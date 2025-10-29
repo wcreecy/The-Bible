@@ -15,6 +15,7 @@ struct ReadingView: View {
     @State private var highlightOnAppear: Bool = true
     @State private var highlightedVerse: Int? = nil
     @State private var menuVerse: Int? = nil
+    @State private var selectedVerse: Int? = nil
 
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
@@ -53,27 +54,36 @@ struct ReadingView: View {
         ZStack {
             ScrollViewReader { proxy in
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 12) {
+                    LazyVStack(alignment: .leading, spacing: 0) {
                         ForEach(currentChapter.verses) { verse in
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(verse.text)
-                                    .font(.body)
-                                    .foregroundStyle(.primary)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                Text("\(currentBook.name) \(currentChapter.number):\(verse.number)")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                            Group {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text(verse.text)
+                                        .font(.body)
+                                        .foregroundStyle(.primary)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                    Text("\(currentBook.name) \(currentChapter.number):\(verse.number)")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                .padding(.horizontal)
                             }
                             .id(verseID(for: verse.number))
-                            .padding(.horizontal)
                             .padding(.vertical, 8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(Color.accentColor.opacity(highlightedVerse == verse.number ? 0.2 : 0))
-                            )
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background((highlightedVerse == verse.number || selectedVerse == verse.number) ? Color.yellow.opacity(0.25) : Color.clear)
                             .animation(.easeInOut(duration: 0.6), value: highlightedVerse)
+                            .animation(.easeInOut(duration: 0.2), value: selectedVerse)
                             .onLongPressGesture(minimumDuration: 0.5) {
                                 menuVerse = verse.number
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                let generator = UISelectionFeedbackGenerator()
+                                generator.selectionChanged()
+                                selectedVerse = verse.number
+                                // Dismiss any open menu when tapping to select
+                                if menuVerse != nil { menuVerse = nil }
                             }
 
                             if menuVerse == verse.number {
@@ -108,6 +118,7 @@ struct ReadingView: View {
                 .onChange(of: currentChapterIndex) { _, _ in
                     menuVerse = nil
                     highlightedVerse = nil
+                    selectedVerse = nil
                     // When chapter changes, scroll to the top
                     DispatchQueue.main.async {
                         withAnimation { proxy.scrollTo(verseID(for: 1), anchor: .top) }
@@ -206,3 +217,4 @@ struct ReadingView: View {
             .modelContainer(for: [ReaderSettings.self, ReadingProgress.self], inMemory: true)
     }
 }
+
