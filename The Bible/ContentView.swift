@@ -9,9 +9,48 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        NavigationStack {
-            BooksView(books: BibleData.books)
-                .navigationTitle("Books")
+        TabView {
+            NavigationStack {
+                Text("Home")
+                    .navigationTitle("Home")
+            }
+            .tabItem { Label("Home", systemImage: "house") }
+
+            NavigationStack {
+                BooksView(books: BibleData.books)
+                    .navigationTitle("Bible")
+            }
+            .tabItem { Label("Bible", systemImage: "book") }
+
+            NavigationStack {
+                Text("Search")
+                    .navigationTitle("Search")
+            }
+            .tabItem { Label("Search", systemImage: "magnifyingglass") }
+
+            NavigationStack {
+                Text("Favorites")
+                    .navigationTitle("Favorites")
+            }
+            .tabItem { Label("Favorites", systemImage: "heart") }
+
+            NavigationStack {
+                Text("Bookmarks")
+                    .navigationTitle("Bookmarks")
+            }
+            .tabItem { Label("Bookmarks", systemImage: "bookmark") }
+
+            NavigationStack {
+                Text("Notes")
+                    .navigationTitle("Notes")
+            }
+            .tabItem { Label("Notes", systemImage: "note.text") }
+
+            NavigationStack {
+                Text("Settings")
+                    .navigationTitle("Settings")
+            }
+            .tabItem { Label("Settings", systemImage: "gear") }
         }
     }
 }
