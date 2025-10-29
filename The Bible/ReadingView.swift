@@ -4,6 +4,7 @@ import SwiftData
 struct ReadingView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var progressList: [ReadingProgress]
+    @Query private var favorites: [Favorite]
 
     let book: Book
     let chapter: Chapter
@@ -16,6 +17,10 @@ struct ReadingView: View {
     @State private var highlightedVerse: Int? = nil
     @State private var menuVerse: Int? = nil
     @State private var selectedVerse: Int? = nil
+    @State private var showFavoriteToast: Bool = false
+    @State private var favoriteToastText: String = "Added to Favorites"
+    @State private var favoriteToastSymbol: String = "heart.fill"
+    @State private var favoriteToastTint: Color = .pink
 
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
@@ -88,15 +93,18 @@ struct ReadingView: View {
 
                             if menuVerse == verse.number {
                                 HStack(spacing: 24) {
-                                    Button(action: {}) { Image(systemName: "doc.on.doc") }
+                                    Button(action: { withAnimation(.easeInOut) { menuVerse = nil } }) { Image(systemName: "doc.on.doc") }
                                         .foregroundStyle(.blue)
-                                    Button(action: {}) { Image(systemName: "square.and.arrow.up") }
+                                    Button(action: { withAnimation(.easeInOut) { menuVerse = nil } }) { Image(systemName: "square.and.arrow.up") }
                                         .foregroundStyle(.blue)
-                                    Button(action: {}) { Image(systemName: "note.text") }
+                                    Button(action: { withAnimation(.easeInOut) { menuVerse = nil } }) { Image(systemName: "note.text") }
                                         .foregroundStyle(.blue)
-                                    Button(action: {}) { Image(systemName: "bookmark") }
+                                    Button(action: { withAnimation(.easeInOut) { menuVerse = nil } }) { Image(systemName: "bookmark") }
                                         .foregroundStyle(.blue)
-                                    Button(action: {}) { Image(systemName: "heart") }
+                                    Button(action: {
+                                        toggleFavorite(for: verse)
+                                        withAnimation(.easeInOut) { menuVerse = nil }
+                                    }) { Image(systemName: isFavorited(verse) ? "heart.fill" : "heart") }
                                         .foregroundStyle(.red)
                                 }
                                 .font(.title3)
@@ -141,6 +149,26 @@ struct ReadingView: View {
                 .onTapGesture {
                     if menuVerse != nil { menuVerse = nil }
                 }
+            }
+        }
+        .overlay(alignment: .bottom) {
+            if showFavoriteToast {
+                HStack(spacing: 8) {
+                    Image(systemName: favoriteToastSymbol)
+                        .foregroundStyle(favoriteToastTint)
+                    Text(favoriteToastText)
+                        .font(.subheadline)
+                        .foregroundStyle(.primary)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(.regularMaterial, in: Capsule())
+                .overlay(
+                    Capsule().strokeBorder(.quaternary, lineWidth: 0.5)
+                )
+                .padding(.bottom, 20)
+                .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 6)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
         .contentShape(Rectangle())
@@ -209,6 +237,48 @@ struct ReadingView: View {
     private func verseID(for number: Int) -> String {
         "\(currentBookIndex)-\(currentChapterIndex)-\(number)"
     }
+
+    private func isFavorited(_ verse: Verse) -> Bool {
+        favorites.contains { fav in
+            fav.bookName == currentBook.name &&
+            fav.chapterNumber == currentChapter.number &&
+            fav.verseNumber == verse.number
+        }
+    }
+
+    private func toggleFavorite(for verse: Verse) {
+        if let existing = favorites.first(where: { $0.bookName == currentBook.name && $0.chapterNumber == currentChapter.number && $0.verseNumber == verse.number }) {
+            modelContext.delete(existing)
+            try? modelContext.save()
+            let generator = UINotificationFeedbackGenerator()
+            generator.notificationOccurred(.success)
+            favoriteToastSymbol = "xmark.circle.fill"
+            favoriteToastTint = .red
+            favoriteToastText = "Removed Favorite \(currentBook.name) \(currentChapter.number):\(verse.number)"
+            withAnimation(.spring()) { showFavoriteToast = true }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                withAnimation(.easeOut) { showFavoriteToast = false }
+            }
+        } else {
+            let fav = Favorite(
+                bookName: currentBook.name,
+                chapterNumber: currentChapter.number,
+                verseNumber: verse.number,
+                verseText: verse.text
+            )
+            modelContext.insert(fav)
+            try? modelContext.save()
+            let generator = UINotificationFeedbackGenerator()
+            generator.notificationOccurred(.success)
+            favoriteToastSymbol = "heart.fill"
+            favoriteToastTint = .pink
+            favoriteToastText = "Favorited \(currentBook.name) \(currentChapter.number):\(verse.number)"
+            withAnimation(.spring()) { showFavoriteToast = true }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                withAnimation(.easeOut) { showFavoriteToast = false }
+            }
+        }
+    }
 }
 
 #Preview {
@@ -217,4 +287,3 @@ struct ReadingView: View {
             .modelContainer(for: [ReaderSettings.self, ReadingProgress.self], inMemory: true)
     }
 }
-

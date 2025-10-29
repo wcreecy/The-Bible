@@ -29,8 +29,7 @@ struct ContentView: View {
             .tabItem { Label("Search", systemImage: "magnifyingglass") }
 
             NavigationStack {
-                Text("Favorites")
-                    .navigationTitle("Favorites")
+                FavoritesView()
             }
             .tabItem { Label("Favorites", systemImage: "heart") }
 

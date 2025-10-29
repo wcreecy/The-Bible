@@ -13,6 +13,9 @@ struct The_BibleApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
+            ReaderSettings.self,
+            ReadingProgress.self,
+            Favorite.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -30,3 +33,4 @@ struct The_BibleApp: App {
         .modelContainer(sharedModelContainer)
     }
 }
+
