@@ -34,6 +34,8 @@ struct HomeView: View {
     @State private var selectedChapter: Chapter? = nil
     @State private var selectedStartVerse: Int = 1
     @State private var showCopyToast: Bool = false
+    @State private var startIconBounce: Bool = false
+    @State private var timeMarker: Int = 0
     
     private var remainingFraction: Double {
         guard storedTotalSeconds > 0 else { return 1.0 }
@@ -50,6 +52,15 @@ struct HomeView: View {
             return .red
         }
     }
+    
+    private var isEvening: Bool {
+        let hour = Calendar.current.component(.hour, from: Date())
+        // Evening/Night from 6 PM (18) through 4:59 AM (i.e., hours 0...4)
+        return hour >= 18 || hour < 5
+    }
+
+    private var verseCardTitle: String { isEvening ? "Word of the Night" : "Verse of the Day" }
+    private var verseCardIcon: String { isEvening ? "moon.stars" : "sun.max.fill" }
     
     var progress: ReadingProgress? {
         progressList.first
@@ -72,13 +83,14 @@ struct HomeView: View {
                 .padding(.top)
 
                 // Verse of the Day Card
-                HeroCard(title: "Verse of the Day", subtitle: nil, icon: "sun.max.fill", tint: .orange) {
+                HeroCard(title: verseCardTitle, subtitle: nil, icon: verseCardIcon, tint: .orange) {
                     VStack(alignment: .leading, spacing: 10) {
                         if let v = verseOfDay {
                             Text(v.verseText)
                                 .font(.headline)
                                 .italic()
-                                .fixedSize(horizontal: false, vertical: true)
+                                .lineLimit(8)
+                                .truncationMode(.tail)
                             Text("\(v.bookName) \(v.chapterNumber):\(v.verseNumber)")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
@@ -138,68 +150,146 @@ struct HomeView: View {
                 .padding(.horizontal)
 
                 // Timer Card
-                HeroCard(
-                    title: "Prayer/Study Timer",
-                    subtitle: isTimerRunning ? (isPaused ? "Paused" : "In progress") : "Start a focused timer with an alert when time is up.",
-                    icon: "timer",
-                    tint: timerTintColor,
-                    backgroundColor: isTimerRunning ? timerTintColor.opacity(0.20) : nil,
-                    strokeColor: isTimerRunning ? timerTintColor.opacity(0.35) : nil
-                ) {
-                    VStack(spacing: 10) {
-                        if isTimerRunning {
-                            Text(formattedTime(remainingSeconds))
-                                .font(.system(size: 36, weight: .semibold, design: .monospaced))
-                                .foregroundStyle(timerTintColor)
-                            HStack(spacing: 12) {
-                                Button(action: { togglePause() }) {
-                                    Label(isPaused ? "Resume" : "Pause", systemImage: isPaused ? "play.fill" : "pause.fill")
-                                        .frame(maxWidth: .infinity)
-                                }
-                                .buttonStyle(.bordered)
-                                .tint(timerTintColor)
-
-                                Button(role: .destructive, action: stopTimer) {
-                                    Label("Stop", systemImage: "stop.fill")
-                                        .frame(maxWidth: .infinity)
-                                }
-                                .buttonStyle(.borderedProminent)
-                            }
-                        } else {
-                            Button(action: { showPrayerStudySheet = true }) {
+                Group {
+                    if isTimerRunning {
+                        HeroCard(
+                            title: "Prayer/Study Timer",
+                            subtitle: isTimerRunning ? (isPaused ? "Paused" : "In progress") : "Start a focused timer with an alert when time is up.",
+                            icon: "timer",
+                            tint: timerTintColor,
+                            backgroundColor: isTimerRunning ? timerTintColor.opacity(0.20) : nil,
+                            strokeColor: isTimerRunning ? timerTintColor.opacity(0.35) : nil
+                        ) {
+                            VStack(spacing: 10) {
+                                Text(formattedTime(remainingSeconds))
+                                    .font(.system(size: 36, weight: .semibold, design: .monospaced))
+                                    .foregroundStyle(timerTintColor)
                                 HStack(spacing: 12) {
-                                    Image(systemName: "play.fill")
-                                        .imageScale(.large)
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text("Start Timer")
-                                            .font(.headline)
-                                            .bold()
-                                        Text("Focus your prayer/study time")
-                                            .font(.caption)
-                                            .opacity(0.9)
+                                    Button(action: { togglePause() }) {
+                                        Label(isPaused ? "Resume" : "Pause", systemImage: isPaused ? "play" : "pause.fill")
+                                            .frame(maxWidth: .infinity)
                                     }
+                                    .buttonStyle(.bordered)
+                                    .tint(timerTintColor)
+
+                                    Button(role: .destructive, action: stopTimer) {
+                                        Label("Stop", systemImage: "stop.fill")
+                                            .frame(maxWidth: .infinity)
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    } else {
+                        HeroCard(
+                            title: "Prayer/Study Timer",
+                            subtitle: "Start a focused timer with an alert when time is up.",
+                            icon: "timer",
+                            tint: timerTintColor
+                        ) {
+                            VStack(spacing: 10) {
+                                HStack(spacing: 12) {
+                                    Image(systemName: "play")
+                                        .imageScale(.large)
+                                        .foregroundStyle(.blue)
+                                        .scaleEffect(startIconBounce ? 1.15 : 1.0)
+                                        .animation(.spring(response: 0.25, dampingFraction: 0.6, blendDuration: 0.0), value: startIconBounce)
+                                    Text("Start")
+                                        .font(.headline)
+                                        .bold()
                                     Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .opacity(0.6)
                                 }
                                 .padding(14)
                                 .frame(maxWidth: .infinity)
                                 .foregroundStyle(.primary)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                        .fill(.thinMaterial)
-                                )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                        .strokeBorder(.black.opacity(0.08), lineWidth: 1)
-                                )
                             }
-                            .buttonStyle(.plain)
                         }
+                        .padding(.horizontal)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            let generator = UIImpactFeedbackGenerator(style: .medium)
+                            generator.impactOccurred()
+                            withAnimation(.spring(response: 0.25, dampingFraction: 0.6)) {
+                                startIconBounce = true
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                                startIconBounce = false
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.10) {
+                                showPrayerStudySheet = true
+                            }
+                        }
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityLabel("Start")
                     }
                 }
-                .padding(.horizontal)
 
+                // Resume Card
+                if let progress = progress,
+                   let book = BibleData.books.first(where: { $0.name == progress.bookName }),
+                   let chapter = book.chapters.first(where: { $0.number == progress.chapterNumber }) {
+                    Button(action: {
+                        selectedBook = book
+                        selectedChapter = chapter
+                        selectedStartVerse = progress.verseNumber
+                        navigateToReader = true
+                    }) {
+                        HeroCard(
+                            title: "",
+                            subtitle: nil,
+                            icon: nil,
+                            tint: .blue
+                        ) {
+                            HStack(alignment: .center, spacing: 12) {
+                                Image(systemName: "arrow.uturn.backward.circle")
+                                    .font(.system(size: 28, weight: .semibold))
+                                    .foregroundStyle(.blue)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Resume")
+                                        .font(.headline)
+                                        .bold()
+                                    Text("Continue where you left off")
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                    Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal)
+                } else {
+                    HeroCard(
+                        title: "",
+                        subtitle: nil,
+                        icon: nil,
+                        tint: .blue
+                    ) {
+                        HStack(alignment: .center, spacing: 12) {
+                            Image(systemName: "arrow.uturn.backward.circle")
+                                .font(.system(size: 28, weight: .semibold))
+                                .foregroundStyle(.blue)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Resume")
+                                    .font(.headline)
+                                    .bold()
+                                Text("Continue where you left off")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                Text("Start reading from the Bible tab")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                        }
+                    }
+                    .redacted(reason: .placeholder)
+                    .padding(.horizontal)
+                }
             }
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
@@ -236,6 +326,10 @@ struct HomeView: View {
                 }
             }
         }
+        .onReceive(Timer.publish(every: 60, on: .main, in: .common).autoconnect()) { _ in
+            // Update a marker to trigger view refresh for time-based changes (e.g., after 6 PM)
+            timeMarker = (timeMarker + 1) % 60
+        }
         .sheet(isPresented: $showPrayerStudySheet) {
             PrayerStudyTimerSetupView(onStart: { minutes in
                 startTimer(minutes: minutes)
@@ -250,77 +344,6 @@ struct HomeView: View {
             }
         } message: {
             Text("Your prayer/study timer has completed.")
-        }
-        .safeAreaInset(edge: .bottom) {
-            VStack(spacing: 0) {
-                if let progress = progress,
-                   let book = BibleData.books.first(where: { $0.name == progress.bookName }),
-                   let chapter = book.chapters.first(where: { $0.number == progress.chapterNumber }) {
-                    Button(action: {
-                        selectedBook = book
-                        selectedChapter = chapter
-                        selectedStartVerse = progress.verseNumber
-                        navigateToReader = true
-                    }) {
-                        HeroCard(
-                            title: "",
-                            subtitle: nil,
-                            icon: nil,
-                            tint: .blue
-                        ) {
-                            HStack(alignment: .center, spacing: 12) {
-                                Image(systemName: "arrow.uturn.backward.circle.fill")
-                                    .font(.system(size: 28, weight: .semibold))
-                                    .foregroundStyle(.blue)
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("Resume")
-                                        .font(.headline)
-                                        .bold()
-                                    Text("Continue where you left off")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                    Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                }
-                                Spacer()
-                            }
-                        }
-                    }
-                    .buttonStyle(.plain)
-                } else {
-                    // Placeholder HeroCard to always reserve space
-                    HeroCard(
-                        title: "",
-                        subtitle: nil,
-                        icon: nil,
-                        tint: .blue
-                    ) {
-                        HStack(alignment: .center, spacing: 12) {
-                            Image(systemName: "arrow.uturn.backward.circle.fill")
-                                .font(.system(size: 28, weight: .semibold))
-                                .foregroundStyle(.blue)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Resume")
-                                    .font(.headline)
-                                    .bold()
-                                Text("Continue where you left off")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                Text("Start reading from the Bible tab")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                        }
-                    }
-                    .redacted(reason: .placeholder)
-                }
-            }
-            .padding(.horizontal)
-            .padding(.top, 8)
-            .padding(.bottom, 8)
-            .background(.ultraThinMaterial)
         }
         // Hidden navigation link trigger for deep-linking into reader from verse card
         .background(
@@ -632,23 +655,20 @@ private struct PrayerStudyTimerSetupView: View {
                 .bold()
 
             VStack(spacing: 16) {
-                Text("Duration: \(selectedMinutes) minute\(selectedMinutes == 1 ? "" : "s")")
+                Text("Duration")
                     .font(.headline)
 
-                Slider(value: Binding(
-                    get: { Double(selectedMinutes) },
-                    set: { selectedMinutes = max(1, min(120, Int($0))) }
-                ), in: 1...120, step: 1)
-
-                HStack {
-                    Text("1 min")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                    Text("120 min")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                Picker("Minutes", selection: $selectedMinutes) {
+                    ForEach(1...120, id: \.self) { m in
+                        Text("\(m) minute\(m == 1 ? "" : "s")").tag(m)
+                    }
                 }
+                .pickerStyle(.wheel)
+                .frame(height: 160)
+
+                Text("Selected: \(selectedMinutes) minute\(selectedMinutes == 1 ? "" : "s")")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
 
             Button {
