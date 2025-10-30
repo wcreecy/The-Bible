@@ -47,8 +47,7 @@ struct ContentView: View {
             .tabItem { Label("Bookmarks", systemImage: "bookmark") }
 
             NavigationStack {
-                Text("Notes")
-                    .navigationTitle("Notes")
+                NotesView()
             }
             .tabItem { Label("Notes", systemImage: "note.text") }
 

@@ -17,6 +17,7 @@ struct The_BibleApp: App {
             ReadingProgress.self,
             Favorite.self,
             Bookmark.self,
+            VerseNote.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

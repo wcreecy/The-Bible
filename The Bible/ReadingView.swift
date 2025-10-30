@@ -6,6 +6,7 @@ struct ReadingView: View {
     @Query private var progressList: [ReadingProgress]
     @Query private var favorites: [Favorite]
     @Query private var bookmarks: [Bookmark]
+    @Query private var notes: [VerseNote]
 
     let book: Book
     let chapter: Chapter
@@ -23,6 +24,9 @@ struct ReadingView: View {
     @State private var favoriteToastSymbol: String = "heart.fill"
     @State private var favoriteToastTint: Color = .pink
     @AppStorage("keepScreenOn") private var keepScreenOn: Bool = false
+    @State private var showNoteSheet: Bool = false
+    @State private var noteDraft: String = ""
+    @State private var noteVerseForSheet: Int? = nil
 
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
@@ -65,6 +69,39 @@ struct ReadingView: View {
             }
             .onChange(of: keepScreenOn) { _, newValue in
                 UIApplication.shared.isIdleTimerDisabled = newValue
+            }
+            .sheet(isPresented: $showNoteSheet) {
+                NavigationStack {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Add Note")
+                            .font(.headline)
+                        TextEditor(text: $noteDraft)
+                            .frame(minHeight: 160)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                            )
+                        Spacer()
+                    }
+                    .padding()
+                    .navigationTitle("Note")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") { showNoteSheet = false }
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Save") {
+                                if let verseNum = noteVerseForSheet,
+                                   let verse = currentChapter.verses.first(where: { $0.number == verseNum }) {
+                                    saveNote(for: verse, content: noteDraft.trimmingCharacters(in: .whitespacesAndNewlines))
+                                }
+                                showNoteSheet = false
+                            }
+                            .disabled(noteDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        }
+                    }
+                }
             }
             .appToast(isPresented: $showFavoriteToast, symbol: favoriteToastSymbol, text: favoriteToastText, tint: favoriteToastTint)
     }
@@ -112,8 +149,16 @@ struct ReadingView: View {
                                         .foregroundStyle(.blue)
                                     Button(action: { withAnimation(.easeInOut) { menuVerse = nil } }) { Image(systemName: "square.and.arrow.up") }
                                         .foregroundStyle(.blue)
-                                    Button(action: { withAnimation(.easeInOut) { menuVerse = nil } }) { Image(systemName: "note.text") }
-                                        .foregroundStyle(.blue)
+                                    Button(action: {
+                                        noteVerseForSheet = verse.number
+                                        noteDraft = existingNote(for: verse)?.content ?? ""
+                                        withAnimation(.easeInOut) { menuVerse = nil }
+                                        showNoteSheet = true
+                                    }) {
+                                        Image(systemName: "note.text")
+                                            .symbolVariant(isNoted(verse) ? .fill : .none)
+                                    }
+                                    .foregroundStyle(.blue)
                                     Button(action: {
                                         let generator = UIImpactFeedbackGenerator(style: .light)
                                         generator.impactOccurred()
@@ -274,6 +319,36 @@ struct ReadingView: View {
         }
     }
 
+    private func existingNote(for verse: Verse) -> VerseNote? {
+        notes.first { n in
+            n.bookName == currentBook.name && n.chapterNumber == currentChapter.number && n.verseNumber == verse.number
+        }
+    }
+
+    private func isNoted(_ verse: Verse) -> Bool {
+        existingNote(for: verse) != nil
+    }
+
+    private func saveNote(for verse: Verse, content: String) {
+        if let existing = existingNote(for: verse) {
+            existing.content = content
+            existing.updatedAt = Date()
+            try? modelContext.save()
+        } else {
+            let note = VerseNote(
+                bookName: currentBook.name,
+                chapterNumber: currentChapter.number,
+                verseNumber: verse.number,
+                verseText: verse.text,
+                content: content,
+                createdAt: Date(),
+                updatedAt: Date()
+            )
+            modelContext.insert(note)
+            try? modelContext.save()
+        }
+    }
+
     private func toggleFavorite(for verse: Verse) {
         if let existing = favorites.first(where: { $0.bookName == currentBook.name && $0.chapterNumber == currentChapter.number && $0.verseNumber == verse.number }) {
             modelContext.delete(existing)
@@ -337,3 +412,4 @@ struct ReadingView: View {
             .modelContainer(for: [ReaderSettings.self, ReadingProgress.self], inMemory: true)
     }
 }
+
