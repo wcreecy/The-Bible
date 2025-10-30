@@ -5,6 +5,7 @@ struct SettingsView: View {
     @AppStorage("fontSizePreference") private var fontSizePreferenceRaw: String = FontSizePreference.system.rawValue
     @AppStorage("keepScreenOn") private var keepScreenOn: Bool = false
     @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = FontFamilyPreference.system.rawValue
+    @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
 
     private var selectionBinding: Binding<ColorSchemePreference> {
         Binding<ColorSchemePreference>(
@@ -73,6 +74,21 @@ struct SettingsView: View {
                     Label("Keep Screen On While Reading", systemImage: "display.sleep")
                 }
                 .accessibilityIdentifier("keepScreenOnToggle")
+            }
+            .headerProminence(.increased)
+            Section(header: Text("Verse of the Day"), footer: Text("Choose which part of the Bible the Verse of the Day is selected from.")) {
+                Picker(selection: Binding<String>(
+                    get: { verseScopeRaw },
+                    set: { verseScopeRaw = $0 }
+                )) {
+                    Text("Old Testament").tag("old")
+                    Text("New Testament").tag("new")
+                    Text("Whole Bible").tag("whole")
+                } label: {
+                    Label("Source", systemImage: "book")
+                }
+                .pickerStyle(.segmented)
+                .accessibilityIdentifier("verseOfDayScopePicker")
             }
             .headerProminence(.increased)
         }

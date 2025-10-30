@@ -20,8 +20,8 @@ struct ContentView: View {
     var body: some View {
         TabView {
             NavigationStack {
-                Text("Home")
-                    .navigationTitle("Home")
+                HomeView()
+                    .navigationTitle("Word of God")
             }
             .tabItem { Label("Home", systemImage: "house") }
 
