@@ -56,55 +56,75 @@ struct HomeView: View {
     }
     
     var body: some View {
-        VStack {
-            if let book = selectedBook, let chapter = selectedChapter {
-                NavigationLink(
-                    destination: ReadingView(book: book, chapter: chapter, startVerse: selectedStartVerse),
-                    isActive: $navigateToReader
-                ) { EmptyView() }
-                .hidden()
-            }
-
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Verse of the Day")
-                    .font(.title3)
-                    .bold()
-
-                if let v = verseOfDay {
-                    Text(v.verseText)
-                        .font(.body)
-                        .italic()
-                        .fixedSize(horizontal: false, vertical: true)
-                    Text("\(v.bookName) \(v.chapterNumber):\(v.verseNumber)")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .padding(.bottom, 4)
-
-                    HStack(spacing: 24) {
-                        Button(action: { loadRandomVerse() }) {
-                            Image(systemName: "arrow.clockwise")
-                        }
-                        .help("Refresh")
-
-                        Button(action: { copyVerse(v) }) {
-                            Image(systemName: "doc.on.doc")
-                        }
-                        .help("Copy")
-
-                        ShareLink(item: shareText(for: v)) {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                        .help("Share")
-
-                        Button(action: { toggleFavorite(for: v) }) {
-                            Image(systemName: isFavorited(v) ? "heart.fill" : "heart")
-                                .foregroundStyle(.red)
-                        }
-                        .help("Favorite")
+        ScrollView {
+            VStack(spacing: 16) {
+                // Title Card
+                HeroCard(title: "Word of God", subtitle: "Welcome back", icon: "book.fill", tint: .blue, titleFont: .largeTitle, titleFontWeight: .black) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "person.wave.2.fill")
+                            .foregroundStyle(.blue)
+                        Text("What is God saying to you today?")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                     }
-                    .font(.title3)
+                }
+                .padding(.horizontal)
+                .padding(.top)
+
+                // Verse of the Day Card
+                HeroCard(title: "Verse of the Day", subtitle: nil, icon: "sun.max.fill", tint: .orange) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        if let v = verseOfDay {
+                            Text(v.verseText)
+                                .font(.headline)
+                                .italic()
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text("\(v.bookName) \(v.chapterNumber):\(v.verseNumber)")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+
+                            HStack(spacing: 20) {
+                                Button(action: { loadRandomVerse() }) {
+                                    Label("Refresh", systemImage: "arrow.clockwise")
+                                }
+                                .labelStyle(.iconOnly)
+                                .font(.title3)
+                                .help("Refresh")
+
+                                Button(action: { copyVerse(v) }) {
+                                    Label("Copy", systemImage: "doc.on.doc")
+                                }
+                                .labelStyle(.iconOnly)
+                                .font(.title3)
+                                .help("Copy")
+
+                                ShareLink(item: shareText(for: v)) {
+                                    Image(systemName: "square.and.arrow.up")
+                                }
+                                .font(.title3)
+                                .help("Share")
+
+                                Button(action: { toggleFavorite(for: v) }) {
+                                    Image(systemName: isFavorited(v) ? "heart.fill" : "heart")
+                                        .foregroundStyle(.red)
+                                }
+                                .font(.title3)
+                                .help("Favorite")
+                            }
+                        } else {
+                            Text("Tap refresh to get today's verse.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Button(action: { loadRandomVerse() }) {
+                                Label("Refresh", systemImage: "arrow.clockwise")
+                            }
+                            .buttonStyle(.bordered)
+                            .tint(.orange)
+                        }
+                    }
+                    .contentShape(Rectangle())
                     .onLongPressGesture(minimumDuration: 0.5) {
-                        let generator = UIImpactFeedbackGenerator(style: .medium)
+                        let generator = UIImpactFeedbackGenerator(style: .heavy)
                         generator.impactOccurred()
                         guard let v = verseOfDay,
                               let book = BibleData.books.first(where: { $0.name == v.bookName }),
@@ -114,155 +134,76 @@ struct HomeView: View {
                         selectedStartVerse = v.verseNumber
                         navigateToReader = true
                     }
-                } else {
-                    // Placeholder while loading
-                    Text("Tap refresh to get today's verse.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    HStack(spacing: 24) {
-                        Button(action: { loadRandomVerse() }) {
-                            Image(systemName: "arrow.clockwise")
-                        }
-                        .help("Refresh")
-                    }
-                    .font(.title3)
                 }
-            }
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color(.secondarySystemBackground))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .strokeBorder(Color.gray.opacity(0.2), lineWidth: 1)
-            )
-            .padding([.horizontal, .top])
-            
-            Spacer()
-            if isTimerRunning {
-                VStack(spacing: 8) {
-                    HStack { Spacer() }
-                    VStack(spacing: 8) {
-                        Text("Prayer/Study")
-                            .font(.headline)
-                            .bold()
-                        Text(formattedTime(remainingSeconds))
-                            .font(.system(size: 32, weight: .semibold, design: .monospaced))
-                        HStack(spacing: 12) {
-                            Button(action: { togglePause() }) {
-                                Label(isPaused ? "Resume" : "Pause", systemImage: isPaused ? "play.fill" : "pause.fill")
-                                    .frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(.bordered)
-                            .tint(timerTintColor)
-
-                            Button(role: .destructive, action: stopTimer) {
-                                Label("Stop", systemImage: "stop.fill")
-                                    .frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(.borderedProminent)
-                        }
-                    }
-                    .multilineTextAlignment(.center)
-                    HStack { Spacer() }
-                }
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(timerTintColor.opacity(0.12))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .strokeBorder(timerTintColor.opacity(0.25), lineWidth: 1)
-                )
                 .padding(.horizontal)
-                .padding(.bottom, 8)
-            } else {
-                Button(action: { showPrayerStudySheet = true }) {
-                    HStack {
-                        Spacer()
-                        VStack(spacing: 4) {
-                            Text("Prayer/Study")
-                                .font(.headline)
-                                .bold()
-                            Text("Set a timer to focus")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+
+                // Timer Card
+                HeroCard(
+                    title: "Prayer/Study Timer",
+                    subtitle: isTimerRunning ? (isPaused ? "Paused" : "In progress") : "Start a focused timer with an alert when time is up.",
+                    icon: "timer",
+                    tint: timerTintColor,
+                    backgroundColor: isTimerRunning ? timerTintColor.opacity(0.20) : nil,
+                    strokeColor: isTimerRunning ? timerTintColor.opacity(0.35) : nil
+                ) {
+                    VStack(spacing: 10) {
+                        if isTimerRunning {
+                            Text(formattedTime(remainingSeconds))
+                                .font(.system(size: 36, weight: .semibold, design: .monospaced))
+                                .foregroundStyle(timerTintColor)
+                            HStack(spacing: 12) {
+                                Button(action: { togglePause() }) {
+                                    Label(isPaused ? "Resume" : "Pause", systemImage: isPaused ? "play.fill" : "pause.fill")
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(.bordered)
+                                .tint(timerTintColor)
+
+                                Button(role: .destructive, action: stopTimer) {
+                                    Label("Stop", systemImage: "stop.fill")
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(.borderedProminent)
+                            }
+                        } else {
+                            Button(action: { showPrayerStudySheet = true }) {
+                                HStack(spacing: 12) {
+                                    Image(systemName: "play.fill")
+                                        .imageScale(.large)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("Start Timer")
+                                            .font(.headline)
+                                            .bold()
+                                        Text("Focus your prayer/study time")
+                                            .font(.caption)
+                                            .opacity(0.9)
+                                    }
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .opacity(0.6)
+                                }
+                                .padding(14)
+                                .frame(maxWidth: .infinity)
+                                .foregroundStyle(.primary)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                        .fill(.thinMaterial)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                        .strokeBorder(.black.opacity(0.08), lineWidth: 1)
+                                )
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .multilineTextAlignment(.center)
-                        Spacer()
                     }
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .padding(.bottom, 8)
+                .padding(.horizontal)
+
             }
-            VStack(spacing: 8) {
-                if let progress = progress,
-                   let book = BibleData.books.first(where: { $0.name == progress.bookName }),
-                   let chapter = book.chapters.first(where: { $0.number == progress.chapterNumber }) {
-                    NavigationLink(
-                        destination: ReadingView(book: book, chapter: chapter, startVerse: progress.verseNumber)
-                    ) {
-                        HStack {
-                            Spacer()
-                            VStack(spacing: 4) {
-                                Text("Resume")
-                                    .font(.headline)
-                                    .bold()
-                                Text("Continue where you left off")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                if let p = progressList.first {
-                                    Text("\(p.bookName) \(p.chapterNumber):\(p.verseNumber)")
-                                        .font(.footnote)
-                                        .foregroundStyle(.tertiary)
-                                } else {
-                                    Text("No recent reading")
-                                        .font(.footnote)
-                                        .foregroundStyle(.tertiary)
-                                }
-                            }
-                            .multilineTextAlignment(.center)
-                            Spacer()
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                } else {
-                    NavigationLink(destination: EmptyView()) {
-                        HStack {
-                            Spacer()
-                            VStack(spacing: 4) {
-                                Text("Resume")
-                                    .font(.headline)
-                                    .bold()
-                                Text("Continue where you left off")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                if let p = progressList.first {
-                                    Text("\(p.bookName) \(p.chapterNumber):\(p.verseNumber)")
-                                        .font(.footnote)
-                                        .foregroundStyle(.tertiary)
-                                } else {
-                                    Text("No recent reading")
-                                        .font(.footnote)
-                                        .foregroundStyle(.tertiary)
-                                }
-                            }
-                            .multilineTextAlignment(.center)
-                            Spacer()
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    .disabled(true)
-                }
-            }
-            .padding()
-            .padding(.bottom)
         }
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .navigationTitle("")
         .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
         .onAppear {
             // Request notification permission once
@@ -286,10 +227,7 @@ struct HomeView: View {
         }
         .onReceive(prayerTimer) { _ in
             guard isTimerRunning else { return }
-            if isPaused {
-                // Keep remaining time as stored
-                return
-            }
+            if isPaused { return }
             if storedEndDate > 0 {
                 let remaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
                 remainingSeconds = remaining
@@ -313,6 +251,89 @@ struct HomeView: View {
         } message: {
             Text("Your prayer/study timer has completed.")
         }
+        .safeAreaInset(edge: .bottom) {
+            VStack(spacing: 0) {
+                if let progress = progress,
+                   let book = BibleData.books.first(where: { $0.name == progress.bookName }),
+                   let chapter = book.chapters.first(where: { $0.number == progress.chapterNumber }) {
+                    Button(action: {
+                        selectedBook = book
+                        selectedChapter = chapter
+                        selectedStartVerse = progress.verseNumber
+                        navigateToReader = true
+                    }) {
+                        HeroCard(
+                            title: "",
+                            subtitle: nil,
+                            icon: nil,
+                            tint: .blue
+                        ) {
+                            HStack(alignment: .center, spacing: 12) {
+                                Image(systemName: "arrow.uturn.backward.circle.fill")
+                                    .font(.system(size: 28, weight: .semibold))
+                                    .foregroundStyle(.blue)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Resume")
+                                        .font(.headline)
+                                        .bold()
+                                    Text("Continue where you left off")
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                    Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                } else {
+                    // Placeholder HeroCard to always reserve space
+                    HeroCard(
+                        title: "",
+                        subtitle: nil,
+                        icon: nil,
+                        tint: .blue
+                    ) {
+                        HStack(alignment: .center, spacing: 12) {
+                            Image(systemName: "arrow.uturn.backward.circle.fill")
+                                .font(.system(size: 28, weight: .semibold))
+                                .foregroundStyle(.blue)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Resume")
+                                    .font(.headline)
+                                    .bold()
+                                Text("Continue where you left off")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                Text("Start reading from the Bible tab")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                        }
+                    }
+                    .redacted(reason: .placeholder)
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 8)
+            .padding(.bottom, 8)
+            .background(.ultraThinMaterial)
+        }
+        // Hidden navigation link trigger for deep-linking into reader from verse card
+        .background(
+            Group {
+                if let book = selectedBook, let chapter = selectedChapter {
+                    NavigationLink(
+                        destination: ReadingView(book: book, chapter: chapter, startVerse: selectedStartVerse),
+                        isActive: $navigateToReader
+                    ) { EmptyView() }
+                    .hidden()
+                }
+            }
+        )
     }
     
     private func startTimer(minutes: Int) {
@@ -498,6 +519,96 @@ struct HomeView: View {
             modelContext.insert(fav)
             try? modelContext.save()
         }
+    }
+}
+
+private struct HeroCard<Content: View>: View {
+    let title: String
+    let subtitle: String?
+    let icon: String?
+    let tint: Color
+    let backgroundColor: Color?
+    let strokeColor: Color?
+    let titleFont: Font
+    let titleFontWeight: Font.Weight
+    @ViewBuilder var content: Content
+
+    init(
+        title: String,
+        subtitle: String? = nil,
+        icon: String? = nil,
+        tint: Color = .accentColor,
+        backgroundColor: Color? = nil,
+        strokeColor: Color? = nil,
+        titleFont: Font = .headline,
+        titleFontWeight: Font.Weight = .bold,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.title = title
+        self.subtitle = subtitle
+        self.icon = icon
+        self.tint = tint
+        self.backgroundColor = backgroundColor
+        self.strokeColor = strokeColor
+        self.titleFont = titleFont
+        self.titleFontWeight = titleFontWeight
+        self.content = content()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            if !(title.isEmpty && subtitle == nil && icon == nil) {
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    if let icon {
+                        Image(systemName: icon)
+                            .foregroundStyle(tint)
+                            .font(titleFont)
+                    }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(title)
+                            .font(titleFont)
+                            .fontWeight(titleFontWeight)
+                        if let subtitle {
+                            Text(subtitle)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    Spacer()
+                }
+            }
+            content
+        }
+        .padding(16)
+        .background(
+            Group {
+                if let backgroundColor {
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(backgroundColor)
+                } else {
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color(.secondarySystemBackground), Color(.systemBackground)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                }
+            }
+        )
+        .overlay(
+            Group {
+                if let strokeColor {
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .strokeBorder(strokeColor, lineWidth: 1)
+                } else {
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .strokeBorder(.black.opacity(0.06), lineWidth: 1)
+                }
+            }
+        )
+        .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 4)
     }
 }
 

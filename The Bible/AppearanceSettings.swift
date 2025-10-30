@@ -47,10 +47,10 @@ enum FontSizePreference: String, CaseIterable, Identifiable {
     var dynamicTypeSize: DynamicTypeSize? {
         switch self {
         case .system: return nil
-        case .small: return .small
+        case .small: return .xSmall
         case .medium: return .medium
-        case .large: return .large
-        case .extraLarge: return .xLarge
+        case .large: return .xLarge
+        case .extraLarge: return .xxLarge
         }
     }
 }
