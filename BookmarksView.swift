@@ -3,7 +3,7 @@ import SwiftData
 
 struct BookmarksView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \.createdAt, order: .reverse) private var bookmarks: [Bookmark]
+    @Query(sort: \Bookmark.createdAt, order: .reverse) private var bookmarks: [Bookmark]
 
     var body: some View {
         Group {

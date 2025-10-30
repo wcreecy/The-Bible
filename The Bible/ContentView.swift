@@ -42,8 +42,7 @@ struct ContentView: View {
             .tabItem { Label("Favorites", systemImage: "heart") }
 
             NavigationStack {
-                Text("Bookmarks")
-                    .navigationTitle("Bookmarks")
+                BookmarksView()
             }
             .tabItem { Label("Bookmarks", systemImage: "bookmark") }
 
@@ -68,4 +67,3 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-

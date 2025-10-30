@@ -5,6 +5,7 @@ struct ReadingView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var progressList: [ReadingProgress]
     @Query private var favorites: [Favorite]
+    @Query private var bookmarks: [Bookmark]
 
     let book: Book
     let chapter: Chapter
@@ -112,7 +113,32 @@ struct ReadingView: View {
                                         .foregroundStyle(.blue)
                                     Button(action: { withAnimation(.easeInOut) { menuVerse = nil } }) { Image(systemName: "note.text") }
                                         .foregroundStyle(.blue)
-                                    Button(action: { withAnimation(.easeInOut) { menuVerse = nil } }) { Image(systemName: "bookmark") }
+                                    Button(action: {
+                                        let generator = UIImpactFeedbackGenerator(style: .light)
+                                        generator.impactOccurred()
+                                        if isBookmarked(verse) {
+                                            removeBookmark(for: verse)
+                                            favoriteToastSymbol = "bookmark.slash.fill"
+                                            favoriteToastTint = .red
+                                            favoriteToastText = "Removed from Favorites"
+                                            withAnimation(.spring()) { showFavoriteToast = true }
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                                withAnimation(.easeOut) { showFavoriteToast = false }
+                                            }
+                                        } else {
+                                            let added = addBookmark(for: verse)
+                                            if added {
+                                                favoriteToastSymbol = "bookmark.fill"
+                                                favoriteToastTint = .blue
+                                                favoriteToastText = "Bookmarked \(currentBook.name) \(currentChapter.number):\(verse.number)"
+                                                withAnimation(.spring()) { showFavoriteToast = true }
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                                    withAnimation(.easeOut) { showFavoriteToast = false }
+                                                }
+                                            }
+                                        }
+                                        withAnimation(.easeInOut) { menuVerse = nil }
+                                    }) { Image(systemName: isBookmarked(verse) ? "bookmark.fill" : "bookmark") }
                                         .foregroundStyle(.blue)
                                     Button(action: {
                                         toggleFavorite(for: verse)
@@ -259,6 +285,14 @@ struct ReadingView: View {
         }
     }
 
+    private func isBookmarked(_ verse: Verse) -> Bool {
+        bookmarks.contains { bm in
+            bm.bookName == currentBook.name &&
+            bm.chapterNumber == currentChapter.number &&
+            bm.verseNumber == verse.number
+        }
+    }
+
     private func toggleFavorite(for verse: Verse) {
         if let existing = favorites.first(where: { $0.bookName == currentBook.name && $0.chapterNumber == currentChapter.number && $0.verseNumber == verse.number }) {
             modelContext.delete(existing)
@@ -290,6 +324,28 @@ struct ReadingView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 withAnimation(.easeOut) { showFavoriteToast = false }
             }
+        }
+    }
+    
+    @discardableResult
+    private func addBookmark(for verse: Verse) -> Bool {
+        // Avoid duplicate bookmarks for the same verse
+        if isBookmarked(verse) { return false }
+        let bookmark = Bookmark(
+            bookName: currentBook.name,
+            chapterNumber: currentChapter.number,
+            verseNumber: verse.number,
+            verseText: verse.text
+        )
+        modelContext.insert(bookmark)
+        try? modelContext.save()
+        return true
+    }
+    
+    private func removeBookmark(for verse: Verse) {
+        if let existing = bookmarks.first(where: { $0.bookName == currentBook.name && $0.chapterNumber == currentChapter.number && $0.verseNumber == verse.number }) {
+            modelContext.delete(existing)
+            try? modelContext.save()
         }
     }
 }

@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2CB56D3E2EB3830D00A657FA /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D3D2EB3830D00A657FA /* Bookmark.swift */; };
+		2CB56D402EB3831100A657FA /* BookmarksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D3F2EB3831100A657FA /* BookmarksView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		2C3B0F7F2EB14F3E0089556C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +32,8 @@
 		2C3B0F6D2EB14F3D0089556C /* The Bible.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "The Bible.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C3B0F7E2EB14F3E0089556C /* The BibleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The BibleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C3B0F882EB14F3E0089556C /* The BibleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The BibleUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2CB56D3D2EB3830D00A657FA /* Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
+		2CB56D3F2EB3831100A657FA /* BookmarksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarksView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -92,6 +99,8 @@
 				2C3B0F812EB14F3E0089556C /* The BibleTests */,
 				2C3B0F8B2EB14F3E0089556C /* The BibleUITests */,
 				2C3B0F6E2EB14F3D0089556C /* Products */,
+				2CB56D3D2EB3830D00A657FA /* Bookmark.swift */,
+				2CB56D3F2EB3831100A657FA /* BookmarksView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -249,6 +258,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CB56D402EB3831100A657FA /* BookmarksView.swift in Sources */,
+				2CB56D3E2EB3830D00A657FA /* Bookmark.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -16,6 +16,7 @@ struct The_BibleApp: App {
             ReaderSettings.self,
             ReadingProgress.self,
             Favorite.self,
+            Bookmark.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -33,4 +34,3 @@ struct The_BibleApp: App {
         .modelContainer(sharedModelContainer)
     }
 }
-
