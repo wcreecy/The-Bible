@@ -18,6 +18,7 @@ struct HomeView: View {
     @AppStorage("prayerTimerRunning") private var storedRunning: Bool = false
     @AppStorage("prayerTimerPaused") private var storedPaused: Bool = false
     @AppStorage("prayerTimerRemainingWhenPaused") private var storedRemainingWhenPaused: Int = 0
+    @AppStorage("prayerTimerTotalSeconds") private var storedTotalSeconds: Int = 0
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
 
@@ -33,6 +34,22 @@ struct HomeView: View {
     @State private var selectedChapter: Chapter? = nil
     @State private var selectedStartVerse: Int = 1
     @State private var showCopyToast: Bool = false
+    
+    private var remainingFraction: Double {
+        guard storedTotalSeconds > 0 else { return 1.0 }
+        return max(0.0, min(1.0, Double(remainingSeconds) / Double(storedTotalSeconds)))
+    }
+
+    private var timerTintColor: Color {
+        switch remainingFraction {
+        case 0.5...1.0:
+            return .green
+        case 0.1..<0.5:
+            return .yellow
+        default:
+            return .red
+        }
+    }
     
     var progress: ReadingProgress? {
         progressList.first
@@ -138,6 +155,7 @@ struct HomeView: View {
                                     .frame(maxWidth: .infinity)
                             }
                             .buttonStyle(.bordered)
+                            .tint(timerTintColor)
 
                             Button(role: .destructive, action: stopTimer) {
                                 Label("Stop", systemImage: "stop.fill")
@@ -152,11 +170,11 @@ struct HomeView: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color.accentColor.opacity(0.12))
+                        .fill(timerTintColor.opacity(0.12))
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .strokeBorder(Color.accentColor.opacity(0.25), lineWidth: 1)
+                        .strokeBorder(timerTintColor.opacity(0.25), lineWidth: 1)
                 )
                 .padding(.horizontal)
                 .padding(.bottom, 8)
@@ -245,26 +263,7 @@ struct HomeView: View {
             .padding()
             .padding(.bottom)
         }
-        .overlay(alignment: .bottom) {
-            if showCopyToast {
-                HStack(spacing: 8) {
-                    Image(systemName: "doc.on.doc")
-                        .foregroundStyle(.blue)
-                    Text("Copied to Clipboard")
-                        .font(.subheadline)
-                        .foregroundStyle(.primary)
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
-                .background(.regularMaterial, in: Capsule())
-                .overlay(
-                    Capsule().strokeBorder(.quaternary, lineWidth: 0.5)
-                )
-                .padding(.bottom, 20)
-                .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 6)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-        }
+        .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
         .onAppear {
             // Request notification permission once
             UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
@@ -318,8 +317,9 @@ struct HomeView: View {
     
     private func startTimer(minutes: Int) {
         let secs = max(1, minutes) * 60
-        let end = Date().addingTimeInterval(TimeInterval(secs))
         remainingSeconds = secs
+        storedTotalSeconds = secs
+        let end = Date().addingTimeInterval(TimeInterval(secs))
         isPaused = false
         isTimerRunning = true
 
@@ -358,6 +358,7 @@ struct HomeView: View {
         storedPaused = false
         storedEndDate = 0
         storedRemainingWhenPaused = 0
+        storedTotalSeconds = 0
 
         cancelNotification()
         stopFinishAlerts()
@@ -405,6 +406,7 @@ struct HomeView: View {
         remainingSeconds = 0
         storedEndDate = 0
         storedRemainingWhenPaused = 0
+        storedTotalSeconds = 0
 
         // Start foreground alert with repeating vibration if app is active
         showFinishedAlert = true

@@ -66,6 +66,7 @@ struct ReadingView: View {
             .onChange(of: keepScreenOn) { _, newValue in
                 UIApplication.shared.isIdleTimerDisabled = newValue
             }
+            .appToast(isPresented: $showFavoriteToast, symbol: favoriteToastSymbol, text: favoriteToastText, tint: favoriteToastTint)
     }
 
     @ViewBuilder
@@ -188,26 +189,6 @@ struct ReadingView: View {
                 .onTapGesture {
                     if menuVerse != nil { menuVerse = nil }
                 }
-            }
-        }
-        .overlay(alignment: .bottom) {
-            if showFavoriteToast {
-                HStack(spacing: 8) {
-                    Image(systemName: favoriteToastSymbol)
-                        .foregroundStyle(favoriteToastTint)
-                    Text(favoriteToastText)
-                        .font(.subheadline)
-                        .foregroundStyle(.primary)
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
-                .background(.regularMaterial, in: Capsule())
-                .overlay(
-                    Capsule().strokeBorder(.quaternary, lineWidth: 0.5)
-                )
-                .padding(.bottom, 20)
-                .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 6)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
         .contentShape(Rectangle())
