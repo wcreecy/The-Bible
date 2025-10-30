@@ -6,6 +6,7 @@ struct SettingsView: View {
     @AppStorage("keepScreenOn") private var keepScreenOn: Bool = false
     @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = FontFamilyPreference.system.rawValue
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
+    @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
 
     private var selectionBinding: Binding<ColorSchemePreference> {
         Binding<ColorSchemePreference>(
@@ -77,24 +78,72 @@ struct SettingsView: View {
             }
             .headerProminence(.increased)
             Section(header: Text("Verse of the Day"), footer: Text("Choose which part of the Bible the Verse of the Day is selected from.")) {
-                Picker(selection: Binding<String>(
-                    get: { verseScopeRaw },
-                    set: { verseScopeRaw = $0 }
-                )) {
-                    Text("Old Testament").tag("old")
-                    Text("New Testament").tag("new")
-                    Text("Whole Bible").tag("whole")
-                } label: {
-                    Label("Source", systemImage: "book")
+                VStack(spacing: 8) {
+                    // Custom segmented control with vertical separators
+                    HStack(spacing: 0) {
+                        segmentButton(title: "OT", tag: "old")
+                        verticalSeparator()
+                        segmentButton(title: "NT", tag: "new")
+                        verticalSeparator()
+                        segmentButton(title: "OT/NT", tag: "whole")
+                        verticalSeparator()
+                        segmentButton(title: "Book", tag: "book")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(4)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(Color(.secondarySystemBackground))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
+                    )
+                    .accessibilityIdentifier("verseOfDayScopePicker")
+
+                    if verseScopeRaw == "book" {
+                        Picker(selection: $verseSpecificBook) {
+                            ForEach(BibleData.books.map { $0.name }, id: \.self) { name in
+                                Text(name).tag(name)
+                            }
+                        } label: {
+                            Label("Choose Book", systemImage: "text.book.closed")
+                        }
+                        .accessibilityIdentifier("verseOfDaySpecificBookPicker")
+                    }
                 }
-                .pickerStyle(.segmented)
-                .accessibilityIdentifier("verseOfDayScopePicker")
             }
             .headerProminence(.increased)
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         .formStyle(.grouped)
+    }
+
+    private func segmentButton(title: String, tag: String) -> some View {
+        Button(action: { verseScopeRaw = tag }) {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(verseScopeRaw == tag ? .semibold : .regular)
+                .foregroundStyle(verseScopeRaw == tag ? .primary : .secondary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+                .background(
+                    Group {
+                        if verseScopeRaw == tag {
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(Color.accentColor.opacity(0.15))
+                        }
+                    }
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func verticalSeparator() -> some View {
+        Rectangle()
+            .fill(Color.gray.opacity(0.25))
+            .frame(width: 1, height: 24)
     }
 }
 

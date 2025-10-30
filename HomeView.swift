@@ -19,6 +19,7 @@ struct HomeView: View {
     @AppStorage("prayerTimerPaused") private var storedPaused: Bool = false
     @AppStorage("prayerTimerRemainingWhenPaused") private var storedRemainingWhenPaused: Int = 0
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
+    @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
 
     @State private var showFinishedAlert: Bool = false
     @State private var finishHapticTimer: Timer? = nil
@@ -26,6 +27,12 @@ struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
     @State private var verseOfDay: VerseRef? = nil
+
+    @State private var navigateToReader: Bool = false
+    @State private var selectedBook: Book? = nil
+    @State private var selectedChapter: Chapter? = nil
+    @State private var selectedStartVerse: Int = 1
+    @State private var showCopyToast: Bool = false
     
     var progress: ReadingProgress? {
         progressList.first
@@ -33,6 +40,14 @@ struct HomeView: View {
     
     var body: some View {
         VStack {
+            if let book = selectedBook, let chapter = selectedChapter {
+                NavigationLink(
+                    destination: ReadingView(book: book, chapter: chapter, startVerse: selectedStartVerse),
+                    isActive: $navigateToReader
+                ) { EmptyView() }
+                .hidden()
+            }
+
             VStack(alignment: .leading, spacing: 8) {
                 Text("Verse of the Day")
                     .font(.title3)
@@ -71,6 +86,17 @@ struct HomeView: View {
                         .help("Favorite")
                     }
                     .font(.title3)
+                    .onLongPressGesture(minimumDuration: 0.5) {
+                        let generator = UIImpactFeedbackGenerator(style: .medium)
+                        generator.impactOccurred()
+                        guard let v = verseOfDay,
+                              let book = BibleData.books.first(where: { $0.name == v.bookName }),
+                              let chapter = book.chapters.first(where: { $0.number == v.chapterNumber }) else { return }
+                        selectedBook = book
+                        selectedChapter = chapter
+                        selectedStartVerse = v.verseNumber
+                        navigateToReader = true
+                    }
                 } else {
                     // Placeholder while loading
                     Text("Tap refresh to get today's verse.")
@@ -218,6 +244,26 @@ struct HomeView: View {
             }
             .padding()
             .padding(.bottom)
+        }
+        .overlay(alignment: .bottom) {
+            if showCopyToast {
+                HStack(spacing: 8) {
+                    Image(systemName: "doc.on.doc")
+                        .foregroundStyle(.blue)
+                    Text("Copied to Clipboard")
+                        .font(.subheadline)
+                        .foregroundStyle(.primary)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(.regularMaterial, in: Capsule())
+                .overlay(
+                    Capsule().strokeBorder(.quaternary, lineWidth: 0.5)
+                )
+                .padding(.bottom, 20)
+                .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 6)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
         .onAppear {
             // Request notification permission once
@@ -399,7 +445,7 @@ struct HomeView: View {
             "Haggai","Zechariah","Malachi"
         ]
 
-        enum VerseScope: String { case old, new, whole }
+        enum VerseScope: String { case old, new, whole, book }
         let scope = VerseScope(rawValue: verseScopeRaw) ?? .whole
 
         let books: [Book]
@@ -410,6 +456,13 @@ struct HomeView: View {
             books = allBooks.filter { !oldTestament.contains($0.name) }
         case .whole:
             books = allBooks
+        case .book:
+            if let chosen = allBooks.first(where: { $0.name == verseSpecificBook }) {
+                books = [chosen]
+            } else {
+                // Fallback to whole if not chosen
+                books = allBooks
+            }
         }
 
         guard let book = books.randomElement(), let chapter = book.chapters.randomElement(), !chapter.verses.isEmpty, let verse = chapter.verses.randomElement() else { return }
@@ -422,6 +475,10 @@ struct HomeView: View {
 
     private func copyVerse(_ v: VerseRef) {
         UIPasteboard.general.string = shareText(for: v)
+        withAnimation(.spring()) { showCopyToast = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+            withAnimation(.easeOut) { showCopyToast = false }
+        }
     }
 
     private func isFavorited(_ v: VerseRef) -> Bool {
@@ -501,3 +558,4 @@ private struct PrayerStudyTimerSetupView: View {
         .padding()
     }
 }
+
