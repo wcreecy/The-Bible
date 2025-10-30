@@ -21,6 +21,7 @@ struct ReadingView: View {
     @State private var favoriteToastText: String = "Added to Favorites"
     @State private var favoriteToastSymbol: String = "heart.fill"
     @State private var favoriteToastTint: Color = .pink
+    @AppStorage("keepScreenOn") private var keepScreenOn: Bool = false
 
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
@@ -52,6 +53,18 @@ struct ReadingView: View {
             .navigationTitle("\(currentBook.name) \(currentChapter.number)")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear(perform: onAppear)
+            .onAppear {
+                if keepScreenOn {
+                    UIApplication.shared.isIdleTimerDisabled = true
+                }
+            }
+            .onDisappear {
+                // Restore default behavior when leaving the reader
+                UIApplication.shared.isIdleTimerDisabled = false
+            }
+            .onChange(of: keepScreenOn) { _, newValue in
+                UIApplication.shared.isIdleTimerDisabled = newValue
+            }
     }
 
     @ViewBuilder

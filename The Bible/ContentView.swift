@@ -8,6 +8,15 @@
 import SwiftUI
 
 struct ContentView: View {
+    @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
+    @AppStorage("fontSizePreference") private var fontSizePreferenceRaw: String = FontSizePreference.system.rawValue
+    @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = FontFamilyPreference.system.rawValue
+    
+    private var preferredScheme: ColorScheme? { (ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme }
+    private var preferredDynamicType: DynamicTypeSize? { (FontSizePreference(rawValue: fontSizePreferenceRaw) ?? .system).dynamicTypeSize }
+    private var preferredFontDesign: Font.Design? { (FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).fontDesign }
+    private var preferredCustomFontName: String? { (FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).customFontName }
+    
     var body: some View {
         TabView {
             NavigationStack {
@@ -45,14 +54,18 @@ struct ContentView: View {
             .tabItem { Label("Notes", systemImage: "note.text") }
 
             NavigationStack {
-                Text("Settings")
-                    .navigationTitle("Settings")
+                SettingsView()
             }
             .tabItem { Label("Settings", systemImage: "gear") }
         }
+        .preferredColorScheme(preferredScheme)
+        .dynamicTypeSize(preferredDynamicType ?? .medium)
+        .font(preferredCustomFontName != nil ? .custom(preferredCustomFontName!, size: 17) : .body)
+        .fontDesign(preferredFontDesign ?? .default)
     }
 }
 
 #Preview {
     ContentView()
 }
+
