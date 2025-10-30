@@ -23,8 +23,7 @@ struct ContentView: View {
             .tabItem { Label("Bible", systemImage: "book") }
 
             NavigationStack {
-                Text("Search")
-                    .navigationTitle("Search")
+                SearchView()
             }
             .tabItem { Label("Search", systemImage: "magnifyingglass") }
 
