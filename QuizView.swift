@@ -77,8 +77,9 @@ struct QuizView: View {
                                         .foregroundColor(.secondary)
                                         .frame(width: 70, alignment: .leading)
                                     statPill(title: "Correct", value: "\(score)", tint: .blue)
-                                    statPill(title: "Answered", value: "\(sessionAnswered)", tint: .orange)
+                                    statPill(title: "Total", value: "\(sessionAnswered)", tint: .orange)
                                     statPill(title: "Streak", value: "\(currentStreak)", tint: .green)
+                                    statPill(title: "Percent", value: percentString(correct: score, answered: sessionAnswered), tint: .purple)
                                 }
                                 // All-time stats
                                 HStack(spacing: 12) {
@@ -87,8 +88,9 @@ struct QuizView: View {
                                         .foregroundColor(.secondary)
                                         .frame(width: 70, alignment: .leading)
                                     statPill(title: "Correct", value: "\(allTimeCorrect)", tint: .blue)
-                                    statPill(title: "Answered", value: "\(allTimeAnswered)", tint: .orange)
+                                    statPill(title: "Total", value: "\(allTimeAnswered)", tint: .orange)
                                     statPill(title: "Streak", value: "\(allTimeBestStreak)", tint: .green)
+                                    statPill(title: "Percent", value: percentString(correct: allTimeCorrect, answered: allTimeAnswered), tint: .purple)
                                 }
                             }
                             .padding()
@@ -114,6 +116,8 @@ struct QuizView: View {
                                 .italic()
                                 .font(.title3)
                                 .multilineTextAlignment(.center)
+                                .lineLimit(6)
+                                .truncationMode(.tail)
                                 .foregroundColor(.primary)
                                 .padding(24)
                         }
@@ -190,6 +194,7 @@ struct QuizView: View {
                 }
             }
         }
+        .onDisappear { resetSessionScores() }
     }
     
     private func startQuiz() {
@@ -332,6 +337,13 @@ struct QuizView: View {
         showAnswerReveal = q.selected != nil
     }
     
+    private func resetSessionScores() {
+        score = 0
+        sessionAnswered = 0
+        currentStreak = 0
+        bestStreak = 0
+    }
+    
     private func buttonBackground(for option: String) -> Color {
         guard let selected = selectedOption else {
             return Color.clear
@@ -382,6 +394,12 @@ struct QuizView: View {
             return "\(correctBook) \(currentChapterNumber):\(currentVerseNumber)"
         }
         return option
+    }
+
+    private func percentString(correct: Int, answered: Int) -> String {
+        guard answered > 0 else { return "0%" }
+        let pct = Int(round((Double(correct) / Double(answered)) * 100.0))
+        return "\(pct)%"
     }
 }
 

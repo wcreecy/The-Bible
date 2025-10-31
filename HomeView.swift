@@ -36,6 +36,7 @@ struct HomeView: View {
     @State private var showCopyToast: Bool = false
     @State private var startIconBounce: Bool = false
     @State private var timeMarker: Int = 0
+    @State private var navigateToQuiz: Bool = false
     
     private var remainingFraction: Double {
         guard storedTotalSeconds > 0 else { return 1.0 }
@@ -78,6 +79,10 @@ struct HomeView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    navigateToQuiz = true
                 }
                 .padding(.horizontal)
                 .padding(.top)
@@ -355,6 +360,8 @@ struct HomeView: View {
                     ) { EmptyView() }
                     .hidden()
                 }
+                NavigationLink(destination: QuizView(), isActive: $navigateToQuiz) { EmptyView() }
+                    .hidden()
             }
         )
     }
