@@ -15,6 +15,7 @@
 		2CB56D402EB3831100A657FA /* BookmarksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D3F2EB3831100A657FA /* BookmarksView.swift */; };
 		2CB56D982EB3895400A657FA /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D972EB3895400A657FA /* HomeView.swift */; };
 		2CB56DF02EB3942900A657FA /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56DEF2EB3942900A657FA /* Toast.swift */; };
+		2CB677112EB56EB000E609B5 /* QuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB677102EB56EB000E609B5 /* QuizView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +47,7 @@
 		2CB56D3F2EB3831100A657FA /* BookmarksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarksView.swift; sourceTree = "<group>"; };
 		2CB56D972EB3895400A657FA /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		2CB56DEF2EB3942900A657FA /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
+		2CB677102EB56EB000E609B5 /* QuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -119,6 +121,7 @@
 				2C78413A2EB407D1008DDBBF /* NotesView.swift */,
 				2C320B492EB4093F003814A6 /* NotesModel.swift */,
 				2C320B4B2EB40966003814A6 /* NotesListView.swift */,
+				2CB677102EB56EB000E609B5 /* QuizView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -281,6 +284,7 @@
 				2CB56D402EB3831100A657FA /* BookmarksView.swift in Sources */,
 				2CB56D3E2EB3830D00A657FA /* Bookmark.swift in Sources */,
 				2C320B4A2EB40940003814A6 /* NotesModel.swift in Sources */,
+				2CB677112EB56EB000E609B5 /* QuizView.swift in Sources */,
 				2C320B4C2EB40966003814A6 /* NotesListView.swift in Sources */,
 				2CB56DF02EB3942900A657FA /* Toast.swift in Sources */,
 				2CB56D982EB3895400A657FA /* HomeView.swift in Sources */,

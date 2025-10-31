@@ -50,6 +50,12 @@ struct ContentView: View {
                 NotesView()
             }
             .tabItem { Label("Notes", systemImage: "note.text") }
+            
+            NavigationStack {
+                QuizView()
+                    .navigationTitle("Quiz")
+            }
+            .tabItem { Label("Quiz", systemImage: "questionmark.circle") }
 
             NavigationStack {
                 SettingsView()

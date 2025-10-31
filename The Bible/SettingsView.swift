@@ -7,6 +7,8 @@ struct SettingsView: View {
     @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = FontFamilyPreference.system.rawValue
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
+    @AppStorage("quizScope") private var quizScopeRaw: String = "whole"
+    @State private var showingResetQuizAlert: Bool = false
 
     private var selectionBinding: Binding<ColorSchemePreference> {
         Binding<ColorSchemePreference>(
@@ -158,6 +160,46 @@ struct SettingsView: View {
                 }
             }
             .headerProminence(.increased)
+            Section(header: Text("Quiz"), footer: Text("Choose which part of the Bible quiz questions are selected from.")) {
+                VStack(spacing: 8) {
+                    HStack(spacing: 0) {
+                        quizSegmentButton(title: "OT", tag: "old")
+                        verticalSeparator()
+                        quizSegmentButton(title: "NT", tag: "new")
+                        verticalSeparator()
+                        quizSegmentButton(title: "OT/NT", tag: "whole")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(4)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(Color(.secondarySystemBackground))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
+                    )
+                    .accessibilityIdentifier("quizScopePicker")
+                }
+            }
+            Section(header: Text("Quiz Data"), footer: Text("Reset your all-time quiz statistics. This action cannot be undone.")) {
+                Button(role: .destructive) {
+                    showingResetQuizAlert = true
+                } label: {
+                    Label("Reset All-time Quiz Stats", systemImage: "trash")
+                }
+                .alert("Reset All-time Stats?", isPresented: $showingResetQuizAlert) {
+                    Button("Cancel", role: .cancel) {}
+                    Button("Reset", role: .destructive) {
+                        UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect")
+                        UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered")
+                        UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak")
+                    }
+                } message: {
+                    Text("Your all-time quiz scores will be reset. Would you like to continue?")
+                }
+            }
+            .headerProminence(.increased)
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
@@ -175,6 +217,26 @@ struct SettingsView: View {
                 .background(
                     Group {
                         if verseScopeRaw == tag {
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(Color.accentColor.opacity(0.15))
+                        }
+                    }
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func quizSegmentButton(title: String, tag: String) -> some View {
+        Button(action: { quizScopeRaw = tag }) {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(quizScopeRaw == tag ? .semibold : .regular)
+                .foregroundStyle(quizScopeRaw == tag ? .primary : .secondary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+                .background(
+                    Group {
+                        if quizScopeRaw == tag {
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 .fill(Color.accentColor.opacity(0.15))
                         }
