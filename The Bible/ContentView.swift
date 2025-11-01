@@ -63,8 +63,8 @@ struct ContentView: View {
             .tabItem { Label("Settings", systemImage: "gear") }
         }
         .preferredColorScheme(preferredScheme)
-        .dynamicTypeSize(preferredDynamicType ?? .medium)
-        .font(preferredCustomFontName != nil ? .custom(preferredCustomFontName!, size: 17) : .body)
+        .dynamicTypeSize(preferredDynamicType ?? .large)
+        .font(preferredCustomFontName != nil ? .custom(preferredCustomFontName!, size: 19) : .body)
         .fontDesign(preferredFontDesign ?? .default)
     }
 }

@@ -19,6 +19,8 @@ struct ReadingView: View {
     @State private var highlightedVerse: Int? = nil
     @State private var menuVerse: Int? = nil
     @State private var selectedVerse: Int? = nil
+    @State private var topVisibleVerse: Int? = nil
+    @State private var lastSavedTopVerse: Int? = nil
     @State private var showFavoriteToast: Bool = false
     @State private var favoriteToastText: String = "Added to Favorites"
     @State private var favoriteToastSymbol: String = "heart.fill"
@@ -27,6 +29,7 @@ struct ReadingView: View {
     @State private var showNoteSheet: Bool = false
     @State private var noteDraft: String = ""
     @State private var noteVerseForSheet: Int? = nil
+    @State private var pinVerse: Int? = nil
 
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
@@ -52,6 +55,18 @@ struct ReadingView: View {
     private var currentBook: Book { allBooks[currentBookIndex] }
 
     private var currentChapter: Chapter { allChapters[currentChapterIndex] }
+
+    private struct VerseOffset: Equatable {
+        let verse: Int
+        let minY: CGFloat
+    }
+
+    private struct VerseOffsetsKey: PreferenceKey {
+        static var defaultValue: [VerseOffset] = []
+        static func reduce(value: inout [VerseOffset], nextValue: () -> [VerseOffset]) {
+            value.append(contentsOf: nextValue())
+        }
+    }
 
     var body: some View {
         content
@@ -131,6 +146,16 @@ struct ReadingView: View {
                             .background((highlightedVerse == verse.number || selectedVerse == verse.number) ? Color.yellow.opacity(0.25) : Color.clear)
                             .animation(.easeInOut(duration: 0.6), value: highlightedVerse)
                             .animation(.easeInOut(duration: 0.2), value: selectedVerse)
+                            .overlay(alignment: .trailing) {
+                                if pinVerse == verse.number {
+                                    Image(systemName: "mappin.and.ellipse")
+                                        .foregroundStyle(.blue)
+                                        .padding(.trailing, 12)
+                                        .transition(.opacity)
+                                        .opacity(0.9)
+                                    
+                                }
+                            }
                             .onLongPressGesture(minimumDuration: 0.5) {
                                 menuVerse = verse.number
                             }
@@ -139,9 +164,28 @@ struct ReadingView: View {
                                 let generator = UISelectionFeedbackGenerator()
                                 generator.selectionChanged()
                                 selectedVerse = verse.number
+                                currentVerse = verse.number
+                                saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number)
                                 // Dismiss any open menu when tapping to select
                                 if menuVerse != nil { menuVerse = nil }
+                                let haptic = UIImpactFeedbackGenerator(style: .light); haptic.impactOccurred()
+                                withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                                    pinVerse = verse.number
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                    withAnimation(.easeOut) {
+                                        if pinVerse == verse.number { pinVerse = nil }
+                                    }
+                                }
                             }
+                            .background(
+                                GeometryReader { geo in
+                                    Color.clear.preference(
+                                        key: VerseOffsetsKey.self,
+                                        value: [VerseOffset(verse: verse.number, minY: geo.frame(in: .named("readingScroll")).minY)]
+                                    )
+                                }
+                            )
 
                             if menuVerse == verse.number {
                                 HStack(spacing: 24) {
@@ -206,12 +250,29 @@ struct ReadingView: View {
                         }
                     }
                     .padding(.vertical)
+                    .onPreferenceChange(VerseOffsetsKey.self) { offsets in
+                        // Find the verse with the smallest non-negative minY (closest to top). If none, pick the highest minY.
+                        let top = offsets
+                            .sorted { a, b in a.minY < b.minY }
+                            .first(where: { $0.minY >= 0 }) ?? offsets.max(by: { a, b in a.minY < b.minY })
+                        if let top = top {
+                            topVisibleVerse = top.verse
+                            if selectedVerse == nil {
+                                if lastSavedTopVerse != top.verse {
+                                    saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: top.verse)
+                                    lastSavedTopVerse = top.verse
+                                }
+                            }
+                        }
+                    }
                 }
+                .coordinateSpace(name: "readingScroll")
                 .background(Color.clear.ignoresSafeArea())
                 .onChange(of: currentChapterIndex) { _, _ in
                     menuVerse = nil
                     highlightedVerse = nil
                     selectedVerse = nil
+                    lastSavedTopVerse = nil
                     // When chapter changes, scroll to the top
                     DispatchQueue.main.async {
                         withAnimation { proxy.scrollTo(verseID(for: 1), anchor: .top) }
