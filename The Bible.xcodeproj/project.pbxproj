@@ -16,7 +16,6 @@
 		2CB56D982EB3895400A657FA /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D972EB3895400A657FA /* HomeView.swift */; };
 		2CB56DF02EB3942900A657FA /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56DEF2EB3942900A657FA /* Toast.swift */; };
 		2CB677112EB56EB000E609B5 /* QuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB677102EB56EB000E609B5 /* QuizView.swift */; };
-		2CB677C42EB67F1400E609B5 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB677C32EB67F1400E609B5 /* HealthKitManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,9 +48,6 @@
 		2CB56D972EB3895400A657FA /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		2CB56DEF2EB3942900A657FA /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		2CB677102EB56EB000E609B5 /* QuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizView.swift; sourceTree = "<group>"; };
-		2CB677C32EB67F1400E609B5 /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
-		2CB677DA2EB680AE00E609B5 /* BibleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BibleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2CB677E42EB680AE00E609B5 /* BibleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BibleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -107,20 +103,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2CB677D72EB680AE00E609B5 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2CB677E12EB680AE00E609B5 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -140,7 +122,6 @@
 				2C320B492EB4093F003814A6 /* NotesModel.swift */,
 				2C320B4B2EB40966003814A6 /* NotesListView.swift */,
 				2CB677102EB56EB000E609B5 /* QuizView.swift */,
-				2CB677C32EB67F1400E609B5 /* HealthKitManager.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -150,8 +131,6 @@
 				2C3B0F6D2EB14F3D0089556C /* The Bible.app */,
 				2C3B0F7E2EB14F3E0089556C /* The BibleTests.xctest */,
 				2C3B0F882EB14F3E0089556C /* The BibleUITests.xctest */,
-				2CB677DA2EB680AE00E609B5 /* BibleTests.xctest */,
-				2CB677E42EB680AE00E609B5 /* BibleUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -227,44 +206,6 @@
 			productReference = 2C3B0F882EB14F3E0089556C /* The BibleUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-		2CB677D92EB680AE00E609B5 /* BibleTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 2CB677F02EB680AE00E609B5 /* Build configuration list for PBXNativeTarget "BibleTests" */;
-			buildPhases = (
-				2CB677D62EB680AE00E609B5 /* Sources */,
-				2CB677D72EB680AE00E609B5 /* Frameworks */,
-				2CB677D82EB680AE00E609B5 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = BibleTests;
-			packageProductDependencies = (
-			);
-			productName = BibleTests;
-			productReference = 2CB677DA2EB680AE00E609B5 /* BibleTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		2CB677E32EB680AE00E609B5 /* BibleUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 2CB677F32EB680AE00E609B5 /* Build configuration list for PBXNativeTarget "BibleUITests" */;
-			buildPhases = (
-				2CB677E02EB680AE00E609B5 /* Sources */,
-				2CB677E12EB680AE00E609B5 /* Frameworks */,
-				2CB677E22EB680AE00E609B5 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = BibleUITests;
-			packageProductDependencies = (
-			);
-			productName = BibleUITests;
-			productReference = 2CB677E42EB680AE00E609B5 /* BibleUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -286,14 +227,6 @@
 						CreatedOnToolsVersion = 26.0.1;
 						TestTargetID = 2C3B0F6C2EB14F3D0089556C;
 					};
-					2CB677D92EB680AE00E609B5 = {
-						CreatedOnToolsVersion = 26.0.1;
-						TestTargetID = 2CB677C92EB680AC00E609B5;
-					};
-					2CB677E32EB680AE00E609B5 = {
-						CreatedOnToolsVersion = 26.0.1;
-						TestTargetID = 2CB677C92EB680AC00E609B5;
-					};
 				};
 			};
 			buildConfigurationList = 2C3B0F682EB14F3D0089556C /* Build configuration list for PBXProject "The Bible" */;
@@ -313,8 +246,6 @@
 				2C3B0F6C2EB14F3D0089556C /* The Bible */,
 				2C3B0F7D2EB14F3E0089556C /* The BibleTests */,
 				2C3B0F872EB14F3E0089556C /* The BibleUITests */,
-				2CB677D92EB680AE00E609B5 /* BibleTests */,
-				2CB677E32EB680AE00E609B5 /* BibleUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -341,20 +272,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		2CB677D82EB680AE00E609B5 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2CB677E22EB680AE00E609B5 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -362,7 +279,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2CB677C42EB67F1400E609B5 /* HealthKitManager.swift in Sources */,
 				2C78413B2EB407D1008DDBBF /* NotesView.swift in Sources */,
 				2C7841392EB407C0008DDBBF /* Note.swift in Sources */,
 				2CB56D402EB3831100A657FA /* BookmarksView.swift in Sources */,
@@ -383,20 +299,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		2C3B0F842EB14F3E0089556C /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2CB677D62EB680AE00E609B5 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		2CB677E02EB680AE00E609B5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -424,7 +326,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "The Bible/The Bible.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ZKG79M599K;
@@ -434,9 +335,6 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible/Info.plist";
-				INFOPLIST_KEY_LSApplicationCategoryType = "";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app logs your prayer/study sessions as Mindful Minutes";
-				INFOPLIST_KEY_NSHomeKitUsageDescription = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -473,7 +371,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "The Bible/The Bible.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = ZKG79M599K;
@@ -483,9 +380,6 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible/Info.plist";
-				INFOPLIST_KEY_LSApplicationCategoryType = "";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app logs your prayer/study sessions as Mindful Minutes";
-				INFOPLIST_KEY_NSHomeKitUsageDescription = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -735,98 +629,6 @@
 			};
 			name = Release;
 		};
-		2CB677F12EB680AE00E609B5 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ZKG79M599K;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Creecy.BibleTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Bible.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Bible";
-			};
-			name = Debug;
-		};
-		2CB677F22EB680AE00E609B5 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ZKG79M599K;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Creecy.BibleTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Bible.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Bible";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		2CB677F42EB680AE00E609B5 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ZKG79M599K;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Creecy.BibleUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Bible;
-			};
-			name = Debug;
-		};
-		2CB677F52EB680AE00E609B5 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ZKG79M599K;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Creecy.BibleUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Bible;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -862,24 +664,6 @@
 			buildConfigurations = (
 				2C3B0F9A2EB14F3E0089556C /* Debug */,
 				2C3B0F9B2EB14F3E0089556C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		2CB677F02EB680AE00E609B5 /* Build configuration list for PBXNativeTarget "BibleTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				2CB677F12EB680AE00E609B5 /* Debug */,
-				2CB677F22EB680AE00E609B5 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		2CB677F32EB680AE00E609B5 /* Build configuration list for PBXNativeTarget "BibleUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				2CB677F42EB680AE00E609B5 /* Debug */,
-				2CB677F52EB680AE00E609B5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
