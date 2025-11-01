@@ -4,6 +4,7 @@ import Combine
 import UserNotifications
 import AudioToolbox
 import UIKit
+import HealthKit
 
 struct HomeView: View {
     @Query private var progressList: [ReadingProgress]
@@ -21,6 +22,8 @@ struct HomeView: View {
     @AppStorage("prayerTimerTotalSeconds") private var storedTotalSeconds: Int = 0
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
+    @AppStorage("prayerTimerStartDate") private var storedStartDate: Double = 0
+    @AppStorage("healthKitPrompted") private var healthKitPrompted: Bool = false
 
     @State private var showFinishedAlert: Bool = false
     @State private var finishHapticTimer: Timer? = nil
@@ -36,6 +39,7 @@ struct HomeView: View {
     @State private var showCopyToast: Bool = false
     @State private var startIconBounce: Bool = false
     @State private var timeMarker: Int = 0
+    @State private var isHealthKitAvailable: Bool = HealthKitManager.shared.isAvailable()
     
     private var remainingFraction: Double {
         guard storedTotalSeconds > 0 else { return 1.0 }
@@ -209,6 +213,11 @@ struct HomeView: View {
                         .padding(.horizontal)
                         .contentShape(Rectangle())
                         .onTapGesture {
+                            if isHealthKitAvailable && !healthKitPrompted {
+                                HealthKitManager.shared.requestAuthorizationIfNeeded { success in
+                                    self.healthKitPrompted = true
+                                }
+                            }
                             let generator = UIImpactFeedbackGenerator(style: .medium)
                             generator.impactOccurred()
                             withAnimation(.spring(response: 0.25, dampingFraction: 0.6)) {
@@ -303,6 +312,8 @@ struct HomeView: View {
             // Restore persisted state
             isTimerRunning = storedRunning
             isPaused = storedPaused
+            // Cache HealthKit availability
+            isHealthKitAvailable = HealthKitManager.shared.isAvailable()
             if storedRunning {
                 if isPaused {
                     remainingSeconds = storedRemainingWhenPaused
@@ -364,15 +375,24 @@ struct HomeView: View {
         let secs = max(1, minutes) * 60
         remainingSeconds = secs
         storedTotalSeconds = secs
-        let end = Date().addingTimeInterval(TimeInterval(secs))
+        let start = Date()
+        let end = start.addingTimeInterval(TimeInterval(secs))
         isPaused = false
         isTimerRunning = true
 
         // Persist
         storedRunning = true
         storedPaused = false
+        storedStartDate = start.timeIntervalSince1970
         storedEndDate = end.timeIntervalSince1970
         storedRemainingWhenPaused = 0
+
+        // HealthKit: request authorization on first use
+        if isHealthKitAvailable && !healthKitPrompted {
+            HealthKitManager.shared.requestAuthorizationIfNeeded { success in
+                self.healthKitPrompted = true
+            }
+        }
 
         scheduleNotification(at: end)
     }
@@ -395,6 +415,15 @@ struct HomeView: View {
     }
 
     private func stopTimer() {
+        // If we have a valid start date, log the mindful session up to now
+        if isHealthKitAvailable, storedStartDate > 0 {
+            let start = Date(timeIntervalSince1970: storedStartDate)
+            let end = Date()
+            if end > start {
+                HealthKitManager.shared.saveMindfulSession(start: start, end: end, completion: nil)
+            }
+        }
+
         isTimerRunning = false
         isPaused = false
         remainingSeconds = 0
@@ -404,6 +433,7 @@ struct HomeView: View {
         storedEndDate = 0
         storedRemainingWhenPaused = 0
         storedTotalSeconds = 0
+        storedStartDate = 0
 
         cancelNotification()
         stopFinishAlerts()
@@ -444,6 +474,16 @@ struct HomeView: View {
     private func handleTimerFinished() {
         // Ensure we only fire once
         if !isTimerRunning { return }
+
+        // Save mindful session from start to end if available
+        if isHealthKitAvailable, storedStartDate > 0 {
+            let start = Date(timeIntervalSince1970: storedStartDate)
+            let end = Date()
+            if end > start {
+                HealthKitManager.shared.saveMindfulSession(start: start, end: end, completion: nil)
+            }
+        }
+
         isTimerRunning = false
         storedRunning = false
         isPaused = false
@@ -452,6 +492,7 @@ struct HomeView: View {
         storedEndDate = 0
         storedRemainingWhenPaused = 0
         storedTotalSeconds = 0
+        storedStartDate = 0
 
         // Start foreground alert with repeating vibration if app is active
         showFinishedAlert = true
@@ -692,4 +733,4 @@ private struct PrayerStudyTimerSetupView: View {
         .padding()
     }
 }
-
+// Note: HealthKit logging is handled in HomeView, no changes needed here.

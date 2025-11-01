@@ -30,6 +30,7 @@ struct ReadingView: View {
     @State private var noteDraft: String = ""
     @State private var noteVerseForSheet: Int? = nil
     @State private var pinVerse: Int? = nil
+    @State private var topVerseUpdateWorkItem: DispatchWorkItem? = nil
 
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
@@ -64,7 +65,15 @@ struct ReadingView: View {
     private struct VerseOffsetsKey: PreferenceKey {
         static var defaultValue: [VerseOffset] = []
         static func reduce(value: inout [VerseOffset], nextValue: () -> [VerseOffset]) {
-            value.append(contentsOf: nextValue())
+            // Keep only the latest values and cap to avoid large allocations
+            let incoming = nextValue()
+            // Merge by verse, keeping the smallest minY per verse to stabilize top detection
+            var map: [Int: CGFloat] = Dictionary(uniqueKeysWithValues: value.map { ($0.verse, $0.minY) })
+            for v in incoming { map[v.verse] = min(map[v.verse] ?? v.minY, v.minY) }
+            // Cap to a reasonable number of entries near the top of the list
+            let merged = map.map { VerseOffset(verse: $0.key, minY: $0.value) }
+                .sorted { $0.minY < $1.minY }
+            value = Array(merged.prefix(60))
         }
     }
 
@@ -251,19 +260,24 @@ struct ReadingView: View {
                     }
                     .padding(.vertical)
                     .onPreferenceChange(VerseOffsetsKey.self) { offsets in
-                        // Find the verse with the smallest non-negative minY (closest to top). If none, pick the highest minY.
-                        let top = offsets
-                            .sorted { a, b in a.minY < b.minY }
-                            .first(where: { $0.minY >= 0 }) ?? offsets.max(by: { a, b in a.minY < b.minY })
-                        if let top = top {
-                            topVisibleVerse = top.verse
-                            if selectedVerse == nil {
-                                if lastSavedTopVerse != top.verse {
-                                    saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: top.verse)
-                                    lastSavedTopVerse = top.verse
+                        topVerseUpdateWorkItem?.cancel()
+                        let work = DispatchWorkItem { @MainActor in
+                            // Find the verse with the smallest non-negative minY (closest to top). If none, pick the highest minY.
+                            let top = offsets
+                                .sorted { a, b in a.minY < b.minY }
+                                .first(where: { $0.minY >= 0 }) ?? offsets.max(by: { a, b in a.minY < b.minY })
+                            if let top = top {
+                                topVisibleVerse = top.verse
+                                if selectedVerse == nil {
+                                    if lastSavedTopVerse != top.verse {
+                                        saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: top.verse)
+                                        lastSavedTopVerse = top.verse
+                                    }
                                 }
                             }
                         }
+                        topVerseUpdateWorkItem = work
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.10, execute: work)
                     }
                 }
                 .coordinateSpace(name: "readingScroll")
