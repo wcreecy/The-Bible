@@ -9,12 +9,12 @@ import HealthKit
 struct HomeView: View {
     @Query private var progressList: [ReadingProgress]
     @State private var showPrayerStudySheet: Bool = false
-    
+
     @State private var isTimerRunning: Bool = false
     @State private var isPaused: Bool = false
     @State private var remainingSeconds: Int = 0
     private let prayerTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
+
     @AppStorage("prayerTimerEndDate") private var storedEndDate: Double = 0
     @AppStorage("prayerTimerRunning") private var storedRunning: Bool = false
     @AppStorage("prayerTimerPaused") private var storedPaused: Bool = false
@@ -24,6 +24,7 @@ struct HomeView: View {
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
     @AppStorage("prayerTimerStartDate") private var storedStartDate: Double = 0
     @AppStorage("healthKitPrompted") private var healthKitPrompted: Bool = false
+    @AppStorage("mindfulSessionStartDate") private var mindfulStartDate: Double = 0
 
     @State private var showFinishedAlert: Bool = false
     @State private var finishHapticTimer: Timer? = nil
@@ -40,7 +41,9 @@ struct HomeView: View {
     @State private var startIconBounce: Bool = false
     @State private var timeMarker: Int = 0
     @State private var isHealthKitAvailable: Bool = HealthKitManager.shared.isAvailable()
-    
+
+    @Environment(\.scenePhase) private var scenePhase
+
     private var remainingFraction: Double {
         guard storedTotalSeconds > 0 else { return 1.0 }
         return max(0.0, min(1.0, Double(remainingSeconds) / Double(storedTotalSeconds)))
@@ -56,7 +59,7 @@ struct HomeView: View {
             return .red
         }
     }
-    
+
     private var isEvening: Bool {
         let hour = Calendar.current.component(.hour, from: Date())
         // Evening/Night from 6 PM (18) through 4:59 AM (i.e., hours 0...4)
@@ -65,11 +68,30 @@ struct HomeView: View {
 
     private var verseCardTitle: String { isEvening ? "Word of the Night" : "Verse of the Day" }
     private var verseCardIcon: String { isEvening ? "moon.stars" : "sun.max.fill" }
-    
+
     var progress: ReadingProgress? {
         progressList.first
     }
-    
+
+    private func startMindfulLoggingIfNeeded() {
+        guard isHealthKitAvailable else { return }
+        if mindfulStartDate == 0 {
+            mindfulStartDate = Date().timeIntervalSince1970
+        }
+    }
+
+    private func stopMindfulLogging() {
+        guard isHealthKitAvailable else { return }
+        if mindfulStartDate > 0 {
+            let start = Date(timeIntervalSince1970: mindfulStartDate)
+            let end = Date()
+            if end > start {
+                HealthKitManager.shared.saveMindfulSession(start: start, end: end, completion: nil)
+            }
+            mindfulStartDate = 0
+        }
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -107,7 +129,9 @@ struct HomeView: View {
                                 .font(.title3)
                                 .help("Refresh")
 
-                                Button(action: { copyVerse(v) }) {
+                                Button(action: {
+                                    copyVerse(v)
+                                }) {
                                     Label("Copy", systemImage: "doc.on.doc")
                                 }
                                 .labelStyle(.iconOnly)
@@ -214,8 +238,10 @@ struct HomeView: View {
                         .contentShape(Rectangle())
                         .onTapGesture {
                             if isHealthKitAvailable && !healthKitPrompted {
-                                HealthKitManager.shared.requestAuthorizationIfNeeded { success in
-                                    self.healthKitPrompted = true
+                                HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
+                                    Task { @MainActor in
+                                        self.healthKitPrompted = true
+                                    }
                                 }
                             }
                             let generator = UIImpactFeedbackGenerator(style: .medium)
@@ -314,6 +340,17 @@ struct HomeView: View {
             isPaused = storedPaused
             // Cache HealthKit availability
             isHealthKitAvailable = HealthKitManager.shared.isAvailable()
+            // Request HealthKit authorization and start mindful logging on app open
+            if isHealthKitAvailable && !healthKitPrompted {
+                HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
+                    Task { @MainActor in
+                        self.healthKitPrompted = true
+                        startMindfulLoggingIfNeeded()
+                    }
+                }
+            } else {
+                startMindfulLoggingIfNeeded()
+            }
             if storedRunning {
                 if isPaused {
                     remainingSeconds = storedRemainingWhenPaused
@@ -341,6 +378,20 @@ struct HomeView: View {
         .onReceive(Timer.publish(every: 60, on: .main, in: .common).autoconnect()) { _ in
             // Update a marker to trigger view refresh for time-based changes (e.g., after 6 PM)
             timeMarker = (timeMarker + 1) % 60
+        }
+        .onChange(of: scenePhase) { newPhase in
+            switch newPhase {
+            case .active:
+                // App became active: start logging if available
+                startMindfulLoggingIfNeeded()
+            case .inactive, .background:
+                // Stop logging only if the timer is not running; keep logging while timer runs
+                if !isTimerRunning {
+                    stopMindfulLogging()
+                }
+            @unknown default:
+                break
+            }
         }
         .sheet(isPresented: $showPrayerStudySheet) {
             PrayerStudyTimerSetupView(onStart: { minutes in
@@ -370,7 +421,7 @@ struct HomeView: View {
             }
         )
     }
-    
+
     private func startTimer(minutes: Int) {
         let secs = max(1, minutes) * 60
         remainingSeconds = secs
@@ -389,10 +440,14 @@ struct HomeView: View {
 
         // HealthKit: request authorization on first use
         if isHealthKitAvailable && !healthKitPrompted {
-            HealthKitManager.shared.requestAuthorizationIfNeeded { success in
-                self.healthKitPrompted = true
+            HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
+                Task { @MainActor in
+                    self.healthKitPrompted = true
+                }
             }
         }
+
+        startMindfulLoggingIfNeeded()
 
         scheduleNotification(at: end)
     }
@@ -415,13 +470,9 @@ struct HomeView: View {
     }
 
     private func stopTimer() {
-        // If we have a valid start date, log the mindful session up to now
-        if isHealthKitAvailable, storedStartDate > 0 {
-            let start = Date(timeIntervalSince1970: storedStartDate)
-            let end = Date()
-            if end > start {
-                HealthKitManager.shared.saveMindfulSession(start: start, end: end, completion: nil)
-            }
+        // End global mindful logging if app is not active; if active, continue logging app-open time
+        if scenePhase != .active {
+            stopMindfulLogging()
         }
 
         isTimerRunning = false
@@ -454,7 +505,7 @@ struct HomeView: View {
     private func scheduleNotification(at date: Date) {
         let center = UNUserNotificationCenter.current()
         // Remove any existing pending timer notification
-        center.removePendingNotificationRequests(withIdentifiers: ["PrayerStudyTimerFinished"]) 
+        center.removePendingNotificationRequests(withIdentifiers: ["PrayerStudyTimerFinished"])
 
         let content = UNMutableNotificationContent()
         content.title = "Prayer/Study Finished"
@@ -468,20 +519,16 @@ struct HomeView: View {
 
     private func cancelNotification() {
         let center = UNUserNotificationCenter.current()
-        center.removePendingNotificationRequests(withIdentifiers: ["PrayerStudyTimerFinished"]) 
+        center.removePendingNotificationRequests(withIdentifiers: ["PrayerStudyTimerFinished"])
     }
 
     private func handleTimerFinished() {
         // Ensure we only fire once
         if !isTimerRunning { return }
 
-        // Save mindful session from start to end if available
-        if isHealthKitAvailable, storedStartDate > 0 {
-            let start = Date(timeIntervalSince1970: storedStartDate)
-            let end = Date()
-            if end > start {
-                HealthKitManager.shared.saveMindfulSession(start: start, end: end, completion: nil)
-            }
+        // End global mindful logging if app is not active; if active, continue logging app-open time
+        if scenePhase != .active {
+            stopMindfulLogging()
         }
 
         isTimerRunning = false
@@ -494,7 +541,7 @@ struct HomeView: View {
         storedTotalSeconds = 0
         storedStartDate = 0
 
-        // Start foreground alert with repeating vibration if app is active
+        // Start foreground alert with repeating vibration if alert is shown
         showFinishedAlert = true
         startFinishAlerts()
     }
@@ -734,3 +781,4 @@ private struct PrayerStudyTimerSetupView: View {
     }
 }
 // Note: HealthKit logging is handled in HomeView, no changes needed here.
+
