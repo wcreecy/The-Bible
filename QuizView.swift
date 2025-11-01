@@ -365,7 +365,7 @@ struct QuizView: View {
     }
     
     private func borderColor(for option: String) -> Color {
-        guard let selected = selectedOption else { return .clear }
+        guard selectedOption != nil else { return .clear }
         if option == correctBook {
             return .green
         }

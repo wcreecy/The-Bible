@@ -379,7 +379,7 @@ struct HomeView: View {
             // Update a marker to trigger view refresh for time-based changes (e.g., after 6 PM)
             timeMarker = (timeMarker + 1) % 60
         }
-        .onChange(of: scenePhase) { newPhase in
+        .onChange(of: scenePhase) { oldPhase, newPhase in
             switch newPhase {
             case .active:
                 // App became active: start logging if available
@@ -408,18 +408,11 @@ struct HomeView: View {
         } message: {
             Text("Your prayer/study timer has completed.")
         }
-        // Hidden navigation link trigger for deep-linking into reader from verse card
-        .background(
-            Group {
-                if let book = selectedBook, let chapter = selectedChapter {
-                    NavigationLink(
-                        destination: ReadingView(book: book, chapter: chapter, startVerse: selectedStartVerse),
-                        isActive: $navigateToReader
-                    ) { EmptyView() }
-                    .hidden()
-                }
+        .navigationDestination(isPresented: $navigateToReader) {
+            if let book = selectedBook, let chapter = selectedChapter {
+                ReadingView(book: book, chapter: chapter, startVerse: selectedStartVerse)
             }
-        )
+        }
     }
 
     private func startTimer(minutes: Int) {

@@ -435,7 +435,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible/Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app logs your prayer/study sessions as Mindful Minutes";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Spending time in God's Word is VITAL to our relationship with Him! This app logs your time spent in the app as mindfulness minutes which can be found in your Health app. Try for at least 1 hour per day.";
 				INFOPLIST_KEY_NSHomeKitUsageDescription = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -484,7 +484,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible/Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app logs your prayer/study sessions as Mindful Minutes";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Spending time in God's Word is VITAL to our relationship with Him! This app logs your time spent in the app as mindfulness minutes which can be found in your Health app. Try for at least 1 hour per day.";
 				INFOPLIST_KEY_NSHomeKitUsageDescription = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
