@@ -8,6 +8,7 @@ struct SettingsView: View {
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
     @AppStorage("quizScope") private var quizScopeRaw: String = "whole"
+    @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
     @State private var showingResetQuizAlert: Bool = false
 
     private var selectionBinding: Binding<ColorSchemePreference> {
@@ -158,6 +159,21 @@ struct SettingsView: View {
                         .accessibilityIdentifier("verseOfDaySpecificBookPicker")
                     }
                 }
+            }
+            .headerProminence(.increased)
+            Section(header: Text("Timer"), footer: Text("Choose the sound that plays when the prayer/study timer finishes.")) {
+                Picker(selection: Binding<String>(
+                    get: { timerSoundSelection },
+                    set: { timerSoundSelection = $0 }
+                )) {
+                    ForEach(TimerSound.allCases) { sound in
+                        Text(sound.title).tag(sound.rawValue)
+                    }
+                } label: {
+                    Label("Timer Sound", systemImage: "speaker.wave.2")
+                }
+                .pickerStyle(.menu)
+                .accessibilityIdentifier("timerSoundPicker")
             }
             .headerProminence(.increased)
             Section(header: Text("Quiz"), footer: Text("Choose which part of the Bible quiz questions are selected from.")) {

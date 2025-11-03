@@ -17,6 +17,7 @@
 		2CB56DF02EB3942900A657FA /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56DEF2EB3942900A657FA /* Toast.swift */; };
 		2CB677112EB56EB000E609B5 /* QuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB677102EB56EB000E609B5 /* QuizView.swift */; };
 		2CB677C42EB67F1400E609B5 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB677C32EB67F1400E609B5 /* HealthKitManager.swift */; };
+		2CF6F1712EB83C2100E59640 /* TimerSound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF6F1702EB83C2100E59640 /* TimerSound.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,7 @@
 		2CB677C32EB67F1400E609B5 /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
 		2CB677DA2EB680AE00E609B5 /* BibleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BibleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CB677E42EB680AE00E609B5 /* BibleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BibleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2CF6F1702EB83C2100E59640 /* TimerSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerSound.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -141,6 +143,7 @@
 				2C320B4B2EB40966003814A6 /* NotesListView.swift */,
 				2CB677102EB56EB000E609B5 /* QuizView.swift */,
 				2CB677C32EB67F1400E609B5 /* HealthKitManager.swift */,
+				2CF6F1702EB83C2100E59640 /* TimerSound.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -371,6 +374,7 @@
 				2CB677112EB56EB000E609B5 /* QuizView.swift in Sources */,
 				2C320B4C2EB40966003814A6 /* NotesListView.swift in Sources */,
 				2CB56DF02EB3942900A657FA /* Toast.swift in Sources */,
+				2CF6F1712EB83C2100E59640 /* TimerSound.swift in Sources */,
 				2CB56D982EB3895400A657FA /* HomeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

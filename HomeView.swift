@@ -25,6 +25,7 @@ struct HomeView: View {
     @AppStorage("prayerTimerStartDate") private var storedStartDate: Double = 0
     @AppStorage("healthKitPrompted") private var healthKitPrompted: Bool = false
     @AppStorage("mindfulSessionStartDate") private var mindfulStartDate: Double = 0
+    @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
 
     @State private var showFinishedAlert: Bool = false
     @State private var finishHapticTimer: Timer? = nil
@@ -43,6 +44,10 @@ struct HomeView: View {
     @State private var isHealthKitAvailable: Bool = HealthKitManager.shared.isAvailable()
 
     @Environment(\.scenePhase) private var scenePhase
+
+    private var selectedFinishSoundID: SystemSoundID {
+        (TimerSound(rawValue: timerSoundSelection) ?? .default).systemSoundID
+    }
 
     private var remainingFraction: Double {
         guard storedTotalSeconds > 0 else { return 1.0 }
@@ -541,11 +546,15 @@ struct HomeView: View {
 
     private func startFinishAlerts() {
         stopFinishAlerts()
-        // Repeating vibration every 1.5 seconds while alert is shown
+        // Repeating sound + vibration every 1.5 seconds while alert is shown
         finishHapticTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { _ in
+            // Play audible system sound
+            AudioServicesPlaySystemSound(selectedFinishSoundID)
+            // Vibrate
             AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
         }
-        // Also vibrate immediately
+        // Also play immediately
+        AudioServicesPlaySystemSound(selectedFinishSoundID)
         AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
     }
 
