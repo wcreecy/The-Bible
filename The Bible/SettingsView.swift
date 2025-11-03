@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 struct SettingsView: View {
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
@@ -11,6 +12,12 @@ struct SettingsView: View {
     @AppStorage("quizDifficulty") private var quizDifficulty: String = "easy"
     @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
     @State private var showingResetQuizAlert: Bool = false
+
+    @AppStorage("appTotalActiveSeconds") private var appTotalActiveSeconds: Int = 0
+    @AppStorage("appActiveStart") private var appActiveStart: Double = 0
+    @State private var liveNowSeconds: Int = 0
+    @State private var showResetAppTimeAlert: Bool = false
+    @State private var appTimeTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     private var selectionBinding: Binding<ColorSchemePreference> {
         Binding<ColorSchemePreference>(
@@ -177,49 +184,6 @@ struct SettingsView: View {
                 .accessibilityIdentifier("timerSoundPicker")
             }
             .headerProminence(.increased)
-            Section(header: Text("Quiz"), footer: Text("Choose which part of the Bible quiz questions are selected from.")) {
-                VStack(spacing: 8) {
-                    HStack(spacing: 0) {
-                        quizSegmentButton(title: "OT", tag: "old")
-                        verticalSeparator()
-                        quizSegmentButton(title: "NT", tag: "new")
-                        verticalSeparator()
-                        quizSegmentButton(title: "OT/NT", tag: "whole")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(4)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
-                    )
-                    .accessibilityIdentifier("quizScopePicker")
-                }
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("Difficulty", systemImage: "speedometer")
-                    HStack(spacing: 0) {
-                        quizDifficultyButton(title: "Easy", tag: "easy")
-                        verticalSeparator()
-                        quizDifficultyButton(title: "Normal", tag: "normal")
-                        verticalSeparator()
-                        quizDifficultyButton(title: "Hard", tag: "hard")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(4)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
-                    )
-                    .accessibilityIdentifier("quizDifficultyPicker")
-                }
-            }
             Section(header: Text("Quiz Data"), footer: Text("Reset your all-time quiz statistics. This action cannot be undone.")) {
                 Button(role: .destructive) {
                     showingResetQuizAlert = true
@@ -229,12 +193,68 @@ struct SettingsView: View {
                 .alert("Reset All-time Stats?", isPresented: $showingResetQuizAlert) {
                     Button("Cancel", role: .cancel) {}
                     Button("Reset", role: .destructive) {
-                        UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect")
-                        UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered")
-                        UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak")
+                        UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect_easy")
+                        UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered_easy")
+                        UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak_easy")
+                        UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect_normal")
+                        UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered_normal")
+                        UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak_normal")
+                        UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect_hard")
+                        UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered_hard")
+                        UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak_hard")
                     }
                 } message: {
                     Text("Your all-time quiz scores will be reset. Would you like to continue?")
+                }
+            }
+            .headerProminence(.increased)
+            Section(header: Text("Time with God (via this app)")) {
+                VStack(alignment: .leading, spacing: 12) {
+                    Label("Time in App", systemImage: "clock")
+                        .font(.headline)
+
+                    // Grid of units with labels above numbers styled as flip cards
+                    let b = timeBreakdown()
+                    let items: [(String, Int)] = [
+                        ("Years", b.years),
+                        ("Months", b.months),
+                        ("Weeks", b.weeks),
+                        ("Days", b.days),
+                        ("Hours", b.hours),
+                        ("Minutes", b.minutes),
+                        ("Seconds", b.seconds)
+                    ]
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                        ForEach(items, id: \.0) { label, value in
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(label)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                flipCard(value)
+                            }
+                        }
+                    }
+                    .accessibilityIdentifier("appTotalTimeLabel")
+
+                    HStack {
+                        Spacer()
+                        Label("Reset Time in App", systemImage: "arrow.counterclockwise")
+                            .foregroundStyle(.red)
+                            .onLongPressGesture(minimumDuration: 0.6) {
+                                showResetAppTimeAlert = true
+                            }
+                            .accessibilityAddTraits(.isButton)
+                            .accessibilityHint("Long press to reset time in app")
+                            .alert("Reset Time in App?", isPresented: $showResetAppTimeAlert) {
+                                Button("Cancel", role: .cancel) {}
+                                Button("Reset", role: .destructive) {
+                                    appTotalActiveSeconds = 0
+                                    appActiveStart = Date().timeIntervalSince1970
+                                }
+                            } message: {
+                                Text("This will reset the total time you've spent in the app.")
+                            }
+                    }
                 }
             }
             .headerProminence(.increased)
@@ -242,6 +262,12 @@ struct SettingsView: View {
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         .formStyle(.grouped)
+        .onReceive(appTimeTimer) { _ in
+            liveNowSeconds = currentSessionElapsed()
+        }
+        .onAppear {
+            liveNowSeconds = currentSessionElapsed()
+        }
     }
 
     private func segmentButton(title: String, tag: String) -> some View {
@@ -264,51 +290,34 @@ struct SettingsView: View {
         .buttonStyle(.plain)
     }
 
-    private func quizSegmentButton(title: String, tag: String) -> some View {
-        Button(action: { quizScopeRaw = tag }) {
-            Text(title)
-                .font(.subheadline)
-                .fontWeight(quizScopeRaw == tag ? .semibold : .regular)
-                .foregroundStyle(quizScopeRaw == tag ? .primary : .secondary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .background(
-                    Group {
-                        if quizScopeRaw == tag {
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(Color.accentColor.opacity(0.15))
-                        }
-                    }
-                )
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func quizDifficultyButton(title: String, tag: String) -> some View {
-        Button(action: { quizDifficulty = tag }) {
-            let isSelected = (quizDifficulty == tag)
-            Text(title)
-                .font(.subheadline)
-                .fontWeight(isSelected ? .semibold : .regular)
-                .foregroundStyle(isSelected ? .primary : .secondary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .background(
-                    Group {
-                        if isSelected {
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(Color.accentColor.opacity(0.15))
-                        }
-                    }
-                )
-        }
-        .buttonStyle(.plain)
-    }
-
     private func verticalSeparator() -> some View {
         Rectangle()
             .fill(Color.gray.opacity(0.25))
             .frame(width: 1, height: 24)
+    }
+
+    private func flipCard(_ value: Int) -> some View {
+        Text("\(value)")
+            .font(.title3)
+            .monospacedDigit()
+            .fontWeight(.semibold)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(Color(.secondarySystemBackground))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+            )
+            .overlay(
+                Rectangle()
+                    .fill(Color.black.opacity(0.06))
+                    .frame(height: 1),
+                alignment: .center
+            )
+            .shadow(color: Color.black.opacity(0.05), radius: 1, x: 0, y: 1)
     }
 
     private func appearanceSegmentButton(_ pref: ColorSchemePreference) -> some View {
@@ -373,9 +382,50 @@ struct SettingsView: View {
         }
         .buttonStyle(.plain)
     }
+    
+    private func currentSessionElapsed() -> Int {
+        guard appActiveStart > 0 else { return 0 }
+        let start = Date(timeIntervalSince1970: appActiveStart)
+        return max(0, Int(Date().timeIntervalSince(start)))
+    }
+
+    private func timeBreakdown() -> (years: Int, months: Int, weeks: Int, days: Int, hours: Int, minutes: Int, seconds: Int) {
+        let total = appTotalActiveSeconds + liveNowSeconds
+        var remaining = total
+        let years = remaining / (365 * 24 * 3600); remaining %= (365 * 24 * 3600)
+        let months = remaining / (30 * 24 * 3600); remaining %= (30 * 24 * 3600)
+        let weeks = remaining / (7 * 24 * 3600); remaining %= (7 * 24 * 3600)
+        let days = remaining / (24 * 3600); remaining %= (24 * 3600)
+        let hours = remaining / 3600; remaining %= 3600
+        let minutes = remaining / 60
+        let seconds = remaining % 60
+        return (years, months, weeks, days, hours, minutes, seconds)
+    }
+
+    private func formattedTotalAppTime() -> String {
+        let total = appTotalActiveSeconds + liveNowSeconds
+        // Define units: years (365d), months (30d), weeks (7d), days, hours, minutes, seconds
+        var remaining = total
+        let years = remaining / (365 * 24 * 3600); remaining %= (365 * 24 * 3600)
+        let months = remaining / (30 * 24 * 3600); remaining %= (30 * 24 * 3600)
+        let weeks = remaining / (7 * 24 * 3600); remaining %= (7 * 24 * 3600)
+        let days = remaining / (24 * 3600); remaining %= (24 * 3600)
+        let hours = remaining / 3600; remaining %= 3600
+        let minutes = remaining / 60
+        let seconds = remaining % 60
+        // Build human-readable string omitting zero-leading units except to show zeros up to minutes if needed
+        var parts: [String] = []
+        parts.append("\(years) year\(years == 1 ? "" : "s")")
+        parts.append("\(months) month\(months == 1 ? "" : "s")")
+        parts.append("\(weeks) week\(weeks == 1 ? "" : "s")")
+        parts.append("\(days) day\(days == 1 ? "" : "s")")
+        if hours > 0 { parts.append("\(hours) hour\(hours == 1 ? "" : "s")") }
+        parts.append("\(minutes) minute\(minutes == 1 ? "" : "s")")
+        parts.append("\(seconds) second\(seconds == 1 ? "" : "s")")
+        return parts.joined(separator: ", ")
+    }
 }
 
 #Preview {
     NavigationStack { SettingsView() }
 }
-

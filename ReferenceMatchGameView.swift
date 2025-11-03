@@ -90,16 +90,20 @@ struct ReferenceMatchGameView: View {
                             .font(.headline)
                             .foregroundStyle(correct ? .green : .red)
                             .padding(.top, 8)
-
-                        Button("Next") { nextQuestion() }
-                            .buttonStyle(.bordered)
-                            .padding(.top, 4)
                     }
                 }
             }
             .padding()
         }
         .navigationTitle("Reference Match")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                if started {
+                    Button("Next") { nextQuestion() }
+                        .disabled(selectedOption == nil)
+                }
+            }
+        }
     }
 
     private func startGame() {

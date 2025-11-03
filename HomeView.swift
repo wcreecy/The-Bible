@@ -169,7 +169,7 @@ struct HomeView: View {
                         }
                     }
                     .contentShape(Rectangle())
-                    .onLongPressGesture(minimumDuration: 0.5) {
+                    .onTapGesture {
                         let generator = UIImpactFeedbackGenerator(style: .heavy)
                         generator.impactOccurred()
                         guard let v = verseOfDay,
@@ -179,6 +179,19 @@ struct HomeView: View {
                         selectedChapter = chapter
                         selectedStartVerse = v.verseNumber
                         navigateToReader = true
+                    }
+                    .contextMenu {
+                        if let v = verseOfDay {
+                            Button {
+                                copyVerse(v)
+                            } label: {
+                                Label("Copy", systemImage: "doc.on.doc")
+                            }
+
+                            ShareLink(item: shareText(for: v)) {
+                                Label("Share", systemImage: "square.and.arrow.up")
+                            }
+                        }
                     }
                 }
                 .padding(.horizontal)
@@ -783,4 +796,5 @@ private struct PrayerStudyTimerSetupView: View {
     }
 }
 // Note: HealthKit logging is handled in HomeView, no changes needed here.
+
 

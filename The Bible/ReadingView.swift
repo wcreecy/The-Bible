@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct ReadingView: View {
     @Environment(\.modelContext) private var modelContext
@@ -167,10 +168,23 @@ struct ReadingView: View {
 
                         if menuVerse == verse.number {
                             HStack(spacing: 24) {
-                                Button(action: { withAnimation(.easeInOut) { menuVerse = nil } }) { Image(systemName: "doc.on.doc") }
+                                Button(action: {
+                                    let share = "\"\(verse.text)\" — \(currentBook.name) \(currentChapter.number):\(verse.number)"
+                                    UIPasteboard.general.string = share
+                                    favoriteToastSymbol = "doc.on.doc"
+                                    favoriteToastTint = .blue
+                                    favoriteToastText = "Copied to Clipboard"
+                                    withAnimation(.spring()) { showFavoriteToast = true }
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                        withAnimation(.easeOut) { showFavoriteToast = false }
+                                    }
+                                    withAnimation(.easeInOut) { menuVerse = nil }
+                                }) { Image(systemName: "doc.on.doc") }
                                     .foregroundStyle(.blue)
-                                Button(action: { withAnimation(.easeInOut) { menuVerse = nil } }) { Image(systemName: "square.and.arrow.up") }
-                                    .foregroundStyle(.blue)
+                                ShareLink(item: "\"\(verse.text)\" — \(currentBook.name) \(currentChapter.number):\(verse.number)") {
+                                    Image(systemName: "square.and.arrow.up")
+                                }
+                                .foregroundStyle(.blue)
                                 Button(action: {
                                     noteVerseForSheet = verse.number
                                     noteDraft = existingNote(for: verse)?.content ?? ""
@@ -237,27 +251,24 @@ struct ReadingView: View {
                     topVisibleVerseID = rowID(for: 1)
                 }
                 .onAppear {
-                    topVisibleVerseID = rowID(for: currentVerse)
+                    DispatchQueue.main.async {
+                        withAnimation(.easeInOut(duration: 0.35)) {
+                            topVisibleVerseID = rowID(for: currentVerse)
+                        }
+                    }
                     if highlightOnAppear {
                         highlightedVerse = currentVerse
-                        // Clear highlight after a short delay
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                             withAnimation { highlightedVerse = nil }
                         }
-                        // Ensure we don't highlight on subsequent chapter changes/swipes
                         highlightOnAppear = false
                     }
                 }
                 .onTapGesture {
                     if menuVerse != nil { menuVerse = nil }
                 }
-                .scrollPosition(id: $topVisibleVerseID, anchor: .top)
-                .onChange(of: topVisibleVerseID) { _, newTop in
-                    if let id = newTop, let verseStr = id.split(separator: "-").last, let verseNum = Int(verseStr) {
-                        saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: verseNum)
-                    }
-                }
             }
+            .scrollPosition(id: $topVisibleVerseID, anchor: .top)
         }
         .contentShape(Rectangle())
         .simultaneousGesture(
@@ -282,6 +293,11 @@ struct ReadingView: View {
     private func onAppear() {
         // Update progress to the current location
         saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: startVerse)
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut(duration: 0.35)) {
+                topVisibleVerseID = rowID(for: currentVerse)
+            }
+        }
     }
 
     private func saveProgress(bookName: String, chapter: Int, verse: Int) {

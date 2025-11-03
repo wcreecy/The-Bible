@@ -34,21 +34,6 @@ struct HangmanGameView: View {
 
     @State private var currentRoundCategory: Theme = .books
 
-    // Candidate sets for themes
-    private let peopleNames: Set<String> = [
-        "Abraham","Moses","David","Solomon","Isaiah","Jeremiah","Ezekiel","Daniel",
-        "Hosea","Joel","Amos","Obadiah","Jonah","Micah","Nahum","Habakkuk","Zephaniah",
-        "Haggai","Zechariah","Malachi","Mary","Joseph","Jesus","Peter","Paul","James",
-        "John","Jude","Timothy","Titus","Philemon","Barnabas","Stephen","Philip","Martha",
-        "Lazarus","Matthew","Mark","Luke","Thomas","Andrew","Bartholomew","Nathaniel","Saul",
-        "Samuel","Joshua","Gideon","Elijah","Elisha"
-    ]
-    private let placeNames: Set<String> = [
-        "Jerusalem","Bethlehem","Nazareth","Galilee","Judea","Samaria","Capernaum","Jericho",
-        "Egypt","Babylon","Nineveh","Damascus","Rome","Corinth","Ephesus","Philippi","Colossae",
-        "Thessalonica","Antioch","Patmos","Sinai","Zion","Jordan"
-    ]
-
     private let alphabet: [Character] = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
     var body: some View {
@@ -150,8 +135,10 @@ struct HangmanGameView: View {
         }
         .navigationTitle("Hangman")
         .onAppear {
-            if loadedPeople.isEmpty { loadedPeople = GameDataLoaders.loadNames() }
-            if loadedPlaces.isEmpty { loadedPlaces = GameDataLoaders.loadLocations() }
+            Task {
+                if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadNamesAsync() }
+                if loadedPlaces.isEmpty { loadedPlaces = await GameDataLoaders.loadLocationsAsync() }
+            }
         }
         .navigationDestination(isPresented: $navigateToReader) {
             if let book = navBook, let chapter = navChapter {
@@ -162,10 +149,17 @@ struct HangmanGameView: View {
     }
 
     private func startGame() {
-        // Ensure data is loaded before first round
-        if loadedPeople.isEmpty { loadedPeople = GameDataLoaders.loadNames() }
-        if loadedPlaces.isEmpty { loadedPlaces = GameDataLoaders.loadLocations() }
-
+        if loadedPeople.isEmpty || loadedPlaces.isEmpty {
+            Task {
+                if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadNamesAsync() }
+                if loadedPlaces.isEmpty { loadedPlaces = await GameDataLoaders.loadLocationsAsync() }
+                score = 0
+                answered = 0
+                started = true
+                nextRound()
+            }
+            return
+        }
         score = 0
         answered = 0
         started = true
@@ -274,31 +268,6 @@ struct HangmanGameView: View {
             }
         case .all:
             break
-        }
-    }
-
-    private func generateWordRound(candidates: Set<String>) {
-        // Try to find a verse containing a candidate word
-        for _ in 0..<500 {
-            guard let book = BibleData.books.randomElement(),
-                  let chapter = book.chapters.randomElement(),
-                  let verse = chapter.verses.randomElement() else { continue }
-            let words = verse.text
-                .components(separatedBy: CharacterSet.alphanumerics.inverted)
-                .filter { !$0.isEmpty }
-            if let match = words.first(where: { candidates.contains(capitalize($0)) }) {
-                targetWord = capitalize(match)
-                displayWord = masked(from: targetWord)
-                return
-            }
-        }
-        // Fallback if not found quickly: pick any candidate and a random hint verse
-        if let fallback = candidates.randomElement(),
-           let _ = BibleData.books.randomElement(),
-           let _ = BibleData.books.randomElement()?.chapters.randomElement(),
-           let _ = BibleData.books.randomElement()?.chapters.randomElement()?.verses.randomElement() {
-            targetWord = fallback
-            displayWord = masked(from: targetWord)
         }
     }
 
@@ -447,11 +416,6 @@ struct HangmanGameView: View {
     }
 }
 
-extension Notification.Name {
-    static let openReadingReference = Notification.Name("openReadingReference")
-}
-
 #Preview {
     NavigationStack { HangmanGameView() }
 }
-

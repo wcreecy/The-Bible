@@ -119,15 +119,31 @@ struct QuizView: View {
                         .fontWeight(.heavy)
                         .multilineTextAlignment(.center)
                     
-                    Text("Difficulty: \(quizDifficulty.capitalized)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    
                     Text("Test your knowledge by guessing the book of the Bible from a given verse.")
                         .font(.body)
                         .multilineTextAlignment(.center)
                         .foregroundColor(.secondary)
                         .padding(.horizontal)
+                    
+                    VStack(alignment: .center, spacing: 12) {
+                        VStack(spacing: 6) {
+                            Text("Verse Source")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            SegmentedPicker(options: ["old", "new", "whole"], titleForOption: { opt in
+                                switch opt { case "old": return "OT"; case "new": return "NT"; default: return "Both" }
+                            }, selection: Binding<String>(get: { quizScopeRaw }, set: { quizScopeRaw = $0 }))
+                        }
+                        VStack(spacing: 6) {
+                            Text("Difficulty")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            SegmentedPicker(options: ["easy", "normal", "hard"], titleForOption: { opt in
+                                switch opt { case "easy": return "Easy"; case "normal": return "Medium"; default: return "Hard" }
+                            }, selection: Binding<String>(get: { quizDifficulty }, set: { quizDifficulty = $0 }))
+                        }
+                    }
+                    .padding(.horizontal)
                     
                     Button("Start") {
                         startQuiz()
@@ -592,4 +608,3 @@ struct QuizView: View {
         QuizView()
     }
 }
-

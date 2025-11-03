@@ -20,6 +20,7 @@
 		2CD457292EB8FFCF003CB315 /* GamesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD457282EB8FFCE003CB315 /* GamesView.swift */; };
 		2CD4572D2EB9025D003CB315 /* HangmanGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4572C2EB9025D003CB315 /* HangmanGameView.swift */; };
 		2CD4572F2EB90410003CB315 /* ReferenceMatchGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4572E2EB90410003CB315 /* ReferenceMatchGameView.swift */; };
+		2CD4579B2EB93C72003CB315 /* SegmentedPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4579A2EB93C72003CB315 /* SegmentedPicker.swift */; };
 		2CF6F1712EB83C2100E59640 /* TimerSound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF6F1702EB83C2100E59640 /* TimerSound.swift */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +60,7 @@
 		2CD457282EB8FFCE003CB315 /* GamesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesView.swift; sourceTree = "<group>"; };
 		2CD4572C2EB9025D003CB315 /* HangmanGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HangmanGameView.swift; sourceTree = "<group>"; };
 		2CD4572E2EB90410003CB315 /* ReferenceMatchGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferenceMatchGameView.swift; sourceTree = "<group>"; };
+		2CD4579A2EB93C72003CB315 /* SegmentedPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedPicker.swift; sourceTree = "<group>"; };
 		2CF6F1702EB83C2100E59640 /* TimerSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerSound.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -153,6 +155,7 @@
 				2CD457282EB8FFCE003CB315 /* GamesView.swift */,
 				2CD4572C2EB9025D003CB315 /* HangmanGameView.swift */,
 				2CD4572E2EB90410003CB315 /* ReferenceMatchGameView.swift */,
+				2CD4579A2EB93C72003CB315 /* SegmentedPicker.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -383,6 +386,7 @@
 				2CB56D3E2EB3830D00A657FA /* Bookmark.swift in Sources */,
 				2C320B4A2EB40940003814A6 /* NotesModel.swift in Sources */,
 				2CB677112EB56EB000E609B5 /* QuizView.swift in Sources */,
+				2CD4579B2EB93C72003CB315 /* SegmentedPicker.swift in Sources */,
 				2CD4572F2EB90410003CB315 /* ReferenceMatchGameView.swift in Sources */,
 				2C320B4C2EB40966003814A6 /* NotesListView.swift in Sources */,
 				2CB56DF02EB3942900A657FA /* Toast.swift in Sources */,
