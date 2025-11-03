@@ -1,10 +1,12 @@
 import SwiftUI
+import Combine
 
 struct QuizView: View {
     @AppStorage("quizScope") private var quizScopeRaw: String = "whole"
     @AppStorage("quizAllTimeCorrect") private var allTimeCorrect: Int = 0
     @AppStorage("quizAllTimeAnswered") private var allTimeAnswered: Int = 0
     @AppStorage("quizAllTimeBestStreak") private var allTimeBestStreak: Int = 0
+    @AppStorage("quizDifficulty") private var quizDifficulty: String = "easy"
     
     struct VerseRef {
         let bookName: String
@@ -39,6 +41,8 @@ struct QuizView: View {
     @State private var currentStreak: Int = 0
     @State private var bestStreak: Int = 0
     @State private var showAnswerReveal: Bool = false
+    @State private var remainingSeconds: Int = 0
+    @State private var quizTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var history: [QuizQuestion] = []
     @State private var currentIndex: Int = -1
     
@@ -51,6 +55,10 @@ struct QuizView: View {
                         .font(.largeTitle)
                         .fontWeight(.heavy)
                         .multilineTextAlignment(.center)
+                    
+                    Text("Difficulty: \(quizDifficulty.capitalized)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                     
                     Text("Test your knowledge by guessing the book of the Bible from a given verse.")
                         .font(.body)
@@ -138,6 +146,16 @@ struct QuizView: View {
                         )
                         .padding(.horizontal)
                         
+                        if (quizDifficulty == "normal" || quizDifficulty == "hard") && selectedOption == nil {
+                            HStack {
+                                Image(systemName: "timer")
+                                Text("Time left: \(remainingSeconds)s")
+                            }
+                            .font(.caption)
+                            .foregroundStyle(remainingSeconds <= 5 ? .red : .secondary)
+                            .padding(.top, 4)
+                        }
+                        
                         Text("Which book is this from?")
                             .font(.headline)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -179,6 +197,16 @@ struct QuizView: View {
                 }
             }
             .padding(.horizontal)
+        }
+        .onReceive(quizTimer) { _ in
+            guard started else { return }
+            guard selectedOption == nil else { return }
+            guard quizDifficulty == "normal" || quizDifficulty == "hard" else { return }
+            guard remainingSeconds > 0 else { return }
+            remainingSeconds -= 1
+            if remainingSeconds == 0 {
+                timeOutQuestion()
+            }
         }
         .navigationTitle("Bible Quiz")
         .toolbar {
@@ -261,17 +289,35 @@ struct QuizView: View {
             return
         }
         
+        // Set timer duration based on difficulty
+        switch quizDifficulty {
+        case "normal":
+            remainingSeconds = 15
+        case "hard":
+            remainingSeconds = 10
+        default:
+            remainingSeconds = 0
+        }
+        
         let verseText = randomVerse.text
         let bookName = randomBook.name
         let chapterNum = randomChapter.number
         let verseNum = randomVerse.number
 
-        var wrongBooks = filteredBooks
-            .map { $0.name }
-            .filter { $0 != bookName }
-            .shuffled()
+        // Build wrong options pool
+        let allBookNames = filteredBooks.map { $0.name }
+        let correctName = bookName
+
+        // Determine testament of the correct book
+        let isOldTestament = oldTestamentSet.contains(correctName)
+
+        var wrongPool = allBookNames.filter { $0 != correctName }
+        if quizDifficulty == "hard" {
+            wrongPool = wrongPool.filter { isOldTestament == oldTestamentSet.contains($0) }
+        }
+        var wrongBooks = wrongPool.shuffled()
         if wrongBooks.count > 3 { wrongBooks = Array(wrongBooks.prefix(3)) }
-        let opts = (wrongBooks + [bookName]).shuffled()
+        let opts = (wrongBooks + [correctName]).shuffled()
 
         let q = QuizQuestion(
             verseText: verseText,
@@ -290,6 +336,7 @@ struct QuizView: View {
         guard selectedOption == nil else { return }
         // Only allow answering on the latest question
         guard currentIndex >= 0 && currentIndex == history.count - 1 else { return }
+        remainingSeconds = 0
         selectedOption = name
         history[currentIndex].selected = name
         sessionAnswered += 1
@@ -315,12 +362,14 @@ struct QuizView: View {
         guard currentIndex > 0 else { return }
         currentIndex -= 1
         let q = history[currentIndex]
+        remainingSeconds = 0
         loadQuestion(from: q)
     }
 
     private func showNext() {
         if currentIndex < history.count - 1 {
             currentIndex += 1
+            remainingSeconds = 0
             loadQuestion(from: history[currentIndex])
         } else {
             nextQuestion()
@@ -400,6 +449,16 @@ struct QuizView: View {
         guard answered > 0 else { return "0%" }
         let pct = Int(round((Double(correct) / Double(answered)) * 100.0))
         return "\(pct)%"
+    }
+    
+    private func timeOutQuestion() {
+        // Mark as answered incorrectly due to timeout
+        guard selectedOption == nil else { return }
+        selectedOption = "__timeout__" // disable buttons
+        sessionAnswered += 1
+        allTimeAnswered += 1
+        currentStreak = 0
+        showAnswerReveal = true
     }
 }
 

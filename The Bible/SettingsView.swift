@@ -8,6 +8,7 @@ struct SettingsView: View {
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
     @AppStorage("quizScope") private var quizScopeRaw: String = "whole"
+    @AppStorage("quizDifficulty") private var quizDifficulty: String = "easy"
     @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
     @State private var showingResetQuizAlert: Bool = false
 
@@ -197,6 +198,27 @@ struct SettingsView: View {
                     )
                     .accessibilityIdentifier("quizScopePicker")
                 }
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("Difficulty", systemImage: "speedometer")
+                    HStack(spacing: 0) {
+                        quizDifficultyButton(title: "Easy", tag: "easy")
+                        verticalSeparator()
+                        quizDifficultyButton(title: "Normal", tag: "normal")
+                        verticalSeparator()
+                        quizDifficultyButton(title: "Hard", tag: "hard")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(4)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(Color(.secondarySystemBackground))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
+                    )
+                    .accessibilityIdentifier("quizDifficultyPicker")
+                }
             }
             Section(header: Text("Quiz Data"), footer: Text("Reset your all-time quiz statistics. This action cannot be undone.")) {
                 Button(role: .destructive) {
@@ -253,6 +275,27 @@ struct SettingsView: View {
                 .background(
                     Group {
                         if quizScopeRaw == tag {
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(Color.accentColor.opacity(0.15))
+                        }
+                    }
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func quizDifficultyButton(title: String, tag: String) -> some View {
+        Button(action: { quizDifficulty = tag }) {
+            let isSelected = (quizDifficulty == tag)
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(isSelected ? .semibold : .regular)
+                .foregroundStyle(isSelected ? .primary : .secondary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+                .background(
+                    Group {
+                        if isSelected {
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 .fill(Color.accentColor.opacity(0.15))
                         }
@@ -335,3 +378,4 @@ struct SettingsView: View {
 #Preview {
     NavigationStack { SettingsView() }
 }
+
