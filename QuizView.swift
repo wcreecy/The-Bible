@@ -1,12 +1,73 @@
 import SwiftUI
 import Combine
 
+#if canImport(UIKit)
+import UIKit
+#endif
+
 struct QuizView: View {
     @AppStorage("quizScope") private var quizScopeRaw: String = "whole"
-    @AppStorage("quizAllTimeCorrect") private var allTimeCorrect: Int = 0
-    @AppStorage("quizAllTimeAnswered") private var allTimeAnswered: Int = 0
-    @AppStorage("quizAllTimeBestStreak") private var allTimeBestStreak: Int = 0
     @AppStorage("quizDifficulty") private var quizDifficulty: String = "easy"
+    
+    @AppStorage("quizAllTimeCorrect_easy") private var allTimeCorrectEasy: Int = 0
+    @AppStorage("quizAllTimeAnswered_easy") private var allTimeAnsweredEasy: Int = 0
+    @AppStorage("quizAllTimeBestStreak_easy") private var allTimeBestStreakEasy: Int = 0
+
+    @AppStorage("quizAllTimeCorrect_normal") private var allTimeCorrectNormal: Int = 0
+    @AppStorage("quizAllTimeAnswered_normal") private var allTimeAnsweredNormal: Int = 0
+    @AppStorage("quizAllTimeBestStreak_normal") private var allTimeBestStreakNormal: Int = 0
+
+    @AppStorage("quizAllTimeCorrect_hard") private var allTimeCorrectHard: Int = 0
+    @AppStorage("quizAllTimeAnswered_hard") private var allTimeAnsweredHard: Int = 0
+    @AppStorage("quizAllTimeBestStreak_hard") private var allTimeBestStreakHard: Int = 0
+
+    private var allTimeCorrect: Int {
+        switch quizDifficulty {
+        case "normal": return allTimeCorrectNormal
+        case "hard": return allTimeCorrectHard
+        default: return allTimeCorrectEasy
+        }
+    }
+
+    private var allTimeAnswered: Int {
+        switch quizDifficulty {
+        case "normal": return allTimeAnsweredNormal
+        case "hard": return allTimeAnsweredHard
+        default: return allTimeAnsweredEasy
+        }
+    }
+
+    private var allTimeBestStreak: Int {
+        switch quizDifficulty {
+        case "normal": return allTimeBestStreakNormal
+        case "hard": return allTimeBestStreakHard
+        default: return allTimeBestStreakEasy
+        }
+    }
+    
+    private func incrementAllTimeAnswered() {
+        switch quizDifficulty {
+        case "normal": allTimeAnsweredNormal += 1
+        case "hard": allTimeAnsweredHard += 1
+        default: allTimeAnsweredEasy += 1
+        }
+    }
+    
+    private func incrementAllTimeCorrect() {
+        switch quizDifficulty {
+        case "normal": allTimeCorrectNormal += 1
+        case "hard": allTimeCorrectHard += 1
+        default: allTimeCorrectEasy += 1
+        }
+    }
+    
+    private func updateAllTimeBestStreak(_ newStreak: Int) {
+        switch quizDifficulty {
+        case "normal": allTimeBestStreakNormal = max(allTimeBestStreakNormal, newStreak)
+        case "hard": allTimeBestStreakHard = max(allTimeBestStreakHard, newStreak)
+        default: allTimeBestStreakEasy = max(allTimeBestStreakEasy, newStreak)
+        }
+    }
     
     struct VerseRef {
         let bookName: String
@@ -43,6 +104,8 @@ struct QuizView: View {
     @State private var showAnswerReveal: Bool = false
     @State private var remainingSeconds: Int = 0
     @State private var quizTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var wasInRedZone: Bool = false
+    @State private var pulseOn: Bool = false
     @State private var history: [QuizQuestion] = []
     @State private var currentIndex: Int = -1
     
@@ -147,12 +210,17 @@ struct QuizView: View {
                         .padding(.horizontal)
                         
                         if (quizDifficulty == "normal" || quizDifficulty == "hard") && selectedOption == nil {
-                            HStack {
+                            HStack(spacing: 6) {
                                 Image(systemName: "timer")
                                 Text("Time left: \(remainingSeconds)s")
+                                    .monospacedDigit()
                             }
-                            .font(.caption)
-                            .foregroundStyle(remainingSeconds <= 5 ? .red : .secondary)
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(timerColor(for: remainingSeconds))
+                            .scaleEffect(pulseOn ? 1.12 : 1.0)
+                            .animation(.easeInOut(duration: 0.25), value: pulseOn)
+                            .frame(maxWidth: .infinity)
                             .padding(.top, 4)
                         }
                         
@@ -207,6 +275,14 @@ struct QuizView: View {
             if remainingSeconds == 0 {
                 timeOutQuestion()
             }
+        }
+        .onChange(of: remainingSeconds) { _, newValue in
+            guard started, selectedOption == nil, (quizDifficulty == "normal" || quizDifficulty == "hard") else { return }
+            let inRed = isInRedZone(newValue)
+            if inRed && !wasInRedZone {
+                startTimerPulse()
+            }
+            wasInRedZone = inRed
         }
         .navigationTitle("Bible Quiz")
         .toolbar {
@@ -292,12 +368,15 @@ struct QuizView: View {
         // Set timer duration based on difficulty
         switch quizDifficulty {
         case "normal":
-            remainingSeconds = 15
+            remainingSeconds = 30
         case "hard":
-            remainingSeconds = 10
+            remainingSeconds = 20
         default:
             remainingSeconds = 0
         }
+        
+        wasInRedZone = false
+        pulseOn = false
         
         let verseText = randomVerse.text
         let bookName = randomBook.name
@@ -327,7 +406,9 @@ struct QuizView: View {
             options: opts,
             selected: nil
         )
-        history.append(q)
+        var newHistory = history
+        newHistory.append(q)
+        history = newHistory
         currentIndex = history.count - 1
         loadQuestion(from: q)
     }
@@ -336,17 +417,20 @@ struct QuizView: View {
         guard selectedOption == nil else { return }
         // Only allow answering on the latest question
         guard currentIndex >= 0 && currentIndex == history.count - 1 else { return }
+        pulseOn = false
         remainingSeconds = 0
         selectedOption = name
-        history[currentIndex].selected = name
+        var newHistory = history
+        newHistory[currentIndex].selected = name
+        history = newHistory
         sessionAnswered += 1
-        allTimeAnswered += 1
+        incrementAllTimeAnswered()
         if name == correctBook {
             score += 1
-            allTimeCorrect += 1
+            incrementAllTimeCorrect()
             currentStreak += 1
             bestStreak = max(bestStreak, currentStreak)
-            allTimeBestStreak = max(allTimeBestStreak, currentStreak)
+            updateAllTimeBestStreak(currentStreak)
         } else {
             currentStreak = 0
         }
@@ -451,12 +535,53 @@ struct QuizView: View {
         return "\(pct)%"
     }
     
+    private func timerColor(for seconds: Int) -> Color {
+        switch quizDifficulty {
+        case "normal":
+            if seconds > 10 { return .green }
+            else if seconds >= 5 { return .yellow } // 5...10 inclusive
+            else { return .red } // <5
+        case "hard":
+            if seconds > 8 { return .green }
+            else if seconds >= 4 { return .yellow } // 4...8 inclusive
+            else { return .red } // <4
+        default:
+            return .secondary
+        }
+    }
+
+    private func isInRedZone(_ seconds: Int) -> Bool {
+        switch quizDifficulty {
+        case "normal":
+            return seconds < 5
+        case "hard":
+            return seconds < 4
+        default:
+            return false
+        }
+    }
+
+    private func startTimerPulse() {
+        // Perform a brief pulse sequence when entering red zone
+        let pulses = 3
+        for i in 0..<(pulses * 2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.25) {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    pulseOn.toggle()
+                }
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + Double(pulses * 2) * 0.25 + 0.01) {
+            pulseOn = false
+        }
+    }
+
     private func timeOutQuestion() {
         // Mark as answered incorrectly due to timeout
         guard selectedOption == nil else { return }
         selectedOption = "__timeout__" // disable buttons
         sessionAnswered += 1
-        allTimeAnswered += 1
+        incrementAllTimeAnswered()
         currentStreak = 0
         showAnswerReveal = true
     }
