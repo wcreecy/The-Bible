@@ -19,8 +19,7 @@ struct ReadingView: View {
     @State private var highlightedVerse: Int? = nil
     @State private var menuVerse: Int? = nil
     @State private var selectedVerse: Int? = nil
-    @State private var topVisibleVerse: Int? = nil
-    @State private var lastSavedTopVerse: Int? = nil
+    @State private var topVisibleVerseID: String? = nil
     @State private var showFavoriteToast: Bool = false
     @State private var favoriteToastText: String = "Added to Favorites"
     @State private var favoriteToastSymbol: String = "heart.fill"
@@ -30,7 +29,6 @@ struct ReadingView: View {
     @State private var noteDraft: String = ""
     @State private var noteVerseForSheet: Int? = nil
     @State private var pinVerse: Int? = nil
-    @State private var topVerseUpdateWorkItem: DispatchWorkItem? = nil
 
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
@@ -56,26 +54,6 @@ struct ReadingView: View {
     private var currentBook: Book { allBooks[currentBookIndex] }
 
     private var currentChapter: Chapter { allChapters[currentChapterIndex] }
-
-    private struct VerseOffset: Equatable {
-        let verse: Int
-        let minY: CGFloat
-    }
-
-    private struct VerseOffsetsKey: PreferenceKey {
-        static var defaultValue: [VerseOffset] = []
-        static func reduce(value: inout [VerseOffset], nextValue: () -> [VerseOffset]) {
-            // Keep only the latest values and cap to avoid large allocations
-            let incoming = nextValue()
-            // Merge by verse, keeping the smallest minY per verse to stabilize top detection
-            var map: [Int: CGFloat] = Dictionary(uniqueKeysWithValues: value.map { ($0.verse, $0.minY) })
-            for v in incoming { map[v.verse] = min(map[v.verse] ?? v.minY, v.minY) }
-            // Cap to a reasonable number of entries near the top of the list
-            let merged = map.map { VerseOffset(verse: $0.key, minY: $0.value) }
-                .sorted { $0.minY < $1.minY }
-            value = Array(merged.prefix(60))
-        }
-    }
 
     var body: some View {
         content
@@ -133,169 +111,133 @@ struct ReadingView: View {
     @ViewBuilder
     private var content: some View {
         ZStack {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 0) {
-                        ForEach(currentChapter.verses) { verse in
-                            Group {
-                                VStack(alignment: .leading, spacing: 6) {
-                                    Text(verse.text)
-                                        .font(.body)
-                                        .foregroundStyle(.primary)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                    Text("\(currentBook.name) \(currentChapter.number):\(verse.number)")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                                .padding(.horizontal)
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    ForEach(currentChapter.verses) { verse in
+                        Group {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(verse.text)
+                                    .font(.body)
+                                    .foregroundStyle(.primary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Text("\(currentBook.name) \(currentChapter.number):\(verse.number)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
                             }
-                            .id(verseID(for: verse.number))
-                            .padding(.vertical, 8)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background((highlightedVerse == verse.number || selectedVerse == verse.number) ? Color.yellow.opacity(0.25) : Color.clear)
-                            .animation(.easeInOut(duration: 0.6), value: highlightedVerse)
-                            .animation(.easeInOut(duration: 0.2), value: selectedVerse)
-                            .overlay(alignment: .trailing) {
-                                if pinVerse == verse.number {
-                                    Image(systemName: "mappin.and.ellipse")
-                                        .foregroundStyle(.blue)
-                                        .padding(.trailing, 12)
-                                        .transition(.opacity)
-                                        .opacity(0.9)
-                                    
-                                }
-                            }
-                            .onLongPressGesture(minimumDuration: 0.5) {
-                                menuVerse = verse.number
-                            }
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                let generator = UISelectionFeedbackGenerator()
-                                generator.selectionChanged()
-                                selectedVerse = verse.number
-                                currentVerse = verse.number
-                                saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number)
-                                // Dismiss any open menu when tapping to select
-                                if menuVerse != nil { menuVerse = nil }
-                                let haptic = UIImpactFeedbackGenerator(style: .light); haptic.impactOccurred()
-                                withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
-                                    pinVerse = verse.number
-                                }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                                    withAnimation(.easeOut) {
-                                        if pinVerse == verse.number { pinVerse = nil }
-                                    }
-                                }
-                            }
-                            .background(
-                                GeometryReader { geo in
-                                    Color.clear.preference(
-                                        key: VerseOffsetsKey.self,
-                                        value: [VerseOffset(verse: verse.number, minY: geo.frame(in: .named("readingScroll")).minY)]
-                                    )
-                                }
-                            )
-
-                            if menuVerse == verse.number {
-                                HStack(spacing: 24) {
-                                    Button(action: { withAnimation(.easeInOut) { menuVerse = nil } }) { Image(systemName: "doc.on.doc") }
-                                        .foregroundStyle(.blue)
-                                    Button(action: { withAnimation(.easeInOut) { menuVerse = nil } }) { Image(systemName: "square.and.arrow.up") }
-                                        .foregroundStyle(.blue)
-                                    Button(action: {
-                                        noteVerseForSheet = verse.number
-                                        noteDraft = existingNote(for: verse)?.content ?? ""
-                                        withAnimation(.easeInOut) { menuVerse = nil }
-                                        showNoteSheet = true
-                                    }) {
-                                        Image(systemName: "note.text")
-                                            .symbolVariant(isNoted(verse) ? .fill : .none)
-                                    }
+                            .padding(.horizontal)
+                        }
+                        .id(rowID(for: verse.number))
+                        .padding(.vertical, 8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background((highlightedVerse == verse.number || selectedVerse == verse.number) ? Color.yellow.opacity(0.25) : Color.clear)
+                        .animation(.easeInOut(duration: 0.6), value: highlightedVerse)
+                        .animation(.easeInOut(duration: 0.2), value: selectedVerse)
+                        .overlay(alignment: .trailing) {
+                            if pinVerse == verse.number {
+                                Image(systemName: "mappin.and.ellipse")
                                     .foregroundStyle(.blue)
-                                    Button(action: {
-                                        let generator = UIImpactFeedbackGenerator(style: .light)
-                                        generator.impactOccurred()
-                                        if isBookmarked(verse) {
-                                            removeBookmark(for: verse)
-                                            favoriteToastSymbol = "bookmark.slash.fill"
-                                            favoriteToastTint = .red
-                                            favoriteToastText = "Removed from Favorites"
+                                    .padding(.trailing, 12)
+                                    .transition(.opacity)
+                                    .opacity(0.9)
+                                
+                            }
+                        }
+                        .onLongPressGesture(minimumDuration: 0.5) {
+                            menuVerse = verse.number
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            let generator = UISelectionFeedbackGenerator()
+                            generator.selectionChanged()
+                            selectedVerse = verse.number
+                            currentVerse = verse.number
+                            saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number)
+                            // Dismiss any open menu when tapping to select
+                            if menuVerse != nil { menuVerse = nil }
+                            let haptic = UIImpactFeedbackGenerator(style: .light); haptic.impactOccurred()
+                            withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+                                pinVerse = verse.number
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                withAnimation(.easeOut) {
+                                    if pinVerse == verse.number { pinVerse = nil }
+                                }
+                            }
+                        }
+
+                        if menuVerse == verse.number {
+                            HStack(spacing: 24) {
+                                Button(action: { withAnimation(.easeInOut) { menuVerse = nil } }) { Image(systemName: "doc.on.doc") }
+                                    .foregroundStyle(.blue)
+                                Button(action: { withAnimation(.easeInOut) { menuVerse = nil } }) { Image(systemName: "square.and.arrow.up") }
+                                    .foregroundStyle(.blue)
+                                Button(action: {
+                                    noteVerseForSheet = verse.number
+                                    noteDraft = existingNote(for: verse)?.content ?? ""
+                                    withAnimation(.easeInOut) { menuVerse = nil }
+                                    showNoteSheet = true
+                                }) {
+                                    Image(systemName: "note.text")
+                                        .symbolVariant(isNoted(verse) ? .fill : .none)
+                                }
+                                .foregroundStyle(.blue)
+                                Button(action: {
+                                    let generator = UIImpactFeedbackGenerator(style: .light)
+                                    generator.impactOccurred()
+                                    if isBookmarked(verse) {
+                                        removeBookmark(for: verse)
+                                        favoriteToastSymbol = "bookmark.slash.fill"
+                                        favoriteToastTint = .red
+                                        favoriteToastText = "Removed from Favorites"
+                                        withAnimation(.spring()) { showFavoriteToast = true }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                            withAnimation(.easeOut) { showFavoriteToast = false }
+                                        }
+                                    } else {
+                                        let added = addBookmark(for: verse)
+                                        if added {
+                                            favoriteToastSymbol = "bookmark.fill"
+                                            favoriteToastTint = .blue
+                                            favoriteToastText = "Bookmarked \(currentBook.name) \(currentChapter.number):\(verse.number)"
                                             withAnimation(.spring()) { showFavoriteToast = true }
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                                 withAnimation(.easeOut) { showFavoriteToast = false }
                                             }
-                                        } else {
-                                            let added = addBookmark(for: verse)
-                                            if added {
-                                                favoriteToastSymbol = "bookmark.fill"
-                                                favoriteToastTint = .blue
-                                                favoriteToastText = "Bookmarked \(currentBook.name) \(currentChapter.number):\(verse.number)"
-                                                withAnimation(.spring()) { showFavoriteToast = true }
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                                                    withAnimation(.easeOut) { showFavoriteToast = false }
-                                                }
-                                            }
                                         }
-                                        withAnimation(.easeInOut) { menuVerse = nil }
-                                    }) { Image(systemName: isBookmarked(verse) ? "bookmark.fill" : "bookmark") }
-                                        .foregroundStyle(.blue)
-                                    Button(action: {
-                                        toggleFavorite(for: verse)
-                                        withAnimation(.easeInOut) { menuVerse = nil }
-                                    }) { Image(systemName: isFavorited(verse) ? "heart.fill" : "heart") }
-                                        .foregroundStyle(.red)
-                                }
-                                .font(.title3)
-                                .frame(maxWidth: .infinity)
-                                .padding(.horizontal)
-                                .padding(.bottom, 6)
-                                .transition(.opacity)
-                            }
-
-                            // Divider between verses
-                            if verse.number != currentChapter.verses.count {
-                                Divider()
-                            }
-                        }
-                    }
-                    .padding(.vertical)
-                    .onPreferenceChange(VerseOffsetsKey.self) { offsets in
-                        topVerseUpdateWorkItem?.cancel()
-                        let work = DispatchWorkItem { @MainActor in
-                            // Find the verse with the smallest non-negative minY (closest to top). If none, pick the highest minY.
-                            let top = offsets
-                                .sorted { a, b in a.minY < b.minY }
-                                .first(where: { $0.minY >= 0 }) ?? offsets.max(by: { a, b in a.minY < b.minY })
-                            if let top = top {
-                                topVisibleVerse = top.verse
-                                if selectedVerse == nil {
-                                    if lastSavedTopVerse != top.verse {
-                                        saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: top.verse)
-                                        lastSavedTopVerse = top.verse
                                     }
-                                }
+                                    withAnimation(.easeInOut) { menuVerse = nil }
+                                }) { Image(systemName: isBookmarked(verse) ? "bookmark.fill" : "bookmark") }
+                                    .foregroundStyle(.blue)
+                                Button(action: {
+                                    toggleFavorite(for: verse)
+                                    withAnimation(.easeInOut) { menuVerse = nil }
+                                }) { Image(systemName: isFavorited(verse) ? "heart.fill" : "heart") }
+                                    .foregroundStyle(.red)
                             }
+                            .font(.title3)
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal)
+                            .padding(.bottom, 6)
+                            .transition(.opacity)
                         }
-                        topVerseUpdateWorkItem = work
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.10, execute: work)
+
+                        // Divider between verses
+                        if verse.number != currentChapter.verses.count {
+                            Divider()
+                        }
                     }
                 }
-                .coordinateSpace(name: "readingScroll")
-                .background(Color.clear.ignoresSafeArea())
+                .padding(.vertical)
+                .scrollTargetLayout()
                 .onChange(of: currentChapterIndex) { _, _ in
                     menuVerse = nil
                     highlightedVerse = nil
                     selectedVerse = nil
-                    lastSavedTopVerse = nil
                     // When chapter changes, scroll to the top
-                    DispatchQueue.main.async {
-                        withAnimation { proxy.scrollTo(verseID(for: 1), anchor: .top) }
-                    }
+                    topVisibleVerseID = rowID(for: 1)
                 }
                 .onAppear {
-                    DispatchQueue.main.async {
-                        withAnimation { proxy.scrollTo(verseID(for: currentVerse), anchor: .top) }
-                    }
+                    topVisibleVerseID = rowID(for: currentVerse)
                     if highlightOnAppear {
                         highlightedVerse = currentVerse
                         // Clear highlight after a short delay
@@ -308,6 +250,12 @@ struct ReadingView: View {
                 }
                 .onTapGesture {
                     if menuVerse != nil { menuVerse = nil }
+                }
+                .scrollPosition(id: $topVisibleVerseID, anchor: .top)
+                .onChange(of: topVisibleVerseID) { _, newTop in
+                    if let id = newTop, let verseStr = id.split(separator: "-").last, let verseNum = Int(verseStr) {
+                        saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: verseNum)
+                    }
                 }
             }
         }
@@ -374,8 +322,8 @@ struct ReadingView: View {
         saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: currentVerse)
     }
 
-    private func verseID(for number: Int) -> String {
-        "\(currentBookIndex)-\(currentChapterIndex)-\(number)"
+    private func rowID(for verse: Int) -> String {
+        "\(currentBookIndex)-\(currentChapterIndex)-\(verse)"
     }
 
     private func isFavorited(_ verse: Verse) -> Bool {
