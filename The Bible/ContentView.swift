@@ -52,10 +52,10 @@ struct ContentView: View {
             .tabItem { Label("Notes", systemImage: "note.text") }
             
             NavigationStack {
-                QuizView()
-                    .navigationTitle("Quiz")
+                GamesView()
+                    .navigationTitle("Games")
             }
-            .tabItem { Label("Quiz", systemImage: "questionmark.circle") }
+            .tabItem { Label("Games", systemImage: "gamecontroller") }
 
             NavigationStack {
                 SettingsView()
@@ -72,4 +72,3 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-

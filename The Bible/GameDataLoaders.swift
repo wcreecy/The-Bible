@@ -3,7 +3,7 @@ import Foundation
 struct BibleName: Decodable, Identifiable, Hashable {
     var id: String { name }
     let name: String
-    let firstReference: String
+    let firstReference: String?
 
     enum CodingKeys: String, CodingKey {
         case name
@@ -14,7 +14,7 @@ struct BibleName: Decodable, Identifiable, Hashable {
 struct BibleLocation: Decodable, Identifiable, Hashable {
     var id: String { location }
     let location: String
-    let firstReference: String
+    let firstReference: String?
 
     enum CodingKeys: String, CodingKey {
         case location
@@ -28,7 +28,14 @@ enum GameDataLoaders {
     }
 
     static func loadLocations() -> [BibleLocation] {
-        loadArray([BibleLocation].self, resource: "biblelocations")
+        if let first: [BibleLocation] = tryLoadArray([BibleLocation].self, resource: "biblelocations") {
+            return first
+        }
+        if let fallback: [BibleLocation] = tryLoadArray([BibleLocation].self, resource: "bibleplaces") {
+            return fallback
+        }
+        print("⚠️ Neither biblelocations.json nor bibleplaces.json could be loaded.")
+        return []
     }
 
     private static func loadArray<T: Decodable>(_ type: T.Type, resource: String) -> T {
@@ -43,6 +50,20 @@ enum GameDataLoaders {
         } catch {
             print("⚠️ Failed to decode \(resource).json: \(error)")
             return [] as! T
+        }
+    }
+
+    private static func tryLoadArray<T: Decodable>(_ type: T.Type, resource: String) -> T? {
+        guard let url = Bundle.main.url(forResource: resource, withExtension: "json") else {
+            return nil
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            let decoded = try JSONDecoder().decode(T.self, from: data)
+            return decoded
+        } catch {
+            print("⚠️ Failed to decode \(resource).json: \(error)")
+            return nil
         }
     }
 }

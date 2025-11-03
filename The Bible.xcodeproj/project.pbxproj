@@ -17,6 +17,9 @@
 		2CB56DF02EB3942900A657FA /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56DEF2EB3942900A657FA /* Toast.swift */; };
 		2CB677112EB56EB000E609B5 /* QuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB677102EB56EB000E609B5 /* QuizView.swift */; };
 		2CB677C42EB67F1400E609B5 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB677C32EB67F1400E609B5 /* HealthKitManager.swift */; };
+		2CD457292EB8FFCF003CB315 /* GamesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD457282EB8FFCE003CB315 /* GamesView.swift */; };
+		2CD4572D2EB9025D003CB315 /* HangmanGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4572C2EB9025D003CB315 /* HangmanGameView.swift */; };
+		2CD4572F2EB90410003CB315 /* ReferenceMatchGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4572E2EB90410003CB315 /* ReferenceMatchGameView.swift */; };
 		2CF6F1712EB83C2100E59640 /* TimerSound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF6F1702EB83C2100E59640 /* TimerSound.swift */; };
 /* End PBXBuildFile section */
 
@@ -53,6 +56,9 @@
 		2CB677C32EB67F1400E609B5 /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
 		2CB677DA2EB680AE00E609B5 /* BibleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BibleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CB677E42EB680AE00E609B5 /* BibleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BibleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2CD457282EB8FFCE003CB315 /* GamesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesView.swift; sourceTree = "<group>"; };
+		2CD4572C2EB9025D003CB315 /* HangmanGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HangmanGameView.swift; sourceTree = "<group>"; };
+		2CD4572E2EB90410003CB315 /* ReferenceMatchGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferenceMatchGameView.swift; sourceTree = "<group>"; };
 		2CF6F1702EB83C2100E59640 /* TimerSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerSound.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -144,6 +150,9 @@
 				2CB677102EB56EB000E609B5 /* QuizView.swift */,
 				2CB677C32EB67F1400E609B5 /* HealthKitManager.swift */,
 				2CF6F1702EB83C2100E59640 /* TimerSound.swift */,
+				2CD457282EB8FFCE003CB315 /* GamesView.swift */,
+				2CD4572C2EB9025D003CB315 /* HangmanGameView.swift */,
+				2CD4572E2EB90410003CB315 /* ReferenceMatchGameView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -367,11 +376,14 @@
 			files = (
 				2CB677C42EB67F1400E609B5 /* HealthKitManager.swift in Sources */,
 				2C78413B2EB407D1008DDBBF /* NotesView.swift in Sources */,
+				2CD457292EB8FFCF003CB315 /* GamesView.swift in Sources */,
+				2CD4572D2EB9025D003CB315 /* HangmanGameView.swift in Sources */,
 				2C7841392EB407C0008DDBBF /* Note.swift in Sources */,
 				2CB56D402EB3831100A657FA /* BookmarksView.swift in Sources */,
 				2CB56D3E2EB3830D00A657FA /* Bookmark.swift in Sources */,
 				2C320B4A2EB40940003814A6 /* NotesModel.swift in Sources */,
 				2CB677112EB56EB000E609B5 /* QuizView.swift in Sources */,
+				2CD4572F2EB90410003CB315 /* ReferenceMatchGameView.swift in Sources */,
 				2C320B4C2EB40966003814A6 /* NotesListView.swift in Sources */,
 				2CB56DF02EB3942900A657FA /* Toast.swift in Sources */,
 				2CF6F1712EB83C2100E59640 /* TimerSound.swift in Sources */,
@@ -439,6 +451,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible/Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "To log time in the app as Mindful minutes in the Health App";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Spending time in God's Word is VITAL to our relationship with Him! This app logs your time spent in the app as mindfulness minutes which can be found in your Health app. Try for at least 1 hour per day.";
 				INFOPLIST_KEY_NSHomeKitUsageDescription = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -488,6 +501,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible/Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "To log time in the app as Mindful minutes in the Health App";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Spending time in God's Word is VITAL to our relationship with Him! This app logs your time spent in the app as mindfulness minutes which can be found in your Health app. Try for at least 1 hour per day.";
 				INFOPLIST_KEY_NSHomeKitUsageDescription = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
