@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct FavoritesFlashcardsGameView: View {
-    @Query(sort: \.order) private var favorites: [Favorite]
+    @Query(sort: \Favorite.createdAt, order: .reverse) private var favorites: [Favorite]
     
     enum Mode: String, CaseIterable, Identifiable {
         case referenceToVerse = "Reference → Verse"
@@ -49,7 +49,7 @@ struct FavoritesFlashcardsGameView: View {
                 } else {
                     Spacer()
                     flashcardView()
-                        .frame(maxWidth: 320, maxHeight: 220)
+                        .frame(width: 320, height: 220)
                         .padding()
                     
                     Text(instructionText)
@@ -59,17 +59,19 @@ struct FavoritesFlashcardsGameView: View {
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: 320)
                     
-                    HStack(spacing: 40) {
+                    HStack(spacing: 12) {
                         Button("Previous") {
                             previousCard()
                         }
-                        .buttonStyle(ModernProminentButtonStyle())
+                        .buttonStyle(ModernPillButtonStyle())
+                        .frame(maxWidth: .infinity)
                         .disabled(shuffledFavorites.count <= 1)
                         
-                        Button("Next") {
-                            nextCard()
+                        Button("Random") {
+                            randomCard()
                         }
-                        .buttonStyle(ModernProminentButtonStyle())
+                        .buttonStyle(ModernPillButtonStyle())
+                        .frame(maxWidth: .infinity)
                     }
                     Spacer()
                 }
@@ -100,6 +102,21 @@ struct FavoritesFlashcardsGameView: View {
         currentIndex = (currentIndex - 1 + shuffledFavorites.count) % shuffledFavorites.count
     }
     
+    private func randomCard() {
+        guard !shuffledFavorites.isEmpty else { return }
+        withAnimation(.easeInOut) {
+            flipped = false
+        }
+        // If there's only one card, nothing to change
+        guard shuffledFavorites.count > 1 else { return }
+        var newIndex = currentIndex
+        // Ensure we pick a different index than the current one
+        repeat {
+            newIndex = Int.random(in: 0..<shuffledFavorites.count)
+        } while newIndex == currentIndex
+        currentIndex = newIndex
+    }
+    
     private var instructionText: String {
         switch (mode, flipped) {
         case (.referenceToVerse, false):
@@ -127,11 +144,11 @@ struct FavoritesFlashcardsGameView: View {
                         .matchedGeometryEffect(id: "flashcard", in: flipNamespace)
                 }
             }
-            .frame(maxWidth: 320, maxHeight: 220)
-            .background(.ultraThinMaterial)
-            .clipShape(Capsule())
+            .frame(width: 320, height: 220)
+            .background(IndexCardBackground(cornerRadius: 20))
+            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             .overlay(
-                Capsule()
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
                     .stroke(.primary.opacity(0.15), lineWidth: 1)
             )
             .shadow(color: .primary.opacity(0.1), radius: 4, x: 0, y: 2)
@@ -155,14 +172,14 @@ struct FavoritesFlashcardsGameView: View {
         Group {
             switch mode {
             case .referenceToVerse:
-                Text(favorite.reference)
+                Text("\(favorite.bookName) \(favorite.chapterNumber):\(favorite.verseNumber)")
                     .font(.title3.bold())
                     .multilineTextAlignment(.center)
                     .padding(30)
                     .foregroundColor(.primary)
             case .verseToReference:
-                Text(favorite.verse)
-                    .font(.title3)
+                Text(favorite.verseText)
+                    .font(.body)
                     .multilineTextAlignment(.center)
                     .padding(30)
                     .foregroundColor(.primary)
@@ -174,13 +191,13 @@ struct FavoritesFlashcardsGameView: View {
         Group {
             switch mode {
             case .referenceToVerse:
-                Text(favorite.verse)
-                    .font(.title3)
+                Text(favorite.verseText)
+                    .font(.body)
                     .multilineTextAlignment(.center)
                     .padding(30)
                     .foregroundColor(.primary)
             case .verseToReference:
-                Text(favorite.reference)
+                Text("\(favorite.bookName) \(favorite.chapterNumber):\(favorite.verseNumber)")
                     .font(.title3.bold())
                     .multilineTextAlignment(.center)
                     .padding(30)
@@ -194,16 +211,16 @@ struct FavoritesFlashcardsGameView: View {
         if flipped {
             switch mode {
             case .referenceToVerse:
-                return "Verse: \(favorite.verse)"
+                return "Verse: \(favorite.verseText)"
             case .verseToReference:
-                return "Reference: \(favorite.reference)"
+                return "Reference: \(favorite.bookName) \(favorite.chapterNumber):\(favorite.verseNumber)"
             }
         } else {
             switch mode {
             case .referenceToVerse:
-                return "Reference: \(favorite.reference)"
+                return "Reference: \(favorite.bookName) \(favorite.chapterNumber):\(favorite.verseNumber)"
             case .verseToReference:
-                return "Verse: \(favorite.verse)"
+                return "Verse: \(favorite.verseText)"
             }
         }
     }
@@ -249,25 +266,84 @@ struct ModernProminentButtonStyle: ButtonStyle {
     }
 }
 
-#Preview {
-    // Provide an in-memory model container if possible, otherwise just show the view.
-    if let container = try? ModelContainer(for: Favorite.self, inMemory: true) {
-        // Add sample data
-        let context = container.mainContext
-        let sampleFavorites: [(String, String)] = [
-            ("John 3:16", "For God so loved the world..."),
-            ("Psalm 23:1", "The Lord is my shepherd..."),
-            ("Romans 8:28", "All things work together for good...")
-        ]
-        for (ref, verse) in sampleFavorites {
-            let fav = Favorite(reference: ref, verse: verse)
-            context.insert(fav)
-        }
-        try? context.save()
-        
-        return FavoritesFlashcardsGameView()
-            .modelContainer(container)
-    } else {
-        return FavoritesFlashcardsGameView()
+struct GameProminentButtonStyle: ButtonStyle {
+    var tint: Color = .accentColor
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.headline)
+            .foregroundStyle(.white)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(tint)
+                    .shadow(color: .black.opacity(configuration.isPressed ? 0.05 : 0.12), radius: configuration.isPressed ? 2 : 6, x: 0, y: configuration.isPressed ? 1 : 3)
+            )
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.8), value: configuration.isPressed)
     }
+}
+
+struct IndexCardBackground: View {
+    var cornerRadius: CGFloat = 16
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                // Paper fill
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [Color(.systemBackground), Color(.secondarySystemBackground)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                // Subtle horizontal ruling lines
+                let spacing: CGFloat = 22
+                ForEach(0...max(0, Int(geo.size.height / spacing)), id: \.self) { i in
+                    Path { path in
+                        let y = CGFloat(i) * spacing + 10
+                        path.move(to: CGPoint(x: 0, y: y))
+                        path.addLine(to: CGPoint(x: geo.size.width, y: y))
+                    }
+                    .stroke(Color.blue.opacity(0.10), lineWidth: 1)
+                }
+                // Left margin line (index card style)
+                Path { path in
+                    let x: CGFloat = 32
+                    path.move(to: CGPoint(x: x, y: 0))
+                    path.addLine(to: CGPoint(x: x, y: geo.size.height))
+                }
+                .stroke(Color.red.opacity(0.15), lineWidth: 1)
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+    }
+}
+
+@MainActor
+private let previewFavoritesContainer: ModelContainer = {
+    let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: Favorite.self, configurations: configuration)
+    let context = container.mainContext
+
+    let samples: [(String, Int, Int, String)] = [
+        ("John", 3, 16, "For God so loved the world..."),
+        ("Psalms", 23, 1, "The Lord is my shepherd..."),
+        ("Romans", 8, 28, "All things work together for good...")
+    ]
+
+    for (book, chapter, verse, text) in samples {
+        let fav = Favorite(bookName: book, chapterNumber: chapter, verseNumber: verse, verseText: text)
+        context.insert(fav)
+    }
+
+    try? context.save()
+    return container
+}()
+
+#Preview {
+    FavoritesFlashcardsGameView()
+        .modelContainer(previewFavoritesContainer)
 }

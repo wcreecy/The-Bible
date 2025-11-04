@@ -138,6 +138,7 @@ struct HangmanGameView: View {
 
     @State private var currentRoundCategory: Theme = .books
     @State private var tappedKey: Character? = nil
+    @State private var currentTargetReference: String? = nil
 
     // History of completed rounds for "Previous" viewing
     private struct HangmanSnapshot: Identifiable {
@@ -235,13 +236,15 @@ struct HangmanGameView: View {
                         HStack(spacing: 8) {
                             if let ref = firstReferenceForCurrentTarget(), shouldShowReference() {
                                 Button {
-                                    openFirstReference(ref)
+                                    if roundOver { openFirstReference(ref) }
                                 } label: {
                                     Text(ref)
                                         .lineLimit(1)
                                 }
                                 .buttonStyle(ModernPillButtonStyle(tint: .blue))
                                 .controlSize(.regular)
+                                .disabled(!roundOver)
+                                .opacity(roundOver ? 1.0 : 0.55)
                             }
 
                             Button("Previous") { showPreviousSheet = true }
@@ -600,6 +603,7 @@ struct HangmanGameView: View {
             if displayWord.isEmpty {
                 displayWord = masked(from: targetWord)
             }
+            currentTargetReference = nil
         case .people:
             if loadedPeople.isEmpty { loadedPeople = GameDataLoaders.loadNames() }
             guard let entry = loadedPeople.randomElement() else { return }
@@ -610,6 +614,7 @@ struct HangmanGameView: View {
             if displayWord.isEmpty {
                 displayWord = masked(from: targetWord)
             }
+            currentTargetReference = entry.firstReference
         case .places:
             if loadedPlaces.isEmpty { loadedPlaces = GameDataLoaders.loadLocations() }
             guard !loadedPlaces.isEmpty else { return }
@@ -630,6 +635,7 @@ struct HangmanGameView: View {
             if displayWord.isEmpty {
                 displayWord = masked(from: targetWord)
             }
+            currentTargetReference = loadedPlaces.first { $0.location.caseInsensitiveCompare(targetWord) == .orderedSame }?.firstReference
         case .all:
             break
         }
@@ -675,8 +681,8 @@ struct HangmanGameView: View {
             // Always show during an active round
             return started && !targetWord.isEmpty && !displayWord.isEmpty
         case .medium:
-            // Show when down to two remaining guesses
-            return roundOver || wrongGuesses >= maxWrong - 2
+            // Show when down to three or more wrong guesses
+            return roundOver || wrongGuesses >= 3
         case .hard:
             // Only after the round ends (win or lose)
             return roundOver
@@ -684,16 +690,7 @@ struct HangmanGameView: View {
     }
 
     private func firstReferenceForCurrentTarget() -> String? {
-        switch currentRoundCategory {
-        case .people:
-            return loadedPeople.first { $0.name.caseInsensitiveCompare(targetWord) == .orderedSame }?.firstReference
-        case .places:
-            return loadedPlaces.first { $0.location.caseInsensitiveCompare(targetWord) == .orderedSame }?.firstReference
-        case .books:
-            return nil
-        case .all:
-            return nil
-        }
+        return currentTargetReference
     }
 
     private func openFirstReference(_ ref: String) {
@@ -822,4 +819,3 @@ private struct ConfettiView: View {
 #Preview {
     NavigationStack { HangmanGameView() }
 }
-

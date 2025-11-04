@@ -45,6 +45,34 @@ struct GamesView: View {
                         }
                     }
                 }
+                
+                NavigationLink {
+                    FavoritesFlashcardsGameView()
+                        .navigationTitle("Favorites Flashcards")
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "rectangle.portrait.on.rectangle.portrait")
+                            .foregroundStyle(.pink)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Favorites Flashcards").font(.headline)
+                            Text("Practice your favorited verses with flashcards").font(.subheadline).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                
+                NavigationLink {
+                    BookOrderGameView()
+                        .navigationTitle("Book Order")
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "list.number")
+                            .foregroundStyle(.purple)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Book Order").font(.headline)
+                            Text("Drag books into order").font(.subheadline).foregroundStyle(.secondary)
+                        }
+                    }
+                }
             }
         }
         .listStyle(.insetGrouped)

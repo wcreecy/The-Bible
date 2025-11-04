@@ -1,9 +1,19 @@
 import Foundation
 import Combine
 
+enum BookOrderDifficulty: String, CaseIterable, Identifiable {
+    case easy, normal, hard, all
+    var id: String { rawValue }
+}
+
+enum BookSourceScope: String, CaseIterable, Identifiable {
+    case ot = "OT", nt = "NT", both = "Both"
+    var id: String { rawValue }
+}
+
 struct BibleCanon {
     /// Hardcoded fallback Protestant canonical 66 books in order
-    static let fallbackBooks: [String] = [
+    static let fallbackCanon: [String] = [
         "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
         "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel",
         "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra",
@@ -25,7 +35,7 @@ struct BibleCanon {
         if !BibleData.books.isEmpty {
             return BibleData.books.map { $0.name }
         }
-        return fallbackBooks
+        return fallbackCanon
     }
 }
 
@@ -51,11 +61,13 @@ final class BookOrderGameViewModel: ObservableObject {
     @Published var wasCorrect: Bool = false
     @Published var showingCorrectOrder: Bool = false
     
+    @Published var difficulty: BookOrderDifficulty = .normal
+    @Published var source: BookSourceScope = .both
+    
     // MARK: - Round info for prompt display
     
-    private(set) var prompt: String = "Arrange these books in canonical order"
-    private(set) var roundFirstBook: String = ""
-    private(set) var roundLastBook: String = ""
+    private var sliceFirst: String? = nil
+    private var sliceLast: String? = nil
     
     // MARK: - Persistence keys
     
@@ -94,52 +106,77 @@ final class BookOrderGameViewModel: ObservableObject {
         nextRound()
     }
     
-    func nextRound() {
+    private func workingCanon() -> [String] {
         let canon = BibleCanon.canonicalOrder()
-        guard canon.count >= 8 else {
+        switch source {
+        case .both:
+            return canon
+        case .ot:
+            // Old Testament is first 39 in the fallback list; if BibleData order is used and differs, prefer names up to the first 39 that match fallback
+            let fallback = BibleCanon.fallbackCanon
+            let otSet = Set(fallback.prefix(39))
+            return canon.filter { otSet.contains($0) }
+        case .nt:
+            let fallback = BibleCanon.fallbackCanon
+            let ntSet = Set(fallback.suffix(27))
+            return canon.filter { ntSet.contains($0) }
+        }
+    }
+    
+    func nextRound() {
+        let canon = workingCanon()
+        guard !canon.isEmpty else {
             // Not enough books to play
             currentItems = []
             correctOrder = []
-            prompt = "Insufficient data for canonical order"
-            roundFirstBook = ""
-            roundLastBook = ""
+            sliceFirst = nil
+            sliceLast = nil
             return
         }
         
-        // Pick slice length 5 to 8
-        let sliceLength = Int.random(in: 5...8)
-        // Pick start index so slice fits
-        let maxStart = canon.count - sliceLength
-        let startIndex = Int.random(in: 0...maxStart)
-        
-        let slice = Array(canon[startIndex..<(startIndex + sliceLength)])
-        correctOrder = slice
-        
-        // Shuffle until shuffled != correctOrder to avoid trivial order
-        var shuffledSlice = slice.shuffled()
-        while shuffledSlice == slice {
-            shuffledSlice = slice.shuffled()
+        let length: Int
+        switch difficulty {
+        case .easy:
+            length = 5
+        case .normal:
+            length = 10
+        case .hard:
+            length = 15
+        case .all:
+            length = canon.count
         }
-        currentItems = shuffledSlice
         
-        // Set prompt with range info
-        roundFirstBook = slice.first ?? ""
-        roundLastBook = slice.last ?? ""
-        prompt = promptText(forFirst: roundFirstBook, last: roundLastBook)
+        let maxStart = max(0, canon.count - length)
+        let start = (maxStart > 0) ? Int.random(in: 0...maxStart) : 0
+        
+        let slice = Array(canon[start..<(start + length)])
+        correctOrder = slice
+        sliceFirst = slice.first
+        sliceLast = slice.last
+        
+        var shuffled = slice.shuffled()
+        if shuffled == slice && shuffled.count > 1 {
+            shuffled.swapAt(0, 1)
+        }
+        currentItems = shuffled
         
         showResult = false
         wasCorrect = false
         showingCorrectOrder = false
     }
     
-    /// Returns the prompt text, including range if possible
-    private func promptText(forFirst first: String, last: String) -> String {
-        if !first.isEmpty && !last.isEmpty && first != last {
-            return "Arrange these books in canonical order\n(\(first) to \(last))"
-        } else if !first.isEmpty {
-            return "Arrange these books in canonical order\n(\(first))"
+    var prompt: String {
+        let base = "Arrange these books in canonical order"
+        let scope: String
+        switch source {
+        case .both: scope = "(Whole Bible)"
+        case .ot: scope = "(Old Testament)"
+        case .nt: scope = "(New Testament)"
+        }
+        if let a = sliceFirst, let b = sliceLast, difficulty != .all {
+            return "\(base) \(scope) — \(a) to \(b)"
         } else {
-            return "Arrange these books in canonical order"
+            return "\(base) \(scope)"
         }
     }
     
@@ -195,9 +232,8 @@ extension BookOrderGameViewModel {
         let slice = Array(canon[startIndex..<(startIndex+sliceLength)])
         vm.correctOrder = slice
         vm.currentItems = slice.shuffled()
-        vm.roundFirstBook = slice.first ?? ""
-        vm.roundLastBook = slice.last ?? ""
-        vm.prompt = vm.promptText(forFirst: vm.roundFirstBook, last: vm.roundLastBook)
+        vm.sliceFirst = slice.first
+        vm.sliceLast = slice.last
         vm.started = true
         return vm
     }
