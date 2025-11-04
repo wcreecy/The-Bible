@@ -110,15 +110,15 @@ struct HomeView: View {
             LazyVGrid(columns: gridColumns, spacing: 16) {
                 // Title Card
                 HeroCard(title: "Word of God", subtitle: "Welcome back", icon: "book.fill", tint: .blue, titleFont: .largeTitle, titleFontWeight: .black) {
-                    VStack(spacing: 8) {
+                    HStack(alignment: .center, spacing: 8) {
                         Image(systemName: "person.wave.2.fill")
                             .foregroundStyle(.blue)
                         Text("What is God saying to you today?")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
+                            .multilineTextAlignment(.leading)
                     }
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(.top)
                 .frame(maxWidth: 700)

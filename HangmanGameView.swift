@@ -113,9 +113,20 @@ struct HangmanGameView: View {
     @State private var currentStreak: Int = 0
     @State private var currentBestStreak: Int = 0
 
-    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "hangmanAllTimeCorrect") }
-    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "hangmanAllTimeAnswered") }
-    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "hangmanAllTimeBestStreak") }
+    @State private var showConfetti: Bool = false
+
+    private var allTimeCorrect: Int {
+        let key = "hangmanAllTimeCorrect_\(difficultyKeySuffix())"
+        return UserDefaults.standard.integer(forKey: key)
+    }
+    private var allTimeAnswered: Int {
+        let key = "hangmanAllTimeAnswered_\(difficultyKeySuffix())"
+        return UserDefaults.standard.integer(forKey: key)
+    }
+    private var allTimeBestStreak: Int {
+        let key = "hangmanAllTimeBestStreak_\(difficultyKeySuffix())"
+        return UserDefaults.standard.integer(forKey: key)
+    }
 
     @State private var loadedPeople: [BibleName] = []
     @State private var loadedPlaces: [BibleLocation] = []
@@ -127,6 +138,19 @@ struct HangmanGameView: View {
 
     @State private var currentRoundCategory: Theme = .books
     @State private var tappedKey: Character? = nil
+
+    // History of completed rounds for "Previous" viewing
+    private struct HangmanSnapshot: Identifiable {
+        let id = UUID()
+        let category: Theme
+        let targetWord: String
+        let didWin: Bool
+        let wrongGuesses: Int
+        let maxWrong: Int
+        let reference: String?
+    }
+    @State private var history: [HangmanSnapshot] = []
+    @State private var showPreviousSheet: Bool = false
 
     private let alphabet: [Character] = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
@@ -181,27 +205,33 @@ struct HangmanGameView: View {
                             }
                         }
 
-                    HStack(alignment: .center, spacing: 12) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "tag.fill")
-                            Text(currentRoundCategory.rawValue.uppercased())
-                                .font(.headline)
+                    VStack(alignment: .leading, spacing: 8) {
+                        // Row 1: Title and Category pill
+                        HStack(alignment: .center, spacing: 12) {
+                            Text("Hangman")
+                                .font(.title)
                                 .fontWeight(.bold)
+                            Spacer()
+                            HStack(spacing: 8) {
+                                Image(systemName: iconName(for: currentRoundCategory))
+                                Text(currentRoundCategory.rawValue.uppercased())
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(
+                                .ultraThinMaterial,
+                                in: Capsule(style: .continuous)
+                            )
+                            .overlay(
+                                Capsule(style: .continuous)
+                                    .strokeBorder(.separator.opacity(0.5), lineWidth: 1)
+                            )
+                            .foregroundStyle(.tint)
                         }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(
-                            .ultraThinMaterial,
-                            in: Capsule(style: .continuous)
-                        )
-                        .overlay(
-                            Capsule(style: .continuous)
-                                .strokeBorder(.separator.opacity(0.5), lineWidth: 1)
-                        )
-                        .foregroundStyle(.tint)
 
-                        Spacer()
-
+                        // Row 2: Reference, Previous, Next
                         HStack(spacing: 8) {
                             if let ref = firstReferenceForCurrentTarget(), shouldShowReference() {
                                 Button {
@@ -213,6 +243,12 @@ struct HangmanGameView: View {
                                 .buttonStyle(ModernPillButtonStyle(tint: .blue))
                                 .controlSize(.regular)
                             }
+
+                            Button("Previous") { showPreviousSheet = true }
+                                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                                .controlSize(.regular)
+                                .disabled(history.isEmpty)
+                                .opacity(history.isEmpty ? 0.5 : 1.0)
 
                             if roundOver {
                                 Button("Next") { nextRound() }
@@ -255,7 +291,7 @@ struct HangmanGameView: View {
 
                     // Word Display
                     Text(spacedDisplayWord())
-                        .font(.system(size: 36, weight: .semibold, design: .monospaced))
+                        .font(.system(size: 30, weight: .semibold, design: .monospaced))
                         .fontDesign(appFontDesign)
                         .padding(.top, 8)
                         .accessibilityLabel("Word to guess")
@@ -311,6 +347,13 @@ struct HangmanGameView: View {
                 }
             }
             .padding()
+            .overlay(alignment: .top) {
+                if showConfetti {
+                    ConfettiView()
+                        .transition(.opacity)
+                        .zIndex(1)
+                }
+            }
         }
         .fontDesign(appFontDesign)
         .navigationTitle("Hangman")
@@ -325,6 +368,72 @@ struct HangmanGameView: View {
                 ReadingView(book: book, chapter: chapter, startVerse: navStartVerse)
                     .id("\(book.name)-\(chapter.number)-\(navStartVerse)")
             }
+        }
+        .toolbar { }
+        .sheet(isPresented: $showPreviousSheet) {
+            if let last = history.last {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Previous Round")
+                        .font(.title3)
+                        .bold()
+                    HStack(spacing: 8) {
+                        Text("Category:")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text(last.category.rawValue)
+                            .font(.subheadline)
+                    }
+                    HStack(spacing: 8) {
+                        Text("Result:")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text(last.didWin ? "Correct" : "Out of guesses")
+                            .font(.subheadline)
+                            .foregroundStyle(last.didWin ? .green : .red)
+                    }
+                    HStack(spacing: 8) {
+                        Text("Answer:")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text(last.targetWord)
+                            .font(.headline)
+                    }
+                    HStack(spacing: 8) {
+                        Text("Mistakes:")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text("\(last.wrongGuesses)/\(last.maxWrong)")
+                            .font(.subheadline)
+                    }
+                    if let ref = last.reference {
+                        Divider()
+                        Button {
+                            openFirstReference(ref)
+                            showPreviousSheet = false
+                        } label: {
+                            Text(ref)
+                                .lineLimit(1)
+                        }
+                        .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                    }
+                    Spacer()
+                    HStack { Spacer(); Button("Close") { showPreviousSheet = false } }
+                }
+                .padding()
+                .presentationDetents([.medium])
+            } else {
+                Text("No previous rounds")
+                    .padding()
+            }
+        }
+    }
+
+    private func iconName(for theme: Theme) -> String {
+        switch theme {
+        case .places: return "house.fill"
+        case .people: return "person.fill"
+        case .books: return "book.fill"
+        case .all: return "tag.fill"
         }
     }
 
@@ -412,6 +521,18 @@ struct HangmanGameView: View {
     private func endRound(win: Bool) {
         roundOver = true
         didWin = win
+
+        // Save a snapshot of this completed round for Previous
+        let snapshot = HangmanSnapshot(
+            category: currentRoundCategory,
+            targetWord: targetWord,
+            didWin: win,
+            wrongGuesses: wrongGuesses,
+            maxWrong: maxWrong,
+            reference: firstReferenceForCurrentTarget()
+        )
+        history.append(snapshot)
+
         answered += 1
         if win { score += 1 }
 
@@ -428,16 +549,37 @@ struct HangmanGameView: View {
             currentStreak = 0
             updateAllTime(correct: 0, answered: 1, streak: currentBestStreak)
         }
+
+        if win && wrongGuesses == 0 {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                showConfetti = true
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                withAnimation(.easeOut) { showConfetti = false }
+            }
+        }
+    }
+
+    private func difficultyKeySuffix() -> String {
+        switch difficulty {
+        case .easy: return "easy"
+        case .medium: return "medium"
+        case .hard: return "hard"
+        }
     }
 
     private func updateAllTime(correct addCorrect: Int, answered addAnswered: Int, streak: Int) {
         let defaults = UserDefaults.standard
-        let newCorrect = allTimeCorrect + addCorrect
-        let newAnswered = allTimeAnswered + addAnswered
-        let newBest = max(allTimeBestStreak, streak)
-        defaults.set(newCorrect, forKey: "hangmanAllTimeCorrect")
-        defaults.set(newAnswered, forKey: "hangmanAllTimeAnswered")
-        defaults.set(newBest, forKey: "hangmanAllTimeBestStreak")
+        let suffix = difficultyKeySuffix()
+        let correctKey = "hangmanAllTimeCorrect_\(suffix)"
+        let answeredKey = "hangmanAllTimeAnswered_\(suffix)"
+        let bestKey = "hangmanAllTimeBestStreak_\(suffix)"
+        let newCorrect = defaults.integer(forKey: correctKey) + addCorrect
+        let newAnswered = defaults.integer(forKey: answeredKey) + addAnswered
+        let newBest = max(defaults.integer(forKey: bestKey), streak)
+        defaults.set(newCorrect, forKey: correctKey)
+        defaults.set(newAnswered, forKey: answeredKey)
+        defaults.set(newBest, forKey: bestKey)
     }
 
     private func generateRound() {
@@ -652,6 +794,32 @@ struct HangmanGameView: View {
     }
 }
 
+private struct ConfettiView: View {
+    @State private var anim: Bool = false
+    private let colors: [Color] = [.red, .blue, .green, .orange, .pink, .purple, .yellow]
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                ForEach(0..<24, id: \.self) { i in
+                    let x = CGFloat.random(in: 0...geo.size.width)
+                    let delay = Double.random(in: 0...0.6)
+                    let size = CGFloat.random(in: 6...12)
+                    let color = colors.randomElement()!
+                    Circle()
+                        .fill(color.opacity(0.85))
+                        .frame(width: size, height: size)
+                        .position(x: x, y: anim ? geo.size.height + 20 : -20)
+                        .animation(.interpolatingSpring(stiffness: 80, damping: 12).delay(delay), value: anim)
+                }
+            }
+            .onAppear { anim = true }
+        }
+        .ignoresSafeArea()
+        .frame(height: 220)
+    }
+}
+
 #Preview {
     NavigationStack { HangmanGameView() }
 }
+

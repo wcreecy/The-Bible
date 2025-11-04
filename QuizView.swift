@@ -347,11 +347,12 @@ struct QuizView: View {
             ToolbarItem(placement: .topBarLeading) {
                 if started && currentIndex > 0 {
                     Button("Previous") { showPrevious() }
+                        .disabled(selectedOption == nil && (quizDifficulty == "normal" || quizDifficulty == "hard") && remainingSeconds > 0)
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
                 if started && selectedOption != nil {
-                    Button("Next Question") { showNext() }
+                    Button("Next") { showNext() }
                         .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                         .controlSize(.regular)
                 }

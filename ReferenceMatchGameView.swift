@@ -43,6 +43,9 @@ struct ReferenceMatchGameView: View {
         }
     }
 
+    enum Difficulty: String, CaseIterable, Identifiable { case easy, medium, hard; var id: String { rawValue } }
+    @State private var difficulty: Difficulty = .medium
+
     @State private var started = false
     @State private var questionNumber: Int = 0
     @State private var score: Int = 0
@@ -51,9 +54,12 @@ struct ReferenceMatchGameView: View {
     @State private var currentStreak: Int = 0
     @State private var currentBestStreak: Int = 0
 
-    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "refmatchAllTimeCorrect") }
-    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "refmatchAllTimeAnswered") }
-    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "refmatchAllTimeBestStreak") }
+    @State private var history: [(book: Book, chapter: Chapter, verse: Verse, options: [String], correct: String, selected: String?)] = []
+    @State private var currentIndex: Int = -1
+
+    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "refmatchAllTimeCorrect_\(difficultyKeySuffix())") }
+    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "refmatchAllTimeAnswered_\(difficultyKeySuffix())") }
+    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "refmatchAllTimeBestStreak_\(difficultyKeySuffix())") }
 
     @State private var refBook: Book? = nil
     @State private var refChapter: Chapter? = nil
@@ -76,6 +82,15 @@ struct ReferenceMatchGameView: View {
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
+
+                    Picker("Difficulty", selection: $difficulty) {
+                        ForEach(Difficulty.allCases) { d in
+                            Text(d.rawValue.capitalized).tag(d)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal)
+
                     Button("Start") { startGame() }
                         .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                         .controlSize(.large)
@@ -170,12 +185,21 @@ struct ReferenceMatchGameView: View {
         }
         .navigationTitle("Verse Match")
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                if started && currentIndex > 0 {
+                    Button("Previous") { currentIndex -= 1; loadFromHistory() }
+                        .disabled(selectedOption == nil)
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 if started {
-                    Button("Next") { nextQuestion() }
-                        .disabled(selectedOption == nil)
-                        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                        .controlSize(.regular)
+                    Button("Next") { 
+                        if currentIndex < history.count - 1 { currentIndex += 1; loadFromHistory() }
+                        else { nextQuestion() }
+                    }
+                    .disabled(selectedOption == nil)
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                    .controlSize(.regular)
                 }
             }
         }
@@ -188,6 +212,8 @@ struct ReferenceMatchGameView: View {
         currentBestStreak = 0
         questionNumber = 0
         started = true
+        history = []
+        currentIndex = -1
         generateQuestion()
     }
 
@@ -200,6 +226,9 @@ struct ReferenceMatchGameView: View {
     private func select(_ opt: String) {
         guard selectedOption == nil else { return }
         selectedOption = opt
+        if currentIndex >= 0 && currentIndex < history.count {
+            history[currentIndex].selected = opt
+        }
         answered += 1
         if opt == correctOption { score += 1 }
 
@@ -242,6 +271,23 @@ struct ReferenceMatchGameView: View {
         var opts = Array(distractors)
         opts.append(correctOption)
         options = opts.shuffled()
+
+        var newHistory = history
+        newHistory.append((book: book, chapter: chapter, verse: verse, options: options, correct: correctOption, selected: nil))
+        history = newHistory
+        currentIndex = history.count - 1
+        loadFromHistory()
+    }
+
+    private func loadFromHistory() {
+        guard currentIndex >= 0 && currentIndex < history.count else { return }
+        let h = history[currentIndex]
+        refBook = h.book
+        refChapter = h.chapter
+        refVerse = h.verse
+        options = h.options
+        correctOption = h.correct
+        selectedOption = h.selected
     }
 
     private func snippet(for text: String) -> String {
@@ -287,12 +333,20 @@ struct ReferenceMatchGameView: View {
 
     private func updateAllTime(correct addCorrect: Int, answered addAnswered: Int, streak: Int) {
         let defaults = UserDefaults.standard
-        let newCorrect = allTimeCorrect + addCorrect
-        let newAnswered = allTimeAnswered + addAnswered
-        let newBest = max(allTimeBestStreak, streak)
-        defaults.set(newCorrect, forKey: "refmatchAllTimeCorrect")
-        defaults.set(newAnswered, forKey: "refmatchAllTimeAnswered")
-        defaults.set(newBest, forKey: "refmatchAllTimeBestStreak")
+        let suffix = difficultyKeySuffix()
+        let correctKey = "refmatchAllTimeCorrect_\(suffix)"
+        let answeredKey = "refmatchAllTimeAnswered_\(suffix)"
+        let bestKey = "refmatchAllTimeBestStreak_\(suffix)"
+        let newCorrect = defaults.integer(forKey: correctKey) + addCorrect
+        let newAnswered = defaults.integer(forKey: answeredKey) + addAnswered
+        let newBest = max(defaults.integer(forKey: bestKey), streak)
+        defaults.set(newCorrect, forKey: correctKey)
+        defaults.set(newAnswered, forKey: answeredKey)
+        defaults.set(newBest, forKey: bestKey)
+    }
+
+    private func difficultyKeySuffix() -> String {
+        switch difficulty { case .easy: return "easy"; case .medium: return "medium"; case .hard: return "hard" }
     }
 
     private func percentString(correct: Int, answered: Int) -> String {
@@ -305,4 +359,3 @@ struct ReferenceMatchGameView: View {
 #Preview {
     NavigationStack { ReferenceMatchGameView() }
 }
-
