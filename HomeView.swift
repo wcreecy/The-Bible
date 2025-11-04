@@ -44,6 +44,7 @@ struct HomeView: View {
     @State private var isHealthKitAvailable: Bool = HealthKitManager.shared.isAvailable()
 
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.horizontalSizeClass) private var hSize
 
     private var selectedFinishSoundID: SystemSoundID {
         (TimerSound(rawValue: timerSoundSelection) ?? .default).systemSoundID
@@ -74,6 +75,13 @@ struct HomeView: View {
     private var verseCardTitle: String { isEvening ? "Word of the Night" : "Verse of the Day" }
     private var verseCardIcon: String { isEvening ? "moon.stars" : "sun.max.fill" }
 
+    private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
+    private var iPadCardHeight: CGFloat { 200 }
+
+    private var gridColumns: [GridItem] {
+        return [GridItem(.flexible())]
+    }
+
     var progress: ReadingProgress? {
         progressList.first
     }
@@ -99,19 +107,23 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            LazyVGrid(columns: gridColumns, spacing: 16) {
                 // Title Card
                 HeroCard(title: "Word of God", subtitle: "Welcome back", icon: "book.fill", tint: .blue, titleFont: .largeTitle, titleFontWeight: .black) {
-                    HStack(spacing: 8) {
+                    VStack(spacing: 8) {
                         Image(systemName: "person.wave.2.fill")
                             .foregroundStyle(.blue)
                         Text("What is God saying to you today?")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
                     }
+                    .frame(maxWidth: .infinity)
                 }
-                .padding(.horizontal)
                 .padding(.top)
+                .frame(maxWidth: 700)
+                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity, alignment: .center)
 
                 // Verse of the Day Card
                 HeroCard(title: verseCardTitle, subtitle: nil, icon: verseCardIcon, tint: .orange) {
@@ -194,7 +206,8 @@ struct HomeView: View {
                         }
                     }
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, 16)
+                .frame(height: isPad ? iPadCardHeight : nil)
 
                 // Timer Card
                 Group {
@@ -227,7 +240,8 @@ struct HomeView: View {
                                 }
                             }
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, 16)
+                        .frame(height: isPad ? iPadCardHeight : nil)
                     } else {
                         HeroCard(
                             title: "Prayer/Study Timer",
@@ -252,7 +266,8 @@ struct HomeView: View {
                                 .foregroundStyle(.primary)
                             }
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, 16)
+                        .frame(height: isPad ? iPadCardHeight : nil)
                         .contentShape(Rectangle())
                         .onTapGesture {
                             if isHealthKitAvailable && !healthKitPrompted {
@@ -315,7 +330,8 @@ struct HomeView: View {
                         }
                     }
                     .buttonStyle(.plain)
-                    .padding(.horizontal)
+                    .padding(.horizontal, 16)
+                    .frame(height: isPad ? iPadCardHeight : nil)
                 } else {
                     HeroCard(
                         title: "",
@@ -342,9 +358,11 @@ struct HomeView: View {
                         }
                     }
                     .redacted(reason: .placeholder)
-                    .padding(.horizontal)
+                    .padding(.horizontal, 16)
+                    .frame(height: isPad ? iPadCardHeight : nil)
                 }
             }
+            .padding(.horizontal, 0)
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationTitle("")
@@ -796,5 +814,4 @@ private struct PrayerStudyTimerSetupView: View {
     }
 }
 // Note: HealthKit logging is handled in HomeView, no changes needed here.
-
 

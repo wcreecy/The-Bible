@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2C320B4A2EB40940003814A6 /* NotesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C320B492EB4093F003814A6 /* NotesModel.swift */; };
 		2C320B4C2EB40966003814A6 /* NotesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C320B4B2EB40966003814A6 /* NotesListView.swift */; };
+		2C736D092EB9899600CD2E6F /* BibleSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C736D082EB9899600CD2E6F /* BibleSplitView.swift */; };
 		2C7841392EB407C0008DDBBF /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7841382EB407C0008DDBBF /* Note.swift */; };
 		2C78413B2EB407D1008DDBBF /* NotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C78413A2EB407D1008DDBBF /* NotesView.swift */; };
 		2CB56D3E2EB3830D00A657FA /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D3D2EB3830D00A657FA /* Bookmark.swift */; };
@@ -47,6 +48,7 @@
 		2C3B0F6D2EB14F3D0089556C /* The Bible.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "The Bible.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C3B0F7E2EB14F3E0089556C /* The BibleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The BibleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C3B0F882EB14F3E0089556C /* The BibleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The BibleUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C736D082EB9899600CD2E6F /* BibleSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleSplitView.swift; sourceTree = "<group>"; };
 		2C7841382EB407C0008DDBBF /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		2C78413A2EB407D1008DDBBF /* NotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesView.swift; sourceTree = "<group>"; };
 		2CB56D3D2EB3830D00A657FA /* Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 				2CD4572C2EB9025D003CB315 /* HangmanGameView.swift */,
 				2CD4572E2EB90410003CB315 /* ReferenceMatchGameView.swift */,
 				2CD4579A2EB93C72003CB315 /* SegmentedPicker.swift */,
+				2C736D082EB9899600CD2E6F /* BibleSplitView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -385,6 +388,7 @@
 				2CB56D402EB3831100A657FA /* BookmarksView.swift in Sources */,
 				2CB56D3E2EB3830D00A657FA /* Bookmark.swift in Sources */,
 				2C320B4A2EB40940003814A6 /* NotesModel.swift in Sources */,
+				2C736D092EB9899600CD2E6F /* BibleSplitView.swift in Sources */,
 				2CB677112EB56EB000E609B5 /* QuizView.swift in Sources */,
 				2CD4579B2EB93C72003CB315 /* SegmentedPicker.swift in Sources */,
 				2CD4572F2EB90410003CB315 /* ReferenceMatchGameView.swift in Sources */,

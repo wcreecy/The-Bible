@@ -7,14 +7,26 @@ struct BibleSplitView: View {
     
     var body: some View {
         NavigationSplitView(columnVisibility: .constant(.all)) {
-            List(BibleData.books, selection: $selectedBook) { book in
-                Text(book.name)
+            List {
+                ForEach(BibleData.books, id: \.name) { book in
+                    Button {
+                        selectedBook = book
+                        selectedChapter = nil
+                        navStartVerse = 1
+                    } label: {
+                        HStack {
+                            Text(book.name)
+                            if selectedBook?.name == book.name {
+                                Spacer()
+                                Image(systemName: "checkmark")
+                                    .foregroundStyle(.blue)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
             }
             .navigationTitle("Books")
-            .onChange(of: selectedBook) { _ in
-                selectedChapter = nil
-                navStartVerse = 1
-            }
         } content: {
             if let book = selectedBook {
                 if selectedChapter == nil {

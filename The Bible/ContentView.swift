@@ -12,6 +12,8 @@ struct ContentView: View {
     @AppStorage("fontSizePreference") private var fontSizePreferenceRaw: String = FontSizePreference.system.rawValue
     @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = FontFamilyPreference.system.rawValue
     
+    @State private var rootSize: CGSize = .zero
+    
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("appTotalActiveSeconds") private var appTotalActiveSeconds: Int = 0
     @AppStorage("appActiveStart") private var appActiveStart: Double = 0
@@ -21,6 +23,10 @@ struct ContentView: View {
     private var preferredFontDesign: Font.Design? { (FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).fontDesign }
     private var preferredCustomFontName: String? { (FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).customFontName }
     
+    private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
+    private var isLandscape: Bool { rootSize.width > rootSize.height && rootSize != .zero }
+    private var baseFontSize: CGFloat { (isPad && isLandscape) ? 21 : 19 }
+    
     var body: some View {
         TabView {
             NavigationStack {
@@ -29,11 +35,17 @@ struct ContentView: View {
             }
             .tabItem { Label("Home", systemImage: "house") }
 
-            NavigationStack {
-                BooksView(books: BibleData.books)
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                BibleSplitView()
                     .navigationTitle("Bible")
+                    .tabItem { Label("Bible", systemImage: "book") }
+            } else {
+                NavigationStack {
+                    BooksView(books: BibleData.books)
+                        .navigationTitle("Bible")
+                }
+                .tabItem { Label("Bible", systemImage: "book") }
             }
-            .tabItem { Label("Bible", systemImage: "book") }
 
             NavigationStack {
                 SearchView()
@@ -68,7 +80,7 @@ struct ContentView: View {
         }
         .preferredColorScheme(preferredScheme)
         .dynamicTypeSize(preferredDynamicType ?? .large)
-        .font(preferredCustomFontName != nil ? .custom(preferredCustomFontName!, size: 19) : .body)
+        .font(preferredCustomFontName != nil ? .custom(preferredCustomFontName!, size: baseFontSize) : .system(size: baseFontSize))
         .fontDesign(preferredFontDesign ?? .default)
         .onAppear {
             // If app launches directly into active state, ensure we start tracking
@@ -95,6 +107,13 @@ struct ContentView: View {
                 break
             }
         }
+        .background(
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear { rootSize = proxy.size }
+                    .onChange(of: proxy.size) { _, newSize in rootSize = newSize }
+            }
+        )
     }
 }
 
