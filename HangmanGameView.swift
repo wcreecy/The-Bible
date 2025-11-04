@@ -1,6 +1,82 @@
 import SwiftUI
+import UIKit
 
 struct HangmanGameView: View {
+    // MARK: - Consistent modern button styles for games
+    private struct GameProminentButtonStyle: ButtonStyle {
+        var tint: Color = .accentColor
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(.headline)
+                .foregroundStyle(.white)
+                .padding(.vertical, 12)
+                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(tint)
+                        .shadow(color: .black.opacity(configuration.isPressed ? 0.05 : 0.12), radius: configuration.isPressed ? 2 : 6, x: 0, y: configuration.isPressed ? 1 : 3)
+                )
+                .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+                .animation(.spring(response: 0.25, dampingFraction: 0.8), value: configuration.isPressed)
+        }
+    }
+
+    private struct GameKeyButtonStyle: ButtonStyle {
+        var tint: Color
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(.headline)
+                .foregroundStyle(tint)
+                .padding(.vertical, 10)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(tint.opacity(configuration.isPressed ? 0.22 : 0.15))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(tint.opacity(0.35), lineWidth: configuration.isPressed ? 2 : 1)
+                )
+                .shadow(color: .black.opacity(0.05), radius: configuration.isPressed ? 1 : 2, x: 0, y: configuration.isPressed ? 0 : 1)
+                .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+                .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
+        }
+    }
+
+    private struct ModernPillButtonStyle: ButtonStyle {
+        var tint: Color = .accentColor
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(.headline)
+                .foregroundStyle(tint)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 14)
+                .background(
+                    .ultraThinMaterial,
+                    in: Capsule(style: .continuous)
+                )
+                .overlay(
+                    Capsule(style: .continuous)
+                        .stroke(tint.opacity(configuration.isPressed ? 0.6 : 0.35), lineWidth: configuration.isPressed ? 2 : 1)
+                )
+                .shadow(color: .black.opacity(configuration.isPressed ? 0.04 : 0.08), radius: configuration.isPressed ? 1 : 3, x: 0, y: configuration.isPressed ? 0 : 2)
+                .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+                .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
+        }
+    }
+
+    // MARK: - Font design mapping based on Settings
+    @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = "system"
+    private var appFontDesign: Font.Design? {
+        switch fontFamilyPreferenceRaw.lowercased() {
+        case "serif", "georgia": return .serif
+        case "rounded": return .rounded
+        case "monospaced": return .monospaced
+        default: return nil
+        }
+    }
+
     enum Theme: String, CaseIterable, Identifiable {
         case all = "All"
         case people = "People"
@@ -8,14 +84,24 @@ struct HangmanGameView: View {
         case books = "Books"
         var id: String { rawValue }
     }
+    enum Difficulty: String, CaseIterable, Identifiable {
+        case easy = "Easy"
+        case medium = "Medium"
+        case hard = "Hard"
+        var id: String { rawValue }
+    }
 
     @State private var started = false
     @State private var theme: Theme = .all
+    @State private var difficulty: Difficulty = .medium
 
     @State private var targetWord: String = ""
     @State private var displayWord: String = ""
 
     @State private var guessedLetters: Set<Character> = []
+    @State private var correctLetters: Set<Character> = []
+    @State private var wrongLetters: Set<Character> = []
+
     @State private var wrongGuesses: Int = 0
     @State private var maxWrong: Int = 7
 
@@ -23,6 +109,13 @@ struct HangmanGameView: View {
     @State private var answered: Int = 0
     @State private var roundOver: Bool = false
     @State private var didWin: Bool = false
+
+    @State private var currentStreak: Int = 0
+    @State private var currentBestStreak: Int = 0
+
+    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "hangmanAllTimeCorrect") }
+    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "hangmanAllTimeAnswered") }
+    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "hangmanAllTimeBestStreak") }
 
     @State private var loadedPeople: [BibleName] = []
     @State private var loadedPlaces: [BibleLocation] = []
@@ -33,6 +126,7 @@ struct HangmanGameView: View {
     @State private var navStartVerse: Int = 1
 
     @State private var currentRoundCategory: Theme = .books
+    @State private var tappedKey: Character? = nil
 
     private let alphabet: [Character] = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
@@ -44,7 +138,7 @@ struct HangmanGameView: View {
                     Text("Bible Hangman")
                         .font(.largeTitle)
                         .fontWeight(.heavy)
-                    Text("Guess the hidden word from a verse. Use the hint to help!")
+                    Text("Guess the person, place or book from the Bible")
                         .font(.body)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -58,29 +152,111 @@ struct HangmanGameView: View {
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
 
+                    Picker("Difficulty", selection: $difficulty) {
+                        ForEach(Difficulty.allCases) { d in
+                            Text(d.rawValue).tag(d)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal)
+
                     Button("Start") { startGame() }
-                        .buttonStyle(.borderedProminent)
-                        .font(.title2)
+                        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                        .controlSize(.large)
                         .frame(maxWidth: 240)
                     Spacer(minLength: 32)
                 } else {
-                    HStack {
-                        Label("Category: \(currentRoundCategory.rawValue)", systemImage: "tag")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                    // Hidden text field to capture hardware keyboard input on iPad
+                    TextField("", text: .constant(""))
+                        .textInputAutocapitalization(.characters)
+                        .keyboardType(.asciiCapable)
+                        .opacity(0.001)
+                        .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidChangeNotification)) { note in
+                            if let tf = note.object as? UITextField, let text = tf.text, let ch = text.last {
+                                // Clear field and process input
+                                tf.text = ""
+                                if ch.isLetter {
+                                    guess(ch)
+                                }
+                            }
+                        }
+
+                    HStack(alignment: .center, spacing: 12) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "tag.fill")
+                            Text(currentRoundCategory.rawValue.uppercased())
+                                .font(.headline)
+                                .fontWeight(.bold)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(
+                            .ultraThinMaterial,
+                            in: Capsule(style: .continuous)
+                        )
+                        .overlay(
+                            Capsule(style: .continuous)
+                                .strokeBorder(.separator.opacity(0.5), lineWidth: 1)
+                        )
+                        .foregroundStyle(.tint)
+
                         Spacer()
+
+                        HStack(spacing: 8) {
+                            if let ref = firstReferenceForCurrentTarget(), shouldShowReference() {
+                                Button {
+                                    openFirstReference(ref)
+                                } label: {
+                                    Text(ref)
+                                        .lineLimit(1)
+                                }
+                                .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                                .controlSize(.regular)
+                            }
+
+                            if roundOver {
+                                Button("Next") { nextRound() }
+                                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                                    .controlSize(.regular)
+                            }
+                        }
                     }
 
-                    // Stats
-                    HStack(spacing: 12) {
-                        statPill(title: "Correct", value: "\(score)", tint: .blue)
-                        statPill(title: "Total", value: "\(answered)", tint: .orange)
-                        statPill(title: "Percent", value: percentString(correct: score, answered: answered), tint: .purple)
+                    VStack(alignment: .leading, spacing: 8) {
+                        // Header labels
+                        HStack {
+                            Text("")
+                                .frame(width: 80, alignment: .leading)
+                            Text("Correct").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                            Text("Total").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                            Text("Streak").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                            Text("Percent").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        // Current session row
+                        HStack {
+                            Text("Current").font(.subheadline).frame(width: 80, alignment: .leading)
+                            Text("\(score)").frame(maxWidth: .infinity, alignment: .leading)
+                            Text("\(answered)").frame(maxWidth: .infinity, alignment: .leading)
+                            Text("\(currentBestStreak)")
+                                .foregroundStyle(currentStreak == currentBestStreak && currentBestStreak > 0 ? .green : .primary)
+                                .animation(.easeInOut(duration: 0.2), value: currentBestStreak)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text(percentString(correct: score, answered: answered)).frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        // All-time row
+                        HStack {
+                            Text("All-time").font(.subheadline).frame(width: 80, alignment: .leading)
+                            Text("\(allTimeCorrect)").frame(maxWidth: .infinity, alignment: .leading)
+                            Text("\(allTimeAnswered)").frame(maxWidth: .infinity, alignment: .leading)
+                            Text("\(allTimeBestStreak)").frame(maxWidth: .infinity, alignment: .leading)
+                            Text(percentString(correct: allTimeCorrect, answered: allTimeAnswered)).frame(maxWidth: .infinity, alignment: .leading)
+                        }
                     }
 
                     // Word Display
                     Text(spacedDisplayWord())
                         .font(.system(size: 36, weight: .semibold, design: .monospaced))
+                        .fontDesign(appFontDesign)
                         .padding(.top, 8)
                         .accessibilityLabel("Word to guess")
 
@@ -92,14 +268,36 @@ struct HangmanGameView: View {
                     // Keyboard
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 7), spacing: 6) {
                         ForEach(alphabet, id: \.self) { ch in
-                            Button(action: { guess(ch) }) {
+                            Button(action: {
+                                // Trigger a brief scale animation on the tapped key
+                                withAnimation(.spring(response: 0.18, dampingFraction: 0.65)) {
+                                    tappedKey = ch
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.16) {
+                                    withAnimation(.spring(response: 0.22, dampingFraction: 0.8)) {
+                                        tappedKey = nil
+                                    }
+                                }
+                                // Process the guess
+                                guess(ch)
+                            }) {
                                 Text(String(ch))
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 8)
                             }
-                            .buttonStyle(.bordered)
-                            .tint(.blue)
                             .disabled(guessedLetters.contains(ch) || roundOver)
+                            .scaleEffect(tappedKey == ch ? 1.08 : 1.0)
+                            .animation(.spring(response: 0.22, dampingFraction: 0.75), value: tappedKey)
+                            .buttonStyle(
+                                GameKeyButtonStyle(
+                                    tint: (
+                                        correctLetters.contains(ch) ? .green : (
+                                            wrongLetters.contains(ch) ? .red : .blue
+                                        )
+                                    )
+                                )
+                            )
+                            .opacity((guessedLetters.contains(ch) || roundOver) ? 0.5 : 1.0)
                         }
                     }
                     .padding(.top, 6)
@@ -109,30 +307,12 @@ struct HangmanGameView: View {
                             .font(.headline)
                             .foregroundStyle(didWin ? .green : .red)
                             .padding(.top, 8)
-
-                        if let ref = firstReferenceForCurrentTarget() {
-                            Button {
-                                openFirstReference(ref)
-                            } label: {
-                                HStack(spacing: 6) {
-                                    Image(systemName: "book")
-                                    Text(ref)
-                                }
-                            }
-                            .buttonStyle(.bordered)
-                            .tint(.blue)
-                            .padding(.top, 2)
-                        }
-
-                        Button("Next") { nextRound() }
-                            .buttonStyle(.borderedProminent)
-                            .font(.title2)
-                            .padding(.top, 4)
                     }
                 }
             }
             .padding()
         }
+        .fontDesign(appFontDesign)
         .navigationTitle("Hangman")
         .onAppear {
             Task {
@@ -155,6 +335,10 @@ struct HangmanGameView: View {
                 if loadedPlaces.isEmpty { loadedPlaces = await GameDataLoaders.loadLocationsAsync() }
                 score = 0
                 answered = 0
+                correctLetters.removeAll()
+                wrongLetters.removeAll()
+                currentStreak = 0
+                currentBestStreak = 0
                 started = true
                 nextRound()
             }
@@ -162,6 +346,10 @@ struct HangmanGameView: View {
         }
         score = 0
         answered = 0
+        correctLetters.removeAll()
+        wrongLetters.removeAll()
+        currentStreak = 0
+        currentBestStreak = 0
         started = true
         nextRound()
     }
@@ -169,6 +357,8 @@ struct HangmanGameView: View {
     private func nextRound(resetScore: Bool = false) {
         guessedLetters = []
         wrongGuesses = 0
+        correctLetters.removeAll()
+        wrongLetters.removeAll()
         roundOver = false
         didWin = false
         generateRound()
@@ -184,6 +374,10 @@ struct HangmanGameView: View {
         guard !guessedLetters.contains(upper) else { return }
         guessedLetters.insert(upper)
 
+        // Haptics setup
+        let light = UIImpactFeedbackGenerator(style: .light)
+        let heavy = UIImpactFeedbackGenerator(style: .heavy)
+
         let upperTarget = targetWord.uppercased()
         if upperTarget.contains(upper) {
             // Reveal letters
@@ -196,8 +390,12 @@ struct HangmanGameView: View {
                 }
             }
             displayWord = String(chars)
+            correctLetters.insert(upper)
+            light.impactOccurred()
             checkWin()
         } else {
+            wrongLetters.insert(upper)
+            heavy.impactOccurred()
             wrongGuesses += 1
             if wrongGuesses >= maxWrong {
                 endRound(win: false)
@@ -216,6 +414,30 @@ struct HangmanGameView: View {
         didWin = win
         answered += 1
         if win { score += 1 }
+
+        if win {
+            currentStreak += 1
+            if currentStreak > currentBestStreak {
+                currentBestStreak = currentStreak
+                // Optional haptic feedback on new best streak
+                let generator = UINotificationFeedbackGenerator()
+                generator.notificationOccurred(.success)
+            }
+            updateAllTime(correct: 1, answered: 1, streak: currentBestStreak)
+        } else {
+            currentStreak = 0
+            updateAllTime(correct: 0, answered: 1, streak: currentBestStreak)
+        }
+    }
+
+    private func updateAllTime(correct addCorrect: Int, answered addAnswered: Int, streak: Int) {
+        let defaults = UserDefaults.standard
+        let newCorrect = allTimeCorrect + addCorrect
+        let newAnswered = allTimeAnswered + addAnswered
+        let newBest = max(allTimeBestStreak, streak)
+        defaults.set(newCorrect, forKey: "hangmanAllTimeCorrect")
+        defaults.set(newAnswered, forKey: "hangmanAllTimeAnswered")
+        defaults.set(newBest, forKey: "hangmanAllTimeBestStreak")
     }
 
     private func generateRound() {
@@ -303,6 +525,20 @@ struct HangmanGameView: View {
         guard answered > 0 else { return "0%" }
         let pct = Int(round((Double(correct) / Double(answered)) * 100.0))
         return "\(pct)%"
+    }
+
+    private func shouldShowReference() -> Bool {
+        switch difficulty {
+        case .easy:
+            // Always show during an active round
+            return started && !targetWord.isEmpty && !displayWord.isEmpty
+        case .medium:
+            // Show when down to two remaining guesses
+            return roundOver || wrongGuesses >= maxWrong - 2
+        case .hard:
+            // Only after the round ends (win or lose)
+            return roundOver
+        }
     }
 
     private func firstReferenceForCurrentTarget() -> String? {

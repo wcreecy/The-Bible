@@ -6,6 +6,48 @@ import UIKit
 #endif
 
 struct QuizView: View {
+    // Consistent modern button styles (matching Hangman)
+    private struct GameProminentButtonStyle: ButtonStyle {
+        var tint: Color = .accentColor
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(.headline)
+                .foregroundStyle(.white)
+                .padding(.vertical, 12)
+                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(tint)
+                        .shadow(color: .black.opacity(configuration.isPressed ? 0.05 : 0.12), radius: configuration.isPressed ? 2 : 6, x: 0, y: configuration.isPressed ? 1 : 3)
+                )
+                .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+                .animation(.spring(response: 0.25, dampingFraction: 0.8), value: configuration.isPressed)
+        }
+    }
+
+    private struct ModernPillButtonStyle: ButtonStyle {
+        var tint: Color = .accentColor
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(.headline)
+                .foregroundStyle(tint)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 14)
+                .background(
+                    .ultraThinMaterial,
+                    in: Capsule(style: .continuous)
+                )
+                .overlay(
+                    Capsule(style: .continuous)
+                        .stroke(tint.opacity(configuration.isPressed ? 0.6 : 0.35), lineWidth: configuration.isPressed ? 2 : 1)
+                )
+                .shadow(color: .black.opacity(configuration.isPressed ? 0.04 : 0.08), radius: configuration.isPressed ? 1 : 3, x: 0, y: configuration.isPressed ? 0 : 2)
+                .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+                .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
+        }
+    }
+    
     @AppStorage("quizScope") private var quizScopeRaw: String = "whole"
     @AppStorage("quizDifficulty") private var quizDifficulty: String = "easy"
     
@@ -148,8 +190,8 @@ struct QuizView: View {
                     Button("Start") {
                         startQuiz()
                     }
-                    .buttonStyle(.borderedProminent)
-                    .font(.title2)
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                    .controlSize(.large)
                     .frame(maxWidth: 240)
                     Spacer(minLength: 48)
                 } else {
@@ -310,7 +352,8 @@ struct QuizView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 if started && selectedOption != nil {
                     Button("Next Question") { showNext() }
-                        .buttonStyle(.borderedProminent)
+                        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                        .controlSize(.regular)
                 }
             }
         }
@@ -608,3 +651,4 @@ struct QuizView: View {
         QuizView()
     }
 }
+

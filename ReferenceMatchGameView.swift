@@ -1,10 +1,59 @@
 import SwiftUI
 
 struct ReferenceMatchGameView: View {
+    // Consistent modern button styles (matching Hangman)
+    private struct GameProminentButtonStyle: ButtonStyle {
+        var tint: Color = .accentColor
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(.headline)
+                .foregroundStyle(.white)
+                .padding(.vertical, 12)
+                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(tint)
+                        .shadow(color: .black.opacity(configuration.isPressed ? 0.05 : 0.12), radius: configuration.isPressed ? 2 : 6, x: 0, y: configuration.isPressed ? 1 : 3)
+                )
+                .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+                .animation(.spring(response: 0.25, dampingFraction: 0.8), value: configuration.isPressed)
+        }
+    }
+
+    private struct ModernPillButtonStyle: ButtonStyle {
+        var tint: Color = .accentColor
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(.headline)
+                .foregroundStyle(tint)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 14)
+                .background(
+                    .ultraThinMaterial,
+                    in: Capsule(style: .continuous)
+                )
+                .overlay(
+                    Capsule(style: .continuous)
+                        .stroke(tint.opacity(configuration.isPressed ? 0.6 : 0.35), lineWidth: configuration.isPressed ? 2 : 1)
+                )
+                .shadow(color: .black.opacity(configuration.isPressed ? 0.04 : 0.08), radius: configuration.isPressed ? 1 : 3, x: 0, y: configuration.isPressed ? 0 : 2)
+                .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+                .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
+        }
+    }
+
     @State private var started = false
     @State private var questionNumber: Int = 0
     @State private var score: Int = 0
     @State private var answered: Int = 0
+
+    @State private var currentStreak: Int = 0
+    @State private var currentBestStreak: Int = 0
+
+    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "refmatchAllTimeCorrect") }
+    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "refmatchAllTimeAnswered") }
+    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "refmatchAllTimeBestStreak") }
 
     @State private var refBook: Book? = nil
     @State private var refChapter: Chapter? = nil
@@ -19,7 +68,7 @@ struct ReferenceMatchGameView: View {
             VStack(spacing: 16) {
                 if !started {
                     Spacer(minLength: 32)
-                    Text("Reference Match")
+                    Text("Verse Match")
                         .font(.largeTitle)
                         .fontWeight(.heavy)
                     Text("Choose the verse text that matches the reference.")
@@ -28,16 +77,40 @@ struct ReferenceMatchGameView: View {
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
                     Button("Start") { startGame() }
-                        .buttonStyle(.borderedProminent)
-                        .font(.title2)
+                        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                        .controlSize(.large)
                         .frame(maxWidth: 240)
                     Spacer(minLength: 32)
                 } else {
-                    // Stats
-                    HStack(spacing: 12) {
-                        statPill(title: "Correct", value: "\(score)", tint: .blue)
-                        statPill(title: "Total", value: "\(answered)", tint: .orange)
-                        statPill(title: "Percent", value: percentString(correct: score, answered: answered), tint: .purple)
+                    VStack(alignment: .leading, spacing: 8) {
+                        // Header labels
+                        HStack {
+                            Text("")
+                                .frame(width: 80, alignment: .leading)
+                            Text("Correct").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                            Text("Total").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                            Text("Streak").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                            Text("Percent").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        // Current session row
+                        HStack {
+                            Text("Current").font(.subheadline).frame(width: 80, alignment: .leading)
+                            Text("\(score)").frame(maxWidth: .infinity, alignment: .leading)
+                            Text("\(answered)").frame(maxWidth: .infinity, alignment: .leading)
+                            Text("\(currentBestStreak)")
+                                .foregroundStyle(currentStreak == currentBestStreak && currentBestStreak > 0 ? .green : .primary)
+                                .animation(.easeInOut(duration: 0.2), value: currentBestStreak)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text(percentString(correct: score, answered: answered)).frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        // All-time row
+                        HStack {
+                            Text("All-time").font(.subheadline).frame(width: 80, alignment: .leading)
+                            Text("\(allTimeCorrect)").frame(maxWidth: .infinity, alignment: .leading)
+                            Text("\(allTimeAnswered)").frame(maxWidth: .infinity, alignment: .leading)
+                            Text("\(allTimeBestStreak)").frame(maxWidth: .infinity, alignment: .leading)
+                            Text(percentString(correct: allTimeCorrect, answered: allTimeAnswered)).frame(maxWidth: .infinity, alignment: .leading)
+                        }
                     }
 
                     // Reference card
@@ -95,12 +168,14 @@ struct ReferenceMatchGameView: View {
             }
             .padding()
         }
-        .navigationTitle("Reference Match")
+        .navigationTitle("Verse Match")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 if started {
                     Button("Next") { nextQuestion() }
                         .disabled(selectedOption == nil)
+                        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                        .controlSize(.regular)
                 }
             }
         }
@@ -109,6 +184,8 @@ struct ReferenceMatchGameView: View {
     private func startGame() {
         score = 0
         answered = 0
+        currentStreak = 0
+        currentBestStreak = 0
         questionNumber = 0
         started = true
         generateQuestion()
@@ -125,6 +202,19 @@ struct ReferenceMatchGameView: View {
         selectedOption = opt
         answered += 1
         if opt == correctOption { score += 1 }
+
+        if opt == correctOption {
+            currentStreak += 1
+            if currentStreak > currentBestStreak {
+                currentBestStreak = currentStreak
+                let generator = UINotificationFeedbackGenerator()
+                generator.notificationOccurred(.success)
+            }
+            updateAllTime(correct: 1, answered: 1, streak: currentBestStreak)
+        } else {
+            currentStreak = 0
+            updateAllTime(correct: 0, answered: 1, streak: currentBestStreak)
+        }
     }
 
     private func generateQuestion() {
@@ -195,6 +285,16 @@ struct ReferenceMatchGameView: View {
         )
     }
 
+    private func updateAllTime(correct addCorrect: Int, answered addAnswered: Int, streak: Int) {
+        let defaults = UserDefaults.standard
+        let newCorrect = allTimeCorrect + addCorrect
+        let newAnswered = allTimeAnswered + addAnswered
+        let newBest = max(allTimeBestStreak, streak)
+        defaults.set(newCorrect, forKey: "refmatchAllTimeCorrect")
+        defaults.set(newAnswered, forKey: "refmatchAllTimeAnswered")
+        defaults.set(newBest, forKey: "refmatchAllTimeBestStreak")
+    }
+
     private func percentString(correct: Int, answered: Int) -> String {
         guard answered > 0 else { return "0%" }
         let pct = Int(round((Double(correct) / Double(answered)) * 100.0))
@@ -205,3 +305,4 @@ struct ReferenceMatchGameView: View {
 #Preview {
     NavigationStack { ReferenceMatchGameView() }
 }
+

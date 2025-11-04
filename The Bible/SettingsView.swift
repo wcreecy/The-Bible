@@ -188,7 +188,7 @@ struct SettingsView: View {
                 Button(role: .destructive) {
                     showingResetQuizAlert = true
                 } label: {
-                    Label("Reset All-time Quiz Stats", systemImage: "trash")
+                    Label("Reset All-time Game Stats", systemImage: "trash")
                 }
                 .alert("Reset All-time Stats?", isPresented: $showingResetQuizAlert) {
                     Button("Cancel", role: .cancel) {}
@@ -202,6 +202,14 @@ struct SettingsView: View {
                         UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect_hard")
                         UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered_hard")
                         UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak_hard")
+                        // Hangman all-time
+                        UserDefaults.standard.set(0, forKey: "hangmanAllTimeCorrect")
+                        UserDefaults.standard.set(0, forKey: "hangmanAllTimeAnswered")
+                        UserDefaults.standard.set(0, forKey: "hangmanAllTimeBestStreak")
+                        // Reference Match all-time
+                        UserDefaults.standard.set(0, forKey: "refmatchAllTimeCorrect")
+                        UserDefaults.standard.set(0, forKey: "refmatchAllTimeAnswered")
+                        UserDefaults.standard.set(0, forKey: "refmatchAllTimeBestStreak")
                     }
                 } message: {
                     Text("Your all-time quiz scores will be reset. Would you like to continue?")
@@ -429,3 +437,4 @@ struct SettingsView: View {
 #Preview {
     NavigationStack { SettingsView() }
 }
+

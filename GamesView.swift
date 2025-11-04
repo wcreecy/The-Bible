@@ -13,7 +13,7 @@ struct GamesView: View {
                             .foregroundStyle(.blue)
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Bible Quiz").font(.headline)
-                            Text("Guess the book from a verse").font(.subheadline).foregroundStyle(.secondary)
+                            Text("Guess which book the given verse is from").font(.subheadline).foregroundStyle(.secondary)
                         }
                     }
                 }
@@ -27,20 +27,20 @@ struct GamesView: View {
                             .foregroundStyle(.teal)
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Hangman").font(.headline)
-                            Text("Guess a word from a verse").font(.subheadline).foregroundStyle(.secondary)
+                            Text("Guess a person, place or book from the Bible").font(.subheadline).foregroundStyle(.secondary)
                         }
                     }
                 }
                 
                 NavigationLink {
                     ReferenceMatchGameView()
-                        .navigationTitle("Reference Match")
+                        .navigationTitle("Verse Match")
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "text.quote")
                             .foregroundStyle(.orange)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Reference Match").font(.headline)
+                            Text("Verse Match").font(.headline)
                             Text("Match the verse to its reference").font(.subheadline).foregroundStyle(.secondary)
                         }
                     }
