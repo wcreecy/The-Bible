@@ -169,7 +169,7 @@ struct ReadingView: View {
                         if menuVerse == verse.number {
                             HStack(spacing: 24) {
                                 Button(action: {
-                                    let share = "\"\(verse.text)\" — \(currentBook.name) \(currentChapter.number):\(verse.number)"
+                                    let share = shareText(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number, text: verse.text)
                                     UIPasteboard.general.string = share
                                     favoriteToastSymbol = "doc.on.doc"
                                     favoriteToastTint = .blue
@@ -181,7 +181,7 @@ struct ReadingView: View {
                                     withAnimation(.easeInOut) { menuVerse = nil }
                                 }) { Image(systemName: "doc.on.doc") }
                                     .foregroundStyle(.blue)
-                                ShareLink(item: "\"\(verse.text)\" — \(currentBook.name) \(currentChapter.number):\(verse.number)") {
+                                ShareLink(item: shareText(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number, text: verse.text)) {
                                     Image(systemName: "square.and.arrow.up")
                                 }
                                 .foregroundStyle(.blue)
@@ -202,7 +202,7 @@ struct ReadingView: View {
                                         removeBookmark(for: verse)
                                         favoriteToastSymbol = "bookmark.slash.fill"
                                         favoriteToastTint = .red
-                                        favoriteToastText = "Removed from Favorites"
+                                        favoriteToastText = "Removed Bookmark"
                                         withAnimation(.spring()) { showFavoriteToast = true }
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                             withAnimation(.easeOut) { showFavoriteToast = false }

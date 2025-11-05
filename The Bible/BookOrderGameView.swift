@@ -61,23 +61,25 @@ struct BookOrderGameView: View {
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
 
+                    // Source on top: OT/NT, OT, NT
+                    Picker("Source", selection: $vm.source) {
+                        Text("OT/NT").tag(BookSourceScope.both)
+                        Text("OT").tag(BookSourceScope.ot)
+                        Text("NT").tag(BookSourceScope.nt)
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal)
+
+                    // Difficulty below: Easy, Normal, Hard, All Books
                     Picker("Difficulty", selection: $vm.difficulty) {
                         ForEach(BookOrderDifficulty.allCases) { difficulty in
                             switch difficulty {
                             case .easy: Text("Easy").tag(difficulty)
                             case .normal: Text("Normal").tag(difficulty)
                             case .hard: Text("Hard").tag(difficulty)
-                            case .all: Text("All").tag(difficulty)
+                            case .all: Text("All Books").tag(difficulty)
                             }
                         }
-                    }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal)
-
-                    Picker("Source", selection: $vm.source) {
-                        Text("Both").tag(BookSourceScope.both)
-                        Text("OT").tag(BookSourceScope.ot)
-                        Text("NT").tag(BookSourceScope.nt)
                     }
                     .pickerStyle(.segmented)
                     .padding(.horizontal)

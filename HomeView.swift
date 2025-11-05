@@ -5,6 +5,22 @@ import UserNotifications
 import AudioToolbox
 import UIKit
 import HealthKit
+import Foundation
+
+private enum VerseScope: String { case old, new, whole, book }
+private let oldTestamentBooks: Set<String> = [
+    "Genesis","Exodus","Leviticus","Numbers","Deuteronomy",
+    "Joshua","Judges","Ruth",
+    "1 Samuel","2 Samuel",
+    "1 Kings","2 Kings",
+    "1 Chronicles","2 Chronicles",
+    "Ezra","Nehemiah","Esther",
+    "Job","Psalms","Proverbs","Ecclesiastes","Song of Solomon",
+    "Isaiah","Jeremiah","Lamentations","Ezekiel","Daniel",
+    "Hosea","Joel","Amos","Obadiah","Jonah",
+    "Micah","Nahum","Habakkuk","Zephaniah",
+    "Haggai","Zechariah","Malachi"
+]
 
 struct HomeView: View {
     @Query private var progressList: [ReadingProgress]
@@ -27,6 +43,8 @@ struct HomeView: View {
     @AppStorage("mindfulSessionStartDate") private var mindfulStartDate: Double = 0
     @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
 
+    @AppStorage("didRequestNotifications") private var didRequestNotifications: Bool = false
+
     @State private var showFinishedAlert: Bool = false
     @State private var finishHapticTimer: Timer? = nil
 
@@ -45,6 +63,13 @@ struct HomeView: View {
 
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.horizontalSizeClass) private var hSize
+
+    private let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+
+    private static let sharedGridColumns: [GridItem] = [GridItem(.flexible())]
+    private static let notificationID = "PrayerStudyTimerFinished"
+    private static let notificationTitle = "Prayer/Study Finished"
+    private static let notificationBody = "Your prayer/study timer has completed."
 
     private var selectedFinishSoundID: SystemSoundID {
         (TimerSound(rawValue: timerSoundSelection) ?? .default).systemSoundID
@@ -78,9 +103,7 @@ struct HomeView: View {
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
     private var iPadCardHeight: CGFloat { 200 }
 
-    private var gridColumns: [GridItem] {
-        return [GridItem(.flexible())]
-    }
+    private var gridColumns: [GridItem] { Self.sharedGridColumns }
 
     var progress: ReadingProgress? {
         progressList.first
@@ -155,7 +178,7 @@ struct HomeView: View {
                                 .font(.title3)
                                 .help("Copy")
 
-                                ShareLink(item: shareText(for: v)) {
+                                ShareLink(item: shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText)) {
                                     Image(systemName: "square.and.arrow.up")
                                 }
                                 .font(.title3)
@@ -200,7 +223,7 @@ struct HomeView: View {
                                 Label("Copy", systemImage: "doc.on.doc")
                             }
 
-                            ShareLink(item: shareText(for: v)) {
+                            ShareLink(item: shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText)) {
                                 Label("Share", systemImage: "square.and.arrow.up")
                             }
                         }
@@ -369,7 +392,10 @@ struct HomeView: View {
         .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
         .onAppear {
             // Request notification permission once
-            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
+            if !didRequestNotifications {
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
+                didRequestNotifications = true
+            }
 
             // Restore persisted state
             isTimerRunning = storedRunning
@@ -411,7 +437,7 @@ struct HomeView: View {
                 }
             }
         }
-        .onReceive(Timer.publish(every: 60, on: .main, in: .common).autoconnect()) { _ in
+        .onReceive(minuteTimer) { _ in
             // Update a marker to trigger view refresh for time-based changes (e.g., after 6 PM)
             timeMarker = (timeMarker + 1) % 60
         }
@@ -498,12 +524,7 @@ struct HomeView: View {
         }
     }
 
-    private func stopTimer() {
-        // End global mindful logging if app is not active; if active, continue logging app-open time
-        if scenePhase != .active {
-            stopMindfulLogging()
-        }
-
+    private func resetTimerState() {
         isTimerRunning = false
         isPaused = false
         remainingSeconds = 0
@@ -514,6 +535,15 @@ struct HomeView: View {
         storedRemainingWhenPaused = 0
         storedTotalSeconds = 0
         storedStartDate = 0
+    }
+
+    private func stopTimer() {
+        // End global mindful logging if app is not active; if active, continue logging app-open time
+        if scenePhase != .active {
+            stopMindfulLogging()
+        }
+
+        resetTimerState()
 
         cancelNotification()
         stopFinishAlerts()
@@ -534,21 +564,21 @@ struct HomeView: View {
     private func scheduleNotification(at date: Date) {
         let center = UNUserNotificationCenter.current()
         // Remove any existing pending timer notification
-        center.removePendingNotificationRequests(withIdentifiers: ["PrayerStudyTimerFinished"])
+        center.removePendingNotificationRequests(withIdentifiers: [Self.notificationID])
 
         let content = UNMutableNotificationContent()
-        content.title = "Prayer/Study Finished"
-        content.body = "Your prayer/study timer has completed."
+        content.title = Self.notificationTitle
+        content.body = Self.notificationBody
         content.sound = .default
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(1, date.timeIntervalSinceNow), repeats: false)
-        let request = UNNotificationRequest(identifier: "PrayerStudyTimerFinished", content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: Self.notificationID, content: content, trigger: trigger)
         center.add(request, withCompletionHandler: nil)
     }
 
     private func cancelNotification() {
         let center = UNUserNotificationCenter.current()
-        center.removePendingNotificationRequests(withIdentifiers: ["PrayerStudyTimerFinished"])
+        center.removePendingNotificationRequests(withIdentifiers: [Self.notificationID])
     }
 
     private func handleTimerFinished() {
@@ -560,15 +590,7 @@ struct HomeView: View {
             stopMindfulLogging()
         }
 
-        isTimerRunning = false
-        storedRunning = false
-        isPaused = false
-        storedPaused = false
-        remainingSeconds = 0
-        storedEndDate = 0
-        storedRemainingWhenPaused = 0
-        storedTotalSeconds = 0
-        storedStartDate = 0
+        resetTimerState()
 
         // Start foreground alert with repeating vibration if alert is shown
         showFinishedAlert = true
@@ -577,15 +599,17 @@ struct HomeView: View {
 
     private func startFinishAlerts() {
         stopFinishAlerts()
+        // Cache the selected sound ID to avoid capturing self in the timer closure
+        let soundID = selectedFinishSoundID
         // Repeating sound + vibration every 1.5 seconds while alert is shown
         finishHapticTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { _ in
             // Play audible system sound
-            AudioServicesPlaySystemSound(selectedFinishSoundID)
+            AudioServicesPlaySystemSound(soundID)
             // Vibrate
             AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
         }
         // Also play immediately
-        AudioServicesPlaySystemSound(selectedFinishSoundID)
+        AudioServicesPlaySystemSound(soundID)
         AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
     }
 
@@ -598,30 +622,14 @@ struct HomeView: View {
         let allBooks = BibleData.books
         guard !allBooks.isEmpty else { return }
 
-        // Define Old Testament book names
-        let oldTestament: Set<String> = [
-            "Genesis","Exodus","Leviticus","Numbers","Deuteronomy",
-            "Joshua","Judges","Ruth",
-            "1 Samuel","2 Samuel",
-            "1 Kings","2 Kings",
-            "1 Chronicles","2 Chronicles",
-            "Ezra","Nehemiah","Esther",
-            "Job","Psalms","Proverbs","Ecclesiastes","Song of Solomon",
-            "Isaiah","Jeremiah","Lamentations","Ezekiel","Daniel",
-            "Hosea","Joel","Amos","Obadiah","Jonah",
-            "Micah","Nahum","Habakkuk","Zephaniah",
-            "Haggai","Zechariah","Malachi"
-        ]
-
-        enum VerseScope: String { case old, new, whole, book }
         let scope = VerseScope(rawValue: verseScopeRaw) ?? .whole
 
         let books: [Book]
         switch scope {
         case .old:
-            books = allBooks.filter { oldTestament.contains($0.name) }
+            books = allBooks.filter { oldTestamentBooks.contains($0.name) }
         case .new:
-            books = allBooks.filter { !oldTestament.contains($0.name) }
+            books = allBooks.filter { !oldTestamentBooks.contains($0.name) }
         case .whole:
             books = allBooks
         case .book:
@@ -637,12 +645,8 @@ struct HomeView: View {
         verseOfDay = VerseRef(bookName: book.name, chapterNumber: chapter.number, verseNumber: verse.number, verseText: verse.text)
     }
 
-    private func shareText(for v: VerseRef) -> String {
-        "\"\(v.verseText)\" — \(v.bookName) \(v.chapterNumber):\(v.verseNumber)"
-    }
-
     private func copyVerse(_ v: VerseRef) {
-        UIPasteboard.general.string = shareText(for: v)
+        UIPasteboard.general.string = shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText)
         withAnimation(.spring()) { showCopyToast = true }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
             withAnimation(.easeOut) { showCopyToast = false }

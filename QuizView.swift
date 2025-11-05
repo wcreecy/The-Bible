@@ -172,17 +172,23 @@ struct QuizView: View {
                             Text("Verse Source")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            SegmentedPicker(options: ["old", "new", "whole"], titleForOption: { opt in
-                                switch opt { case "old": return "OT"; case "new": return "NT"; default: return "Both" }
-                            }, selection: Binding<String>(get: { quizScopeRaw }, set: { quizScopeRaw = $0 }))
+                            Picker("Verse Source", selection: Binding<String>(get: { quizScopeRaw }, set: { quizScopeRaw = $0 })) {
+                                Text("OT/NT").tag("whole")
+                                Text("OT").tag("old")
+                                Text("NT").tag("new")
+                            }
+                            .pickerStyle(.segmented)
                         }
                         VStack(spacing: 6) {
                             Text("Difficulty")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            SegmentedPicker(options: ["easy", "normal", "hard"], titleForOption: { opt in
-                                switch opt { case "easy": return "Easy"; case "normal": return "Medium"; default: return "Hard" }
-                            }, selection: Binding<String>(get: { quizDifficulty }, set: { quizDifficulty = $0 }))
+                            Picker("Difficulty", selection: Binding<String>(get: { quizDifficulty }, set: { quizDifficulty = $0 })) {
+                                Text("Easy").tag("easy")
+                                Text("Medium").tag("normal")
+                                Text("Hard").tag("hard")
+                            }
+                            .pickerStyle(.segmented)
                         }
                     }
                     .padding(.horizontal)

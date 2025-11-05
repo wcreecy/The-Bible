@@ -47,6 +47,8 @@ struct ReferenceMatchGameView: View {
     @State private var difficulty: Difficulty = .medium
 
     @State private var started = false
+    @AppStorage("refmatchScope") private var verseScopeRaw: String = "whole"
+
     @State private var questionNumber: Int = 0
     @State private var score: Int = 0
     @State private var answered: Int = 0
@@ -82,6 +84,21 @@ struct ReferenceMatchGameView: View {
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
+
+                    VStack(spacing: 6) {
+                        Text("Verse Source")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Picker("Verse Source", selection: Binding<String>(
+                            get: { verseScopeRaw },
+                            set: { verseScopeRaw = $0 }
+                        )) {
+                            Text("OT/NT").tag("whole")
+                            Text("OT").tag("old")
+                            Text("NT").tag("new")
+                        }
+                        .pickerStyle(.segmented)
+                    }
 
                     Picker("Difficulty", selection: $difficulty) {
                         ForEach(Difficulty.allCases) { d in
@@ -193,7 +210,7 @@ struct ReferenceMatchGameView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 if started {
-                    Button("Next") { 
+                    Button("Next") {
                         if currentIndex < history.count - 1 { currentIndex += 1; loadFromHistory() }
                         else { nextQuestion() }
                     }
@@ -247,8 +264,36 @@ struct ReferenceMatchGameView: View {
     }
 
     private func generateQuestion() {
-        // Choose a random reference
-        guard let book = BibleData.books.randomElement(),
+        // Define Old and New Testament sets
+        let oldTestamentSet: Set<String> = [
+            "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
+            "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings",
+            "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job",
+            "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah",
+            "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel",
+            "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk",
+            "Zephaniah", "Haggai", "Zechariah", "Malachi"
+        ]
+        let newTestamentSet: Set<String> = [
+            "Matthew", "Mark", "Luke", "John", "Acts", "Romans",
+            "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians",
+            "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians",
+            "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews",
+            "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John",
+            "Jude", "Revelation"
+        ]
+
+        var filteredBooks: [Book]
+        switch verseScopeRaw {
+        case "old":
+            filteredBooks = BibleData.books.filter { oldTestamentSet.contains($0.name) }
+        case "new":
+            filteredBooks = BibleData.books.filter { newTestamentSet.contains($0.name) }
+        default:
+            filteredBooks = BibleData.books
+        }
+
+        guard let book = filteredBooks.randomElement(),
               let chapter = book.chapters.randomElement(),
               let verse = chapter.verses.randomElement() else {
             refBook = nil; refChapter = nil; refVerse = nil; options = []; correctOption = ""; return
