@@ -144,6 +144,8 @@ struct ReadingView: View {
                             }
                         }
                         .onLongPressGesture(minimumDuration: 0.5) {
+                            let generator = UIImpactFeedbackGenerator(style: .heavy)
+                            generator.impactOccurred()
                             menuVerse = verse.number
                         }
                         .contentShape(Rectangle())

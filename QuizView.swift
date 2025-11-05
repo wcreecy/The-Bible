@@ -151,6 +151,9 @@ struct QuizView: View {
     @State private var history: [QuizQuestion] = []
     @State private var currentIndex: Int = -1
     
+    @State private var howToExpanded: Bool = false
+    @State private var difficultyExpanded: Bool = false
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -161,6 +164,35 @@ struct QuizView: View {
                         .multilineTextAlignment(.center)
                         .foregroundColor(.secondary)
                         .padding(.horizontal)
+                    
+                    VStack(alignment: .leading, spacing: 10) {
+                        GroupBox {
+                            DisclosureGroup(isExpanded: $howToExpanded) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("• Pick a verse source and difficulty, then tap Start.")
+                                    Text("• Read the verse, then choose the correct book from the options.")
+                                    Text("• In timed modes, answer before the clock runs out.")
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            } label: {
+                                Text("How to Play").font(.headline)
+                            }
+                        }
+
+                        GroupBox {
+                            DisclosureGroup(isExpanded: $difficultyExpanded) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("• Easy: No timer; options from the whole scope.")
+                                    Text("• Medium: 30 seconds per question.")
+                                    Text("• Hard: 20 seconds; wrong options are from the same testament to increase challenge.")
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            } label: {
+                                Text("Difficulty Levels").font(.headline)
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
                     
                     VStack(alignment: .center, spacing: 12) {
                         VStack(spacing: 6) {
@@ -653,3 +685,4 @@ struct QuizView: View {
         QuizView()
     }
 }
+

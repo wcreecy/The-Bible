@@ -2,6 +2,8 @@ import SwiftUI
 
 struct BookOrderGameView: View {
     @StateObject private var vm = BookOrderGameViewModel()
+    @State private var howToExpanded: Bool = false
+    @State private var difficultyExpanded: Bool = false
 
     struct GameProminentButtonStyle: ButtonStyle {
         var tint: Color = .accentColor
@@ -57,6 +59,36 @@ struct BookOrderGameView: View {
                         .font(.title3)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        GroupBox {
+                            DisclosureGroup(isExpanded: $howToExpanded) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("• Choose a source (OT/NT) and difficulty, then tap Start.")
+                                    Text("• Drag the rows to arrange the books in canonical order.")
+                                    Text("• Tap Check to see results; then tap Next for a new round.")
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            } label: {
+                                Text("How to Play").font(.headline)
+                            }
+                        }
+
+                        GroupBox {
+                            DisclosureGroup(isExpanded: $difficultyExpanded) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("• Easy: Arrange 5 books.")
+                                    Text("• Normal: Arrange 10 books.")
+                                    Text("• Hard: Arrange 15 books.")
+                                    Text("• All Books: Arrange the entire selected canon.")
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            } label: {
+                                Text("Difficulty Levels").font(.headline)
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
 
                     // Source on top: OT/NT, OT, NT
                     Picker("Source", selection: $vm.source) {

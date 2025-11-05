@@ -49,6 +49,8 @@ struct BeatTheClockGameView: View {
     enum Category: String, CaseIterable, Identifiable { case people = "People", places = "Places", both = "Both"; var id: String { rawValue } }
 
     @State private var started: Bool = false
+    @State private var howToExpanded: Bool = false
+    @State private var difficultyExpanded: Bool = false
     @State private var difficulty: Difficulty = .medium
     @State private var category: Category = .people
 
@@ -111,6 +113,35 @@ struct BeatTheClockGameView: View {
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        GroupBox {
+                            DisclosureGroup(isExpanded: $howToExpanded) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("• Choose a category and difficulty, then tap Start.")
+                                    Text("• You'll see a person or place; type a Bible book that mentions it.")
+                                    Text("• Submit before the timer hits zero. Suggestions appear as you type.")
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            } label: {
+                                Text("How to Play").font(.headline)
+                            }
+                        }
+
+                        GroupBox {
+                            DisclosureGroup(isExpanded: $difficultyExpanded) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("• Easy: No timer pressure; focus on accuracy.")
+                                    Text("• Medium: 10 seconds per round.")
+                                    Text("• Hard: 7 seconds per round; wrong options are more similar.")
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            } label: {
+                                Text("Difficulty Levels").font(.headline)
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
 
                     Picker("Category", selection: $category) {
                         Text("People").tag(Category.people)
@@ -482,4 +513,3 @@ struct BeatTheClockGameView: View {
 #Preview {
     NavigationStack { BeatTheClockGameView() }
 }
-

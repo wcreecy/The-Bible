@@ -92,6 +92,9 @@ struct HangmanGameView: View {
     }
 
     @State private var started = false
+    @State private var howToExpanded: Bool = false
+    @State private var difficultyExpanded: Bool = false
+
     @State private var theme: Theme = .all
     @State private var difficulty: Difficulty = .medium
 
@@ -165,6 +168,35 @@ struct HangmanGameView: View {
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        GroupBox {
+                            DisclosureGroup(isExpanded: $howToExpanded) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("• Pick a theme and difficulty, then tap Start.")
+                                    Text("• Guess letters using the on-screen keyboard (hardware keyboard is supported on iPad).")
+                                    Text("• You have a limited number of mistakes. Reveal the word before you run out!")
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            } label: {
+                                Text("How to Play").font(.headline)
+                            }
+                        }
+
+                        GroupBox {
+                            DisclosureGroup(isExpanded: $difficultyExpanded) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("• Easy: A scripture reference is shown during the round to help.")
+                                    Text("• Medium: The reference appears after 3 wrong guesses.")
+                                    Text("• Hard: The reference is only shown after the round ends.")
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            } label: {
+                                Text("Difficulty Levels").font(.headline)
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
 
                     Picker("Theme", selection: $theme) {
                         ForEach(Theme.allCases) { t in

@@ -46,6 +46,9 @@ struct ReferenceMatchGameView: View {
     enum Difficulty: String, CaseIterable, Identifiable { case easy, medium, hard; var id: String { rawValue } }
     @State private var difficulty: Difficulty = .medium
 
+    @State private var howToExpanded: Bool = false
+    @State private var difficultyExpanded: Bool = false
+
     @State private var started = false
     @AppStorage("refmatchScope") private var verseScopeRaw: String = "whole"
 
@@ -81,6 +84,33 @@ struct ReferenceMatchGameView: View {
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        GroupBox {
+                            DisclosureGroup(isExpanded: $howToExpanded) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("• Choose a verse source and difficulty, then tap Start.")
+                                    Text("• You'll see a reference; pick the verse text that matches it.")
+                                    Text("• Review your answer, then tap Next for a new question.")
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            } label: {
+                                Text("How to Play").font(.headline)
+                            }
+                        }
+
+                        GroupBox {
+                            DisclosureGroup(isExpanded: $difficultyExpanded) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("• Easy / Medium / Hard: Affects all-time stats buckets; gameplay remains untimed.")
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            } label: {
+                                Text("Difficulty Levels").font(.headline)
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
 
                     VStack(spacing: 6) {
                         Text("Verse Source")
