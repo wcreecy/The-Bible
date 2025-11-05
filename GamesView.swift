@@ -33,6 +33,20 @@ struct GamesView: View {
                 }
                 
                 NavigationLink {
+                    BeatTheClockGameView()
+                        .navigationTitle("Beat the Clock")
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "hourglass")
+                            .foregroundStyle(.indigo)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Beat the Clock").font(.headline)
+                            Text("Name a Bible book before time runs out").font(.subheadline).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                
+                NavigationLink {
                     ReferenceMatchGameView()
                         .navigationTitle("Verse Match")
                 } label: {

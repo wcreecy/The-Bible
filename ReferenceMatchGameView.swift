@@ -76,11 +76,8 @@ struct ReferenceMatchGameView: View {
             VStack(spacing: 16) {
                 if !started {
                     Spacer(minLength: 32)
-                    Text("Verse Match")
-                        .font(.largeTitle)
-                        .fontWeight(.heavy)
                     Text("Choose the verse text that matches the reference.")
-                        .font(.body)
+                        .font(.title3)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
@@ -404,3 +401,4 @@ struct ReferenceMatchGameView: View {
 #Preview {
     NavigationStack { ReferenceMatchGameView() }
 }
+

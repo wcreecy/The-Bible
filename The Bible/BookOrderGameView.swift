@@ -53,9 +53,6 @@ struct BookOrderGameView: View {
         VStack {
             if !vm.started {
                 VStack(spacing: 16) {
-                    Text("Book Order")
-                        .font(.largeTitle)
-                        .bold()
                     Text("Rearrange the books in the correct order.")
                         .font(.title3)
                         .multilineTextAlignment(.center)
@@ -233,3 +230,4 @@ struct BookOrderGameView: View {
         BookOrderGameView()
     }
 }
+

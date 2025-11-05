@@ -14,6 +14,7 @@
 		2C78413B2EB407D1008DDBBF /* NotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C78413A2EB407D1008DDBBF /* NotesView.swift */; };
 		2C82F4862EBACCE600DB40FC /* BookSelectionLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C82F4852EBACCE600DB40FC /* BookSelectionLink.swift */; };
 		2C82F4DD2EBB944B00DB40FC /* ShareText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C82F4DC2EBB944B00DB40FC /* ShareText.swift */; };
+		2C82F4DF2EBBB31000DB40FC /* BeatTheClockGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C82F4DE2EBBB31000DB40FC /* BeatTheClockGameView.swift */; };
 		2CB56D3E2EB3830D00A657FA /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D3D2EB3830D00A657FA /* Bookmark.swift */; };
 		2CB56D402EB3831100A657FA /* BookmarksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D3F2EB3831100A657FA /* BookmarksView.swift */; };
 		2CB56D982EB3895400A657FA /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D972EB3895400A657FA /* HomeView.swift */; };
@@ -55,6 +56,7 @@
 		2C78413A2EB407D1008DDBBF /* NotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesView.swift; sourceTree = "<group>"; };
 		2C82F4852EBACCE600DB40FC /* BookSelectionLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookSelectionLink.swift; sourceTree = "<group>"; };
 		2C82F4DC2EBB944B00DB40FC /* ShareText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareText.swift; sourceTree = "<group>"; };
+		2C82F4DE2EBBB31000DB40FC /* BeatTheClockGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTheClockGameView.swift; sourceTree = "<group>"; };
 		2CB56D3D2EB3830D00A657FA /* Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
 		2CB56D3F2EB3831100A657FA /* BookmarksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarksView.swift; sourceTree = "<group>"; };
 		2CB56D972EB3895400A657FA /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -165,6 +167,7 @@
 				2C736D082EB9899600CD2E6F /* BibleSplitView.swift */,
 				2C82F4852EBACCE600DB40FC /* BookSelectionLink.swift */,
 				2C82F4DC2EBB944B00DB40FC /* ShareText.swift */,
+				2C82F4DE2EBBB31000DB40FC /* BeatTheClockGameView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -387,6 +390,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2CB677C42EB67F1400E609B5 /* HealthKitManager.swift in Sources */,
+				2C82F4DF2EBBB31000DB40FC /* BeatTheClockGameView.swift in Sources */,
 				2C78413B2EB407D1008DDBBF /* NotesView.swift in Sources */,
 				2C82F4DD2EBB944B00DB40FC /* ShareText.swift in Sources */,
 				2CD457292EB8FFCF003CB315 /* GamesView.swift in Sources */,

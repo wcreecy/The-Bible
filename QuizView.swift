@@ -155,14 +155,9 @@ struct QuizView: View {
         ScrollView {
             VStack(spacing: 16) {
                 if !started {
-                    Spacer(minLength: 48)
-                    Text("Bible Quiz")
-                        .font(.largeTitle)
-                        .fontWeight(.heavy)
-                        .multilineTextAlignment(.center)
                     
                     Text("Test your knowledge by guessing the book of the Bible from a given verse.")
-                        .font(.body)
+                        .font(.title3)
                         .multilineTextAlignment(.center)
                         .foregroundColor(.secondary)
                         .padding(.horizontal)
@@ -658,4 +653,3 @@ struct QuizView: View {
         QuizView()
     }
 }
-

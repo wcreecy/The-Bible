@@ -160,9 +160,6 @@ struct HangmanGameView: View {
             VStack(spacing: 16) {
                 if !started {
                     Spacer(minLength: 32)
-                    Text("Bible Hangman")
-                        .font(.largeTitle)
-                        .fontWeight(.heavy)
                     Text("Guess the person, place or book from the Bible")
                         .font(.body)
                         .foregroundStyle(.secondary)
@@ -819,3 +816,4 @@ private struct ConfettiView: View {
 #Preview {
     NavigationStack { HangmanGameView() }
 }
+
