@@ -179,13 +179,33 @@ struct BookOrderGameView: View {
                                     .font(.headline)
                                     .foregroundColor(.red)
                                 if vm.showingCorrectOrder {
-                                    GroupBox("Correct Order") {
-                                        VStack(alignment: .leading, spacing: 4) {
-                                            ForEach(vm.correctOrder, id: \.self) { book in
-                                                Text(book)
+                                    GroupBox("Your Order vs Correct") {
+                                        if vm.shouldShowComparison {
+                                            VStack(alignment: .leading, spacing: 8) {
+                                                HStack {
+                                                    Text("Your order").font(.subheadline).foregroundStyle(.secondary)
+                                                    Spacer()
+                                                    Text("Correct order").font(.subheadline).foregroundStyle(.secondary)
+                                                }
+                                                ForEach(Array(vm.comparisonRows.enumerated()), id: \.offset) { _, row in
+                                                    HStack {
+                                                        Text(row.your)
+                                                            .foregroundStyle(row.isMatch ? .green : .red)
+                                                        Spacer()
+                                                        Text(row.correct)
+                                                    }
+                                                }
                                             }
+                                            .padding(.vertical, 4)
+                                        } else {
+                                            // Fallback: show only the correct order if we don't have a submission
+                                            VStack(alignment: .leading, spacing: 4) {
+                                                ForEach(vm.correctOrder, id: \.self) { book in
+                                                    Text(book)
+                                                }
+                                            }
+                                            .padding(.vertical, 4)
                                         }
-                                        .padding(.vertical, 4)
                                     }
                                 }
                             }

@@ -157,13 +157,12 @@ struct SettingsView: View {
                     .accessibilityIdentifier("verseOfDayScopePicker")
 
                     if verseScopeRaw == "book" {
-                        Picker(selection: $verseSpecificBook) {
-                            ForEach(BibleData.books.map { $0.name }, id: \.self) { name in
-                                Text(name).tag(name)
-                            }
-                        } label: {
-                            Label("Choose Book", systemImage: "text.book.closed")
-                        }
+                        BookSelectionLink(
+                            selectedBookName: Binding<String?>(
+                                get: { verseSpecificBook.isEmpty ? nil : verseSpecificBook },
+                                set: { verseSpecificBook = $0 ?? "" }
+                            )
+                        )
                         .accessibilityIdentifier("verseOfDaySpecificBookPicker")
                     }
                 }

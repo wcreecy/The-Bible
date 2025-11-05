@@ -5,10 +5,8 @@ struct BookSelectionLink: View {
 
     var body: some View {
         NavigationLink {
-            List(BibleData.books, id: \.name) { book in
-                Button {
-                    selectedBookName = book.name
-                } label: {
+            List {
+                ForEach(BibleData.books, id: \.name) { book in
                     HStack {
                         Text(book.name)
                         Spacer()
@@ -17,10 +15,12 @@ struct BookSelectionLink: View {
                                 .foregroundColor(.accentColor)
                         }
                     }
+                    .contentShape(Rectangle())
+                    .onTapGesture { selectedBookName = book.name }
+                    .accessibilityIdentifier("book_\(book.name)")
                 }
-                .accessibilityIdentifier("book_\(book.name)")
-                .buttonStyle(.plain)
             }
+            .listStyle(.insetGrouped)
             .navigationTitle("Select Book")
         } label: {
             HStack {
@@ -33,18 +33,19 @@ struct BookSelectionLink: View {
     }
 }
 
-#Preview {
-    struct PreviewWrapper: View {
-        @State private var selectedBook: String? = nil
+private struct BookSelectionLinkPreviewWrapper: View {
+    @State private var selectedBook: String? = nil
 
-        var body: some View {
-            NavigationStack {
-                Form {
-                    BookSelectionLink(selectedBookName: $selectedBook)
-                }
-                .navigationTitle("Preview")
+    var body: some View {
+        NavigationStack {
+            Form {
+                BookSelectionLink(selectedBookName: $selectedBook)
             }
+            .navigationTitle("Preview")
         }
     }
-    PreviewWrapper()
+}
+
+#Preview {
+    BookSelectionLinkPreviewWrapper()
 }

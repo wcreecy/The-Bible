@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import SwiftUI
 
 enum BookOrderDifficulty: String, CaseIterable, Identifiable {
     case easy, normal, hard, all
@@ -60,6 +61,7 @@ final class BookOrderGameViewModel: ObservableObject {
     @Published var showResult: Bool = false
     @Published var wasCorrect: Bool = false
     @Published var showingCorrectOrder: Bool = false
+    @Published var lastSubmittedOrder: [String]? = nil
     
     @Published var difficulty: BookOrderDifficulty = .normal
     @Published var source: BookSourceScope = .both
@@ -102,6 +104,7 @@ final class BookOrderGameViewModel: ObservableObject {
         showResult = false
         wasCorrect = false
         showingCorrectOrder = false
+        lastSubmittedOrder = nil
         started = true
         nextRound()
     }
@@ -131,6 +134,7 @@ final class BookOrderGameViewModel: ObservableObject {
             correctOrder = []
             sliceFirst = nil
             sliceLast = nil
+            lastSubmittedOrder = nil
             return
         }
         
@@ -163,6 +167,7 @@ final class BookOrderGameViewModel: ObservableObject {
         showResult = false
         wasCorrect = false
         showingCorrectOrder = false
+        lastSubmittedOrder = nil
     }
     
     var prompt: String {
@@ -180,12 +185,33 @@ final class BookOrderGameViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Comparison helpers
+    
+    /// Whether the UI should show a side-by-side comparison of the user's submission and the correct order
+    var shouldShowComparison: Bool {
+        showingCorrectOrder && lastSubmittedOrder != nil && !correctOrder.isEmpty
+    }
+    
+    /// Pairs the user's submitted order with the correct order for side-by-side display
+    /// Each tuple indicates the user's pick, the correct item at that position, and whether they match
+    var comparisonRows: [(your: String, correct: String, isMatch: Bool)] {
+        guard let submitted = lastSubmittedOrder else { return [] }
+        let count = min(submitted.count, correctOrder.count)
+        return (0..<count).map { idx in
+            let your = submitted[idx]
+            let correct = correctOrder[idx]
+            return (your, correct, your == correct)
+        }
+    }
+    
     func checkOrder() {
         guard !currentItems.isEmpty, !correctOrder.isEmpty else {
             wasCorrect = false
             showResult = true
             return
         }
+        
+        lastSubmittedOrder = currentItems
         
         if currentItems == correctOrder {
             wasCorrect = true
