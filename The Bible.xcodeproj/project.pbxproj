@@ -462,7 +462,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible/Info.plist";
-				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.reference";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "To log time in the app as Mindful minutes in the Health App";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Spending time in God's Word is VITAL to our relationship with Him! This app logs your time spent in the app as mindfulness minutes which can be found in your Health app. Try for at least 1 hour per day.";
 				INFOPLIST_KEY_NSHomeKitUsageDescription = "";
@@ -480,7 +480,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "Creecy.The-Bible";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -512,7 +512,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible/Info.plist";
-				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.reference";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "To log time in the app as Mindful minutes in the Health App";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Spending time in God's Word is VITAL to our relationship with Him! This app logs your time spent in the app as mindfulness minutes which can be found in your Health app. Try for at least 1 hour per day.";
 				INFOPLIST_KEY_NSHomeKitUsageDescription = "";
@@ -530,7 +530,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "Creecy.The-Bible";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
