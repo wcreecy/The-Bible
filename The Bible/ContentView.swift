@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var coordinator = NavigationCoordinator()
+    
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
     @AppStorage("fontSizePreference") private var fontSizePreferenceRaw: String = FontSizePreference.system.rawValue
     @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = FontFamilyPreference.system.rawValue
@@ -29,61 +31,146 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-            NavigationStack {
+            NavigationStack(path: $coordinator.path) {
                 HomeView()
-                    .navigationTitle("Word of God")
+                    .navigationDestination(for: Route.self) { route in
+                        switch route {
+                        case let .book(book):
+                            ChaptersView(book: book)
+                                .navigationBarTitleDisplayMode(.inline)
+                        case let .chapter(book, chapter):
+                            VersesView(book: book, chapter: chapter)
+                                .navigationBarTitleDisplayMode(.inline)
+                        case let .reader(book, chapter, startVerse):
+                            ReadingView(book: book, chapter: chapter, startVerse: startVerse)
+                                .navigationBarTitleDisplayMode(.inline)
+                        }
+                    }
             }
             .tabItem { Label("Home", systemImage: "house") }
-
-            if UIDevice.current.userInterfaceIdiom == .pad {
+            
+            if isPad {
                 BibleSplitView()
-                    .navigationTitle("Bible")
                     .tabItem { Label("Bible", systemImage: "book") }
             } else {
-                NavigationStack {
+                NavigationStack(path: $coordinator.path) {
                     BooksView(books: BibleData.books)
-                        .navigationTitle("Bible")
+                        .navigationDestination(for: Route.self) { route in
+                            switch route {
+                            case let .book(book):
+                                ChaptersView(book: book)
+                                    .navigationBarTitleDisplayMode(.inline)
+                            case let .chapter(book, chapter):
+                                VersesView(book: book, chapter: chapter)
+                                    .navigationBarTitleDisplayMode(.inline)
+                            case let .reader(book, chapter, startVerse):
+                                ReadingView(book: book, chapter: chapter, startVerse: startVerse)
+                                    .navigationBarTitleDisplayMode(.inline)
+                            }
+                        }
                 }
                 .tabItem { Label("Bible", systemImage: "book") }
             }
-
-            NavigationStack {
+            
+            NavigationStack(path: $coordinator.path) {
                 SearchView()
+                    .navigationDestination(for: Route.self) { route in
+                        switch route {
+                        case let .book(book):
+                            ChaptersView(book: book)
+                                .navigationBarTitleDisplayMode(.inline)
+                        case let .chapter(book, chapter):
+                            VersesView(book: book, chapter: chapter)
+                                .navigationBarTitleDisplayMode(.inline)
+                        case let .reader(book, chapter, startVerse):
+                            ReadingView(book: book, chapter: chapter, startVerse: startVerse)
+                                .navigationBarTitleDisplayMode(.inline)
+                        }
+                    }
             }
             .tabItem { Label("Search", systemImage: "magnifyingglass") }
-
-            NavigationStack {
+            
+            NavigationStack(path: $coordinator.path) {
                 FavoritesView()
+                    .navigationDestination(for: Route.self) { route in
+                        switch route {
+                        case let .book(book):
+                            ChaptersView(book: book)
+                                .navigationBarTitleDisplayMode(.inline)
+                        case let .chapter(book, chapter):
+                            VersesView(book: book, chapter: chapter)
+                                .navigationBarTitleDisplayMode(.inline)
+                        case let .reader(book, chapter, startVerse):
+                            ReadingView(book: book, chapter: chapter, startVerse: startVerse)
+                                .navigationBarTitleDisplayMode(.inline)
+                        }
+                    }
             }
             .tabItem { Label("Favorites", systemImage: "heart") }
-
+            
             NavigationStack {
                 BookmarksView()
+                    .navigationDestination(for: Route.self) { route in
+                        switch route {
+                        case let .book(book):
+                            ChaptersView(book: book)
+                                .navigationBarTitleDisplayMode(.inline)
+                        case let .chapter(book, chapter):
+                            VersesView(book: book, chapter: chapter)
+                                .navigationBarTitleDisplayMode(.inline)
+                        case let .reader(book, chapter, startVerse):
+                            ReadingView(book: book, chapter: chapter, startVerse: startVerse)
+                                .navigationBarTitleDisplayMode(.inline)
+                        }
+                    }
             }
             .tabItem { Label("Bookmarks", systemImage: "bookmark") }
-
-            NavigationStack {
+            
+            NavigationStack(path: $coordinator.path) {
                 NotesView()
+                    .navigationDestination(for: Route.self) { route in
+                        switch route {
+                        case let .book(book):
+                            ChaptersView(book: book)
+                                .navigationBarTitleDisplayMode(.inline)
+                        case let .chapter(book, chapter):
+                            VersesView(book: book, chapter: chapter)
+                                .navigationBarTitleDisplayMode(.inline)
+                        case let .reader(book, chapter, startVerse):
+                            ReadingView(book: book, chapter: chapter, startVerse: startVerse)
+                                .navigationBarTitleDisplayMode(.inline)
+                        }
+                    }
             }
             .tabItem { Label("Notes", systemImage: "note.text") }
             
-            NavigationStack {
-                GamesView()
-                    .navigationTitle("Games")
-            }
-            .tabItem { Label("Games", systemImage: "gamecontroller") }
-
-            NavigationStack {
+            GamesView()
+                .tabItem { Label("Games", systemImage: "gamecontroller") }
+            
+            NavigationStack(path: $coordinator.path) {
                 SettingsView()
+                    .navigationDestination(for: Route.self) { route in
+                        switch route {
+                        case let .book(book):
+                            ChaptersView(book: book)
+                                .navigationBarTitleDisplayMode(.inline)
+                        case let .chapter(book, chapter):
+                            VersesView(book: book, chapter: chapter)
+                                .navigationBarTitleDisplayMode(.inline)
+                        case let .reader(book, chapter, startVerse):
+                            ReadingView(book: book, chapter: chapter, startVerse: startVerse)
+                                .navigationBarTitleDisplayMode(.inline)
+                        }
+                    }
             }
             .tabItem { Label("Settings", systemImage: "gear") }
         }
+        .environmentObject(coordinator)
         .preferredColorScheme(preferredScheme)
         .dynamicTypeSize(preferredDynamicType ?? .large)
         .font(preferredCustomFontName != nil ? .custom(preferredCustomFontName!, size: baseFontSize) : .system(size: baseFontSize))
         .fontDesign(preferredFontDesign ?? .default)
         .onAppear {
-            // If app launches directly into active state, ensure we start tracking
             if appActiveStart == 0 {
                 appActiveStart = Date().timeIntervalSince1970
             }
@@ -91,12 +178,10 @@ struct ContentView: View {
         .onChange(of: scenePhase) { _, newPhase in
             switch newPhase {
             case .active:
-                // Start a new active session if not already started
                 if appActiveStart == 0 {
                     appActiveStart = Date().timeIntervalSince1970
                 }
             case .inactive, .background:
-                // Accumulate the elapsed active time and clear the start marker
                 if appActiveStart > 0 {
                     let start = Date(timeIntervalSince1970: appActiveStart)
                     let delta = max(0, Int(Date().timeIntervalSince(start)))
@@ -120,4 +205,3 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-

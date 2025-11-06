@@ -8,21 +8,10 @@ import HealthKit
 import Foundation
 
 private enum VerseScope: String { case old, new, whole, book }
-private let oldTestamentBooks: Set<String> = [
-    "Genesis","Exodus","Leviticus","Numbers","Deuteronomy",
-    "Joshua","Judges","Ruth",
-    "1 Samuel","2 Samuel",
-    "1 Kings","2 Kings",
-    "1 Chronicles","2 Chronicles",
-    "Ezra","Nehemiah","Esther",
-    "Job","Psalms","Proverbs","Ecclesiastes","Song of Solomon",
-    "Isaiah","Jeremiah","Lamentations","Ezekiel","Daniel",
-    "Hosea","Joel","Amos","Obadiah","Jonah",
-    "Micah","Nahum","Habakkuk","Zephaniah",
-    "Haggai","Zechariah","Malachi"
-]
 
 struct HomeView: View {
+    private enum PrayerMode: String { case timer, stopwatch }
+
     @Query private var progressList: [ReadingProgress]
     @State private var showPrayerStudySheet: Bool = false
 
@@ -45,17 +34,27 @@ struct HomeView: View {
 
     @AppStorage("didRequestNotifications") private var didRequestNotifications: Bool = false
 
+    @AppStorage("verseOfDayPaused") private var verseOfDayPaused: Bool = false
+    @AppStorage("verseOfDayBook") private var storedVerseBook: String = ""
+    @AppStorage("verseOfDayChapter") private var storedVerseChapter: Int = 0
+    @AppStorage("verseOfDayNumber") private var storedVerseNumber: Int = 0
+    @AppStorage("verseOfDayText") private var storedVerseText: String = ""
+
+    @AppStorage("prayerMode") private var prayerMode: PrayerMode = .timer
+    @AppStorage("stopwatchRunning") private var stopwatchRunning: Bool = false
+    @AppStorage("stopwatchStartDate") private var stopwatchStartDate: Double = 0
+    @AppStorage("stopwatchAccumulated") private var stopwatchAccumulated: Int = 0
+    @State private var stopwatchElapsed: Int = 0
+    private let stopwatchTicker = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
     @State private var showFinishedAlert: Bool = false
     @State private var finishHapticTimer: Timer? = nil
 
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
+    @EnvironmentObject private var coordinator: NavigationCoordinator
     @State private var verseOfDay: VerseRef? = nil
 
-    @State private var navigateToReader: Bool = false
-    @State private var selectedBook: Book? = nil
-    @State private var selectedChapter: Chapter? = nil
-    @State private var selectedStartVerse: Int = 1
     @State private var showCopyToast: Bool = false
     @State private var startIconBounce: Bool = false
     @State private var timeMarker: Int = 0
@@ -128,262 +127,381 @@ struct HomeView: View {
         }
     }
 
-    var body: some View {
-        ScrollView {
-            LazyVGrid(columns: gridColumns, spacing: 16) {
-                // Title Card
-                HeroCard(title: "Word of God", subtitle: "Welcome back", icon: "book.fill", tint: .blue, titleFont: .largeTitle, titleFontWeight: .black) {
-                    HStack(alignment: .center, spacing: 8) {
-                        Image(systemName: "person.wave.2.fill")
-                            .foregroundStyle(.blue)
-                        Text("What is God saying to you today?")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.leading)
+    // MARK: - Split cards to reduce type-checking complexity
+    @ViewBuilder
+    private var titleCard: some View {
+        HeroCard(title: "Word of God", subtitle: "Welcome back", icon: "book.fill", tint: .blue, titleFont: .largeTitle, titleFontWeight: .black) {
+            HStack(alignment: .center, spacing: 8) {
+                Image(systemName: "person.wave.2.fill")
+                    .foregroundStyle(.blue)
+                Text("What is God saying to you today?")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(.top)
+        .frame(maxWidth: 700)
+        .padding(.horizontal, 16)
+        .frame(maxWidth: .infinity, alignment: .center)
+    }
+
+    @ViewBuilder
+    private var verseOfDayCard: some View {
+        HeroCard(
+            title: verseCardTitle,
+            subtitle: nil,
+            icon: verseCardIcon,
+            tint: .orange,
+            trailingAccessory: AnyView(
+                HStack(spacing: 8) {
+                    if verseOfDayPaused {
+                        Text("Paused")
+                            .font(.caption2).bold()
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                Capsule().fill(Color.red.opacity(0.15))
+                            )
+                            .overlay(
+                                Capsule().stroke(Color.red.opacity(0.4), lineWidth: 1)
+                            )
+                            .foregroundStyle(.red)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    Button(action: {
+                        let newValue = !verseOfDayPaused
+                        verseOfDayPaused = newValue
+                        if newValue, let v = verseOfDay {
+                            storedVerseBook = v.bookName
+                            storedVerseChapter = v.chapterNumber
+                            storedVerseNumber = v.verseNumber
+                            storedVerseText = v.verseText
+                        }
+                        let generator = UIImpactFeedbackGenerator(style: .medium)
+                        generator.impactOccurred()
+                    }) {
+                        Image(systemName: verseOfDayPaused ? "pause.circle.fill" : "pause.circle")
+                            .font(.title3)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(verseOfDayPaused ? Color.red : Color.blue)
+                    .accessibilityLabel(verseOfDayPaused ? "Unpause Verse Refresh" : "Pause Verse Refresh")
+                    .help(verseOfDayPaused ? "Unpause Verse Refresh" : "Pause Verse Refresh")
                 }
-                .padding(.top)
-                .frame(maxWidth: 700)
-                .padding(.horizontal, 16)
-                .frame(maxWidth: .infinity, alignment: .center)
+            )
+        ) {
+            VStack(alignment: .leading, spacing: 10) {
+                if let v = verseOfDay {
+                    Text(v.verseText)
+                        .font(.headline)
+                        .italic()
+                        .lineLimit(8)
+                        .truncationMode(.tail)
+                    Text("\(v.bookName) \(v.chapterNumber):\(v.verseNumber)")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
 
-                // Verse of the Day Card
-                HeroCard(title: verseCardTitle, subtitle: nil, icon: verseCardIcon, tint: .orange) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        if let v = verseOfDay {
-                            Text(v.verseText)
-                                .font(.headline)
-                                .italic()
-                                .lineLimit(8)
-                                .truncationMode(.tail)
-                            Text("\(v.bookName) \(v.chapterNumber):\(v.verseNumber)")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                    HStack(spacing: 24) {
+                        Button(action: { loadRandomVerse() }) {
+                            Label("Refresh", systemImage: "arrow.clockwise")
+                        }
+                        .labelStyle(.iconOnly)
+                        .foregroundStyle(verseOfDayPaused ? AnyShapeStyle(.secondary) : AnyShapeStyle(.green))
+                        .font(.title3)
+                        .help("Refresh")
+                        .disabled(verseOfDayPaused)
 
-                            HStack(spacing: 24) {
-                                Button(action: { loadRandomVerse() }) {
-                                    Label("Refresh", systemImage: "arrow.clockwise")
-                                }
-                                .labelStyle(.iconOnly)
-                                .font(.title3)
-                                .help("Refresh")
+                        Button(action: {
+                            copyVerse(v)
+                        }) {
+                            Label("Copy", systemImage: "doc.on.doc")
+                        }
+                        .labelStyle(.iconOnly)
+                        .font(.title3)
+                        .help("Copy")
 
-                                Button(action: {
-                                    copyVerse(v)
-                                }) {
-                                    Label("Copy", systemImage: "doc.on.doc")
-                                }
-                                .labelStyle(.iconOnly)
-                                .font(.title3)
-                                .help("Copy")
+                        ShareLink(item: shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText)) {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                        .font(.title3)
+                        .help("Share")
 
-                                ShareLink(item: shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText)) {
-                                    Image(systemName: "square.and.arrow.up")
-                                }
-                                .font(.title3)
-                                .help("Share")
+                        Button(action: { toggleFavorite(for: v) }) {
+                            Image(systemName: isFavorited(v) ? "heart.fill" : "heart")
+                                .foregroundStyle(.red)
+                        }
+                        .font(.title3)
+                        .help("Favorite")
+                    }
+                    .frame(maxWidth: .infinity)
+                } else {
+                    Text("Tap refresh to get today's verse.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Button(action: { loadRandomVerse() }) {
+                        Label("Refresh", systemImage: "arrow.clockwise")
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(.orange)
+                    .disabled(verseOfDayPaused)
+                }
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                let generator = UIImpactFeedbackGenerator(style: .heavy)
+                generator.impactOccurred()
+                guard let v = verseOfDay,
+                      let book = BibleData.books.first(where: { $0.name == v.bookName }),
+                      let chapter = book.chapters.first(where: { $0.number == v.chapterNumber }) else { return }
+                coordinator.push(.reader(book: book, chapter: chapter, startVerse: v.verseNumber))
+            }
+            .contextMenu {
+                if let v = verseOfDay {
+                    Button {
+                        copyVerse(v)
+                    } label: {
+                        Label("Copy", systemImage: "doc.on.doc")
+                    }
 
-                                Button(action: { toggleFavorite(for: v) }) {
-                                    Image(systemName: isFavorited(v) ? "heart.fill" : "heart")
-                                        .foregroundStyle(.red)
-                                }
-                                .font(.title3)
-                                .help("Favorite")
+                    ShareLink(item: shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText)) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+        .frame(height: isPad ? iPadCardHeight : nil)
+    }
+
+    @ViewBuilder
+    private var timerCard: some View {
+        Group {
+            if prayerMode == .timer {
+                if isTimerRunning {
+                    HeroCard(
+                        title: "Prayer/Study Timer",
+                        subtitle: isTimerRunning ? (isPaused ? "Paused" : "In progress") : "Start a focused timer with an alert when time is up.",
+                        icon: "timer",
+                        tint: timerTintColor,
+                        backgroundColor: isTimerRunning ? timerTintColor.opacity(0.20) : nil,
+                        strokeColor: isTimerRunning ? timerTintColor.opacity(0.35) : nil
+                    ) {
+                        VStack(spacing: 10) {
+                            // Mode picker
+                            Picker("Mode", selection: $prayerMode) {
+                                Text("Timer").tag(PrayerMode.timer)
+                                Text("Stopwatch").tag(PrayerMode.stopwatch)
                             }
-                            .frame(maxWidth: .infinity)
-                        } else {
-                            Text("Tap refresh to get today's verse.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            Button(action: { loadRandomVerse() }) {
-                                Label("Refresh", systemImage: "arrow.clockwise")
+                            .pickerStyle(.segmented)
+                            .controlSize(.small)
+                            .disabled(isTimerRunning || stopwatchRunning)
+
+                            Text(formattedTime(remainingSeconds))
+                                .font(.system(size: 36, weight: .semibold, design: .monospaced))
+                                .foregroundStyle(timerTintColor)
+                            HStack(spacing: 12) {
+                                Button(action: { togglePause() }) {
+                                    Label(isPaused ? "Resume" : "Pause", systemImage: isPaused ? "play" : "pause.fill")
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(.bordered)
+                                .tint(timerTintColor)
+
+                                Button(role: .destructive, action: stopTimer) {
+                                    Label("Stop", systemImage: "stop.fill")
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(.borderedProminent)
                             }
-                            .buttonStyle(.bordered)
-                            .tint(.orange)
                         }
                     }
+                    .padding(.horizontal, 16)
+                    .frame(height: isPad ? iPadCardHeight : nil)
+                } else {
+                    HeroCard(
+                        title: "Prayer/Study Timer",
+                        subtitle: "Start a focused timer with an alert when time is up.",
+                        icon: "timer",
+                        tint: .blue
+                    ) {
+                        VStack(spacing: 10) {
+                            // Mode picker
+                            Picker("Mode", selection: $prayerMode) {
+                                Text("Timer").tag(PrayerMode.timer)
+                                Text("Stopwatch").tag(PrayerMode.stopwatch)
+                            }
+                            .pickerStyle(.segmented)
+                            .controlSize(.small)
+                            .disabled(isTimerRunning || stopwatchRunning)
+
+                            HStack(spacing: 12) {
+                                Image(systemName: "play")
+                                    .imageScale(.large)
+                                    .foregroundStyle(.blue)
+                                    .scaleEffect(startIconBounce ? 1.15 : 1.0)
+                                    .animation(.spring(response: 0.25, dampingFraction: 0.6, blendDuration: 0.0), value: startIconBounce)
+                                Text("Start")
+                                    .font(.headline)
+                                    .bold()
+                                Spacer()
+                            }
+                            .padding(14)
+                            .frame(maxWidth: .infinity)
+                            .foregroundStyle(.primary)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .frame(height: isPad ? iPadCardHeight : nil)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        let generator = UIImpactFeedbackGenerator(style: .heavy)
-                        generator.impactOccurred()
-                        guard let v = verseOfDay,
-                              let book = BibleData.books.first(where: { $0.name == v.bookName }),
-                              let chapter = book.chapters.first(where: { $0.number == v.chapterNumber }) else { return }
-                        selectedBook = book
-                        selectedChapter = chapter
-                        selectedStartVerse = v.verseNumber
-                        navigateToReader = true
-                    }
-                    .contextMenu {
-                        if let v = verseOfDay {
-                            Button {
-                                copyVerse(v)
-                            } label: {
-                                Label("Copy", systemImage: "doc.on.doc")
+                        if isHealthKitAvailable && !healthKitPrompted {
+                            HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
+                                Task { @MainActor in
+                                    self.healthKitPrompted = true
+                                }
                             }
+                        }
+                        let generator = UIImpactFeedbackGenerator(style: .medium)
+                        generator.impactOccurred()
+                        withAnimation(.spring(response: 0.25, dampingFraction: 0.6)) {
+                            startIconBounce = true
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                            startIconBounce = false
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.10) {
+                            showPrayerStudySheet = true
+                        }
+                    }
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityLabel("Start")
+                }
+            } else { // Stopwatch mode
+                HeroCard(
+                    title: "Stopwatch",
+                    subtitle: stopwatchRunning ? "Running" : (stopwatchElapsed > 0 ? "Paused" : "Ready"),
+                    icon: "stopwatch",
+                    tint: .blue
+                ) {
+                    VStack(spacing: 10) {
+                        // Mode picker
+                        Picker("Mode", selection: $prayerMode) {
+                            Text("Timer").tag(PrayerMode.timer)
+                            Text("Stopwatch").tag(PrayerMode.stopwatch)
+                        }
+                        .pickerStyle(.segmented)
+                        .controlSize(.small)
+                        .disabled(isTimerRunning || stopwatchRunning)
 
-                            ShareLink(item: shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText)) {
-                                Label("Share", systemImage: "square.and.arrow.up")
+                        Text(formattedHMS(stopwatchElapsed))
+                            .font(.system(size: 36, weight: .semibold, design: .monospaced))
+                        HStack(spacing: 12) {
+                            if stopwatchRunning {
+                                Button("Pause") { pauseStopwatch() }
+                                    .buttonStyle(.bordered)
+                                Button("Stop") { stopStopwatch() }
+                                    .buttonStyle(.borderedProminent)
+                                    .tint(.red)
+                            } else {
+                                Button(stopwatchElapsed == 0 ? "Start" : "Resume") { startStopwatch() }
+                                    .buttonStyle(.borderedProminent)
+                                if stopwatchElapsed > 0 {
+                                    Button("Reset") { resetStopwatch() }
+                                        .buttonStyle(.bordered)
+                                        .tint(.secondary)
+                                }
                             }
                         }
                     }
                 }
                 .padding(.horizontal, 16)
                 .frame(height: isPad ? iPadCardHeight : nil)
+            }
+        }
+    }
 
-                // Timer Card
-                Group {
-                    if isTimerRunning {
-                        HeroCard(
-                            title: "Prayer/Study Timer",
-                            subtitle: isTimerRunning ? (isPaused ? "Paused" : "In progress") : "Start a focused timer with an alert when time is up.",
-                            icon: "timer",
-                            tint: timerTintColor,
-                            backgroundColor: isTimerRunning ? timerTintColor.opacity(0.20) : nil,
-                            strokeColor: isTimerRunning ? timerTintColor.opacity(0.35) : nil
-                        ) {
-                            VStack(spacing: 10) {
-                                Text(formattedTime(remainingSeconds))
-                                    .font(.system(size: 36, weight: .semibold, design: .monospaced))
-                                    .foregroundStyle(timerTintColor)
-                                HStack(spacing: 12) {
-                                    Button(action: { togglePause() }) {
-                                        Label(isPaused ? "Resume" : "Pause", systemImage: isPaused ? "play" : "pause.fill")
-                                            .frame(maxWidth: .infinity)
-                                    }
-                                    .buttonStyle(.bordered)
-                                    .tint(timerTintColor)
-
-                                    Button(role: .destructive, action: stopTimer) {
-                                        Label("Stop", systemImage: "stop.fill")
-                                            .frame(maxWidth: .infinity)
-                                    }
-                                    .buttonStyle(.borderedProminent)
-                                }
-                            }
+    @ViewBuilder
+    private var resumeCard: some View {
+        if let progress = progress,
+           let book = BibleData.books.first(where: { $0.name == progress.bookName }),
+           let chapter = book.chapters.first(where: { $0.number == progress.chapterNumber }) {
+            Button(action: {
+                coordinator.push(.reader(book: book, chapter: chapter, startVerse: progress.verseNumber))
+            }) {
+                HeroCard(
+                    title: "",
+                    subtitle: nil,
+                    icon: nil,
+                    tint: .blue
+                ) {
+                    HStack(alignment: .center, spacing: 12) {
+                        Image(systemName: "arrow.uturn.backward.circle")
+                            .font(.system(size: 28, weight: .semibold))
+                            .foregroundStyle(.blue)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Resume")
+                                .font(.headline)
+                                .bold()
+                            Text("Continue where you left off")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
                         }
-                        .padding(.horizontal, 16)
-                        .frame(height: isPad ? iPadCardHeight : nil)
-                    } else {
-                        HeroCard(
-                            title: "Prayer/Study Timer",
-                            subtitle: "Start a focused timer with an alert when time is up.",
-                            icon: "timer",
-                            tint: timerTintColor
-                        ) {
-                            VStack(spacing: 10) {
-                                HStack(spacing: 12) {
-                                    Image(systemName: "play")
-                                        .imageScale(.large)
-                                        .foregroundStyle(.blue)
-                                        .scaleEffect(startIconBounce ? 1.15 : 1.0)
-                                        .animation(.spring(response: 0.25, dampingFraction: 0.6, blendDuration: 0.0), value: startIconBounce)
-                                    Text("Start")
-                                        .font(.headline)
-                                        .bold()
-                                    Spacer()
-                                }
-                                .padding(14)
-                                .frame(maxWidth: .infinity)
-                                .foregroundStyle(.primary)
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .frame(height: isPad ? iPadCardHeight : nil)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            if isHealthKitAvailable && !healthKitPrompted {
-                                HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
-                                    Task { @MainActor in
-                                        self.healthKitPrompted = true
-                                    }
-                                }
-                            }
-                            let generator = UIImpactFeedbackGenerator(style: .medium)
-                            generator.impactOccurred()
-                            withAnimation(.spring(response: 0.25, dampingFraction: 0.6)) {
-                                startIconBounce = true
-                            }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
-                                startIconBounce = false
-                            }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.10) {
-                                showPrayerStudySheet = true
-                            }
-                        }
-                        .accessibilityAddTraits(.isButton)
-                        .accessibilityLabel("Start")
+                        Spacer()
                     }
                 }
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 16)
+            .frame(height: isPad ? iPadCardHeight : nil)
+        } else {
+            HeroCard(
+                title: "",
+                subtitle: nil,
+                icon: nil,
+                tint: .blue
+            ) {
+                HStack(alignment: .center, spacing: 12) {
+                    Image(systemName: "arrow.uturn.backward.circle")
+                        .font(.system(size: 28, weight: .semibold))
+                        .foregroundStyle(.blue)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Resume")
+                            .font(.headline)
+                            .bold()
+                        Text("Continue where you left off")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text("Start reading from the Bible tab")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                }
+            }
+            .redacted(reason: .placeholder)
+            .padding(.horizontal, 16)
+            .frame(height: isPad ? iPadCardHeight : nil)
+        }
+    }
+
+    var body: some View {
+        ScrollView {
+            LazyVGrid(columns: gridColumns, spacing: 16) {
+                // Title Card
+                titleCard
+
+                // Verse of the Day Card
+                verseOfDayCard
+
+                // Timer / Stopwatch Card
+                timerCard
 
                 // Resume Card
-                if let progress = progress,
-                   let book = BibleData.books.first(where: { $0.name == progress.bookName }),
-                   let chapter = book.chapters.first(where: { $0.number == progress.chapterNumber }) {
-                    Button(action: {
-                        selectedBook = book
-                        selectedChapter = chapter
-                        selectedStartVerse = progress.verseNumber
-                        navigateToReader = true
-                    }) {
-                        HeroCard(
-                            title: "",
-                            subtitle: nil,
-                            icon: nil,
-                            tint: .blue
-                        ) {
-                            HStack(alignment: .center, spacing: 12) {
-                                Image(systemName: "arrow.uturn.backward.circle")
-                                    .font(.system(size: 28, weight: .semibold))
-                                    .foregroundStyle(.blue)
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("Resume")
-                                        .font(.headline)
-                                        .bold()
-                                    Text("Continue where you left off")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                    Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                }
-                                Spacer()
-                            }
-                        }
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.horizontal, 16)
-                    .frame(height: isPad ? iPadCardHeight : nil)
-                } else {
-                    HeroCard(
-                        title: "",
-                        subtitle: nil,
-                        icon: nil,
-                        tint: .blue
-                    ) {
-                        HStack(alignment: .center, spacing: 12) {
-                            Image(systemName: "arrow.uturn.backward.circle")
-                                .font(.system(size: 28, weight: .semibold))
-                                .foregroundStyle(.blue)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Resume")
-                                    .font(.headline)
-                                    .bold()
-                                Text("Continue where you left off")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                Text("Start reading from the Bible tab")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                        }
-                    }
-                    .redacted(reason: .placeholder)
-                    .padding(.horizontal, 16)
-                    .frame(height: isPad ? iPadCardHeight : nil)
-                }
+                resumeCard
             }
             .padding(.horizontal, 0)
         }
@@ -424,7 +542,22 @@ struct HomeView: View {
                     }
                 }
             }
-            loadRandomVerse()
+            if verseOfDayPaused {
+                // Restore last verse without refreshing when paused
+                if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
+                    verseOfDay = VerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
+                }
+            } else {
+                loadRandomVerse()
+            }
+            // Initialize stopwatch elapsed from stored state
+            if stopwatchRunning {
+                let now = Date().timeIntervalSince1970
+                let base = stopwatchAccumulated + Int(max(0, now - stopwatchStartDate))
+                stopwatchElapsed = base
+            } else {
+                stopwatchElapsed = stopwatchAccumulated
+            }
         }
         .onReceive(prayerTimer) { _ in
             guard isTimerRunning else { return }
@@ -437,6 +570,12 @@ struct HomeView: View {
                 }
             }
         }
+        .onReceive(stopwatchTicker) { _ in
+            guard stopwatchRunning else { return }
+            let now = Date().timeIntervalSince1970
+            let base = stopwatchAccumulated + Int(max(0, now - stopwatchStartDate))
+            stopwatchElapsed = base
+        }
         .onReceive(minuteTimer) { _ in
             // Update a marker to trigger view refresh for time-based changes (e.g., after 6 PM)
             timeMarker = (timeMarker + 1) % 60
@@ -447,8 +586,8 @@ struct HomeView: View {
                 // App became active: start logging if available
                 startMindfulLoggingIfNeeded()
             case .inactive, .background:
-                // Stop logging only if the timer is not running; keep logging while timer runs
-                if !isTimerRunning {
+                // Stop logging only if the timer is not running and stopwatch is not running; keep logging while either runs
+                if !isTimerRunning && !stopwatchRunning {
                     stopMindfulLogging()
                 }
             @unknown default:
@@ -469,11 +608,6 @@ struct HomeView: View {
             }
         } message: {
             Text("Your prayer/study timer has completed.")
-        }
-        .navigationDestination(isPresented: $navigateToReader) {
-            if let book = selectedBook, let chapter = selectedChapter {
-                ReadingView(book: book, chapter: chapter, startVerse: selectedStartVerse)
-            }
         }
     }
 
@@ -619,6 +753,7 @@ struct HomeView: View {
     }
 
     private func loadRandomVerse() {
+        if verseOfDayPaused { return }
         let allBooks = BibleData.books
         guard !allBooks.isEmpty else { return }
 
@@ -643,6 +778,10 @@ struct HomeView: View {
 
         guard let book = books.randomElement(), let chapter = book.chapters.randomElement(), !chapter.verses.isEmpty, let verse = chapter.verses.randomElement() else { return }
         verseOfDay = VerseRef(bookName: book.name, chapterNumber: chapter.number, verseNumber: verse.number, verseText: verse.text)
+        storedVerseBook = book.name
+        storedVerseChapter = chapter.number
+        storedVerseNumber = verse.number
+        storedVerseText = verse.text
     }
 
     private func copyVerse(_ v: VerseRef) {
@@ -669,7 +808,66 @@ struct HomeView: View {
             try? modelContext.save()
         }
     }
+
+    // Stopwatch helper methods
+
+    private func startStopwatch() {
+        let now = Date().timeIntervalSince1970
+        if stopwatchStartDate == 0 { stopwatchStartDate = now }
+        stopwatchRunning = true
+        startMindfulLoggingIfNeeded()
+    }
+
+    private func pauseStopwatch() {
+        guard stopwatchRunning else { return }
+        let now = Date().timeIntervalSince1970
+        if stopwatchStartDate > 0 {
+            let delta = Int(max(0, now - stopwatchStartDate))
+            stopwatchAccumulated += delta
+            stopwatchStartDate = 0
+        }
+        stopwatchRunning = false
+    }
+
+    private func stopStopwatch() {
+        // End global mindful logging if app is not active; if active, continue logging app-open time
+        if scenePhase != .active {
+            stopMindfulLogging()
+        }
+        stopwatchRunning = false
+        stopwatchStartDate = 0
+        stopwatchAccumulated = 0
+        stopwatchElapsed = 0
+    }
+
+    private func resetStopwatch() {
+        stopwatchRunning = false
+        stopwatchStartDate = 0
+        stopwatchAccumulated = 0
+        stopwatchElapsed = 0
+    }
+
+    private func formattedHMS(_ totalSeconds: Int) -> String {
+        let hours = totalSeconds / 3600
+        let minutes = (totalSeconds % 3600) / 60
+        let seconds = totalSeconds % 60
+        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+    }
 }
+
+private let oldTestamentBooks: Set<String> = [
+    "Genesis","Exodus","Leviticus","Numbers","Deuteronomy",
+    "Joshua","Judges","Ruth",
+    "1 Samuel","2 Samuel",
+    "1 Kings","2 Kings",
+    "1 Chronicles","2 Chronicles",
+    "Ezra","Nehemiah","Esther",
+    "Job","Psalms","Proverbs","Ecclesiastes","Song of Solomon",
+    "Isaiah","Jeremiah","Lamentations","Ezekiel","Daniel",
+    "Hosea","Joel","Amos","Obadiah","Jonah",
+    "Micah","Nahum","Habakkuk","Zephaniah",
+    "Haggai","Zechariah","Malachi"
+]
 
 private struct HeroCard<Content: View>: View {
     let title: String
@@ -678,6 +876,7 @@ private struct HeroCard<Content: View>: View {
     let tint: Color
     let backgroundColor: Color?
     let strokeColor: Color?
+    let trailingAccessory: AnyView?
     let titleFont: Font
     let titleFontWeight: Font.Weight
     @ViewBuilder var content: Content
@@ -689,6 +888,7 @@ private struct HeroCard<Content: View>: View {
         tint: Color = .accentColor,
         backgroundColor: Color? = nil,
         strokeColor: Color? = nil,
+        trailingAccessory: AnyView? = nil,
         titleFont: Font = .headline,
         titleFontWeight: Font.Weight = .bold,
         @ViewBuilder content: () -> Content
@@ -699,6 +899,7 @@ private struct HeroCard<Content: View>: View {
         self.tint = tint
         self.backgroundColor = backgroundColor
         self.strokeColor = strokeColor
+        self.trailingAccessory = trailingAccessory
         self.titleFont = titleFont
         self.titleFontWeight = titleFontWeight
         self.content = content()
@@ -724,6 +925,9 @@ private struct HeroCard<Content: View>: View {
                         }
                     }
                     Spacer()
+                    if let trailingAccessory {
+                        trailingAccessory
+                    }
                 }
             }
             content

@@ -19,73 +19,71 @@ struct FavoritesFlashcardsGameView: View {
     @Namespace private var flipNamespace
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                if favorites.isEmpty {
-                    Spacer()
-                    Text("You have no favorites yet.\nAdd favorites to start the flashcards game!")
-                        .font(.title3)
-                        .multilineTextAlignment(.center)
-                        .padding()
-                    Spacer()
-                } else if !started {
-                    Spacer()
-                    Picker("Mode", selection: $mode) {
-                        ForEach(Mode.allCases) { mode in
-                            Text(mode.rawValue).tag(mode)
-                        }
+        VStack {
+            if favorites.isEmpty {
+                Spacer()
+                Text("You have no favorites yet.\nAdd favorites to start the flashcards game!")
+                    .font(.title3)
+                    .multilineTextAlignment(.center)
+                    .padding()
+                Spacer()
+            } else if !started {
+                Spacer()
+                Picker("Mode", selection: $mode) {
+                    ForEach(Mode.allCases) { mode in
+                        Text(mode.rawValue).tag(mode)
                     }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal, 40)
-                    .padding(.bottom, 30)
-                    
-                    Text("Build & test your memorization of the Word. As you favorite scriptures, they'll be added to the game")
-                        .font(.title3)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
-                        .padding(.bottom, 16)
-                    
-                    Button("Start") {
-                        startGame()
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                    .controlSize(.large)
-                    .frame(maxWidth: 240)
-                    Spacer()
-                } else {
-                    Spacer()
-                    flashcardView()
-                        .frame(width: 320, height: 220)
-                        .padding()
-                    
-                    Text(instructionText)
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                        .padding(.bottom, 30)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: 320)
-                    
-                    HStack(spacing: 12) {
-                        Button("Previous") {
-                            previousCard()
-                        }
-                        .buttonStyle(ModernPillButtonStyle())
-                        .frame(maxWidth: .infinity)
-                        .disabled(shuffledFavorites.count <= 1)
-                        
-                        Button("Random") {
-                            randomCard()
-                        }
-                        .buttonStyle(ModernPillButtonStyle())
-                        .frame(maxWidth: .infinity)
-                    }
-                    Spacer()
                 }
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 40)
+                .padding(.bottom, 30)
+                
+                Text("Build & test your memorization of the Word. As you favorite scriptures, they'll be added to the game")
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+                    .padding(.bottom, 16)
+                
+                Button("Start") {
+                    startGame()
+                }
+                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                .controlSize(.large)
+                .frame(maxWidth: 240)
+                Spacer()
+            } else {
+                Spacer()
+                flashcardView()
+                    .frame(width: 320, height: 220)
+                    .padding()
+                
+                Text(instructionText)
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                    .padding(.bottom, 30)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 320)
+                
+                HStack(spacing: 12) {
+                    Button("Previous") {
+                        previousCard()
+                    }
+                    .buttonStyle(ModernPillButtonStyle())
+                    .frame(maxWidth: .infinity)
+                    .disabled(shuffledFavorites.count <= 1)
+                    
+                    Button("Random") {
+                        randomCard()
+                    }
+                    .buttonStyle(ModernPillButtonStyle())
+                    .frame(maxWidth: .infinity)
+                }
+                Spacer()
             }
-            .navigationTitle("Favorites Flashcards")
-            .padding()
         }
+        .navigationTitle("Favorites Flashcards")
+        .padding()
     }
     
     private func startGame() {

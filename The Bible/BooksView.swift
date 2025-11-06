@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct BooksView: View {
+    @EnvironmentObject private var coordinator: NavigationCoordinator
     let books: [Book]
     @State private var searchText: String = ""
 
@@ -22,9 +23,16 @@ struct BooksView: View {
                 if !otBooks.isEmpty {
                     Section {
                         ForEach(otBooks) { book in
-                            NavigationLink(value: book) {
-                                Text(book.name)
+                            Button { coordinator.push(.book(book)) } label: {
+                                HStack {
+                                    Text(book.name)
+                                    Spacer()
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
                             }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(.primary)
                         }
                     } header: {
                         Text("Old Testament (\(otBooks.count))")
@@ -35,9 +43,16 @@ struct BooksView: View {
                 if !ntBooks.isEmpty {
                     Section {
                         ForEach(ntBooks) { book in
-                            NavigationLink(value: book) {
-                                Text(book.name)
+                            Button { coordinator.push(.book(book)) } label: {
+                                HStack {
+                                    Text(book.name)
+                                    Spacer()
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
                             }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(.primary)
                         }
                     } header: {
                         Text("New Testament (\(ntBooks.count))")
@@ -47,16 +62,17 @@ struct BooksView: View {
                 }
             }
             .listStyle(.insetGrouped)
-            .navigationDestination(for: Book.self) { book in
-                ChaptersView(book: book)
-            }
         }
-        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search books")
+        .navigationTitle("Books")
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search books")
+        .tint(.blue)
+        .navigationBarTitleDisplayMode(.large)
     }
 }
 
 #Preview {
     NavigationStack {
         BooksView(books: BibleData.books)
+            .environmentObject(NavigationCoordinator())
     }
 }

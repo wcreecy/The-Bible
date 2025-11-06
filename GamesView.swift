@@ -6,7 +6,6 @@ struct GamesView: View {
             Section("Available Games") {
                 NavigationLink {
                     QuizView()
-                        .navigationTitle("Bible Quiz")
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "questionmark.circle")
@@ -20,7 +19,6 @@ struct GamesView: View {
                 
                 NavigationLink {
                     HangmanGameView()
-                        .navigationTitle("Hangman")
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "text.word.spacing")
@@ -34,7 +32,6 @@ struct GamesView: View {
                 
                 NavigationLink {
                     BeatTheClockGameView()
-                        .navigationTitle("Beat the Clock")
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "hourglass")
@@ -48,7 +45,6 @@ struct GamesView: View {
                 
                 NavigationLink {
                     ReferenceMatchGameView()
-                        .navigationTitle("Verse Match")
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "text.quote")
@@ -62,7 +58,6 @@ struct GamesView: View {
                 
                 NavigationLink {
                     FavoritesFlashcardsGameView()
-                        .navigationTitle("Favorites Flashcards")
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "rectangle.portrait.on.rectangle.portrait")
@@ -76,7 +71,6 @@ struct GamesView: View {
                 
                 NavigationLink {
                     BookOrderGameView()
-                        .navigationTitle("Book Order")
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "list.number")

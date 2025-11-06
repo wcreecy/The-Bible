@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C279D002EBCC62A0023C46B /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C279CFF2EBCC62A0023C46B /* Route.swift */; };
+		2C279D022EBCC62C0023C46B /* NavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C279D012EBCC62C0023C46B /* NavigationCoordinator.swift */; };
 		2C320B4A2EB40940003814A6 /* NotesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C320B492EB4093F003814A6 /* NotesModel.swift */; };
 		2C320B4C2EB40966003814A6 /* NotesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C320B4B2EB40966003814A6 /* NotesListView.swift */; };
 		2C736D092EB9899600CD2E6F /* BibleSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C736D082EB9899600CD2E6F /* BibleSplitView.swift */; };
@@ -46,6 +48,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2C279CFF2EBCC62A0023C46B /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
+		2C279D012EBCC62C0023C46B /* NavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationCoordinator.swift; sourceTree = "<group>"; };
 		2C320B492EB4093F003814A6 /* NotesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesModel.swift; sourceTree = "<group>"; };
 		2C320B4B2EB40966003814A6 /* NotesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesListView.swift; sourceTree = "<group>"; };
 		2C3B0F6D2EB14F3D0089556C /* The Bible.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "The Bible.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -168,6 +172,8 @@
 				2C82F4852EBACCE600DB40FC /* BookSelectionLink.swift */,
 				2C82F4DC2EBB944B00DB40FC /* ShareText.swift */,
 				2C82F4DE2EBBB31000DB40FC /* BeatTheClockGameView.swift */,
+				2C279CFF2EBCC62A0023C46B /* Route.swift */,
+				2C279D012EBCC62C0023C46B /* NavigationCoordinator.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -392,6 +398,7 @@
 				2CB677C42EB67F1400E609B5 /* HealthKitManager.swift in Sources */,
 				2C82F4DF2EBBB31000DB40FC /* BeatTheClockGameView.swift in Sources */,
 				2C78413B2EB407D1008DDBBF /* NotesView.swift in Sources */,
+				2C279D022EBCC62C0023C46B /* NavigationCoordinator.swift in Sources */,
 				2C82F4DD2EBB944B00DB40FC /* ShareText.swift in Sources */,
 				2CD457292EB8FFCF003CB315 /* GamesView.swift in Sources */,
 				2CD4572D2EB9025D003CB315 /* HangmanGameView.swift in Sources */,
@@ -408,6 +415,7 @@
 				2CB56DF02EB3942900A657FA /* Toast.swift in Sources */,
 				2CF6F1712EB83C2100E59640 /* TimerSound.swift in Sources */,
 				2CB56D982EB3895400A657FA /* HomeView.swift in Sources */,
+				2C279D002EBCC62A0023C46B /* Route.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

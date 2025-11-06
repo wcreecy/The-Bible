@@ -6,6 +6,7 @@ struct VersesView: View {
     let book: Book
     let chapter: Chapter
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var coordinator: NavigationCoordinator
     @Query private var favorites: [Favorite]
     @Query private var bookmarks: [Bookmark]
     @Query private var notes: [VerseNote]
@@ -63,7 +64,9 @@ struct VersesView: View {
                         Button("Open") {
                             navStartVerse = verse.number
                             previewVerse = nil
-                            navToReader = true
+                            if let book = BibleData.books.first(where: { $0.name == self.book.name }), let chapter = book.chapters.first(where: { $0.number == self.chapter.number }) {
+                                coordinator.push(.reader(book: book, chapter: chapter, startVerse: verse.number))
+                            }
                         }
                     }
                     ToolbarItemGroup(placement: .bottomBar) {
@@ -160,10 +163,6 @@ struct VersesView: View {
         }
         .navigationTitle("\(book.name) \(chapter.number)")
         .navigationBarTitleDisplayMode(.large)
-        .navigationDestination(isPresented: $navToReader) {
-            ReadingView(book: book, chapter: chapter, startVerse: navStartVerse)
-                .id("\(book.name)-\(chapter.number)-\(navStartVerse)")
-        }
     }
 
     private func isFavorited(_ verse: Verse) -> Bool {
@@ -255,5 +254,6 @@ struct VersesView: View {
 #Preview {
     NavigationStack {
         VersesView(book: BibleData.books.first!, chapter: BibleData.books.first!.chapters.first!)
+            .environmentObject(NavigationCoordinator())
     }
 }

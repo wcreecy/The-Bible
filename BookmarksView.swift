@@ -17,14 +17,11 @@ struct BookmarksView: View {
                 List {
                     ForEach(bookmarks) { bm in
                         NavigationLink(
-                            destination: ReadingView(
-                                book: BibleData.books.first(where: { $0.name == bm.bookName }) ?? BibleData.books.first!,
-                                chapter: {
-                                    let book = BibleData.books.first(where: { $0.name == bm.bookName }) ?? BibleData.books.first!
-                                    return book.chapters.first(where: { $0.number == bm.chapterNumber }) ?? book.chapters.first!
-                                }(),
-                                startVerse: bm.verseNumber
-                            )
+                            value: {
+                                let book = BibleData.books.first(where: { $0.name == bm.bookName }) ?? BibleData.books.first!
+                                let chapter = book.chapters.first(where: { $0.number == bm.chapterNumber }) ?? book.chapters.first!
+                                return Route.reader(book: book, chapter: chapter, startVerse: bm.verseNumber)
+                            }()
                         ) {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(bm.verseText)
