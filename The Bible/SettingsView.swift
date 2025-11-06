@@ -216,29 +216,49 @@ struct SettingsView: View {
             }
             .headerProminence(.increased)
             Section(header: Text("Time with God (via this app)")) {
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 8) {
                     Label("Time in App", systemImage: "clock")
                         .font(.headline)
 
-                    // Grid of units with labels above numbers styled as flip cards
+                    // Adaptive pills layout: try full labels, then short labels, then scroll if needed
                     let b = timeBreakdown()
-                    let items: [(String, Int)] = [
-                        ("Years", b.years),
-                        ("Months", b.months),
-                        ("Weeks", b.weeks),
-                        ("Days", b.days),
-                        ("Hours", b.hours),
-                        ("Minutes", b.minutes),
-                        ("Seconds", b.seconds)
-                    ]
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                        ForEach(items, id: \.0) { label, value in
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(label)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                flipCard(value)
+                    ViewThatFits(in: .horizontal) {
+                        // 1) Full labels in one line
+                        HStack(spacing: 8) {
+                            compactPill(label: "Years", value: b.years)
+                            compactPill(label: "Months", value: b.months)
+                            compactPill(label: "Weeks", value: b.weeks)
+                            compactPill(label: "Days", value: b.days)
+                            compactPill(label: "Hours", value: b.hours)
+                            compactPill(label: "Minutes", value: b.minutes)
+                            compactPill(label: "Seconds", value: b.seconds)
+                        }
+                        .padding(.vertical, 2)
+
+                        // 2) Short labels in one line
+                        HStack(spacing: 8) {
+                            compactPill(label: "Yrs", value: b.years)
+                            compactPill(label: "Mo", value: b.months)
+                            compactPill(label: "Wk", value: b.weeks)
+                            compactPill(label: "D", value: b.days)
+                            compactPill(label: "H", value: b.hours)
+                            compactPill(label: "M", value: b.minutes)
+                            compactPill(label: "S", value: b.seconds)
+                        }
+                        .padding(.vertical, 2)
+
+                        // 3) Fallback: short labels with horizontal scroll
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                compactPill(label: "Yrs", value: b.years)
+                                compactPill(label: "Mo", value: b.months)
+                                compactPill(label: "Wk", value: b.weeks)
+                                compactPill(label: "D", value: b.days)
+                                compactPill(label: "H", value: b.hours)
+                                compactPill(label: "M", value: b.minutes)
+                                compactPill(label: "S", value: b.seconds)
                             }
+                            .padding(.vertical, 2)
                         }
                     }
                     .accessibilityIdentifier("appTotalTimeLabel")
@@ -431,9 +451,30 @@ struct SettingsView: View {
         parts.append("\(seconds) second\(seconds == 1 ? "" : "s")")
         return parts.joined(separator: ", ")
     }
+
+    private func compactPill(label: String, value: Int) -> some View {
+        VStack(spacing: 2) {
+            Text(label)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            Text("\(value)")
+                .font(.subheadline)
+                .monospacedDigit()
+                .fontWeight(.semibold)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(
+                    Capsule(style: .continuous)
+                        .fill(Color(.secondarySystemBackground))
+                )
+                .overlay(
+                    Capsule(style: .continuous)
+                        .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                )
+        }
+    }
 }
 
 #Preview {
     NavigationStack { SettingsView() }
 }
-

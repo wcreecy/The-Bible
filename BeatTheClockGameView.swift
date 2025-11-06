@@ -330,7 +330,9 @@ struct BeatTheClockGameView: View {
                         Text("No matches found in the Bible text for this entry.")
                             .foregroundStyle(.secondary)
                     } else {
-                        let books = Array(acceptableBooks).sorted()
+                        let canon = BibleCanon.canonicalOrder()
+                        let order = Dictionary(uniqueKeysWithValues: canon.enumerated().map { ($1, $0) })
+                        let books = Array(acceptableBooks).sorted { (lhs, rhs) in (order[lhs] ?? Int.max) < (order[rhs] ?? Int.max) }
                         List(books, id: \.self) { name in
                             Text(name)
                         }
@@ -513,3 +515,4 @@ struct BeatTheClockGameView: View {
 #Preview {
     NavigationStack { BeatTheClockGameView() }
 }
+
