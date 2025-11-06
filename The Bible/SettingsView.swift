@@ -125,14 +125,14 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
             }
             .headerProminence(.increased)
-            Section(header: Text("Reading"), footer: Text("Keeping the screen on may increase battery usage.")) {
+            Section(header: Text("Reading"), footer: Text("Keeping the screen on may increase battery usage.").font(.footnote).foregroundStyle(.secondary)) {
                 Toggle(isOn: $keepScreenOn) {
                     Label("Keep Screen On While Reading", systemImage: "display.sleep")
                 }
                 .accessibilityIdentifier("keepScreenOnToggle")
             }
             .headerProminence(.increased)
-            Section(header: Text("Verse of the Day"), footer: Text("Choose which part of the Bible the Verse of the Day is selected from.")) {
+            Section(header: Text("Verse of the Day"), footer: Text("Choose which part of the Bible the Verse of the Day is selected from. Verse refreshes daily at 6 AM & 6 PM unless paused.").font(.footnote).foregroundStyle(.secondary)) {
                 VStack(spacing: 8) {
                     // Custom segmented control with vertical separators
                     HStack(spacing: 0) {
@@ -168,7 +168,7 @@ struct SettingsView: View {
                 }
             }
             .headerProminence(.increased)
-            Section(header: Text("Timer"), footer: Text("Choose the sound that plays when the prayer/study timer finishes.")) {
+            Section(header: Text("Timer"), footer: Text("Choose the sound that plays when the prayer/study timer finishes.").font(.footnote).foregroundStyle(.secondary)) {
                 Picker(selection: Binding<String>(
                     get: { timerSoundSelection },
                     set: { timerSoundSelection = $0 }
@@ -183,7 +183,7 @@ struct SettingsView: View {
                 .accessibilityIdentifier("timerSoundPicker")
             }
             .headerProminence(.increased)
-            Section(header: Text("Quiz Data"), footer: Text("Reset your all-time quiz statistics. This action cannot be undone.")) {
+            Section(header: Text("Game Data"), footer: Text("Reset your all-time game statistics. This action cannot be undone.").font(.footnote).foregroundStyle(.secondary)) {
                 Button(role: .destructive) {
                     showingResetQuizAlert = true
                 } label: {
@@ -478,3 +478,4 @@ struct SettingsView: View {
 #Preview {
     NavigationStack { SettingsView() }
 }
+

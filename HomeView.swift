@@ -18,8 +18,6 @@ struct HomeView: View {
     @State private var isTimerRunning: Bool = false
     @State private var isPaused: Bool = false
     @State private var remainingSeconds: Int = 0
-    private let prayerTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-
     @AppStorage("prayerTimerEndDate") private var storedEndDate: Double = 0
     @AppStorage("prayerTimerRunning") private var storedRunning: Bool = false
     @AppStorage("prayerTimerPaused") private var storedPaused: Bool = false
@@ -45,7 +43,9 @@ struct HomeView: View {
     @AppStorage("stopwatchStartDate") private var stopwatchStartDate: Double = 0
     @AppStorage("stopwatchAccumulated") private var stopwatchAccumulated: Int = 0
     @State private var stopwatchElapsed: Int = 0
-    private let stopwatchTicker = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    @State private var unifiedTick: Int = 0
+    private let unifiedTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     @State private var showFinishedAlert: Bool = false
     @State private var finishHapticTimer: Timer? = nil
@@ -58,12 +58,11 @@ struct HomeView: View {
     @State private var showCopyToast: Bool = false
     @State private var startIconBounce: Bool = false
     @State private var timeMarker: Int = 0
+    @State private var lastVerseAutoRefreshToken: String = ""
     @State private var isHealthKitAvailable: Bool = HealthKitManager.shared.isAvailable()
 
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.horizontalSizeClass) private var hSize
-
-    private let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
     private static let sharedGridColumns: [GridItem] = [GridItem(.flexible())]
     private static let notificationID = "PrayerStudyTimerFinished"
@@ -74,18 +73,14 @@ struct HomeView: View {
         (TimerSound(rawValue: timerSoundSelection) ?? .default).systemSoundID
     }
 
-    private var remainingFraction: Double {
-        guard storedTotalSeconds > 0 else { return 1.0 }
-        return max(0.0, min(1.0, Double(remainingSeconds) / Double(storedTotalSeconds)))
-    }
-
     private var timerTintColor: Color {
-        switch remainingFraction {
-        case 0.5...1.0:
+        // Color based on absolute remaining time
+        // Green > 5 minutes (300s), Yellow between 2 and 5 minutes, Red < 2 minutes (120s)
+        if remainingSeconds > 300 {
             return .green
-        case 0.1..<0.5:
+        } else if remainingSeconds > 120 {
             return .yellow
-        default:
+        } else {
             return .red
         }
     }
@@ -236,15 +231,9 @@ struct HomeView: View {
                     }
                     .frame(maxWidth: .infinity)
                 } else {
-                    Text("Tap refresh to get today's verse.")
+                    Text("Verse will refresh automatically at 6 AM and 6 PM.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                    Button(action: { loadRandomVerse() }) {
-                        Label("Refresh", systemImage: "arrow.clockwise")
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(.orange)
-                    .disabled(verseOfDayPaused)
                 }
             }
             .contentShape(Rectangle())
@@ -281,7 +270,7 @@ struct HomeView: View {
                 if isTimerRunning {
                     HeroCard(
                         title: "Prayer/Study Timer",
-                        subtitle: isTimerRunning ? (isPaused ? "Paused" : "In progress") : "Start a focused timer with an alert when time is up.",
+                        subtitle: isTimerRunning ? (isPaused ? "Paused" : "In progress") : "Start a timer with an alert when time is up.",
                         icon: "timer",
                         tint: timerTintColor,
                         backgroundColor: isTimerRunning ? timerTintColor.opacity(0.20) : nil,
@@ -300,19 +289,24 @@ struct HomeView: View {
                             Text(formattedTime(remainingSeconds))
                                 .font(.system(size: 36, weight: .semibold, design: .monospaced))
                                 .foregroundStyle(timerTintColor)
-                            HStack(spacing: 12) {
+                            HStack(spacing: 24) {
+                                // Pause or Resume toggle
                                 Button(action: { togglePause() }) {
-                                    Label(isPaused ? "Resume" : "Pause", systemImage: isPaused ? "play" : "pause.fill")
-                                        .frame(maxWidth: .infinity)
+                                    Image(systemName: isPaused ? "play.circle.fill" : "pause.circle.fill")
+                                        .font(.system(size: 56))
+                                        .foregroundStyle(isPaused ? Color.green : timerTintColor)
                                 }
-                                .buttonStyle(.bordered)
-                                .tint(timerTintColor)
+                                .buttonStyle(.plain)
+                                .accessibilityLabel(isPaused ? "Resume" : "Pause")
 
-                                Button(role: .destructive, action: stopTimer) {
-                                    Label("Stop", systemImage: "stop.fill")
-                                        .frame(maxWidth: .infinity)
+                                // Stop (red)
+                                Button(action: { stopTimer() }) {
+                                    Image(systemName: "stop.circle.fill")
+                                        .font(.system(size: 56))
+                                        .foregroundStyle(.red)
                                 }
-                                .buttonStyle(.borderedProminent)
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Stop")
                             }
                         }
                     }
@@ -321,7 +315,7 @@ struct HomeView: View {
                 } else {
                     HeroCard(
                         title: "Prayer/Study Timer",
-                        subtitle: "Start a focused timer with an alert when time is up.",
+                        subtitle: "Start a timer with an alert when time is up. Long-press this card for quick-start options",
                         icon: "timer",
                         tint: .blue
                     ) {
@@ -338,7 +332,7 @@ struct HomeView: View {
                             HStack(spacing: 12) {
                                 Image(systemName: "play")
                                     .imageScale(.large)
-                                    .foregroundStyle(.blue)
+                                    .foregroundStyle(.green)
                                     .scaleEffect(startIconBounce ? 1.15 : 1.0)
                                     .animation(.spring(response: 0.25, dampingFraction: 0.6, blendDuration: 0.0), value: startIconBounce)
                                 Text("Start")
@@ -376,6 +370,13 @@ struct HomeView: View {
                     }
                     .accessibilityAddTraits(.isButton)
                     .accessibilityLabel("Start")
+                    .contextMenu {
+                        Button("Start 5 min") { startTimer(minutes: 5) }
+                        Button("Start 10 min") { startTimer(minutes: 10) }
+                        Button("Start 15 min") { startTimer(minutes: 15) }
+                        Button("Start 20 min") { startTimer(minutes: 20) }
+                        Button("Start 30 min") { startTimer(minutes: 30) }
+                    }
                 }
             } else { // Stopwatch mode
                 HeroCard(
@@ -396,21 +397,68 @@ struct HomeView: View {
 
                         Text(formattedHMS(stopwatchElapsed))
                             .font(.system(size: 36, weight: .semibold, design: .monospaced))
-                        HStack(spacing: 12) {
+                        HStack(spacing: 24) {
                             if stopwatchRunning {
-                                Button("Pause") { pauseStopwatch() }
-                                    .buttonStyle(.bordered)
-                                Button("Stop") { stopStopwatch() }
-                                    .buttonStyle(.borderedProminent)
-                                    .tint(.red)
-                            } else {
-                                Button(stopwatchElapsed == 0 ? "Start" : "Resume") { startStopwatch() }
-                                    .buttonStyle(.borderedProminent)
-                                if stopwatchElapsed > 0 {
-                                    Button("Reset") { resetStopwatch() }
-                                        .buttonStyle(.bordered)
-                                        .tint(.secondary)
+                                // Running: Pause (active), Resume (inactive), Stop (active)
+                                Button(action: { pauseStopwatch() }) {
+                                    Image(systemName: "pause.circle.fill")
+                                        .font(.system(size: 44))
+                                        .foregroundStyle(.yellow)
                                 }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Pause")
+
+                                Button(action: {}) {
+                                    Image(systemName: "play.circle")
+                                        .font(.system(size: 44))
+                                        .foregroundStyle(.secondary)
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(true)
+                                .accessibilityLabel("Resume (inactive)")
+
+                                Button(action: { stopStopwatch() }) {
+                                    Image(systemName: "stop.circle.fill")
+                                        .font(.system(size: 44))
+                                }
+                                .buttonStyle(.plain)
+                                .foregroundStyle(.red)
+                                .accessibilityLabel("Stop")
+                            } else if stopwatchElapsed > 0 {
+                                // Paused: Pause (inactive), Resume (active), Stop (active)
+                                Button(action: {}) {
+                                    Image(systemName: "pause.circle")
+                                        .font(.system(size: 44))
+                                        .foregroundStyle(.secondary)
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(true)
+                                .accessibilityLabel("Pause (inactive)")
+
+                                Button(action: { startStopwatch() }) {
+                                    Image(systemName: "play.circle.fill")
+                                        .font(.system(size: 44))
+                                        .foregroundStyle(.green)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Resume")
+
+                                Button(action: { stopStopwatch() }) {
+                                    Image(systemName: "stop.circle.fill")
+                                        .font(.system(size: 44))
+                                }
+                                .buttonStyle(.plain)
+                                .foregroundStyle(.red)
+                                .accessibilityLabel("Stop")
+                            } else {
+                                // Ready: large Start icon
+                                Button(action: { startStopwatch() }) {
+                                    Image(systemName: "play.circle.fill")
+                                        .font(.system(size: 56))
+                                        .foregroundStyle(.green)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Start")
                             }
                         }
                     }
@@ -548,7 +596,12 @@ struct HomeView: View {
                     verseOfDay = VerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
                 }
             } else {
-                loadRandomVerse()
+                // Do not arbitrarily refresh; show the last stored verse if available, otherwise seed an initial verse.
+                if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
+                    verseOfDay = VerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
+                } else {
+                    loadRandomVerse()
+                }
             }
             // Initialize stopwatch elapsed from stored state
             if stopwatchRunning {
@@ -559,26 +612,31 @@ struct HomeView: View {
                 stopwatchElapsed = stopwatchAccumulated
             }
         }
-        .onReceive(prayerTimer) { _ in
-            guard isTimerRunning else { return }
-            if isPaused { return }
-            if storedEndDate > 0 {
+        .onReceive(unifiedTimer) { _ in
+            // Increment a unified tick counter
+            unifiedTick &+= 1
+
+            // Timer logic: update remaining seconds when running and not paused
+            if isTimerRunning && !isPaused && storedEndDate > 0 {
                 let remaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
                 remainingSeconds = remaining
                 if remaining == 0 {
                     handleTimerFinished()
                 }
             }
-        }
-        .onReceive(stopwatchTicker) { _ in
-            guard stopwatchRunning else { return }
-            let now = Date().timeIntervalSince1970
-            let base = stopwatchAccumulated + Int(max(0, now - stopwatchStartDate))
-            stopwatchElapsed = base
-        }
-        .onReceive(minuteTimer) { _ in
-            // Update a marker to trigger view refresh for time-based changes (e.g., after 6 PM)
-            timeMarker = (timeMarker + 1) % 60
+
+            // Stopwatch logic: update elapsed when running
+            if stopwatchRunning {
+                let now = Date().timeIntervalSince1970
+                let base = stopwatchAccumulated + Int(max(0, now - stopwatchStartDate))
+                stopwatchElapsed = base
+            }
+
+            // Minute tick: every 60 seconds, update marker and check auto verse refresh
+            if unifiedTick % 60 == 0 {
+                timeMarker = (timeMarker + 1) % 60
+                checkAutoVerseRefresh()
+            }
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             switch newPhase {
@@ -608,6 +666,21 @@ struct HomeView: View {
             }
         } message: {
             Text("Your prayer/study timer has completed.")
+        }
+    }
+
+    private func checkAutoVerseRefresh() {
+        guard !verseOfDayPaused else { return }
+        let now = Date()
+        let cal = Calendar.current
+        let comps = cal.dateComponents([.year, .month, .day, .hour, .minute], from: now)
+        guard let hour = comps.hour, let minute = comps.minute, let year = comps.year, let month = comps.month, let day = comps.day else { return }
+        // Only refresh exactly at 6:00 and 18:00
+        guard minute == 0, (hour == 6 || hour == 18) else { return }
+        let token = "\(year)-\(month)-\(day)-\(hour)"
+        if token != lastVerseAutoRefreshToken {
+            lastVerseAutoRefreshToken = token
+            loadRandomVerse()
         }
     }
 
@@ -646,8 +719,11 @@ struct HomeView: View {
         isPaused.toggle()
         storedPaused = isPaused
         if isPaused {
-            // Freeze remaining
-            storedRemainingWhenPaused = remainingSeconds
+            // Freeze remaining based on stored end date for robustness
+            let now = Date().timeIntervalSince1970
+            storedRemainingWhenPaused = Int(max(0, storedEndDate - now))
+            // Keep UI in sync
+            remainingSeconds = storedRemainingWhenPaused
             cancelNotification()
         } else {
             // Resume: compute new end date from remaining
@@ -723,6 +799,9 @@ struct HomeView: View {
         if scenePhase != .active {
             stopMindfulLogging()
         }
+
+        // Ensure no pending local notification fires now that we're handling the finish in the foreground
+        cancelNotification()
 
         resetTimerState()
 
