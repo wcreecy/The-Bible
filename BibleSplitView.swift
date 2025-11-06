@@ -7,23 +7,56 @@ struct BibleSplitView: View {
     
     var body: some View {
         NavigationSplitView(columnVisibility: .constant(.all)) {
+            let canon = BibleData.books
+            let indexMap = Dictionary(uniqueKeysWithValues: canon.enumerated().map { ($1.name, $0) })
+            let matthewIndex = indexMap["Matthew"] ?? Int.max
+            let otBooks = canon.filter { (indexMap[$0.name] ?? Int.max) < matthewIndex }
+            let ntBooks = canon.filter { (indexMap[$0.name] ?? Int.max) >= matthewIndex }
+
             List {
-                ForEach(BibleData.books, id: \.name) { book in
-                    Button {
-                        selectedBook = book
-                        selectedChapter = nil
-                        navStartVerse = 1
-                    } label: {
-                        HStack {
-                            Text(book.name)
-                            if selectedBook?.name == book.name {
-                                Spacer()
-                                Image(systemName: "checkmark")
-                                    .foregroundStyle(.blue)
+                if !otBooks.isEmpty {
+                    Section {
+                        ForEach(otBooks, id: \.name) { book in
+                            Button {
+                                selectedBook = book
+                                selectedChapter = nil
+                                navStartVerse = 1
+                            } label: {
+                                HStack {
+                                    Text(book.name)
+                                    if selectedBook?.name == book.name {
+                                        Spacer()
+                                        Image(systemName: "checkmark").foregroundStyle(.blue)
+                                    }
+                                }
                             }
+                            .buttonStyle(.plain)
                         }
+                    } header: {
+                        Text("Old Testament (\(otBooks.count))").font(.footnote).foregroundStyle(.secondary)
                     }
-                    .buttonStyle(.plain)
+                }
+                if !ntBooks.isEmpty {
+                    Section {
+                        ForEach(ntBooks, id: \.name) { book in
+                            Button {
+                                selectedBook = book
+                                selectedChapter = nil
+                                navStartVerse = 1
+                            } label: {
+                                HStack {
+                                    Text(book.name)
+                                    if selectedBook?.name == book.name {
+                                        Spacer()
+                                        Image(systemName: "checkmark").foregroundStyle(.blue)
+                                    }
+                                }
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    } header: {
+                        Text("New Testament (\(ntBooks.count))").font(.footnote).foregroundStyle(.secondary)
+                    }
                 }
             }
             .navigationTitle("Books")

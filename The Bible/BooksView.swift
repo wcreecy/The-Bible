@@ -12,11 +12,41 @@ struct BooksView: View {
 
     var body: some View {
         Group {
-            List(filteredBooks) { book in
-                NavigationLink(value: book) {
-                    Text(book.name)
+            let canon = BibleData.books
+            let indexMap = Dictionary(uniqueKeysWithValues: canon.enumerated().map { ($1.name, $0) })
+            let matthewIndex = indexMap["Matthew"] ?? Int.max
+            let otBooks = filteredBooks.filter { (indexMap[$0.name] ?? Int.max) < matthewIndex }
+            let ntBooks = filteredBooks.filter { (indexMap[$0.name] ?? Int.max) >= matthewIndex }
+
+            List {
+                if !otBooks.isEmpty {
+                    Section {
+                        ForEach(otBooks) { book in
+                            NavigationLink(value: book) {
+                                Text(book.name)
+                            }
+                        }
+                    } header: {
+                        Text("Old Testament (\(otBooks.count))")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                if !ntBooks.isEmpty {
+                    Section {
+                        ForEach(ntBooks) { book in
+                            NavigationLink(value: book) {
+                                Text(book.name)
+                            }
+                        }
+                    } header: {
+                        Text("New Testament (\(ntBooks.count))")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
+            .listStyle(.insetGrouped)
             .navigationDestination(for: Book.self) { book in
                 ChaptersView(book: book)
             }
