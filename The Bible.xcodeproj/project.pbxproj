@@ -7,27 +7,41 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2C279D002EBCC62A0023C46B /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C279CFF2EBCC62A0023C46B /* Route.swift */; };
-		2C279D022EBCC62C0023C46B /* NavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C279D012EBCC62C0023C46B /* NavigationCoordinator.swift */; };
-		2C320B4A2EB40940003814A6 /* NotesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C320B492EB4093F003814A6 /* NotesModel.swift */; };
-		2C320B4C2EB40966003814A6 /* NotesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C320B4B2EB40966003814A6 /* NotesListView.swift */; };
-		2C736D092EB9899600CD2E6F /* BibleSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C736D082EB9899600CD2E6F /* BibleSplitView.swift */; };
-		2C7841392EB407C0008DDBBF /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7841382EB407C0008DDBBF /* Note.swift */; };
-		2C78413B2EB407D1008DDBBF /* NotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C78413A2EB407D1008DDBBF /* NotesView.swift */; };
-		2C82F4862EBACCE600DB40FC /* BookSelectionLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C82F4852EBACCE600DB40FC /* BookSelectionLink.swift */; };
-		2C82F4DD2EBB944B00DB40FC /* ShareText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C82F4DC2EBB944B00DB40FC /* ShareText.swift */; };
-		2C82F4DF2EBBB31000DB40FC /* BeatTheClockGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C82F4DE2EBBB31000DB40FC /* BeatTheClockGameView.swift */; };
-		2CB56D3E2EB3830D00A657FA /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D3D2EB3830D00A657FA /* Bookmark.swift */; };
-		2CB56D402EB3831100A657FA /* BookmarksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D3F2EB3831100A657FA /* BookmarksView.swift */; };
-		2CB56D982EB3895400A657FA /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D972EB3895400A657FA /* HomeView.swift */; };
-		2CB56DF02EB3942900A657FA /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56DEF2EB3942900A657FA /* Toast.swift */; };
-		2CB677112EB56EB000E609B5 /* QuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB677102EB56EB000E609B5 /* QuizView.swift */; };
-		2CB677C42EB67F1400E609B5 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB677C32EB67F1400E609B5 /* HealthKitManager.swift */; };
-		2CD457292EB8FFCF003CB315 /* GamesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD457282EB8FFCE003CB315 /* GamesView.swift */; };
-		2CD4572D2EB9025D003CB315 /* HangmanGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4572C2EB9025D003CB315 /* HangmanGameView.swift */; };
-		2CD4572F2EB90410003CB315 /* ReferenceMatchGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4572E2EB90410003CB315 /* ReferenceMatchGameView.swift */; };
-		2CD4579B2EB93C72003CB315 /* SegmentedPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4579A2EB93C72003CB315 /* SegmentedPicker.swift */; };
-		2CF6F1712EB83C2100E59640 /* TimerSound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF6F1702EB83C2100E59640 /* TimerSound.swift */; };
+		2C49CF442EBE0FF30006FF79 /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D3D2EB3830D00A657FA /* Bookmark.swift */; };
+		2C49CF452EBE0FFA0006FF79 /* BookmarksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D3F2EB3831100A657FA /* BookmarksView.swift */; };
+		2C49CF462EBE10000006FF79 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D972EB3895400A657FA /* HomeView.swift */; };
+		2C49CF472EBE10070006FF79 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56DEF2EB3942900A657FA /* Toast.swift */; };
+		2C49CF482EBE100D0006FF79 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7841382EB407C0008DDBBF /* Note.swift */; };
+		2C49CF492EBE10140006FF79 /* NotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C78413A2EB407D1008DDBBF /* NotesView.swift */; };
+		2C49CF4A2EBE101C0006FF79 /* NotesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C320B492EB4093F003814A6 /* NotesModel.swift */; };
+		2C49CF4B2EBE10210006FF79 /* NotesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C320B4B2EB40966003814A6 /* NotesListView.swift */; };
+		2C49CF4C2EBE10260006FF79 /* QuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB677102EB56EB000E609B5 /* QuizView.swift */; };
+		2C49CF4D2EBE10310006FF79 /* BibleSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C736D082EB9899600CD2E6F /* BibleSplitView.swift */; };
+		2C49CF4E2EBE10310006FF79 /* BeatTheClockGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C82F4DE2EBBB31000DB40FC /* BeatTheClockGameView.swift */; };
+		2C49CF4F2EBE10310006FF79 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB677C32EB67F1400E609B5 /* HealthKitManager.swift */; };
+		2C49CF502EBE10310006FF79 /* HangmanGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4572C2EB9025D003CB315 /* HangmanGameView.swift */; };
+		2C49CF512EBE10310006FF79 /* BookSelectionLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C82F4852EBACCE600DB40FC /* BookSelectionLink.swift */; };
+		2C49CF522EBE10310006FF79 /* ShareText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C82F4DC2EBB944B00DB40FC /* ShareText.swift */; };
+		2C49CF532EBE10310006FF79 /* NavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C279D012EBCC62C0023C46B /* NavigationCoordinator.swift */; };
+		2C49CF542EBE10310006FF79 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C279CFF2EBCC62A0023C46B /* Route.swift */; };
+		2C49CF552EBE10310006FF79 /* TimerSound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF6F1702EB83C2100E59640 /* TimerSound.swift */; };
+		2C49CF562EBE10310006FF79 /* SegmentedPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4579A2EB93C72003CB315 /* SegmentedPicker.swift */; };
+		2C49CF572EBE10310006FF79 /* GamesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD457282EB8FFCE003CB315 /* GamesView.swift */; };
+		2C49CF582EBE10310006FF79 /* ReferenceMatchGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD4572E2EB90410003CB315 /* ReferenceMatchGameView.swift */; };
+		2C49CF602EBE16090006FF79 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C49CF5F2EBE16090006FF79 /* WidgetKit.framework */; };
+		2C49CF622EBE16090006FF79 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C49CF612EBE16090006FF79 /* SwiftUI.framework */; };
+		2C49CF732EBE160A0006FF79 /* The Bible WidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 2C49CF5D2EBE16090006FF79 /* The Bible WidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2C49CF7F2EBE27AE0006FF79 /* PrayerTimerAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF7E2EBE27AE0006FF79 /* PrayerTimerAttributes.swift */; };
+		2C49CF802EBE27C40006FF79 /* PrayerTimerAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF7E2EBE27AE0006FF79 /* PrayerTimerAttributes.swift */; };
+		2C49CF822EBE27D40006FF79 /* PrayerTimerActivityController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF812EBE27D40006FF79 /* PrayerTimerActivityController.swift */; };
+		2C49CF832EBE28250006FF79 /* PrayerTimerActivityController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF812EBE27D40006FF79 /* PrayerTimerActivityController.swift */; };
+		2C49CF852EBE2E940006FF79 /* StopwatchAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF842EBE2E940006FF79 /* StopwatchAttributes.swift */; };
+		2C49CF872EBE2E9C0006FF79 /* StopwatchActivityController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF862EBE2E9C0006FF79 /* StopwatchActivityController.swift */; };
+		2C49CF892EBE2EA30006FF79 /* StopwatchLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF882EBE2EA30006FF79 /* StopwatchLiveActivity.swift */; };
+		2C49CF8A2EBE2EC40006FF79 /* StopwatchAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF842EBE2E940006FF79 /* StopwatchAttributes.swift */; };
+		2C49CF8B2EBE31CB0006FF79 /* StopwatchLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF882EBE2EA30006FF79 /* StopwatchLiveActivity.swift */; };
+		2C49CF8D2EBE33010006FF79 /* StopwatchActivityIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF8C2EBE33010006FF79 /* StopwatchActivityIntents.swift */; };
+		2C49CF932EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF922EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,7 +59,42 @@
 			remoteGlobalIDString = 2C3B0F6C2EB14F3D0089556C;
 			remoteInfo = "The Bible";
 		};
+		2C49CF112EBE0F6D0006FF79 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C3B0F652EB14F3D0089556C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2C49CEFF2EBE0F6C0006FF79;
+			remoteInfo = "The Bible (iOS)";
+		};
+		2C49CF1B2EBE0F6D0006FF79 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C3B0F652EB14F3D0089556C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2C49CEFF2EBE0F6C0006FF79;
+			remoteInfo = "The Bible (iOS)";
+		};
+		2C49CF712EBE160A0006FF79 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C3B0F652EB14F3D0089556C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2C49CF5C2EBE16090006FF79;
+			remoteInfo = "The Bible WidgetsExtension";
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2C49CF782EBE160A0006FF79 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				2C49CF732EBE160A0006FF79 /* The Bible WidgetsExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		2C279CFF2EBCC62A0023C46B /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
@@ -55,6 +104,19 @@
 		2C3B0F6D2EB14F3D0089556C /* The Bible.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "The Bible.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C3B0F7E2EB14F3E0089556C /* The BibleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The BibleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C3B0F882EB14F3E0089556C /* The BibleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The BibleUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C49CF002EBE0F6C0006FF79 /* The Bible (iOS).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "The Bible (iOS).app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C49CF102EBE0F6D0006FF79 /* The Bible (iOS)Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The Bible (iOS)Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C49CF1A2EBE0F6D0006FF79 /* The Bible (iOS)UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The Bible (iOS)UITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C49CF5D2EBE16090006FF79 /* The Bible WidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "The Bible WidgetsExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C49CF5F2EBE16090006FF79 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		2C49CF612EBE16090006FF79 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		2C49CF7E2EBE27AE0006FF79 /* PrayerTimerAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimerAttributes.swift; sourceTree = "<group>"; };
+		2C49CF812EBE27D40006FF79 /* PrayerTimerActivityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimerActivityController.swift; sourceTree = "<group>"; };
+		2C49CF842EBE2E940006FF79 /* StopwatchAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopwatchAttributes.swift; sourceTree = "<group>"; };
+		2C49CF862EBE2E9C0006FF79 /* StopwatchActivityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopwatchActivityController.swift; sourceTree = "<group>"; };
+		2C49CF882EBE2EA30006FF79 /* StopwatchLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopwatchLiveActivity.swift; sourceTree = "<group>"; };
+		2C49CF8C2EBE33010006FF79 /* StopwatchActivityIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopwatchActivityIntents.swift; sourceTree = "<group>"; };
+		2C49CF922EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshVerseOfDayIntent.swift; sourceTree = "<group>"; };
 		2C736D082EB9899600CD2E6F /* BibleSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleSplitView.swift; sourceTree = "<group>"; };
 		2C7841382EB407C0008DDBBF /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		2C78413A2EB407D1008DDBBF /* NotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesView.swift; sourceTree = "<group>"; };
@@ -73,16 +135,31 @@
 		2CD4572C2EB9025D003CB315 /* HangmanGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HangmanGameView.swift; sourceTree = "<group>"; };
 		2CD4572E2EB90410003CB315 /* ReferenceMatchGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferenceMatchGameView.swift; sourceTree = "<group>"; };
 		2CD4579A2EB93C72003CB315 /* SegmentedPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedPicker.swift; sourceTree = "<group>"; };
+		2CEA02D52EBE677900039D4B /* The Bible WidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "The Bible WidgetsExtension.entitlements"; sourceTree = "<group>"; };
 		2CF6F1702EB83C2100E59640 /* TimerSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerSound.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		2C3B0F902EB14F3E0089556C /* Exceptions for "The Bible" folder in "The Bible" target */ = {
+		2C49CF282EBE0F6D0006FF79 /* Exceptions for "The Bible (iOS)" folder in "The Bible (iOS)" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 2C3B0F6C2EB14F3D0089556C /* The Bible */;
+			target = 2C49CEFF2EBE0F6C0006FF79 /* The Bible (iOS) */;
+		};
+		2C49CF772EBE160A0006FF79 /* Exceptions for "The Bible Widgets" folder in "The Bible WidgetsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 2C49CF5C2EBE16090006FF79 /* The Bible WidgetsExtension */;
+		};
+		2C49CF7D2EBE1A030006FF79 /* Exceptions for "The Bible" folder in "The Bible (iOS)" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 2C49CEFF2EBE0F6C0006FF79 /* The Bible (iOS) */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -90,7 +167,7 @@
 		2C3B0F6F2EB14F3D0089556C /* The Bible */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				2C3B0F902EB14F3E0089556C /* Exceptions for "The Bible" folder in "The Bible" target */,
+				2C49CF7D2EBE1A030006FF79 /* Exceptions for "The Bible" folder in "The Bible (iOS)" target */,
 			);
 			path = "The Bible";
 			sourceTree = "<group>";
@@ -103,6 +180,32 @@
 		2C3B0F8B2EB14F3E0089556C /* The BibleUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "The BibleUITests";
+			sourceTree = "<group>";
+		};
+		2C49CF012EBE0F6C0006FF79 /* The Bible (iOS) */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2C49CF282EBE0F6D0006FF79 /* Exceptions for "The Bible (iOS)" folder in "The Bible (iOS)" target */,
+			);
+			path = "The Bible (iOS)";
+			sourceTree = "<group>";
+		};
+		2C49CF132EBE0F6D0006FF79 /* The Bible (iOS)Tests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "The Bible (iOS)Tests";
+			sourceTree = "<group>";
+		};
+		2C49CF1D2EBE0F6D0006FF79 /* The Bible (iOS)UITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "The Bible (iOS)UITests";
+			sourceTree = "<group>";
+		};
+		2C49CF632EBE16090006FF79 /* The Bible Widgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2C49CF772EBE160A0006FF79 /* Exceptions for "The Bible Widgets" folder in "The Bible WidgetsExtension" target */,
+			);
+			path = "The Bible Widgets";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -129,6 +232,36 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2C49CEFD2EBE0F6C0006FF79 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C49CF0D2EBE0F6D0006FF79 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C49CF172EBE0F6D0006FF79 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C49CF5A2EBE16090006FF79 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C49CF622EBE16090006FF79 /* SwiftUI.framework in Frameworks */,
+				2C49CF602EBE16090006FF79 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2CB677D72EB680AE00E609B5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -149,9 +282,15 @@
 		2C3B0F642EB14F3D0089556C = {
 			isa = PBXGroup;
 			children = (
+				2CEA02D52EBE677900039D4B /* The Bible WidgetsExtension.entitlements */,
 				2C3B0F6F2EB14F3D0089556C /* The Bible */,
 				2C3B0F812EB14F3E0089556C /* The BibleTests */,
 				2C3B0F8B2EB14F3E0089556C /* The BibleUITests */,
+				2C49CF012EBE0F6C0006FF79 /* The Bible (iOS) */,
+				2C49CF132EBE0F6D0006FF79 /* The Bible (iOS)Tests */,
+				2C49CF1D2EBE0F6D0006FF79 /* The Bible (iOS)UITests */,
+				2C49CF632EBE16090006FF79 /* The Bible Widgets */,
+				2C49CF5E2EBE16090006FF79 /* Frameworks */,
 				2C3B0F6E2EB14F3D0089556C /* Products */,
 				2CB56D3D2EB3830D00A657FA /* Bookmark.swift */,
 				2CB56D3F2EB3831100A657FA /* BookmarksView.swift */,
@@ -173,7 +312,14 @@
 				2C82F4DC2EBB944B00DB40FC /* ShareText.swift */,
 				2C82F4DE2EBBB31000DB40FC /* BeatTheClockGameView.swift */,
 				2C279CFF2EBCC62A0023C46B /* Route.swift */,
+				2C49CF7E2EBE27AE0006FF79 /* PrayerTimerAttributes.swift */,
+				2C49CF812EBE27D40006FF79 /* PrayerTimerActivityController.swift */,
 				2C279D012EBCC62C0023C46B /* NavigationCoordinator.swift */,
+				2C49CF842EBE2E940006FF79 /* StopwatchAttributes.swift */,
+				2C49CF862EBE2E9C0006FF79 /* StopwatchActivityController.swift */,
+				2C49CF882EBE2EA30006FF79 /* StopwatchLiveActivity.swift */,
+				2C49CF8C2EBE33010006FF79 /* StopwatchActivityIntents.swift */,
+				2C49CF922EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -185,8 +331,21 @@
 				2C3B0F882EB14F3E0089556C /* The BibleUITests.xctest */,
 				2CB677DA2EB680AE00E609B5 /* BibleTests.xctest */,
 				2CB677E42EB680AE00E609B5 /* BibleUITests.xctest */,
+				2C49CF002EBE0F6C0006FF79 /* The Bible (iOS).app */,
+				2C49CF102EBE0F6D0006FF79 /* The Bible (iOS)Tests.xctest */,
+				2C49CF1A2EBE0F6D0006FF79 /* The Bible (iOS)UITests.xctest */,
+				2C49CF5D2EBE16090006FF79 /* The Bible WidgetsExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		2C49CF5E2EBE16090006FF79 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2C49CF5F2EBE16090006FF79 /* WidgetKit.framework */,
+				2C49CF612EBE16090006FF79 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -203,9 +362,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				2C3B0F6F2EB14F3D0089556C /* The Bible */,
 			);
 			name = "The Bible";
 			packageProductDependencies = (
@@ -259,6 +415,99 @@
 			productName = "The BibleUITests";
 			productReference = 2C3B0F882EB14F3E0089556C /* The BibleUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		2C49CEFF2EBE0F6C0006FF79 /* The Bible (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C49CF292EBE0F6D0006FF79 /* Build configuration list for PBXNativeTarget "The Bible (iOS)" */;
+			buildPhases = (
+				2C49CEFC2EBE0F6C0006FF79 /* Sources */,
+				2C49CEFD2EBE0F6C0006FF79 /* Frameworks */,
+				2C49CEFE2EBE0F6C0006FF79 /* Resources */,
+				2C49CF782EBE160A0006FF79 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2C49CF722EBE160A0006FF79 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				2C3B0F6F2EB14F3D0089556C /* The Bible */,
+				2C49CF012EBE0F6C0006FF79 /* The Bible (iOS) */,
+			);
+			name = "The Bible (iOS)";
+			packageProductDependencies = (
+			);
+			productName = "The Bible (iOS)";
+			productReference = 2C49CF002EBE0F6C0006FF79 /* The Bible (iOS).app */;
+			productType = "com.apple.product-type.application";
+		};
+		2C49CF0F2EBE0F6D0006FF79 /* The Bible (iOS)Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C49CF2A2EBE0F6D0006FF79 /* Build configuration list for PBXNativeTarget "The Bible (iOS)Tests" */;
+			buildPhases = (
+				2C49CF0C2EBE0F6D0006FF79 /* Sources */,
+				2C49CF0D2EBE0F6D0006FF79 /* Frameworks */,
+				2C49CF0E2EBE0F6D0006FF79 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2C49CF122EBE0F6D0006FF79 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				2C49CF132EBE0F6D0006FF79 /* The Bible (iOS)Tests */,
+			);
+			name = "The Bible (iOS)Tests";
+			packageProductDependencies = (
+			);
+			productName = "The Bible (iOS)Tests";
+			productReference = 2C49CF102EBE0F6D0006FF79 /* The Bible (iOS)Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		2C49CF192EBE0F6D0006FF79 /* The Bible (iOS)UITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C49CF2B2EBE0F6D0006FF79 /* Build configuration list for PBXNativeTarget "The Bible (iOS)UITests" */;
+			buildPhases = (
+				2C49CF162EBE0F6D0006FF79 /* Sources */,
+				2C49CF172EBE0F6D0006FF79 /* Frameworks */,
+				2C49CF182EBE0F6D0006FF79 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2C49CF1C2EBE0F6D0006FF79 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				2C49CF1D2EBE0F6D0006FF79 /* The Bible (iOS)UITests */,
+			);
+			name = "The Bible (iOS)UITests";
+			packageProductDependencies = (
+			);
+			productName = "The Bible (iOS)UITests";
+			productReference = 2C49CF1A2EBE0F6D0006FF79 /* The Bible (iOS)UITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		2C49CF5C2EBE16090006FF79 /* The Bible WidgetsExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C49CF742EBE160A0006FF79 /* Build configuration list for PBXNativeTarget "The Bible WidgetsExtension" */;
+			buildPhases = (
+				2C49CF592EBE16090006FF79 /* Sources */,
+				2C49CF5A2EBE16090006FF79 /* Frameworks */,
+				2C49CF5B2EBE16090006FF79 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				2C49CF632EBE16090006FF79 /* The Bible Widgets */,
+			);
+			name = "The Bible WidgetsExtension";
+			packageProductDependencies = (
+			);
+			productName = "The Bible WidgetsExtension";
+			productReference = 2C49CF5D2EBE16090006FF79 /* The Bible WidgetsExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 		2CB677D92EB680AE00E609B5 /* BibleTests */ = {
 			isa = PBXNativeTarget;
@@ -319,6 +568,20 @@
 						CreatedOnToolsVersion = 26.0.1;
 						TestTargetID = 2C3B0F6C2EB14F3D0089556C;
 					};
+					2C49CEFF2EBE0F6C0006FF79 = {
+						CreatedOnToolsVersion = 26.0.1;
+					};
+					2C49CF0F2EBE0F6D0006FF79 = {
+						CreatedOnToolsVersion = 26.0.1;
+						TestTargetID = 2C49CEFF2EBE0F6C0006FF79;
+					};
+					2C49CF192EBE0F6D0006FF79 = {
+						CreatedOnToolsVersion = 26.0.1;
+						TestTargetID = 2C49CEFF2EBE0F6C0006FF79;
+					};
+					2C49CF5C2EBE16090006FF79 = {
+						CreatedOnToolsVersion = 26.0.1;
+					};
 					2CB677D92EB680AE00E609B5 = {
 						CreatedOnToolsVersion = 26.0.1;
 						TestTargetID = 2CB677C92EB680AC00E609B5;
@@ -348,6 +611,10 @@
 				2C3B0F872EB14F3E0089556C /* The BibleUITests */,
 				2CB677D92EB680AE00E609B5 /* BibleTests */,
 				2CB677E32EB680AE00E609B5 /* BibleUITests */,
+				2C49CEFF2EBE0F6C0006FF79 /* The Bible (iOS) */,
+				2C49CF0F2EBE0F6D0006FF79 /* The Bible (iOS)Tests */,
+				2C49CF192EBE0F6D0006FF79 /* The Bible (iOS)UITests */,
+				2C49CF5C2EBE16090006FF79 /* The Bible WidgetsExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -368,6 +635,34 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		2C3B0F862EB14F3E0089556C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C49CEFE2EBE0F6C0006FF79 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C49CF0E2EBE0F6D0006FF79 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C49CF182EBE0F6D0006FF79 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C49CF5B2EBE16090006FF79 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -395,27 +690,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2CB677C42EB67F1400E609B5 /* HealthKitManager.swift in Sources */,
-				2C82F4DF2EBBB31000DB40FC /* BeatTheClockGameView.swift in Sources */,
-				2C78413B2EB407D1008DDBBF /* NotesView.swift in Sources */,
-				2C279D022EBCC62C0023C46B /* NavigationCoordinator.swift in Sources */,
-				2C82F4DD2EBB944B00DB40FC /* ShareText.swift in Sources */,
-				2CD457292EB8FFCF003CB315 /* GamesView.swift in Sources */,
-				2CD4572D2EB9025D003CB315 /* HangmanGameView.swift in Sources */,
-				2C7841392EB407C0008DDBBF /* Note.swift in Sources */,
-				2CB56D402EB3831100A657FA /* BookmarksView.swift in Sources */,
-				2CB56D3E2EB3830D00A657FA /* Bookmark.swift in Sources */,
-				2C320B4A2EB40940003814A6 /* NotesModel.swift in Sources */,
-				2C82F4862EBACCE600DB40FC /* BookSelectionLink.swift in Sources */,
-				2C736D092EB9899600CD2E6F /* BibleSplitView.swift in Sources */,
-				2CB677112EB56EB000E609B5 /* QuizView.swift in Sources */,
-				2CD4579B2EB93C72003CB315 /* SegmentedPicker.swift in Sources */,
-				2CD4572F2EB90410003CB315 /* ReferenceMatchGameView.swift in Sources */,
-				2C320B4C2EB40966003814A6 /* NotesListView.swift in Sources */,
-				2CB56DF02EB3942900A657FA /* Toast.swift in Sources */,
-				2CF6F1712EB83C2100E59640 /* TimerSound.swift in Sources */,
-				2CB56D982EB3895400A657FA /* HomeView.swift in Sources */,
-				2C279D002EBCC62A0023C46B /* Route.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -430,6 +704,66 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C49CEFC2EBE0F6C0006FF79 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C49CF442EBE0FF30006FF79 /* Bookmark.swift in Sources */,
+				2C49CF452EBE0FFA0006FF79 /* BookmarksView.swift in Sources */,
+				2C49CF482EBE100D0006FF79 /* Note.swift in Sources */,
+				2C49CF852EBE2E940006FF79 /* StopwatchAttributes.swift in Sources */,
+				2C49CF892EBE2EA30006FF79 /* StopwatchLiveActivity.swift in Sources */,
+				2C49CF8D2EBE33010006FF79 /* StopwatchActivityIntents.swift in Sources */,
+				2C49CF7F2EBE27AE0006FF79 /* PrayerTimerAttributes.swift in Sources */,
+				2C49CF4B2EBE10210006FF79 /* NotesListView.swift in Sources */,
+				2C49CF4C2EBE10260006FF79 /* QuizView.swift in Sources */,
+				2C49CF492EBE10140006FF79 /* NotesView.swift in Sources */,
+				2C49CF4D2EBE10310006FF79 /* BibleSplitView.swift in Sources */,
+				2C49CF4E2EBE10310006FF79 /* BeatTheClockGameView.swift in Sources */,
+				2C49CF4F2EBE10310006FF79 /* HealthKitManager.swift in Sources */,
+				2C49CF502EBE10310006FF79 /* HangmanGameView.swift in Sources */,
+				2C49CF512EBE10310006FF79 /* BookSelectionLink.swift in Sources */,
+				2C49CF522EBE10310006FF79 /* ShareText.swift in Sources */,
+				2C49CF872EBE2E9C0006FF79 /* StopwatchActivityController.swift in Sources */,
+				2C49CF822EBE27D40006FF79 /* PrayerTimerActivityController.swift in Sources */,
+				2C49CF532EBE10310006FF79 /* NavigationCoordinator.swift in Sources */,
+				2C49CF542EBE10310006FF79 /* Route.swift in Sources */,
+				2C49CF552EBE10310006FF79 /* TimerSound.swift in Sources */,
+				2C49CF562EBE10310006FF79 /* SegmentedPicker.swift in Sources */,
+				2C49CF572EBE10310006FF79 /* GamesView.swift in Sources */,
+				2C49CF582EBE10310006FF79 /* ReferenceMatchGameView.swift in Sources */,
+				2C49CF4A2EBE101C0006FF79 /* NotesModel.swift in Sources */,
+				2C49CF932EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift in Sources */,
+				2C49CF462EBE10000006FF79 /* HomeView.swift in Sources */,
+				2C49CF472EBE10070006FF79 /* Toast.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C49CF0C2EBE0F6D0006FF79 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C49CF162EBE0F6D0006FF79 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C49CF592EBE16090006FF79 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2C49CF832EBE28250006FF79 /* PrayerTimerActivityController.swift in Sources */,
+				2C49CF802EBE27C40006FF79 /* PrayerTimerAttributes.swift in Sources */,
+				2C49CF8A2EBE2EC40006FF79 /* StopwatchAttributes.swift in Sources */,
+				2C49CF8B2EBE31CB0006FF79 /* StopwatchLiveActivity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,6 +793,21 @@
 			isa = PBXTargetDependency;
 			target = 2C3B0F6C2EB14F3D0089556C /* The Bible */;
 			targetProxy = 2C3B0F892EB14F3E0089556C /* PBXContainerItemProxy */;
+		};
+		2C49CF122EBE0F6D0006FF79 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2C49CEFF2EBE0F6C0006FF79 /* The Bible (iOS) */;
+			targetProxy = 2C49CF112EBE0F6D0006FF79 /* PBXContainerItemProxy */;
+		};
+		2C49CF1C2EBE0F6D0006FF79 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2C49CEFF2EBE0F6C0006FF79 /* The Bible (iOS) */;
+			targetProxy = 2C49CF1B2EBE0F6D0006FF79 /* PBXContainerItemProxy */;
+		};
+		2C49CF722EBE160A0006FF79 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2C49CF5C2EBE16090006FF79 /* The Bible WidgetsExtension */;
+			targetProxy = 2C49CF712EBE160A0006FF79 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -781,6 +1130,250 @@
 			};
 			name = Release;
 		};
+		2C49CF222EBE0F6D0006FF79 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "The Bible (iOS)/The_Bible__iOS_.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZKG79M599K;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "The Bible (iOS)/Info.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app logs time in app as Mindful Minutes found in your Health app";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app logs time in app to Mindful Minutes found in your Health app";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Creecy.iOS-Bible-App.Bible-iOS-App.The-Bible--iOS-";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2C49CF232EBE0F6D0006FF79 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "The Bible (iOS)/The_Bible__iOS_.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZKG79M599K;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "The Bible (iOS)/Info.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app logs time in app as Mindful Minutes found in your Health app";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app logs time in app to Mindful Minutes found in your Health app";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Creecy.iOS-Bible-App.Bible-iOS-App.The-Bible--iOS-";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2C49CF242EBE0F6D0006FF79 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZKG79M599K;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Creecy.iOS-Bible-App.Bible-iOS-App.The-Bible--iOS-Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/The Bible (iOS).app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/The Bible (iOS)";
+			};
+			name = Debug;
+		};
+		2C49CF252EBE0F6D0006FF79 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZKG79M599K;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Creecy.iOS-Bible-App.Bible-iOS-App.The-Bible--iOS-Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/The Bible (iOS).app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/The Bible (iOS)";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2C49CF262EBE0F6D0006FF79 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZKG79M599K;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Creecy.iOS-Bible-App.Bible-iOS-App.The-Bible--iOS-UITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "The Bible (iOS)";
+			};
+			name = Debug;
+		};
+		2C49CF272EBE0F6D0006FF79 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZKG79M599K;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Creecy.iOS-Bible-App.Bible-iOS-App.The-Bible--iOS-UITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "The Bible (iOS)";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2C49CF752EBE160A0006FF79 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "The Bible WidgetsExtension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZKG79M599K;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "The Bible Widgets/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "The Bible Widgets";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Creecy.iOS-Bible-App.Bible-iOS-App.The-Bible--iOS-.The-Bible-Widgets";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2C49CF762EBE160A0006FF79 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "The Bible WidgetsExtension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZKG79M599K;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "The Bible Widgets/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "The Bible Widgets";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Creecy.iOS-Bible-App.Bible-iOS-App.The-Bible--iOS-.The-Bible-Widgets";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		2CB677F12EB680AE00E609B5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -908,6 +1501,42 @@
 			buildConfigurations = (
 				2C3B0F9A2EB14F3E0089556C /* Debug */,
 				2C3B0F9B2EB14F3E0089556C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2C49CF292EBE0F6D0006FF79 /* Build configuration list for PBXNativeTarget "The Bible (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2C49CF222EBE0F6D0006FF79 /* Debug */,
+				2C49CF232EBE0F6D0006FF79 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2C49CF2A2EBE0F6D0006FF79 /* Build configuration list for PBXNativeTarget "The Bible (iOS)Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2C49CF242EBE0F6D0006FF79 /* Debug */,
+				2C49CF252EBE0F6D0006FF79 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2C49CF2B2EBE0F6D0006FF79 /* Build configuration list for PBXNativeTarget "The Bible (iOS)UITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2C49CF262EBE0F6D0006FF79 /* Debug */,
+				2C49CF272EBE0F6D0006FF79 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2C49CF742EBE160A0006FF79 /* Build configuration list for PBXNativeTarget "The Bible WidgetsExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2C49CF752EBE160A0006FF79 /* Debug */,
+				2C49CF762EBE160A0006FF79 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

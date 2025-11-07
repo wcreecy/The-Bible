@@ -6,6 +6,7 @@ import AudioToolbox
 import UIKit
 import HealthKit
 import Foundation
+import WidgetKit
 
 private enum VerseScope: String { case old, new, whole, book }
 
@@ -173,6 +174,15 @@ struct HomeView: View {
                             storedVerseNumber = v.verseNumber
                             storedVerseText = v.verseText
                         }
+                        // Mirror current stored verse to App Group for widget sync
+                        if let shared = UserDefaults(suiteName: "group.bible.app") {
+                            shared.set(storedVerseBook, forKey: "verseOfDayBook")
+                            shared.set(storedVerseChapter, forKey: "verseOfDayChapter")
+                            shared.set(storedVerseNumber, forKey: "verseOfDayNumber")
+                            shared.set(storedVerseText, forKey: "verseOfDayText")
+                        }
+                        // Prompt widgets to refresh
+                        WidgetCenter.shared.reloadAllTimelines()
                         let generator = UIImpactFeedbackGenerator(style: .medium)
                         generator.impactOccurred()
                     }) {
@@ -594,11 +604,23 @@ struct HomeView: View {
                 // Restore last verse without refreshing when paused
                 if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
                     verseOfDay = VerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
+                    if let shared = UserDefaults(suiteName: "group.bible.app") {
+                        shared.set(storedVerseBook, forKey: "verseOfDayBook")
+                        shared.set(storedVerseChapter, forKey: "verseOfDayChapter")
+                        shared.set(storedVerseNumber, forKey: "verseOfDayNumber")
+                        shared.set(storedVerseText, forKey: "verseOfDayText")
+                    }
                 }
             } else {
                 // Do not arbitrarily refresh; show the last stored verse if available, otherwise seed an initial verse.
                 if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
                     verseOfDay = VerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
+                    if let shared = UserDefaults(suiteName: "group.bible.app") {
+                        shared.set(storedVerseBook, forKey: "verseOfDayBook")
+                        shared.set(storedVerseChapter, forKey: "verseOfDayChapter")
+                        shared.set(storedVerseNumber, forKey: "verseOfDayNumber")
+                        shared.set(storedVerseText, forKey: "verseOfDayText")
+                    }
                 } else {
                     loadRandomVerse()
                 }
@@ -623,6 +645,13 @@ struct HomeView: View {
                 if remaining == 0 {
                     handleTimerFinished()
                 }
+
+                // Live Activity: update each tick
+                PrayerTimerActivityController.shared.update(
+                    remainingSeconds: remainingSeconds,
+                    totalSeconds: storedTotalSeconds,
+                    isPaused: isPaused
+                )
             }
 
             // Stopwatch logic: update elapsed when running
@@ -630,6 +659,9 @@ struct HomeView: View {
                 let now = Date().timeIntervalSince1970
                 let base = stopwatchAccumulated + Int(max(0, now - stopwatchStartDate))
                 stopwatchElapsed = base
+
+                // Live Activity: update stopwatch each tick
+                StopwatchActivityController.shared.update(elapsed: stopwatchElapsed, isRunning: true)
             }
 
             // Minute tick: every 60 seconds, update marker and check auto verse refresh
@@ -712,6 +744,14 @@ struct HomeView: View {
         startMindfulLoggingIfNeeded()
 
         scheduleNotification(at: end)
+
+        // Live Activity: start Prayer/Study timer activity
+        PrayerTimerActivityController.shared.start(
+            sessionName: "Prayer/Study",
+            totalSeconds: storedTotalSeconds,
+            remainingSeconds: remainingSeconds,
+            isPaused: false
+        )
     }
 
     private func togglePause() {
@@ -732,6 +772,13 @@ struct HomeView: View {
             storedRemainingWhenPaused = 0
             scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
         }
+
+        // Live Activity: reflect pause/resume
+        PrayerTimerActivityController.shared.update(
+            remainingSeconds: remainingSeconds,
+            totalSeconds: storedTotalSeconds,
+            isPaused: isPaused
+        )
     }
 
     private func resetTimerState() {
@@ -757,6 +804,9 @@ struct HomeView: View {
 
         cancelNotification()
         stopFinishAlerts()
+
+        // Live Activity: cancel
+        PrayerTimerActivityController.shared.cancel()
         showFinishedAlert = false
     }
 
@@ -804,6 +854,9 @@ struct HomeView: View {
         cancelNotification()
 
         resetTimerState()
+
+        // Live Activity: finish
+        PrayerTimerActivityController.shared.finish()
 
         // Start foreground alert with repeating vibration if alert is shown
         showFinishedAlert = true
@@ -861,6 +914,14 @@ struct HomeView: View {
         storedVerseChapter = chapter.number
         storedVerseNumber = verse.number
         storedVerseText = verse.text
+        // Mirror to App Group for widget sync
+        if let shared = UserDefaults(suiteName: "group.bible.app") {
+            shared.set(book.name, forKey: "verseOfDayBook")
+            shared.set(chapter.number, forKey: "verseOfDayChapter")
+            shared.set(verse.number, forKey: "verseOfDayNumber")
+            shared.set(verse.text, forKey: "verseOfDayText")
+        }
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     private func copyVerse(_ v: VerseRef) {
@@ -895,6 +956,8 @@ struct HomeView: View {
         if stopwatchStartDate == 0 { stopwatchStartDate = now }
         stopwatchRunning = true
         startMindfulLoggingIfNeeded()
+        // Live Activity: start stopwatch
+        StopwatchActivityController.shared.start(sessionName: "Stopwatch", initialElapsed: stopwatchElapsed)
     }
 
     private func pauseStopwatch() {
@@ -906,6 +969,8 @@ struct HomeView: View {
             stopwatchStartDate = 0
         }
         stopwatchRunning = false
+        // Live Activity: update paused state
+        StopwatchActivityController.shared.update(elapsed: stopwatchElapsed, isRunning: false)
     }
 
     private func stopStopwatch() {
@@ -917,6 +982,8 @@ struct HomeView: View {
         stopwatchStartDate = 0
         stopwatchAccumulated = 0
         stopwatchElapsed = 0
+        // Live Activity: finish stopwatch
+        StopwatchActivityController.shared.finish(finalStatus: "Stopped")
     }
 
     private func resetStopwatch() {

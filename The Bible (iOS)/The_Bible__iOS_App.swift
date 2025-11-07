@@ -1,18 +1,17 @@
 //
-//  The_BibleApp.swift
-//  The Bible
+//  The_Bible__iOS_App.swift
+//  The Bible (iOS)
 //
-//  Created by William Creecy on 10/28/25.
+//  Created by William Creecy on 11/7/25.
 //
 
 import SwiftUI
 import SwiftData
 
 @main
-struct The_BibleApp: App {
+struct The_Bible__iOS_App: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
             ReaderSettings.self,
             ReadingProgress.self,
             Favorite.self,

@@ -1,3 +1,6 @@
+// NOTE: Deprecated template model. Safe to remove if unused.
+
+#if false
 //
 //  Item.swift
 //  The Bible
@@ -16,3 +19,4 @@ final class Item {
         self.timestamp = timestamp
     }
 }
+#endif

@@ -48,6 +48,25 @@ struct QuizView: View {
         }
     }
     
+    private struct ToolbarPillButtonStyle: ButtonStyle {
+        var tint: Color = .accentColor
+        @Environment(\.isEnabled) private var isEnabled
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(isEnabled ? tint : .secondary)
+                .padding(.vertical, 6)
+                .padding(.horizontal, 12)
+                .background(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(isEnabled ? tint.opacity(configuration.isPressed ? 0.22 : 0.16) : Color(.secondarySystemFill))
+                )
+                .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+                .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+        }
+    }
+    
     @AppStorage("quizScope") private var quizScopeRaw: String = "whole"
     @AppStorage("quizDifficulty") private var quizDifficulty: String = "easy"
     
@@ -153,6 +172,14 @@ struct QuizView: View {
     
     @State private var howToExpanded: Bool = false
     @State private var difficultyExpanded: Bool = false
+    
+    private var isPreviousEnabled: Bool {
+        started && currentIndex > 0 && !(selectedOption == nil && (quizDifficulty == "normal" || quizDifficulty == "hard") && remainingSeconds > 0)
+    }
+
+    private var isNextEnabled: Bool {
+        started && (selectedOption != nil || currentIndex < history.count - 1)
+    }
     
     var body: some View {
         ScrollView {
@@ -377,18 +404,16 @@ struct QuizView: View {
         }
         .navigationTitle("Bible Quiz")
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                if started && currentIndex > 0 {
-                    Button("Previous") { showPrevious() }
-                        .disabled(selectedOption == nil && (quizDifficulty == "normal" || quizDifficulty == "hard") && remainingSeconds > 0)
-                }
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                if started && selectedOption != nil {
-                    Button("Next") { showNext() }
-                        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                        .controlSize(.regular)
-                }
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Button("Previous") { showPrevious() }
+                    .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
+                    .controlSize(.regular)
+                    .disabled(!isPreviousEnabled)
+
+                Button("Next") { showNext() }
+                    .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
+                    .controlSize(.regular)
+                    .disabled(!isNextEnabled)
             }
         }
         .onDisappear { resetSessionScores() }
