@@ -133,6 +133,10 @@ struct HomeView: View {
 
     private var gridColumns: [GridItem] { Self.sharedGridColumns }
 
+    private var isEditingFocus: Bool {
+        prayerMode == .focus && (focusTitleIsFocused || focusBodyIsFocused)
+    }
+
     var progress: ReadingProgress? {
         progressList.first
     }
@@ -858,6 +862,12 @@ struct HomeView: View {
             // Increment a unified tick counter
             unifiedTick &+= 1
 
+            // If the user is actively typing in Focus, skip per-second background work to keep the UI responsive
+            if isEditingFocus {
+                return
+            }
+            let shouldUpdateLiveActivities = (unifiedTick % 2 == 0)
+
             // Timer logic: update remaining seconds when running and not paused
             if isTimerRunning && !isPaused && storedEndDate > 0 {
                 let remaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
@@ -867,11 +877,13 @@ struct HomeView: View {
                 }
 
                 // Live Activity: update each tick
-                PrayerTimerActivityController.shared.update(
-                    remainingSeconds: remainingSeconds,
-                    totalSeconds: storedTotalSeconds,
-                    isPaused: isPaused
-                )
+                if shouldUpdateLiveActivities {
+                    PrayerTimerActivityController.shared.update(
+                        remainingSeconds: remainingSeconds,
+                        totalSeconds: storedTotalSeconds,
+                        isPaused: isPaused
+                    )
+                }
             }
 
             // Stopwatch logic: update elapsed when running
@@ -881,7 +893,9 @@ struct HomeView: View {
                 stopwatchElapsed = base
 
                 // Live Activity: update stopwatch each tick
-                StopwatchActivityController.shared.update(elapsed: stopwatchElapsed, isRunning: true)
+                if shouldUpdateLiveActivities {
+                    StopwatchActivityController.shared.update(elapsed: stopwatchElapsed, isRunning: true)
+                }
             }
 
             // Minute tick: every 60 seconds, update marker and check auto verse refresh

@@ -23,6 +23,25 @@ private func sharedFocusBody() -> String? {
     return nil
 }
 
+private func focusLogoView() -> some View {
+    // Try to load from widget bundle by name; fall back to an SF Symbol if missing
+    if let ui = UIImage(named: "WidgetLogo") ?? UIImage(named: "AppIcon") {
+        return AnyView(
+            Image(uiImage: ui)
+                .renderingMode(.original)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 16, height: 16)
+                .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+        )
+    } else {
+        return AnyView(
+            Image(systemName: "target")
+                .font(.system(size: 14, weight: .semibold))
+        )
+    }
+}
+
 // 2) Widget configuration for Lock Screen + Dynamic Island
 struct PrayerTimerLiveActivity: Widget {
     var body: some WidgetConfiguration {
@@ -123,7 +142,7 @@ struct PrayerTimerLiveActivity: Widget {
                 }
             } compactLeading: {
                 if context.state.status == "Focus" {
-                    Text("❝") // Decorative open quote for Focus mode
+                    focusLogoView()
                 } else {
                     Image(systemName: "timer") // Timer icon for Timer/Stopwatch modes
                 }

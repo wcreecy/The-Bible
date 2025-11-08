@@ -184,6 +184,15 @@ struct ContentView: View {
             if appActiveStart == 0 {
                 appActiveStart = Date().timeIntervalSince1970
             }
+            // Ensure Focus Live Activity is visible on Lock Screen/Dynamic Island across the app
+            if let shared = UserDefaults(suiteName: "group.bible.app") {
+                let title = shared.string(forKey: "focusTitle")?.trimmingCharacters(in: .whitespacesAndNewlines)
+                let body = shared.string(forKey: "focusBody")?.trimmingCharacters(in: .whitespacesAndNewlines)
+                let hasContent = ((title?.isEmpty == false) || (body?.isEmpty == false))
+                if hasContent {
+                    PrayerTimerActivityController.shared.ensureFocusIfNone(title: title?.isEmpty == true ? nil : title, body: body?.isEmpty == true ? nil : body)
+                }
+            }
         }
         .onChange(of: scenePhase) { _, newPhase in
             switch newPhase {
@@ -231,3 +240,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+

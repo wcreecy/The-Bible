@@ -113,4 +113,25 @@ final class PrayerTimerActivityController {
         }
         self.activity = nil
     }
+    
+    func ensureFocusIfNone(title: String?, body: String?) {
+        guard #available(iOS 16.1, *) else { return }
+        // If a PrayerTimer activity exists (timer/focus), do nothing
+        if !Activity<PrayerTimerAttributes>.activities.isEmpty { return }
+        // If a Stopwatch activity exists, do nothing
+        if !Activity<StopwatchAttributes>.activities.isEmpty { return }
+        // Otherwise, start a Focus activity with provided title/body
+        let attributes = PrayerTimerAttributes(sessionName: "Prayer/Study")
+        let state = PrayerTimerAttributes.ContentState(status: "Focus", remaining: 0, total: 0, focusTitle: title, focusBody: body)
+        do {
+            if #available(iOS 17.0, *) {
+                let content = ActivityContent(state: state, staleDate: nil)
+                self.activity = try Activity.request(attributes: attributes, content: content, pushType: nil)
+            } else {
+                self.activity = try Activity.request(attributes: attributes, contentState: state, pushType: nil)
+            }
+        } catch {
+            print("Failed to start Focus Live Activity (ensureIfNone): \(error)")
+        }
+    }
 }
