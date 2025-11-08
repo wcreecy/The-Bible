@@ -11,7 +11,7 @@ import WidgetKit
 private enum VerseScope: String { case old, new, whole, book }
 
 struct HomeView: View {
-    private enum PrayerMode: String { case timer, stopwatch }
+    private enum PrayerMode: String { case timer, stopwatch, focus }
 
     @Query private var progressList: [ReadingProgress]
     @State private var showPrayerStudySheet: Bool = false
@@ -43,6 +43,8 @@ struct HomeView: View {
     @AppStorage("stopwatchRunning") private var stopwatchRunning: Bool = false
     @AppStorage("stopwatchStartDate") private var stopwatchStartDate: Double = 0
     @AppStorage("stopwatchAccumulated") private var stopwatchAccumulated: Int = 0
+    @AppStorage("focusTitle") private var focusTitle: String = ""
+    @AppStorage("focusBody") private var focusBody: String = ""
     @State private var stopwatchElapsed: Int = 0
 
     @State private var unifiedTick: Int = 0
@@ -291,6 +293,7 @@ struct HomeView: View {
                             Picker("Mode", selection: $prayerMode) {
                                 Text("Timer").tag(PrayerMode.timer)
                                 Text("Stopwatch").tag(PrayerMode.stopwatch)
+                                Text("Focus").tag(PrayerMode.focus)
                             }
                             .pickerStyle(.segmented)
                             .controlSize(.small)
@@ -325,70 +328,137 @@ struct HomeView: View {
                 } else {
                     HeroCard(
                         title: "Prayer/Study Timer",
-                        subtitle: "Start a timer with an alert when time is up. Long-press this card for quick-start options",
+                        subtitle: "Choose a preset to begin",
                         icon: "timer",
                         tint: .blue
                     ) {
-                        VStack(spacing: 10) {
+                        VStack(spacing: 12) {
                             // Mode picker
                             Picker("Mode", selection: $prayerMode) {
                                 Text("Timer").tag(PrayerMode.timer)
                                 Text("Stopwatch").tag(PrayerMode.stopwatch)
+                                Text("Focus").tag(PrayerMode.focus)
                             }
                             .pickerStyle(.segmented)
                             .controlSize(.small)
                             .disabled(isTimerRunning || stopwatchRunning)
 
                             HStack(spacing: 12) {
-                                Image(systemName: "play")
-                                    .imageScale(.large)
-                                    .foregroundStyle(.green)
-                                    .scaleEffect(startIconBounce ? 1.15 : 1.0)
-                                    .animation(.spring(response: 0.25, dampingFraction: 0.6, blendDuration: 0.0), value: startIconBounce)
-                                Text("Start")
-                                    .font(.headline)
-                                    .bold()
-                                Spacer()
+                                // Custom
+                                Button {
+                                    if isHealthKitAvailable && !healthKitPrompted {
+                                        HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
+                                            Task { @MainActor in
+                                                self.healthKitPrompted = true
+                                            }
+                                        }
+                                    }
+                                    let generator = UIImpactFeedbackGenerator(style: .light)
+                                    generator.impactOccurred()
+                                    showPrayerStudySheet = true
+                                } label: {
+                                    Image(systemName: "slider.horizontal.3")
+                                        .font(.subheadline.weight(.semibold))
+                                        .frame(width: 40, height: 40)
+                                        .foregroundStyle(.primary)
+                                        .background(
+                                            Circle().fill(Color(.secondarySystemBackground))
+                                        )
+                                        .overlay(
+                                            Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Custom duration")
+
+                                // 5
+                                Button { startTimer(minutes: 5) } label: {
+                                    Text("5")
+                                        .font(.subheadline.weight(.semibold))
+                                        .frame(width: 40, height: 40)
+                                        .foregroundStyle(.primary)
+                                        .background(
+                                            Circle().fill(Color(.secondarySystemBackground))
+                                        )
+                                        .overlay(
+                                            Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Start 5 minutes")
+
+                                // 10
+                                Button { startTimer(minutes: 10) } label: {
+                                    Text("10")
+                                        .font(.subheadline.weight(.semibold))
+                                        .frame(width: 40, height: 40)
+                                        .foregroundStyle(.primary)
+                                        .background(
+                                            Circle().fill(Color(.secondarySystemBackground))
+                                        )
+                                        .overlay(
+                                            Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Start 10 minutes")
+
+                                // 15
+                                Button { startTimer(minutes: 15) } label: {
+                                    Text("15")
+                                        .font(.subheadline.weight(.semibold))
+                                        .frame(width: 40, height: 40)
+                                        .foregroundStyle(.primary)
+                                        .background(
+                                            Circle().fill(Color(.secondarySystemBackground))
+                                        )
+                                        .overlay(
+                                            Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Start 15 minutes")
+
+                                // 20
+                                Button { startTimer(minutes: 20) } label: {
+                                    Text("20")
+                                        .font(.subheadline.weight(.semibold))
+                                        .frame(width: 40, height: 40)
+                                        .foregroundStyle(.primary)
+                                        .background(
+                                            Circle().fill(Color(.secondarySystemBackground))
+                                        )
+                                        .overlay(
+                                            Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Start 20 minutes")
+
+                                // 30
+                                Button { startTimer(minutes: 30) } label: {
+                                    Text("30")
+                                        .font(.subheadline.weight(.semibold))
+                                        .frame(width: 40, height: 40)
+                                        .foregroundStyle(.primary)
+                                        .background(
+                                            Circle().fill(Color(.secondarySystemBackground))
+                                        )
+                                        .overlay(
+                                            Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Start 30 minutes")
                             }
-                            .padding(14)
                             .frame(maxWidth: .infinity)
-                            .foregroundStyle(.primary)
+                            .padding(.top, 4)
                         }
                     }
                     .padding(.horizontal, 16)
                     .frame(height: isPad ? iPadCardHeight : nil)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        if isHealthKitAvailable && !healthKitPrompted {
-                            HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
-                                Task { @MainActor in
-                                    self.healthKitPrompted = true
-                                }
-                            }
-                        }
-                        let generator = UIImpactFeedbackGenerator(style: .medium)
-                        generator.impactOccurred()
-                        withAnimation(.spring(response: 0.25, dampingFraction: 0.6)) {
-                            startIconBounce = true
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
-                            startIconBounce = false
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.10) {
-                            showPrayerStudySheet = true
-                        }
-                    }
-                    .accessibilityAddTraits(.isButton)
-                    .accessibilityLabel("Start")
-                    .contextMenu {
-                        Button("Start 5 min") { startTimer(minutes: 5) }
-                        Button("Start 10 min") { startTimer(minutes: 10) }
-                        Button("Start 15 min") { startTimer(minutes: 15) }
-                        Button("Start 20 min") { startTimer(minutes: 20) }
-                        Button("Start 30 min") { startTimer(minutes: 30) }
-                    }
                 }
-            } else { // Stopwatch mode
+            } else if prayerMode == .stopwatch { // Stopwatch mode
                 HeroCard(
                     title: "Stopwatch",
                     subtitle: stopwatchRunning ? "Running" : (stopwatchElapsed > 0 ? "Paused" : "Ready"),
@@ -400,6 +470,7 @@ struct HomeView: View {
                         Picker("Mode", selection: $prayerMode) {
                             Text("Timer").tag(PrayerMode.timer)
                             Text("Stopwatch").tag(PrayerMode.stopwatch)
+                            Text("Focus").tag(PrayerMode.focus)
                         }
                         .pickerStyle(.segmented)
                         .controlSize(.small)
@@ -469,6 +540,55 @@ struct HomeView: View {
                                 }
                                 .buttonStyle(.plain)
                                 .accessibilityLabel("Start")
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .frame(height: isPad ? iPadCardHeight : nil)
+            } else { // Focus mode
+                HeroCard(
+                    title: "Focus",
+                    subtitle: "Enter a title and notes for your prayer/study focus.",
+                    icon: "target",
+                    tint: .purple
+                ) {
+                    VStack(spacing: 12) {
+                        // Mode picker
+                        Picker("Mode", selection: $prayerMode) {
+                            Text("Timer").tag(PrayerMode.timer)
+                            Text("Stopwatch").tag(PrayerMode.stopwatch)
+                            Text("Focus").tag(PrayerMode.focus)
+                        }
+                        .pickerStyle(.segmented)
+                        .controlSize(.small)
+                        .disabled(isTimerRunning || stopwatchRunning)
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Title")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            TextField("Focus title", text: $focusTitle)
+                                .textFieldStyle(.roundedBorder)
+                        }
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Body")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            ZStack(alignment: .topLeading) {
+                                if focusBody.isEmpty {
+                                    Text("Enter your focus notes…")
+                                        .foregroundStyle(.secondary)
+                                        .padding(.top, 8)
+                                        .padding(.leading, 5)
+                                }
+                                TextEditor(text: $focusBody)
+                                    .frame(minHeight: 120)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                            .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                                    )
                             }
                         }
                     }
