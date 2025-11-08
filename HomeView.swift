@@ -44,8 +44,38 @@ struct HomeView: View {
     @AppStorage("stopwatchStartDate") private var stopwatchStartDate: Double = 0
     @AppStorage("stopwatchAccumulated") private var stopwatchAccumulated: Int = 0
     @AppStorage("focusTitle") private var focusTitle: String = ""
+
+    private var sharedDefaults: UserDefaults? { UserDefaults(suiteName: "group.bible.app") }
+
     @AppStorage("focusBody") private var focusBody: String = ""
     @State private var stopwatchElapsed: Int = 0
+
+    @State private var hasSavedFocus: Bool = false
+    @FocusState private var focusTitleIsFocused: Bool
+    @FocusState private var focusBodyIsFocused: Bool
+
+    private struct ModernPillButtonStyle: ButtonStyle {
+        var tint: Color = .accentColor
+        @Environment(\.isEnabled) private var isEnabled
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(isEnabled ? .white : .secondary)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 16)
+                .background(
+                    Capsule(style: .continuous)
+                        .fill(isEnabled ? tint : Color(.secondarySystemFill))
+                )
+                .overlay(
+                    Capsule(style: .continuous)
+                        .stroke(tint.opacity(configuration.isPressed ? 0.6 : 0.35), lineWidth: configuration.isPressed ? 2 : 1)
+                )
+                .shadow(color: .black.opacity(configuration.isPressed ? 0.04 : 0.08), radius: configuration.isPressed ? 1 : 3, x: 0, y: configuration.isPressed ? 0 : 2)
+                .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+                .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
+        }
+    }
 
     @State private var unifiedTick: Int = 0
     private let unifiedTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -59,6 +89,7 @@ struct HomeView: View {
     @State private var verseOfDay: VerseRef? = nil
 
     @State private var showCopyToast: Bool = false
+    @State private var showFocusSavedToast: Bool = false
     @State private var startIconBounce: Bool = false
     @State private var timeMarker: Int = 0
     @State private var lastVerseAutoRefreshToken: String = ""
@@ -568,8 +599,10 @@ struct HomeView: View {
                             Text("Title")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
-                            TextField("Focus title", text: $focusTitle)
+                            TextField("Shown on Dynamic Island", text: $focusTitle)
                                 .textFieldStyle(.roundedBorder)
+                                .submitLabel(.done)
+                                .focused($focusTitleIsFocused)
                         }
 
                         VStack(alignment: .leading, spacing: 8) {
@@ -584,6 +617,7 @@ struct HomeView: View {
                                         .padding(.leading, 5)
                                 }
                                 TextEditor(text: $focusBody)
+                                    .focused($focusBodyIsFocused)
                                     .frame(minHeight: 120)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -591,6 +625,61 @@ struct HomeView: View {
                                     )
                             }
                         }
+
+                        let hasTypedLetter: Bool = {
+                            let letters = CharacterSet.letters
+                            let t = focusTitle.unicodeScalars.contains { letters.contains($0) }
+                            let b = focusBody.unicodeScalars.contains { letters.contains($0) }
+                            return t || b
+                        }()
+
+                        HStack(spacing: 12) {
+                            Button {
+                                // Save focus to shared defaults and update Live Activity/Dynamic Island
+                                sharedDefaults?.set(focusTitle, forKey: "focusTitle")
+                                sharedDefaults?.set(focusBody, forKey: "focusBody")
+                                // Ensure only one activity is active: stop stopwatch
+                                StopwatchActivityController.shared.cancel()
+                                // Ensure Focus is active in Live Activity/DI with compact leading/trailing via focusTitle and body
+                                PrayerTimerActivityController.shared.ensureActivityForFocus(
+                                    title: focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : focusTitle,
+                                    body: focusBody.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : focusBody
+                                )
+                                // Mark as saved and dismiss keyboard
+                                hasSavedFocus = true
+                                focusTitleIsFocused = false
+                                focusBodyIsFocused = false
+                                // Show confirmation toast
+                                withAnimation(.spring()) { showFocusSavedToast = true }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                                    withAnimation(.easeOut) { showFocusSavedToast = false }
+                                }
+                            } label: {
+                                Label("Save", systemImage: "checkmark.circle.fill")
+                            }
+                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                            .disabled(!hasTypedLetter)
+
+                            Button {
+                                // Clear focus fields and update shared defaults/live activity
+                                focusTitle = ""
+                                focusBody = ""
+                                sharedDefaults?.set("", forKey: "focusTitle")
+                                sharedDefaults?.set("", forKey: "focusBody")
+                                // Remove Focus from Live Activity/Dynamic Island
+                                PrayerTimerActivityController.shared.cancel()
+                                // Mark as not saved and dismiss keyboard
+                                hasSavedFocus = false
+                                focusTitleIsFocused = false
+                                focusBodyIsFocused = false
+                            } label: {
+                                Label("Clear", systemImage: "xmark.circle.fill")
+                            }
+                            .buttonStyle(ModernPillButtonStyle(tint: .red))
+                            .disabled(!hasSavedFocus)
+                        }
+                        .padding(.top, 4)
+                        .toolbar { ToolbarItem(placement: .keyboard) { Button("Done") { focusTitleIsFocused = false; focusBodyIsFocused = false } } }
                     }
                 }
                 .padding(.horizontal, 16)
@@ -686,6 +775,7 @@ struct HomeView: View {
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationTitle("")
         .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
+        .appToast(isPresented: $showFocusSavedToast, symbol: "checkmark.seal.fill", text: "Focus Saved", tint: .green)
         .onAppear {
             // Request notification permission once
             if !didRequestNotifications {
@@ -745,6 +835,7 @@ struct HomeView: View {
                     loadRandomVerse()
                 }
             }
+
             // Initialize stopwatch elapsed from stored state
             if stopwatchRunning {
                 let now = Date().timeIntervalSince1970
@@ -752,6 +843,15 @@ struct HomeView: View {
                 stopwatchElapsed = base
             } else {
                 stopwatchElapsed = stopwatchAccumulated
+            }
+
+            // Initialize saved focus state from shared defaults
+            if let shared = UserDefaults(suiteName: "group.bible.app") {
+                let savedTitle = (shared.string(forKey: "focusTitle") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                let savedBody = (shared.string(forKey: "focusBody") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                hasSavedFocus = !(savedTitle.isEmpty && savedBody.isEmpty)
+            } else {
+                hasSavedFocus = false
             }
         }
         .onReceive(unifiedTimer) { _ in
@@ -864,6 +964,9 @@ struct HomeView: View {
         startMindfulLoggingIfNeeded()
 
         scheduleNotification(at: end)
+
+        // Cancel any running stopwatch activity to enforce single active Live Activity
+        StopwatchActivityController.shared.cancel()
 
         // Live Activity: start Prayer/Study timer activity
         PrayerTimerActivityController.shared.start(
@@ -1076,6 +1179,8 @@ struct HomeView: View {
         if stopwatchStartDate == 0 { stopwatchStartDate = now }
         stopwatchRunning = true
         startMindfulLoggingIfNeeded()
+        // Cancel Prayer/Study timer/focus Live Activity to enforce single active activity
+        PrayerTimerActivityController.shared.cancel()
         // Live Activity: start stopwatch
         StopwatchActivityController.shared.start(sessionName: "Stopwatch", initialElapsed: stopwatchElapsed)
     }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var coordinator = NavigationCoordinator()
+    @State private var selectedTab: Int = 0
     
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
     @AppStorage("fontSizePreference") private var fontSizePreferenceRaw: String = FontSizePreference.system.rawValue
@@ -30,7 +31,7 @@ struct ContentView: View {
     private var baseFontSize: CGFloat { (isPad && isLandscape) ? 21 : 19 }
     
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             NavigationStack(path: $coordinator.path) {
                 HomeView()
                     .navigationDestination(for: Route.self) { route in
@@ -48,10 +49,12 @@ struct ContentView: View {
                     }
             }
             .tabItem { Label("Home", systemImage: "house") }
+            .tag(0)
             
             if isPad {
                 BibleSplitView()
                     .tabItem { Label("Bible", systemImage: "book") }
+                    .tag(1)
             } else {
                 NavigationStack(path: $coordinator.path) {
                     BooksView(books: BibleData.books)
@@ -70,6 +73,7 @@ struct ContentView: View {
                         }
                 }
                 .tabItem { Label("Bible", systemImage: "book") }
+                .tag(1)
             }
             
             NavigationStack(path: $coordinator.path) {
@@ -89,6 +93,7 @@ struct ContentView: View {
                     }
             }
             .tabItem { Label("Search", systemImage: "magnifyingglass") }
+            .tag(2)
             
             NavigationStack(path: $coordinator.path) {
                 FavoritesView()
@@ -107,6 +112,7 @@ struct ContentView: View {
                     }
             }
             .tabItem { Label("Favorites", systemImage: "heart") }
+            .tag(3)
             
             NavigationStack {
                 BookmarksView()
@@ -125,6 +131,7 @@ struct ContentView: View {
                     }
             }
             .tabItem { Label("Bookmarks", systemImage: "bookmark") }
+            .tag(4)
             
             NavigationStack(path: $coordinator.path) {
                 NotesView()
@@ -143,9 +150,11 @@ struct ContentView: View {
                     }
             }
             .tabItem { Label("Notes", systemImage: "note.text") }
+            .tag(5)
             
             GamesView()
                 .tabItem { Label("Games", systemImage: "gamecontroller") }
+                .tag(6)
             
             NavigationStack(path: $coordinator.path) {
                 SettingsView()
@@ -164,6 +173,7 @@ struct ContentView: View {
                     }
             }
             .tabItem { Label("Settings", systemImage: "gear") }
+            .tag(7)
         }
         .environmentObject(coordinator)
         .preferredColorScheme(preferredScheme)
@@ -199,6 +209,22 @@ struct ContentView: View {
                     .onChange(of: proxy.size) { _, newSize in rootSize = newSize }
             }
         )
+        .onOpenURL { url in
+            guard url.scheme == "thebible" else { return }
+            switch url.host?.lowercased() {
+            case "timer":
+                selectedTab = 0
+                UserDefaults.standard.set("timer", forKey: "prayerMode")
+            case "stopwatch":
+                selectedTab = 0
+                UserDefaults.standard.set("stopwatch", forKey: "prayerMode")
+            case "focus":
+                selectedTab = 0
+                UserDefaults.standard.set("focus", forKey: "prayerMode")
+            default:
+                break
+            }
+        }
     }
 }
 
