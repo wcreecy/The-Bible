@@ -1,11 +1,15 @@
 import SwiftUI
 import Combine
+import SwiftData
 
 #if canImport(UIKit)
 import UIKit
 #endif
 
 struct QuizView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query private var favorites: [Favorite]
+    
     // Consistent modern button styles (matching Hangman)
     private struct GameProminentButtonStyle: ButtonStyle {
         var tint: Color = .accentColor
@@ -373,10 +377,18 @@ struct QuizView: View {
                         .padding(.horizontal)
                         
                         if showAnswerReveal {
-                            Text("Correct answer: \(correctBook) \(currentChapterNumber):\(currentVerseNumber)")
-                                .font(.footnote)
-                                .foregroundColor(.secondary)
-                                .padding(.top, 4)
+                            HStack(spacing: 8) {
+                                Text("Correct answer: \(correctBook) \(currentChapterNumber):\(currentVerseNumber)")
+                                    .font(.footnote)
+                                    .foregroundColor(.secondary)
+                                Button(action: { toggleFavoriteCurrent() }) {
+                                    Image(systemName: isCurrentFavorited() ? "heart.fill" : "heart")
+                                        .foregroundStyle(.red)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel(isCurrentFavorited() ? "Remove Favorite" : "Add to Favorites")
+                            }
+                            .padding(.top, 4)
                         }
                     }
                     .padding(.vertical)
@@ -702,6 +714,28 @@ struct QuizView: View {
         incrementAllTimeAnswered()
         currentStreak = 0
         showAnswerReveal = true
+    }
+    
+    private func isCurrentFavorited() -> Bool {
+        favorites.contains { fav in
+            fav.bookName == correctBook && fav.chapterNumber == currentChapterNumber && fav.verseNumber == currentVerseNumber
+        }
+    }
+
+    private func toggleFavoriteCurrent() {
+        if let existing = favorites.first(where: { $0.bookName == correctBook && $0.chapterNumber == currentChapterNumber && $0.verseNumber == currentVerseNumber }) {
+            modelContext.delete(existing)
+            try? modelContext.save()
+        } else {
+            let fav = Favorite(
+                bookName: correctBook,
+                chapterNumber: currentChapterNumber,
+                verseNumber: currentVerseNumber,
+                verseText: currentVerseText
+            )
+            modelContext.insert(fav)
+            try? modelContext.save()
+        }
     }
 }
 

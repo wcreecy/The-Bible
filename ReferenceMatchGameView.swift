@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct ReferenceMatchGameView: View {
     // Consistent modern button styles (matching Hangman)
@@ -42,6 +43,9 @@ struct ReferenceMatchGameView: View {
                 .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
         }
     }
+
+    @Environment(\.modelContext) private var modelContext
+    @Query private var favorites: [Favorite]
 
     enum Difficulty: String, CaseIterable, Identifiable { case easy, medium, hard; var id: String { rawValue } }
     @State private var difficulty: Difficulty = .medium
@@ -178,9 +182,19 @@ struct ReferenceMatchGameView: View {
                             if let b = refBook, let c = refChapter, let v = refVerse {
                                 Text("Reference")
                                     .font(.headline)
-                                Text("\(b.name) \(c.number):\(v.number)")
-                                    .font(.title3)
-                                    .fontWeight(.semibold)
+                                HStack(spacing: 8) {
+                                    Text("\(b.name) \(c.number):\(v.number)")
+                                        .font(.title3)
+                                        .fontWeight(.semibold)
+                                    if selectedOption != nil {
+                                        Button(action: { toggleFavoriteCurrent() }) {
+                                            Image(systemName: currentFavoriteExists() ? "heart.fill" : "heart")
+                                                .foregroundStyle(.red)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .accessibilityLabel(currentFavoriteExists() ? "Remove Favorite" : "Add to Favorites")
+                                    }
+                                }
                             } else {
                                 Text("No reference")
                             }
@@ -425,6 +439,30 @@ struct ReferenceMatchGameView: View {
         guard answered > 0 else { return "0%" }
         let pct = Int(round((Double(correct) / Double(answered)) * 100.0))
         return "\(pct)%"
+    }
+
+    private func currentFavoriteExists() -> Bool {
+        guard let b = refBook, let c = refChapter, let v = refVerse else { return false }
+        return favorites.contains { fav in
+            fav.bookName == b.name && fav.chapterNumber == c.number && fav.verseNumber == v.number
+        }
+    }
+
+    private func toggleFavoriteCurrent() {
+        guard let b = refBook, let c = refChapter, let v = refVerse else { return }
+        if let existing = favorites.first(where: { $0.bookName == b.name && $0.chapterNumber == c.number && $0.verseNumber == v.number }) {
+            modelContext.delete(existing)
+            try? modelContext.save()
+        } else {
+            let fav = Favorite(
+                bookName: b.name,
+                chapterNumber: c.number,
+                verseNumber: v.number,
+                verseText: v.text
+            )
+            modelContext.insert(fav)
+            try? modelContext.save()
+        }
     }
 }
 
