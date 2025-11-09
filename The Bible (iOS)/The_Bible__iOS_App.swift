@@ -11,19 +11,34 @@ import SwiftData
 @main
 struct The_Bible__iOS_App: App {
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            ReaderSettings.self,
-            ReadingProgress.self,
-            Favorite.self,
-            Bookmark.self,
-            VerseNote.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            // Preferred: let SwiftData choose default store location
+            let container = try ModelContainer(for: 
+                ReaderSettings.self,
+                ReadingProgress.self,
+                Favorite.self,
+                Bookmark.self,
+                VerseNote.self
+            )
+            return container
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            print("⚠️ Failed to create default SwiftData ModelContainer: \(error)")
+        }
+
+        // Final fallback: in-memory so the app can still run
+        do {
+            let memoryConfig = ModelConfiguration(isStoredInMemoryOnly: true)
+            let container = try ModelContainer(for: 
+                ReaderSettings.self,
+                ReadingProgress.self,
+                Favorite.self,
+                Bookmark.self,
+                VerseNote.self,
+            configurations: memoryConfig)
+            print("ℹ️ Falling back to in-memory SwiftData store. Data will not persist across launches.")
+            return container
+        } catch {
+            fatalError("Could not create any ModelContainer (including in-memory): \(error)")
         }
     }()
 
@@ -34,3 +49,4 @@ struct The_Bible__iOS_App: App {
         .modelContainer(sharedModelContainer)
     }
 }
+

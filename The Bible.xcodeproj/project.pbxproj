@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		2C275BC02EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2C275BBF2EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf */; };
-		2C49CF442EBE0FF30006FF79 /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D3D2EB3830D00A657FA /* Bookmark.swift */; };
 		2C49CF452EBE0FFA0006FF79 /* BookmarksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D3F2EB3831100A657FA /* BookmarksView.swift */; };
 		2C49CF462EBE10000006FF79 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D972EB3895400A657FA /* HomeView.swift */; };
 		2C49CF472EBE10070006FF79 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56DEF2EB3942900A657FA /* Toast.swift */; };
@@ -106,7 +105,7 @@
 		2C3B0F6D2EB14F3D0089556C /* The Bible.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "The Bible.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C3B0F7E2EB14F3E0089556C /* The BibleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The BibleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C3B0F882EB14F3E0089556C /* The BibleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The BibleUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2C49CF002EBE0F6C0006FF79 /* The Bible (iOS).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "The Bible (iOS).app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C49CF002EBE0F6C0006FF79 /* Bible.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bible.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C49CF102EBE0F6D0006FF79 /* The Bible (iOS)Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The Bible (iOS)Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C49CF1A2EBE0F6D0006FF79 /* The Bible (iOS)UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The Bible (iOS)UITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C49CF5D2EBE16090006FF79 /* The Bible WidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "The Bible WidgetsExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -334,7 +333,7 @@
 				2C3B0F882EB14F3E0089556C /* The BibleUITests.xctest */,
 				2CB677DA2EB680AE00E609B5 /* BibleTests.xctest */,
 				2CB677E42EB680AE00E609B5 /* BibleUITests.xctest */,
-				2C49CF002EBE0F6C0006FF79 /* The Bible (iOS).app */,
+				2C49CF002EBE0F6C0006FF79 /* Bible.app */,
 				2C49CF102EBE0F6D0006FF79 /* The Bible (iOS)Tests.xctest */,
 				2C49CF1A2EBE0F6D0006FF79 /* The Bible (iOS)UITests.xctest */,
 				2C49CF5D2EBE16090006FF79 /* The Bible WidgetsExtension.appex */,
@@ -441,7 +440,7 @@
 			packageProductDependencies = (
 			);
 			productName = "The Bible (iOS)";
-			productReference = 2C49CF002EBE0F6C0006FF79 /* The Bible (iOS).app */;
+			productReference = 2C49CF002EBE0F6C0006FF79 /* Bible.app */;
 			productType = "com.apple.product-type.application";
 		};
 		2C49CF0F2EBE0F6D0006FF79 /* The Bible (iOS)Tests */ = {
@@ -715,7 +714,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C49CF442EBE0FF30006FF79 /* Bookmark.swift in Sources */,
 				2C49CF452EBE0FFA0006FF79 /* BookmarksView.swift in Sources */,
 				2C49CF482EBE100D0006FF79 /* Note.swift in Sources */,
 				2C49CF852EBE2E940006FF79 /* StopwatchAttributes.swift in Sources */,
@@ -1146,6 +1144,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible (iOS)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Bible;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app logs time in app as Mindful Minutes found in your Health app";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app logs time in app to Mindful Minutes found in your Health app";
@@ -1161,7 +1160,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "Creecy.iOS-Bible-App.Bible-iOS-App.The-Bible--iOS-";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Bible;
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1188,6 +1187,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible (iOS)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Bible;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app logs time in app as Mindful Minutes found in your Health app";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app logs time in app to Mindful Minutes found in your Health app";
@@ -1203,7 +1203,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "Creecy.iOS-Bible-App.Bible-iOS-App.The-Bible--iOS-";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Bible;
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
