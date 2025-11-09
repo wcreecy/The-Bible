@@ -6,8 +6,6 @@ struct ReadingView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var progressList: [ReadingProgress]
     @Query private var favorites: [Favorite]
-    @Query private var bookmarks: [Bookmark]
-    @Query private var notes: [VerseNote]
 
     let book: Book
     let chapter: Chapter
@@ -26,9 +24,6 @@ struct ReadingView: View {
     @State private var favoriteToastSymbol: String = "heart.fill"
     @State private var favoriteToastTint: Color = .pink
     @AppStorage("keepScreenOn") private var keepScreenOn: Bool = false
-    @State private var showNoteSheet: Bool = false
-    @State private var noteDraft: String = ""
-    @State private var noteVerseForSheet: Int? = nil
     @State private var pinVerse: Int? = nil
 
     init(book: Book, chapter: Chapter, startVerse: Int) {
@@ -72,39 +67,6 @@ struct ReadingView: View {
             }
             .onChange(of: keepScreenOn) { _, newValue in
                 UIApplication.shared.isIdleTimerDisabled = newValue
-            }
-            .sheet(isPresented: $showNoteSheet) {
-                NavigationStack {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Add Note")
-                            .font(.headline)
-                        TextEditor(text: $noteDraft)
-                            .frame(minHeight: 160)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-                            )
-                        Spacer()
-                    }
-                    .padding()
-                    .navigationTitle("Note")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel") { showNoteSheet = false }
-                        }
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("Save") {
-                                if let verseNum = noteVerseForSheet,
-                                   let verse = currentChapter.verses.first(where: { $0.number == verseNum }) {
-                                    saveNote(for: verse, content: noteDraft.trimmingCharacters(in: .whitespacesAndNewlines))
-                                }
-                                showNoteSheet = false
-                            }
-                            .disabled(noteDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                        }
-                    }
-                }
             }
             .appToast(isPresented: $showFavoriteToast, symbol: favoriteToastSymbol, text: favoriteToastText, tint: favoriteToastTint)
     }
@@ -186,43 +148,6 @@ struct ReadingView: View {
                                     Image(systemName: "square.and.arrow.up")
                                 }
                                 .foregroundStyle(.blue)
-                                Button(action: {
-                                    noteVerseForSheet = verse.number
-                                    noteDraft = existingNote(for: verse)?.content ?? ""
-                                    withAnimation(.easeInOut) { menuVerse = nil }
-                                    showNoteSheet = true
-                                }) {
-                                    Image(systemName: "note.text")
-                                        .symbolVariant(isNoted(verse) ? .fill : .none)
-                                }
-                                .foregroundStyle(.blue)
-                                Button(action: {
-                                    let generator = UIImpactFeedbackGenerator(style: .light)
-                                    generator.impactOccurred()
-                                    if isBookmarked(verse) {
-                                        removeBookmark(for: verse)
-                                        favoriteToastSymbol = "bookmark.slash.fill"
-                                        favoriteToastTint = .red
-                                        favoriteToastText = "Removed Bookmark"
-                                        withAnimation(.spring()) { showFavoriteToast = true }
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                                            withAnimation(.easeOut) { showFavoriteToast = false }
-                                        }
-                                    } else {
-                                        let added = addBookmark(for: verse)
-                                        if added {
-                                            favoriteToastSymbol = "bookmark.fill"
-                                            favoriteToastTint = .blue
-                                            favoriteToastText = "Bookmarked \(currentBook.name) \(currentChapter.number):\(verse.number)"
-                                            withAnimation(.spring()) { showFavoriteToast = true }
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                                                withAnimation(.easeOut) { showFavoriteToast = false }
-                                            }
-                                        }
-                                    }
-                                    withAnimation(.easeInOut) { menuVerse = nil }
-                                }) { Image(systemName: isBookmarked(verse) ? "bookmark.fill" : "bookmark") }
-                                    .foregroundStyle(.blue)
                                 Button(action: {
                                     toggleFavorite(for: verse)
                                     withAnimation(.easeInOut) { menuVerse = nil }
@@ -351,44 +276,6 @@ struct ReadingView: View {
         }
     }
 
-    private func isBookmarked(_ verse: Verse) -> Bool {
-        bookmarks.contains { bm in
-            bm.bookName == currentBook.name &&
-            bm.chapterNumber == currentChapter.number &&
-            bm.verseNumber == verse.number
-        }
-    }
-
-    private func existingNote(for verse: Verse) -> VerseNote? {
-        notes.first { n in
-            n.bookName == currentBook.name && n.chapterNumber == currentChapter.number && n.verseNumber == verse.number
-        }
-    }
-
-    private func isNoted(_ verse: Verse) -> Bool {
-        existingNote(for: verse) != nil
-    }
-
-    private func saveNote(for verse: Verse, content: String) {
-        if let existing = existingNote(for: verse) {
-            existing.content = content
-            existing.updatedAt = Date()
-            try? modelContext.save()
-        } else {
-            let note = VerseNote(
-                bookName: currentBook.name,
-                chapterNumber: currentChapter.number,
-                verseNumber: verse.number,
-                verseText: verse.text,
-                content: content,
-                createdAt: Date(),
-                updatedAt: Date()
-            )
-            modelContext.insert(note)
-            try? modelContext.save()
-        }
-    }
-
     private func toggleFavorite(for verse: Verse) {
         if let existing = favorites.first(where: { $0.bookName == currentBook.name && $0.chapterNumber == currentChapter.number && $0.verseNumber == verse.number }) {
             modelContext.delete(existing)
@@ -420,28 +307,6 @@ struct ReadingView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 withAnimation(.easeOut) { showFavoriteToast = false }
             }
-        }
-    }
-    
-    @discardableResult
-    private func addBookmark(for verse: Verse) -> Bool {
-        // Avoid duplicate bookmarks for the same verse
-        if isBookmarked(verse) { return false }
-        let bookmark = Bookmark(
-            bookName: currentBook.name,
-            chapterNumber: currentChapter.number,
-            verseNumber: verse.number,
-            verseText: verse.text
-        )
-        modelContext.insert(bookmark)
-        try? modelContext.save()
-        return true
-    }
-    
-    private func removeBookmark(for verse: Verse) {
-        if let existing = bookmarks.first(where: { $0.bookName == currentBook.name && $0.chapterNumber == currentChapter.number && $0.verseNumber == verse.number }) {
-            modelContext.delete(existing)
-            try? modelContext.save()
         }
     }
 }

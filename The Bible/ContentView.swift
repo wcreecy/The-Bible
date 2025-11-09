@@ -114,49 +114,11 @@ struct ContentView: View {
             .tabItem { Label("Favorites", systemImage: "heart") }
             .tag(3)
             
-            NavigationStack {
-                BookmarksView()
-                    .navigationDestination(for: Route.self) { route in
-                        switch route {
-                        case let .book(book):
-                            ChaptersView(book: book)
-                                .navigationBarTitleDisplayMode(.inline)
-                        case let .chapter(book, chapter):
-                            VersesView(book: book, chapter: chapter)
-                                .navigationBarTitleDisplayMode(.inline)
-                        case let .reader(book, chapter, startVerse):
-                            ReadingView(book: book, chapter: chapter, startVerse: startVerse)
-                                .navigationBarTitleDisplayMode(.inline)
-                        }
-                    }
-            }
-            .tabItem { Label("Bookmarks", systemImage: "bookmark") }
-            .tag(4)
-            
             NavigationStack(path: $coordinator.path) {
-                NotesView()
-                    .navigationDestination(for: Route.self) { route in
-                        switch route {
-                        case let .book(book):
-                            ChaptersView(book: book)
-                                .navigationBarTitleDisplayMode(.inline)
-                        case let .chapter(book, chapter):
-                            VersesView(book: book, chapter: chapter)
-                                .navigationBarTitleDisplayMode(.inline)
-                        case let .reader(book, chapter, startVerse):
-                            ReadingView(book: book, chapter: chapter, startVerse: startVerse)
-                                .navigationBarTitleDisplayMode(.inline)
-                        }
-                    }
-            }
-            .tabItem { Label("Notes", systemImage: "note.text") }
-            .tag(5)
-            
-            NavigationStack {
                 GamesView()
             }
             .tabItem { Label("Games", systemImage: "gamecontroller") }
-            .tag(6)
+            .tag(4)
             
             NavigationStack(path: $coordinator.path) {
                 SettingsView()
@@ -175,7 +137,7 @@ struct ContentView: View {
                     }
             }
             .tabItem { Label("Settings", systemImage: "gear") }
-            .tag(7)
+            .tag(5)
         }
         .environmentObject(coordinator)
         .preferredColorScheme(preferredScheme)
@@ -242,4 +204,3 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-

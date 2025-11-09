@@ -8,11 +8,6 @@ struct VersesView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var coordinator: NavigationCoordinator
     @Query private var favorites: [Favorite]
-    @Query private var bookmarks: [Bookmark]
-    @Query private var notes: [VerseNote]
-
-    @State private var showNoteSheet: Bool = false
-    @State private var noteDraft: String = ""
 
     @State private var showToast: Bool = false
     @State private var toastText: String = ""
@@ -90,71 +85,12 @@ struct VersesView: View {
                             Image(systemName: "square.and.arrow.up")
                         }
 
-                        // Notes
-                        Button {
-                            noteDraft = existingNote(for: verse)?.content ?? ""
-                            showNoteSheet = true
-                        } label: {
-                            Image(systemName: "note.text")
-                        }
-
-                        // Bookmark toggle
-                        Button {
-                            if isBookmarked(verse) {
-                                removeBookmark(for: verse)
-                                toastSymbol = "bookmark.slash.fill"
-                                toastTint = .red
-                                toastText = "Removed Bookmark"
-                            } else {
-                                _ = addBookmark(for: verse)
-                                toastSymbol = "bookmark.fill"
-                                toastTint = .blue
-                                toastText = "Bookmarked \(book.name) \(chapter.number):\(verse.number)"
-                            }
-                            withAnimation(.spring()) { showToast = true }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                                withAnimation(.easeOut) { showToast = false }
-                            }
-                        } label: {
-                            Image(systemName: isBookmarked(verse) ? "bookmark.fill" : "bookmark")
-                        }
-
                         // Favorite toggle
                         Button {
                             toggleFavorite(for: verse)
                         } label: {
                             Image(systemName: isFavorited(verse) ? "heart.fill" : "heart")
                                 .foregroundStyle(.red)
-                        }
-                    }
-                }
-                .sheet(isPresented: $showNoteSheet) {
-                    NavigationStack {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Add Note")
-                                .font(.headline)
-                            TextEditor(text: $noteDraft)
-                                .frame(minHeight: 160)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                        .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-                                )
-                            Spacer()
-                        }
-                        .padding()
-                        .navigationTitle("Note")
-                        .navigationBarTitleDisplayMode(.inline)
-                        .toolbar {
-                            ToolbarItem(placement: .cancellationAction) {
-                                Button("Cancel") { showNoteSheet = false }
-                            }
-                            ToolbarItem(placement: .confirmationAction) {
-                                Button("Save") {
-                                    saveNote(for: verse, content: noteDraft.trimmingCharacters(in: .whitespacesAndNewlines))
-                                    showNoteSheet = false
-                                }
-                                .disabled(noteDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                            }
                         }
                     }
                 }
@@ -168,59 +104,6 @@ struct VersesView: View {
     private func isFavorited(_ verse: Verse) -> Bool {
         favorites.contains { fav in
             fav.bookName == book.name && fav.chapterNumber == chapter.number && fav.verseNumber == verse.number
-        }
-    }
-
-    private func isBookmarked(_ verse: Verse) -> Bool {
-        bookmarks.contains { bm in
-            bm.bookName == book.name && bm.chapterNumber == chapter.number && bm.verseNumber == verse.number
-        }
-    }
-
-    private func existingNote(for verse: Verse) -> VerseNote? {
-        notes.first { n in
-            n.bookName == book.name && n.chapterNumber == chapter.number && n.verseNumber == verse.number
-        }
-    }
-
-    private func saveNote(for verse: Verse, content: String) {
-        if let existing = existingNote(for: verse) {
-            existing.content = content
-            existing.updatedAt = Date()
-            try? modelContext.save()
-        } else {
-            let note = VerseNote(
-                bookName: book.name,
-                chapterNumber: chapter.number,
-                verseNumber: verse.number,
-                verseText: verse.text,
-                content: content,
-                createdAt: Date(),
-                updatedAt: Date()
-            )
-            modelContext.insert(note)
-            try? modelContext.save()
-        }
-    }
-
-    @discardableResult
-    private func addBookmark(for verse: Verse) -> Bool {
-        if isBookmarked(verse) { return false }
-        let bookmark = Bookmark(
-            bookName: book.name,
-            chapterNumber: chapter.number,
-            verseNumber: verse.number,
-            verseText: verse.text
-        )
-        modelContext.insert(bookmark)
-        try? modelContext.save()
-        return true
-    }
-
-    private func removeBookmark(for verse: Verse) {
-        if let existing = bookmarks.first(where: { $0.bookName == book.name && $0.chapterNumber == chapter.number && $0.verseNumber == verse.number }) {
-            modelContext.delete(existing)
-            try? modelContext.save()
         }
     }
 
