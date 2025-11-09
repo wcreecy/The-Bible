@@ -152,9 +152,11 @@ struct ContentView: View {
             .tabItem { Label("Notes", systemImage: "note.text") }
             .tag(5)
             
-            GamesView()
-                .tabItem { Label("Games", systemImage: "gamecontroller") }
-                .tag(6)
+            NavigationStack {
+                GamesView()
+            }
+            .tabItem { Label("Games", systemImage: "gamecontroller") }
+            .tag(6)
             
             NavigationStack(path: $coordinator.path) {
                 SettingsView()

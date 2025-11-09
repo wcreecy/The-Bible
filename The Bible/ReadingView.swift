@@ -135,12 +135,11 @@ struct ReadingView: View {
                         .animation(.easeInOut(duration: 0.2), value: selectedVerse)
                         .overlay(alignment: .trailing) {
                             if pinVerse == verse.number {
-                                Image(systemName: "mappin.and.ellipse")
-                                    .foregroundStyle(.blue)
+                                Image(systemName: "mappin.circle.fill")
+                                    .symbolRenderingMode(.multicolor)
                                     .padding(.trailing, 12)
                                     .transition(.opacity)
                                     .opacity(0.9)
-                                
                             }
                         }
                         .onLongPressGesture(minimumDuration: 0.5) {
@@ -453,4 +452,3 @@ struct ReadingView: View {
             .modelContainer(for: [ReaderSettings.self, ReadingProgress.self], inMemory: true)
     }
 }
-
