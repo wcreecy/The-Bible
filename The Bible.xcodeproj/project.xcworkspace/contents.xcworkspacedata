@@ -4,10 +4,4 @@
    <FileRef
       location = "self:">
    </FileRef>
-   <FileRef
-      location = "group:PrayerTimerAttributes.swift">
-   </FileRef>
-   <FileRef
-      location = "group:PrayerTimerActivityController.swift">
-   </FileRef>
 </Workspace>
