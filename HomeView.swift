@@ -86,7 +86,7 @@ struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
     @EnvironmentObject private var coordinator: NavigationCoordinator
-    @State private var verseOfDay: VerseRef? = nil
+    @State private var verseOfDay: HomeVerseRef? = nil
 
     @State private var showCopyToast: Bool = false
     @State private var showFocusSavedToast: Bool = false
@@ -817,7 +817,7 @@ struct HomeView: View {
             if verseOfDayPaused {
                 // Restore last verse without refreshing when paused
                 if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
-                    verseOfDay = VerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
+                    verseOfDay = HomeVerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
                     if let shared = UserDefaults(suiteName: "group.bible.app") {
                         shared.set(storedVerseBook, forKey: "verseOfDayBook")
                         shared.set(storedVerseChapter, forKey: "verseOfDayChapter")
@@ -828,7 +828,7 @@ struct HomeView: View {
             } else {
                 // Do not arbitrarily refresh; show the last stored verse if available, otherwise seed an initial verse.
                 if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
-                    verseOfDay = VerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
+                    verseOfDay = HomeVerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
                     if let shared = UserDefaults(suiteName: "group.bible.app") {
                         shared.set(storedVerseBook, forKey: "verseOfDayBook")
                         shared.set(storedVerseChapter, forKey: "verseOfDayChapter")
@@ -1146,7 +1146,7 @@ struct HomeView: View {
         }
 
         guard let book = books.randomElement(), let chapter = book.chapters.randomElement(), !chapter.verses.isEmpty, let verse = chapter.verses.randomElement() else { return }
-        verseOfDay = VerseRef(bookName: book.name, chapterNumber: chapter.number, verseNumber: verse.number, verseText: verse.text)
+        verseOfDay = HomeVerseRef(bookName: book.name, chapterNumber: chapter.number, verseNumber: verse.number, verseText: verse.text)
         storedVerseBook = book.name
         storedVerseChapter = chapter.number
         storedVerseNumber = verse.number
@@ -1161,7 +1161,7 @@ struct HomeView: View {
         WidgetCenter.shared.reloadAllTimelines()
     }
 
-    private func copyVerse(_ v: VerseRef) {
+    private func copyVerse(_ v: HomeVerseRef) {
         UIPasteboard.general.string = shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText)
         withAnimation(.spring()) { showCopyToast = true }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
@@ -1169,13 +1169,13 @@ struct HomeView: View {
         }
     }
 
-    private func isFavorited(_ v: VerseRef) -> Bool {
+    private func isFavorited(_ v: HomeVerseRef) -> Bool {
         favorites.contains { fav in
             fav.bookName == v.bookName && fav.chapterNumber == v.chapterNumber && fav.verseNumber == v.verseNumber
         }
     }
 
-    private func toggleFavorite(for v: VerseRef) {
+    private func toggleFavorite(for v: HomeVerseRef) {
         if let existing = favorites.first(where: { $0.bookName == v.bookName && $0.chapterNumber == v.chapterNumber && $0.verseNumber == v.verseNumber }) {
             modelContext.delete(existing)
             try? modelContext.save()
@@ -1350,7 +1350,7 @@ private struct HeroCard<Content: View>: View {
     }
 }
 
-private struct VerseRef {
+private struct HomeVerseRef {
     let bookName: String
     let chapterNumber: Int
     let verseNumber: Int
@@ -1407,4 +1407,3 @@ private struct PrayerStudyTimerSetupView: View {
     }
 }
 // Note: HealthKit logging is handled in HomeView, no changes needed here.
-

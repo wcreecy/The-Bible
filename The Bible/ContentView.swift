@@ -114,11 +114,15 @@ struct ContentView: View {
             .tabItem { Label("Favorites", systemImage: "heart") }
             .tag(3)
             
+            JournalListView()
+                .tabItem { Label("Journal", systemImage: "book.closed") }
+                .tag(4)
+            
             NavigationStack(path: $coordinator.path) {
                 GamesView()
             }
             .tabItem { Label("Games", systemImage: "gamecontroller") }
-            .tag(4)
+            .tag(5)
             
             NavigationStack(path: $coordinator.path) {
                 SettingsView()
@@ -137,7 +141,7 @@ struct ContentView: View {
                     }
             }
             .tabItem { Label("Settings", systemImage: "gear") }
-            .tag(5)
+            .tag(6)
         }
         .environmentObject(coordinator)
         .preferredColorScheme(preferredScheme)

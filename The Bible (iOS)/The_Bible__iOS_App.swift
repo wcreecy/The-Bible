@@ -18,7 +18,8 @@ struct The_Bible__iOS_App: App {
                 ReadingProgress.self,
                 Favorite.self,
                 Bookmark.self,
-                VerseNote.self
+                VerseNote.self,
+                JournalEntry.self
             )
             return container
         } catch {
@@ -34,6 +35,7 @@ struct The_Bible__iOS_App: App {
                 Favorite.self,
                 Bookmark.self,
                 VerseNote.self,
+                JournalEntry.self,
             configurations: memoryConfig)
             print("ℹ️ Falling back to in-memory SwiftData store. Data will not persist across launches.")
             return container

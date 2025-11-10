@@ -26,6 +26,9 @@ struct ReadingView: View {
     @AppStorage("keepScreenOn") private var keepScreenOn: Bool = false
     @State private var pinVerse: Int? = nil
 
+    @State private var showJournalEditor: Bool = false
+    @State private var journalInitialBody: String = ""
+
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
         self.chapter = chapter
@@ -69,6 +72,9 @@ struct ReadingView: View {
                 UIApplication.shared.isIdleTimerDisabled = newValue
             }
             .appToast(isPresented: $showFavoriteToast, symbol: favoriteToastSymbol, text: favoriteToastText, tint: favoriteToastTint)
+            .sheet(isPresented: $showJournalEditor) {
+                JournalEditorView(verseRef: nil, initialBody: journalInitialBody)
+            }
     }
 
     @ViewBuilder
@@ -148,6 +154,19 @@ struct ReadingView: View {
                                     Image(systemName: "square.and.arrow.up")
                                 }
                                 .foregroundStyle(.blue)
+                                Button(action: {
+                                    // Build a verse reference and open JournalEditorView with it in the body
+                                    let bookName = currentBook.name
+                                    let chapterNum = currentChapter.number
+                                    let verseNum = verse.number
+                                    let refText = "\(bookName) \(chapterNum):\(verseNum)"
+                                    // Present the editor by pushing a sheet via a local state
+                                    openJournalForReference(text: refText)
+                                    withAnimation(.easeInOut) { menuVerse = nil }
+                                }) {
+                                    Image(systemName: "book.closed")
+                                }
+                                .foregroundStyle(.brown)
                                 Button(action: {
                                     toggleFavorite(for: verse)
                                     withAnimation(.easeInOut) { menuVerse = nil }
@@ -309,6 +328,11 @@ struct ReadingView: View {
             }
         }
     }
+    
+    private func openJournalForReference(text: String) {
+        journalInitialBody = text
+        showJournalEditor = true
+    }
 }
 
 #Preview {
@@ -317,3 +341,4 @@ struct ReadingView: View {
             .modelContainer(for: [ReaderSettings.self, ReadingProgress.self], inMemory: true)
     }
 }
+
