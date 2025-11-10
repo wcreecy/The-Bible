@@ -5,6 +5,46 @@ struct BibleSplitView: View {
     @State private var selectedChapter: Chapter? = nil
     @State private var navStartVerse: Int = 1
     @State private var searchText: String = ""
+    @State private var detailPath = NavigationPath()
+    
+    private struct ChapterRoute: Hashable {
+        let bookName: String
+        let chapterNumber: Int
+    }
+
+    private struct ReadingRoute: Hashable {
+        let bookName: String
+        let chapterNumber: Int
+        let verseNumber: Int
+    }
+    
+    private struct SearchHit: Identifiable, Hashable {
+        let id: String
+        let book: Book
+        let chapter: Chapter
+        let verseNumber: Int
+        let verseText: String
+        
+        init(book: Book, chapter: Chapter, verseNumber: Int, verseText: String) {
+            self.book = book
+            self.chapter = chapter
+            self.verseNumber = verseNumber
+            self.verseText = verseText
+            self.id = "\(book.name)-\(chapter.number)-\(verseNumber)"
+        }
+    }
+    
+    private var canon: [Book] { BibleData.books }
+    private var indexMap: [String: Int] {
+        Dictionary(uniqueKeysWithValues: canon.enumerated().map { ($1.name, $0) })
+    }
+    private var matthewIndex: Int { indexMap["Matthew"] ?? Int.max }
+    private var otBooks: [Book] {
+        canon.filter { (indexMap[$0.name] ?? Int.max) < matthewIndex }
+    }
+    private var ntBooks: [Book] {
+        canon.filter { (indexMap[$0.name] ?? Int.max) >= matthewIndex }
+    }
     
     private var shouldSearch: Bool {
         let words = searchText
@@ -14,15 +54,15 @@ struct BibleSplitView: View {
         return words.count >= 2
     }
     
-    private var searchResults: [(book: Book, chapter: Chapter, verseNumber: Int, verseText: String)] {
+    private var searchResults: [SearchHit] {
         guard shouldSearch else { return [] }
         let needle = searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        var results: [(Book, Chapter, Int, String)] = []
+        var results: [SearchHit] = []
         for book in BibleData.books {
             for chapter in book.chapters {
                 for verse in chapter.verses {
                     if verse.text.lowercased().contains(needle) {
-                        results.append((book, chapter, verse.number, verse.text))
+                        results.append(SearchHit(book: book, chapter: chapter, verseNumber: verse.number, verseText: verse.text))
                     }
                 }
             }
@@ -30,118 +70,151 @@ struct BibleSplitView: View {
         return results
     }
     
-    var body: some View {
-        NavigationSplitView(columnVisibility: .constant(.all)) {
-            // Sidebar: Books only
-            let canon = BibleData.books
-            let indexMap = Dictionary(uniqueKeysWithValues: canon.enumerated().map { ($1.name, $0) })
-            let matthewIndex = indexMap["Matthew"] ?? Int.max
-            let otBooks = canon.filter { (indexMap[$0.name] ?? Int.max) < matthewIndex }
-            let ntBooks = canon.filter { (indexMap[$0.name] ?? Int.max) >= matthewIndex }
-
-            List {
-                if !otBooks.isEmpty {
-                    Section {
-                        ForEach(otBooks, id: \.name) { book in
-                            Button {
-                                selectedBook = book
-                                selectedChapter = nil
-                                navStartVerse = 1
-                            } label: {
-                                HStack {
-                                    Text(book.name)
-                                    if selectedBook?.name == book.name {
-                                        Spacer()
-                                        Image(systemName: "checkmark").foregroundStyle(.blue)
-                                    }
+    @ViewBuilder
+    private var sidebarView: some View {
+        // Sidebar: Books only
+        List {
+            if !otBooks.isEmpty {
+                Section {
+                    ForEach(otBooks, id: \.name) { book in
+                        Button {
+                            selectedBook = book
+                            selectedChapter = nil
+                            navStartVerse = 1
+                            searchText = ""
+                            detailPath = NavigationPath()
+                        } label: {
+                            HStack {
+                                Text(book.name)
+                                if selectedBook?.name == book.name {
+                                    Spacer()
+                                    Image(systemName: "checkmark").foregroundStyle(.blue)
                                 }
                             }
-                            .buttonStyle(.plain)
                         }
-                    } header: {
-                        Text("Old Testament (\(otBooks.count))").font(.footnote).foregroundStyle(.secondary)
+                        .buttonStyle(.plain)
                     }
-                }
-                if !ntBooks.isEmpty {
-                    Section {
-                        ForEach(ntBooks, id: \.name) { book in
-                            Button {
-                                selectedBook = book
-                                selectedChapter = nil
-                                navStartVerse = 1
-                            } label: {
-                                HStack {
-                                    Text(book.name)
-                                    if selectedBook?.name == book.name {
-                                        Spacer()
-                                        Image(systemName: "checkmark").foregroundStyle(.blue)
-                                    }
-                                }
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    } header: {
-                        Text("New Testament (\(ntBooks.count))").font(.footnote).foregroundStyle(.secondary)
-                    }
+                } header: {
+                    Text("Old Testament (\(otBooks.count))").font(.footnote).foregroundStyle(.secondary)
                 }
             }
-            .navigationTitle("Books")
-        } detail: {
-            NavigationStack {
-                if shouldSearch {
-                    // Show search results over the entire Bible
-                    if searchResults.isEmpty {
-                        ContentUnavailableView("No results", systemImage: "magnifyingglass", description: Text("Type at least two words to search Bible text."))
-                    } else {
-                        List(searchResults, id: \.verseNumber) { hit in
-                            NavigationLink {
-                                ReadingView(book: hit.book, chapter: hit.chapter, startVerse: hit.verseNumber)
-                                    .id("\(hit.book.name)-\(hit.chapter.number)-\(hit.verseNumber)")
-                            } label: {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("\(hit.book.name) \(hit.chapter.number):\(hit.verseNumber)")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                    Text(hit.verseText)
-                                        .font(.body)
-                                        .lineLimit(3)
-                                }
-                                .padding(.vertical, 4)
-                            }
-                        }
-                        .navigationTitle("Search")
-                    }
-                } else if let book = selectedBook {
-                    // Root: Chapters for selected book
-                    List(book.chapters, id: \.number) { chapter in
-                        NavigationLink {
-                            // Verses list for selected chapter
-                            List(chapter.verses, id: \.number) { verse in
-                                NavigationLink {
-                                    ReadingView(book: book, chapter: chapter, startVerse: verse.number)
-                                        .id("\(book.name)-\(chapter.number)-\(verse.number)")
-                                } label: {
-                                    VStack(alignment: .leading) {
-                                        Text("Verse \(verse.number)")
-                                            .font(.headline)
-                                        Text(verse.text.prefix(120) + (verse.text.count > 120 ? "…" : ""))
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                    }
-                                    .padding(.vertical, 4)
-                                }
-                            }
-                            .navigationTitle("\(book.name) \(chapter.number)")
+            if !ntBooks.isEmpty {
+                Section {
+                    ForEach(ntBooks, id: \.name) { book in
+                        Button {
+                            selectedBook = book
+                            selectedChapter = nil
+                            navStartVerse = 1
+                            searchText = ""
+                            detailPath = NavigationPath()
                         } label: {
-                            Text("Chapter \(chapter.number)")
+                            HStack {
+                                Text(book.name)
+                                if selectedBook?.name == book.name {
+                                    Spacer()
+                                    Image(systemName: "checkmark").foregroundStyle(.blue)
+                                }
+                            }
                         }
+                        .buttonStyle(.plain)
                     }
-                    .navigationTitle(book.name)
+                } header: {
+                    Text("New Testament (\(ntBooks.count))").font(.footnote).foregroundStyle(.secondary)
+                }
+            }
+        }
+        .navigationTitle("Books")
+    }
+    
+    private struct SearchResultsList: View {
+        let results: [SearchHit]
+        var body: some View {
+            if results.isEmpty {
+                ContentUnavailableView("No results", systemImage: "magnifyingglass", description: Text("Type at least two words to search Bible text."))
+            } else {
+                List(results) { hit in
+                    NavigationLink(value: ReadingRoute(bookName: hit.book.name, chapterNumber: hit.chapter.number, verseNumber: hit.verseNumber)) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("\(hit.book.name) \(hit.chapter.number):\(hit.verseNumber)")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Text(hit.verseText)
+                                .font(.body)
+                                .lineLimit(3)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+                .navigationTitle("Search")
+            }
+        }
+    }
+
+    private struct ChaptersListView: View {
+        let book: Book
+        var body: some View {
+            List(book.chapters, id: \.number) { chapter in
+                NavigationLink(value: ChapterRoute(bookName: book.name, chapterNumber: chapter.number)) {
+                    Text("Chapter \(chapter.number)")
+                }
+            }
+            .navigationTitle(book.name)
+        }
+    }
+    
+    @ViewBuilder
+    private var detailView: some View {
+        NavigationStack(path: $detailPath) {
+            Group {
+                if shouldSearch {
+                    SearchResultsList(results: searchResults)
+                } else if let book = selectedBook {
+                    ChaptersListView(book: book)
                 } else {
                     ContentUnavailableView("Select a Book", systemImage: "book")
                 }
             }
-            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search Bible text")
+            .navigationDestination(for: ChapterRoute.self) { route in
+                // Resolve book and chapter
+                if let book = BibleData.books.first(where: { $0.name == route.bookName }),
+                   let chapter = book.chapters.first(where: { $0.number == route.chapterNumber }) {
+                    List(chapter.verses, id: \.number) { verse in
+                        NavigationLink(value: ReadingRoute(bookName: book.name, chapterNumber: chapter.number, verseNumber: verse.number)) {
+                            VStack(alignment: .leading) {
+                                Text("Verse \(verse.number)")
+                                    .font(.headline)
+                                let preview = String(verse.text.prefix(120)) + (verse.text.count > 120 ? "…" : "")
+                                Text(preview)
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(.vertical, 4)
+                        }
+                    }
+                    .navigationTitle("\(book.name) \(chapter.number)")
+                } else {
+                    ContentUnavailableView("Chapter not found", systemImage: "exclamationmark.triangle")
+                }
+            }
+            .navigationDestination(for: ReadingRoute.self) { route in
+                if let book = BibleData.books.first(where: { $0.name == route.bookName }),
+                   let chapter = book.chapters.first(where: { $0.number == route.chapterNumber }) {
+                    ReadingView(book: book, chapter: chapter, startVerse: route.verseNumber)
+                        .id("\(route.bookName)-\(route.chapterNumber)-\(route.verseNumber)")
+                } else {
+                    ContentUnavailableView("Passage not found", systemImage: "exclamationmark.triangle")
+                }
+            }
+        }
+        .id(selectedBook?.name ?? "__no_book__")
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search Bible text")
+    }
+    
+    var body: some View {
+        NavigationSplitView(columnVisibility: .constant(.all)) {
+            sidebarView
+        } detail: {
+            detailView
         }
     }
 }
