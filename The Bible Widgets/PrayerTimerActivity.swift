@@ -144,7 +144,7 @@ struct PrayerTimerLiveActivity: Widget {
                 if context.state.status == "Focus" {
                     focusLogoView()
                 } else {
-                    Image(systemName: "timer") // Timer icon for Timer/Stopwatch modes
+                    ProgressRing(progress: progress(context), tint: timerTintColor(context))
                 }
             } compactTrailing: {
                 if context.state.status == "Focus" {
@@ -194,5 +194,34 @@ struct PrayerTimerLiveActivity: Widget {
             return String(format: "%dm %02ds", m, s)
         }
     }
-}
 
+    private func timerTintColor(_ context: ActivityViewContext<PrayerTimerAttributes>) -> Color {
+        let remaining = context.state.remaining
+        let total = context.state.total
+        guard total > 0 else { return .accentColor }
+        if remaining > 300 { // > 5 minutes
+            return .green
+        } else if remaining > 120 { // 2–5 minutes
+            return .yellow
+        } else {
+            return .red
+        }
+    }
+
+    private struct ProgressRing: View {
+        var progress: Double // 0.0 ... 1.0
+        var tint: Color
+        var lineWidth: CGFloat = 3
+        var body: some View {
+            ZStack {
+                Circle()
+                    .stroke(Color.primary.opacity(0.15), lineWidth: lineWidth)
+                Circle()
+                    .trim(from: 0, to: max(0, min(1, progress)))
+                    .stroke(tint, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+            }
+            .frame(width: 22, height: 22)
+        }
+    }
+}

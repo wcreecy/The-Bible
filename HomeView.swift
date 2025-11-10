@@ -347,7 +347,7 @@ struct HomeView: View {
                                 .buttonStyle(.plain)
                                 .accessibilityLabel(isPaused ? "Resume" : "Pause")
 
-                                // Stop (red)
+                                // Stop (red) — placed next to Pause
                                 Button(action: { stopTimer() }) {
                                     Image(systemName: "stop.circle.fill")
                                         .font(.system(size: 56))
@@ -355,6 +355,19 @@ struct HomeView: View {
                                 }
                                 .buttonStyle(.plain)
                                 .accessibilityLabel("Stop")
+
+                                // +5 minutes — blue button with "+5" label
+                                Button(action: { addFiveMinutes() }) {
+                                    Text("+5")
+                                        .font(.subheadline.weight(.semibold))
+                                        .frame(width: 44, height: 44)
+                                        .foregroundStyle(.white)
+                                        .background(
+                                            Circle().fill(Color.blue)
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Add 5 minutes")
                             }
                         }
                     }
@@ -583,8 +596,8 @@ struct HomeView: View {
                 .frame(height: isPad ? iPadCardHeight : nil)
             } else { // Focus mode
                 HeroCard(
-                    title: "Focus",
-                    subtitle: "Enter a title and notes for your prayer/study focus.",
+                    title: "Daily Focus",
+                    subtitle: "What's something you want to focus on today?",
                     icon: "target",
                     tint: .purple
                 ) {
@@ -1029,6 +1042,41 @@ struct HomeView: View {
             totalSeconds: storedTotalSeconds,
             isPaused: isPaused
         )
+    }
+
+    private func addFiveMinutes() {
+        guard isTimerRunning else { return }
+        let delta: Int = 300
+        if isPaused {
+            // Extend paused remaining and total
+            remainingSeconds += delta
+            storedRemainingWhenPaused += delta
+            storedTotalSeconds += delta
+            // Update Live Activity
+            PrayerTimerActivityController.shared.update(
+                remainingSeconds: remainingSeconds,
+                totalSeconds: storedTotalSeconds,
+                isPaused: isPaused
+            )
+        } else {
+            // Extend end date and total
+            storedEndDate += TimeInterval(delta)
+            storedTotalSeconds += delta
+            // Refresh remaining now for immediate UI feedback
+            let newRemaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
+            remainingSeconds = newRemaining
+            // Reschedule notification at new end time
+            scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
+            // Update Live Activity
+            PrayerTimerActivityController.shared.update(
+                remainingSeconds: remainingSeconds,
+                totalSeconds: storedTotalSeconds,
+                isPaused: isPaused
+            )
+        }
+        // Optional: light haptic to confirm action
+        let gen = UIImpactFeedbackGenerator(style: .light)
+        gen.impactOccurred()
     }
 
     private func resetTimerState() {
