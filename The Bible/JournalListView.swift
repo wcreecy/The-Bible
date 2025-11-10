@@ -18,6 +18,26 @@ struct JournalListView: View {
     var body: some View {
         NavigationStack {
             List {
+                if let tag = selectedTag {
+                    HStack(spacing: 8) {
+                        Text(tag)
+                            .font(.subheadline).bold()
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .layoutPriority(1)
+                        Spacer()
+                        Button {
+                            selectedTag = nil
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .imageScale(.medium)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Clear tag filter")
+                    }
+                    .padding(.vertical, 6)
+                }
+                
                 if !pinned.isEmpty {
                     Section("Pinned (\(pinned.count))") {
                         ForEach(pinned) { entry in
@@ -47,28 +67,6 @@ struct JournalListView: View {
             .navigationTitle("Journal")
             .searchable(text: $search, placement: .navigationBarDrawer, prompt: Text("Search title, body, tags…"))
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    if let tag = selectedTag {
-                        Button {
-                            selectedTag = nil
-                        } label: {
-                            HStack(spacing: 6) {
-                                Text("Tag:")
-                                Text(tag)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(.quaternary, in: Capsule())
-                                Text("(\(selectedTagCount))")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                Image(systemName: "xmark.circle.fill")
-                            }
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(.primary)
-                        .accessibilityLabel("Clear tag filter")
-                    }
-                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         draftVerse = nil
