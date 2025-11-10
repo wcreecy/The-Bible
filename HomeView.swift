@@ -59,10 +59,10 @@ struct HomeView: View {
         @Environment(\.isEnabled) private var isEnabled
         func makeBody(configuration: Configuration) -> some View {
             configuration.label
-                .font(.subheadline.weight(.semibold))
+                .font(.footnote.weight(.semibold))
                 .foregroundStyle(isEnabled ? .white : .secondary)
-                .padding(.vertical, 10)
-                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
                 .background(
                     Capsule(style: .continuous)
                         .fill(isEnabled ? tint : Color(.secondarySystemFill))
@@ -609,24 +609,28 @@ struct HomeView: View {
                                 .focused($focusTitleIsFocused)
                         }
 
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Body")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            ZStack(alignment: .topLeading) {
-                                if focusBody.isEmpty {
-                                    Text("Enter your focus notes…")
-                                        .foregroundStyle(.secondary)
-                                        .padding(.top, 8)
-                                        .padding(.leading, 5)
+                        let hasTitle = !focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+
+                        if hasTitle {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Body")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                ZStack(alignment: .topLeading) {
+                                    if focusBody.isEmpty {
+                                        Text("Enter your focus notes…")
+                                            .foregroundStyle(.secondary)
+                                            .padding(.top, 8)
+                                            .padding(.leading, 5)
+                                    }
+                                    TextEditor(text: $focusBody)
+                                        .focused($focusBodyIsFocused)
+                                        .frame(minHeight: 120)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                                .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                                        )
                                 }
-                                TextEditor(text: $focusBody)
-                                    .focused($focusBodyIsFocused)
-                                    .frame(minHeight: 120)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                            .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                                    )
                             }
                         }
 
@@ -659,9 +663,13 @@ struct HomeView: View {
                                     withAnimation(.easeOut) { showFocusSavedToast = false }
                                 }
                             } label: {
-                                Label("Save", systemImage: "checkmark.circle.fill")
+                                Label("Save", systemImage: "square.and.arrow.down")
                             }
-                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                            .labelStyle(.iconOnly)
+                            .font(.title3)
+                            .buttonStyle(.plain)
+                            .help("Save")
+                            .accessibilityLabel("Save")
                             .disabled(!hasTypedLetter)
 
                             Button {
@@ -679,7 +687,12 @@ struct HomeView: View {
                             } label: {
                                 Label("Clear", systemImage: "xmark.circle.fill")
                             }
-                            .buttonStyle(ModernPillButtonStyle(tint: .red))
+                            .labelStyle(.iconOnly)
+                            .font(.title3)
+                            .buttonStyle(.plain)
+                            .foregroundStyle(.red)
+                            .help("Clear")
+                            .accessibilityLabel("Clear")
                             .disabled(!hasSavedFocus)
                         }
                         .padding(.top, 4)
@@ -1407,3 +1420,4 @@ private struct PrayerStudyTimerSetupView: View {
     }
 }
 // Note: HealthKit logging is handled in HomeView, no changes needed here.
+
