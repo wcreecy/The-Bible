@@ -11,8 +11,24 @@ struct JournalEditorView: View {
     @State private var title: String = ""
     @State private var content: String = ""      // <-- renamed from `body`
     @State private var tagsText: String = ""     // comma-separated
-    @State private var isFavorite = false
-    @State private var isPinned = false
+
+    private var parsedTags: [String] {
+        tagsText
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+    }
+
+    private func colorBinding(for tag: String) -> Binding<Color> {
+        let initial = TagColorStore.color(for: tag) ?? .accentColor
+        var current = initial
+        return Binding<Color>(
+            get: { TagColorStore.color(for: tag) ?? current },
+            set: { newValue in
+                TagColorStore.setColor(newValue, for: tag)
+            }
+        )
+    }
 
     @State private var showSaveError = false
     @State private var saveErrorMessage: String = ""
@@ -33,16 +49,42 @@ struct JournalEditorView: View {
                     }
                 }
                 Section("Body") {
-                    TextEditor(text: $content)
-                        .frame(minHeight: 160)
+                    ZStack(alignment: .topLeading) {
+                        if content.isEmpty {
+                            Text("Write your thoughts here…")
+                                .foregroundStyle(.secondary)
+                                .padding(.top, 8)
+                                .padding(.leading, 5)
+                        }
+                        TextEditor(text: $content)
+                            .frame(minHeight: 200)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                            )
+                    }
                 }
                 Section("Tags") {
-                    TextField("faith, prayer, study…", text: $tagsText)
+                    TextField("sermon notes, prayer, study…", text: $tagsText)
                         .textInputAutocapitalization(.never)
-                }
-                Section("Options") {
-                    Toggle("Favorite", isOn: $isFavorite)
-                    Toggle("Pin", isOn: $isPinned)
+                    VStack(alignment: .leading, spacing: 8) {
+                        ForEach(parsedTags, id: \.self) { t in
+                            HStack(spacing: 8) {
+                                let color = TagColorStore.color(for: t) ?? .accentColor
+                                Text(t)
+                                    .font(.caption)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(color.opacity(0.15), in: Capsule())
+                                    .overlay(
+                                        Capsule().stroke(color.opacity(0.4), lineWidth: 1)
+                                    )
+                                    .foregroundStyle(color)
+                                ColorPicker("", selection: colorBinding(for: t), supportsOpacity: false)
+                                    .labelsHidden()
+                            }
+                        }
+                    }
                 }
             }
             .navigationTitle("New Entry")
@@ -51,7 +93,10 @@ struct JournalEditorView: View {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Save") { save() }.bold()
+                    Button(action: save) {
+                        Label("Save", systemImage: "square.and.arrow.down")
+                    }
+                    .bold()
                 }
             }
             .alert("Couldn’t Save Entry", isPresented: $showSaveError) {
@@ -73,8 +118,8 @@ struct JournalEditorView: View {
             body: content.trimmingCharacters(in: .whitespacesAndNewlines),
             verseRef: verseRef,
             tags: tags,
-            isPinned: isPinned,
-            isFavorite: isFavorite
+            isPinned: false,
+            isFavorite: false
         )
         // Ensure timestamps are current if your model uses them
         entry.updatedAt = Date()

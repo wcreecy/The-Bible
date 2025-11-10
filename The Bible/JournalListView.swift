@@ -125,6 +125,9 @@ struct JournalListView: View {
         .blue, .green, .orange, .pink, .purple, .teal, .indigo, .red, .mint, .brown
     ]
     private func tagColor(for tag: String) -> Color {
+        if let stored = TagColorStore.color(for: tag) {
+            return stored
+        }
         let cleaned = tag.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard !cleaned.isEmpty else { return .gray }
         var hasher = Hasher()
@@ -151,7 +154,6 @@ struct JournalListView: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel(e.isPinned ? "Unpin" : "Pin")
             }
-            // Inline tags as tappable chips to filter
             if !e.tags.isEmpty {
                 HStack(spacing: 6) {
                     ForEach(e.tags, id: \.self) { t in
@@ -171,17 +173,6 @@ struct JournalListView: View {
                         .accessibilityLabel("Filter by tag \(t)")
                     }
                 }
-            }
-            if let ref = e.verseRef {
-                Text(ref.display)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            if !e.body.isEmpty {
-                Text(e.body)
-                    .font(.subheadline)
-                    .lineLimit(2)
-                    .foregroundStyle(.secondary)
             }
         }
     }
@@ -206,3 +197,4 @@ struct JournalListView: View {
         try? ctx.save()
     }
 }
+

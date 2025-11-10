@@ -7,6 +7,22 @@ struct BibleSplitView: View {
     @State private var searchText: String = ""
     @State private var detailPath = NavigationPath()
     
+    @State private var debouncedText: String = ""
+    @State private var showInspector: Bool = false
+    @AppStorage("readerFontSize") private var readerFontSize: Double = 17
+    @State private var readerUseTwoColumns: Bool = false
+
+    private enum SearchScope: String, CaseIterable, Identifiable {
+        case all = "All"
+        case ot = "OT"
+        case nt = "NT"
+        case thisBook = "This Book"
+        var id: String { rawValue }
+    }
+    @State private var searchScope: SearchScope = .all
+
+    @Environment(\.horizontalSizeClass) private var hSize
+    
     private struct ChapterRoute: Hashable {
         let bookName: String
         let chapterNumber: Int
@@ -47,7 +63,7 @@ struct BibleSplitView: View {
     }
     
     private var shouldSearch: Bool {
-        let words = searchText
+        let words = debouncedText
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .components(separatedBy: CharacterSet.whitespacesAndNewlines)
             .filter { !$0.isEmpty }
@@ -56,9 +72,23 @@ struct BibleSplitView: View {
     
     private var searchResults: [SearchHit] {
         guard shouldSearch else { return [] }
-        let needle = searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let needle = debouncedText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+
+        // Determine which books to search based on scope
+        let booksToSearch: [Book]
+        switch searchScope {
+        case .all:
+            booksToSearch = BibleData.books
+        case .ot:
+            booksToSearch = otBooks
+        case .nt:
+            booksToSearch = ntBooks
+        case .thisBook:
+            if let book = selectedBook { booksToSearch = [book] } else { booksToSearch = [] }
+        }
+
         var results: [SearchHit] = []
-        for book in BibleData.books {
+        for book in booksToSearch {
             for chapter in book.chapters {
                 for verse in chapter.verses {
                     if verse.text.lowercased().contains(needle) {
@@ -152,6 +182,7 @@ struct BibleSplitView: View {
 
     private struct ChaptersListView: View {
         let book: Book
+        @Binding var showInspector: Bool
         var body: some View {
             List(book.chapters, id: \.number) { chapter in
                 NavigationLink(value: ChapterRoute(bookName: book.name, chapterNumber: chapter.number)) {
@@ -162,6 +193,33 @@ struct BibleSplitView: View {
         }
     }
     
+    private struct ReaderSettingsView: View {
+        @Binding var fontSize: Double
+        @Binding var useTwoColumns: Bool
+        var body: some View {
+            Form {
+                Section("Text") {
+                    HStack {
+                        Text("Font Size")
+                        Spacer()
+                        Text("\(Int(fontSize)) pt").foregroundStyle(.secondary)
+                    }
+                    .accessibilityElement(children: .combine)
+                    Slider(value: $fontSize, in: 12...30, step: 1)
+                    Button {
+                        fontSize = 17
+                    } label: {
+                        Label("Reset to Default", systemImage: "arrow.counterclockwise")
+                    }
+                }
+                Section("Layout") {
+                    Toggle("Two-column reading", isOn: $useTwoColumns)
+                }
+            }
+            .navigationTitle("Reading Settings")
+        }
+    }
+    
     @ViewBuilder
     private var detailView: some View {
         NavigationStack(path: $detailPath) {
@@ -169,9 +227,16 @@ struct BibleSplitView: View {
                 if shouldSearch {
                     SearchResultsList(results: searchResults)
                 } else if let book = selectedBook {
-                    ChaptersListView(book: book)
+                    ChaptersListView(book: book, showInspector: $showInspector)
                 } else {
                     ContentUnavailableView("Select a Book", systemImage: "book")
+                }
+            }
+            .task(id: searchText) {
+                // Debounce input by 300ms
+                try? await Task.sleep(nanoseconds: 300_000_000)
+                if !Task.isCancelled {
+                    debouncedText = searchText
                 }
             }
             .navigationDestination(for: ChapterRoute.self) { route in
@@ -201,13 +266,61 @@ struct BibleSplitView: View {
                    let chapter = book.chapters.first(where: { $0.number == route.chapterNumber }) {
                     ReadingView(book: book, chapter: chapter, startVerse: route.verseNumber)
                         .id("\(route.bookName)-\(route.chapterNumber)-\(route.verseNumber)")
+                        // Propagate a base font size to all text in the reader
+                        .font(.system(size: readerFontSize))
+                        .toolbar {
+                            ToolbarItem(placement: .primaryAction) {
+                                Button {
+                                    showInspector.toggle()
+                                } label: {
+                                    Label("Reading Settings", systemImage: "slider.horizontal.3")
+                                }
+                                .keyboardShortcut(",", modifiers: [.command])
+                            }
+                        }
                 } else {
                     ContentUnavailableView("Passage not found", systemImage: "exclamationmark.triangle")
                 }
             }
         }
+//        Removed entire toolbar block here
+//        .toolbar {
+//            ToolbarItem(placement: .primaryAction) {
+//                Button {
+//                    showInspector.toggle()
+//                } label: {
+//                    Label("Reading Settings", systemImage: "slider.horizontal.3")
+//                }
+//                .keyboardShortcut(",", modifiers: [.command])
+//            }
+//        }
+        .inspector(isPresented: $showInspector) {
+            ReaderSettingsView(fontSize: $readerFontSize, useTwoColumns: $readerUseTwoColumns)
+                .inspectorColumnWidth(min: 240, ideal: 300, max: 400)
+        }
+        .sheet(
+            isPresented: Binding(
+                get: { hSize == .compact && showInspector },
+                set: { newValue in if hSize == .compact { showInspector = newValue } }
+            )
+        ) {
+            NavigationStack {
+                ReaderSettingsView(fontSize: $readerFontSize, useTwoColumns: $readerUseTwoColumns)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Done") { showInspector = false }
+                        }
+                    }
+            }
+            .presentationDetents([.medium, .large])
+        }
         .id(selectedBook?.name ?? "__no_book__")
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search Bible text")
+        .searchScopes($searchScope) {
+            ForEach(SearchScope.allCases) { scope in
+                Text(scope.rawValue)
+            }
+        }
     }
     
     var body: some View {
