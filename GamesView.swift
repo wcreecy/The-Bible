@@ -1,12 +1,21 @@
 import SwiftUI
 
 struct GamesView: View {
+    private enum GameRoute: Hashable {
+        case quiz
+        case hangman
+        case beatTheClock
+        case referenceMatch
+        case favoritesFlashcards
+        case bookOrder
+    }
+
+    @State private var selection: GameRoute? = nil
+
     var body: some View {
         List {
             Section("Available Games") {
-                NavigationLink {
-                    QuizView()
-                } label: {
+                NavigationLink(value: GameRoute.quiz) {
                     HStack(spacing: 12) {
                         Image(systemName: "questionmark.circle")
                             .foregroundStyle(.blue)
@@ -17,9 +26,7 @@ struct GamesView: View {
                     }
                 }
                 
-                NavigationLink {
-                    HangmanGameView()
-                } label: {
+                NavigationLink(value: GameRoute.hangman) {
                     HStack(spacing: 12) {
                         Image(systemName: "text.word.spacing")
                             .foregroundStyle(.teal)
@@ -30,9 +37,7 @@ struct GamesView: View {
                     }
                 }
                 
-                NavigationLink {
-                    BeatTheClockGameView()
-                } label: {
+                NavigationLink(value: GameRoute.beatTheClock) {
                     HStack(spacing: 12) {
                         Image(systemName: "hourglass")
                             .foregroundStyle(.indigo)
@@ -43,9 +48,7 @@ struct GamesView: View {
                     }
                 }
                 
-                NavigationLink {
-                    ReferenceMatchGameView()
-                } label: {
+                NavigationLink(value: GameRoute.referenceMatch) {
                     HStack(spacing: 12) {
                         Image(systemName: "text.quote")
                             .foregroundStyle(.orange)
@@ -56,9 +59,7 @@ struct GamesView: View {
                     }
                 }
                 
-                NavigationLink {
-                    FavoritesFlashcardsGameView()
-                } label: {
+                NavigationLink(value: GameRoute.favoritesFlashcards) {
                     HStack(spacing: 12) {
                         Image(systemName: "rectangle.portrait.on.rectangle.portrait")
                             .foregroundStyle(.pink)
@@ -69,9 +70,7 @@ struct GamesView: View {
                     }
                 }
                 
-                NavigationLink {
-                    BookOrderGameView()
-                } label: {
+                NavigationLink(value: GameRoute.bookOrder) {
                     HStack(spacing: 12) {
                         Image(systemName: "list.number")
                             .foregroundStyle(.purple)
@@ -85,6 +84,23 @@ struct GamesView: View {
         }
         .listStyle(.insetGrouped)
         .navigationTitle("Games")
+        .navigationDestination(for: GameRoute.self) { route in
+            switch route {
+            case .quiz:
+                QuizView()
+            case .hangman:
+                HangmanGameView()
+            case .beatTheClock:
+                BeatTheClockGameView()
+            case .referenceMatch:
+                ReferenceMatchGameView()
+            case .favoritesFlashcards:
+                FavoritesFlashcardsGameView()
+            case .bookOrder:
+                BookOrderGameView()
+            }
+        }
+        .onAppear { selection = nil }
     }
 }
 

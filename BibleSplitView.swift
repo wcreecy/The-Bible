@@ -269,50 +269,26 @@ struct BibleSplitView: View {
                         // Propagate a base font size to all text in the reader
                         .font(.system(size: readerFontSize))
                         .toolbar {
-                            ToolbarItem(placement: .primaryAction) {
+                            ToolbarItemGroup(placement: .topBarTrailing) {
                                 Button {
-                                    showInspector.toggle()
+                                    readerFontSize = max(12, readerFontSize - 1)
                                 } label: {
-                                    Label("Reading Settings", systemImage: "slider.horizontal.3")
+                                    Image(systemName: "textformat.size.smaller")
                                 }
-                                .keyboardShortcut(",", modifiers: [.command])
+                                .accessibilityLabel("Decrease font size")
+
+                                Button {
+                                    readerFontSize = min(30, readerFontSize + 1)
+                                } label: {
+                                    Image(systemName: "textformat.size.larger")
+                                }
+                                .accessibilityLabel("Increase font size")
                             }
                         }
                 } else {
                     ContentUnavailableView("Passage not found", systemImage: "exclamationmark.triangle")
                 }
             }
-        }
-//        Removed entire toolbar block here
-//        .toolbar {
-//            ToolbarItem(placement: .primaryAction) {
-//                Button {
-//                    showInspector.toggle()
-//                } label: {
-//                    Label("Reading Settings", systemImage: "slider.horizontal.3")
-//                }
-//                .keyboardShortcut(",", modifiers: [.command])
-//            }
-//        }
-        .inspector(isPresented: $showInspector) {
-            ReaderSettingsView(fontSize: $readerFontSize, useTwoColumns: $readerUseTwoColumns)
-                .inspectorColumnWidth(min: 240, ideal: 300, max: 400)
-        }
-        .sheet(
-            isPresented: Binding(
-                get: { hSize == .compact && showInspector },
-                set: { newValue in if hSize == .compact { showInspector = newValue } }
-            )
-        ) {
-            NavigationStack {
-                ReaderSettingsView(fontSize: $readerFontSize, useTwoColumns: $readerUseTwoColumns)
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Done") { showInspector = false }
-                        }
-                    }
-            }
-            .presentationDetents([.medium, .large])
         }
         .id(selectedBook?.name ?? "__no_book__")
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search Bible text")
@@ -335,3 +311,4 @@ struct BibleSplitView: View {
 #Preview {
     BibleSplitView()
 }
+

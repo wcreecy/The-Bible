@@ -118,7 +118,7 @@ struct ContentView: View {
                 .tabItem { Label("Journal", systemImage: "book.closed") }
                 .tag(4)
             
-            NavigationStack(path: $coordinator.path) {
+            NavigationStack {
                 GamesView()
             }
             .tabItem { Label("Games", systemImage: "gamecontroller") }

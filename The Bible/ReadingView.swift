@@ -86,7 +86,6 @@ struct ReadingView: View {
                         Group {
                             VStack(alignment: .leading, spacing: 6) {
                                 Text(verse.text)
-                                    .font(.body)
                                     .foregroundStyle(.primary)
                                     .fixedSize(horizontal: false, vertical: true)
                                 Text("\(currentBook.name) \(currentChapter.number):\(verse.number)")

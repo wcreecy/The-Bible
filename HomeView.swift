@@ -1286,13 +1286,6 @@ struct HomeView: View {
         StopwatchActivityController.shared.finish(finalStatus: "Stopped")
     }
 
-    private func resetStopwatch() {
-        stopwatchRunning = false
-        stopwatchStartDate = 0
-        stopwatchAccumulated = 0
-        stopwatchElapsed = 0
-    }
-
     private func formattedHMS(_ totalSeconds: Int) -> String {
         let hours = totalSeconds / 3600
         let minutes = (totalSeconds % 3600) / 60

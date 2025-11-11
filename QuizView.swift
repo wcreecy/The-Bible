@@ -134,11 +134,6 @@ struct QuizView: View {
         }
     }
     
-    struct VerseRef {
-        let bookName: String
-        let text: String
-    }
-    
     private struct QuizQuestion: Identifiable {
         let id = UUID()
         let verseText: String
@@ -625,14 +620,6 @@ struct QuizView: View {
             return .primary
         }
         return .primary
-    }
-    
-    private func borderColor(for option: String) -> Color {
-        guard selectedOption != nil else { return .clear }
-        if option == correctBook {
-            return .green
-        }
-        return .clear
     }
     
     @ViewBuilder
