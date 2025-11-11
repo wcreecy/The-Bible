@@ -28,6 +28,7 @@ struct ReadingView: View {
 
     @State private var showJournalEditor: Bool = false
     @State private var journalInitialBody: String = ""
+    @State private var journalDraftVerse: VerseRef? = nil
 
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
@@ -73,7 +74,7 @@ struct ReadingView: View {
             }
             .appToast(isPresented: $showFavoriteToast, symbol: favoriteToastSymbol, text: favoriteToastText, tint: favoriteToastTint)
             .sheet(isPresented: $showJournalEditor) {
-                JournalEditorView(verseRef: nil, initialBody: journalInitialBody)
+                JournalEditorView(verseRef: journalDraftVerse, initialBody: journalInitialBody)
             }
     }
 
@@ -160,8 +161,9 @@ struct ReadingView: View {
                                     let chapterNum = currentChapter.number
                                     let verseNum = verse.number
                                     let refText = "\(bookName) \(chapterNum):\(verseNum)"
+                                    let ref = VerseRef(book: bookName, chapter: chapterNum, verse: verseNum)
                                     // Present the editor by pushing a sheet via a local state
-                                    openJournalForReference(text: refText)
+                                    openJournalForReference(ref: ref, bodySeed: refText)
                                     withAnimation(.easeInOut) { menuVerse = nil }
                                 }) {
                                     Image(systemName: "book.closed")
@@ -329,8 +331,9 @@ struct ReadingView: View {
         }
     }
     
-    private func openJournalForReference(text: String) {
-        journalInitialBody = text
+    private func openJournalForReference(ref: VerseRef, bodySeed: String) {
+        journalDraftVerse = ref
+        journalInitialBody = bodySeed
         showJournalEditor = true
     }
 }

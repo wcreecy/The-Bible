@@ -39,6 +39,7 @@
 		2C49CF8B2EBE31CB0006FF79 /* StopwatchLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF882EBE2EA30006FF79 /* StopwatchLiveActivity.swift */; };
 		2C49CF8D2EBE33010006FF79 /* StopwatchActivityIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF8C2EBE33010006FF79 /* StopwatchActivityIntents.swift */; };
 		2C49CF932EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF922EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift */; };
+		2CB309D32EC2CE2D0032CB7D /* BibleReferenceLinker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB309D22EC2CE2D0032CB7D /* BibleReferenceLinker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -119,6 +120,7 @@
 		2C82F4852EBACCE600DB40FC /* BookSelectionLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookSelectionLink.swift; sourceTree = "<group>"; };
 		2C82F4DC2EBB944B00DB40FC /* ShareText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareText.swift; sourceTree = "<group>"; };
 		2C82F4DE2EBBB31000DB40FC /* BeatTheClockGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTheClockGameView.swift; sourceTree = "<group>"; };
+		2CB309D22EC2CE2D0032CB7D /* BibleReferenceLinker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleReferenceLinker.swift; sourceTree = "<group>"; };
 		2CB56D3D2EB3830D00A657FA /* Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
 		2CB56D972EB3895400A657FA /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		2CB56DEF2EB3942900A657FA /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
@@ -313,6 +315,7 @@
 				2C49CF8C2EBE33010006FF79 /* StopwatchActivityIntents.swift */,
 				2C49CF922EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift */,
 				2C275BBF2EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf */,
+				2CB309D22EC2CE2D0032CB7D /* BibleReferenceLinker.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -729,6 +732,7 @@
 				2C49CF932EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift in Sources */,
 				2C49CF462EBE10000006FF79 /* HomeView.swift in Sources */,
 				2C49CF472EBE10070006FF79 /* Toast.swift in Sources */,
+				2CB309D32EC2CE2D0032CB7D /* BibleReferenceLinker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

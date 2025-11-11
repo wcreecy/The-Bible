@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import Foundation
+import UIKit
 
 struct JournalDetailView: View {
     @Environment(\.modelContext) private var modelContext
@@ -11,6 +12,10 @@ struct JournalDetailView: View {
     @State private var bodyText: String = ""
     @State private var tagsText: String = "" // comma-separated
     @State private var isEditing: Bool = false
+
+    @State private var previewRef: ScriptureRef? = nil
+    @State private var previewContent: (title: String, verses: [Verse])? = nil
+    @State private var showPreview: Bool = false
 
     // Autosave debounce
     @State private var autosaveTask: Task<Void, Never>? = nil
@@ -28,6 +33,8 @@ struct JournalDetailView: View {
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
     }
+    
+    private var linkedBody: AttributedString { BibleReferenceLinker.linkify(bodyText) }
 
     private func colorBinding(for tag: String) -> Binding<Color> {
         let initial = TagColorStore.color(for: tag) ?? .accentColor
@@ -97,9 +104,56 @@ struct JournalDetailView: View {
                         Text("No content")
                             .foregroundStyle(.secondary)
                     } else {
-                        Text(bodyText)
-                            .frame(minHeight: 200, alignment: .topLeading)
-                            .textSelection(.enabled)
+                        VStack(alignment: .leading, spacing: 12) {
+                            // Linked rich text
+                            Text(linkedBody)
+                                .frame(minHeight: 200, alignment: .topLeading)
+                                .textSelection(.enabled)
+                                .environment(\._openURL, OpenURLAction { url in
+                                    if let ref = BibleReferenceLinker.parse(url: url), let content = BibleReferenceLinker.loadVerses(for: ref) {
+                                        previewRef = ref
+                                        previewContent = content
+                                        withAnimation(.spring()) { showPreview = true }
+                                        return .handled
+                                    }
+                                    return .systemAction
+                                })
+
+                            if showPreview, let content = previewContent {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    HStack {
+                                        Text(content.title)
+                                            .font(.headline)
+                                        Spacer()
+                                        Button(action: { withAnimation(.easeOut) { showPreview = false } }) {
+                                            Image(systemName: "xmark.circle.fill")
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                    ForEach(content.verses, id: \.number) { v in
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(v.text)
+                                                .font(.body)
+                                            Text("\(previewRef?.bookName ?? "") \(previewRef?.chapter ?? 0):\(v.number)")
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        if v.number != content.verses.last?.number { Divider().padding(.vertical, 4) }
+                                    }
+                                }
+                                .padding(12)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .fill(Color(.secondarySystemBackground))
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                                )
+                                .transition(.move(edge: .bottom).combined(with: .opacity))
+                            }
+                        }
                     }
                 }
             }

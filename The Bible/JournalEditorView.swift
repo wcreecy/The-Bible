@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct JournalEditorView: View {
     @Environment(\.dismiss) private var dismiss
@@ -11,6 +12,12 @@ struct JournalEditorView: View {
     @State private var title: String = ""
     @State private var content: String = ""      // <-- renamed from `body`
     @State private var tagsText: String = ""     // comma-separated
+
+    @State private var previewRef: ScriptureRef? = nil
+    @State private var previewContent: (title: String, verses: [Verse])? = nil
+    @State private var showPreview: Bool = false
+
+    private var linkedContent: AttributedString { BibleReferenceLinker.linkify(content) }
 
     private var parsedTags: [String] {
         tagsText
@@ -32,6 +39,7 @@ struct JournalEditorView: View {
 
     @State private var showSaveError = false
     @State private var saveErrorMessage: String = ""
+    @State private var showCopyToast: Bool = false
 
     init(verseRef: VerseRef?, initialBody: String? = nil) {
         self.verseRef = verseRef
@@ -46,22 +54,6 @@ struct JournalEditorView: View {
                     TextField("Title", text: $title)
                     if let ref = verseRef {
                         LabeledContent("Linked Verse", value: ref.display)
-                    }
-                }
-                Section("Body") {
-                    ZStack(alignment: .topLeading) {
-                        if content.isEmpty {
-                            Text("Write your thoughts here…")
-                                .foregroundStyle(.secondary)
-                                .padding(.top, 8)
-                                .padding(.leading, 5)
-                        }
-                        TextEditor(text: $content)
-                            .frame(minHeight: 200)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                            )
                     }
                 }
                 Section("Tags") {
@@ -86,6 +78,93 @@ struct JournalEditorView: View {
                         }
                     }
                 }
+                Section("Body") {
+                    ZStack(alignment: .topLeading) {
+                        if content.isEmpty {
+                            Text("Write your thoughts here…")
+                                .foregroundStyle(.secondary)
+                                .padding(.top, 8)
+                                .padding(.leading, 5)
+                        }
+                        TextEditor(text: $content)
+                            .frame(minHeight: 200)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                            )
+                    }
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Live Preview")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        // Linkified rich text preview that updates while typing
+                        Text(linkedContent)
+                            .frame(minHeight: 60, alignment: .topLeading)
+                            .textSelection(.enabled)
+                            .environment(\._openURL, OpenURLAction { url in
+                                if let ref = BibleReferenceLinker.parse(url: url), let content = BibleReferenceLinker.loadVerses(for: ref) {
+                                    previewRef = ref
+                                    previewContent = content
+                                    withAnimation(.spring()) { showPreview = true }
+                                    return .handled
+                                }
+                                return .systemAction
+                            })
+
+                        if showPreview, let content = previewContent {
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack(spacing: 8) {
+                                    Text(content.title)
+                                        .font(.headline)
+                                    Spacer()
+                                    Button(action: {
+                                        // Build formatted scripture text and copy to clipboard
+                                        let verseLines = content.verses.map { "\($0.number). \($0.text)" }.joined(separator: "\n")
+                                        let copyText = content.title + "\n" + verseLines
+                                        UIPasteboard.general.string = copyText
+                                        withAnimation(.spring()) { showCopyToast = true }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                            withAnimation(.easeOut) { showCopyToast = false }
+                                        }
+                                    }) {
+                                        Image(systemName: "doc.on.doc")
+                                            .foregroundStyle(.blue)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .accessibilityLabel("Copy scripture")
+
+                                    Button(action: { withAnimation(.easeOut) { showPreview = false } }) {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                                ForEach(content.verses, id: \.number) { v in
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(v.text)
+                                            .font(.body)
+                                        Text("\(previewRef?.bookName ?? "") \(previewRef?.chapter ?? 0):\(v.number)")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    if v.number != content.verses.last?.number { Divider().padding(.vertical, 4) }
+                                }
+                            }
+                            .padding(12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .fill(Color(.secondarySystemBackground))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                            )
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                        }
+                    }
+                    .padding(.top, 8)
+                }
             }
             .navigationTitle("New Entry")
             .toolbar {
@@ -104,6 +183,7 @@ struct JournalEditorView: View {
             } message: {
                 Text(saveErrorMessage)
             }
+            .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
         }
     }
 
