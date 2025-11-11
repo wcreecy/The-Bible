@@ -114,7 +114,7 @@ struct ContentView: View {
             .tabItem { Label("Favorites", systemImage: "heart") }
             .tag(3)
             
-            JournalListView()
+            JournalTabView()
                 .tabItem { Label("Journal", systemImage: "book.closed") }
                 .tag(4)
             

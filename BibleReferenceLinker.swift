@@ -126,9 +126,10 @@ enum BibleReferenceLinker {
 
     /// Build a regex that matches references like "John 3:16" or "1 John 4:7-8" using known book names.
     private static func referenceRegex() -> NSRegularExpression? {
-        // Match a permissive book token (letters/digits/periods/spaces) followed by chapter:verse and optional -end
-        // We intentionally avoid strict book-name alternation so we can accept shorthands like "gen 1:1-6" or "1kgs 10:15".
-        let pattern = "\\b([A-Za-z0-9. ]{2,30})\\s+(\\d+):(\\d+)(?:-(\\d+))?\\b"
+        // Start at a word boundary to allow optional leading numeral (like "1 John")
+        // Book: optional [1-3] and possible space, followed by tokens of letters/digits/periods, up to 4 tokens total
+        // Chapter: digits, then ':', then verse digits, with optional range using hyphen, en dash, or em dash
+        let pattern = "(?<![A-Za-z0-9])([A-Za-z][A-Za-z0-9.]*?(?:\\s+[A-Za-z0-9.]+){0,3})\\s+(\\d+):(\\d+)(?:[\\-\\u2013\\u2014](\\d+))?"
         return try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
     }
 
@@ -140,7 +141,7 @@ enum BibleReferenceLinker {
         let matches = regex.matches(in: text, options: [], range: NSRange(location: 0, length: ns.length))
         // Walk from end to start to avoid range shifting while editing attributes
         for m in matches.reversed() {
-            guard m.numberOfRanges >= 4 else { continue }
+            guard m.numberOfRanges >= 5 else { continue }
             let fullRange = m.range(at: 0)
             let bookRange = m.range(at: 1)
             let chapterRange = m.range(at: 2)

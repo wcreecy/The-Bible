@@ -73,7 +73,7 @@ struct ReadingView: View {
             }
             .appToast(isPresented: $showFavoriteToast, symbol: favoriteToastSymbol, text: favoriteToastText, tint: favoriteToastTint)
             .sheet(isPresented: $showJournalEditor) {
-                JournalEditorView(verseRef: nil, initialBody: journalInitialBody)
+                JournalEditorView(verseRef: nil, initialBody: journalInitialBody, showTagColors: false)
             }
     }
 
