@@ -28,7 +28,6 @@ struct ReadingView: View {
 
     @State private var showJournalEditor: Bool = false
     @State private var journalInitialBody: String = ""
-    @State private var journalDraftVerse: VerseRef? = nil
 
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
@@ -74,7 +73,7 @@ struct ReadingView: View {
             }
             .appToast(isPresented: $showFavoriteToast, symbol: favoriteToastSymbol, text: favoriteToastText, tint: favoriteToastTint)
             .sheet(isPresented: $showJournalEditor) {
-                JournalEditorView(verseRef: journalDraftVerse, initialBody: journalInitialBody)
+                JournalEditorView(verseRef: nil, initialBody: journalInitialBody)
             }
     }
 
@@ -156,14 +155,12 @@ struct ReadingView: View {
                                 }
                                 .foregroundStyle(.blue)
                                 Button(action: {
-                                    // Build a verse reference and open JournalEditorView with it in the body
+                                    // Build a verse reference string and open JournalEditorView with it in the body
                                     let bookName = currentBook.name
                                     let chapterNum = currentChapter.number
                                     let verseNum = verse.number
                                     let refText = "\(bookName) \(chapterNum):\(verseNum)"
-                                    let ref = VerseRef(book: bookName, chapter: chapterNum, verse: verseNum)
-                                    // Present the editor by pushing a sheet via a local state
-                                    openJournalForReference(ref: ref, bodySeed: refText)
+                                    openJournalForReference(text: refText)
                                     withAnimation(.easeInOut) { menuVerse = nil }
                                 }) {
                                     Image(systemName: "book.closed")
@@ -331,9 +328,8 @@ struct ReadingView: View {
         }
     }
     
-    private func openJournalForReference(ref: VerseRef, bodySeed: String) {
-        journalDraftVerse = ref
-        journalInitialBody = bodySeed
+    private func openJournalForReference(text: String) {
+        journalInitialBody = text
         showJournalEditor = true
     }
 }
