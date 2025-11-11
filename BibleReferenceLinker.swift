@@ -12,18 +12,123 @@ enum BibleReferenceLinker {
     // Custom URL scheme for in-app scripture links
     private static let scheme = "thebible-ref"
 
+    // Common book abbreviations mapped to canonical names (lowercased keys)
+    private static let abbreviations: [String: String] = [
+        // Pentateuch
+        "gen": "Genesis", "ge": "Genesis", "gn": "Genesis",
+        "ex": "Exodus", "exo": "Exodus",
+        "lev": "Leviticus", "lv": "Leviticus",
+        "num": "Numbers", "nm": "Numbers", "nu": "Numbers",
+        "deut": "Deuteronomy", "deu": "Deuteronomy", "dt": "Deuteronomy",
+        // History
+        "jos": "Joshua", "josh": "Joshua",
+        "judg": "Judges", "jdg": "Judges",
+        "rut": "Ruth", "ru": "Ruth",
+        "sam": "Samuel", "sa": "Samuel",
+        "kgs": "Kings", "kg": "Kings",
+        "chron": "Chronicles", "chr": "Chronicles",
+        "ezr": "Ezra",
+        "neh": "Nehemiah", "ne": "Nehemiah",
+        "est": "Esther",
+        // Poetry/Wisdom
+        "job": "Job",
+        "ps": "Psalms", "psa": "Psalms", "psalm": "Psalms",
+        "prov": "Proverbs", "pr": "Proverbs",
+        "eccl": "Ecclesiastes", "ecc": "Ecclesiastes",
+        "song": "Song of Solomon", "so": "Song of Solomon", "sos": "Song of Solomon",
+        // Major Prophets
+        "isa": "Isaiah",
+        "jer": "Jeremiah",
+        "lam": "Lamentations",
+        "eze": "Ezekiel", "ezek": "Ezekiel",
+        "dan": "Daniel",
+        // Minor Prophets
+        "hos": "Hosea",
+        "joe": "Joel",
+        "amo": "Amos",
+        "oba": "Obadiah",
+        "jon": "Jonah",
+        "mic": "Micah",
+        "nah": "Nahum",
+        "hab": "Habakkuk",
+        "zep": "Zephaniah",
+        "hag": "Haggai",
+        "zec": "Zechariah",
+        "mal": "Malachi",
+        // Gospels/Acts
+        "mat": "Matthew", "mt": "Matthew",
+        "mk": "Mark", "mrk": "Mark",
+        "lk": "Luke",
+        "jn": "John", "jhn": "John",
+        "act": "Acts", "acts": "Acts",
+        // Paul
+        "rom": "Romans",
+        "cor": "Corinthians",
+        "gal": "Galatians",
+        "eph": "Ephesians",
+        "phil": "Philippians",
+        "col": "Colossians",
+        "thess": "Thessalonians",
+        "tim": "Timothy",
+        "tit": "Titus",
+        "phm": "Philemon",
+        "heb": "Hebrews",
+        // General
+        "jas": "James",
+        "pet": "Peter", "petr": "Peter",
+        "joh": "John",
+        "jud": "Jude",
+        "rev": "Revelation"
+    ]
+
+    // Insert a space between leading digits and letters (e.g., "1sam" -> "1 sam")
+    private static func insertSpaceBetweenLeadingDigitsAndLetters(in s: String) -> String {
+        guard let first = s.first, first.isNumber else { return s }
+        let digits = String(s.prefix { $0.isNumber })
+        let rest = String(s.drop { $0.isNumber })
+        if rest.first?.isLetter == true { return digits + " " + rest }
+        return s
+    }
+
+    // Normalize a raw book token to a canonical BibleData book name, if possible
+    private static func resolveBook(named raw: String) -> String? {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        // Try direct match first
+        if let direct = BibleData.books.first(where: { $0.name.compare(trimmed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
+            return direct.name
+        }
+        // Insert a space between leading digits and letters (e.g., "1kgs")
+        let spaced = insertSpaceBetweenLeadingDigitsAndLetters(in: trimmed)
+        // Tokenize, expand abbreviations, and title-case tokens
+        let cleaned = spaced.replacingOccurrences(of: ".", with: " ")
+            .replacingOccurrences(of: "_", with: " ")
+            .replacingOccurrences(of: "-", with: " ")
+        var tokens = cleaned.split { $0.isWhitespace }.map { String($0) }
+        // Map abbreviations
+        let mapped = tokens.enumerated().map { (idx, t) -> String in
+            let lower = t.lowercased()
+            if let exp = abbreviations[lower] { return exp }
+            if Int(lower) != nil { return t } // keep numeric ordinals
+            return t.prefix(1).uppercased() + t.dropFirst().lowercased()
+        }
+        let candidate = mapped.joined(separator: " ")
+        if let match = BibleData.books.first(where: { $0.name.compare(candidate, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
+            return match.name
+        }
+        // Relaxed: remove spaces and compare
+        let collapsed = candidate.replacingOccurrences(of: " ", with: "")
+        if let match = BibleData.books.first(where: { $0.name.replacingOccurrences(of: " ", with: "").compare(collapsed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
+            return match.name
+        }
+        return nil
+    }
+
     /// Build a regex that matches references like "John 3:16" or "1 John 4:7-8" using known book names.
     private static func referenceRegex() -> NSRegularExpression? {
-        // Build alternation of known book names from BibleData
-        let bookNames = BibleData.books.map { NSRegularExpression.escapedPattern(for: $0.name) }
-        guard !bookNames.isEmpty else { return nil }
-        let booksAlt = bookNames.sorted { $0.count > $1.count }.joined(separator: "|")
-        let pattern = "\\b((?:" + booksAlt + "))\\s+(\\d+):(\\d+)(?:-(\\d+))?\\b"
-        // The pattern captures:
-        // 1: Book name
-        // 2: Chapter
-        // 3: Start verse
-        // 4: Optional end verse
+        // Match a permissive book token (letters/digits/periods/spaces) followed by chapter:verse and optional -end
+        // We intentionally avoid strict book-name alternation so we can accept shorthands like "gen 1:1-6" or "1kgs 10:15".
+        let pattern = "\\b([A-Za-z0-9. ]{2,30})\\s+(\\d+):(\\d+)(?:-(\\d+))?\\b"
         return try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
     }
 
@@ -41,7 +146,9 @@ enum BibleReferenceLinker {
             let chapterRange = m.range(at: 2)
             let startRange = m.range(at: 3)
             let endRange = m.range(at: 4)
-            let book = ns.substring(with: bookRange)
+            let rawBook = ns.substring(with: bookRange)
+            // Resolve raw token (may be shorthand) to a canonical book name
+            guard let resolvedBook = resolveBook(named: rawBook) else { continue }
             let chapStr = ns.substring(with: chapterRange)
             let startStr = ns.substring(with: startRange)
             let endStr: String? = endRange.location != NSNotFound ? ns.substring(with: endRange) : nil
@@ -53,7 +160,7 @@ enum BibleReferenceLinker {
             comps.scheme = scheme
             comps.host = "ref"
             comps.queryItems = [
-                URLQueryItem(name: "book", value: book),
+                URLQueryItem(name: "book", value: resolvedBook),
                 URLQueryItem(name: "chapter", value: String(chapter)),
                 URLQueryItem(name: "start", value: String(start))
             ]
@@ -99,3 +206,4 @@ enum BibleReferenceLinker {
         return (title, selected)
     }
 }
+

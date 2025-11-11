@@ -16,9 +16,9 @@ struct JournalDetailView: View {
     @State private var previewRef: ScriptureRef? = nil
     @State private var previewContent: (title: String, verses: [Verse])? = nil
     @State private var showPreview: Bool = false
-
-    // Autosave debounce
     @State private var autosaveTask: Task<Void, Never>? = nil
+
+    private var linkedBodyEditing: AttributedString { BibleReferenceLinker.linkify(bodyText) }
 
     init(entry: JournalEntry) {
         self.entry = entry
@@ -99,6 +99,58 @@ struct JournalDetailView: View {
                                     .stroke(Color.gray.opacity(0.25), lineWidth: 1)
                             )
                     }
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Live Preview")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text(linkedBodyEditing)
+                            .frame(minHeight: 60, alignment: .topLeading)
+                            .textSelection(.enabled)
+                            .environment(\._openURL, OpenURLAction { url in
+                                if let ref = BibleReferenceLinker.parse(url: url), let content = BibleReferenceLinker.loadVerses(for: ref) {
+                                    previewRef = ref
+                                    previewContent = content
+                                    withAnimation(.spring()) { showPreview = true }
+                                    return .handled
+                                }
+                                return .systemAction
+                            })
+                        if showPreview, let content = previewContent {
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    Text(content.title)
+                                        .font(.headline)
+                                    Spacer()
+                                    Button(action: { withAnimation(.easeOut) { showPreview = false } }) {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                                ForEach(content.verses, id: \.number) { v in
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(v.text)
+                                            .font(.body)
+                                        Text("\(previewRef?.bookName ?? "") \(previewRef?.chapter ?? 0):\(v.number)")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    if v.number != content.verses.last?.number { Divider().padding(.vertical, 4) }
+                                }
+                            }
+                            .padding(12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .fill(Color(.secondarySystemBackground))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                            )
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                        }
+                    }
+                    .padding(.top, 8)
                 } else {
                     if bodyText.isEmpty {
                         Text("No content")
@@ -174,6 +226,7 @@ struct JournalDetailView: View {
         .onChange(of: titleText) { _, _ in if isEditing { scheduleAutosave() } }
         .onChange(of: bodyText) { _, _ in if isEditing { scheduleAutosave() } }
         .onChange(of: tagsText) { _, _ in if isEditing { scheduleAutosave() } }
+        .onDisappear { autosaveTask?.cancel(); autosaveTask = nil }
     }
 
     // MARK: - Saving
