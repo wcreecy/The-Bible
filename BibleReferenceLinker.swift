@@ -126,10 +126,15 @@ enum BibleReferenceLinker {
 
     /// Build a regex that matches references like "John 3:16" or "1 John 4:7-8" using known book names.
     private static func referenceRegex() -> NSRegularExpression? {
-        // Start at a word boundary to allow optional leading numeral (like "1 John")
-        // Book: optional [1-3] and possible space, followed by tokens of letters/digits/periods, up to 4 tokens total
-        // Chapter: digits, then ':', then verse digits, with optional range using hyphen, en dash, or em dash
-        let pattern = "(?<![A-Za-z0-9])([A-Za-z][A-Za-z0-9.]*?(?:\\s+[A-Za-z0-9.]+){0,3})\\s+(\\d+):(\\d+)(?:[\\-\\u2013\\u2014](\\d+))?"
+        // Match a boundary (start of string or any non-alphanumeric), then a book name that may start with an optional ordinal (1-3) and optional space.
+        // The book name is 1-3 tokens of letters (and periods for abbreviations). Then whitespace, then chapter:verse with optional range.
+        // Capture groups:
+        // 1: boundary (may be zero-width when at start of string)
+        // 2: book token(s)
+        // 3: chapter digits
+        // 4: start verse digits
+        // 5: optional end verse digits
+        let pattern = "(^|[^A-Za-z0-9])((?:[1-3]\\s*)?[A-Za-z][A-Za-z.]*?(?:\\s+[A-Za-z.]+){0,2})\\s+(\\d+):(\\d+)(?:[\\-\\u2013\\u2014](\\d+))?"
         return try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
     }
 
@@ -141,12 +146,12 @@ enum BibleReferenceLinker {
         let matches = regex.matches(in: text, options: [], range: NSRange(location: 0, length: ns.length))
         // Walk from end to start to avoid range shifting while editing attributes
         for m in matches.reversed() {
-            guard m.numberOfRanges >= 5 else { continue }
-            let fullRange = m.range(at: 0)
-            let bookRange = m.range(at: 1)
-            let chapterRange = m.range(at: 2)
-            let startRange = m.range(at: 3)
-            let endRange = m.range(at: 4)
+            guard m.numberOfRanges >= 6 else { continue }
+            let boundaryRange = m.range(at: 1)
+            let bookRange = m.range(at: 2)
+            let chapterRange = m.range(at: 3)
+            let startRange = m.range(at: 4)
+            let endRange = m.range(at: 5)
             let rawBook = ns.substring(with: bookRange)
             // Resolve raw token (may be shorthand) to a canonical book name
             guard let resolvedBook = resolveBook(named: rawBook) else { continue }
@@ -168,7 +173,13 @@ enum BibleReferenceLinker {
             if let end = end { comps.queryItems?.append(URLQueryItem(name: "end", value: String(end))) }
             guard let url = comps.url else { continue }
 
-            if let strRange = Range(fullRange, in: text) {
+            // Build the hyperlink range from the beginning of the book through the end of the full match
+            let overall = m.range(at: 0)
+            let linkStart = bookRange.location
+            let linkLength = overall.location + overall.length - linkStart
+            let fullLinkRange = NSRange(location: linkStart, length: linkLength)
+
+            if let strRange = Range(fullLinkRange, in: text) {
                 if let lower = AttributedString.Index(strRange.lowerBound, within: attributed),
                    let upper = AttributedString.Index(strRange.upperBound, within: attributed) {
                     let attrRange: Range<AttributedString.Index> = lower..<upper
