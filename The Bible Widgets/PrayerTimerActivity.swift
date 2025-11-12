@@ -68,9 +68,7 @@ struct PrayerTimerLiveActivity: Widget {
                     Text(context.attributes.sessionName)
                         .font(.headline)
                     ProgressView(value: progress(context))
-                    Text("\(formatted(context.state.remaining)) left")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Text(endDate(context.state.remaining), style: .timer).monospacedDigit()
                 }
             }
             .padding()
@@ -116,7 +114,7 @@ struct PrayerTimerLiveActivity: Widget {
                     if context.state.status == "Focus" {
                         EmptyView()
                     } else {
-                        Text("\(short(context.state.remaining))")
+                        Text(endDate(context.state.remaining), style: .timer)
                             .monospacedDigit()
                     }
                 }
@@ -160,7 +158,7 @@ struct PrayerTimerLiveActivity: Widget {
                         Text("")
                     }
                 } else {
-                    Text(short(context.state.remaining))
+                    Text(endDate(context.state.remaining), style: .timer)
                         .monospacedDigit()
                 }
             } minimal: {
@@ -195,6 +193,10 @@ struct PrayerTimerLiveActivity: Widget {
         }
     }
 
+    private func endDate(_ remaining: Int) -> Date {
+        Date().addingTimeInterval(TimeInterval(max(0, remaining)))
+    }
+
     private func timerTintColor(_ context: ActivityViewContext<PrayerTimerAttributes>) -> Color {
         let remaining = context.state.remaining
         let total = context.state.total
@@ -225,3 +227,4 @@ struct PrayerTimerLiveActivity: Widget {
         }
     }
 }
+

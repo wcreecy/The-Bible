@@ -15,8 +15,14 @@ struct StopwatchLiveActivity: Widget {
                     Text(context.attributes.sessionName)
                         .font(.headline)
                     Spacer()
-                    Text(timeString(context.state.elapsed))
-                        .monospacedDigit()
+                    let startDate = Date(timeIntervalSinceNow: -Double(context.state.elapsed))
+                    if context.state.status == "Running" {
+                        Text(startDate, style: .timer)
+                            .monospacedDigit()
+                    } else {
+                        Text(timeString(context.state.elapsed))
+                            .monospacedDigit()
+                    }
                     Spacer()
                     HStack(spacing: 8) {
                         if context.state.status == "Running" {
@@ -67,9 +73,16 @@ struct StopwatchLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.center) {
                     VStack(spacing: 6) {
                         Text(context.attributes.sessionName).font(.headline)
-                        Text(timeString(context.state.elapsed))
-                            .font(.title2)
-                            .monospacedDigit()
+                        let startDate = Date(timeIntervalSinceNow: -Double(context.state.elapsed))
+                        if context.state.status == "Running" {
+                            Text(startDate, style: .timer)
+                                .font(.title2)
+                                .monospacedDigit()
+                        } else {
+                            Text(timeString(context.state.elapsed))
+                                .font(.title2)
+                                .monospacedDigit()
+                        }
                     }
                 }
                 DynamicIslandExpandedRegion(.trailing) {
@@ -154,7 +167,12 @@ struct StopwatchLiveActivity: Widget {
             } compactLeading: {
                 Image(systemName: "stopwatch")
             } compactTrailing: {
-                Text(shortString(context.state.elapsed)).monospacedDigit()
+                let startDate = Date(timeIntervalSinceNow: -Double(context.state.elapsed))
+                if context.state.status == "Running" {
+                    Text(startDate, style: .timer).monospacedDigit()
+                } else {
+                    Text(shortString(context.state.elapsed)).monospacedDigit()
+                }
             } minimal: {
                 Image(systemName: "stopwatch")
             }

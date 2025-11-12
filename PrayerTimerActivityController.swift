@@ -19,7 +19,7 @@ final class PrayerTimerActivityController {
         let state = PrayerTimerAttributes.ContentState(status: status, remaining: remainingSeconds, total: totalSeconds, focusTitle: focus, focusBody: body)
         do {
             if #available(iOS 17.0, *) {
-                let content = ActivityContent(state: state, staleDate: nil)
+                let content = ActivityContent(state: state, staleDate: .now.addingTimeInterval(1))
                 activity = try Activity.request(attributes: attributes, content: content, pushType: nil)
             } else {
                 activity = try Activity.request(attributes: attributes, contentState: state, pushType: nil)
@@ -38,7 +38,7 @@ final class PrayerTimerActivityController {
         let state = PrayerTimerAttributes.ContentState(status: status, remaining: remainingSeconds, total: totalSeconds, focusTitle: focus, focusBody: body)
         Task {
             if #available(iOS 17.0, *) {
-                let content = ActivityContent(state: state, staleDate: nil)
+                let content = ActivityContent(state: state, staleDate: .now.addingTimeInterval(1))
                 await activity.update(content)
             } else {
                 await activity.update(using: state)
@@ -58,7 +58,7 @@ final class PrayerTimerActivityController {
                     focusTitle: title,
                     focusBody: body
                 )
-                let content = ActivityContent(state: newState, staleDate: nil)
+                let content = ActivityContent(state: newState, staleDate: .now.addingTimeInterval(1))
                 await activity.update(content)
             } else {
                 let current = activity.contentState
@@ -82,7 +82,7 @@ final class PrayerTimerActivityController {
         let state = PrayerTimerAttributes.ContentState(status: "Focus", remaining: 0, total: 0, focusTitle: title, focusBody: body)
         do {
             if #available(iOS 17.0, *) {
-                let content = ActivityContent(state: state, staleDate: nil)
+                let content = ActivityContent(state: state, staleDate: .now.addingTimeInterval(1))
                 activity = try Activity.request(attributes: attributes, content: content, pushType: nil)
             } else {
                 activity = try Activity.request(attributes: attributes, contentState: state, pushType: nil)
@@ -125,7 +125,7 @@ final class PrayerTimerActivityController {
         let state = PrayerTimerAttributes.ContentState(status: "Focus", remaining: 0, total: 0, focusTitle: title, focusBody: body)
         do {
             if #available(iOS 17.0, *) {
-                let content = ActivityContent(state: state, staleDate: nil)
+                let content = ActivityContent(state: state, staleDate: .now.addingTimeInterval(1))
                 self.activity = try Activity.request(attributes: attributes, content: content, pushType: nil)
             } else {
                 self.activity = try Activity.request(attributes: attributes, contentState: state, pushType: nil)
@@ -135,3 +135,4 @@ final class PrayerTimerActivityController {
         }
     }
 }
+

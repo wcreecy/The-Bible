@@ -16,12 +16,41 @@ struct JournalTabView: View {
     @State private var previewContent: (title: String, verses: [Verse])? = nil
     @State private var showPreview: Bool = false
 
+    @State private var editingTagsText: String = ""
+
+    @State private var selectedTags: Set<String> = []
+
+    private var filteredEntries: [JournalEntry] {
+        if selectedTags.isEmpty { return entries }
+        let target = Set(selectedTags.map { $0.lowercased() })
+        return entries.filter { entry in
+            let entryTags = Set(entry.tags.map { $0.lowercased() })
+            return target.isSubset(of: entryTags) // AND filter: must contain all selected tags
+        }
+    }
+
+    private func toggleTagFilter(_ tag: String) {
+        let key = tag.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !key.isEmpty else { return }
+        let lower = key.lowercased()
+        if selectedTags.contains(lower) {
+            selectedTags.remove(lower)
+        } else {
+            selectedTags.insert(lower)
+        }
+    }
+
     var body: some View {
         if hSize == .regular {
             NavigationSplitView(columnVisibility: .constant(.all)) {
                 sidebarList
                     .navigationTitle("Journal")
                     .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            if !selectedTags.isEmpty {
+                                Button("Clear Filters") { selectedTags.removeAll() }
+                            }
+                        }
                         ToolbarItem(placement: .topBarTrailing) {
                             Button { showComposer = true } label: { Label("New Entry", systemImage: "square.and.pencil") }
                         }
@@ -33,7 +62,17 @@ struct JournalTabView: View {
                             .navigationTitle("Edit Entry")
                             .toolbar {
                                 ToolbarItem(placement: .confirmationAction) {
-                                    Button("Done") { isEditing = false; try? ctx.save() }
+                                    Button("Done") {
+                                        // Persist edited tags from text to the model
+                                        let tags = editingTagsText
+                                            .split(separator: ",")
+                                            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                                            .filter { !$0.isEmpty }
+                                        e.tags = tags
+                                        e.updatedAt = Date()
+                                        isEditing = false
+                                        try? ctx.save()
+                                    }
                                 }
                             }
                     } else {
@@ -41,7 +80,10 @@ struct JournalTabView: View {
                             .navigationTitle("Entry")
                             .toolbar {
                                 ToolbarItem(placement: .primaryAction) {
-                                    Button("Edit") { isEditing = true }
+                                    Button("Edit") {
+                                        editingTagsText = e.tags.joined(separator: ", ")
+                                        isEditing = true
+                                    }
                                 }
                             }
                     }
@@ -60,11 +102,16 @@ struct JournalTabView: View {
         } else {
             // Compact width: simple list + push to detail
             NavigationStack {
-                List(entries) { entry in
+                List(filteredEntries) { entry in
                     NavigationLink(value: entry) { listRow(for: entry) }
                 }
                 .navigationTitle("Journal")
                 .toolbar {
+                    if !selectedTags.isEmpty {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button("Clear Filters") { selectedTags.removeAll() }
+                        }
+                    }
                     ToolbarItem(placement: .topBarTrailing) {
                         Button { showComposer = true } label: { Label("New Entry", systemImage: "square.and.pencil") }
                     }
@@ -77,13 +124,48 @@ struct JournalTabView: View {
         }
     }
 
+    private var parsedEditingTags: [String] {
+        editingTagsText
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+    }
+
     @ViewBuilder
     private var sidebarList: some View {
-        List(entries) { entry in
-            Button {
-                selectedEntry = entry
-                isEditing = false
-            } label: { listRow(for: entry) }
+        List {
+            if !selectedTags.isEmpty {
+                Section {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(Array(selectedTags), id: \.self) { t in
+                                HStack(spacing: 6) {
+                                    Text(t)
+                                        .font(.caption)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(Color.accentColor.opacity(0.15), in: Capsule())
+                                        .overlay(Capsule().stroke(Color.accentColor.opacity(0.35), lineWidth: 1))
+                                    Button(action: { toggleTagFilter(t) }) {
+                                        Image(systemName: "xmark.circle.fill")
+                                    }
+                                    .buttonStyle(.plain)
+                                    .foregroundStyle(.secondary)
+                                }
+                            }
+                            Button("Clear Filters") { selectedTags.removeAll() }
+                                .font(.caption)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+            }
+            ForEach(filteredEntries) { entry in
+                Button {
+                    selectedEntry = entry
+                    isEditing = false
+                } label: { listRow(for: entry) }
+            }
         }
     }
 
@@ -96,13 +178,19 @@ struct JournalTabView: View {
                 HStack(spacing: 6) {
                     ForEach(entry.tags.prefix(4), id: \.self) { t in
                         let tint = TagColorStore.color(for: t) ?? .accentColor
-                        Text(t)
-                            .font(.caption)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(tint.opacity(0.15), in: Capsule())
-                            .overlay(Capsule().stroke(tint.opacity(0.4), lineWidth: 1))
-                            .foregroundStyle(tint)
+                        let isSelected = selectedTags.contains(t.lowercased())
+                        Button(action: { toggleTagFilter(t) }) {
+                            Text(t)
+                                .font(.caption)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background((isSelected ? tint : tint).opacity(isSelected ? 0.30 : 0.15), in: Capsule())
+                                .overlay(
+                                    Capsule().stroke((isSelected ? tint : tint).opacity(isSelected ? 0.8 : 0.4), lineWidth: isSelected ? 2 : 1)
+                                )
+                                .foregroundStyle(tint)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
@@ -215,6 +303,21 @@ struct JournalTabView: View {
 
     @ViewBuilder
     private func editorPane(entry: JournalEntry) -> some View {
+        let linkedBody = BibleReferenceLinker.linkify(entry.body)
+        var linkOverlayBody: AttributedString {
+            var s = linkedBody
+            // Make everything transparent first
+            s.foregroundColor = .clear
+            // Re-color and underline only link ranges
+            for run in s.runs {
+                if run.link != nil {
+                    s[run.range].foregroundColor = .blue
+                    s[run.range].underlineStyle = .single
+                }
+            }
+            return s
+        }
+
         Form {
             Section("Title") {
                 TextField("Title", text: Binding(get: { entry.title }, set: { entry.title = $0; entry.updatedAt = Date(); try? ctx.save() }))
@@ -222,22 +325,12 @@ struct JournalTabView: View {
             Section("Tags") {
                 TextField(
                     "Add tags (comma-separated)",
-                    text: Binding(
-                        get: { entry.tags.joined(separator: ", ") },
-                        set: { newValue in
-                            let parts = newValue.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
-                            var seen = Set<String>()
-                            var uniq: [String] = []
-                            for p in parts { if !seen.contains(p.lowercased()) { seen.insert(p.lowercased()); uniq.append(p) } }
-                            entry.tags = uniq
-                            entry.updatedAt = Date(); try? ctx.save()
-                        }
-                    )
+                    text: $editingTagsText
                 )
-                .textInputAutocapitalization(.words)
-                if !entry.tags.isEmpty {
+                .textInputAutocapitalization(.never)
+                if !parsedEditingTags.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
-                        ForEach(entry.tags, id: \.self) { t in
+                        ForEach(parsedEditingTags, id: \.self) { t in
                             HStack(spacing: 10) {
                                 Circle().fill(TagColorStore.color(for: t) ?? .accentColor).frame(width: 18, height: 18)
                                 Text(t).font(.subheadline)
@@ -252,10 +345,97 @@ struct JournalTabView: View {
                 }
             }
             Section("Body") {
-                TextEditor(text: Binding(get: { entry.body }, set: { entry.body = $0; entry.updatedAt = Date(); try? ctx.save() }))
-                    .frame(minHeight: 240)
+                ZStack(alignment: .topLeading) {
+                    if entry.body.isEmpty {
+                        Text("Write your thoughts here…")
+                            .foregroundStyle(.secondary)
+                            .padding(.top, 8)
+                            .padding(.leading, 5)
+                    }
+                    // Inline smart link overlay (non-interactive)
+                    Text(linkOverlayBody)
+                        .font(.body)
+                        .frame(maxWidth: .infinity, minHeight: 240, alignment: .topLeading)
+                        .padding(.top, 8)
+                        .padding(.leading, 5)
+                        .allowsHitTesting(false)
+                    // Actual editor
+                    TextEditor(text: Binding(get: { entry.body }, set: { entry.body = $0; entry.updatedAt = Date(); try? ctx.save() }))
+                        .frame(minHeight: 240)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                        )
+                }
+
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Live Preview")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    Text(linkedBody)
+                        .frame(minHeight: 60, alignment: .topLeading)
+                        .textSelection(.enabled)
+                        .environment(\._openURL, OpenURLAction { url in
+                            if let ref = BibleReferenceLinker.parse(url: url), let content = BibleReferenceLinker.loadVerses(for: ref) {
+                                previewRef = ref
+                                previewContent = content
+                                withAnimation(.spring()) { showPreview = true }
+                                return .handled
+                            }
+                            return .systemAction
+                        })
+
+                    if showPreview, let content = previewContent {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 8) {
+                                Text(content.title)
+                                    .font(.headline)
+                                Spacer()
+                                Button(action: {
+                                    let verseLines = content.verses.map { "\($0.number). \($0.text)" }.joined(separator: "\n")
+                                    let copyText = content.title + "\n" + verseLines
+                                    UIPasteboard.general.string = copyText
+                                }) {
+                                    Image(systemName: "doc.on.doc")
+                                        .foregroundStyle(.blue)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Copy scripture")
+
+                                Button(action: { withAnimation(.easeOut) { showPreview = false } }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundStyle(.secondary)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                            ForEach(content.verses, id: \.number) { v in
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(v.text)
+                                        .font(.body)
+                                    Text("\(previewRef?.bookName ?? "") \(previewRef?.chapter ?? 0):\(v.number)")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                if v.number != content.verses.last?.number { Divider().padding(.vertical, 4) }
+                            }
+                        }
+                        .padding(12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(Color(.secondarySystemBackground))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                        )
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
+                }
+                .padding(.top, 8)
             }
         }
+        .onAppear { editingTagsText = entry.tags.joined(separator: ", ") }
     }
 
     @ViewBuilder
@@ -325,6 +505,7 @@ struct JournalTabView: View {
             }
             .padding(16)
         }
+        .id(entry.body)
     }
 }
 
