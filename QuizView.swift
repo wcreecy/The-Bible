@@ -10,67 +10,6 @@ struct QuizView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
     
-    // Consistent modern button styles (matching Hangman)
-    private struct GameProminentButtonStyle: ButtonStyle {
-        var tint: Color = .accentColor
-        func makeBody(configuration: Configuration) -> some View {
-            configuration.label
-                .font(.headline)
-                .foregroundStyle(.white)
-                .padding(.vertical, 12)
-                .padding(.horizontal, 16)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(tint)
-                        .shadow(color: .black.opacity(configuration.isPressed ? 0.05 : 0.12), radius: configuration.isPressed ? 2 : 6, x: 0, y: configuration.isPressed ? 1 : 3)
-                )
-                .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-                .animation(.spring(response: 0.25, dampingFraction: 0.8), value: configuration.isPressed)
-        }
-    }
-
-    private struct ModernPillButtonStyle: ButtonStyle {
-        var tint: Color = .accentColor
-        func makeBody(configuration: Configuration) -> some View {
-            configuration.label
-                .font(.headline)
-                .foregroundStyle(tint)
-                .padding(.vertical, 10)
-                .padding(.horizontal, 14)
-                .background(
-                    .ultraThinMaterial,
-                    in: Capsule(style: .continuous)
-                )
-                .overlay(
-                    Capsule(style: .continuous)
-                        .stroke(tint.opacity(configuration.isPressed ? 0.6 : 0.35), lineWidth: configuration.isPressed ? 2 : 1)
-                )
-                .shadow(color: .black.opacity(configuration.isPressed ? 0.04 : 0.08), radius: configuration.isPressed ? 1 : 3, x: 0, y: configuration.isPressed ? 0 : 2)
-                .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-                .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
-        }
-    }
-    
-    private struct ToolbarPillButtonStyle: ButtonStyle {
-        var tint: Color = .accentColor
-        @Environment(\.isEnabled) private var isEnabled
-        func makeBody(configuration: Configuration) -> some View {
-            configuration.label
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(isEnabled ? tint : .secondary)
-                .padding(.vertical, 6)
-                .padding(.horizontal, 12)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(isEnabled ? tint.opacity(configuration.isPressed ? 0.22 : 0.16) : Color(.secondarySystemFill))
-                )
-                .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-                .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
-        }
-    }
-    
     @AppStorage("quizScope") private var quizScopeRaw: String = "whole"
     @AppStorage("quizDifficulty") private var quizDifficulty: String = "easy"
     

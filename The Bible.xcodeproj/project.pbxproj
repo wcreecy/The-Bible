@@ -8,10 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		2C275BC02EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2C275BBF2EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf */; };
+		2C3F38102EC4042D002CA795 /* Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3F380F2EC4042D002CA795 /* Styles.swift */; };
 		2C49CF462EBE10000006FF79 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D972EB3895400A657FA /* HomeView.swift */; };
 		2C49CF472EBE10070006FF79 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56DEF2EB3942900A657FA /* Toast.swift */; };
 		2C49CF482EBE100D0006FF79 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7841382EB407C0008DDBBF /* Note.swift */; };
-		2C49CF4A2EBE101C0006FF79 /* NotesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C320B492EB4093F003814A6 /* NotesModel.swift */; };
 		2C49CF4C2EBE10260006FF79 /* QuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB677102EB56EB000E609B5 /* QuizView.swift */; };
 		2C49CF4D2EBE10310006FF79 /* BibleSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C736D082EB9899600CD2E6F /* BibleSplitView.swift */; };
 		2C49CF4E2EBE10310006FF79 /* BeatTheClockGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C82F4DE2EBBB31000DB40FC /* BeatTheClockGameView.swift */; };
@@ -98,10 +98,10 @@
 		2C275BBF2EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = "TheBibleApp-UserGuide.rtf"; sourceTree = "<group>"; };
 		2C279CFF2EBCC62A0023C46B /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		2C279D012EBCC62C0023C46B /* NavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationCoordinator.swift; sourceTree = "<group>"; };
-		2C320B492EB4093F003814A6 /* NotesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesModel.swift; sourceTree = "<group>"; };
 		2C3B0F6D2EB14F3D0089556C /* The Bible.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "The Bible.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C3B0F7E2EB14F3E0089556C /* The BibleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The BibleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C3B0F882EB14F3E0089556C /* The BibleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The BibleUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C3F380F2EC4042D002CA795 /* Styles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Styles.swift; sourceTree = "<group>"; };
 		2C49CF002EBE0F6C0006FF79 /* Bible.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bible.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C49CF102EBE0F6D0006FF79 /* The Bible (iOS)Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The Bible (iOS)Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C49CF1A2EBE0F6D0006FF79 /* The Bible (iOS)UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The Bible (iOS)UITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -293,7 +293,6 @@
 				2CB56D972EB3895400A657FA /* HomeView.swift */,
 				2CB56DEF2EB3942900A657FA /* Toast.swift */,
 				2C7841382EB407C0008DDBBF /* Note.swift */,
-				2C320B492EB4093F003814A6 /* NotesModel.swift */,
 				2CB677102EB56EB000E609B5 /* QuizView.swift */,
 				2CB677C32EB67F1400E609B5 /* HealthKitManager.swift */,
 				2CF6F1702EB83C2100E59640 /* TimerSound.swift */,
@@ -316,6 +315,7 @@
 				2C49CF922EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift */,
 				2C275BBF2EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf */,
 				2CB309D22EC2CE2D0032CB7D /* BibleReferenceLinker.swift */,
+				2C3F380F2EC4042D002CA795 /* Styles.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -719,6 +719,7 @@
 				2C49CF4F2EBE10310006FF79 /* HealthKitManager.swift in Sources */,
 				2C49CF502EBE10310006FF79 /* HangmanGameView.swift in Sources */,
 				2C49CF512EBE10310006FF79 /* BookSelectionLink.swift in Sources */,
+				2C3F38102EC4042D002CA795 /* Styles.swift in Sources */,
 				2C49CF522EBE10310006FF79 /* ShareText.swift in Sources */,
 				2C49CF872EBE2E9C0006FF79 /* StopwatchActivityController.swift in Sources */,
 				2C49CF822EBE27D40006FF79 /* PrayerTimerActivityController.swift in Sources */,
@@ -728,7 +729,6 @@
 				2C49CF562EBE10310006FF79 /* SegmentedPicker.swift in Sources */,
 				2C49CF572EBE10310006FF79 /* GamesView.swift in Sources */,
 				2C49CF582EBE10310006FF79 /* ReferenceMatchGameView.swift in Sources */,
-				2C49CF4A2EBE101C0006FF79 /* NotesModel.swift in Sources */,
 				2C49CF932EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift in Sources */,
 				2C49CF462EBE10000006FF79 /* HomeView.swift in Sources */,
 				2C49CF472EBE10070006FF79 /* Toast.swift in Sources */,
