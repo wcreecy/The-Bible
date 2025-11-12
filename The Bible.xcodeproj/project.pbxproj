@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2C275BC02EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2C275BBF2EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf */; };
 		2C3F38102EC4042D002CA795 /* Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3F380F2EC4042D002CA795 /* Styles.swift */; };
+		2C3F38E42EC4AFEC002CA795 /* PrayerTimerIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3F38E32EC4AFEC002CA795 /* PrayerTimerIntents.swift */; };
 		2C49CF462EBE10000006FF79 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D972EB3895400A657FA /* HomeView.swift */; };
 		2C49CF472EBE10070006FF79 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56DEF2EB3942900A657FA /* Toast.swift */; };
 		2C49CF482EBE100D0006FF79 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7841382EB407C0008DDBBF /* Note.swift */; };
@@ -102,6 +103,7 @@
 		2C3B0F7E2EB14F3E0089556C /* The BibleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The BibleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C3B0F882EB14F3E0089556C /* The BibleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The BibleUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C3F380F2EC4042D002CA795 /* Styles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Styles.swift; sourceTree = "<group>"; };
+		2C3F38E32EC4AFEC002CA795 /* PrayerTimerIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimerIntents.swift; sourceTree = "<group>"; };
 		2C49CF002EBE0F6C0006FF79 /* Bible.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bible.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C49CF102EBE0F6D0006FF79 /* The Bible (iOS)Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The Bible (iOS)Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C49CF1A2EBE0F6D0006FF79 /* The Bible (iOS)UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The Bible (iOS)UITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -316,6 +318,7 @@
 				2C275BBF2EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf */,
 				2CB309D22EC2CE2D0032CB7D /* BibleReferenceLinker.swift */,
 				2C3F380F2EC4042D002CA795 /* Styles.swift */,
+				2C3F38E32EC4AFEC002CA795 /* PrayerTimerIntents.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -720,6 +723,7 @@
 				2C49CF502EBE10310006FF79 /* HangmanGameView.swift in Sources */,
 				2C49CF512EBE10310006FF79 /* BookSelectionLink.swift in Sources */,
 				2C3F38102EC4042D002CA795 /* Styles.swift in Sources */,
+				2C3F38E42EC4AFEC002CA795 /* PrayerTimerIntents.swift in Sources */,
 				2C49CF522EBE10310006FF79 /* ShareText.swift in Sources */,
 				2C49CF872EBE2E9C0006FF79 /* StopwatchActivityController.swift in Sources */,
 				2C49CF822EBE27D40006FF79 /* PrayerTimerActivityController.swift in Sources */,

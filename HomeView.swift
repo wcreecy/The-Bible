@@ -883,6 +883,9 @@ struct HomeView: View {
             } else {
                 hasSavedFocus = false
             }
+            
+            // Handle any pending Live Activity action (pause/resume, +5, stop)
+            handlePrayerTimerPendingAction()
         }
         .onReceive(unifiedTimer) { _ in
             // Increment a unified tick counter
@@ -892,7 +895,7 @@ struct HomeView: View {
             if isEditingFocus {
                 return
             }
-            let shouldUpdateLiveActivities = (unifiedTick % 2 == 0)
+            let shouldUpdateLiveActivities = (unifiedTick % 15 == 0)
 
             // Timer logic: update remaining seconds when running and not paused
             if isTimerRunning && !isPaused && storedEndDate > 0 {
@@ -902,8 +905,8 @@ struct HomeView: View {
                     handleTimerFinished()
                 }
 
-                // Live Activity: update each tick
-                if shouldUpdateLiveActivities {
+                // Live Activity: update each tick only when not paused
+                if shouldUpdateLiveActivities && !isPaused {
                     PrayerTimerActivityController.shared.update(
                         remainingSeconds: remainingSeconds,
                         totalSeconds: storedTotalSeconds,
@@ -935,6 +938,8 @@ struct HomeView: View {
             case .active:
                 // App became active: start logging if available
                 startMindfulLoggingIfNeeded()
+                // Process any action requested from Live Activity / Dynamic Island
+                handlePrayerTimerPendingAction()
             case .inactive, .background:
                 // Stop logging only if the timer is not running and stopwatch is not running; keep logging while either runs
                 if !isTimerRunning && !stopwatchRunning {
@@ -973,6 +978,30 @@ struct HomeView: View {
         if token != lastVerseAutoRefreshToken {
             lastVerseAutoRefreshToken = token
             loadRandomVerse()
+        }
+    }
+
+    private func handlePrayerTimerPendingAction() {
+        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
+        guard let action = shared.string(forKey: "prayerTimerPendingAction") else { return }
+        // Clear immediately to avoid reprocessing
+        shared.removeObject(forKey: "prayerTimerPendingAction")
+
+        switch action {
+        case "togglePause":
+            if isTimerRunning {
+                togglePause()
+            }
+        case "add5":
+            if isTimerRunning {
+                addFiveMinutes()
+            }
+        case "stop":
+            if isTimerRunning {
+                stopTimer()
+            }
+        default:
+            break
         }
     }
 

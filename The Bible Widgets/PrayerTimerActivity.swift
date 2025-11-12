@@ -8,6 +8,12 @@
 import ActivityKit
 import WidgetKit
 import SwiftUI
+#if canImport(AppIntents)
+import AppIntents
+#endif
+#if canImport(AppIntentsUI)
+import AppIntentsUI
+#endif
 
 private func sharedFocusTitle() -> String? {
     let shared = UserDefaults(suiteName: "group.bible.app")
@@ -65,10 +71,97 @@ struct PrayerTimerLiveActivity: Widget {
                             .lineLimit(2)
                     }
                 } else {
-                    Text(context.attributes.sessionName)
-                        .font(.headline)
-                    ProgressView(value: progress(context))
-                    Text(endDate(context.state.remaining), style: .timer).monospacedDigit()
+                    VStack(alignment: .center, spacing: 8) {
+                        // Top: Name
+                        Text(context.attributes.sessionName)
+                            .font(.subheadline)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+
+                        // Middle: Ring + Timer side by side for compactness
+                        HStack(alignment: .center, spacing: 10) {
+                            ProgressRing(progress: progress(context), tint: timerTintColor(context), lineWidth: 5, size: 36)
+                            Text(endDate(context.state.remaining), style: .timer)
+                                .font(.system(size: 28, weight: .bold, design: .monospaced))
+                                .monospacedDigit()
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+                        }
+
+                        // Bottom: Compact controls
+                        // AppIntentButton on iOS 17+ if available; otherwise deep links
+                        if #available(iOS 17.0, *) {
+#if canImport(AppIntentsUI)
+                            HStack(spacing: 14) {
+                                AppIntentButton(PauseOrResumePrayerTimerIntent()) {
+                                    Image(systemName: context.state.status == "Paused" ? "play.fill" : "pause.fill")
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                                .accessibilityLabel(context.state.status == "Paused" ? "Resume" : "Pause")
+
+                                AppIntentButton(AddFiveMinutesPrayerTimerIntent()) {
+                                    Text("+5")
+                                        .font(.caption.weight(.semibold))
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                                .accessibilityLabel("Add five minutes")
+
+                                AppIntentButton(StopPrayerTimerIntent()) {
+                                    Image(systemName: "stop.fill")
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .tint(.red)
+                                .controlSize(.small)
+                                .accessibilityLabel("Stop")
+                            }
+#else
+                            HStack(spacing: 14) {
+                                Link(destination: URL(string: "thebible://timer?action=togglePause")!) {
+                                    Image(systemName: context.state.status == "Paused" ? "play.fill" : "pause.fill")
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+
+                                Link(destination: URL(string: "thebible://timer?action=add5")!) {
+                                    Text("+5").font(.caption.weight(.semibold))
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+
+                                Link(destination: URL(string: "thebible://timer?action=stop")!) {
+                                    Image(systemName: "stop.fill")
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .tint(.red)
+                                .controlSize(.small)
+                            }
+#endif
+                        } else {
+                            HStack(spacing: 14) {
+                                Link(destination: URL(string: "thebible://timer?action=togglePause")!) {
+                                    Image(systemName: context.state.status == "Paused" ? "play.fill" : "pause.fill")
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+
+                                Link(destination: URL(string: "thebible://timer?action=add5")!) {
+                                    Text("+5").font(.caption.weight(.semibold))
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+
+                                Link(destination: URL(string: "thebible://timer?action=stop")!) {
+                                    Image(systemName: "stop.fill")
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .tint(.red)
+                                .controlSize(.small)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
                 }
             }
             .padding()
@@ -103,10 +196,19 @@ struct PrayerTimerLiveActivity: Widget {
                             }
                         }
                     } else {
-                        VStack {
+                        VStack(spacing: 6) {
                             Text(context.attributes.sessionName)
-                                .font(.headline)
-                            ProgressView(value: progress(context))
+                                .font(.subheadline)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+                            HStack(spacing: 8) {
+                                ProgressRing(progress: progress(context), tint: timerTintColor(context), lineWidth: 4, size: 28)
+                                Text(endDate(context.state.remaining), style: .timer)
+                                    .font(.headline)
+                                    .monospacedDigit()
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.7)
+                            }
                         }
                     }
                 }
@@ -135,7 +237,49 @@ struct PrayerTimerLiveActivity: Widget {
                                 .font(.subheadline)
                         }
                     } else {
-                        Text(context.state.status)
+                        // Controls (Pause/Resume, +5, Stop)
+                        if #available(iOS 17.0, *) {
+#if canImport(AppIntentsUI)
+                            HStack(spacing: 16) {
+                                AppIntentButton(PauseOrResumePrayerTimerIntent()) { Image(systemName: context.state.status == "Paused" ? "play.fill" : "pause.fill") }
+                                    .buttonStyle(.bordered)
+                                    .controlSize(.small)
+                                AppIntentButton(AddFiveMinutesPrayerTimerIntent()) { Text("+5").font(.caption.weight(.semibold)) }
+                                    .buttonStyle(.bordered)
+                                    .controlSize(.small)
+                                AppIntentButton(StopPrayerTimerIntent()) { Image(systemName: "stop.fill") }
+                                    .buttonStyle(.borderedProminent)
+                                    .tint(.red)
+                                    .controlSize(.small)
+                            }
+#else
+                            HStack(spacing: 16) {
+                                Link(destination: URL(string: "thebible://timer?action=togglePause")!) { Image(systemName: context.state.status == "Paused" ? "play.fill" : "pause.fill") }
+                                    .buttonStyle(.bordered)
+                                    .controlSize(.small)
+                                Link(destination: URL(string: "thebible://timer?action=add5")!) { Text("+5").font(.caption.weight(.semibold)) }
+                                    .buttonStyle(.bordered)
+                                    .controlSize(.small)
+                                Link(destination: URL(string: "thebible://timer?action=stop")!) { Image(systemName: "stop.fill") }
+                                    .buttonStyle(.borderedProminent)
+                                    .tint(.red)
+                                    .controlSize(.small)
+                            }
+#endif
+                        } else {
+                            HStack(spacing: 16) {
+                                Link(destination: URL(string: "thebible://timer?action=togglePause")!) { Image(systemName: context.state.status == "Paused" ? "play.fill" : "pause.fill") }
+                                    .buttonStyle(.bordered)
+                                    .controlSize(.small)
+                                Link(destination: URL(string: "thebible://timer?action=add5")!) { Text("+5").font(.caption.weight(.semibold)) }
+                                    .buttonStyle(.bordered)
+                                    .controlSize(.small)
+                                Link(destination: URL(string: "thebible://timer?action=stop")!) { Image(systemName: "stop.fill") }
+                                    .buttonStyle(.borderedProminent)
+                                    .tint(.red)
+                                    .controlSize(.small)
+                            }
+                        }
                     }
                 }
             } compactLeading: {
@@ -214,6 +358,7 @@ struct PrayerTimerLiveActivity: Widget {
         var progress: Double // 0.0 ... 1.0
         var tint: Color
         var lineWidth: CGFloat = 3
+        var size: CGFloat = 22
         var body: some View {
             ZStack {
                 Circle()
@@ -223,7 +368,7 @@ struct PrayerTimerLiveActivity: Widget {
                     .stroke(tint, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
                     .rotationEffect(.degrees(-90))
             }
-            .frame(width: 22, height: 22)
+            .frame(width: size, height: size)
         }
     }
 }

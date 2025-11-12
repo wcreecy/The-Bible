@@ -192,6 +192,18 @@ struct ContentView: View {
             case "timer":
                 selectedTab = 0
                 UserDefaults.standard.set("timer", forKey: "prayerMode")
+                if let comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                   let action = comps.queryItems?.first(where: { $0.name == "action" })?.value {
+                    // Store pending action for HomeView to process on appear/active
+                    if let shared = UserDefaults(suiteName: "group.bible.app") {
+                        switch action {
+                        case "togglePause": shared.set("togglePause", forKey: "prayerTimerPendingAction")
+                        case "add5": shared.set("add5", forKey: "prayerTimerPendingAction")
+                        case "stop": shared.set("stop", forKey: "prayerTimerPendingAction")
+                        default: break
+                        }
+                    }
+                }
             case "stopwatch":
                 selectedTab = 0
                 UserDefaults.standard.set("stopwatch", forKey: "prayerMode")
