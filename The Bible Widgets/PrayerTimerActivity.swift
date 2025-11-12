@@ -80,12 +80,13 @@ struct PrayerTimerLiveActivity: Widget {
 
                         // Middle: Ring + Timer side by side for compactness
                         HStack(alignment: .center, spacing: 10) {
-                            ProgressRing(progress: progress(context), tint: timerTintColor(context), lineWidth: 5, size: 36)
-                            Text(endDate(context.state.remaining), style: .timer)
-                                .font(.system(size: 28, weight: .bold, design: .monospaced))
+                            ProgressRing(progress: progress(context), tint: timerTintColor(context), lineWidth: 6, size: 44)
+                            CountdownText(remaining: context.state.remaining)
+                                .font(.system(size: 40, weight: .bold, design: .monospaced))
                                 .monospacedDigit()
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.7)
+                                .foregroundStyle(timerTintColor(context))
                         }
 
                         // Bottom: Compact controls
@@ -116,6 +117,7 @@ struct PrayerTimerLiveActivity: Widget {
                                 .controlSize(.small)
                                 .accessibilityLabel("Stop")
                             }
+                            .tint(timerTintColor(context))
 #else
                             HStack(spacing: 14) {
                                 Link(destination: URL(string: "thebible://timer?action=togglePause")!) {
@@ -137,6 +139,7 @@ struct PrayerTimerLiveActivity: Widget {
                                 .tint(.red)
                                 .controlSize(.small)
                             }
+                            .tint(timerTintColor(context))
 #endif
                         } else {
                             HStack(spacing: 14) {
@@ -202,12 +205,13 @@ struct PrayerTimerLiveActivity: Widget {
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.7)
                             HStack(spacing: 8) {
-                                ProgressRing(progress: progress(context), tint: timerTintColor(context), lineWidth: 4, size: 28)
-                                Text(endDate(context.state.remaining), style: .timer)
-                                    .font(.headline)
+                                ProgressRing(progress: progress(context), tint: timerTintColor(context), lineWidth: 5, size: 32)
+                                CountdownText(remaining: context.state.remaining)
+                                    .font(.system(size: 24, weight: .bold, design: .monospaced))
                                     .monospacedDigit()
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.7)
+                                    .foregroundStyle(timerTintColor(context))
                             }
                         }
                     }
@@ -216,7 +220,7 @@ struct PrayerTimerLiveActivity: Widget {
                     if context.state.status == "Focus" {
                         EmptyView()
                     } else {
-                        Text(endDate(context.state.remaining), style: .timer)
+                        CountdownText(remaining: context.state.remaining)
                             .monospacedDigit()
                     }
                 }
@@ -302,7 +306,7 @@ struct PrayerTimerLiveActivity: Widget {
                         Text("")
                     }
                 } else {
-                    Text(endDate(context.state.remaining), style: .timer)
+                    CountdownText(remaining: context.state.remaining)
                         .monospacedDigit()
                 }
             } minimal: {
@@ -369,6 +373,25 @@ struct PrayerTimerLiveActivity: Widget {
                     .rotationEffect(.degrees(-90))
             }
             .frame(width: size, height: size)
+        }
+    }
+
+    private struct CountdownText: View {
+        let remaining: Int
+        var body: some View {
+            Group {
+                if remaining >= 0 {
+                    // Countdown: pass a future date so the system counts down.
+                    let endDate = Date().addingTimeInterval(TimeInterval(remaining))
+                    Text(endDate, style: .timer)
+                        .monospacedDigit()
+                } else {
+                    // Stopwatch (count up): pass a past date so the system counts up.
+                    let startDate = Date().addingTimeInterval(TimeInterval(remaining))
+                    Text(startDate, style: .timer)
+                        .monospacedDigit()
+                }
+            }
         }
     }
 }
