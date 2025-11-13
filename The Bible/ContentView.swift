@@ -192,9 +192,25 @@ struct ContentView: View {
             case "timer":
                 selectedTab = 0
                 UserDefaults.standard.set("timer", forKey: "prayerMode")
+                if let comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                   let action = comps.queryItems?.first(where: { $0.name == "action" })?.value,
+                   let shared = UserDefaults(suiteName: "group.bible.app") {
+                    shared.set(action, forKey: "prayerTimerPendingAction")
+                }
             case "stopwatch":
                 selectedTab = 0
                 UserDefaults.standard.set("stopwatch", forKey: "prayerMode")
+                if let comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                   let action = comps.queryItems?.first(where: { $0.name == "action" })?.value,
+                   let shared = UserDefaults(suiteName: "group.bible.app") {
+                    let mapped: String
+                    switch action.lowercased() {
+                    case "pause": mapped = "togglePause"
+                    case "stop": mapped = "stop"
+                    default: mapped = action
+                    }
+                    shared.set(mapped, forKey: "stopwatchPendingAction")
+                }
             case "focus":
                 selectedTab = 0
                 UserDefaults.standard.set("focus", forKey: "prayerMode")

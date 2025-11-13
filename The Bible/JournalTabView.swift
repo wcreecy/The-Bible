@@ -12,6 +12,9 @@ struct JournalTabView: View {
     @State private var selectedEntry: JournalEntry? = nil
     @State private var isEditing: Bool = false
 
+    @State private var selectionMode: Bool = false
+    @State private var selectedForDeletion: Set<JournalEntry> = []
+
     @State private var previewRef: ScriptureRef? = nil
     @State private var previewContent: (title: String, verses: [Verse])? = nil
     @State private var showPreview: Bool = false
@@ -40,6 +43,21 @@ struct JournalTabView: View {
         }
     }
 
+    private func deleteEntry(_ entry: JournalEntry) {
+        ctx.delete(entry)
+        try? ctx.save()
+        if selectedEntry?.id == entry.id { selectedEntry = nil }
+    }
+
+    private func deleteSelectedEntries() {
+        for entry in selectedForDeletion {
+            ctx.delete(entry)
+        }
+        try? ctx.save()
+        selectedForDeletion.removeAll()
+        selectionMode = false
+    }
+
     var body: some View {
         if hSize == .regular {
             NavigationSplitView(columnVisibility: .constant(.all)) {
@@ -51,8 +69,22 @@ struct JournalTabView: View {
                                 Button("Clear Filters") { selectedTags.removeAll() }
                             }
                         }
-                        ToolbarItem(placement: .topBarTrailing) {
+                        ToolbarItemGroup(placement: .topBarTrailing) {
                             Button { showComposer = true } label: { Label("New Entry", systemImage: "square.and.pencil") }
+                            if selectionMode {
+                                Button(role: .destructive) {
+                                    deleteSelectedEntries()
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                                Button("Cancel") { selectionMode = false; selectedForDeletion.removeAll() }
+                            } else {
+                                Button {
+                                    selectionMode = true
+                                } label: {
+                                    Label("Select", systemImage: "checkmark.circle")
+                                }
+                            }
                         }
                     }
             } content: {
@@ -102,9 +134,20 @@ struct JournalTabView: View {
         } else {
             // Compact width: simple list + push to detail
             NavigationStack {
-                List(filteredEntries) { entry in
-                    NavigationLink(value: entry) { listRow(for: entry) }
+                List(selection: $selectedForDeletion) {
+                    ForEach(filteredEntries) { entry in
+                        NavigationLink(value: entry) { listRow(for: entry) }
+                            .tag(entry)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    deleteEntry(entry)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                    }
                 }
+                .environment(\.editMode, .constant(selectionMode ? .active : .inactive))
                 .navigationTitle("Journal")
                 .toolbar {
                     if !selectedTags.isEmpty {
@@ -112,8 +155,14 @@ struct JournalTabView: View {
                             Button("Clear Filters") { selectedTags.removeAll() }
                         }
                     }
-                    ToolbarItem(placement: .topBarTrailing) {
+                    ToolbarItemGroup(placement: .topBarTrailing) {
                         Button { showComposer = true } label: { Label("New Entry", systemImage: "square.and.pencil") }
+                        if selectionMode {
+                            Button(role: .destructive) { deleteSelectedEntries() } label: { Label("Delete", systemImage: "trash") }
+                            Button("Cancel") { selectionMode = false; selectedForDeletion.removeAll() }
+                        } else {
+                            Button { selectionMode = true } label: { Label("Select", systemImage: "checkmark.circle") }
+                        }
                     }
                 }
                 .navigationDestination(for: JournalEntry.self) { entry in
@@ -133,7 +182,7 @@ struct JournalTabView: View {
 
     @ViewBuilder
     private var sidebarList: some View {
-        List {
+        List(selection: $selectedForDeletion) {
             if !selectedTags.isEmpty {
                 Section {
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -165,6 +214,14 @@ struct JournalTabView: View {
                     selectedEntry = entry
                     isEditing = false
                 } label: { listRow(for: entry) }
+                .tag(entry)
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    Button(role: .destructive) {
+                        deleteEntry(entry)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
             }
         }
     }

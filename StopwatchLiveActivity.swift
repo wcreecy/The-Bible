@@ -10,35 +10,56 @@ struct StopwatchLiveActivity: Widget {
         ActivityConfiguration(for: StopwatchAttributes.self) { context in
 #if canImport(AppIntentsUI)
             if #available(iOS 17.0, *) {
-                HStack(spacing: 8) {
-                    Image(systemName: "stopwatch")
-                    Text(context.attributes.sessionName)
-                        .font(.headline)
-                    Spacer()
+                VStack(alignment: .center, spacing: 12) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "stopwatch")
+                        Text(context.attributes.sessionName)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text(context.state.status)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+
                     let startDate = Date(timeIntervalSinceNow: -Double(context.state.elapsed))
                     if context.state.status == "Running" {
                         Text(startDate, style: .timer)
                             .monospacedDigit()
+                            .font(.system(size: 48, weight: .bold, design: .monospaced))
+                            .minimumScaleFactor(0.6)
+                            .lineLimit(1)
                     } else {
                         Text(timeString(context.state.elapsed))
                             .monospacedDigit()
+                            .font(.system(size: 48, weight: .bold, design: .monospaced))
+                            .minimumScaleFactor(0.6)
+                            .lineLimit(1)
                     }
-                    Spacer()
-                    HStack(spacing: 8) {
+
+                    HStack(spacing: 16) {
                         if context.state.status == "Running" {
                             AppIntentButton(PauseStopwatchIntent()) {
-                                Image(systemName: "pause.fill")
+                                Label("Pause", systemImage: "pause.fill")
                             }
+                            .buttonStyle(.bordered)
+
                             AppIntentButton(StopStopwatchIntent()) {
-                                Image(systemName: "stop.fill")
+                                Label("Stop", systemImage: "stop.fill")
                             }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.red)
                         } else {
                             AppIntentButton(ResumeStopwatchIntent()) {
-                                Image(systemName: "play.fill")
+                                Label("Resume", systemImage: "play.fill")
                             }
+                            .buttonStyle(.bordered)
+
                             AppIntentButton(StopStopwatchIntent()) {
-                                Image(systemName: "stop.fill")
+                                Label("Stop", systemImage: "stop.fill")
                             }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.red)
                         }
                     }
                 }
@@ -51,6 +72,9 @@ struct StopwatchLiveActivity: Widget {
                     Spacer()
                     Text(timeString(context.state.elapsed))
                         .monospacedDigit()
+                        .font(.system(size: 40, weight: .bold, design: .monospaced))
+                        .minimumScaleFactor(0.6)
+                        .lineLimit(1)
                 }
                 .padding()
             }
@@ -62,6 +86,9 @@ struct StopwatchLiveActivity: Widget {
                 Spacer()
                 Text(timeString(context.state.elapsed))
                     .monospacedDigit()
+                    .font(.system(size: 40, weight: .bold, design: .monospaced))
+                    .minimumScaleFactor(0.6)
+                    .lineLimit(1)
             }
             .padding()
 #endif

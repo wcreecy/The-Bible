@@ -14,7 +14,7 @@ final class StopwatchActivityController {
         let state = StopwatchAttributes.ContentState(status: "Running", elapsed: initialElapsed)
         do {
             if #available(iOS 17.0, *) {
-                let content = ActivityContent(state: state, staleDate: nil)
+                let content = ActivityContent(state: state, staleDate: .now.addingTimeInterval(60))
                 activity = try Activity.request(attributes: attributes, content: content, pushType: nil)
             } else {
                 activity = try Activity.request(attributes: attributes, contentState: state, pushType: nil)
@@ -30,7 +30,7 @@ final class StopwatchActivityController {
         let state = StopwatchAttributes.ContentState(status: status, elapsed: elapsed)
         Task {
             if #available(iOS 17.0, *) {
-                let content = ActivityContent(state: state, staleDate: nil)
+                let content = ActivityContent(state: state, staleDate: .now.addingTimeInterval(60))
                 await activity.update(content)
             } else {
                 await activity.update(using: state)

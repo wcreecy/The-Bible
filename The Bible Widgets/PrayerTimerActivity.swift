@@ -8,6 +8,41 @@
 import ActivityKit
 import WidgetKit
 import SwiftUI
+import AppIntents
+
+// MARK: - Local App Intents for Live Activity Controls (iOS 17+)
+@available(iOS 17.0, *)
+struct PrayerTimerTogglePauseIntent: AppIntent {
+    static var title: LocalizedStringResource = "Pause/Resume Prayer Timer"
+    func perform() async throws -> some IntentResult {
+        if let shared = UserDefaults(suiteName: "group.bible.app") {
+            shared.set("togglePause", forKey: "prayerTimerPendingAction")
+        }
+        return .result()
+    }
+}
+
+@available(iOS 17.0, *)
+struct PrayerTimerAddFiveMinutesIntent: AppIntent {
+    static var title: LocalizedStringResource = "+5 Minutes"
+    func perform() async throws -> some IntentResult {
+        if let shared = UserDefaults(suiteName: "group.bible.app") {
+            shared.set("add5", forKey: "prayerTimerPendingAction")
+        }
+        return .result()
+    }
+}
+
+@available(iOS 17.0, *)
+struct PrayerTimerStopIntent: AppIntent {
+    static var title: LocalizedStringResource = "Stop Prayer Timer"
+    func perform() async throws -> some IntentResult {
+        if let shared = UserDefaults(suiteName: "group.bible.app") {
+            shared.set("stop", forKey: "prayerTimerPendingAction")
+        }
+        return .result()
+    }
+}
 
 private func sharedFocusTitle() -> String? {
     let shared = UserDefaults(suiteName: "group.bible.app")
@@ -46,32 +81,73 @@ private func focusLogoView() -> some View {
 struct PrayerTimerLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: PrayerTimerAttributes.self) { context in
-            // Lock Screen (and banner) UI
-            VStack(alignment: .leading, spacing: 6) {
-                if context.state.status == "Focus" {
-                    // Show title prominently on Lock Screen tile
-                    if let title = (context.state.focusTitle?.isEmpty == false ? context.state.focusTitle : sharedFocusTitle()) {
-                        Text(title)
-                            .font(.headline)
-                            .lineLimit(2)
-                    } else {
+            // Lock Screen (and banner) UI — Larger, color-tinted, with controls
+            let tint = timerTintColor(context)
+            VStack(spacing: 10) {
+                if context.state.status != "Focus" {
+                    HStack(alignment: .firstTextBaseline) {
                         Text(context.attributes.sessionName)
                             .font(.headline)
+                            .foregroundStyle(tint)
+                        Spacer()
+                        if context.state.total > 0 {
+                            ProgressView(value: progress(context))
+                                .tint(tint)
+                                .frame(width: 90)
+                        }
                     }
-                    if let body = (context.state.focusBody?.isEmpty == false ? context.state.focusBody : sharedFocusBody()) {
-                        Text(body)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(2)
+                }
+                if context.state.status == "Focus" {
+                    VStack(alignment: .leading, spacing: 6) {
+                        if let title = (context.state.focusTitle?.isEmpty == false ? context.state.focusTitle : sharedFocusTitle()) {
+                            Text(title)
+                                .font(.title3.weight(.semibold))
+                                .lineLimit(2)
+                        }
+                        if let body = (context.state.focusBody?.isEmpty == false ? context.state.focusBody : sharedFocusBody()) {
+                            Text(body)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(2)
+                        }
                     }
                 } else {
-                    Text(context.attributes.sessionName)
-                        .font(.headline)
-                    ProgressView(value: progress(context))
-                    Text(endDate(context.state.remaining), style: .timer).monospacedDigit()
+                    // Big live countdown
+                    Text(endDate(context.state.remaining), style: .timer)
+                        .monospacedDigit()
+                        .font(.system(size: 44, weight: .bold, design: .rounded))
+                        .foregroundStyle(tint)
+                        .minimumScaleFactor(0.6)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Controls row
+                    HStack(spacing: 20) {
+                        Link(destination: URL(string: "thebible://timer?action=togglePause")!) {
+                            Image(systemName: context.state.status == "Paused" ? "play.fill" : "pause.fill")
+                                .font(.system(size: 18, weight: .bold))
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(tint)
+
+                        Link(destination: URL(string: "thebible://timer?action=add5")!) {
+                            Text("+5")
+                                .font(.system(size: 16, weight: .bold))
+                                .frame(minWidth: 36)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(tint)
+
+                        Link(destination: URL(string: "thebible://timer?action=stop")!) {
+                            Image(systemName: "stop.fill")
+                                .font(.system(size: 18, weight: .bold))
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.red)
+                    }
                 }
             }
             .padding()
+            .activityBackgroundTint(.clear)
         } dynamicIsland: { context in
             DynamicIsland {
                 // Expanded regions
@@ -103,10 +179,13 @@ struct PrayerTimerLiveActivity: Widget {
                             }
                         }
                     } else {
-                        VStack {
+                        VStack(spacing: 8) {
                             Text(context.attributes.sessionName)
                                 .font(.headline)
-                            ProgressView(value: progress(context))
+                            Text(endDate(context.state.remaining), style: .timer)
+                                .monospacedDigit()
+                                .font(.system(size: 28, weight: .bold, design: .rounded))
+                                .foregroundStyle(timerTintColor(context))
                         }
                     }
                 }
@@ -135,7 +214,26 @@ struct PrayerTimerLiveActivity: Widget {
                                 .font(.subheadline)
                         }
                     } else {
-                        Text(context.state.status)
+                        HStack(spacing: 20) {
+                            Link(destination: URL(string: "thebible://timer?action=togglePause")!) {
+                                Image(systemName: context.state.status == "Paused" ? "play.fill" : "pause.fill")
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(timerTintColor(context))
+
+                            Link(destination: URL(string: "thebible://timer?action=add5")!) {
+                                Text("+5")
+                                    .fontWeight(.bold)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(timerTintColor(context))
+
+                            Link(destination: URL(string: "thebible://timer?action=stop")!) {
+                                Image(systemName: "stop.fill")
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.red)
+                        }
                     }
                 }
             } compactLeading: {

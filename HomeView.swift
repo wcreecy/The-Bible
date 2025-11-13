@@ -883,8 +883,14 @@ struct HomeView: View {
             } else {
                 hasSavedFocus = false
             }
+
+            handlePrayerTimerPendingAction()
+            handleStopwatchPendingAction()
         }
         .onReceive(unifiedTimer) { _ in
+            // Process any pending Live Activity actions promptly
+            handlePrayerTimerPendingAction()
+
             // Increment a unified tick counter
             unifiedTick &+= 1
 
@@ -892,7 +898,7 @@ struct HomeView: View {
             if isEditingFocus {
                 return
             }
-            let shouldUpdateLiveActivities = (unifiedTick % 2 == 0)
+            let shouldUpdateLiveActivities = true
 
             // Timer logic: update remaining seconds when running and not paused
             if isTimerRunning && !isPaused && storedEndDate > 0 {
@@ -935,6 +941,8 @@ struct HomeView: View {
             case .active:
                 // App became active: start logging if available
                 startMindfulLoggingIfNeeded()
+                handlePrayerTimerPendingAction()
+                handleStopwatchPendingAction()
             case .inactive, .background:
                 // Stop logging only if the timer is not running and stopwatch is not running; keep logging while either runs
                 if !isTimerRunning && !stopwatchRunning {
@@ -1292,6 +1300,50 @@ struct HomeView: View {
         let seconds = totalSeconds % 60
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
+    
+    private func handlePrayerTimerPendingAction() {
+        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
+        guard let action = shared.string(forKey: "prayerTimerPendingAction") else { return }
+        // Clear immediately to avoid reprocessing
+        shared.removeObject(forKey: "prayerTimerPendingAction")
+        switch action {
+        case "togglePause":
+            if isTimerRunning {
+                togglePause()
+            }
+        case "add5":
+            if isTimerRunning {
+                addFiveMinutes()
+            }
+        case "stop":
+            if isTimerRunning {
+                stopTimer()
+            }
+        default:
+            break
+        }
+    }
+
+    private func handleStopwatchPendingAction() {
+        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
+        guard let action = shared.string(forKey: "stopwatchPendingAction") else { return }
+        // Clear immediately to avoid reprocessing
+        shared.removeObject(forKey: "stopwatchPendingAction")
+        switch action {
+        case "togglePause":
+            if stopwatchRunning {
+                pauseStopwatch()
+            } else {
+                startStopwatch()
+            }
+        case "stop":
+            if stopwatchRunning || stopwatchElapsed > 0 {
+                stopStopwatch()
+            }
+        default:
+            break
+        }
+    }
 }
 
 private let oldTestamentBooks: Set<String> = [
@@ -1461,4 +1513,3 @@ private struct PrayerStudyTimerSetupView: View {
     }
 }
 // Note: HealthKit logging is handled in HomeView, no changes needed here.
-
