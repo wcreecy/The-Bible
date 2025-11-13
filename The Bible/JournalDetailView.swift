@@ -4,6 +4,7 @@ import SwiftData
 struct JournalDetailView: View {
     @Environment(\.modelContext) private var ctx
     @Environment(\.horizontalSizeClass) private var hSize
+    @EnvironmentObject private var journalComposer: JournalComposer
     var entry: JournalEntry
 
     @State private var showEditSheet: Bool = false
@@ -161,33 +162,13 @@ struct JournalDetailView: View {
         }
         .navigationTitle("Entry")
         .toolbar {
-            ToolbarItemGroup(placement: .topBarTrailing) {
+            ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    // Seed drafts from current entry and present editor
-                    draftTitle = entry.title
-                    draftBody = entry.body
-                    draftTagsText = entry.tags.joined(separator: ", ")
-                    showEditSheet = true
+                    journalComposer.presentForEditing(entry: entry)
                 } label: {
                     Image(systemName: "pencil")
                 }
             }
-        }
-        .sheet(
-            isPresented: Binding(
-                get: { hSize != .regular && showEditSheet },
-                set: { newValue in if hSize != .regular { showEditSheet = newValue } }
-            )
-        ) {
-            NavigationStack { editContentCompact }
-        }
-        .fullScreenCover(
-            isPresented: Binding(
-                get: { hSize == .regular && showEditSheet },
-                set: { newValue in if hSize == .regular { showEditSheet = newValue } }
-            )
-        ) {
-            NavigationStack { editContentRegular }
         }
     }
 
@@ -506,4 +487,3 @@ struct JournalDetailView: View {
     )
     NavigationStack { JournalDetailView(entry: entry) }
 }
-

@@ -3,10 +3,9 @@ import SwiftData
 
 struct JournalTabView: View {
     @Environment(\.modelContext) private var ctx
+    @EnvironmentObject private var journalComposer: JournalComposer
     @Query(filter: #Predicate<JournalEntry> { !$0.isArchived }, sort: \JournalEntry.updatedAt, order: .reverse)
     private var entries: [JournalEntry]
-
-    @State private var showComposer: Bool = false
 
     @Environment(\.horizontalSizeClass) private var hSize
     @State private var selectedEntry: JournalEntry? = nil
@@ -138,7 +137,11 @@ struct JournalTabView: View {
                                     selectedForDeletion.removeAll()
                                 }
                             } else {
-                                Button { showComposer = true } label: { Label("New Entry", systemImage: "square.and.pencil") }
+                                Button {
+                                    journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
+                                } label: {
+                                    Label("New Entry", systemImage: "square.and.pencil")
+                                }
                                 Button {
                                     selectionMode = true
                                 } label: {
@@ -189,8 +192,7 @@ struct JournalTabView: View {
                             .toolbar {
                                 ToolbarItem(placement: .primaryAction) {
                                     Button("Edit") {
-                                        editingTagsText = e.tags.joined(separator: ", ")
-                                        isEditing = true
+                                        journalComposer.presentForEditing(entry: e)
                                     }
                                 }
                             }
@@ -213,7 +215,6 @@ struct JournalTabView: View {
                     refreshToken = UUID().uuidString
                 }
             }
-            .sheet(isPresented: $showComposer) { JournalEditorView(verseRef: nil, showTagColors: false) }
         } else {
             // Compact width: simple list + push to detail
             NavigationStack {
@@ -263,7 +264,11 @@ struct JournalTabView: View {
                                 selectedForDeletion.removeAll()
                             }
                         } else {
-                            Button { showComposer = true } label: { Label("New Entry", systemImage: "square.and.pencil") }
+                            Button {
+                                journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
+                            } label: {
+                                Label("New Entry", systemImage: "square.and.pencil")
+                            }
                             Button {
                                 selectionMode = true
                             } label: {
@@ -278,7 +283,6 @@ struct JournalTabView: View {
                     JournalDetailView(entry: entry)
                 }
             }
-            .sheet(isPresented: $showComposer) { JournalEditorView(verseRef: nil) }
         }
     }
 

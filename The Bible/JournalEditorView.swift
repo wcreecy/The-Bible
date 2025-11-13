@@ -19,6 +19,39 @@ struct JournalEditorView: View {
     @State private var previewContent: (title: String, verses: [Verse])? = nil
     @State private var showPreview: Bool = false
 
+    // MARK: - Stats & Links Helpers
+
+    private func displayString(for ref: ScriptureRef) -> String {
+        if let end = ref.endVerse, end != ref.startVerse {
+            return "\(ref.bookName) \(ref.chapter):\(ref.startVerse)-\(end)"
+        } else {
+            return "\(ref.bookName) \(ref.chapter):\(ref.startVerse)"
+        }
+    }
+
+    private func detectedScriptureRefs() -> [ScriptureRef] {
+        var refs: [ScriptureRef] = []
+        var seen: Set<String> = []
+        for run in linkedContent.runs {
+            if let url = run.link, let ref = BibleReferenceLinker.parse(url: url) {
+                let key = displayString(for: ref)
+                if !seen.contains(key) {
+                    seen.insert(key)
+                    refs.append(ref)
+                }
+            }
+        }
+        return refs
+    }
+
+    private func copy(_ ref: ScriptureRef) {
+        UIPasteboard.general.string = displayString(for: ref)
+        withAnimation(.spring()) { showCopyToast = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            withAnimation(.easeOut) { showCopyToast = false }
+        }
+    }
+
     private var linkedContent: AttributedString { BibleReferenceLinker.linkify(content) }
 
     private var parsedTags: [String] {
@@ -42,12 +75,15 @@ struct JournalEditorView: View {
     @State private var showSaveError = false
     @State private var saveErrorMessage: String = ""
     @State private var showCopyToast: Bool = false
+    @State private var editingEntry: JournalEntry? = nil
 
-    init(verseRef: VerseRef?, initialBody: String? = nil, showTagColors: Bool = false) {
+    init(verseRef: VerseRef?, initialBody: String? = nil, showTagColors: Bool = false, editingEntry: JournalEntry? = nil) {
         self.verseRef = verseRef
         self.showTagColors = showTagColors
-        _title = State(initialValue: verseRef?.display ?? "")
-        _content = State(initialValue: initialBody ?? "")
+        _title = State(initialValue: editingEntry?.title ?? verseRef?.display ?? "")
+        _content = State(initialValue: editingEntry?.body ?? initialBody ?? "")
+        _tagsText = State(initialValue: editingEntry?.tags.joined(separator: ", ") ?? "")
+        self._editingEntry = State(initialValue: editingEntry)
     }
 
     var body: some View {
@@ -112,21 +148,48 @@ struct JournalEditorView: View {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text(title.isEmpty ? "Untitled" : title)
                                     .font(.title3).bold()
-                                Text("Live Preview")
+                                Text("Entry Stats & Links")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
-                                Text(linkedContent)
-                                    .frame(minHeight: 60, alignment: .topLeading)
-                                    .textSelection(.enabled)
-                                    .environment(\._openURL, OpenURLAction { url in
-                                        if let ref = BibleReferenceLinker.parse(url: url), let content = BibleReferenceLinker.loadVerses(for: ref) {
-                                            previewRef = ref
-                                            previewContent = content
-                                            withAnimation(.spring()) { showPreview = true }
-                                            return .handled
+                                // Stats row
+                                HStack(spacing: 12) {
+                                    Label("\(wordCount) words", systemImage: "textformat")
+                                    Label("\(characterCount) chars", systemImage: "character.book.closed")
+                                }
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+
+                                let refs = detectedScriptureRefs()
+                                if !refs.isEmpty {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Scripture Links")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                        ForEach(Array(refs.enumerated()), id: \.offset) { _, ref in
+                                            HStack(spacing: 8) {
+                                                Button(action: {
+                                                    if let content = BibleReferenceLinker.loadVerses(for: ref) {
+                                                        previewRef = ref
+                                                        previewContent = content
+                                                        withAnimation(.spring()) { showPreview = true }
+                                                    }
+                                                }) {
+                                                    Text(displayString(for: ref))
+                                                        .font(.subheadline)
+                                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                                        .foregroundStyle(.blue)
+                                                        .underline()
+                                                }
+                                                .buttonStyle(.plain)
+
+                                                Button { copy(ref) } label: { Image(systemName: "doc.on.doc") }
+                                                    .buttonStyle(.plain)
+                                                    .foregroundStyle(.blue)
+                                                    .accessibilityLabel("Copy reference")
+                                            }
                                         }
-                                        return .systemAction
-                                    })
+                                    }
+                                }
 
                                 if showPreview, let content = previewContent {
                                     VStack(alignment: .leading, spacing: 8) {
@@ -269,23 +332,49 @@ struct JournalEditorView: View {
                                     )
                             }
                             VStack(alignment: .leading, spacing: 12) {
-                                Text("Live Preview")
+                                Text("Entry Stats & Links")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
 
-                                // Linkified rich text preview that updates while typing
-                                Text(linkedContent)
-                                    .frame(minHeight: 60, alignment: .topLeading)
-                                    .textSelection(.enabled)
-                                    .environment(\._openURL, OpenURLAction { url in
-                                        if let ref = BibleReferenceLinker.parse(url: url), let content = BibleReferenceLinker.loadVerses(for: ref) {
-                                            previewRef = ref
-                                            previewContent = content
-                                            withAnimation(.spring()) { showPreview = true }
-                                            return .handled
+                                // Stats row
+                                HStack(spacing: 12) {
+                                    Label("\(wordCount) words", systemImage: "textformat")
+                                    Label("\(characterCount) chars", systemImage: "character.book.closed")
+                                }
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+
+                                let refs = detectedScriptureRefs()
+                                if !refs.isEmpty {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Scripture Links")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                        ForEach(Array(refs.enumerated()), id: \.offset) { _, ref in
+                                            HStack(spacing: 8) {
+                                                Button(action: {
+                                                    if let content = BibleReferenceLinker.loadVerses(for: ref) {
+                                                        previewRef = ref
+                                                        previewContent = content
+                                                        withAnimation(.spring()) { showPreview = true }
+                                                    }
+                                                }) {
+                                                    Text(displayString(for: ref))
+                                                        .font(.subheadline)
+                                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                                        .foregroundStyle(.blue)
+                                                        .underline()
+                                                }
+                                                .buttonStyle(.plain)
+
+                                                Button { copy(ref) } label: { Image(systemName: "doc.on.doc") }
+                                                    .buttonStyle(.plain)
+                                                    .foregroundStyle(.blue)
+                                                    .accessibilityLabel("Copy reference")
+                                            }
                                         }
-                                        return .systemAction
-                                    })
+                                    }
+                                }
 
                                 if showPreview, let content = previewContent {
                                     VStack(alignment: .leading, spacing: 8) {
@@ -342,7 +431,7 @@ struct JournalEditorView: View {
                     }
                 }
             }
-            .navigationTitle("New Entry")
+            .navigationTitle(editingEntry == nil ? "New Entry" : "Edit Entry")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { dismiss() }
@@ -363,11 +452,40 @@ struct JournalEditorView: View {
         }
     }
 
+    private var wordCount: Int {
+        content.split { $0.isWhitespace || $0.isNewline }.count
+    }
+    private var characterCount: Int { content.count }
+    private var paragraphCount: Int {
+        content.split(whereSeparator: { $0 == "\n" }).split(separator: "\n\n").count
+    }
+    private var estimatedReadingMinutes: Int {
+        let minutes = Double(wordCount) / 200.0
+        return max(1, Int(ceil(minutes)))
+    }
+    private var tagCount: Int { parsedTags.count }
+
     private func save() {
         let tags = tagsText
             .split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
+
+        if var entry = editingEntry {
+            entry.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
+            entry.body = content.trimmingCharacters(in: .whitespacesAndNewlines)
+            entry.tags = tags
+            entry.updatedAt = Date()
+            do {
+                try ctx.save()
+                NotificationCenter.default.post(name: Notification.Name("JournalEntryUpdated"), object: nil, userInfo: ["id": entry.id.uuidString])
+                dismiss()
+            } catch {
+                saveErrorMessage = error.localizedDescription
+                showSaveError = true
+            }
+            return
+        }
 
         let entry = JournalEntry(
             title: title.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -377,12 +495,10 @@ struct JournalEditorView: View {
             isPinned: false,
             isFavorite: false
         )
-        // Ensure timestamps are current if your model uses them
         entry.updatedAt = Date()
         ctx.insert(entry)
         do {
             try ctx.save()
-            // Notify listeners (e.g., JournalTabView) that a new entry was created
             NotificationCenter.default.post(name: Notification.Name("JournalEntryCreated"), object: nil, userInfo: ["id": entry.id.uuidString])
             dismiss()
         } catch {

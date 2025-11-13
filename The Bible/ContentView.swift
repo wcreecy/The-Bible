@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var coordinator = NavigationCoordinator()
+    @StateObject private var journalComposer = JournalComposer()
     @State private var selectedTab: Int = 0
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
     
@@ -245,6 +246,7 @@ struct ContentView: View {
             .tag(6)
         }
         .environmentObject(coordinator)
+        .environmentObject(journalComposer)
         .preferredColorScheme(preferredScheme)
         .dynamicTypeSize(preferredDynamicType ?? .large)
         .font(preferredCustomFontName != nil ? .custom(preferredCustomFontName!, size: baseFontSize) : .system(size: baseFontSize))
@@ -287,6 +289,12 @@ struct ContentView: View {
                     .onChange(of: proxy.size) { _, newSize in rootSize = newSize }
             }
         )
+        .sheet(isPresented: Binding(
+            get: { journalComposer.isPresented },
+            set: { newVal in if !newVal { journalComposer.dismiss() } }
+        )) {
+            JournalEditorView(verseRef: journalComposer.verseRef, initialBody: journalComposer.initialBody, showTagColors: journalComposer.showTagColors, editingEntry: journalComposer.editingEntry)
+        }
         .onOpenURL { url in
             guard url.scheme == "thebible" else { return }
             switch url.host?.lowercased() {

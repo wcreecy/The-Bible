@@ -6,6 +6,7 @@ struct ReadingView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var progressList: [ReadingProgress]
     @Query private var favorites: [Favorite]
+    @EnvironmentObject private var journalComposer: JournalComposer
 
     let book: Book
     let chapter: Chapter
@@ -25,9 +26,6 @@ struct ReadingView: View {
     @State private var favoriteToastTint: Color = .pink
     @AppStorage("keepScreenOn") private var keepScreenOn: Bool = false
     @State private var pinVerse: Int? = nil
-
-    @State private var showJournalEditor: Bool = false
-    @State private var journalInitialBody: String = ""
 
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
@@ -72,9 +70,6 @@ struct ReadingView: View {
                 UIApplication.shared.isIdleTimerDisabled = newValue
             }
             .appToast(isPresented: $showFavoriteToast, symbol: favoriteToastSymbol, text: favoriteToastText, tint: favoriteToastTint)
-            .sheet(isPresented: $showJournalEditor) {
-                JournalEditorView(verseRef: nil, initialBody: journalInitialBody, showTagColors: false)
-            }
     }
 
     @ViewBuilder
@@ -328,8 +323,7 @@ struct ReadingView: View {
     }
     
     private func openJournalForReference(text: String) {
-        journalInitialBody = text
-        showJournalEditor = true
+        journalComposer.present(initialBody: text, verseRef: nil, showTagColors: false)
     }
 }
 
@@ -339,4 +333,3 @@ struct ReadingView: View {
             .modelContainer(for: [ReaderSettings.self, ReadingProgress.self], inMemory: true)
     }
 }
-
