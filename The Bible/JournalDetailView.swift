@@ -209,13 +209,6 @@ struct JournalDetailView: View {
                             .padding(.top, 8)
                             .padding(.leading, 5)
                     }
-                    // Inline smart link overlay
-                    Text(linkOverlayDraft)
-                        .font(.body)
-                        .frame(maxWidth: .infinity, minHeight: 200, alignment: .topLeading)
-                        .padding(.top, 8)
-                        .padding(.leading, 5)
-                        .allowsHitTesting(false)
                     TextEditor(text: $draftBody)
                         .frame(minHeight: 200)
                         .overlay(
@@ -513,3 +506,4 @@ struct JournalDetailView: View {
     )
     NavigationStack { JournalDetailView(entry: entry) }
 }
+

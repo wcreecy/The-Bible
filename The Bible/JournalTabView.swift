@@ -159,7 +159,7 @@ struct JournalTabView: View {
         } else {
             // Compact width: simple list + push to detail
             NavigationStack {
-                List(selection: $selectedForDeletion) {
+                List {
                     ForEach(filteredEntries) { entry in
                         NavigationLink(value: entry) { listRow(for: entry) }
                             .tag(entry)
@@ -172,7 +172,6 @@ struct JournalTabView: View {
                             }
                     }
                 }
-                .environment(\.editMode, .constant(selectionMode ? .active : .inactive))
                 .navigationTitle("Journal")
                 .toolbar {
                     if !selectedTags.isEmpty {
