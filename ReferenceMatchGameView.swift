@@ -5,6 +5,15 @@ struct ReferenceMatchGameView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
 
+    private struct AnswerOption: Hashable, Identifiable {
+        let id = UUID()
+        let snippet: String
+        let bookName: String
+        let chapterNumber: Int
+        let verseNumber: Int
+        let verseText: String
+    }
+
     enum Difficulty: String, CaseIterable, Identifiable { case easy, medium, hard; var id: String { rawValue } }
     @State private var difficulty: Difficulty = .medium
 
@@ -21,7 +30,7 @@ struct ReferenceMatchGameView: View {
     @State private var currentStreak: Int = 0
     @State private var currentBestStreak: Int = 0
 
-    @State private var history: [(book: Book, chapter: Chapter, verse: Verse, options: [String], correct: String, selected: String?)] = []
+    @State private var history: [(book: Book, chapter: Chapter, verse: Verse, options: [AnswerOption], correctIndex: Int, selectedIndex: Int?)] = []
     @State private var currentIndex: Int = -1
 
     private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "refmatchAllTimeCorrect_\(difficultyKeySuffix())") }
@@ -32,9 +41,9 @@ struct ReferenceMatchGameView: View {
     @State private var refChapter: Chapter? = nil
     @State private var refVerse: Verse? = nil
 
-    @State private var options: [String] = []
-    @State private var correctOption: String = ""
-    @State private var selectedOption: String? = nil
+    @State private var options: [AnswerOption] = []
+    @State private var correctIndex: Int = -1
+    @State private var selectedIndex: Int? = nil
 
     var body: some View {
         ScrollView {
@@ -103,36 +112,15 @@ struct ReferenceMatchGameView: View {
                         .frame(maxWidth: 240)
                     Spacer(minLength: 32)
                 } else {
-                    VStack(alignment: .leading, spacing: 8) {
-                        // Header labels
-                        HStack {
-                            Text("")
-                                .frame(width: 80, alignment: .leading)
-                            Text("Correct").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                            Text("Total").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                            Text("Streak").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                            Text("Percent").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        // Current session row
-                        HStack {
-                            Text("Current").font(.subheadline).frame(width: 80, alignment: .leading)
-                            Text("\(score)").frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(answered)").frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(currentBestStreak)")
-                                .foregroundStyle(currentStreak == currentBestStreak && currentBestStreak > 0 ? .green : .primary)
-                                .animation(.easeInOut(duration: 0.2), value: currentBestStreak)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            Text(percentString(correct: score, answered: answered)).frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        // All-time row
-                        HStack {
-                            Text("All-time").font(.subheadline).frame(width: 80, alignment: .leading)
-                            Text("\(allTimeCorrect)").frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(allTimeAnswered)").frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(allTimeBestStreak)").frame(maxWidth: .infinity, alignment: .leading)
-                            Text(percentString(correct: allTimeCorrect, answered: allTimeAnswered)).frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    }
+                    // Scoreboard (Quiz-style)
+                    GameScoreboardCard(
+                        currentCorrect: score,
+                        currentAnswered: answered,
+                        currentStreak: currentBestStreak,
+                        allTimeCorrect: allTimeCorrect,
+                        allTimeAnswered: allTimeAnswered,
+                        allTimeBestStreak: allTimeBestStreak
+                    )
 
                     // Reference card
                     GroupBox {
@@ -144,7 +132,7 @@ struct ReferenceMatchGameView: View {
                                     Text("\(b.name) \(c.number):\(v.number)")
                                         .font(.title3)
                                         .fontWeight(.semibold)
-                                    if selectedOption != nil {
+                                    if selectedIndex != nil {
                                         Button(action: { toggleFavoriteCurrent() }) {
                                             Image(systemName: currentFavoriteExists() ? "heart.fill" : "heart")
                                                 .foregroundStyle(.red)
@@ -165,31 +153,45 @@ struct ReferenceMatchGameView: View {
                         .padding(.top, 4)
 
                     VStack(spacing: 12) {
-                        ForEach(options, id: \.self) { opt in
-                            Button {
-                                select(opt)
-                            } label: {
-                                VStack(alignment: .leading, spacing: 6) {
-                                    Text(opt)
-                                        .font(.body)
-                                        .multilineTextAlignment(.leading)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
+                        ForEach(Array(options.enumerated()), id: \.element.id) { (idx, opt) in
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(opt.snippet)
+                                    .font(.body)
+                                    .multilineTextAlignment(.leading)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                if selectedIndex != nil {
+                                    HStack(spacing: 8) {
+                                        Text("\(opt.bookName) \(opt.chapterNumber):\(opt.verseNumber)")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                        Spacer()
+                                        Button(action: {
+                                            toggleFavorite(bookName: opt.bookName, chapterNumber: opt.chapterNumber, verseNumber: opt.verseNumber, verseText: opt.verseText)
+                                        }) {
+                                            Image(systemName: isFavorited(bookName: opt.bookName, chapterNumber: opt.chapterNumber, verseNumber: opt.verseNumber) ? "heart.fill" : "heart")
+                                                .foregroundStyle(.red)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .accessibilityLabel(isFavorited(bookName: opt.bookName, chapterNumber: opt.chapterNumber, verseNumber: opt.verseNumber) ? "Remove Favorite" : "Add to Favorites")
+                                    }
                                 }
-                                .padding()
-                                .background(buttonBackground(for: opt))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                        .stroke(buttonBorder(for: opt), lineWidth: 1)
-                                )
-                                .cornerRadius(12)
                             }
-                            .buttonStyle(.plain)
-                            .disabled(selectedOption != nil)
+                            .padding()
+                            .background(buttonBackground(forIndex: idx))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .stroke(buttonBorder(forIndex: idx), lineWidth: 1)
+                            )
+                            .cornerRadius(12)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                if selectedIndex == nil { select(idx) }
+                            }
                         }
                     }
 
-                    if let sel = selectedOption {
-                        let correct = sel == correctOption
+                    if let sel = selectedIndex {
+                        let correct = sel == correctIndex
                         Text(correct ? "Correct!" : "Not quite.")
                             .font(.headline)
                             .foregroundStyle(correct ? .green : .red)
@@ -200,11 +202,12 @@ struct ReferenceMatchGameView: View {
             .padding()
         }
         .navigationTitle("Verse Match")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 if started && currentIndex > 0 {
                     Button("Previous") { currentIndex -= 1; loadFromHistory() }
-                        .disabled(selectedOption == nil)
+                        .disabled(selectedIndex == nil)
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
@@ -213,7 +216,7 @@ struct ReferenceMatchGameView: View {
                         if currentIndex < history.count - 1 { currentIndex += 1; loadFromHistory() }
                         else { nextQuestion() }
                     }
-                    .disabled(selectedOption == nil)
+                    .disabled(selectedIndex == nil)
                     .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                     .controlSize(.regular)
                 }
@@ -235,20 +238,20 @@ struct ReferenceMatchGameView: View {
 
     private func nextQuestion() {
         questionNumber += 1
-        selectedOption = nil
+        selectedIndex = nil
         generateQuestion()
     }
 
-    private func select(_ opt: String) {
-        guard selectedOption == nil else { return }
-        selectedOption = opt
+    private func select(_ idx: Int) {
+        guard selectedIndex == nil else { return }
+        selectedIndex = idx
         if currentIndex >= 0 && currentIndex < history.count {
-            history[currentIndex].selected = opt
+            history[currentIndex].selectedIndex = idx
         }
         answered += 1
-        if opt == correctOption { score += 1 }
+        if idx == correctIndex { score += 1 }
 
-        if opt == correctOption {
+        if idx == correctIndex {
             currentStreak += 1
             if currentStreak > currentBestStreak {
                 currentBestStreak = currentStreak
@@ -295,29 +298,50 @@ struct ReferenceMatchGameView: View {
         guard let book = filteredBooks.randomElement(),
               let chapter = book.chapters.randomElement(),
               let verse = chapter.verses.randomElement() else {
-            refBook = nil; refChapter = nil; refVerse = nil; options = []; correctOption = ""; return
+            refBook = nil; refChapter = nil; refVerse = nil; options = []; correctIndex = -1; return
         }
         refBook = book; refChapter = chapter; refVerse = verse
-        let correct = verse.text
-        correctOption = snippet(for: correct)
 
-        // Build distractors: pick from other verses (avoid same reference text duplicate)
-        var distractors: Set<String> = []
+        // Build correct option
+        let correctFull = verse.text
+        let correctSnippet = snippet(for: correctFull)
+        let correct = AnswerOption(
+            snippet: correctSnippet,
+            bookName: book.name,
+            chapterNumber: chapter.number,
+            verseNumber: verse.number,
+            verseText: correctFull
+        )
+
+        // Build distractors: pick from other verses (avoid duplicate snippets)
+        var distractors: [AnswerOption] = []
+        var snippetSet: Set<String> = [correct.snippet]
         var safety = 0
-        while distractors.count < 3 && safety < 2000 {
+        while distractors.count < 3 && safety < 3000 {
             safety += 1
-            guard let b = BibleData.books.randomElement(),
+            guard let b = filteredBooks.randomElement(),
                   let c = b.chapters.randomElement(),
                   let v = c.verses.randomElement() else { continue }
             let snip = snippet(for: v.text)
-            if snip != correctOption { distractors.insert(snip) }
+            if !snippetSet.contains(snip) {
+                snippetSet.insert(snip)
+                distractors.append(AnswerOption(
+                    snippet: snip,
+                    bookName: b.name,
+                    chapterNumber: c.number,
+                    verseNumber: v.number,
+                    verseText: v.text
+                ))
+            }
         }
-        var opts = Array(distractors)
-        opts.append(correctOption)
-        options = opts.shuffled()
+        var allOptions = distractors
+        allOptions.append(correct)
+        allOptions.shuffle()
+        options = allOptions
+        correctIndex = options.firstIndex(where: { $0.bookName == book.name && $0.chapterNumber == chapter.number && $0.verseNumber == verse.number }) ?? -1
 
         var newHistory = history
-        newHistory.append((book: book, chapter: chapter, verse: verse, options: options, correct: correctOption, selected: nil))
+        newHistory.append((book: book, chapter: chapter, verse: verse, options: options, correctIndex: correctIndex, selectedIndex: nil))
         history = newHistory
         currentIndex = history.count - 1
         loadFromHistory()
@@ -330,8 +354,8 @@ struct ReferenceMatchGameView: View {
         refChapter = h.chapter
         refVerse = h.verse
         options = h.options
-        correctOption = h.correct
-        selectedOption = h.selected
+        correctIndex = h.correctIndex
+        selectedIndex = h.selectedIndex
     }
 
     private func snippet(for text: String) -> String {
@@ -341,20 +365,20 @@ struct ReferenceMatchGameView: View {
         return String(trimmed[..<idx]) + "…"
     }
 
-    private func buttonBackground(for opt: String) -> Color {
-        guard let sel = selectedOption else { return Color(.secondarySystemBackground) }
-        if opt == correctOption {
-            return sel == opt ? Color.green.opacity(0.25) : Color.green.opacity(0.15)
-        } else if sel == opt {
+    private func buttonBackground(forIndex idx: Int) -> Color {
+        guard let sel = selectedIndex else { return Color(.secondarySystemBackground) }
+        if idx == correctIndex {
+            return sel == idx ? Color.green.opacity(0.25) : Color.green.opacity(0.15)
+        } else if sel == idx {
             return Color.red.opacity(0.25)
         }
         return Color(.secondarySystemBackground)
     }
 
-    private func buttonBorder(for opt: String) -> Color {
-        guard let sel = selectedOption else { return Color.black.opacity(0.12) }
-        if opt == correctOption { return .green }
-        if opt == sel { return .red }
+    private func buttonBorder(forIndex idx: Int) -> Color {
+        guard let sel = selectedIndex else { return Color.black.opacity(0.12) }
+        if idx == correctIndex { return .green }
+        if idx == sel { return .red }
         return Color.black.opacity(0.12)
     }
 
@@ -417,6 +441,28 @@ struct ReferenceMatchGameView: View {
                 chapterNumber: c.number,
                 verseNumber: v.number,
                 verseText: v.text
+            )
+            modelContext.insert(fav)
+            try? modelContext.save()
+        }
+    }
+
+    private func isFavorited(bookName: String, chapterNumber: Int, verseNumber: Int) -> Bool {
+        favorites.contains { fav in
+            fav.bookName == bookName && fav.chapterNumber == chapterNumber && fav.verseNumber == verseNumber
+        }
+    }
+
+    private func toggleFavorite(bookName: String, chapterNumber: Int, verseNumber: Int, verseText: String) {
+        if let existing = favorites.first(where: { $0.bookName == bookName && $0.chapterNumber == chapterNumber && $0.verseNumber == verseNumber }) {
+            modelContext.delete(existing)
+            try? modelContext.save()
+        } else {
+            let fav = Favorite(
+                bookName: bookName,
+                chapterNumber: chapterNumber,
+                verseNumber: verseNumber,
+                verseText: verseText
             )
             modelContext.insert(fav)
             try? modelContext.save()

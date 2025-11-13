@@ -9,7 +9,7 @@ struct HangmanGameView: View {
             configuration.label
                 .font(.headline)
                 .foregroundStyle(tint)
-                .padding(.vertical, 10)
+                .padding(.vertical, 7)
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -197,9 +197,6 @@ struct HangmanGameView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         // Row 1: Title and Category pill
                         HStack(alignment: .center, spacing: 12) {
-                            Text("Hangman")
-                                .font(.title)
-                                .fontWeight(.bold)
                             Spacer()
                             HStack(spacing: 8) {
                                 Image(systemName: iconName(for: currentRoundCategory))
@@ -249,36 +246,15 @@ struct HangmanGameView: View {
                         }
                     }
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        // Header labels
-                        HStack {
-                            Text("")
-                                .frame(width: 80, alignment: .leading)
-                            Text("Correct").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                            Text("Total").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                            Text("Streak").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                            Text("Percent").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        // Current session row
-                        HStack {
-                            Text("Current").font(.subheadline).frame(width: 80, alignment: .leading)
-                            Text("\(score)").frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(answered)").frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(currentBestStreak)")
-                                .foregroundStyle(currentStreak == currentBestStreak && currentBestStreak > 0 ? .green : .primary)
-                                .animation(.easeInOut(duration: 0.2), value: currentBestStreak)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            Text(percentString(correct: score, answered: answered)).frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        // All-time row
-                        HStack {
-                            Text("All-time").font(.subheadline).frame(width: 80, alignment: .leading)
-                            Text("\(allTimeCorrect)").frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(allTimeAnswered)").frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(allTimeBestStreak)").frame(maxWidth: .infinity, alignment: .leading)
-                            Text(percentString(correct: allTimeCorrect, answered: allTimeAnswered)).frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    }
+                    // Scoreboard (Quiz-style)
+                    GameScoreboardCard(
+                        currentCorrect: score,
+                        currentAnswered: answered,
+                        currentStreak: currentBestStreak,
+                        allTimeCorrect: allTimeCorrect,
+                        allTimeAnswered: allTimeAnswered,
+                        allTimeBestStreak: allTimeBestStreak
+                    )
 
                     // Word Display
                     Text(spacedDisplayWord())
@@ -310,7 +286,7 @@ struct HangmanGameView: View {
                             }) {
                                 Text(String(ch))
                                     .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 8)
+                                    .padding(.vertical, 6)
                             }
                             .disabled(guessedLetters.contains(ch) || roundOver)
                             .scaleEffect(tappedKey == ch ? 1.08 : 1.0)
@@ -348,6 +324,7 @@ struct HangmanGameView: View {
         }
         .fontDesign(appFontDesign)
         .navigationTitle("Hangman")
+        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             Task {
                 if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadNamesAsync() }

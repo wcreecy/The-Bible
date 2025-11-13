@@ -124,34 +124,15 @@ struct BeatTheClockGameView: View {
                     Spacer(minLength: 32)
                 } else {
                     VStack(alignment: .leading, spacing: 12) {
-                        // Stats
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                Text("")
-                                    .frame(width: 80, alignment: .leading)
-                                Text("Correct").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                                Text("Total").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                                Text("Streak").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                                Text("Percent").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                            HStack {
-                                Text("Current").font(.subheadline).frame(width: 80, alignment: .leading)
-                                Text("\(score)").frame(maxWidth: .infinity, alignment: .leading)
-                                Text("\(answered)").frame(maxWidth: .infinity, alignment: .leading)
-                                Text("\(currentBestStreak)")
-                                    .foregroundStyle(currentStreak == currentBestStreak && currentBestStreak > 0 ? .green : .primary)
-                                    .animation(.easeInOut(duration: 0.2), value: currentBestStreak)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text(percentString(correct: score, answered: answered)).frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                            HStack {
-                                Text("All-time").font(.subheadline).frame(width: 80, alignment: .leading)
-                                Text("\(allTimeCorrect)").frame(maxWidth: .infinity, alignment: .leading)
-                                Text("\(allTimeAnswered)").frame(maxWidth: .infinity, alignment: .leading)
-                                Text("\(allTimeBestStreak)").frame(maxWidth: .infinity, alignment: .leading)
-                                Text(percentString(correct: allTimeCorrect, answered: allTimeAnswered)).frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                        }
+                        // Scoreboard (Quiz-style)
+                        GameScoreboardCard(
+                            currentCorrect: score,
+                            currentAnswered: answered,
+                            currentStreak: currentBestStreak,
+                            allTimeCorrect: allTimeCorrect,
+                            allTimeAnswered: allTimeAnswered,
+                            allTimeBestStreak: allTimeBestStreak
+                        )
 
                         // Scoreboard
                         HStack {
@@ -198,21 +179,33 @@ struct BeatTheClockGameView: View {
                                     .focused($searchFieldFocused)
                                     .disabled(selectionLocked)
 
-                                Button(action: { submitCurrentEntry() }) {
-                                    Image(systemName: "paperplane.fill")
+                                Button(action: {
+                                    let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+                                    guard !trimmed.isEmpty else { return }
+                                    searchText = ""
+                                    // Refocus the field to quickly type a new answer
+                                    searchFieldFocused = true
+                                }) {
+                                    Image(systemName: "xmark.circle.fill")
                                         .font(.title3)
                                 }
                                 .buttonStyle(.plain)
-                                .foregroundStyle(canSubmit ? Color.accentColor : .secondary)
-                                .disabled(!canSubmit)
-                                .accessibilityLabel("Submit answer")
+                                .foregroundStyle(searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || selectionLocked ? Color.secondary : Color.red)
+                                .disabled(searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || selectionLocked)
+                                .accessibilityLabel("Clear input")
                             }
 
                             if !filteredBooks.isEmpty {
                                 // Suggestions list
                                 VStack(spacing: 6) {
                                     ForEach(filteredBooks.prefix(8), id: \.self) { name in
-                                        Button(action: { searchText = name; searchFieldFocused = true }) {
+                                        Button(action: {
+                                            // Reflect selection in the text field, then auto-submit
+                                            searchText = name
+                                            submit(bookName: name)
+                                            // Optionally dismiss keyboard focus after submission
+                                            searchFieldFocused = false
+                                        }) {
                                             HStack {
                                                 Text(name)
                                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -244,7 +237,7 @@ struct BeatTheClockGameView: View {
                                     .font(.system(size: 34, weight: .bold))
                             }
                             .buttonStyle(.plain)
-                            .foregroundStyle(canSubmit ? Color.green : .secondary)
+                            .foregroundStyle(canSubmit ? Color.green : Color.secondary)
                             .disabled(!canSubmit)
                             .accessibilityLabel("Submit answer")
                         }
@@ -259,6 +252,7 @@ struct BeatTheClockGameView: View {
             .padding()
         }
         .navigationTitle("Beat the Clock")
+        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             Task {
                 if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadNamesAsync() }
@@ -473,3 +467,4 @@ struct BeatTheClockGameView: View {
 #Preview {
     NavigationStack { BeatTheClockGameView() }
 }
+

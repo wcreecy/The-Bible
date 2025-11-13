@@ -14,6 +14,7 @@ struct JournalTabView: View {
 
     @State private var selectionMode: Bool = false
     @State private var selectedForDeletion: Set<JournalEntry> = []
+    @State private var searchText: String = ""
 
     @State private var previewRef: ScriptureRef? = nil
     @State private var previewContent: (title: String, verses: [Verse])? = nil
@@ -25,13 +26,66 @@ struct JournalTabView: View {
     @State private var refreshToken: String = ""
     @State private var splitVisibility: NavigationSplitViewVisibility = .all
 
+    @AppStorage("journalPinnedIDs") private var pinnedIDsRaw: String = ""
+
     private var filteredEntries: [JournalEntry] {
-        if selectedTags.isEmpty { return entries }
-        let target = Set(selectedTags.map { $0.lowercased() })
-        return entries.filter { entry in
-            let entryTags = Set(entry.tags.map { $0.lowercased() })
-            return target.isSubset(of: entryTags) // AND filter: must contain all selected tags
+        var list = entries
+        // Tag filter (AND across selected tags)
+        if !selectedTags.isEmpty {
+            let target = Set(selectedTags.map { $0.lowercased() })
+            list = list.filter { entry in
+                let entryTags = Set(entry.tags.map { $0.lowercased() })
+                return target.isSubset(of: entryTags)
+            }
         }
+        // Search filter across title, tags, and body
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !query.isEmpty {
+            list = list.filter { entry in
+                let titleMatch = entry.title.localizedCaseInsensitiveContains(query)
+                let tagsMatch = entry.tags.contains { $0.localizedCaseInsensitiveContains(query) }
+                let bodyMatch = entry.body.localizedCaseInsensitiveContains(query)
+                return titleMatch || tagsMatch || bodyMatch
+            }
+        }
+        // Sort: pinned first, then preserve original order based on the original entries array
+        let indexMap: [UUID: Int] = Dictionary(uniqueKeysWithValues: entries.enumerated().map { ($1.id, $0) })
+        let pins = readPinnedIDs()
+        return list.sorted { lhs, rhs in
+            let lp = pins.contains(lhs.id.uuidString)
+            let rp = pins.contains(rhs.id.uuidString)
+            if lp != rp { return lp && !rp }
+            let li = indexMap[lhs.id] ?? 0
+            let ri = indexMap[rhs.id] ?? 0
+            return li < ri
+        }
+    }
+
+    private func readPinnedIDs() -> Set<String> {
+        let parts = pinnedIDsRaw.split(separator: ",").map { String($0) }
+        return Set(parts)
+    }
+    private func writePinnedIDs(_ set: Set<String>) {
+        pinnedIDsRaw = set.joined(separator: ",")
+    }
+    private func isPinned(_ entry: JournalEntry) -> Bool {
+        let pins = readPinnedIDs()
+        return pins.contains(entry.id.uuidString)
+    }
+    private func togglePin(_ entry: JournalEntry) {
+        var pins = readPinnedIDs()
+        let key = entry.id.uuidString
+        if pins.contains(key) { pins.remove(key) } else { pins.insert(key) }
+        writePinnedIDs(pins)
+    }
+
+    private var headerCountText: String {
+        let queryActive = !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let tagsActive = !selectedTags.isEmpty
+        let filtered = queryActive || tagsActive
+        let count = filtered ? filteredEntries.count : entries.count
+        let noun = (count == 1) ? "entry" : "entries"
+        return "\(count) \(noun)" + (filtered ? " (filtered)" : "")
     }
 
     private func toggleTagFilter(_ tag: String) {
@@ -73,15 +127,18 @@ struct JournalTabView: View {
                             }
                         }
                         ToolbarItemGroup(placement: .topBarTrailing) {
-                            Button { showComposer = true } label: { Label("New Entry", systemImage: "square.and.pencil") }
                             if selectionMode {
                                 Button(role: .destructive) {
                                     deleteSelectedEntries()
                                 } label: {
                                     Label("Delete", systemImage: "trash")
                                 }
-                                Button("Cancel") { selectionMode = false; selectedForDeletion.removeAll() }
+                                Button("Cancel") {
+                                    selectionMode = false
+                                    selectedForDeletion.removeAll()
+                                }
                             } else {
+                                Button { showComposer = true } label: { Label("New Entry", systemImage: "square.and.pencil") }
                                 Button {
                                     selectionMode = true
                                 } label: {
@@ -90,6 +147,7 @@ struct JournalTabView: View {
                             }
                         }
                     }
+                    .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
                     .frame(minWidth: 280)
             } detail: {
                 if let e = selectedEntry {
@@ -159,20 +217,34 @@ struct JournalTabView: View {
         } else {
             // Compact width: simple list + push to detail
             NavigationStack {
-                List {
-                    ForEach(filteredEntries) { entry in
-                        NavigationLink(value: entry) { listRow(for: entry) }
-                            .tag(entry)
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                Button(role: .destructive) {
-                                    deleteEntry(entry)
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
+                List(selection: $selectedForDeletion) {
+                    Section {
+                        ForEach(filteredEntries) { entry in
+                            NavigationLink(destination: JournalDetailView(entry: entry)) { listRow(for: entry) }
+                                .tag(entry)
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        deleteEntry(entry)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
                                 }
-                            }
+                                .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                                    Button {
+                                        togglePin(entry)
+                                    } label: {
+                                        Label(isPinned(entry) ? "Unpin" : "Pin", systemImage: "pin.fill")
+                                    }
+                                    .tint(.yellow)
+                                }
+                                .listRowInsets(EdgeInsets(top: 2, leading: 12, bottom: 2, trailing: 12))
+                        }
+                    } header: {
+                        Text(headerCountText)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
-                .navigationTitle("Journal")
                 .toolbar {
                     if !selectedTags.isEmpty {
                         ToolbarItem(placement: .topBarLeading) {
@@ -180,15 +252,28 @@ struct JournalTabView: View {
                         }
                     }
                     ToolbarItemGroup(placement: .topBarTrailing) {
-                        Button { showComposer = true } label: { Label("New Entry", systemImage: "square.and.pencil") }
                         if selectionMode {
-                            Button(role: .destructive) { deleteSelectedEntries() } label: { Label("Delete", systemImage: "trash") }
-                            Button("Cancel") { selectionMode = false; selectedForDeletion.removeAll() }
+                            Button(role: .destructive) {
+                                deleteSelectedEntries()
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                            Button("Cancel") {
+                                selectionMode = false
+                                selectedForDeletion.removeAll()
+                            }
                         } else {
-                            Button { selectionMode = true } label: { Label("Select", systemImage: "checkmark.circle") }
+                            Button { showComposer = true } label: { Label("New Entry", systemImage: "square.and.pencil") }
+                            Button {
+                                selectionMode = true
+                            } label: {
+                                Label("Select", systemImage: "checkmark.circle")
+                            }
                         }
                     }
                 }
+                .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
+                .environment(\.editMode, .constant(selectionMode ? .active : .inactive))
                 .navigationDestination(for: JournalEntry.self) { entry in
                     JournalDetailView(entry: entry)
                 }
@@ -233,19 +318,34 @@ struct JournalTabView: View {
                     }
                 }
             }
-            ForEach(filteredEntries) { entry in
-                Button {
-                    selectedEntry = entry
-                    isEditing = false
-                } label: { listRow(for: entry) }
-                .tag(entry)
-                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                    Button(role: .destructive) {
-                        deleteEntry(entry)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
+            Section {
+                ForEach(filteredEntries) { entry in
+                    Button {
+                        selectedEntry = entry
+                        isEditing = false
+                    } label: { listRow(for: entry) }
+                    .tag(entry)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            deleteEntry(entry)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
                     }
+                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                        Button {
+                            togglePin(entry)
+                        } label: {
+                            Label(isPinned(entry) ? "Unpin" : "Pin", systemImage: "pin.fill")
+                        }
+                        .tint(.yellow)
+                    }
+                    .listRowInsets(EdgeInsets(top: 2, leading: 12, bottom: 2, trailing: 12))
                 }
+            } header: {
+                Text(headerCountText)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
         .environment(\.editMode, .constant(selectionMode ? .active : .inactive))
@@ -254,21 +354,28 @@ struct JournalTabView: View {
     @ViewBuilder
     private func listRow(for entry: JournalEntry) -> some View {
         let isPadSelected = (hSize == .regular) && (selectedEntry?.id == entry.id)
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 2) {
             // Content area that should be highlighted (between dividers)
-            VStack(alignment: .leading, spacing: 6) {
-                Text(entry.title.isEmpty ? "Untitled" : entry.title)
-                    .font(.headline)
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    if isPinned(entry) {
+                        Image(systemName: "pin.fill")
+                            .foregroundStyle(.yellow)
+                            .imageScale(.small)
+                    }
+                    Text(entry.title.isEmpty ? "Untitled" : entry.title)
+                }
+                .font(.subheadline)
                 if !entry.tags.isEmpty {
-                    HStack(spacing: 6) {
+                    HStack(spacing: 3) {
                         ForEach(entry.tags.prefix(4), id: \.self) { t in
                             let tint = TagColorStore.color(for: t) ?? .accentColor
                             let isSelected = selectedTags.contains(t.lowercased())
                             Button(action: { toggleTagFilter(t) }) {
                                 Text(t)
-                                    .font(.caption)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
+                                    .font(.caption2)
+                                    .padding(.horizontal, 5)
+                                    .padding(.vertical, 1)
                                     .background((isSelected ? tint : tint).opacity(isSelected ? 0.30 : 0.15), in: Capsule())
                                     .overlay(
                                         Capsule().stroke((isSelected ? tint : tint).opacity(isSelected ? 0.8 : 0.4), lineWidth: isSelected ? 2 : 1)
@@ -279,14 +386,21 @@ struct JournalTabView: View {
                         }
                     }
                 }
+                if !entry.body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text(entry.body)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .multilineTextAlignment(.leading)
+                }
                 if let ref = entry.verseRef {
                     Text(ref.display)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
             }
-            .padding(.vertical, 6)
-            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .padding(.horizontal, 6)
             .background(
                 isPadSelected ? AnyView(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -297,10 +411,10 @@ struct JournalTabView: View {
             // Divider remains outside the highlight to visually bound the selection
             if hSize == .regular {
                 Divider()
-                    .padding(.top, 6)
+                    .padding(.top, 3)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 1)
     }
 
     @ViewBuilder

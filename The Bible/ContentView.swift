@@ -117,44 +117,15 @@ struct ContentView: View {
                 .tag(1)
             }
             
-            NavigationStack(path: $coordinator.path) {
-                SearchView()
-                    .navigationDestination(for: Route.self) { route in
-                        switch route {
-                        case let .book(book):
-                            ChaptersView(book: book)
-                                .navigationBarTitleDisplayMode(.inline)
-                        case let .chapter(book, chapter):
-                            VersesView(book: book, chapter: chapter)
-                                .navigationBarTitleDisplayMode(.inline)
-                        case let .reader(book, chapter, startVerse):
-                            ReadingView(book: book, chapter: chapter, startVerse: startVerse)
-                                .navigationBarTitleDisplayMode(.inline)
-                                .font(.system(size: readerFontSize))
-                                .toolbar {
-                                    if isPad {
-                                        ToolbarItemGroup(placement: .topBarTrailing) {
-                                            Button {
-                                                readerFontSize = max(12, readerFontSize - 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.smaller")
-                                            }
-                                            .accessibilityLabel("Decrease font size")
-
-                                            Button {
-                                                readerFontSize = min(30, readerFontSize + 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.larger")
-                                            }
-                                            .accessibilityLabel("Increase font size")
-                                        }
-                                    }
-                                }
-                        }
-                    }
+            JournalTabView()
+                .tabItem { Label("Journal", systemImage: "book.closed") }
+                .tag(2)
+            
+            NavigationStack {
+                GamesView()
             }
-            .tabItem { Label("Search", systemImage: "magnifyingglass") }
-            .tag(2)
+            .tabItem { Label("Games", systemImage: "gamecontroller") }
+            .tag(3)
             
             NavigationStack(path: $coordinator.path) {
                 FavoritesView()
@@ -193,16 +164,45 @@ struct ContentView: View {
                     }
             }
             .tabItem { Label("Favorites", systemImage: "heart") }
-            .tag(3)
+            .tag(4)
             
-            JournalTabView()
-                .tabItem { Label("Journal", systemImage: "book.closed") }
-                .tag(4)
-            
-            NavigationStack {
-                GamesView()
+            NavigationStack(path: $coordinator.path) {
+                SearchView()
+                    .navigationDestination(for: Route.self) { route in
+                        switch route {
+                        case let .book(book):
+                            ChaptersView(book: book)
+                                .navigationBarTitleDisplayMode(.inline)
+                        case let .chapter(book, chapter):
+                            VersesView(book: book, chapter: chapter)
+                                .navigationBarTitleDisplayMode(.inline)
+                        case let .reader(book, chapter, startVerse):
+                            ReadingView(book: book, chapter: chapter, startVerse: startVerse)
+                                .navigationBarTitleDisplayMode(.inline)
+                                .font(.system(size: readerFontSize))
+                                .toolbar {
+                                    if isPad {
+                                        ToolbarItemGroup(placement: .topBarTrailing) {
+                                            Button {
+                                                readerFontSize = max(12, readerFontSize - 1)
+                                            } label: {
+                                                Image(systemName: "textformat.size.smaller")
+                                            }
+                                            .accessibilityLabel("Decrease font size")
+
+                                            Button {
+                                                readerFontSize = min(30, readerFontSize + 1)
+                                            } label: {
+                                                Image(systemName: "textformat.size.larger")
+                                            }
+                                            .accessibilityLabel("Increase font size")
+                                        }
+                                    }
+                                }
+                        }
+                    }
             }
-            .tabItem { Label("Games", systemImage: "gamecontroller") }
+            .tabItem { Label("Search", systemImage: "magnifyingglass") }
             .tag(5)
             
             NavigationStack(path: $coordinator.path) {

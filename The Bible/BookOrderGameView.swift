@@ -81,40 +81,15 @@ struct BookOrderGameView: View {
                 Spacer()
             } else {
                 VStack(spacing: 12) {
-                    // Scoreboard
-                    VStack(alignment: .leading, spacing: 8) {
-                        // Header labels
-                        HStack {
-                            Text("")
-                                .frame(width: 80, alignment: .leading)
-                            Text("Correct").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                            Text("Total").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                            Text("Streak").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                            Text("Percent").font(.caption).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        // Current session row
-                        HStack {
-                            Text("Current").font(.subheadline).frame(width: 80, alignment: .leading)
-                            Text("\(vm.score)").frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(vm.answered)").frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(vm.currentBestStreak)")
-                                .foregroundStyle(vm.currentStreak == vm.currentBestStreak && vm.currentBestStreak > 0 ? .green : .primary)
-                                .animation(.easeInOut(duration: 0.2), value: vm.currentBestStreak)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            Text(String(format: "%d%%", Int(round(currentPercent * 100)))).frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        // All-time row
-                        HStack {
-                            Text("All-time").font(.subheadline).frame(width: 80, alignment: .leading)
-                            Text("\(vm.allTimeCorrect)").frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(vm.allTimeAnswered)").frame(maxWidth: .infinity, alignment: .leading)
-                            Text("\(vm.allTimeBestStreak)").frame(maxWidth: .infinity, alignment: .leading)
-                            Text(String(format: "%d%%", Int(round(allTimePercent * 100)))).frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    }
-                    .padding(8)
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(8)
+                    // Scoreboard (Quiz-style)
+                    GameScoreboardCard(
+                        currentCorrect: vm.score,
+                        currentAnswered: vm.answered,
+                        currentStreak: vm.currentBestStreak,
+                        allTimeCorrect: vm.allTimeCorrect,
+                        allTimeAnswered: vm.allTimeAnswered,
+                        allTimeBestStreak: vm.allTimeBestStreak
+                    )
 
                     List {
                         ForEach(vm.currentItems, id: \.self) { item in
@@ -206,6 +181,7 @@ struct BookOrderGameView: View {
             }
         }
         .navigationTitle("Book Order")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if vm.started {
                 EditButton()

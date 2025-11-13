@@ -60,9 +60,11 @@ struct JournalEditorView: View {
                         ScrollView {
                             VStack(alignment: .leading, spacing: 16) {
                                 TextField("Title", text: $title)
+                                    .foregroundStyle(.primary)
                                     .textFieldStyle(.roundedBorder)
                                 TextField("sermon notes, prayer, study…", text: $tagsText)
                                     .textInputAutocapitalization(.never)
+                                    .foregroundStyle(.primary)
                                     .textFieldStyle(.roundedBorder)
                                 if !parsedTags.isEmpty {
                                     VStack(alignment: .leading, spacing: 8) {
@@ -223,6 +225,7 @@ struct JournalEditorView: View {
                     Form {
                         Section {
                             TextField("Title", text: $title)
+                                .foregroundStyle(.primary)
                             if let ref = verseRef {
                                 LabeledContent("Linked Verse", value: ref.display)
                             }
@@ -230,6 +233,7 @@ struct JournalEditorView: View {
                         Section("Tags") {
                             TextField("sermon notes, prayer, study…", text: $tagsText)
                                 .textInputAutocapitalization(.never)
+                                .foregroundStyle(.primary)
                             VStack(alignment: .leading, spacing: 8) {
                                 ForEach(parsedTags, id: \.self) { t in
                                     HStack(spacing: 8) {
