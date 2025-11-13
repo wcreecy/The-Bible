@@ -22,6 +22,8 @@ struct JournalTabView: View {
     @State private var editingTagsText: String = ""
 
     @State private var selectedTags: Set<String> = []
+    @State private var refreshToken: String = ""
+    @State private var splitVisibility: NavigationSplitViewVisibility = .all
 
     private var filteredEntries: [JournalEntry] {
         if selectedTags.isEmpty { return entries }
@@ -60,9 +62,10 @@ struct JournalTabView: View {
 
     var body: some View {
         if hSize == .regular {
-            NavigationSplitView(columnVisibility: .constant(.all)) {
+            NavigationSplitView(columnVisibility: $splitVisibility) {
                 sidebarList
-                    .navigationTitle("Journal")
+                    .id(refreshToken)
+                    .navigationTitle("Journal Entries")
                     .toolbar {
                         ToolbarItem(placement: .topBarLeading) {
                             if !selectedTags.isEmpty {
@@ -87,29 +90,44 @@ struct JournalTabView: View {
                             }
                         }
                     }
-            } content: {
+                    .frame(minWidth: 280)
+            } detail: {
                 if let e = selectedEntry {
                     if isEditing {
-                        editorPane(entry: e)
-                            .navigationTitle("Edit Entry")
-                            .toolbar {
-                                ToolbarItem(placement: .confirmationAction) {
-                                    Button("Done") {
-                                        // Persist edited tags from text to the model
-                                        let tags = editingTagsText
-                                            .split(separator: ",")
-                                            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-                                            .filter { !$0.isEmpty }
-                                        e.tags = tags
-                                        e.updatedAt = Date()
-                                        isEditing = false
-                                        try? ctx.save()
-                                    }
+                        HStack(spacing: 0) {
+                            // Middle: Editor (widest)
+                            editorPane(entry: e, showInlinePreview: false)
+                                .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                                .layoutPriority(1)
+
+                            Divider()
+
+                            // Right: Live Preview (updates live as entry changes)
+                            ScrollView { previewPane(entry: e) }
+                                .frame(minWidth: 320, idealWidth: 360, maxWidth: 420, maxHeight: .infinity, alignment: .topLeading)
+                        }
+                        .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("Done") {
+                                    // Persist edited tags from text to the model
+                                    let tags = editingTagsText
+                                        .split(separator: ",")
+                                        .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                                        .filter { !$0.isEmpty }
+                                    e.tags = tags
+                                    e.updatedAt = Date()
+                                    isEditing = false
+                                    try? ctx.save()
                                 }
                             }
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Cancel") { isEditing = false }
+                            }
+                        }
                     } else {
                         readOnlyPane(entry: e)
-                            .navigationTitle("Entry")
+                            .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
                             .toolbar {
                                 ToolbarItem(placement: .primaryAction) {
                                     Button("Edit") {
@@ -122,12 +140,19 @@ struct JournalTabView: View {
                 } else {
                     ContentUnavailableView("Select an entry", systemImage: "book.closed")
                 }
-            } detail: {
-                if let e = selectedEntry, isEditing {
-                    previewPane(entry: e)
-                        .navigationTitle("Preview")
+            }
+            .navigationSplitViewStyle(.balanced)
+            .onAppear { splitVisibility = .all }
+            .onChange(of: hSize) { _, _ in splitVisibility = .all }
+            .onReceive(NotificationCenter.default.publisher(for: Notification.Name("JournalEntryCreated"))) { note in
+                if let id = note.userInfo?["id"] as? String {
+                    // Force a lightweight refresh; reselect the new entry if present
+                    refreshToken = id
+                    if let created = entries.first(where: { $0.id.uuidString == id }) {
+                        selectedEntry = created
+                    }
                 } else {
-                    EmptyView()
+                    refreshToken = UUID().uuidString
                 }
             }
             .sheet(isPresented: $showComposer) { JournalEditorView(verseRef: nil, showTagColors: false) }
@@ -224,37 +249,56 @@ struct JournalTabView: View {
                 }
             }
         }
+        .environment(\.editMode, .constant(selectionMode ? .active : .inactive))
     }
 
     @ViewBuilder
     private func listRow(for entry: JournalEntry) -> some View {
+        let isPadSelected = (hSize == .regular) && (selectedEntry?.id == entry.id)
         VStack(alignment: .leading, spacing: 6) {
-            Text(entry.title.isEmpty ? "Untitled" : entry.title)
-                .font(.headline)
-            if !entry.tags.isEmpty {
-                HStack(spacing: 6) {
-                    ForEach(entry.tags.prefix(4), id: \.self) { t in
-                        let tint = TagColorStore.color(for: t) ?? .accentColor
-                        let isSelected = selectedTags.contains(t.lowercased())
-                        Button(action: { toggleTagFilter(t) }) {
-                            Text(t)
-                                .font(.caption)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background((isSelected ? tint : tint).opacity(isSelected ? 0.30 : 0.15), in: Capsule())
-                                .overlay(
-                                    Capsule().stroke((isSelected ? tint : tint).opacity(isSelected ? 0.8 : 0.4), lineWidth: isSelected ? 2 : 1)
-                                )
-                                .foregroundStyle(tint)
+            // Content area that should be highlighted (between dividers)
+            VStack(alignment: .leading, spacing: 6) {
+                Text(entry.title.isEmpty ? "Untitled" : entry.title)
+                    .font(.headline)
+                if !entry.tags.isEmpty {
+                    HStack(spacing: 6) {
+                        ForEach(entry.tags.prefix(4), id: \.self) { t in
+                            let tint = TagColorStore.color(for: t) ?? .accentColor
+                            let isSelected = selectedTags.contains(t.lowercased())
+                            Button(action: { toggleTagFilter(t) }) {
+                                Text(t)
+                                    .font(.caption)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background((isSelected ? tint : tint).opacity(isSelected ? 0.30 : 0.15), in: Capsule())
+                                    .overlay(
+                                        Capsule().stroke((isSelected ? tint : tint).opacity(isSelected ? 0.8 : 0.4), lineWidth: isSelected ? 2 : 1)
+                                    )
+                                    .foregroundStyle(tint)
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
                 }
+                if let ref = entry.verseRef {
+                    Text(ref.display)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
-            if let ref = entry.verseRef {
-                Text(ref.display)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+            .padding(.vertical, 6)
+            .padding(.horizontal, 8)
+            .background(
+                isPadSelected ? AnyView(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(Color(.tertiarySystemFill))
+                ) : AnyView(EmptyView())
+            )
+
+            // Divider remains outside the highlight to visually bound the selection
+            if hSize == .regular {
+                Divider()
+                    .padding(.top, 6)
             }
         }
         .padding(.vertical, 4)
@@ -359,7 +403,7 @@ struct JournalTabView: View {
     }
 
     @ViewBuilder
-    private func editorPane(entry: JournalEntry) -> some View {
+    private func editorPane(entry: JournalEntry, showInlinePreview: Bool = true) -> some View {
         let linkedBody = BibleReferenceLinker.linkify(entry.body)
         var linkOverlayBody: AttributedString {
             var s = linkedBody
@@ -409,13 +453,15 @@ struct JournalTabView: View {
                             .padding(.top, 8)
                             .padding(.leading, 5)
                     }
-                    // Inline smart link overlay (non-interactive)
-                    Text(linkOverlayBody)
-                        .font(.body)
-                        .frame(maxWidth: .infinity, minHeight: 240, alignment: .topLeading)
-                        .padding(.top, 8)
-                        .padding(.leading, 5)
-                        .allowsHitTesting(false)
+                    if showInlinePreview {
+                        // Inline smart link overlay (non-interactive)
+                        Text(linkOverlayBody)
+                            .font(.body)
+                            .frame(maxWidth: .infinity, minHeight: 240, alignment: .topLeading)
+                            .padding(.top, 8)
+                            .padding(.leading, 5)
+                            .allowsHitTesting(false)
+                    }
                     // Actual editor
                     TextEditor(text: Binding(get: { entry.body }, set: { entry.body = $0; entry.updatedAt = Date(); try? ctx.save() }))
                         .frame(minHeight: 240)
@@ -424,7 +470,8 @@ struct JournalTabView: View {
                                 .stroke(Color.gray.opacity(0.25), lineWidth: 1)
                         )
                 }
-
+            }
+            if showInlinePreview {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Live Preview")
                         .font(.caption)

@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var coordinator = NavigationCoordinator()
     @State private var selectedTab: Int = 0
+    @AppStorage("readerFontSize") private var readerFontSize: Double = 17
     
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
     @AppStorage("fontSizePreference") private var fontSizePreferenceRaw: String = FontSizePreference.system.rawValue
@@ -45,6 +46,26 @@ struct ContentView: View {
                         case let .reader(book, chapter, startVerse):
                             ReadingView(book: book, chapter: chapter, startVerse: startVerse)
                                 .navigationBarTitleDisplayMode(.inline)
+                                .font(.system(size: readerFontSize))
+                                .toolbar {
+                                    if isPad {
+                                        ToolbarItemGroup(placement: .topBarTrailing) {
+                                            Button {
+                                                readerFontSize = max(12, readerFontSize - 1)
+                                            } label: {
+                                                Image(systemName: "textformat.size.smaller")
+                                            }
+                                            .accessibilityLabel("Decrease font size")
+
+                                            Button {
+                                                readerFontSize = min(30, readerFontSize + 1)
+                                            } label: {
+                                                Image(systemName: "textformat.size.larger")
+                                            }
+                                            .accessibilityLabel("Increase font size")
+                                        }
+                                    }
+                                }
                         }
                     }
             }
@@ -69,6 +90,26 @@ struct ContentView: View {
                             case let .reader(book, chapter, startVerse):
                                 ReadingView(book: book, chapter: chapter, startVerse: startVerse)
                                     .navigationBarTitleDisplayMode(.inline)
+                                    .font(.system(size: readerFontSize))
+                                    .toolbar {
+                                        if isPad {
+                                            ToolbarItemGroup(placement: .topBarTrailing) {
+                                                Button {
+                                                    readerFontSize = max(12, readerFontSize - 1)
+                                                } label: {
+                                                    Image(systemName: "textformat.size.smaller")
+                                                }
+                                                .accessibilityLabel("Decrease font size")
+
+                                                Button {
+                                                    readerFontSize = min(30, readerFontSize + 1)
+                                                } label: {
+                                                    Image(systemName: "textformat.size.larger")
+                                                }
+                                                .accessibilityLabel("Increase font size")
+                                            }
+                                        }
+                                    }
                             }
                         }
                 }
@@ -89,6 +130,26 @@ struct ContentView: View {
                         case let .reader(book, chapter, startVerse):
                             ReadingView(book: book, chapter: chapter, startVerse: startVerse)
                                 .navigationBarTitleDisplayMode(.inline)
+                                .font(.system(size: readerFontSize))
+                                .toolbar {
+                                    if isPad {
+                                        ToolbarItemGroup(placement: .topBarTrailing) {
+                                            Button {
+                                                readerFontSize = max(12, readerFontSize - 1)
+                                            } label: {
+                                                Image(systemName: "textformat.size.smaller")
+                                            }
+                                            .accessibilityLabel("Decrease font size")
+
+                                            Button {
+                                                readerFontSize = min(30, readerFontSize + 1)
+                                            } label: {
+                                                Image(systemName: "textformat.size.larger")
+                                            }
+                                            .accessibilityLabel("Increase font size")
+                                        }
+                                    }
+                                }
                         }
                     }
             }
@@ -108,6 +169,26 @@ struct ContentView: View {
                         case let .reader(book, chapter, startVerse):
                             ReadingView(book: book, chapter: chapter, startVerse: startVerse)
                                 .navigationBarTitleDisplayMode(.inline)
+                                .font(.system(size: readerFontSize))
+                                .toolbar {
+                                    if isPad {
+                                        ToolbarItemGroup(placement: .topBarTrailing) {
+                                            Button {
+                                                readerFontSize = max(12, readerFontSize - 1)
+                                            } label: {
+                                                Image(systemName: "textformat.size.smaller")
+                                            }
+                                            .accessibilityLabel("Decrease font size")
+
+                                            Button {
+                                                readerFontSize = min(30, readerFontSize + 1)
+                                            } label: {
+                                                Image(systemName: "textformat.size.larger")
+                                            }
+                                            .accessibilityLabel("Increase font size")
+                                        }
+                                    }
+                                }
                         }
                     }
             }
@@ -137,6 +218,26 @@ struct ContentView: View {
                         case let .reader(book, chapter, startVerse):
                             ReadingView(book: book, chapter: chapter, startVerse: startVerse)
                                 .navigationBarTitleDisplayMode(.inline)
+                                .font(.system(size: readerFontSize))
+                                .toolbar {
+                                    if isPad {
+                                        ToolbarItemGroup(placement: .topBarTrailing) {
+                                            Button {
+                                                readerFontSize = max(12, readerFontSize - 1)
+                                            } label: {
+                                                Image(systemName: "textformat.size.smaller")
+                                            }
+                                            .accessibilityLabel("Decrease font size")
+
+                                            Button {
+                                                readerFontSize = min(30, readerFontSize + 1)
+                                            } label: {
+                                                Image(systemName: "textformat.size.larger")
+                                            }
+                                            .accessibilityLabel("Increase font size")
+                                        }
+                                    }
+                                }
                         }
                     }
             }

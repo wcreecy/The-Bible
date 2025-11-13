@@ -378,6 +378,8 @@ struct JournalEditorView: View {
         ctx.insert(entry)
         do {
             try ctx.save()
+            // Notify listeners (e.g., JournalTabView) that a new entry was created
+            NotificationCenter.default.post(name: Notification.Name("JournalEntryCreated"), object: nil, userInfo: ["id": entry.id.uuidString])
             dismiss()
         } catch {
             saveErrorMessage = error.localizedDescription
