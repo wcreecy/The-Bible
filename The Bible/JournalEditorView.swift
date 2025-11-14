@@ -29,21 +29,34 @@ struct JournalEditorView: View {
     @State private var showBookSuggestions: Bool = false
     @State private var bookQuery: String = ""
 
+    @State private var textSelectionRange: NSRange = NSRange(location: 0, length: 0)
+
     private func updateBookSuggestions() {
-        // Look at the last token (since last whitespace/newline)
-        let trimmed = content
-        // Find the range of the last token
-        if let range = trimmed.range(of: "\\S+$", options: .regularExpression) {
-            let token = String(trimmed[range])
-            if token.hasPrefix("#") {
-                let q = String(token.dropFirst(1)).trimmingCharacters(in: .whitespaces)
-                bookQuery = q
-                showBookSuggestions = true
-                return
-            }
+        let text = content
+        // Find the last occurrence of '#'
+        guard let hashIdx = text.lastIndex(of: "#") else {
+            showBookSuggestions = false
+            bookQuery = ""
+            return
         }
-        showBookSuggestions = false
-        bookQuery = ""
+        let afterHash = text.index(after: hashIdx)
+        // Build the query from after '#' until a disallowed character (whitespace/newline or non-letter/non-period)
+        var idx = afterHash
+        let allowed: CharacterSet = CharacterSet.letters.union(CharacterSet(charactersIn: "."))
+        while idx < text.endIndex {
+            let ch = text[idx]
+            // Stop at whitespace/newline
+            if ch.isWhitespace || ch == "\n" { break }
+            // Stop if not allowed (e.g., punctuation, digits, symbols)
+            if let scalar = ch.unicodeScalars.first, !allowed.contains(scalar) { break }
+            idx = text.index(after: idx)
+        }
+        let rawQuery = String(text[afterHash..<idx])
+        // Normalize spacing and trim punctuation just in case
+        let cleaned = rawQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        bookQuery = cleaned
+        // Always show suggestions when a '#' exists unless user explicitly dismisses (handled by UI)
+        showBookSuggestions = true
     }
 
     private var filteredBooksForQuery: [String] {
@@ -58,11 +71,33 @@ struct JournalEditorView: View {
     }
 
     private func replaceCurrentTrigger(with bookName: String) {
-        var text = content
-        if let range = text.range(of: "\\S+$", options: .regularExpression) {
-            text.replaceSubrange(range, with: bookName + " ")
-            content = text
+        // Work on a mutable copy
+        var t = content
+        // Find last '#'
+        guard let hashRange = t.range(of: "#", options: .backwards) else {
+            showBookSuggestions = false
+            bookQuery = ""
+            return
         }
+        let tokenStart = hashRange.lowerBound
+        // Find end of token (next whitespace/newline)
+        var tokenEnd = t.endIndex
+        var idx = t.index(after: tokenStart)
+        while idx < t.endIndex {
+            let ch = t[idx]
+            if ch == "\n" || ch.isWhitespace { break }
+            idx = t.index(after: idx)
+        }
+        tokenEnd = idx
+        let insertion = "\(bookName) "
+        // Compute caret position in UTF16 based on original text
+        let utf16BeforeToken = t[..<tokenStart].utf16.count
+        // Perform replacement
+        t.replaceSubrange(tokenStart..<tokenEnd, with: insertion)
+        content = t
+        // New caret position is start of token + insertion length
+        let caretLocation = utf16BeforeToken + insertion.utf16.count
+        textSelectionRange = NSRange(location: caretLocation, length: 0)
         showBookSuggestions = false
         bookQuery = ""
     }
@@ -173,13 +208,14 @@ struct JournalEditorView: View {
                                             .padding(.top, 8)
                                             .padding(.leading, 5)
                                     }
-                                    TextEditor(text: $content)
-                                        .frame(minHeight: 400)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                                .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                                        )
-                                        .onChange(of: content) { _, _ in updateBookSuggestions() }
+                                    CursorTextView(text: $content, selection: $textSelectionRange, onChange: { _ in
+                                        updateBookSuggestions()
+                                    })
+                                    .frame(minHeight: 400)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                            .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                                    )
                                 }
                                 if showBookSuggestions {
                                     Divider()
@@ -406,13 +442,14 @@ struct JournalEditorView: View {
                                         .padding(.top, 8)
                                         .padding(.leading, 5)
                                 }
-                                TextEditor(text: $content)
-                                    .frame(minHeight: 200)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                            .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                                    )
-                                    .onChange(of: content) { _, _ in updateBookSuggestions() }
+                                CursorTextView(text: $content, selection: $textSelectionRange, onChange: { _ in
+                                    updateBookSuggestions()
+                                })
+                                .frame(minHeight: 200)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                        .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                                )
                             }
                             if showBookSuggestions {
                                 Divider()
@@ -541,6 +578,7 @@ struct JournalEditorView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") {
+                        showBookSuggestions = false
                         if let onClose { onClose() } else { dismiss() }
                     }
                 }
@@ -617,3 +655,49 @@ struct JournalEditorView: View {
     }
 }
 
+private struct CursorTextView: UIViewRepresentable {
+    @Binding var text: String
+    @Binding var selection: NSRange
+    var onChange: ((String) -> Void)? = nil
+
+    func makeUIView(context: Context) -> UITextView {
+        let tv = UITextView()
+        tv.isScrollEnabled = true
+        tv.backgroundColor = .clear
+        tv.text = text
+        tv.delegate = context.coordinator
+        tv.autocorrectionType = .no
+        tv.autocapitalizationType = .none
+        tv.smartDashesType = .no
+        tv.smartQuotesType = .no
+        tv.smartInsertDeleteType = .no
+        tv.font = UIFont.preferredFont(forTextStyle: .body)
+        return tv
+    }
+
+    func updateUIView(_ uiView: UITextView, context: Context) {
+        if uiView.text != text {
+            uiView.text = text
+        }
+        if uiView.selectedRange != selection {
+            // Clamp selection to valid range
+            let maxLoc = (uiView.text as NSString).length
+            let loc = min(selection.location, maxLoc)
+            uiView.selectedRange = NSRange(location: loc, length: selection.length)
+        }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
+
+    final class Coordinator: NSObject, UITextViewDelegate {
+        var parent: CursorTextView
+        init(parent: CursorTextView) { self.parent = parent }
+        func textViewDidChange(_ textView: UITextView) {
+            parent.text = textView.text
+            parent.onChange?(textView.text)
+        }
+        func textViewDidChangeSelection(_ textView: UITextView) {
+            parent.selection = textView.selectedRange
+        }
+    }
+}

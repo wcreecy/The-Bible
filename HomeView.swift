@@ -712,7 +712,6 @@ struct HomeView: View {
                     }
                 }
                 .padding(.horizontal, 16)
-                .frame(height: isPad ? iPadCardHeight : nil)
             }
         }
     }
