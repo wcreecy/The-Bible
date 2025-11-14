@@ -10,6 +10,7 @@ struct JournalEditorView: View {
     // If invoked from a verse, we’ll seed the title smartly
     let verseRef: VerseRef?
     let showTagColors: Bool
+    let onClose: (() -> Void)?
 
     @State private var title: String = ""
     @State private var content: String = ""      // <-- renamed from `body`
@@ -18,6 +19,53 @@ struct JournalEditorView: View {
     @State private var previewRef: ScriptureRef? = nil
     @State private var previewContent: (title: String, verses: [Verse])? = nil
     @State private var showPreview: Bool = false
+
+    @State private var showSaveError = false
+    @State private var saveErrorMessage: String = ""
+    @State private var showCopyToast: Bool = false
+    @State private var editingEntry: JournalEntry? = nil
+
+    // MARK: - Smart Link Composer (book suggestions with # trigger)
+    @State private var showBookSuggestions: Bool = false
+    @State private var bookQuery: String = ""
+
+    private func updateBookSuggestions() {
+        // Look at the last token (since last whitespace/newline)
+        let trimmed = content
+        // Find the range of the last token
+        if let range = trimmed.range(of: "\\S+$", options: .regularExpression) {
+            let token = String(trimmed[range])
+            if token.hasPrefix("#") {
+                let q = String(token.dropFirst(1)).trimmingCharacters(in: .whitespaces)
+                bookQuery = q
+                showBookSuggestions = true
+                return
+            }
+        }
+        showBookSuggestions = false
+        bookQuery = ""
+    }
+
+    private var filteredBooksForQuery: [String] {
+        let names = BibleData.books.map { $0.name }
+        let q = bookQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        if q.isEmpty { return Array(names.prefix(10)) }
+        // Prefer prefix matches first, then contains
+        let prefix = names.filter { $0.range(of: q, options: [.caseInsensitive, .diacriticInsensitive])?.lowerBound == $0.startIndex }
+        if !prefix.isEmpty { return Array(prefix.prefix(10)) }
+        let contains = names.filter { $0.range(of: q, options: [.caseInsensitive, .diacriticInsensitive]) != nil }
+        return Array(contains.prefix(10))
+    }
+
+    private func replaceCurrentTrigger(with bookName: String) {
+        var text = content
+        if let range = text.range(of: "\\S+$", options: .regularExpression) {
+            text.replaceSubrange(range, with: bookName + " ")
+            content = text
+        }
+        showBookSuggestions = false
+        bookQuery = ""
+    }
 
     // MARK: - Stats & Links Helpers
 
@@ -72,18 +120,14 @@ struct JournalEditorView: View {
         )
     }
 
-    @State private var showSaveError = false
-    @State private var saveErrorMessage: String = ""
-    @State private var showCopyToast: Bool = false
-    @State private var editingEntry: JournalEntry? = nil
-
-    init(verseRef: VerseRef?, initialBody: String? = nil, showTagColors: Bool = false, editingEntry: JournalEntry? = nil) {
+    init(verseRef: VerseRef?, initialBody: String? = nil, showTagColors: Bool = false, editingEntry: JournalEntry? = nil, onClose: (() -> Void)? = nil) {
         self.verseRef = verseRef
         self.showTagColors = showTagColors
         _title = State(initialValue: editingEntry?.title ?? verseRef?.display ?? "")
         _content = State(initialValue: editingEntry?.body ?? initialBody ?? "")
         _tagsText = State(initialValue: editingEntry?.tags.joined(separator: ", ") ?? "")
         self._editingEntry = State(initialValue: editingEntry)
+        self.onClose = onClose
     }
 
     var body: some View {
@@ -135,6 +179,30 @@ struct JournalEditorView: View {
                                             RoundedRectangle(cornerRadius: 8, style: .continuous)
                                                 .stroke(Color.gray.opacity(0.25), lineWidth: 1)
                                         )
+                                        .onChange(of: content) { _, _ in updateBookSuggestions() }
+                                }
+                                if showBookSuggestions {
+                                    Divider()
+                                        .padding(.top, 6)
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        Text("Bible Books")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                        ForEach(filteredBooksForQuery, id: \.self) { name in
+                                            Button(action: { replaceCurrentTrigger(with: name) }) {
+                                                Text(name)
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                                    .padding(.vertical, 6)
+                                                    .padding(.horizontal, 8)
+                                                    .background(
+                                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                                            .fill(Color(.secondarySystemBackground))
+                                                    )
+                                            }
+                                            .buttonStyle(.plain)
+                                        }
+                                    }
+                                    .padding(.top, 6)
                                 }
                             }
                             .padding(20)
@@ -168,10 +236,24 @@ struct JournalEditorView: View {
                                         ForEach(Array(refs.enumerated()), id: \.offset) { _, ref in
                                             HStack(spacing: 8) {
                                                 Button(action: {
-                                                    if let content = BibleReferenceLinker.loadVerses(for: ref) {
-                                                        previewRef = ref
-                                                        previewContent = content
-                                                        withAnimation(.spring()) { showPreview = true }
+                                                    if hSize == .regular {
+                                                        // Request 3rd-column scripture preview via NotificationCenter
+                                                        NotificationCenter.default.post(
+                                                            name: Notification.Name("OpenScripturePreview"),
+                                                            object: nil,
+                                                            userInfo: [
+                                                                "book": ref.bookName,
+                                                                "chapter": ref.chapter,
+                                                                "start": ref.startVerse,
+                                                                "end": ref.endVerse as Any
+                                                            ]
+                                                        )
+                                                    } else {
+                                                        if let content = BibleReferenceLinker.loadVerses(for: ref) {
+                                                            previewRef = ref
+                                                            previewContent = content
+                                                            withAnimation(.spring()) { showPreview = true }
+                                                        }
                                                     }
                                                 }) {
                                                     Text(displayString(for: ref))
@@ -191,7 +273,7 @@ struct JournalEditorView: View {
                                     }
                                 }
 
-                                if showPreview, let content = previewContent {
+                                if hSize != .regular, showPreview, let content = previewContent {
                                     VStack(alignment: .leading, spacing: 8) {
                                         HStack(spacing: 8) {
                                             Text(content.title)
@@ -319,7 +401,7 @@ struct JournalEditorView: View {
                         Section("Body") {
                             ZStack(alignment: .topLeading) {
                                 if content.isEmpty {
-                                    Text("Write your thoughts here…")
+                                    Text("Write your thoughts here.  To create smart links, type # in front of the book name, e.g. #Romans 1:2-3")
                                         .foregroundStyle(.secondary)
                                         .padding(.top, 8)
                                         .padding(.leading, 5)
@@ -330,6 +412,30 @@ struct JournalEditorView: View {
                                         RoundedRectangle(cornerRadius: 8, style: .continuous)
                                             .stroke(Color.gray.opacity(0.25), lineWidth: 1)
                                     )
+                                    .onChange(of: content) { _, _ in updateBookSuggestions() }
+                            }
+                            if showBookSuggestions {
+                                Divider()
+                                    .padding(.top, 6)
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("Bible Books")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    ForEach(filteredBooksForQuery, id: \.self) { name in
+                                        Button(action: { replaceCurrentTrigger(with: name) }) {
+                                            Text(name)
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                                .padding(.vertical, 6)
+                                                .padding(.horizontal, 8)
+                                                .background(
+                                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                                        .fill(Color(.secondarySystemBackground))
+                                                )
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                }
+                                .padding(.top, 6)
                             }
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("Entry Stats & Links")
@@ -434,7 +540,9 @@ struct JournalEditorView: View {
             .navigationTitle(editingEntry == nil ? "New Entry" : "Edit Entry")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") {
+                        if let onClose { onClose() } else { dismiss() }
+                    }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: save) {
@@ -449,6 +557,7 @@ struct JournalEditorView: View {
                 Text(saveErrorMessage)
             }
             .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
+            .onAppear { updateBookSuggestions() }
         }
     }
 
@@ -479,7 +588,7 @@ struct JournalEditorView: View {
             do {
                 try ctx.save()
                 NotificationCenter.default.post(name: Notification.Name("JournalEntryUpdated"), object: nil, userInfo: ["id": entry.id.uuidString])
-                dismiss()
+                if let onClose { onClose() } else { dismiss() }
             } catch {
                 saveErrorMessage = error.localizedDescription
                 showSaveError = true
@@ -500,7 +609,7 @@ struct JournalEditorView: View {
         do {
             try ctx.save()
             NotificationCenter.default.post(name: Notification.Name("JournalEntryCreated"), object: nil, userInfo: ["id": entry.id.uuidString])
-            dismiss()
+            if let onClose { onClose() } else { dismiss() }
         } catch {
             saveErrorMessage = error.localizedDescription
             showSaveError = true

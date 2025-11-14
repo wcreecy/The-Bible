@@ -174,7 +174,6 @@ struct HomeView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.top)
         .frame(maxWidth: 700)
         .padding(.horizontal, 16)
         .frame(maxWidth: .infinity, alignment: .center)
@@ -787,7 +786,7 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView {
-            LazyVGrid(columns: gridColumns, spacing: 16) {
+            VStack(spacing: 16) {
                 // Title Card
                 titleCard
 
@@ -1370,7 +1369,10 @@ private struct HeroCard<Content: View>: View {
     let trailingAccessory: AnyView?
     let titleFont: Font
     let titleFontWeight: Font.Weight
+    let centerHeader: Bool
     @ViewBuilder var content: Content
+
+    @Environment(\.colorScheme) private var colorScheme
 
     init(
         title: String,
@@ -1382,6 +1384,7 @@ private struct HeroCard<Content: View>: View {
         trailingAccessory: AnyView? = nil,
         titleFont: Font = .headline,
         titleFontWeight: Font.Weight = .bold,
+        centerHeader: Bool = false,
         @ViewBuilder content: () -> Content
     ) {
         self.title = title
@@ -1393,31 +1396,57 @@ private struct HeroCard<Content: View>: View {
         self.trailingAccessory = trailingAccessory
         self.titleFont = titleFont
         self.titleFontWeight = titleFontWeight
+        self.centerHeader = centerHeader
         self.content = content()
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             if !(title.isEmpty && subtitle == nil && icon == nil) {
-                HStack(alignment: .firstTextBaseline, spacing: 10) {
-                    if let icon {
-                        Image(systemName: icon)
-                            .foregroundStyle(tint)
-                            .font(titleFont)
-                    }
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(title)
-                            .font(titleFont)
-                            .fontWeight(titleFontWeight)
+                if centerHeader {
+                    VStack(alignment: .center, spacing: 6) {
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                            if let icon {
+                                Image(systemName: icon)
+                                    .foregroundStyle(tint)
+                                    .font(titleFont)
+                            }
+                            Text(title)
+                                .font(titleFont)
+                                .fontWeight(titleFontWeight)
+                                .multilineTextAlignment(.center)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .center)
+
                         if let subtitle {
                             Text(subtitle)
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
                         }
                     }
-                    Spacer()
-                    if let trailingAccessory {
-                        trailingAccessory
+                    .frame(maxWidth: .infinity, alignment: .center)
+                } else {
+                    HStack(alignment: .firstTextBaseline, spacing: 10) {
+                        if let icon {
+                            Image(systemName: icon)
+                                .foregroundStyle(tint)
+                                .font(titleFont)
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(title)
+                                .font(titleFont)
+                                .fontWeight(titleFontWeight)
+                            if let subtitle {
+                                Text(subtitle)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        Spacer()
+                        if let trailingAccessory {
+                            trailingAccessory
+                        }
                     }
                 }
             }
@@ -1430,14 +1459,19 @@ private struct HeroCard<Content: View>: View {
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
                         .fill(backgroundColor)
                 } else {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(
-                            LinearGradient(
-                                colors: [Color(.secondarySystemBackground), Color(.systemBackground)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
+                    if colorScheme == .dark {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(Color(.secondarySystemBackground))
+                    } else {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color(.secondarySystemBackground), Color(.systemBackground)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
                             )
-                        )
+                    }
                 }
             }
         )
@@ -1448,7 +1482,7 @@ private struct HeroCard<Content: View>: View {
                         .strokeBorder(strokeColor, lineWidth: 1)
                 } else {
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .strokeBorder(.black.opacity(0.06), lineWidth: 1)
+                        .strokeBorder((colorScheme == .dark ? Color.white.opacity(0.15) : Color.black.opacity(0.06)), lineWidth: 1)
                 }
             }
         )
@@ -1513,3 +1547,4 @@ private struct PrayerStudyTimerSetupView: View {
     }
 }
 // Note: HealthKit logging is handled in HomeView, no changes needed here.
+

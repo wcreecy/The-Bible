@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import UIKit
 
 struct SettingsView: View {
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
