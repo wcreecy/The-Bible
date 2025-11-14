@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct JournalTabView: View {
     @Environment(\.modelContext) private var ctx
@@ -20,6 +21,8 @@ struct JournalTabView: View {
     @State private var showPreview: Bool = false
 
     @State private var editingTagsText: String = ""
+    @State private var editingTitleText: String = ""
+    @State private var editingBodyText: String = ""
 
     @State private var selectedTags: Set<String> = []
     @State private var refreshToken: String = ""
@@ -30,6 +33,10 @@ struct JournalTabView: View {
     @State private var showingInlineEditor: Bool = false
     @State private var inlineEditorInitialBody: String? = nil
     @State private var inlineEditorEditingEntry: JournalEntry? = nil
+
+    @State private var showBookSuggestions: Bool = false
+    @State private var bookQuery: String = ""
+    @State private var editorSelection: NSRange = NSRange(location: 0, length: 0)
 
     private var filteredEntries: [JournalEntry] {
         var list = entries
@@ -81,6 +88,87 @@ struct JournalTabView: View {
         if pins.contains(key) { pins.remove(key) } else { pins.insert(key) }
         writePinnedIDs(pins)
     }
+    
+    private func sanitizeSmartLinkTriggers(_ text: String) -> String {
+        // Remove '#' when it is used as a trigger before references (e.g., "#Genesis 2:1-3" -> "Genesis 2:1-3")
+        // We conservatively strip '#' when it precedes a letter or digit.
+        return text.replacingOccurrences(of: "#(?=[A-Za-z0-9])", with: "", options: .regularExpression)
+    }
+    
+    // MARK: - Inline Editor Smart Link Suggestions (iPad two-column editor)
+    private func updateEditorBookSuggestions(window: Int = 256) {
+        let text = editingBodyText
+        let utf16 = text.utf16
+        let total = utf16.count
+        if total == 0 { showBookSuggestions = false; bookQuery = ""; return }
+        // Use the end of text as caret approximation
+        let caret = total
+        let start = max(0, caret - window)
+        let end = min(total, caret)
+        guard start < end else { showBookSuggestions = false; bookQuery = ""; return }
+        let startIdx = utf16.index(utf16.startIndex, offsetBy: start)
+        let endIdx = utf16.index(utf16.startIndex, offsetBy: end)
+        let slice = String(utf16[startIdx..<endIdx]) ?? ""
+        guard let hashRange = slice.range(of: "#", options: .backwards) else {
+            showBookSuggestions = false
+            bookQuery = ""
+            return
+        }
+        let afterHash = hashRange.upperBound
+        let tail = slice[afterHash...]
+        var query = ""
+        let allowed = CharacterSet.letters.union(CharacterSet(charactersIn: "."))
+        var idx = tail.startIndex
+        while idx < tail.endIndex {
+            let ch = tail[idx]
+            if ch.isWhitespace || ch == "\n" { break }
+            if let scalar = ch.unicodeScalars.first, !allowed.contains(scalar) { break }
+            query.append(ch)
+            idx = tail.index(after: idx)
+        }
+        let cleaned = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        bookQuery = cleaned
+        showBookSuggestions = !cleaned.isEmpty || slice.hasSuffix("#")
+    }
+
+    private var filteredBooksForEditorQuery: [String] {
+        let names = BibleData.books.map { $0.name }
+        let q = bookQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        if q.isEmpty { return Array(names.prefix(10)) }
+        let prefix = names.filter { $0.range(of: q, options: [.caseInsensitive, .diacriticInsensitive])?.lowerBound == $0.startIndex }
+        if !prefix.isEmpty { return Array(prefix.prefix(10)) }
+        let contains = names.filter { $0.range(of: q, options: [.caseInsensitive, .diacriticInsensitive]) != nil }
+        return Array(contains.prefix(10))
+    }
+
+    private func replaceEditorTrigger(with bookName: String) {
+        var t = editingBodyText
+        guard let hashRange = t.range(of: "#", options: .backwards) else {
+            showBookSuggestions = false
+            bookQuery = ""
+            return
+        }
+        let tokenStart = hashRange.lowerBound
+        var tokenEnd = t.endIndex
+        var idx = t.index(after: tokenStart)
+        while idx < t.endIndex {
+            let ch = t[idx]
+            if ch == "\n" || ch.isWhitespace { break }
+            idx = t.index(after: idx)
+        }
+        tokenEnd = idx
+        let insertion = "\(bookName) "
+        // Compute caret position based on original text
+        let utf16BeforeToken = t[..<tokenStart].utf16.count
+        // Perform replacement
+        t.replaceSubrange(tokenStart..<tokenEnd, with: insertion)
+        editingBodyText = t
+        // Place caret immediately after the inserted book name + space
+        let caretLocation = utf16BeforeToken + insertion.utf16.count
+        editorSelection = NSRange(location: caretLocation, length: 0)
+        showBookSuggestions = false
+        bookQuery = ""
+    }
 
     private var headerCountText: String {
         let queryActive = !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -122,10 +210,9 @@ struct JournalTabView: View {
             NavigationSplitView(columnVisibility: $splitVisibility) {
                 sidebarList
                     .id(refreshToken)
-                    .navigationTitle("Journal Entries")
                     .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
-                            if !selectedTags.isEmpty {
+                        if !selectedTags.isEmpty {
+                            ToolbarItem(placement: .topBarLeading) {
                                 Button("Clear Filters") { selectedTags.removeAll() }
                             }
                         }
@@ -136,10 +223,12 @@ struct JournalTabView: View {
                                 } label: {
                                     Label("Delete", systemImage: "trash")
                                 }
+                                .labelStyle(.titleAndIcon)
                                 Button("Cancel") {
                                     selectionMode = false
                                     selectedForDeletion.removeAll()
                                 }
+                                .labelStyle(.titleAndIcon)
                             } else {
                                 Button {
                                     inlineEditorEditingEntry = nil
@@ -148,93 +237,126 @@ struct JournalTabView: View {
                                 } label: {
                                     Label("New Entry", systemImage: "square.and.pencil")
                                 }
+                                .labelStyle(.titleAndIcon)
+                                .help("Create a new journal entry")
+
                                 Button {
                                     selectionMode = true
                                 } label: {
-                                    Label("Select", systemImage: "checkmark.circle")
+                                    Label("Select Entries", systemImage: "checkmark.circle")
                                 }
+                                .labelStyle(.titleAndIcon)
+                                .help("Select multiple entries")
                             }
                         }
                     }
+                    // Removed: ToolbarItem(placement: .topBarLeading) { Hide/Show Sidebar button }
                     .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
                     .frame(minWidth: 280)
             } detail: {
-                if showingInlineEditor {
-                    // Inline editor in right column using the same sheet UI
-                    JournalEditorView(
-                        verseRef: nil,
-                        initialBody: inlineEditorInitialBody,
-                        showTagColors: false,
-                        editingEntry: inlineEditorEditingEntry,
-                        onClose: {
-                            showingInlineEditor = false
-                            inlineEditorEditingEntry = nil
-                            inlineEditorInitialBody = nil
-                            // Refresh list after create or update
-                            refreshToken = UUID().uuidString
-                        }
-                    )
-                } else if let e = selectedEntry {
-                    if isEditing {
-                        HStack(spacing: 0) {
-                            editorPane(entry: e, showInlinePreview: false)
-                                .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                                .layoutPriority(1)
-                            Divider()
-                            ScrollView { previewPane(entry: e) }
-                                .frame(minWidth: 320, idealWidth: 360, maxWidth: 420, maxHeight: .infinity, alignment: .topLeading)
-                        }
-                        .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
-                        .toolbar {
-                            ToolbarItem(placement: .confirmationAction) {
-                                Button("Done") {
-                                    let tags = editingTagsText
-                                        .split(separator: ",")
-                                        .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-                                        .filter { !$0.isEmpty }
-                                    e.tags = tags
-                                    e.updatedAt = Date()
-                                    isEditing = false
-                                    try? ctx.save()
+                Group {
+                    if showingInlineEditor {
+                        // Inline editor in right column using the same sheet UI
+                        JournalEditorView(
+                            verseRef: nil,
+                            initialBody: inlineEditorInitialBody,
+                            showTagColors: false,
+                            editingEntry: inlineEditorEditingEntry,
+                            onClose: {
+                                showingInlineEditor = false
+                                inlineEditorEditingEntry = nil
+                                inlineEditorInitialBody = nil
+                                // Refresh list after create or update
+                                refreshToken = UUID().uuidString
+                            }
+                        )
+                    } else if let e = selectedEntry {
+                        if isEditing {
+                            HStack(spacing: 0) {
+                                editorPane(entry: e, showInlinePreview: false)
+                                    .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                                    .layoutPriority(1)
+                                Divider()
+                                ScrollView { previewPane(entry: e) }
+                                    .frame(minWidth: 320, idealWidth: 360, maxWidth: 420, maxHeight: .infinity, alignment: .topLeading)
+                            }
+                            .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
+                            .toolbar {
+                                ToolbarItem(placement: .confirmationAction) {
+                                    Button("Done") {
+                                        let tags = editingTagsText
+                                            .split(separator: ",")
+                                            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                                            .filter { !$0.isEmpty }
+                                        e.title = editingTitleText
+                                        e.body = sanitizeSmartLinkTriggers(editingBodyText)
+                                        e.tags = tags
+                                        e.updatedAt = Date()
+                                        isEditing = false
+                                        try? ctx.save()
+                                    }
+                                }
+                                ToolbarItem(placement: .cancellationAction) {
+                                    Button("Cancel") {
+                                        // Discard buffered changes
+                                        editingTitleText = e.title
+                                        editingBodyText = e.body
+                                        editingTagsText = e.tags.joined(separator: ", ")
+                                        isEditing = false
+                                    }
                                 }
                             }
-                            ToolbarItem(placement: .cancellationAction) {
-                                Button("Cancel") { isEditing = false }
+                        } else {
+                            Group {
+                                if showPreview, previewContent != nil {
+                                    HStack(spacing: 0) {
+                                        // Left: Read-only entry content
+                                        readOnlyPane(entry: e)
+                                            .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                                            .layoutPriority(1)
+
+                                        Divider()
+
+                                        // Right: Scripture preview (third column)
+                                        ScrollView { previewPane(entry: e) }
+                                            .frame(minWidth: 320, idealWidth: 360, maxWidth: 420, maxHeight: .infinity, alignment: .topLeading)
+                                    }
+                                } else {
+                                    readOnlyPane(entry: e)
+                                }
+                            }
+                            .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
+                            .toolbar {
+                                ToolbarItem(placement: .primaryAction) {
+                                    Button("Edit") {
+                                        editingTitleText = e.title
+                                        editingBodyText = e.body
+                                        editingTagsText = e.tags.joined(separator: ", ")
+                                        isEditing = true
+                                    }
+                                }
                             }
                         }
                     } else {
-                        Group {
-                            if showPreview, previewContent != nil {
-                                HStack(spacing: 0) {
-                                    // Left: Read-only entry content
-                                    readOnlyPane(entry: e)
-                                        .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                                        .layoutPriority(1)
-
-                                    Divider()
-
-                                    // Right: Scripture preview (third column)
-                                    ScrollView { previewPane(entry: e) }
-                                        .frame(minWidth: 320, idealWidth: 360, maxWidth: 420, maxHeight: .infinity, alignment: .topLeading)
-                                }
-                            } else {
-                                readOnlyPane(entry: e)
-                            }
-                        }
-                        .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
-                        .toolbar {
-                            ToolbarItem(placement: .primaryAction) {
-                                Button("Edit") {
-                                    editingTagsText = e.tags.joined(separator: ", ")
-                                    isEditing = true
-                                }
-                            }
-                        }
+                        ContentUnavailableView("Select an entry", systemImage: "book.closed")
                     }
-                } else {
-                    ContentUnavailableView("Select an entry", systemImage: "book.closed")
+                }
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            withAnimation {
+                                splitVisibility = (splitVisibility == .all ? .detailOnly : .all)
+                            }
+                        } label: {
+                            Label(splitVisibility == .all ? "Hide Sidebar" : "Show Sidebar",
+                                  systemImage: splitVisibility == .all ? "sidebar.leading" : "sidebar.trailing")
+                        }
+                        .labelStyle(.titleAndIcon)
+                        .help(splitVisibility == .all ? "Hide the sidebar" : "Show the sidebar")
+                    }
                 }
             }
+            .toolbar(removing: .sidebarToggle)
             .navigationSplitViewStyle(.balanced)
             .onAppear { splitVisibility = .all }
             .onChange(of: hSize) { _, _ in splitVisibility = .all }
@@ -247,6 +369,21 @@ struct JournalTabView: View {
                     }
                 } else {
                     refreshToken = UUID().uuidString
+                }
+            }
+            .onChange(of: selectedEntry) { oldValue, newValue in
+                if isEditing, let prev = oldValue {
+                    // Commit buffered edits to the previously selected entry
+                    prev.title = editingTitleText
+                    prev.body = sanitizeSmartLinkTriggers(editingBodyText)
+                    let tags = editingTagsText
+                        .split(separator: ",")
+                        .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                        .filter { !$0.isEmpty }
+                    prev.tags = tags
+                    prev.updatedAt = Date()
+                    try? ctx.save()
+                    isEditing = false
                 }
             }
         } else {
@@ -315,6 +452,20 @@ struct JournalTabView: View {
                 .environment(\.editMode, .constant(selectionMode ? .active : .inactive))
                 .navigationDestination(for: JournalEntry.self) { entry in
                     JournalDetailView(entry: entry)
+                }
+            }
+            .onChange(of: selectedEntry) { oldValue, newValue in
+                if isEditing, let prev = oldValue {
+                    prev.title = editingTitleText
+                    prev.body = sanitizeSmartLinkTriggers(editingBodyText)
+                    let tags = editingTagsText
+                        .split(separator: ",")
+                        .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                        .filter { !$0.isEmpty }
+                    prev.tags = tags
+                    prev.updatedAt = Date()
+                    try? ctx.save()
+                    isEditing = false
                 }
             }
         }
@@ -460,8 +611,6 @@ struct JournalTabView: View {
         let linkedBody = BibleReferenceLinker.linkify(entry.body)
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text(entry.title.isEmpty ? "Untitled" : entry.title)
-                    .font(.title2).bold()
                 if !entry.tags.isEmpty {
                     HStack(spacing: 8) {
                         ForEach(entry.tags, id: \.self) { t in
@@ -555,7 +704,7 @@ struct JournalTabView: View {
 
     @ViewBuilder
     private func editorPane(entry: JournalEntry, showInlinePreview: Bool = true) -> some View {
-        let linkedBody = BibleReferenceLinker.linkify(entry.body)
+        let linkedBody = BibleReferenceLinker.linkify(editingBodyText)
         var linkOverlayBody: AttributedString {
             var s = linkedBody
             // Make everything transparent first
@@ -572,7 +721,7 @@ struct JournalTabView: View {
 
         Form {
             Section("Title") {
-                TextField("Title", text: Binding(get: { entry.title }, set: { entry.title = $0; entry.updatedAt = Date(); try? ctx.save() }))
+                TextField("Title", text: $editingTitleText)
             }
             Section("Tags") {
                 TextField(
@@ -598,7 +747,7 @@ struct JournalTabView: View {
             }
             Section("Body") {
                 ZStack(alignment: .topLeading) {
-                    if entry.body.isEmpty {
+                    if editingBodyText.isEmpty {
                         Text("Write your thoughts here…")
                             .foregroundStyle(.secondary)
                             .padding(.top, 8)
@@ -613,13 +762,38 @@ struct JournalTabView: View {
                             .padding(.leading, 5)
                             .allowsHitTesting(false)
                     }
-                    // Actual editor
-                    TextEditor(text: Binding(get: { entry.body }, set: { entry.body = $0; entry.updatedAt = Date(); try? ctx.save() }))
-                        .frame(minHeight: 240)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                        )
+                    // Actual editor with caret tracking
+                    InlineCursorTextView(text: $editingBodyText, selection: $editorSelection, onChange: { _ in
+                        updateEditorBookSuggestions()
+                    })
+                    .frame(minHeight: 240)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                    )
+                }
+                if showBookSuggestions {
+                    Divider()
+                        .padding(.top, 6)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Bible Books")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        ForEach(filteredBooksForEditorQuery, id: \.self) { name in
+                            Button(action: { replaceEditorTrigger(with: name) }) {
+                                Text(name)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 8)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                            .fill(Color(.secondarySystemBackground))
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.top, 6)
                 }
             }
             if showInlinePreview {
@@ -690,7 +864,11 @@ struct JournalTabView: View {
                 .padding(.top, 8)
             }
         }
-        .onAppear { editingTagsText = entry.tags.joined(separator: ", ") }
+        .onAppear {
+            editingTitleText = entry.title
+            editingBodyText = entry.body
+            editingTagsText = entry.tags.joined(separator: ", ")
+        }
     }
 
     @ViewBuilder
@@ -716,7 +894,7 @@ struct JournalTabView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 // Stats & Links
-                Text("Entry Stats & Links")
+                Text("Stats & Links")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 HStack(spacing: 12) {
@@ -762,8 +940,6 @@ struct JournalTabView: View {
                     }
                 }
 
-                Text(entry.title.isEmpty ? "Untitled" : entry.title)
-                    .font(.title3).bold()
                 Text(linked)
                     .font(.body)
                     .textSelection(.enabled)
@@ -825,6 +1001,53 @@ struct JournalTabView: View {
             .padding(16)
         }
         .id(entry.body)
+    }
+}
+
+private struct InlineCursorTextView: UIViewRepresentable {
+    @Binding var text: String
+    @Binding var selection: NSRange
+    var onChange: ((String) -> Void)? = nil
+
+    func makeUIView(context: Context) -> UITextView {
+        let tv = UITextView()
+        tv.isScrollEnabled = true
+        tv.backgroundColor = .clear
+        tv.text = text
+        tv.delegate = context.coordinator
+        tv.autocorrectionType = .no
+        tv.autocapitalizationType = .none
+        tv.smartDashesType = .no
+        tv.smartQuotesType = .no
+        tv.smartInsertDeleteType = .no
+        tv.font = UIFont.preferredFont(forTextStyle: .body)
+        tv.contentInsetAdjustmentBehavior = .never
+        return tv
+    }
+
+    func updateUIView(_ uiView: UITextView, context: Context) {
+        if uiView.text != text {
+            uiView.text = text
+        }
+        if uiView.selectedRange != selection {
+            let maxLoc = (uiView.text as NSString).length
+            let loc = min(selection.location, maxLoc)
+            uiView.selectedRange = NSRange(location: loc, length: selection.length)
+        }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
+
+    final class Coordinator: NSObject, UITextViewDelegate {
+        var parent: InlineCursorTextView
+        init(parent: InlineCursorTextView) { self.parent = parent }
+        func textViewDidChange(_ textView: UITextView) {
+            parent.text = textView.text
+            parent.onChange?(textView.text)
+        }
+        func textViewDidChangeSelection(_ textView: UITextView) {
+            parent.selection = textView.selectedRange
+        }
     }
 }
 

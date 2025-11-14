@@ -8,19 +8,41 @@ final class WidgetReloadManager {
     private var pendingKinds: Set<String> = []
     private var lastReload: Date = .distantPast
     private let minInterval: TimeInterval = 3 // seconds
+
+    private var enabled: Bool = false
+    private var enableWorkItem: DispatchWorkItem? = nil
+
     private let queue = DispatchQueue(label: "WidgetReloadManagerQueue")
 
-    private init() {}
+    private init() {
+        // Default: enable after 3 seconds to avoid launch-time churn
+        enableAfter(seconds: 3)
+    }
+
+    func enableAfter(seconds: TimeInterval) {
+        queue.async { [weak self] in
+            guard let self else { return }
+            self.enableWorkItem?.cancel()
+            let work = DispatchWorkItem { [weak self] in self?.enabled = true }
+            self.enableWorkItem = work
+            self.enabled = false
+            self.queue.asyncAfter(deadline: .now() + seconds, execute: work)
+        }
+    }
 
     func requestReloadAll() {
         queue.async { [weak self] in
-            self?._requestReloadAll()
+            guard let self else { return }
+            guard self.enabled else { return }
+            self._requestReloadAll()
         }
     }
 
     func requestReload(kind: String) {
         queue.async { [weak self] in
-            self?._requestReload(kind: kind)
+            guard let self else { return }
+            guard self.enabled else { return }
+            self._requestReload(kind: kind)
         }
     }
 

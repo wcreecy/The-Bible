@@ -45,6 +45,17 @@ struct ReferenceMatchGameView: View {
     @State private var correctIndex: Int = -1
     @State private var selectedIndex: Int? = nil
 
+    @State private var saveDebounceWorkItem: DispatchWorkItem? = nil
+
+    private func scheduleModelSave(debounce: TimeInterval = 0.3) {
+        saveDebounceWorkItem?.cancel()
+        let work = DispatchWorkItem { [modelContext] in
+            try? modelContext.save()
+        }
+        saveDebounceWorkItem = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + debounce, execute: work)
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -434,7 +445,7 @@ struct ReferenceMatchGameView: View {
         guard let b = refBook, let c = refChapter, let v = refVerse else { return }
         if let existing = favorites.first(where: { $0.bookName == b.name && $0.chapterNumber == c.number && $0.verseNumber == v.number }) {
             modelContext.delete(existing)
-            try? modelContext.save()
+            scheduleModelSave()
         } else {
             let fav = Favorite(
                 bookName: b.name,
@@ -443,7 +454,7 @@ struct ReferenceMatchGameView: View {
                 verseText: v.text
             )
             modelContext.insert(fav)
-            try? modelContext.save()
+            scheduleModelSave()
         }
     }
 
@@ -456,7 +467,7 @@ struct ReferenceMatchGameView: View {
     private func toggleFavorite(bookName: String, chapterNumber: Int, verseNumber: Int, verseText: String) {
         if let existing = favorites.first(where: { $0.bookName == bookName && $0.chapterNumber == chapterNumber && $0.verseNumber == verseNumber }) {
             modelContext.delete(existing)
-            try? modelContext.save()
+            scheduleModelSave()
         } else {
             let fav = Favorite(
                 bookName: bookName,
@@ -465,7 +476,7 @@ struct ReferenceMatchGameView: View {
                 verseText: verseText
             )
             modelContext.insert(fav)
-            try? modelContext.save()
+            scheduleModelSave()
         }
     }
 }

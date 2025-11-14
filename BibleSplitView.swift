@@ -5,6 +5,7 @@ struct BibleSplitView: View {
     @State private var selectedChapter: Chapter? = nil
     @State private var navStartVerse: Int = 1
     @State private var searchText: String = ""
+    @State private var bookSearchText: String = ""
     @State private var detailPath = NavigationPath()
     
     @State private var debouncedText: String = ""
@@ -56,10 +57,26 @@ struct BibleSplitView: View {
     }
     private var matthewIndex: Int { indexMap["Matthew"] ?? Int.max }
     private var otBooks: [Book] {
-        canon.filter { (indexMap[$0.name] ?? Int.max) < matthewIndex }
+        let base = canon
+        let query = bookSearchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let filtered: [Book]
+        if query.isEmpty {
+            filtered = base
+        } else {
+            filtered = base.filter { $0.name.localizedCaseInsensitiveContains(query) }
+        }
+        return filtered.filter { (indexMap[$0.name] ?? Int.max) < matthewIndex }
     }
     private var ntBooks: [Book] {
-        canon.filter { (indexMap[$0.name] ?? Int.max) >= matthewIndex }
+        let base = canon
+        let query = bookSearchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let filtered: [Book]
+        if query.isEmpty {
+            filtered = base
+        } else {
+            filtered = base.filter { $0.name.localizedCaseInsensitiveContains(query) }
+        }
+        return filtered.filter { (indexMap[$0.name] ?? Int.max) >= matthewIndex }
     }
     
     private var shouldSearch: Bool {
@@ -153,6 +170,7 @@ struct BibleSplitView: View {
                 }
             }
         }
+        .searchable(text: $bookSearchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search books")
         .navigationTitle("Books")
     }
     
@@ -269,20 +287,8 @@ struct BibleSplitView: View {
                         // Propagate a base font size to all text in the reader
                         .font(.system(size: readerFontSize))
                         .toolbar {
-                            ToolbarItemGroup(placement: .topBarTrailing) {
-                                Button {
-                                    readerFontSize = max(12, readerFontSize - 1)
-                                } label: {
-                                    Image(systemName: "textformat.size.smaller")
-                                }
-                                .accessibilityLabel("Decrease font size")
-
-                                Button {
-                                    readerFontSize = min(30, readerFontSize + 1)
-                                } label: {
-                                    Image(systemName: "textformat.size.larger")
-                                }
-                                .accessibilityLabel("Increase font size")
+                            ToolbarItem(placement: .topBarTrailing) {
+                                ReaderFontToolbar(readerFontSize: $readerFontSize)
                             }
                         }
                 } else {

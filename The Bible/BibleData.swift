@@ -1,19 +1,22 @@
 import Foundation
 
 struct Verse: Identifiable, Hashable {
-    let id = UUID()
+    // Stable within a chapter
+    var id: Int { number }
     let number: Int
     let text: String
 }
 
 struct Chapter: Identifiable, Hashable {
-    let id = UUID()
+    // Stable within a book
+    var id: Int { number }
     let number: Int
     let verses: [Verse]
 }
 
 struct Book: Identifiable, Hashable {
-    let id = UUID()
+    // Stable by canonical name
+    var id: String { name }
     let name: String
     let chapters: [Chapter]
 }

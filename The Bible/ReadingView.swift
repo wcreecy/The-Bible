@@ -27,6 +27,17 @@ struct ReadingView: View {
     @AppStorage("keepScreenOn") private var keepScreenOn: Bool = false
     @State private var pinVerse: Int? = nil
 
+    @State private var saveDebounceWorkItem: DispatchWorkItem? = nil
+
+    private func scheduleModelSave(debounce: TimeInterval = 0.3) {
+        saveDebounceWorkItem?.cancel()
+        let work = DispatchWorkItem { [modelContext] in
+            try? modelContext.save()
+        }
+        saveDebounceWorkItem = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + debounce, execute: work)
+    }
+
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
         self.chapter = chapter
@@ -244,7 +255,7 @@ struct ReadingView: View {
         progress.bookName = bookName
         progress.chapterNumber = chapter
         progress.verseNumber = verse
-        try? modelContext.save()
+        scheduleModelSave()
     }
 
     private func previousChapter() {
@@ -291,7 +302,7 @@ struct ReadingView: View {
     private func toggleFavorite(for verse: Verse) {
         if let existing = favorites.first(where: { $0.bookName == currentBook.name && $0.chapterNumber == currentChapter.number && $0.verseNumber == verse.number }) {
             modelContext.delete(existing)
-            try? modelContext.save()
+            scheduleModelSave()
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
             favoriteToastSymbol = "xmark.circle.fill"
@@ -309,7 +320,7 @@ struct ReadingView: View {
                 verseText: verse.text
             )
             modelContext.insert(fav)
-            try? modelContext.save()
+            scheduleModelSave()
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
             favoriteToastSymbol = "heart.fill"

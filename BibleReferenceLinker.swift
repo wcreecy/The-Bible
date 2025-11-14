@@ -96,40 +96,6 @@ enum BibleReferenceLinker {
         return s
     }
 
-    // Normalize a raw book token to a canonical BibleData book name, if possible
-    private static func resolveBook(named raw: String) -> String? {
-        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-        // Try direct match first
-        if let direct = BibleData.books.first(where: { $0.name.compare(trimmed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
-            return direct.name
-        }
-        // Insert a space between leading digits and letters (e.g., "1kgs")
-        let spaced = insertSpaceBetweenLeadingDigitsAndLetters(in: trimmed)
-        // Tokenize, expand abbreviations, and title-case tokens
-        let cleaned = spaced.replacingOccurrences(of: ".", with: " ")
-            .replacingOccurrences(of: "_", with: " ")
-            .replacingOccurrences(of: "-", with: " ")
-        var tokens = cleaned.split { $0.isWhitespace }.map { String($0) }
-        // Map abbreviations
-        let mapped = tokens.enumerated().map { (idx, t) -> String in
-            let lower = t.lowercased()
-            if let exp = abbreviations[lower] { return exp }
-            if Int(lower) != nil { return t } // keep numeric ordinals
-            return t.prefix(1).uppercased() + t.dropFirst().lowercased()
-        }
-        let candidate = mapped.joined(separator: " ")
-        if let match = BibleData.books.first(where: { $0.name.compare(candidate, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
-            return match.name
-        }
-        // Relaxed: remove spaces and compare
-        let collapsed = candidate.replacingOccurrences(of: " ", with: "")
-        if let match = BibleData.books.first(where: { $0.name.replacingOccurrences(of: " ", with: "").compare(collapsed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
-            return match.name
-        }
-        return nil
-    }
-
     /// Build a regex that matches references like "John 3:16" or "1 John 4:7-8" using known book names.
     private static func referenceRegex() -> NSRegularExpression? {
         // Match a boundary (start of string or any non-alphanumeric), then a book name that may start with an optional ordinal (1-3) and optional space.
@@ -160,7 +126,7 @@ enum BibleReferenceLinker {
             let endRange = m.range(at: 5)
             let rawBook = ns.substring(with: bookRange)
             // Resolve raw token (may be shorthand) to a canonical book name
-            guard let resolvedBook = resolveBook(named: rawBook) else { continue }
+            guard let resolvedBook = BibleBookResolver.resolveBook(named: rawBook) else { continue }
             let chapStr = ns.substring(with: chapterRange)
             let startStr = ns.substring(with: startRange)
             let endStr: String? = endRange.location != NSNotFound ? ns.substring(with: endRange) : nil

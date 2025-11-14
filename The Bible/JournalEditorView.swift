@@ -33,31 +33,45 @@ struct JournalEditorView: View {
     
     @State private var linkifyTask: Task<Void, Never>? = nil
 
+    @State private var linkedContentCache: AttributedString = AttributedString("")
+    @State private var detectedRefsCache: [ScriptureRef] = []
+
+    @State private var wordCountState: Int = 0
+    @State private var characterCountState: Int = 0
+
     private func updateBookSuggestions() {
-        let text = content
-        // Find the last occurrence of '#'
-        guard let hashIdx = text.lastIndex(of: "#") else {
+        updateBookSuggestionsUsingSelection()
+    }
+    private func updateBookSuggestionsUsingSelection(window: Int = 256) {
+        let caret = textSelectionRange.location
+        let utf16 = content.utf16
+        let total = utf16.count
+        if total == 0 { showBookSuggestions = false; bookQuery = ""; return }
+        let start = max(0, caret - window)
+        let end = min(total, caret)
+        guard start < end else { showBookSuggestions = false; bookQuery = ""; return }
+        let startIdx = utf16.index(utf16.startIndex, offsetBy: start)
+        let endIdx = utf16.index(utf16.startIndex, offsetBy: end)
+        let slice = String(utf16[startIdx..<endIdx]) ?? ""
+        guard let hashRange = slice.range(of: "#", options: .backwards) else {
             showBookSuggestions = false
             bookQuery = ""
             return
         }
-        let afterHash = text.index(after: hashIdx)
-        // Build the query from after '#' until a disallowed character (whitespace/newline or non-letter/non-period)
-        var idx = afterHash
-        let allowed: CharacterSet = CharacterSet.letters.union(CharacterSet(charactersIn: "."))
-        while idx < text.endIndex {
-            let ch = text[idx]
-            // Stop at whitespace/newline
+        let afterHash = hashRange.upperBound
+        let tail = slice[afterHash...]
+        var query = ""
+        let allowed = CharacterSet.letters.union(CharacterSet(charactersIn: "."))
+        var idx = tail.startIndex
+        while idx < tail.endIndex {
+            let ch = tail[idx]
             if ch.isWhitespace || ch == "\n" { break }
-            // Stop if not allowed (e.g., punctuation, digits, symbols)
             if let scalar = ch.unicodeScalars.first, !allowed.contains(scalar) { break }
-            idx = text.index(after: idx)
+            query.append(ch)
+            idx = tail.index(after: idx)
         }
-        let rawQuery = String(text[afterHash..<idx])
-        // Normalize spacing and trim punctuation just in case
-        let cleaned = rawQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleaned = query.trimmingCharacters(in: .whitespacesAndNewlines)
         bookQuery = cleaned
-        // Always show suggestions when a '#' exists unless user explicitly dismisses (handled by UI)
         showBookSuggestions = true
     }
     
@@ -68,12 +82,15 @@ struct JournalEditorView: View {
             try? await Task.sleep(nanoseconds: 200_000_000) // 200ms debounce
             guard !Task.isCancelled else { return }
             let linked = BibleReferenceLinker.linkify(current)
+            let refs = Self.extractRefs(from: linked)
+            let words = current.split { $0.isWhitespace || $0.isNewline }.count
+            let chars = current.count
             await MainActor.run {
-                // For compact editor preview blocks that use linkedDraft/linkedContent, update the preview state.
-                // We already compute linkedContent on demand; for debounced behavior, we can trigger suggestions only.
-                // If you have a dedicated preview AttributedString state, assign it here.
-                // No-op fallback: trigger suggestions update and preview state where applicable.
-                updateBookSuggestions()
+                linkedContentCache = linked
+                detectedRefsCache = refs
+                wordCountState = words
+                characterCountState = chars
+                updateBookSuggestionsUsingSelection()
             }
         }
     }
@@ -119,6 +136,7 @@ struct JournalEditorView: View {
         textSelectionRange = NSRange(location: caretLocation, length: 0)
         showBookSuggestions = false
         bookQuery = ""
+        scheduleLinkifyPreview()
     }
 
     // MARK: - Stats & Links Helpers
@@ -131,12 +149,17 @@ struct JournalEditorView: View {
         }
     }
 
-    private func detectedScriptureRefs() -> [ScriptureRef] {
+    private static func extractRefs(from linked: AttributedString) -> [ScriptureRef] {
         var refs: [ScriptureRef] = []
         var seen: Set<String> = []
-        for run in linkedContent.runs {
+        for run in linked.runs {
             if let url = run.link, let ref = BibleReferenceLinker.parse(url: url) {
-                let key = displayString(for: ref)
+                let key: String
+                if let end = ref.endVerse, end != ref.startVerse {
+                    key = "\(ref.bookName) \(ref.chapter):\(ref.startVerse)-\(end)"
+                } else {
+                    key = "\(ref.bookName) \(ref.chapter):\(ref.startVerse)"
+                }
                 if !seen.contains(key) {
                     seen.insert(key)
                     refs.append(ref)
@@ -144,6 +167,10 @@ struct JournalEditorView: View {
             }
         }
         return refs
+    }
+
+    private func detectedScriptureRefs() -> [ScriptureRef] {
+        return detectedRefsCache
     }
 
     private func copy(_ ref: ScriptureRef) {
@@ -228,7 +255,7 @@ struct JournalEditorView: View {
                                             .padding(.leading, 5)
                                     }
                                     CursorTextView(text: $content, selection: $textSelectionRange, onChange: { _ in
-                                        updateBookSuggestions()
+                                        updateBookSuggestionsUsingSelection()
                                         scheduleLinkifyPreview()
                                     })
                                     .frame(minHeight: 400)
@@ -272,13 +299,13 @@ struct JournalEditorView: View {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text(title.isEmpty ? "Untitled" : title)
                                     .font(.title3).bold()
-                                Text("Entry Stats & Links")
+                                Text("Stats & Links")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                 // Stats row
                                 HStack(spacing: 12) {
-                                    Label("\(wordCount) words", systemImage: "textformat")
-                                    Label("\(characterCount) chars", systemImage: "character.book.closed")
+                                    Label("\(wordCountState) words", systemImage: "textformat")
+                                    Label("\(characterCountState) chars", systemImage: "character.book.closed")
                                 }
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
@@ -463,7 +490,7 @@ struct JournalEditorView: View {
                                         .padding(.leading, 5)
                                 }
                                 CursorTextView(text: $content, selection: $textSelectionRange, onChange: { _ in
-                                    updateBookSuggestions()
+                                    updateBookSuggestionsUsingSelection()
                                     scheduleLinkifyPreview()
                                 })
                                 .frame(minHeight: 200)
@@ -496,14 +523,14 @@ struct JournalEditorView: View {
                                 .padding(.top, 6)
                             }
                             VStack(alignment: .leading, spacing: 12) {
-                                Text("Entry Stats & Links")
+                                Text("Stats & Links")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
 
                                 // Stats row
                                 HStack(spacing: 12) {
-                                    Label("\(wordCount) words", systemImage: "textformat")
-                                    Label("\(characterCount) chars", systemImage: "character.book.closed")
+                                    Label("\(wordCountState) words", systemImage: "textformat")
+                                    Label("\(characterCountState) chars", systemImage: "character.book.closed")
                                 }
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
@@ -616,7 +643,14 @@ struct JournalEditorView: View {
                 Text(saveErrorMessage)
             }
             .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
-            .onAppear { updateBookSuggestions() }
+            .onAppear {
+                updateBookSuggestionsUsingSelection()
+                Task.detached(priority: .utility) {
+                    _ = BibleReferenceLinker.linkify("")
+                }
+                // Seed initial caches for an empty or prefilled draft
+                scheduleLinkifyPreview()
+            }
         }
     }
 
@@ -693,6 +727,7 @@ private struct CursorTextView: UIViewRepresentable {
         tv.smartQuotesType = .no
         tv.smartInsertDeleteType = .no
         tv.font = UIFont.preferredFont(forTextStyle: .body)
+        tv.contentInsetAdjustmentBehavior = .never
         return tv
     }
 

@@ -45,7 +45,7 @@ struct HomeView: View {
     @AppStorage("stopwatchAccumulated") private var stopwatchAccumulated: Int = 0
     @AppStorage("focusTitle") private var focusTitle: String = ""
 
-    private var sharedDefaults: UserDefaults? { UserDefaults(suiteName: "group.bible.app") }
+    private var sharedDefaults: UserDefaults? { UserDefaults.appGroup }
 
     @AppStorage("focusBody") private var focusBody: String = ""
     @State private var stopwatchElapsed: Int = 0
@@ -80,6 +80,7 @@ struct HomeView: View {
     }
 
     @State private var unifiedTick: Int = 0
+    @State private var didRestoreOnFirstTick: Bool = false
     private let unifiedTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     @State private var showFinishedAlert: Bool = false
@@ -213,11 +214,11 @@ struct HomeView: View {
                             storedVerseText = v.verseText
                         }
                         // Mirror current stored verse to App Group for widget sync
-                        if let shared = UserDefaults(suiteName: "group.bible.app") {
-                            shared.set(storedVerseBook, forKey: "verseOfDayBook")
-                            shared.set(storedVerseChapter, forKey: "verseOfDayChapter")
-                            shared.set(storedVerseNumber, forKey: "verseOfDayNumber")
-                            shared.set(storedVerseText, forKey: "verseOfDayText")
+                        if let shared = UserDefaults.appGroup {
+                            shared.set(storedVerseBook, forKey: DefaultsKeys.verseBook)
+                            shared.set(storedVerseChapter, forKey: DefaultsKeys.verseChapter)
+                            shared.set(storedVerseNumber, forKey: DefaultsKeys.verseNumber)
+                            shared.set(storedVerseText, forKey: DefaultsKeys.verseText)
                         }
                         // Prompt widgets to refresh
                         scheduleNextAutoVerseRefresh()
@@ -279,10 +280,23 @@ struct HomeView: View {
                         .help("Favorite")
                     }
                     .frame(maxWidth: .infinity)
+
+                    // Next refresh label (informational)
+                    if let next = nextVerseRefreshDate() {
+                        Text("Next auto refresh at \(formattedTime(next))")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
                 } else {
                     Text("Verse will refresh automatically at 6 AM and 6 PM.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                    
+                    if let next = nextVerseRefreshDate() {
+                        Text("Next auto refresh at \(formattedTime(next))")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
             .contentShape(Rectangle())
@@ -661,8 +675,8 @@ struct HomeView: View {
                         HStack(spacing: 12) {
                             Button {
                                 // Save focus to shared defaults and update Live Activity/Dynamic Island
-                                sharedDefaults?.set(focusTitle, forKey: "focusTitle")
-                                sharedDefaults?.set(focusBody, forKey: "focusBody")
+                                sharedDefaults?.set(focusTitle, forKey: DefaultsKeys.focusTitle)
+                                sharedDefaults?.set(focusBody, forKey: DefaultsKeys.focusBody)
                                 // Ensure only one activity is active: stop stopwatch
                                 StopwatchActivityController.shared.cancel()
                                 // Ensure Focus is active in Live Activity/DI with compact leading/trailing via focusTitle and body
@@ -693,8 +707,8 @@ struct HomeView: View {
                                 // Clear focus fields and update shared defaults/live activity
                                 focusTitle = ""
                                 focusBody = ""
-                                sharedDefaults?.set("", forKey: "focusTitle")
-                                sharedDefaults?.set("", forKey: "focusBody")
+                                sharedDefaults?.set("", forKey: DefaultsKeys.focusTitle)
+                                sharedDefaults?.set("", forKey: DefaultsKeys.focusBody)
                                 // Remove Focus from Live Activity/Dynamic Island
                                 PrayerTimerActivityController.shared.cancel()
                                 // Mark as not saved and dismiss keyboard
@@ -811,12 +825,6 @@ struct HomeView: View {
         .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
         .appToast(isPresented: $showFocusSavedToast, symbol: "checkmark.seal.fill", text: "Focus Saved", tint: .green)
         .onAppear {
-            // Request notification permission once
-            if !didRequestNotifications {
-                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
-                didRequestNotifications = true
-            }
-
             // Restore persisted state
             isTimerRunning = storedRunning
             isPaused = storedPaused
@@ -843,23 +851,20 @@ struct HomeView: View {
             // Always show cached verse immediately if available; defer refresh
             if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
                 verseOfDay = HomeVerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
-                if let shared = UserDefaults(suiteName: "group.bible.app") {
-                    shared.set(storedVerseBook, forKey: "verseOfDayBook")
-                    shared.set(storedVerseChapter, forKey: "verseOfDayChapter")
-                    shared.set(storedVerseNumber, forKey: "verseOfDayNumber")
-                    shared.set(storedVerseText, forKey: "verseOfDayText")
-                }
-            }
-            // Defer refresh if not paused
-            if !verseOfDayPaused {
-                Task.detached(priority: .background) {
-                    // Small delay to allow first frame to render
-                    try? await Task.sleep(nanoseconds: 300_000_000)
-                    await MainActor.run {
-                        loadRandomVerse()
+                // Defer App Group mirroring to avoid touching the container before first frame
+                DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 1.0) {
+                    if let shared = UserDefaults.appGroup {
+                        shared.set(storedVerseBook, forKey: DefaultsKeys.verseBook)
+                        shared.set(storedVerseChapter, forKey: DefaultsKeys.verseChapter)
+                        shared.set(storedVerseNumber, forKey: DefaultsKeys.verseNumber)
+                        shared.set(storedVerseText, forKey: DefaultsKeys.verseText)
                     }
                 }
             }
+            // Removed immediate verse refresh on appear per instructions
+
+            // Gate widget reloads for a few seconds to avoid initial-launch churn
+            WidgetReloadManager.shared.enableAfter(seconds: 3)
 
             scheduleNextAutoVerseRefresh()
 
@@ -873,20 +878,27 @@ struct HomeView: View {
             }
 
             // Initialize saved focus state from shared defaults
-            if let shared = UserDefaults(suiteName: "group.bible.app") {
-                let savedTitle = (shared.string(forKey: "focusTitle") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-                let savedBody = (shared.string(forKey: "focusBody") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            if let shared = UserDefaults.appGroup {
+                let savedTitle = (shared.string(forKey: DefaultsKeys.focusTitle) ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                let savedBody = (shared.string(forKey: DefaultsKeys.focusBody) ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
                 hasSavedFocus = !(savedTitle.isEmpty && savedBody.isEmpty)
             } else {
                 hasSavedFocus = false
             }
 
-            handlePrayerTimerPendingAction()
-            handleStopwatchPendingAction()
+            // Prewarm heavy data off the main thread to avoid first-touch lag
+            Task.detached(priority: .utility) {
+                _ = BibleData.books
+            }
         }
         .onReceive(unifiedTimer) { _ in
+            if !didRestoreOnFirstTick {
+                didRestoreOnFirstTick = true
+                handlePrayerTimerPendingAction()
+                handleStopwatchPendingAction()
+            }
             // Process any pending Live Activity actions promptly
-            handlePrayerTimerPendingAction()
+            //handlePrayerTimerPendingAction() // removed from here per instructions
 
             // Increment a unified tick counter
             unifiedTick &+= 1
@@ -936,6 +948,11 @@ struct HomeView: View {
                 startMindfulLoggingIfNeeded()
                 handlePrayerTimerPendingAction()
                 handleStopwatchPendingAction()
+
+                // Ensure the next verse refresh is scheduled when returning to the foreground
+                if verseRefreshTimer == nil && !verseOfDayPaused {
+                    scheduleNextAutoVerseRefresh()
+                }
             case .inactive, .background:
                 // Stop logging only if the timer is not running and stopwatch is not running; keep logging while either runs
                 if !isTimerRunning && !stopwatchRunning {
@@ -1010,6 +1027,38 @@ struct HomeView: View {
         RunLoop.main.add(verseRefreshTimer!, forMode: .common)
     }
 
+    private func nextVerseRefreshDate() -> Date? {
+        // Compute the next 6:00 or 18:00 from now
+        let cal = Calendar.current
+        let now = Date()
+        var comps = cal.dateComponents([.year, .month, .day, .hour, .minute, .second], from: now)
+        let hour = comps.hour ?? 0
+        let nextHour: Int
+        if hour < 6 {
+            nextHour = 6
+        } else if hour < 18 {
+            nextHour = 18
+        } else {
+            nextHour = 30 // sentinel: next day at 6
+        }
+        if nextHour == 30 {
+            var nextDay = cal.date(byAdding: .day, value: 1, to: now) ?? now
+            var nextComps = cal.dateComponents([.year, .month, .day], from: nextDay)
+            nextComps.hour = 6; nextComps.minute = 0; nextComps.second = 0
+            return cal.date(from: nextComps)
+        } else {
+            comps.hour = nextHour; comps.minute = 0; comps.second = 0
+            return cal.date(from: comps)
+        }
+    }
+
+    private func formattedTime(_ date: Date) -> String {
+        let fmt = DateFormatter()
+        fmt.timeStyle = .short
+        fmt.dateStyle = .none
+        return fmt.string(from: date)
+    }
+
     private func startTimer(minutes: Int) {
         let secs = max(1, minutes) * 60
         remainingSeconds = secs
@@ -1025,6 +1074,12 @@ struct HomeView: View {
         storedStartDate = start.timeIntervalSince1970
         storedEndDate = end.timeIntervalSince1970
         storedRemainingWhenPaused = 0
+
+        // Request notification permission when starting a timer (deferred from launch)
+        if !didRequestNotifications {
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
+            didRequestNotifications = true
+        }
 
         // HealthKit: request authorization on first use
         if isHealthKitAvailable && !healthKitPrompted {
@@ -1248,11 +1303,11 @@ struct HomeView: View {
         storedVerseText = verse.text
         // Mirror to App Group for widget sync on a background queue, then request a throttled reload
         DispatchQueue.global(qos: .utility).async {
-            if let shared = UserDefaults(suiteName: "group.bible.app") {
-                shared.set(book.name, forKey: "verseOfDayBook")
-                shared.set(chapter.number, forKey: "verseOfDayChapter")
-                shared.set(verse.number, forKey: "verseOfDayNumber")
-                shared.set(verse.text, forKey: "verseOfDayText")
+            if let shared = UserDefaults.appGroup {
+                shared.set(book.name, forKey: DefaultsKeys.verseBook)
+                shared.set(chapter.number, forKey: DefaultsKeys.verseChapter)
+                shared.set(verse.number, forKey: DefaultsKeys.verseNumber)
+                shared.set(verse.text, forKey: DefaultsKeys.verseText)
             }
             WidgetReloadManager.shared.requestReloadAll()
         }
@@ -1275,11 +1330,11 @@ struct HomeView: View {
     private func toggleFavorite(for v: HomeVerseRef) {
         if let existing = favorites.first(where: { $0.bookName == v.bookName && $0.chapterNumber == v.chapterNumber && $0.verseNumber == v.verseNumber }) {
             modelContext.delete(existing)
-            try? modelContext.save()
+            scheduleModelSave()
         } else {
             let fav = Favorite(bookName: v.bookName, chapterNumber: v.chapterNumber, verseNumber: v.verseNumber, verseText: v.verseText)
             modelContext.insert(fav)
-            try? modelContext.save()
+            scheduleModelSave()
         }
     }
 
@@ -1329,11 +1384,22 @@ struct HomeView: View {
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
     
+    @State private var saveDebounceWorkItem: DispatchWorkItem? = nil
+
+    private func scheduleModelSave(debounce: TimeInterval = 0.3) {
+        saveDebounceWorkItem?.cancel()
+        let work = DispatchWorkItem { [modelContext] in
+            try? modelContext.save()
+        }
+        saveDebounceWorkItem = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + debounce, execute: work)
+    }
+
     private func handlePrayerTimerPendingAction() {
-        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
-        guard let action = shared.string(forKey: "prayerTimerPendingAction") else { return }
+        guard let shared = UserDefaults.appGroup else { return }
+        guard let action = shared.string(forKey: DefaultsKeys.prayerTimerPendingAction) else { return }
         // Clear immediately to avoid reprocessing
-        shared.removeObject(forKey: "prayerTimerPendingAction")
+        shared.removeObject(forKey: DefaultsKeys.prayerTimerPendingAction)
         switch action {
         case "togglePause":
             if isTimerRunning {
@@ -1353,10 +1419,10 @@ struct HomeView: View {
     }
 
     private func handleStopwatchPendingAction() {
-        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
-        guard let action = shared.string(forKey: "stopwatchPendingAction") else { return }
+        guard let shared = UserDefaults.appGroup else { return }
+        guard let action = shared.string(forKey: DefaultsKeys.stopwatchPendingAction) else { return }
         // Clear immediately to avoid reprocessing
-        shared.removeObject(forKey: "stopwatchPendingAction")
+        shared.removeObject(forKey: DefaultsKeys.stopwatchPendingAction)
         switch action {
         case "togglePause":
             if stopwatchRunning {
@@ -1576,4 +1642,5 @@ private struct PrayerStudyTimerSetupView: View {
     }
 }
 // Note: HealthKit logging is handled in HomeView, no changes needed here.
+
 

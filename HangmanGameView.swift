@@ -687,72 +687,8 @@ struct HangmanGameView: View {
     }
 
     private func resolveBook(named raw: String) -> Book? {
-        // Try direct match first
-        if let direct = BibleData.books.first(where: { $0.name.caseInsensitiveCompare(raw) == .orderedSame }) {
-            return direct
-        }
-        // Try inserting space between leading digits and letters (e.g., "1Samuel" -> "1 Samuel", "1kgs" -> "1 kgs")
-        let spaced = insertSpaceBetweenLeadingDigitsAndLetters(in: raw)
-        let normalized = normalizeBookName(spaced)
-        if let match = BibleData.books.first(where: { $0.name.compare(normalized, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
-            return match
-        }
-        // Try relaxed comparison: remove spaces and compare
-        let collapsed = normalized.replacingOccurrences(of: " ", with: "")
-        if let match = BibleData.books.first(where: { $0.name.replacingOccurrences(of: " ", with: "").compare(collapsed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
-            return match
-        }
-        return nil
-    }
-
-    private func normalizeBookName(_ s: String) -> String {
-        // Lowercase tokens, expand common abbreviations, then title-case appropriately
-        let abbrev: [String: String] = [
-            "gen": "Genesis", "ex": "Exodus", "lev": "Leviticus", "num": "Numbers", "deut": "Deuteronomy",
-            "jos": "Joshua", "judg": "Judges", "rut": "Ruth",
-            "sam": "Samuel", "kgs": "Kings", "kg": "Kings", "chron": "Chronicles", "chr": "Chronicles",
-            "ezr": "Ezra", "neh": "Nehemiah", "est": "Esther", "job": "Job", "ps": "Psalms", "psa": "Psalms",
-            "prov": "Proverbs", "eccl": "Ecclesiastes", "song": "Song of Solomon", "so": "Song of Solomon",
-            "isa": "Isaiah", "jer": "Jeremiah", "lam": "Lamentations", "eze": "Ezekiel", "dan": "Daniel",
-            "hos": "Hosea", "joe": "Joel", "amo": "Amos", "oba": "Obadiah", "jon": "Jonah", "mic": "Micah",
-            "nah": "Nahum", "hab": "Habakkuk", "zep": "Zephaniah", "hag": "Haggai", "zec": "Zechariah", "mal": "Malachi",
-            "mat": "Matthew", "mk": "Mark", "mrk": "Mark", "lk": "Luke", "jn": "John", "jhn": "John",
-            "act": "Acts", "rom": "Romans", "cor": "Corinthians", "gal": "Galatians", "eph": "Ephesians",
-            "phil": "Philippians", "col": "Colossians", "thess": "Thessalonians", "tim": "Timothy", "tit": "Titus",
-            "phm": "Philemon", "heb": "Hebrews", "jas": "James", "pet": "Peter", "petr": "Peter",
-            "joh": "John", "jud": "Jude", "rev": "Revelation"
-        ]
-        // Tokenize by whitespace and punctuation
-        let cleaned = s.replacingOccurrences(of: ".", with: " ")
-            .replacingOccurrences(of: "_", with: " ")
-            .replacingOccurrences(of: "-", with: " ")
-        var tokens = cleaned.split{ $0.isWhitespace }.map { String($0) }
-        // If first token is a number stuck to letters (e.g., "1kgs"), separate
-        if let first = tokens.first, first.first?.isNumber == true, first.drop(while: { $0.isNumber }).first?.isLetter == true {
-            let digits = String(first.prefix { $0.isNumber })
-            let rest = String(first.drop { $0.isNumber })
-            tokens[0] = digits
-            if rest.isEmpty == false { tokens.insert(rest, at: 1) }
-        }
-        // Map abbreviations
-        let mapped = tokens.enumerated().map { (idx, t) -> String in
-            let lower = t.lowercased()
-            if let exp = abbrev[lower] { return exp }
-            // Title-case otherwise, but keep numeric ordinals as-is
-            if Int(lower) != nil { return t }
-            return t.prefix(1).uppercased() + t.dropFirst().lowercased()
-        }
-        // Special handling: if sequence like ["1", "Kings"] or ["2", "Samuel"], join with space
-        return mapped.joined(separator: " ")
-    }
-
-    private func insertSpaceBetweenLeadingDigitsAndLetters(in s: String) -> String {
-        guard let first = s.first, first.isNumber else { return s }
-        // Insert a space after the leading digit sequence if next is a letter
-        let digits = String(s.prefix { $0.isNumber })
-        let rest = String(s.drop { $0.isNumber })
-        if rest.first?.isLetter == true { return digits + " " + rest }
-        return s
+        guard let name = BibleBookResolver.resolveBook(named: raw) else { return nil }
+        return BibleData.books.first { $0.name.compare(name, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }
     }
 }
 
@@ -784,4 +720,3 @@ private struct ConfettiView: View {
 #Preview {
     NavigationStack { HangmanGameView() }
 }
-

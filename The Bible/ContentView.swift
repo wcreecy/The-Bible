@@ -50,20 +50,8 @@ struct ContentView: View {
                                 .font(.system(size: readerFontSize))
                                 .toolbar {
                                     if isPad {
-                                        ToolbarItemGroup(placement: .topBarTrailing) {
-                                            Button {
-                                                readerFontSize = max(12, readerFontSize - 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.smaller")
-                                            }
-                                            .accessibilityLabel("Decrease font size")
-
-                                            Button {
-                                                readerFontSize = min(30, readerFontSize + 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.larger")
-                                            }
-                                            .accessibilityLabel("Increase font size")
+                                        ToolbarItem(placement: .topBarTrailing) {
+                                            ReaderFontToolbar(readerFontSize: $readerFontSize)
                                         }
                                     }
                                 }
@@ -94,20 +82,8 @@ struct ContentView: View {
                                     .font(.system(size: readerFontSize))
                                     .toolbar {
                                         if isPad {
-                                            ToolbarItemGroup(placement: .topBarTrailing) {
-                                                Button {
-                                                    readerFontSize = max(12, readerFontSize - 1)
-                                                } label: {
-                                                    Image(systemName: "textformat.size.smaller")
-                                                }
-                                                .accessibilityLabel("Decrease font size")
-
-                                                Button {
-                                                    readerFontSize = min(30, readerFontSize + 1)
-                                                } label: {
-                                                    Image(systemName: "textformat.size.larger")
-                                                }
-                                                .accessibilityLabel("Increase font size")
+                                            ToolbarItem(placement: .topBarTrailing) {
+                                                ReaderFontToolbar(readerFontSize: $readerFontSize)
                                             }
                                         }
                                     }
@@ -144,20 +120,8 @@ struct ContentView: View {
                                 .font(.system(size: readerFontSize))
                                 .toolbar {
                                     if isPad {
-                                        ToolbarItemGroup(placement: .topBarTrailing) {
-                                            Button {
-                                                readerFontSize = max(12, readerFontSize - 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.smaller")
-                                            }
-                                            .accessibilityLabel("Decrease font size")
-
-                                            Button {
-                                                readerFontSize = min(30, readerFontSize + 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.larger")
-                                            }
-                                            .accessibilityLabel("Increase font size")
+                                        ToolbarItem(placement: .topBarTrailing) {
+                                            ReaderFontToolbar(readerFontSize: $readerFontSize)
                                         }
                                     }
                                 }
@@ -183,20 +147,8 @@ struct ContentView: View {
                                 .font(.system(size: readerFontSize))
                                 .toolbar {
                                     if isPad {
-                                        ToolbarItemGroup(placement: .topBarTrailing) {
-                                            Button {
-                                                readerFontSize = max(12, readerFontSize - 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.smaller")
-                                            }
-                                            .accessibilityLabel("Decrease font size")
-
-                                            Button {
-                                                readerFontSize = min(30, readerFontSize + 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.larger")
-                                            }
-                                            .accessibilityLabel("Increase font size")
+                                        ToolbarItem(placement: .topBarTrailing) {
+                                            ReaderFontToolbar(readerFontSize: $readerFontSize)
                                         }
                                     }
                                 }
@@ -222,20 +174,8 @@ struct ContentView: View {
                                 .font(.system(size: readerFontSize))
                                 .toolbar {
                                     if isPad {
-                                        ToolbarItemGroup(placement: .topBarTrailing) {
-                                            Button {
-                                                readerFontSize = max(12, readerFontSize - 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.smaller")
-                                            }
-                                            .accessibilityLabel("Decrease font size")
-
-                                            Button {
-                                                readerFontSize = min(30, readerFontSize + 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.larger")
-                                            }
-                                            .accessibilityLabel("Increase font size")
+                                        ToolbarItem(placement: .topBarTrailing) {
+                                            ReaderFontToolbar(readerFontSize: $readerFontSize)
                                         }
                                     }
                                 }
@@ -256,9 +196,9 @@ struct ContentView: View {
                 appActiveStart = Date().timeIntervalSince1970
             }
             // Ensure Focus Live Activity is visible on Lock Screen/Dynamic Island across the app
-            if let shared = UserDefaults(suiteName: "group.bible.app") {
-                let title = shared.string(forKey: "focusTitle")?.trimmingCharacters(in: .whitespacesAndNewlines)
-                let body = shared.string(forKey: "focusBody")?.trimmingCharacters(in: .whitespacesAndNewlines)
+            if let shared = UserDefaults.appGroup {
+                let title = shared.string(forKey: DefaultsKeys.focusTitle)?.trimmingCharacters(in: .whitespacesAndNewlines)
+                let body = shared.string(forKey: DefaultsKeys.focusBody)?.trimmingCharacters(in: .whitespacesAndNewlines)
                 let hasContent = ((title?.isEmpty == false) || (body?.isEmpty == false))
                 if hasContent {
                     PrayerTimerActivityController.shared.ensureFocusIfNone(title: title?.isEmpty == true ? nil : title, body: body?.isEmpty == true ? nil : body)
@@ -300,29 +240,29 @@ struct ContentView: View {
             switch url.host?.lowercased() {
             case "timer":
                 selectedTab = 0
-                UserDefaults.standard.set("timer", forKey: "prayerMode")
+                UserDefaults.standard.set("timer", forKey: DefaultsKeys.prayerMode)
                 if let comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
                    let action = comps.queryItems?.first(where: { $0.name == "action" })?.value,
-                   let shared = UserDefaults(suiteName: "group.bible.app") {
-                    shared.set(action, forKey: "prayerTimerPendingAction")
+                   let shared = UserDefaults.appGroup {
+                    shared.set(action, forKey: DefaultsKeys.prayerTimerPendingAction)
                 }
             case "stopwatch":
                 selectedTab = 0
-                UserDefaults.standard.set("stopwatch", forKey: "prayerMode")
+                UserDefaults.standard.set("stopwatch", forKey: DefaultsKeys.prayerMode)
                 if let comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
                    let action = comps.queryItems?.first(where: { $0.name == "action" })?.value,
-                   let shared = UserDefaults(suiteName: "group.bible.app") {
+                   let shared = UserDefaults.appGroup {
                     let mapped: String
                     switch action.lowercased() {
                     case "pause": mapped = "togglePause"
                     case "stop": mapped = "stop"
                     default: mapped = action
                     }
-                    shared.set(mapped, forKey: "stopwatchPendingAction")
+                    shared.set(mapped, forKey: DefaultsKeys.stopwatchPendingAction)
                 }
             case "focus":
                 selectedTab = 0
-                UserDefaults.standard.set("focus", forKey: "prayerMode")
+                UserDefaults.standard.set("focus", forKey: DefaultsKeys.prayerMode)
             default:
                 break
             }
