@@ -9,6 +9,12 @@ struct ScriptureRef: Equatable {
 }
 
 enum BibleReferenceLinker {
+    // Cache the compiled regex to avoid recompilation on each call
+    private static let compiledRegex: NSRegularExpression = {
+        let pattern = "(^|[^A-Za-z0-9])((?:[1-3]\\s*)?[A-Za-z][A-Za-z.]*?(?:\\s+[A-Za-z.]+){0,2})\\s+(\\d+):(\\d+)(?:[\\-\\u2013\\u2014](\\d+))?"
+        return try! NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
+    }()
+    
     // Custom URL scheme for in-app scripture links
     private static let scheme = "thebible-ref"
 
@@ -141,7 +147,7 @@ enum BibleReferenceLinker {
     /// Returns an AttributedString with link attributes for detected references.
     static func linkify(_ text: String) -> AttributedString {
         var attributed = AttributedString(text)
-        guard let regex = referenceRegex() else { return attributed }
+        let regex = compiledRegex
         let ns = text as NSString
         let matches = regex.matches(in: text, options: [], range: NSRange(location: 0, length: ns.length))
         // Walk from end to start to avoid range shifting while editing attributes

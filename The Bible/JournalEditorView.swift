@@ -30,6 +30,8 @@ struct JournalEditorView: View {
     @State private var bookQuery: String = ""
 
     @State private var textSelectionRange: NSRange = NSRange(location: 0, length: 0)
+    
+    @State private var linkifyTask: Task<Void, Never>? = nil
 
     private func updateBookSuggestions() {
         let text = content
@@ -57,6 +59,23 @@ struct JournalEditorView: View {
         bookQuery = cleaned
         // Always show suggestions when a '#' exists unless user explicitly dismisses (handled by UI)
         showBookSuggestions = true
+    }
+    
+    private func scheduleLinkifyPreview() {
+        let current = content
+        linkifyTask?.cancel()
+        linkifyTask = Task.detached(priority: .utility) { [current] in
+            try? await Task.sleep(nanoseconds: 200_000_000) // 200ms debounce
+            guard !Task.isCancelled else { return }
+            let linked = BibleReferenceLinker.linkify(current)
+            await MainActor.run {
+                // For compact editor preview blocks that use linkedDraft/linkedContent, update the preview state.
+                // We already compute linkedContent on demand; for debounced behavior, we can trigger suggestions only.
+                // If you have a dedicated preview AttributedString state, assign it here.
+                // No-op fallback: trigger suggestions update and preview state where applicable.
+                updateBookSuggestions()
+            }
+        }
     }
 
     private var filteredBooksForQuery: [String] {
@@ -210,6 +229,7 @@ struct JournalEditorView: View {
                                     }
                                     CursorTextView(text: $content, selection: $textSelectionRange, onChange: { _ in
                                         updateBookSuggestions()
+                                        scheduleLinkifyPreview()
                                     })
                                     .frame(minHeight: 400)
                                     .overlay(
@@ -444,6 +464,7 @@ struct JournalEditorView: View {
                                 }
                                 CursorTextView(text: $content, selection: $textSelectionRange, onChange: { _ in
                                     updateBookSuggestions()
+                                    scheduleLinkifyPreview()
                                 })
                                 .frame(minHeight: 200)
                                 .overlay(

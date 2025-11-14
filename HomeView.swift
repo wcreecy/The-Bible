@@ -54,6 +54,8 @@ struct HomeView: View {
     @FocusState private var focusTitleIsFocused: Bool
     @FocusState private var focusBodyIsFocused: Bool
 
+    @State private var verseRefreshTimer: Timer? = nil
+
     private struct ModernPillButtonStyle: ButtonStyle {
         var tint: Color = .accentColor
         @Environment(\.isEnabled) private var isEnabled
@@ -218,7 +220,8 @@ struct HomeView: View {
                             shared.set(storedVerseText, forKey: "verseOfDayText")
                         }
                         // Prompt widgets to refresh
-                        WidgetCenter.shared.reloadAllTimelines()
+                        scheduleNextAutoVerseRefresh()
+                        WidgetReloadManager.shared.requestReloadAll()
                         let generator = UIImpactFeedbackGenerator(style: .medium)
                         generator.impactOccurred()
                     }) {
@@ -653,6 +656,8 @@ struct HomeView: View {
                             return t || b
                         }()
 
+                        let hasAnyFocusText = !focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !focusBody.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+
                         HStack(spacing: 12) {
                             Button {
                                 // Save focus to shared defaults and update Live Activity/Dynamic Island
@@ -705,7 +710,8 @@ struct HomeView: View {
                             .foregroundStyle(.red)
                             .help("Clear")
                             .accessibilityLabel("Clear")
-                            .disabled(!hasSavedFocus)
+                            .disabled(!hasAnyFocusText)
+                            .opacity(hasAnyFocusText ? 1.0 : 0.5)
                         }
                         .padding(.top, 4)
                         .toolbar { ToolbarItem(placement: .keyboard) { Button("Done") { focusTitleIsFocused = false; focusBodyIsFocused = false } } }
@@ -816,17 +822,12 @@ struct HomeView: View {
             isPaused = storedPaused
             // Cache HealthKit availability
             isHealthKitAvailable = HealthKitManager.shared.isAvailable()
-            // Request HealthKit authorization and start mindful logging on app open
-            if isHealthKitAvailable && !healthKitPrompted {
-                HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
-                    Task { @MainActor in
-                        self.healthKitPrompted = true
-                        startMindfulLoggingIfNeeded()
-                    }
-                }
-            } else {
-                startMindfulLoggingIfNeeded()
+
+            // Defer HealthKit authorization until the user starts the timer to speed up launch
+            if isHealthKitAvailable {
+                startMindfulLoggingIfNeeded() // only marks start time; actual HK write happens when sessions finish
             }
+
             if storedRunning {
                 if isPaused {
                     remainingSeconds = storedRemainingWhenPaused
@@ -838,31 +839,29 @@ struct HomeView: View {
                     }
                 }
             }
-            if verseOfDayPaused {
-                // Restore last verse without refreshing when paused
-                if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
-                    verseOfDay = HomeVerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
-                    if let shared = UserDefaults(suiteName: "group.bible.app") {
-                        shared.set(storedVerseBook, forKey: "verseOfDayBook")
-                        shared.set(storedVerseChapter, forKey: "verseOfDayChapter")
-                        shared.set(storedVerseNumber, forKey: "verseOfDayNumber")
-                        shared.set(storedVerseText, forKey: "verseOfDayText")
-                    }
-                }
-            } else {
-                // Do not arbitrarily refresh; show the last stored verse if available, otherwise seed an initial verse.
-                if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
-                    verseOfDay = HomeVerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
-                    if let shared = UserDefaults(suiteName: "group.bible.app") {
-                        shared.set(storedVerseBook, forKey: "verseOfDayBook")
-                        shared.set(storedVerseChapter, forKey: "verseOfDayChapter")
-                        shared.set(storedVerseNumber, forKey: "verseOfDayNumber")
-                        shared.set(storedVerseText, forKey: "verseOfDayText")
-                    }
-                } else {
-                    loadRandomVerse()
+
+            // Always show cached verse immediately if available; defer refresh
+            if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
+                verseOfDay = HomeVerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
+                if let shared = UserDefaults(suiteName: "group.bible.app") {
+                    shared.set(storedVerseBook, forKey: "verseOfDayBook")
+                    shared.set(storedVerseChapter, forKey: "verseOfDayChapter")
+                    shared.set(storedVerseNumber, forKey: "verseOfDayNumber")
+                    shared.set(storedVerseText, forKey: "verseOfDayText")
                 }
             }
+            // Defer refresh if not paused
+            if !verseOfDayPaused {
+                Task.detached(priority: .background) {
+                    // Small delay to allow first frame to render
+                    try? await Task.sleep(nanoseconds: 300_000_000)
+                    await MainActor.run {
+                        loadRandomVerse()
+                    }
+                }
+            }
+
+            scheduleNextAutoVerseRefresh()
 
             // Initialize stopwatch elapsed from stored state
             if stopwatchRunning {
@@ -892,10 +891,12 @@ struct HomeView: View {
             // Increment a unified tick counter
             unifiedTick &+= 1
 
+            // If neither timer nor stopwatch is active, avoid per-second work
+            if !isTimerRunning && !stopwatchRunning { return }
+
             // If the user is actively typing in Focus, skip per-second background work to keep the UI responsive
-            if isEditingFocus {
-                return
-            }
+            if isEditingFocus { return }
+
             let shouldUpdateLiveActivities = true
 
             // Timer logic: update remaining seconds when running and not paused
@@ -927,12 +928,6 @@ struct HomeView: View {
                     StopwatchActivityController.shared.update(elapsed: stopwatchElapsed, isRunning: true)
                 }
             }
-
-            // Minute tick: every 60 seconds, update marker and check auto verse refresh
-            if unifiedTick % 60 == 0 {
-                timeMarker = (timeMarker + 1) % 60
-                checkAutoVerseRefresh()
-            }
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             switch newPhase {
@@ -948,6 +943,13 @@ struct HomeView: View {
                 }
             @unknown default:
                 break
+            }
+        }
+        .onChange(of: verseOfDayPaused) { _, newVal in
+            if newVal {
+                verseRefreshTimer?.invalidate(); verseRefreshTimer = nil
+            } else {
+                scheduleNextAutoVerseRefresh()
             }
         }
         .sheet(isPresented: $showPrayerStudySheet) {
@@ -967,19 +969,45 @@ struct HomeView: View {
         }
     }
 
-    private func checkAutoVerseRefresh() {
+    private func scheduleNextAutoVerseRefresh() {
+        verseRefreshTimer?.invalidate()
+        verseRefreshTimer = nil
         guard !verseOfDayPaused else { return }
-        let now = Date()
         let cal = Calendar.current
-        let comps = cal.dateComponents([.year, .month, .day, .hour, .minute], from: now)
-        guard let hour = comps.hour, let minute = comps.minute, let year = comps.year, let month = comps.month, let day = comps.day else { return }
-        // Only refresh exactly at 6:00 and 18:00
-        guard minute == 0, (hour == 6 || hour == 18) else { return }
-        let token = "\(year)-\(month)-\(day)-\(hour)"
-        if token != lastVerseAutoRefreshToken {
-            lastVerseAutoRefreshToken = token
-            loadRandomVerse()
+        let now = Date()
+        // Compute next 6:00 or 18:00
+        var comps = cal.dateComponents([.year, .month, .day, .hour, .minute, .second], from: now)
+        let hour = comps.hour ?? 0
+        // Determine next target hour
+        let nextHour: Int
+        if hour < 6 {
+            nextHour = 6
+        } else if hour < 18 {
+            nextHour = 18
+        } else {
+            // Next day at 6
+            nextHour = 30 // sentinel meaning +1 day at 6
         }
+        let targetDate: Date
+        if nextHour == 30 {
+            var nextDay = cal.date(byAdding: .day, value: 1, to: now) ?? now
+            var nextComps = cal.dateComponents([.year, .month, .day], from: nextDay)
+            nextComps.hour = 6
+            nextComps.minute = 0
+            nextComps.second = 0
+            targetDate = cal.date(from: nextComps) ?? now.addingTimeInterval(24*3600)
+        } else {
+            comps.hour = nextHour
+            comps.minute = 0
+            comps.second = 0
+            targetDate = cal.date(from: comps) ?? now
+        }
+        let interval = max(1, targetDate.timeIntervalSinceNow)
+        verseRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
+            loadRandomVerse()
+            scheduleNextAutoVerseRefresh()
+        }
+        RunLoop.main.add(verseRefreshTimer!, forMode: .common)
     }
 
     private func startTimer(minutes: Int) {
@@ -1218,14 +1246,16 @@ struct HomeView: View {
         storedVerseChapter = chapter.number
         storedVerseNumber = verse.number
         storedVerseText = verse.text
-        // Mirror to App Group for widget sync
-        if let shared = UserDefaults(suiteName: "group.bible.app") {
-            shared.set(book.name, forKey: "verseOfDayBook")
-            shared.set(chapter.number, forKey: "verseOfDayChapter")
-            shared.set(verse.number, forKey: "verseOfDayNumber")
-            shared.set(verse.text, forKey: "verseOfDayText")
+        // Mirror to App Group for widget sync on a background queue, then request a throttled reload
+        DispatchQueue.global(qos: .utility).async {
+            if let shared = UserDefaults(suiteName: "group.bible.app") {
+                shared.set(book.name, forKey: "verseOfDayBook")
+                shared.set(chapter.number, forKey: "verseOfDayChapter")
+                shared.set(verse.number, forKey: "verseOfDayNumber")
+                shared.set(verse.text, forKey: "verseOfDayText")
+            }
+            WidgetReloadManager.shared.requestReloadAll()
         }
-        WidgetCenter.shared.reloadAllTimelines()
     }
 
     private func copyVerse(_ v: HomeVerseRef) {
