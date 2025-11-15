@@ -5,6 +5,7 @@ struct BibleSplitView: View {
     @State private var selectedChapter: Chapter? = nil
     @State private var navStartVerse: Int = 1
     @State private var searchText: String = ""
+    @State private var sidebarSearch: String = ""
     @State private var detailPath = NavigationPath()
     
     @State private var debouncedText: String = ""
@@ -62,6 +63,22 @@ struct BibleSplitView: View {
         canon.filter { (indexMap[$0.name] ?? Int.max) >= matthewIndex }
     }
     
+    private var filteredSidebarQuery: String {
+        sidebarSearch.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    private var filteredOTBooks: [Book] {
+        let base = otBooks
+        let q = filteredSidebarQuery
+        guard !q.isEmpty else { return base }
+        return base.filter { $0.name.localizedCaseInsensitiveContains(q) }
+    }
+    private var filteredNTBooks: [Book] {
+        let base = ntBooks
+        let q = filteredSidebarQuery
+        guard !q.isEmpty else { return base }
+        return base.filter { $0.name.localizedCaseInsensitiveContains(q) }
+    }
+    
     private var shouldSearch: Bool {
         let words = debouncedText
             .trimmingCharacters(in: .whitespacesAndNewlines)
@@ -104,9 +121,26 @@ struct BibleSplitView: View {
     private var sidebarView: some View {
         // Sidebar: Books only
         List {
-            if !otBooks.isEmpty {
+            Section {
+                TextField("Search books", text: $sidebarSearch)
+                    .textFieldStyle(.roundedBorder)
+                    .overlay(alignment: .trailing) {
+                        if !sidebarSearch.isEmpty {
+                            Button {
+                                sidebarSearch = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                            .buttonStyle(.plain)
+                            .padding(.trailing, 8)
+                            .accessibilityLabel("Clear search")
+                        }
+                    }
+            }
+            if !filteredOTBooks.isEmpty {
                 Section {
-                    ForEach(otBooks, id: \.name) { book in
+                    ForEach(filteredOTBooks, id: \.name) { book in
                         Button {
                             selectedBook = book
                             selectedChapter = nil
@@ -125,12 +159,12 @@ struct BibleSplitView: View {
                         .buttonStyle(.plain)
                     }
                 } header: {
-                    Text("Old Testament (\(otBooks.count))").font(.footnote).foregroundStyle(.secondary)
+                    Text("Old Testament (\(filteredOTBooks.count))").font(.footnote).foregroundStyle(.secondary)
                 }
             }
-            if !ntBooks.isEmpty {
+            if !filteredNTBooks.isEmpty {
                 Section {
-                    ForEach(ntBooks, id: \.name) { book in
+                    ForEach(filteredNTBooks, id: \.name) { book in
                         Button {
                             selectedBook = book
                             selectedChapter = nil
@@ -149,7 +183,7 @@ struct BibleSplitView: View {
                         .buttonStyle(.plain)
                     }
                 } header: {
-                    Text("New Testament (\(ntBooks.count))").font(.footnote).foregroundStyle(.secondary)
+                    Text("New Testament (\(filteredNTBooks.count))").font(.footnote).foregroundStyle(.secondary)
                 }
             }
         }
@@ -311,4 +345,3 @@ struct BibleSplitView: View {
 #Preview {
     BibleSplitView()
 }
-
