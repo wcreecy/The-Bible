@@ -108,8 +108,6 @@ struct HomeView: View {
     }
 
     private var timerTintColor: Color {
-        // Color based on absolute remaining time
-        // Green > 5 minutes (300s), Yellow between 2 and 5 minutes, Red < 2 minutes (120s)
         if remainingSeconds > 300 {
             return .green
         } else if remainingSeconds > 120 {
@@ -121,7 +119,6 @@ struct HomeView: View {
 
     private var isEvening: Bool {
         let hour = Calendar.current.component(.hour, from: Date())
-        // Evening/Night from 6 PM (18) through 4:59 AM (i.e., hours 0...4)
         return hour >= 18 || hour < 5
     }
 
@@ -141,6 +138,12 @@ struct HomeView: View {
         progressList.first
     }
 
+    // Configurable auto-refresh times (defaults to 6:00 AM and 6:00 PM)
+    @AppStorage("votdRefresh1Hour") private var votdRefresh1Hour: Int = 6
+    @AppStorage("votdRefresh1Minute") private var votdRefresh1Minute: Int = 0
+    @AppStorage("votdRefresh2Hour") private var votdRefresh2Hour: Int = 18
+    @AppStorage("votdRefresh2Minute") private var votdRefresh2Minute: Int = 0
+
     private func startMindfulLoggingIfNeeded() {
         guard isHealthKitAvailable else { return }
         if mindfulStartDate == 0 {
@@ -158,6 +161,55 @@ struct HomeView: View {
             }
             mindfulStartDate = 0
         }
+    }
+
+    // MARK: - Next Verse Auto-Refresh Helpers
+
+    private func dateForToday(hour: Int, minute: Int, from now: Date = Date()) -> Date? {
+        let cal = Calendar.current
+        let comps = cal.dateComponents([.year, .month, .day], from: now)
+        return cal.date(from: DateComponents(year: comps.year, month: comps.month, day: comps.day, hour: hour, minute: minute, second: 0))
+    }
+
+    private func nextAutoRefreshDate(from now: Date = Date()) -> Date {
+        let cal = Calendar.current
+        let t1 = dateForToday(hour: votdRefresh1Hour, minute: votdRefresh1Minute, from: now)!
+        let t2 = dateForToday(hour: votdRefresh2Hour, minute: votdRefresh2Minute, from: now)!
+
+        if now < t1 {
+            return t1
+        } else if now < t2 {
+            return t2
+        } else {
+            // Tomorrow at t1
+            let tomorrow = cal.date(byAdding: .day, value: 1, to: now)!
+            let comps = cal.dateComponents([.year, .month, .day], from: tomorrow)
+            return cal.date(from: DateComponents(year: comps.year, month: comps.month, day: comps.day, hour: votdRefresh1Hour, minute: votdRefresh1Minute, second: 0))!
+        }
+    }
+
+    private var nextVerseRefreshDescription: String {
+        if verseOfDayPaused {
+            return "Auto refresh is paused."
+        }
+        let now = Date()
+        let next = nextAutoRefreshDate(from: now)
+        let cal = Calendar.current
+
+        let isSameDay = cal.isDate(now, inSameDayAs: next)
+        let isTomorrow = cal.isDate(next, inSameDayAs: cal.date(byAdding: .day, value: 1, to: now) ?? next)
+
+        let dayString: String
+        if isSameDay {
+            dayString = "Today"
+        } else if isTomorrow {
+            dayString = "Tomorrow"
+        } else {
+            dayString = next.formatted(date: .abbreviated, time: .omitted)
+        }
+
+        let timeString = next.formatted(date: .omitted, time: .shortened)
+        return "Next refresh: \(dayString) at \(timeString)"
     }
 
     // MARK: - Split cards to reduce type-checking complexity
@@ -276,10 +328,21 @@ struct HomeView: View {
                         .help("Favorite")
                     }
                     .frame(maxWidth: .infinity)
-                } else {
-                    Text("Verse will refresh automatically at 6 AM and 6 PM.")
-                        .font(.subheadline)
+
+                    // Next auto-refresh description
+                    Text(nextVerseRefreshDescription)
+                        .font(.caption)
                         .foregroundStyle(.secondary)
+                        .padding(.top, 4)
+                } else {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Verse will refresh automatically at your selected times.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text(nextVerseRefreshDescription)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
             .contentShape(Rectangle())
@@ -527,7 +590,6 @@ struct HomeView: View {
                             .font(.system(size: 36, weight: .semibold, design: .monospaced))
                         HStack(spacing: 24) {
                             if stopwatchRunning {
-                                // Running: Pause (active), Resume (inactive), Stop (active)
                                 Button(action: { pauseStopwatch() }) {
                                     Image(systemName: "pause.circle.fill")
                                         .font(.system(size: 44))
@@ -553,7 +615,6 @@ struct HomeView: View {
                                 .foregroundStyle(.red)
                                 .accessibilityLabel("Stop")
                             } else if stopwatchElapsed > 0 {
-                                // Paused: Pause (inactive), Resume (active), Stop (active)
                                 Button(action: {}) {
                                     Image(systemName: "pause.circle")
                                         .font(.system(size: 44))
@@ -579,7 +640,6 @@ struct HomeView: View {
                                 .foregroundStyle(.red)
                                 .accessibilityLabel("Stop")
                             } else {
-                                // Ready: large Start icon
                                 Button(action: { startStopwatch() }) {
                                     Image(systemName: "play.circle.fill")
                                         .font(.system(size: 56))
@@ -972,13 +1032,29 @@ struct HomeView: View {
         let now = Date()
         let cal = Calendar.current
         let comps = cal.dateComponents([.year, .month, .day, .hour, .minute], from: now)
-        guard let hour = comps.hour, let minute = comps.minute, let year = comps.year, let month = comps.month, let day = comps.day else { return }
-        // Only refresh exactly at 6:00 and 18:00
-        guard minute == 0, (hour == 6 || hour == 18) else { return }
-        let token = "\(year)-\(month)-\(day)-\(hour)"
-        if token != lastVerseAutoRefreshToken {
-            lastVerseAutoRefreshToken = token
-            loadRandomVerse()
+        guard let hour = comps.hour, let minute = comps.minute,
+              let year = comps.year, let month = comps.month, let day = comps.day else { return }
+
+        func tokenFor(slot: Int) -> String {
+            return "\(year)-\(month)-\(day)-\(slot)-\(minute)"
+        }
+
+        // Only refresh exactly when the current time matches either configured refresh time
+        if hour == votdRefresh1Hour && minute == votdRefresh1Minute {
+            let token = tokenFor(slot: 1)
+            if token != lastVerseAutoRefreshToken {
+                lastVerseAutoRefreshToken = token
+                loadRandomVerse()
+            }
+            return
+        }
+        if hour == votdRefresh2Hour && minute == votdRefresh2Minute {
+            let token = tokenFor(slot: 2)
+            if token != lastVerseAutoRefreshToken {
+                lastVerseAutoRefreshToken = token
+                loadRandomVerse()
+            }
+            return
         }
     }
 
@@ -1546,4 +1622,3 @@ private struct PrayerStudyTimerSetupView: View {
     }
 }
 // Note: HealthKit logging is handled in HomeView, no changes needed here.
-

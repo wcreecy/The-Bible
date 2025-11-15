@@ -1,6 +1,4 @@
 import SwiftUI
-import Combine
-import UIKit
 
 struct SettingsView: View {
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
@@ -14,11 +12,11 @@ struct SettingsView: View {
     @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
     @State private var showingResetQuizAlert: Bool = false
 
-    @AppStorage("appTotalActiveSeconds") private var appTotalActiveSeconds: Int = 0
-    @AppStorage("appActiveStart") private var appActiveStart: Double = 0
-    @State private var liveNowSeconds: Int = 0
-    @State private var showResetAppTimeAlert: Bool = false
-    @State private var appTimeTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    // Verse of the Day auto-refresh times (defaults: 6:00 AM and 6:00 PM)
+    @AppStorage("votdRefresh1Hour") private var votdRefresh1Hour: Int = 6
+    @AppStorage("votdRefresh1Minute") private var votdRefresh1Minute: Int = 0
+    @AppStorage("votdRefresh2Hour") private var votdRefresh2Hour: Int = 18
+    @AppStorage("votdRefresh2Minute") private var votdRefresh2Minute: Int = 0
 
     private var selectionBinding: Binding<ColorSchemePreference> {
         Binding<ColorSchemePreference>(
@@ -38,6 +36,55 @@ struct SettingsView: View {
         Binding<FontFamilyPreference>(
             get: { FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system },
             set: { fontFamilyPreferenceRaw = $0.rawValue }
+        )
+    }
+
+    // Helpers to bind DatePickers to hour/minute AppStorage
+    private var refresh1DateBinding: Binding<Date> {
+        Binding<Date>(
+            get: {
+                var comps = DateComponents()
+                let cal = Calendar.current
+                let now = Date()
+                let base = cal.dateComponents([.year, .month, .day], from: now)
+                comps.year = base.year
+                comps.month = base.month
+                comps.day = base.day
+                comps.hour = votdRefresh1Hour
+                comps.minute = votdRefresh1Minute
+                comps.second = 0
+                return cal.date(from: comps) ?? now
+            },
+            set: { newDate in
+                let cal = Calendar.current
+                let c = cal.dateComponents([.hour, .minute], from: newDate)
+                votdRefresh1Hour = c.hour ?? 6
+                votdRefresh1Minute = c.minute ?? 0
+            }
+        )
+    }
+
+    private var refresh2DateBinding: Binding<Date> {
+        Binding<Date>(
+            get: {
+                var comps = DateComponents()
+                let cal = Calendar.current
+                let now = Date()
+                let base = cal.dateComponents([.year, .month, .day], from: now)
+                comps.year = base.year
+                comps.month = base.month
+                comps.day = base.day
+                comps.hour = votdRefresh2Hour
+                comps.minute = votdRefresh2Minute
+                comps.second = 0
+                return cal.date(from: comps) ?? now
+            },
+            set: { newDate in
+                let cal = Calendar.current
+                let c = cal.dateComponents([.hour, .minute], from: newDate)
+                votdRefresh2Hour = c.hour ?? 18
+                votdRefresh2Minute = c.minute ?? 0
+            }
         )
     }
 
@@ -133,7 +180,7 @@ struct SettingsView: View {
                 .accessibilityIdentifier("keepScreenOnToggle")
             }
             .headerProminence(.increased)
-            Section(header: Text("Verse of the Day"), footer: Text("Choose which part of the Bible the Verse of the Day is selected from. Verse refreshes daily at 6 AM & 6 PM unless paused.").font(.footnote).foregroundStyle(.secondary)) {
+            Section(header: Text("Verse of the Day"), footer: Text("Choose which part of the Bible the Verse of the Day is selected from. You can also set two daily auto-refresh times; the verse will refresh at those times unless paused on the Home page.").font(.footnote).foregroundStyle(.secondary)) {
                 VStack(spacing: 8) {
                     // Custom segmented control with vertical separators
                     HStack(spacing: 0) {
@@ -166,6 +213,21 @@ struct SettingsView: View {
                         )
                         .accessibilityIdentifier("verseOfDaySpecificBookPicker")
                     }
+
+                    // Auto-refresh time pickers
+                    VStack(alignment: .leading, spacing: 10) {
+                        Label("Auto-Refresh Times", systemImage: "clock.arrow.2.circlepath")
+                            .font(.headline)
+
+                        DatePicker("Refresh Time 1", selection: refresh1DateBinding, displayedComponents: .hourAndMinute)
+                            .datePickerStyle(.compact)
+                            .accessibilityIdentifier("votdRefreshTime1")
+
+                        DatePicker("Refresh Time 2", selection: refresh2DateBinding, displayedComponents: .hourAndMinute)
+                            .datePickerStyle(.compact)
+                            .accessibilityIdentifier("votdRefreshTime2")
+                    }
+                    .padding(.top, 8)
                 }
             }
             .headerProminence(.increased)
@@ -216,86 +278,10 @@ struct SettingsView: View {
                 }
             }
             .headerProminence(.increased)
-            Section(header: Text("Time with God (via this app)")) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("Time in App", systemImage: "clock")
-                        .font(.headline)
-
-                    // Adaptive pills layout: try full labels, then short labels, then scroll if needed
-                    let b = timeBreakdown()
-                    ViewThatFits(in: .horizontal) {
-                        // 1) Full labels in one line
-                        HStack(spacing: 8) {
-                            compactPill(label: "Years", value: b.years)
-                            compactPill(label: "Months", value: b.months)
-                            compactPill(label: "Weeks", value: b.weeks)
-                            compactPill(label: "Days", value: b.days)
-                            compactPill(label: "Hours", value: b.hours)
-                            compactPill(label: "Minutes", value: b.minutes)
-                            compactPill(label: "Seconds", value: b.seconds)
-                        }
-                        .padding(.vertical, 2)
-
-                        // 2) Short labels in one line
-                        HStack(spacing: 8) {
-                            compactPill(label: "Yrs", value: b.years)
-                            compactPill(label: "Mo", value: b.months)
-                            compactPill(label: "Wk", value: b.weeks)
-                            compactPill(label: "D", value: b.days)
-                            compactPill(label: "H", value: b.hours)
-                            compactPill(label: "M", value: b.minutes)
-                            compactPill(label: "S", value: b.seconds)
-                        }
-                        .padding(.vertical, 2)
-
-                        // 3) Fallback: short labels with horizontal scroll
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
-                                compactPill(label: "Yrs", value: b.years)
-                                compactPill(label: "Mo", value: b.months)
-                                compactPill(label: "Wk", value: b.weeks)
-                                compactPill(label: "D", value: b.days)
-                                compactPill(label: "H", value: b.hours)
-                                compactPill(label: "M", value: b.minutes)
-                                compactPill(label: "S", value: b.seconds)
-                            }
-                            .padding(.vertical, 2)
-                        }
-                    }
-                    .accessibilityIdentifier("appTotalTimeLabel")
-
-                    HStack {
-                        Spacer()
-                        Label("Reset Time in App", systemImage: "arrow.counterclockwise")
-                            .foregroundStyle(.red)
-                            .onLongPressGesture(minimumDuration: 0.6) {
-                                showResetAppTimeAlert = true
-                            }
-                            .accessibilityAddTraits(.isButton)
-                            .accessibilityHint("Long press to reset time in app")
-                            .alert("Reset Time in App?", isPresented: $showResetAppTimeAlert) {
-                                Button("Cancel", role: .cancel) {}
-                                Button("Reset", role: .destructive) {
-                                    appTotalActiveSeconds = 0
-                                    appActiveStart = Date().timeIntervalSince1970
-                                }
-                            } message: {
-                                Text("This will reset the total time you've spent in the app.")
-                            }
-                    }
-                }
-            }
-            .headerProminence(.increased)
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         .formStyle(.grouped)
-        .onReceive(appTimeTimer) { _ in
-            liveNowSeconds = currentSessionElapsed()
-        }
-        .onAppear {
-            liveNowSeconds = currentSessionElapsed()
-        }
     }
 
     private func segmentButton(title: String, tag: String) -> some View {
@@ -322,30 +308,6 @@ struct SettingsView: View {
         Rectangle()
             .fill(Color.gray.opacity(0.25))
             .frame(width: 1, height: 24)
-    }
-
-    private func flipCard(_ value: Int) -> some View {
-        Text("\(value)")
-            .font(.title3)
-            .monospacedDigit()
-            .fontWeight(.semibold)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-            .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(Color(.secondarySystemBackground))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-            )
-            .overlay(
-                Rectangle()
-                    .fill(Color.black.opacity(0.06))
-                    .frame(height: 1),
-                alignment: .center
-            )
-            .shadow(color: Color.black.opacity(0.05), radius: 1, x: 0, y: 1)
     }
 
     private func appearanceSegmentButton(_ pref: ColorSchemePreference) -> some View {
@@ -410,73 +372,8 @@ struct SettingsView: View {
         }
         .buttonStyle(.plain)
     }
-    
-    private func currentSessionElapsed() -> Int {
-        guard appActiveStart > 0 else { return 0 }
-        let start = Date(timeIntervalSince1970: appActiveStart)
-        return max(0, Int(Date().timeIntervalSince(start)))
-    }
-
-    private func timeBreakdown() -> (years: Int, months: Int, weeks: Int, days: Int, hours: Int, minutes: Int, seconds: Int) {
-        let total = appTotalActiveSeconds + liveNowSeconds
-        var remaining = total
-        let years = remaining / (365 * 24 * 3600); remaining %= (365 * 24 * 3600)
-        let months = remaining / (30 * 24 * 3600); remaining %= (30 * 24 * 3600)
-        let weeks = remaining / (7 * 24 * 3600); remaining %= (7 * 24 * 3600)
-        let days = remaining / (24 * 3600); remaining %= (24 * 3600)
-        let hours = remaining / 3600; remaining %= 3600
-        let minutes = remaining / 60
-        let seconds = remaining % 60
-        return (years, months, weeks, days, hours, minutes, seconds)
-    }
-
-    private func formattedTotalAppTime() -> String {
-        let total = appTotalActiveSeconds + liveNowSeconds
-        // Define units: years (365d), months (30d), weeks (7d), days, hours, minutes, seconds
-        var remaining = total
-        let years = remaining / (365 * 24 * 3600); remaining %= (365 * 24 * 3600)
-        let months = remaining / (30 * 24 * 3600); remaining %= (30 * 24 * 3600)
-        let weeks = remaining / (7 * 24 * 3600); remaining %= (7 * 24 * 3600)
-        let days = remaining / (24 * 3600); remaining %= (24 * 3600)
-        let hours = remaining / 3600; remaining %= 3600
-        let minutes = remaining / 60
-        let seconds = remaining % 60
-        // Build human-readable string omitting zero-leading units except to show zeros up to minutes if needed
-        var parts: [String] = []
-        parts.append("\(years) year\(years == 1 ? "" : "s")")
-        parts.append("\(months) month\(months == 1 ? "" : "s")")
-        parts.append("\(weeks) week\(weeks == 1 ? "" : "s")")
-        parts.append("\(days) day\(days == 1 ? "" : "s")")
-        if hours > 0 { parts.append("\(hours) hour\(hours == 1 ? "" : "s")") }
-        parts.append("\(minutes) minute\(minutes == 1 ? "" : "s")")
-        parts.append("\(seconds) second\(seconds == 1 ? "" : "s")")
-        return parts.joined(separator: ", ")
-    }
-
-    private func compactPill(label: String, value: Int) -> some View {
-        VStack(spacing: 2) {
-            Text(label)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-            Text("\(value)")
-                .font(.subheadline)
-                .monospacedDigit()
-                .fontWeight(.semibold)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .background(
-                    Capsule(style: .continuous)
-                        .fill(Color(.secondarySystemBackground))
-                )
-                .overlay(
-                    Capsule(style: .continuous)
-                        .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                )
-        }
-    }
 }
 
 #Preview {
     NavigationStack { SettingsView() }
 }
-

@@ -19,9 +19,8 @@ struct ContentView: View {
     
     @State private var rootSize: CGSize = .zero
     
-    @Environment(\.scenePhase) private var scenePhase
-    @AppStorage("appTotalActiveSeconds") private var appTotalActiveSeconds: Int = 0
-    @AppStorage("appActiveStart") private var appActiveStart: Double = 0
+    // One-time cleanup flag for deprecated app time keys
+    @AppStorage("didCleanupAppTimeKeys") private var didCleanupAppTimeKeys: Bool = false
     
     private var preferredScheme: ColorScheme? { (ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme }
     private var preferredDynamicType: DynamicTypeSize? { (FontSizePreference(rawValue: fontSizePreferenceRaw) ?? .system).dynamicTypeSize }
@@ -252,8 +251,11 @@ struct ContentView: View {
         .font(preferredCustomFontName != nil ? .custom(preferredCustomFontName!, size: baseFontSize) : .system(size: baseFontSize))
         .fontDesign(preferredFontDesign ?? .default)
         .onAppear {
-            if appActiveStart == 0 {
-                appActiveStart = Date().timeIntervalSince1970
+            // One-time cleanup of deprecated app time keys
+            if !didCleanupAppTimeKeys {
+                UserDefaults.standard.removeObject(forKey: "appTotalActiveSeconds")
+                UserDefaults.standard.removeObject(forKey: "appActiveStart")
+                didCleanupAppTimeKeys = true
             }
             // Ensure Focus Live Activity is visible on Lock Screen/Dynamic Island across the app
             if let shared = UserDefaults(suiteName: "group.bible.app") {
@@ -263,23 +265,6 @@ struct ContentView: View {
                 if hasContent {
                     PrayerTimerActivityController.shared.ensureFocusIfNone(title: title?.isEmpty == true ? nil : title, body: body?.isEmpty == true ? nil : body)
                 }
-            }
-        }
-        .onChange(of: scenePhase) { _, newPhase in
-            switch newPhase {
-            case .active:
-                if appActiveStart == 0 {
-                    appActiveStart = Date().timeIntervalSince1970
-                }
-            case .inactive, .background:
-                if appActiveStart > 0 {
-                    let start = Date(timeIntervalSince1970: appActiveStart)
-                    let delta = max(0, Int(Date().timeIntervalSince(start)))
-                    appTotalActiveSeconds += delta
-                    appActiveStart = 0
-                }
-            @unknown default:
-                break
             }
         }
         .background(

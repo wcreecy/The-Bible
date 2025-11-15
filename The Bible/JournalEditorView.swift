@@ -30,32 +30,65 @@ struct JournalEditorView: View {
     @State private var bookQuery: String = ""
 
     @State private var textSelectionRange: NSRange = NSRange(location: 0, length: 0)
+    // Caret rect (in the UITextView’s local coordinate space) used to anchor the suggestions popup
+    @State private var caretRect: CGRect? = nil
 
     private func updateBookSuggestions() {
         let text = content
-        // Find the last occurrence of '#'
-        guard let hashIdx = text.lastIndex(of: "#") else {
+
+        // Map caret (UTF16) to String.Index
+        let caretLoc = textSelectionRange.location
+        let utf16 = text.utf16
+        let clamped = min(caretLoc, utf16.count)
+        guard let caretUTF16Index = utf16.index(utf16.startIndex, offsetBy: clamped, limitedBy: utf16.endIndex),
+              let caretIndex = caretUTF16Index.samePosition(in: text) else {
             showBookSuggestions = false
             bookQuery = ""
             return
         }
-        let afterHash = text.index(after: hashIdx)
-        // Build the query from after '#' until a disallowed character (whitespace/newline or non-letter/non-period)
-        var idx = afterHash
-        let allowed: CharacterSet = CharacterSet.letters.union(CharacterSet(charactersIn: "."))
-        while idx < text.endIndex {
-            let ch = text[idx]
-            // Stop at whitespace/newline
-            if ch.isWhitespace || ch == "\n" { break }
-            // Stop if not allowed (e.g., punctuation, digits, symbols)
-            if let scalar = ch.unicodeScalars.first, !allowed.contains(scalar) { break }
-            idx = text.index(after: idx)
+
+        // Walk backward from the caret to find a '#' that starts the current token,
+        // stopping if we hit whitespace/newline or a disallowed character first.
+        let allowed: CharacterSet = CharacterSet.letters
+            .union(.decimalDigits)
+            .union(CharacterSet(charactersIn: "."))
+
+        var i = caretIndex
+        var foundHash: String.Index? = nil
+        while i > text.startIndex {
+            i = text.index(before: i)
+            let ch = text[i]
+            if ch == "#" {
+                foundHash = i
+                break
+            }
+            if ch.isWhitespace || ch == "\n" {
+                // We crossed a boundary before finding '#': not a valid trigger
+                break
+            }
+            if let scalar = ch.unicodeScalars.first, !allowed.contains(scalar) {
+                // Disallowed punctuation/symbol before reaching '#': not a valid trigger
+                break
+            }
         }
-        let rawQuery = String(text[afterHash..<idx])
-        // Normalize spacing and trim punctuation just in case
+
+        guard let hashIdx = foundHash else {
+            showBookSuggestions = false
+            bookQuery = ""
+            return
+        }
+
+        let afterHash = text.index(after: hashIdx)
+        // Query is the token between '#' and caret (can be empty right after typing '#')
+        guard afterHash <= caretIndex else {
+            showBookSuggestions = false
+            bookQuery = ""
+            return
+        }
+
+        let rawQuery = String(text[afterHash..<caretIndex])
         let cleaned = rawQuery.trimmingCharacters(in: .whitespacesAndNewlines)
         bookQuery = cleaned
-        // Always show suggestions when a '#' exists unless user explicitly dismisses (handled by UI)
         showBookSuggestions = true
     }
 
@@ -208,42 +241,38 @@ struct JournalEditorView: View {
                                             .padding(.top, 8)
                                             .padding(.leading, 5)
                                     }
-                                    CursorTextView(text: $content, selection: $textSelectionRange, onChange: { _ in
-                                        updateBookSuggestions()
-                                    })
+                                    // Text view + caret tracking
+                                    CursorTextView(
+                                        text: $content,
+                                        selection: $textSelectionRange,
+                                        caretRect: $caretRect,
+                                        onChange: { _ in
+                                            updateBookSuggestions()
+                                        }
+                                    )
                                     .frame(minHeight: 400)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 8, style: .continuous)
                                             .stroke(Color.gray.opacity(0.25), lineWidth: 1)
                                     )
-                                }
-                                if showBookSuggestions {
-                                    Divider()
-                                        .padding(.top, 6)
-                                    VStack(alignment: .leading, spacing: 6) {
-                                        Text("Bible Books")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                        ForEach(filteredBooksForQuery, id: \.self) { name in
-                                            Button(action: { replaceCurrentTrigger(with: name) }) {
-                                                Text(name)
-                                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                                    .padding(.vertical, 6)
-                                                    .padding(.horizontal, 8)
-                                                    .background(
-                                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                                            .fill(Color(.secondarySystemBackground))
-                                                    )
-                                            }
-                                            .buttonStyle(.plain)
+
+                                    // Suggestions popup anchored to caret
+                                    if showBookSuggestions, let caret = caretRect {
+                                        GeometryReader { geo in
+                                            suggestionsPopup
+                                                .fixedSize(horizontal: false, vertical: true)
+                                                .frame(maxWidth: min(geo.size.width * 0.9, 320))
+                                                .offset(x: clampX(caret.minX, geo: geo), y: clampY(caret.maxY + 6, geo: geo))
                                         }
+                                        .zIndex(10) // Ensure popup stays above any neighboring panels
+                                        .transition(.opacity)
                                     }
-                                    .padding(.top, 6)
                                 }
                             }
                             .padding(20)
                         }
-                        .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        // Raise the entire editor column above the right column while suggestions are visible
+                        .zIndex(showBookSuggestions ? 2 : 0)
 
                         Divider()
 
@@ -255,13 +284,6 @@ struct JournalEditorView: View {
                                 Text("Entry Stats & Links")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
-                                // Stats row
-                                HStack(spacing: 12) {
-                                    Label("\(wordCount) words", systemImage: "textformat")
-                                    Label("\(characterCount) chars", systemImage: "character.book.closed")
-                                }
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
 
                                 let refs = detectedScriptureRefs()
                                 if !refs.isEmpty {
@@ -362,6 +384,7 @@ struct JournalEditorView: View {
                             }
                             .padding(20)
                         }
+                        .zIndex(1) // Baseline for right column
                         .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
 
                         if showTagColors {
@@ -442,50 +465,37 @@ struct JournalEditorView: View {
                                         .padding(.top, 8)
                                         .padding(.leading, 5)
                                 }
-                                CursorTextView(text: $content, selection: $textSelectionRange, onChange: { _ in
-                                    updateBookSuggestions()
-                                })
+                                // Text view + caret tracking
+                                CursorTextView(
+                                    text: $content,
+                                    selection: $textSelectionRange,
+                                    caretRect: $caretRect,
+                                    onChange: { _ in
+                                        updateBookSuggestions()
+                                    }
+                                )
                                 .frame(minHeight: 200)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 8, style: .continuous)
                                         .stroke(Color.gray.opacity(0.25), lineWidth: 1)
                                 )
-                            }
-                            if showBookSuggestions {
-                                Divider()
-                                    .padding(.top, 6)
-                                VStack(alignment: .leading, spacing: 6) {
-                                    Text("Bible Books")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                    ForEach(filteredBooksForQuery, id: \.self) { name in
-                                        Button(action: { replaceCurrentTrigger(with: name) }) {
-                                            Text(name)
-                                                .frame(maxWidth: .infinity, alignment: .leading)
-                                                .padding(.vertical, 6)
-                                                .padding(.horizontal, 8)
-                                                .background(
-                                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                                        .fill(Color(.secondarySystemBackground))
-                                                )
-                                        }
-                                        .buttonStyle(.plain)
+
+                                // Suggestions popup anchored to caret
+                                if showBookSuggestions, let caret = caretRect {
+                                    GeometryReader { geo in
+                                        suggestionsPopup
+                                            .fixedSize(horizontal: false, vertical: true)
+                                            .frame(maxWidth: min(geo.size.width * 0.95, 320))
+                                            .offset(x: clampX(caret.minX, geo: geo), y: clampY(caret.maxY + 6, geo: geo))
                                     }
+                                    .zIndex(10) // Ensure popup stays above subsequent sections in the form
+                                    .transition(.opacity)
                                 }
-                                .padding(.top, 6)
                             }
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("Entry Stats & Links")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
-
-                                // Stats row
-                                HStack(spacing: 12) {
-                                    Label("\(wordCount) words", systemImage: "textformat")
-                                    Label("\(characterCount) chars", systemImage: "character.book.closed")
-                                }
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
 
                                 let refs = detectedScriptureRefs()
                                 if !refs.isEmpty {
@@ -595,22 +605,62 @@ struct JournalEditorView: View {
                 Text(saveErrorMessage)
             }
             .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
-            .onAppear { updateBookSuggestions() }
+            .onChange(of: textSelectionRange) { _ in
+                // Hide/show suggestions appropriately as the caret moves
+                updateBookSuggestions()
+            }
         }
     }
 
-    private var wordCount: Int {
-        content.split { $0.isWhitespace || $0.isNewline }.count
+    // Suggestions popup view
+    private var suggestionsPopup: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            if !filteredBooksForQuery.isEmpty {
+                ForEach(filteredBooksForQuery, id: \.self) { name in
+                    Button(action: { replaceCurrentTrigger(with: name) }) {
+                        HStack {
+                            Text(name)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .fill(Color(.secondarySystemBackground))
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            } else {
+                Text("No matches")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 10)
+            }
+        }
+        .padding(8)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(.systemBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.12), radius: 10, x: 0, y: 6)
     }
-    private var characterCount: Int { content.count }
-    private var paragraphCount: Int {
-        content.split(whereSeparator: { $0 == "\n" }).split(separator: "\n\n").count
+
+    // Clamp X so the popup stays inside the text view’s bounds
+    private func clampX(_ desiredX: CGFloat, geo: GeometryProxy) -> CGFloat {
+        let maxX = geo.size.width - 16 // padding from right edge
+        return max(0, min(desiredX, maxX))
     }
-    private var estimatedReadingMinutes: Int {
-        let minutes = Double(wordCount) / 200.0
-        return max(1, Int(ceil(minutes)))
+    // Clamp Y similarly (basic protection; popup height is unknown so we just keep a top margin)
+    private func clampY(_ desiredY: CGFloat, geo: GeometryProxy) -> CGFloat {
+        let maxY = geo.size.height - 16
+        return max(0, min(desiredY, maxY))
     }
-    private var tagCount: Int { parsedTags.count }
 
     private func save() {
         let tags = tagsText
@@ -658,6 +708,7 @@ struct JournalEditorView: View {
 private struct CursorTextView: UIViewRepresentable {
     @Binding var text: String
     @Binding var selection: NSRange
+    @Binding var caretRect: CGRect?
     var onChange: ((String) -> Void)? = nil
 
     func makeUIView(context: Context) -> UITextView {
@@ -672,6 +723,13 @@ private struct CursorTextView: UIViewRepresentable {
         tv.smartQuotesType = .no
         tv.smartInsertDeleteType = .no
         tv.font = UIFont.preferredFont(forTextStyle: .body)
+        // Provide consistent insets so caret positioning matches overlay
+        tv.textContainer.lineFragmentPadding = 5
+        tv.textContainerInset = UIEdgeInsets(top: 8, left: 4, bottom: 8, right: 4)
+        // Initial caret update on next runloop
+        DispatchQueue.main.async {
+            context.coordinator.updateCaretRect(tv)
+        }
         return tv
     }
 
@@ -685,19 +743,49 @@ private struct CursorTextView: UIViewRepresentable {
             let loc = min(selection.location, maxLoc)
             uiView.selectedRange = NSRange(location: loc, length: selection.length)
         }
+        // Keep caret rect fresh (e.g., dynamic type or size changes)
+        context.coordinator.updateCaretRect(uiView)
     }
 
     func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
 
-    final class Coordinator: NSObject, UITextViewDelegate {
+    final class Coordinator: NSObject, UITextViewDelegate, UIScrollViewDelegate {
         var parent: CursorTextView
         init(parent: CursorTextView) { self.parent = parent }
+
         func textViewDidChange(_ textView: UITextView) {
             parent.text = textView.text
-            parent.onChange?(textView.text)
+            // Ensure caret position in SwiftUI is current before triggering onChange
+            parent.selection = textView.selectedRange
+            updateCaretRect(textView)
+            // Defer the callback to the next runloop so caret/selection are fully settled
+            DispatchQueue.main.async {
+                self.parent.onChange?(textView.text)
+            }
         }
+
         func textViewDidChangeSelection(_ textView: UITextView) {
             parent.selection = textView.selectedRange
+            updateCaretRect(textView)
+            // Also trigger suggestion update when the caret moves
+            DispatchQueue.main.async {
+                self.parent.onChange?(textView.text)
+            }
+        }
+
+        func scrollViewDidScroll(_ scrollView: UIScrollView) {
+            guard let tv = scrollView as? UITextView else { return }
+            updateCaretRect(tv)
+        }
+
+        func updateCaretRect(_ textView: UITextView) {
+            if let range = textView.selectedTextRange {
+                let rect = textView.caretRect(for: range.start)
+                // This rect is in textView’s coordinate space, matching the SwiftUI overlay geometry
+                parent.caretRect = rect
+            } else {
+                parent.caretRect = nil
+            }
         }
     }
 }
