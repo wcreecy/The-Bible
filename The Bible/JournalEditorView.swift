@@ -40,6 +40,10 @@ struct JournalEditorView: View {
     // Caret rect (in the UITextView’s local coordinate space) used to anchor the suggestions popup
     @State private var caretRect: CGRect? = nil
 
+    // Collapsible sections on iPhone
+    @State private var isTitleExpanded: Bool = true
+    @State private var isTagsExpanded: Bool = true
+
     // Precomputed book names to avoid rebuilding arrays per keystroke
     private static let allBookNames: [String] = BibleData.books.map { $0.name }
     private static let allBookNamesLower: [String] = allBookNames.map { $0.lowercased() }
@@ -102,22 +106,32 @@ struct JournalEditorView: View {
         let q = bookQuery.trimmingCharacters(in: .whitespacesAndNewlines)
         if q.isEmpty { return Array(names.prefix(10)) }
         let qLower = q.lowercased()
-        // Prefer prefix matches first, then contains
+
         var results: [String] = []
-        for (idx, nameLower) in lower.enumerated() {
-            if nameLower.hasPrefix(qLower) {
+        var seen = Set<String>() // track lowercased names to avoid duplicates
+
+        func appendIfNew(_ idx: Int) {
+            let key = lower[idx]
+            if !seen.contains(key) {
                 results.append(names[idx])
-                if results.count == 10 { return results }
+                seen.insert(key)
             }
         }
+
+        // Prefer prefix matches first
+        for (idx, nameLower) in lower.enumerated() where nameLower.hasPrefix(qLower) {
+            appendIfNew(idx)
+            if results.count == 10 { return results }
+        }
+
+        // Then contains matches, excluding anything already added
         if results.count < 10 {
-            for (idx, nameLower) in lower.enumerated() {
-                if nameLower.contains(qLower) {
-                    results.append(names[idx])
-                    if results.count == 10 { break }
-                }
+            for (idx, nameLower) in lower.enumerated() where nameLower.contains(qLower) {
+                appendIfNew(idx)
+                if results.count == 10 { break }
             }
         }
+
         return results
     }
 
@@ -308,6 +322,8 @@ struct JournalEditorView: View {
                     .frame(minWidth: 280, idealWidth: 300, maxWidth: 340, maxHeight: .infinity, alignment: .topLeading)
             }
         }
+        // Ensure overlays from the editor can extend over the right side if needed
+        .clipped(antialiased: false)
     }
 
     private var editorColumn: some View {
@@ -324,6 +340,8 @@ struct JournalEditorView: View {
                 tagChipsView
 
                 textEditorWithSuggestions
+                    // Make sure the editor’s popup wins stacking inside this column
+                    .zIndex(showBookSuggestions ? 10 : 0)
             }
             .padding(20)
         }
@@ -422,8 +440,9 @@ struct JournalEditorView: View {
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: min(geo.size.width * 0.9, 320))
                         .offset(x: clampX(caret.minX, geo: geo), y: clampY(caret.maxY + 6, geo: geo))
+                        .zIndex(1000) // Keep popup above anything within the editor
                 }
-                .zIndex(10) // Ensure popup stays above any neighboring panels
+                .zIndex(1000)
                 .transition(.opacity)
             }
         }
@@ -550,37 +569,57 @@ struct JournalEditorView: View {
 
     private var compactLayout: some View {
         Form {
+            // Collapsible Title section
             Section {
-                TextField("Title", text: $title)
-                    .foregroundStyle(.primary)
-                if let ref = verseRef {
-                    LabeledContent("Linked Verse", value: ref.display)
-                }
-            }
-            Section("Tags") {
-                TextField("sermon notes, prayer, study…", text: $tagsText)
-                    .textInputAutocapitalization(.never)
-                    .foregroundStyle(.primary)
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(parsedTags, id: \.self) { t in
-                        HStack(spacing: 8) {
-                            let color = TagColorStore.color(for: t) ?? .accentColor
-                            Text(t)
-                                .font(.caption)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(color.opacity(0.15), in: Capsule())
-                                .overlay(
-                                    Capsule().stroke(color.opacity(0.4), lineWidth: 1)
-                                )
-                                .foregroundStyle(color)
-                            ColorPicker("", selection: colorBinding(for: t), supportsOpacity: false)
-                                .labelsHidden()
+                DisclosureGroup(isExpanded: $isTitleExpanded) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        TextField("Title", text: $title)
+                            .foregroundStyle(.primary)
+                        if let ref = verseRef {
+                            LabeledContent("Linked Verse", value: ref.display)
                         }
                     }
+                } label: {
+                    Text("Title")
+                        .font(.headline)
                 }
             }
+
+            // Collapsible Tags section
+            Section {
+                DisclosureGroup(isExpanded: $isTagsExpanded) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        TextField("sermon notes, prayer, study…", text: $tagsText)
+                            .textInputAutocapitalization(.never)
+                            .foregroundStyle(.primary)
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(parsedTags, id: \.self) { t in
+                                HStack(spacing: 8) {
+                                    let color = TagColorStore.color(for: t) ?? .accentColor
+                                    Text(t)
+                                        .font(.caption)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(color.opacity(0.15), in: Capsule())
+                                        .overlay(
+                                            Capsule().stroke(color.opacity(0.4), lineWidth: 1)
+                                        )
+                                        .foregroundStyle(color)
+                                    ColorPicker("", selection: colorBinding(for: t), supportsOpacity: false)
+                                        .labelsHidden()
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    Text("Tags")
+                        .font(.headline)
+                }
+            }
+
+            // Body section stays always visible
             Section("Body") {
+                // Editor only on iPhone: remove "Entry Stats & Links" to maximize space
                 ZStack(alignment: .topLeading) {
                     if content.isEmpty {
                         Text("Write your thoughts here.  To create smart links, type # in front of the book name, e.g. #Romans 1:2-3")
@@ -588,7 +627,6 @@ struct JournalEditorView: View {
                             .padding(.top, 8)
                             .padding(.leading, 5)
                     }
-                    // Text view + caret tracking
                     CursorTextView(
                         text: $content,
                         selection: $textSelectionRange,
@@ -598,7 +636,7 @@ struct JournalEditorView: View {
                             scheduleSuggestionsUpdate()
                         }
                     )
-                    .frame(minHeight: 200)
+                    .frame(minHeight: 280) // Expanded editor height on iPhone
                     .overlay(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
                             .stroke(Color.gray.opacity(0.25), lineWidth: 1)
@@ -611,56 +649,16 @@ struct JournalEditorView: View {
                                 .fixedSize(horizontal: false, vertical: true)
                                 .frame(maxWidth: min(geo.size.width * 0.95, 320))
                                 .offset(x: clampX(caret.minX, geo: geo), y: clampY(caret.maxY + 6, geo: geo))
+                                .zIndex(1000)
                         }
-                        .zIndex(10) // Ensure popup stays above subsequent sections in the form
+                        .zIndex(1000)
                         .transition(.opacity)
                     }
                 }
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Entry Stats & Links")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-
-                    let refs: [ScriptureRef] = detectedScriptureRefs()
-                    if !refs.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Scripture Links")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            ForEach(Array(refs.enumerated()), id: \.offset) { _, ref in
-                                HStack(spacing: 8) {
-                                    Button(action: {
-                                        if let content = BibleReferenceLinker.loadVerses(for: ref) {
-                                            previewRef = ref
-                                            previewContent = content
-                                            withAnimation(.spring()) { showPreview = true }
-                                        }
-                                    }) {
-                                        Text(displayString(for: ref))
-                                            .font(.subheadline)
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                            .foregroundStyle(.blue)
-                                            .underline()
-                                    }
-                                    .buttonStyle(.plain)
-
-                                    Button { copy(ref) } label: { Image(systemName: "doc.on.doc") }
-                                        .buttonStyle(.plain)
-                                        .foregroundStyle(.blue)
-                                        .accessibilityLabel("Copy reference")
-                                }
-                            }
-                        }
-                    }
-
-                    if showPreview, let content = previewContent {
-                        scripturePreviewCard(content: content)
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
-                    }
-                }
-                .padding(.top, 8)
+                .zIndex(2)
             }
         }
+        .clipped(antialiased: false)
     }
 
     // Suggestions popup view
