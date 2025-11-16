@@ -54,6 +54,9 @@ struct HomeView: View {
     @FocusState private var focusTitleIsFocused: Bool
     @FocusState private var focusBodyIsFocused: Bool
 
+    // NEW: controls whether the focus body is shown
+    @State private var isFocusBodyExpanded: Bool = false
+
     private struct ModernPillButtonStyle: ButtonStyle {
         var tint: Color = .accentColor
         @Environment(\.isEnabled) private var isEnabled
@@ -636,7 +639,7 @@ struct HomeView: View {
                         ModePicker(disabled: isTimerRunning || stopwatchRunning)
 
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Title")
+                            Text("Today's Focus")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                             TextField("Shown on Dynamic Island", text: $focusTitle)
@@ -647,7 +650,8 @@ struct HomeView: View {
 
                         let hasTitle = !focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
-                        if hasTitle {
+                        // Body stays hidden unless explicitly expanded via the arrow button.
+                        if hasTitle && isFocusBodyExpanded {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Body")
                                     .font(.subheadline)
@@ -699,13 +703,12 @@ struct HomeView: View {
                                     withAnimation(.easeOut) { showFocusSavedToast = false }
                                 }
                             } label: {
-                                Label("Save", systemImage: "square.and.arrow.down")
+                                Label("Save Focus", systemImage: "square.and.arrow.down")
                             }
-                            .labelStyle(.iconOnly)
-                            .font(.title3)
-                            .buttonStyle(.plain)
-                            .help("Save")
-                            .accessibilityLabel("Save")
+                            .buttonStyle(ModernPillButtonStyle(tint: .green))
+                            .controlSize(.regular)
+                            .accessibilityLabel("Save Focus")
+                            .accessibilityHint("Saves your daily focus and shows it on the Dynamic Island")
                             .disabled(!hasTypedLetter)
 
                             Button {
@@ -720,16 +723,35 @@ struct HomeView: View {
                                 hasSavedFocus = false
                                 focusTitleIsFocused = false
                                 focusBodyIsFocused = false
+                                // Also collapse body
+                                isFocusBodyExpanded = false
                             } label: {
-                                Label("Clear", systemImage: "xmark.circle.fill")
+                                Label("Clear Focus", systemImage: "xmark.circle.fill")
                             }
-                            .labelStyle(.iconOnly)
-                            .font(.title3)
-                            .buttonStyle(.plain)
-                            .foregroundStyle(.red)
-                            .help("Clear")
-                            .accessibilityLabel("Clear")
+                            .buttonStyle(ModernPillButtonStyle(tint: .red))
+                            .controlSize(.regular)
+                            .accessibilityLabel("Clear Focus")
+                            .accessibilityHint("Clears your daily focus and removes it from the Dynamic Island")
                             .disabled(!hasSavedFocus)
+
+                            // Down arrow to expand/collapse the body
+                            Button {
+                                withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+                                    isFocusBodyExpanded.toggle()
+                                }
+                                if !isFocusBodyExpanded {
+                                    // Dismiss body focus when collapsing
+                                    focusBodyIsFocused = false
+                                }
+                            } label: {
+                                Image(systemName: isFocusBodyExpanded ? "chevron.up.circle" : "chevron.down.circle")
+                                    .font(.title3)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(isFocusBodyExpanded ? "Hide Body" : "Show Body")
+                            .accessibilityHint(isFocusBodyExpanded ? "Hides the focus notes field" : "Shows the focus notes field")
+                            .disabled(!hasTitle)
+                            .foregroundStyle(.secondary)
                         }
                         .padding(.top, 4)
                         .toolbar { ToolbarItem(placement: .keyboard) { Button("Done") { focusTitleIsFocused = false; focusBodyIsFocused = false } } }
