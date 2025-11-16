@@ -13,26 +13,8 @@ extension View {
                     ChaptersView(book: book)
 
                 case .chapter(let book, let chapter):
-                    ReadingView(book: book, chapter: chapter, startVerse: 1)
-                        .id("\(book.name)-\(chapter.number)-1")
-                        .font(.system(size: readerFontSize.wrappedValue))
-                        .toolbar {
-                            ToolbarItemGroup(placement: .topBarTrailing) {
-                                Button {
-                                    readerFontSize.wrappedValue = max(12, readerFontSize.wrappedValue - 1)
-                                } label: {
-                                    Image(systemName: "textformat.size.smaller")
-                                }
-                                .accessibilityLabel("Decrease font size")
-
-                                Button {
-                                    readerFontSize.wrappedValue = min(30, readerFontSize.wrappedValue + 1)
-                                } label: {
-                                    Image(systemName: "textformat.size.larger")
-                                }
-                                .accessibilityLabel("Increase font size")
-                            }
-                        }
+                    // Show the verses list so the user can pick which verse to read.
+                    VersesView(book: book, chapter: chapter)
 
                 case .reader(let book, let chapter, let startVerse):
                     ReadingView(book: book, chapter: chapter, startVerse: startVerse)

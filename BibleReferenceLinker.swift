@@ -12,6 +12,20 @@ enum BibleReferenceLinker {
     // Custom URL scheme for in-app scripture links
     private static let scheme = "thebible-ref"
 
+    // Cache the compiled regex once
+    private static let cachedRegex: NSRegularExpression? = {
+        // Match a boundary (start of string or any non-alphanumeric), then a book name that may start with an optional ordinal (1-3) and optional space.
+        // The book name is 1-3 tokens of letters (and periods for abbreviations). Then whitespace, then chapter:verse with optional range.
+        // Capture groups:
+        // 1: boundary (may be zero-width when at start of string)
+        // 2: book token(s)
+        // 3: chapter digits
+        // 4: start verse digits
+        // 5: optional end verse digits
+        let pattern = "(^|[^A-Za-z0-9])((?:[1-3]\\s*)?[A-Za-z][A-Za-z.]*?(?:\\s+[A-Za-z.]+){0,2})\\s+(\\d+):(\\d+)(?:[\\-\\u2013\\u2014](\\d+))?"
+        return try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
+    }()
+
     // Common book abbreviations mapped to canonical names (lowercased keys)
     private static let abbreviations: [String: String] = [
         // Pentateuch
@@ -124,30 +138,15 @@ enum BibleReferenceLinker {
         return nil
     }
 
-    /// Build a regex that matches references like "John 3:16" or "1 John 4:7-8" using known book names.
-    private static func referenceRegex() -> NSRegularExpression? {
-        // Match a boundary (start of string or any non-alphanumeric), then a book name that may start with an optional ordinal (1-3) and optional space.
-        // The book name is 1-3 tokens of letters (and periods for abbreviations). Then whitespace, then chapter:verse with optional range.
-        // Capture groups:
-        // 1: boundary (may be zero-width when at start of string)
-        // 2: book token(s)
-        // 3: chapter digits
-        // 4: start verse digits
-        // 5: optional end verse digits
-        let pattern = "(^|[^A-Za-z0-9])((?:[1-3]\\s*)?[A-Za-z][A-Za-z.]*?(?:\\s+[A-Za-z.]+){0,2})\\s+(\\d+):(\\d+)(?:[\\-\\u2013\\u2014](\\d+))?"
-        return try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
-    }
-
     /// Returns an AttributedString with link attributes for detected references.
     static func linkify(_ text: String) -> AttributedString {
         var attributed = AttributedString(text)
-        guard let regex = referenceRegex() else { return attributed }
+        guard let regex = cachedRegex else { return attributed }
         let ns = text as NSString
         let matches = regex.matches(in: text, options: [], range: NSRange(location: 0, length: ns.length))
         // Walk from end to start to avoid range shifting while editing attributes
         for m in matches.reversed() {
             guard m.numberOfRanges >= 6 else { continue }
-            let boundaryRange = m.range(at: 1)
             let bookRange = m.range(at: 2)
             let chapterRange = m.range(at: 3)
             let startRange = m.range(at: 4)

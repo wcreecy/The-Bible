@@ -22,8 +22,9 @@ struct VersesView: View {
     var body: some View {
         List {
             ForEach(chapter.verses) { verse in
-                NavigationLink(destination: ReadingView(book: book, chapter: chapter, startVerse: verse.number)
-                    .id("\(book.name)-\(chapter.number)-\(verse.number)")) {
+                NavigationLink(
+                    value: Route.reader(book: book, chapter: chapter, startVerse: verse.number)
+                ) {
                     HStack(spacing: 0) {
                         Text("Verse \(verse.number)")
                         Text(" of \(chapter.verses.count)")

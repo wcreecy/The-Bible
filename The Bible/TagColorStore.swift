@@ -5,27 +5,27 @@ import UIKit
 struct TagColorStore {
     private static let defaultsKey = "tagColorMap"
 
+    // In-memory cache to avoid hot-path UserDefaults reads
+    private static var cachedMap: [String: [Double]] = {
+        let obj = UserDefaults.standard.dictionary(forKey: defaultsKey) as? [String: [Double]]
+        return obj ?? [:]
+    }()
+
     // Normalize tags for consistent keying
     private static func normalized(_ tag: String) -> String {
         tag.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
     }
 
-    // Retrieve stored dictionary
-    private static func loadMap() -> [String: [Double]] {
-        let obj = UserDefaults.standard.dictionary(forKey: defaultsKey) as? [String: [Double]]
-        return obj ?? [:]
-    }
-
-    // Save dictionary
+    // Save dictionary (and keep cache in sync)
     private static func saveMap(_ map: [String: [Double]]) {
+        cachedMap = map
         UserDefaults.standard.set(map, forKey: defaultsKey)
     }
 
     // Public API
     static func color(for tag: String) -> Color? {
         let key = normalized(tag)
-        let map = loadMap()
-        guard let comps = map[key], comps.count == 4 else { return nil }
+        guard let comps = cachedMap[key], comps.count == 4 else { return nil }
         let r = CGFloat(comps[0])
         let g = CGFloat(comps[1])
         let b = CGFloat(comps[2])
@@ -35,7 +35,7 @@ struct TagColorStore {
 
     static func setColor(_ color: Color?, for tag: String) {
         let key = normalized(tag)
-        var map = loadMap()
+        var map = cachedMap
         if let color {
             // Convert Color to RGBA using UIColor
             let ui = UIColor(color)

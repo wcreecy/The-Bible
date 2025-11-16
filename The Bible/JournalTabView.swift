@@ -31,36 +31,48 @@ struct JournalTabView: View {
     @State private var inlineEditorInitialBody: String? = nil
     @State private var inlineEditorEditingEntry: JournalEntry? = nil
 
-    private var filteredEntries: [JournalEntry] {
-        var list = entries
-        // Tag filter (AND across selected tags)
-        if !selectedTags.isEmpty {
-            let target = Set(selectedTags.map { $0.lowercased() })
-            list = list.filter { entry in
-                let entryTags = Set(entry.tags.map { $0.lowercased() })
-                return target.isSubset(of: entryTags)
+    // Cached filtered list to avoid recomputing every render
+    @State private var cachedFilteredEntries: [JournalEntry] = []
+    @State private var filterDebounceTask: Task<Void, Never>? = nil
+
+    private func recomputeFilteredEntries() {
+        let currentEntries = entries
+        let currentTags = selectedTags
+        let currentQuery = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        filterDebounceTask?.cancel()
+        filterDebounceTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 120_000_000) // 120ms debounce
+            var list = currentEntries
+            // Tag filter (AND across selected tags)
+            if !currentTags.isEmpty {
+                let target = Set(currentTags.map { $0.lowercased() })
+                list = list.filter { entry in
+                    let entryTags = Set(entry.tags.map { $0.lowercased() })
+                    return target.isSubset(of: entryTags)
+                }
             }
-        }
-        // Search filter across title, tags, and body
-        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !query.isEmpty {
-            list = list.filter { entry in
-                let titleMatch = entry.title.localizedCaseInsensitiveContains(query)
-                let tagsMatch = entry.tags.contains { $0.localizedCaseInsensitiveContains(query) }
-                let bodyMatch = entry.body.localizedCaseInsensitiveContains(query)
-                return titleMatch || tagsMatch || bodyMatch
+            // Search filter across title, tags, and body
+            if !currentQuery.isEmpty {
+                list = list.filter { entry in
+                    let titleMatch = entry.title.localizedCaseInsensitiveContains(currentQuery)
+                    let tagsMatch = entry.tags.contains { $0.localizedCaseInsensitiveContains(currentQuery) }
+                    let bodyMatch = entry.body.localizedCaseInsensitiveContains(currentQuery)
+                    return titleMatch || tagsMatch || bodyMatch
+                }
             }
-        }
-        // Sort: pinned first, then preserve original order based on the original entries array
-        let indexMap: [UUID: Int] = Dictionary(uniqueKeysWithValues: entries.enumerated().map { ($1.id, $0) })
-        let pins = readPinnedIDs()
-        return list.sorted { lhs, rhs in
-            let lp = pins.contains(lhs.id.uuidString)
-            let rp = pins.contains(rhs.id.uuidString)
-            if lp != rp { return lp && !rp }
-            let li = indexMap[lhs.id] ?? 0
-            let ri = indexMap[rhs.id] ?? 0
-            return li < ri
+            // Sort: pinned first, then preserve original order based on the original entries array
+            let indexMap: [UUID: Int] = Dictionary(uniqueKeysWithValues: currentEntries.enumerated().map { ($1.id, $0) })
+            let pins = readPinnedIDs()
+            list.sort { lhs, rhs in
+                let lp = pins.contains(lhs.id.uuidString)
+                let rp = pins.contains(rhs.id.uuidString)
+                if lp != rp { return lp && !rp }
+                let li = indexMap[lhs.id] ?? 0
+                let ri = indexMap[rhs.id] ?? 0
+                return li < ri
+            }
+            cachedFilteredEntries = list
         }
     }
 
@@ -80,13 +92,15 @@ struct JournalTabView: View {
         let key = entry.id.uuidString
         if pins.contains(key) { pins.remove(key) } else { pins.insert(key) }
         writePinnedIDs(pins)
+        // Recompute ordering to reflect pin change
+        recomputeFilteredEntries()
     }
 
     private var headerCountText: String {
         let queryActive = !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         let tagsActive = !selectedTags.isEmpty
         let filtered = queryActive || tagsActive
-        let count = filtered ? filteredEntries.count : entries.count
+        let count = filtered ? cachedFilteredEntries.count : entries.count
         let noun = (count == 1) ? "entry" : "entries"
         return "\(count) \(noun)" + (filtered ? " (filtered)" : "")
     }
@@ -106,6 +120,7 @@ struct JournalTabView: View {
         ctx.delete(entry)
         try? ctx.save()
         if selectedEntry?.id == entry.id { selectedEntry = nil }
+        recomputeFilteredEntries()
     }
 
     private func deleteSelectedEntries() {
@@ -115,6 +130,7 @@ struct JournalTabView: View {
         try? ctx.save()
         selectedForDeletion.removeAll()
         selectionMode = false
+        recomputeFilteredEntries()
     }
 
     var body: some View {
@@ -172,6 +188,7 @@ struct JournalTabView: View {
                             inlineEditorInitialBody = nil
                             // Refresh list after create or update
                             refreshToken = UUID().uuidString
+                            recomputeFilteredEntries()
                         }
                     )
                 } else if let e = selectedEntry {
@@ -196,6 +213,7 @@ struct JournalTabView: View {
                                     e.updatedAt = Date()
                                     isEditing = false
                                     try? ctx.save()
+                                    recomputeFilteredEntries()
                                 }
                             }
                             ToolbarItem(placement: .cancellationAction) {
@@ -238,6 +256,10 @@ struct JournalTabView: View {
             .navigationSplitViewStyle(.balanced)
             .onAppear { splitVisibility = .all }
             .onChange(of: hSize) { _, _ in splitVisibility = .all }
+            .onAppear { recomputeFilteredEntries() }
+            .onChange(of: entries) { _, _ in recomputeFilteredEntries() }
+            .onChange(of: searchText) { _, _ in recomputeFilteredEntries() }
+            .onChange(of: selectedTags) { _, _ in recomputeFilteredEntries() }
             .onReceive(NotificationCenter.default.publisher(for: Notification.Name("JournalEntryCreated"))) { note in
                 if let id = note.userInfo?["id"] as? String {
                     // Force a lightweight refresh; reselect the new entry if present
@@ -248,13 +270,14 @@ struct JournalTabView: View {
                 } else {
                     refreshToken = UUID().uuidString
                 }
+                recomputeFilteredEntries()
             }
         } else {
             // Compact width: simple list + push to detail
             NavigationStack {
                 List(selection: $selectedForDeletion) {
                     Section {
-                        ForEach(filteredEntries) { entry in
+                        ForEach(cachedFilteredEntries) { entry in
                             NavigationLink(destination: JournalDetailView(entry: entry)) { listRow(for: entry) }
                                 .tag(entry)
                                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
@@ -316,6 +339,10 @@ struct JournalTabView: View {
                 .navigationDestination(for: JournalEntry.self) { entry in
                     JournalDetailView(entry: entry)
                 }
+                .onAppear { recomputeFilteredEntries() }
+                .onChange(of: entries) { _, _ in recomputeFilteredEntries() }
+                .onChange(of: searchText) { _, _ in recomputeFilteredEntries() }
+                .onChange(of: selectedTags) { _, _ in recomputeFilteredEntries() }
             }
         }
     }
@@ -357,7 +384,7 @@ struct JournalTabView: View {
                 }
             }
             Section {
-                ForEach(filteredEntries) { entry in
+                ForEach(cachedFilteredEntries) { entry in
                     Button {
                         selectedEntry = entry
                         isEditing = false
@@ -831,3 +858,4 @@ struct JournalTabView: View {
 #Preview {
     JournalTabView()
 }
+
