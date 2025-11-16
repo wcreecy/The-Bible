@@ -4,37 +4,48 @@ import WidgetKit
 struct VerseWidgetEntryView: View {
     var entry: VerseProvider.Entry
 
+    private var isEvening: Bool {
+        let hour = Calendar.current.component(.hour, from: entry.date)
+        return hour >= 18 || hour < 5
+    }
+
+    private var headerTitle: String { isEvening ? "Word of the Night" : "Verse of the Day" }
+    private var headerIcon: String { isEvening ? "moon.stars" : "sun.max.fill" }
+
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
+        VStack(alignment: .leading, spacing: 6) {
+            // Self-identifying header so users know which widget this is
+            HStack(spacing: 6) {
+                Image(systemName: headerIcon)
+                    .font(.caption2)
+                    .foregroundStyle(.white.opacity(0.7))
+                Text(headerTitle)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.7))
+                    .lineLimit(1)
+            }
+
             if !entry.text.isEmpty {
-                VStack(alignment: .leading) {
-                    Text("\"\(entry.text)\"")
-                        .font(.body)
-                        .foregroundStyle(.white)
-                        .multilineTextAlignment(.leading)
-                        .lineLimit(nil)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding([.leading, .trailing, .top])
-                    if !entry.book.isEmpty && entry.chapter > 0 && entry.verse > 0 {
-                        Text("\(entry.book) \(entry.chapter):\(entry.verse)")
-                            .font(.caption)
-                            .foregroundStyle(.white.opacity(0.7))
-                            .multilineTextAlignment(.leading)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding([.leading, .trailing, .bottom])
-                    }
+                Text("“\(entry.text)\"")
+                    .font(.footnote)
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(5)
+                if !entry.book.isEmpty && entry.chapter > 0 && entry.verse > 0 {
+                    Text("\(entry.book) \(entry.chapter):\(entry.verse)")
+                        .font(.caption2)
+                        .foregroundStyle(.white.opacity(0.7))
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             } else {
                 Text("No verse yet")
-                    .font(.body)
+                    .font(.footnote)
                     .foregroundStyle(.white.opacity(0.6))
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    .padding()
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .containerBackground(Color.black, for: .widget)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(isEvening ? "Word of the Night widget" : "Verse of the Day widget")
     }
 }

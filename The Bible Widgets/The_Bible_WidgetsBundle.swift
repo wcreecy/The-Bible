@@ -12,7 +12,7 @@ struct VerseWidget: Widget {
     let kind: String = "VerseWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: VerseProvider()) { entry in
+        StaticConfiguration(kind: kind, provider: VerseProvider()) { (entry: VerseWidgetEntry) in
             VerseWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Verse of the Day")
@@ -21,10 +21,24 @@ struct VerseWidget: Widget {
     }
 }
 
+struct LastReadWidget: Widget {
+    let kind: String = "LastReadWidget"
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: LastReadProvider()) { (entry: LastReadEntry) in
+            LastReadWidgetEntryView(entry: entry)
+        }
+        .configurationDisplayName("Last Read")
+        .description("Shows the last verse you bookmarked/read.")
+        .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+
 @main
 struct The_Bible_WidgetsBundle: WidgetBundle {
     var body: some Widget {
         VerseWidget()
+        LastReadWidget()
         PrayerTimerLiveActivity()
         StopwatchLiveActivity()
     }

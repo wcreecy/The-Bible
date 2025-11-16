@@ -168,6 +168,35 @@ struct ContentView: View {
             case "focus":
                 selectedTab = 0
                 UserDefaults.standard.set("focus", forKey: "prayerMode")
+            case "open":
+                // Deep link from Last Read widget: thebible://open?book=...&chapter=...&verse=...
+                guard let comps = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
+                let q = Dictionary(uniqueKeysWithValues: (comps.queryItems ?? []).map { ($0.name.lowercased(), $0.value ?? "") })
+                let bookName = q["book"] ?? ""
+                let chapterNum = Int(q["chapter"] ?? "") ?? 0
+                let verseNum = Int(q["verse"] ?? "") ?? 0
+                guard !bookName.isEmpty, chapterNum > 0, verseNum > 0 else { return }
+
+                // Resolve to model objects
+                let maybeBook = BibleData.books.first { $0.name == bookName }
+                let maybeChapter = maybeBook?.chapters.first { $0.number == chapterNum }
+
+                if !isPad, let book = maybeBook, let chapter = maybeChapter {
+                    // iPhone: push directly on the Bible tab’s coordinator
+                    selectedTab = 1
+                    // Defer push to next runloop so the tab switch completes first
+                    DispatchQueue.main.async {
+                        bibleCoordinator.push(.reader(book: book, chapter: chapter, startVerse: verseNum))
+                    }
+                } else {
+                    // iPad or fallback: use Home’s pending mechanism (already implemented in HomeView)
+                    if let shared = UserDefaults(suiteName: "group.bible.app") {
+                        shared.set(bookName, forKey: "pendingOpenBook")
+                        shared.set(chapterNum, forKey: "pendingOpenChapter")
+                        shared.set(verseNum, forKey: "pendingOpenVerse")
+                    }
+                    selectedTab = 0
+                }
             default:
                 break
             }

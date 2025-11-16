@@ -209,7 +209,7 @@ struct HomeView: View {
         }
 
         let timeString = next.formatted(date: .omitted, time: .shortened)
-        return "Next refresh: \(dayString) at \(timeString)"
+        return "Next auto refresh: \(dayString) at \(timeString)"
     }
 
     // MARK: - Shared Small Views / Helpers
@@ -233,6 +233,39 @@ struct HomeView: View {
         shared.set(verse, forKey: "verseOfDayNumber")
         shared.set(text, forKey: "verseOfDayText")
         WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    // Mirror last read to App Group for Last Read widget
+    private func mirrorLastReadToAppGroup() {
+        guard let shared = sharedDefaults else { return }
+        guard let p = progress else { return }
+        // Lookup verse text from BibleData
+        if let book = BibleData.books.first(where: { $0.name == p.bookName }),
+           let chapter = book.chapters.first(where: { $0.number == p.chapterNumber }),
+           let verse = chapter.verses.first(where: { $0.number == p.verseNumber }) {
+            shared.set(p.bookName, forKey: "lastReadBook")
+            shared.set(p.chapterNumber, forKey: "lastReadChapter")
+            shared.set(p.verseNumber, forKey: "lastReadVerse")
+            shared.set(verse.text, forKey: "lastReadText")
+            shared.set(Date().timeIntervalSince1970, forKey: "lastReadUpdatedAt")
+            WidgetCenter.shared.reloadAllTimelines()
+        }
+    }
+
+    // Handle deep link from Last Read widget
+    private func handleOpenPendingVerse() {
+        guard let shared = sharedDefaults else { return }
+        guard let book = shared.string(forKey: "pendingOpenBook"),
+              let chapter = shared.value(forKey: "pendingOpenChapter") as? Int,
+              let verse = shared.value(forKey: "pendingOpenVerse") as? Int else { return }
+        // Clear pending keys
+        shared.removeObject(forKey: "pendingOpenBook")
+        shared.removeObject(forKey: "pendingOpenChapter")
+        shared.removeObject(forKey: "pendingOpenVerse")
+
+        guard let b = BibleData.books.first(where: { $0.name == book }),
+              let c = b.chapters.first(where: { $0.number == chapter }) else { return }
+        coordinator.push(.reader(book: b, chapter: c, startVerse: verse))
     }
 
     // MARK: - Split cards to reduce type-checking complexity
@@ -849,6 +882,10 @@ struct HomeView: View {
                 hasSavedFocus = false
             }
 
+            // Seed/mirror last read for widget
+            mirrorLastReadToAppGroup()
+            handleOpenPendingVerse()
+
             handlePrayerTimerPendingAction()
             handleStopwatchPendingAction()
         }
@@ -908,6 +945,7 @@ struct HomeView: View {
                 startMindfulLoggingIfNeeded()
                 handlePrayerTimerPendingAction()
                 handleStopwatchPendingAction()
+                handleOpenPendingVerse()
             case .inactive, .background:
                 // Stop logging only if the timer is not running and stopwatch is not running; keep logging while either runs
                 if !isTimerRunning && !stopwatchRunning {
@@ -916,6 +954,10 @@ struct HomeView: View {
             @unknown default:
                 break
             }
+        }
+        .onChange(of: progressList) { _, _ in
+            // Mirror last read to the widget whenever progress changes
+            mirrorLastReadToAppGroup()
         }
         .sheet(isPresented: $showPrayerStudySheet) {
             PrayerStudyTimerSetupView(onStart: { minutes in
@@ -1410,7 +1452,7 @@ private let oldTestamentBooks: Set<String> = [
 ]
 
 // Generic HeroCard with a trailing accessory closure (no AnyView)
-private struct HeroCard<Content: View, TrailingAccessory: View = EmptyView>: View {
+private struct HeroCard<Content: View, TrailingAccessory: View>: View {
     let title: String
     let subtitle: String?
     let icon: String?

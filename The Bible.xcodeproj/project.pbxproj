@@ -42,6 +42,10 @@
 		2C49CF932EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C49CF922EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift */; };
 		2CB309D32EC2CE2D0032CB7D /* BibleReferenceLinker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB309D22EC2CE2D0032CB7D /* BibleReferenceLinker.swift */; };
 		2CD7D7472EC96AB200849235 /* LinkedTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D7462EC96AB200849235 /* LinkedTextView.swift */; };
+		2CD7D8232EC9FF9A00849235 /* LastReadProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D8222EC9FF9A00849235 /* LastReadProvider.swift */; };
+		2CD7D8252EC9FF9A00849235 /* LastReadWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D8242EC9FF9A00849235 /* LastReadWidget.swift */; };
+		2CD7D8262ECA004300849235 /* LastReadProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D8222EC9FF9A00849235 /* LastReadProvider.swift */; };
+		2CD7D8272ECA004A00849235 /* LastReadWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D8242EC9FF9A00849235 /* LastReadWidget.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -136,6 +140,8 @@
 		2CD4572E2EB90410003CB315 /* ReferenceMatchGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferenceMatchGameView.swift; sourceTree = "<group>"; };
 		2CD4579A2EB93C72003CB315 /* SegmentedPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedPicker.swift; sourceTree = "<group>"; };
 		2CD7D7462EC96AB200849235 /* LinkedTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedTextView.swift; sourceTree = "<group>"; };
+		2CD7D8222EC9FF9A00849235 /* LastReadProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastReadProvider.swift; sourceTree = "<group>"; };
+		2CD7D8242EC9FF9A00849235 /* LastReadWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastReadWidget.swift; sourceTree = "<group>"; };
 		2CEA02D52EBE677900039D4B /* The Bible WidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "The Bible WidgetsExtension.entitlements"; sourceTree = "<group>"; };
 		2CF6F1702EB83C2100E59640 /* TimerSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerSound.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -322,6 +328,8 @@
 				2C3F380F2EC4042D002CA795 /* Styles.swift */,
 				2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */,
 				2CD7D7462EC96AB200849235 /* LinkedTextView.swift */,
+				2CD7D8222EC9FF9A00849235 /* LastReadProvider.swift */,
+				2CD7D8242EC9FF9A00849235 /* LastReadWidget.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -728,7 +736,9 @@
 				2C3F38102EC4042D002CA795 /* Styles.swift in Sources */,
 				2C49CF522EBE10310006FF79 /* ShareText.swift in Sources */,
 				2C49CF872EBE2E9C0006FF79 /* StopwatchActivityController.swift in Sources */,
+				2CD7D8252EC9FF9A00849235 /* LastReadWidget.swift in Sources */,
 				2C49CF822EBE27D40006FF79 /* PrayerTimerActivityController.swift in Sources */,
+				2CD7D8232EC9FF9A00849235 /* LastReadProvider.swift in Sources */,
 				2C49CF532EBE10310006FF79 /* NavigationCoordinator.swift in Sources */,
 				2C49CF542EBE10310006FF79 /* Route.swift in Sources */,
 				2C49CF552EBE10310006FF79 /* TimerSound.swift in Sources */,
@@ -763,8 +773,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				2C49CF832EBE28250006FF79 /* PrayerTimerActivityController.swift in Sources */,
+				2CD7D8272ECA004A00849235 /* LastReadWidget.swift in Sources */,
 				2C49CF802EBE27C40006FF79 /* PrayerTimerAttributes.swift in Sources */,
 				2C49CF8A2EBE2EC40006FF79 /* StopwatchAttributes.swift in Sources */,
+				2CD7D8262ECA004300849235 /* LastReadProvider.swift in Sources */,
 				2C49CF8B2EBE31CB0006FF79 /* StopwatchLiveActivity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
