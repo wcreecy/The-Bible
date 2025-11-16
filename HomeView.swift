@@ -90,7 +90,6 @@ struct HomeView: View {
 
     @State private var showCopyToast: Bool = false
     @State private var showFocusSavedToast: Bool = false
-    @State private var startIconBounce: Bool = false
     @State private var timeMarker: Int = 0
     @State private var lastVerseAutoRefreshToken: String = ""
     @State private var isHealthKitAvailable: Bool = HealthKitManager.shared.isAvailable()
@@ -173,8 +172,10 @@ struct HomeView: View {
 
     private func nextAutoRefreshDate(from now: Date = Date()) -> Date {
         let cal = Calendar.current
-        let t1 = dateForToday(hour: votdRefresh1Hour, minute: votdRefresh1Minute, from: now)!
-        let t2 = dateForToday(hour: votdRefresh2Hour, minute: votdRefresh2Minute, from: now)!
+        guard let t1 = dateForToday(hour: votdRefresh1Hour, minute: votdRefresh1Minute, from: now),
+              let t2 = dateForToday(hour: votdRefresh2Hour, minute: votdRefresh2Minute, from: now) else {
+            return now
+        }
 
         if now < t1 {
             return t1
@@ -182,9 +183,8 @@ struct HomeView: View {
             return t2
         } else {
             // Tomorrow at t1
-            let tomorrow = cal.date(byAdding: .day, value: 1, to: now)!
-            let comps = cal.dateComponents([.year, .month, .day], from: tomorrow)
-            return cal.date(from: DateComponents(year: comps.year, month: comps.month, day: comps.day, hour: votdRefresh1Hour, minute: votdRefresh1Minute, second: 0))!
+            let tomorrow = cal.date(byAdding: .day, value: 1, to: now) ?? now
+            return dateForToday(hour: votdRefresh1Hour, minute: votdRefresh1Minute, from: tomorrow) ?? now
         }
     }
 
@@ -212,10 +212,33 @@ struct HomeView: View {
         return "Next refresh: \(dayString) at \(timeString)"
     }
 
+    // MARK: - Shared Small Views / Helpers
+
+    @ViewBuilder
+    private func ModePicker(disabled: Bool) -> some View {
+        Picker("Mode", selection: $prayerMode) {
+            Text("Timer").tag(PrayerMode.timer)
+            Text("Stopwatch").tag(PrayerMode.stopwatch)
+            Text("Focus").tag(PrayerMode.focus)
+        }
+        .pickerStyle(.segmented)
+        .controlSize(.small)
+        .disabled(disabled)
+    }
+
+    private func mirrorVerseToAppGroup(book: String, chapter: Int, verse: Int, text: String) {
+        guard let shared = sharedDefaults else { return }
+        shared.set(book, forKey: "verseOfDayBook")
+        shared.set(chapter, forKey: "verseOfDayChapter")
+        shared.set(verse, forKey: "verseOfDayNumber")
+        shared.set(text, forKey: "verseOfDayText")
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
     // MARK: - Split cards to reduce type-checking complexity
     @ViewBuilder
     private var titleCard: some View {
-        HeroCard(title: "Word of God", subtitle: "Welcome back", icon: "book.fill", tint: .blue, titleFont: .largeTitle, titleFontWeight: .black) {
+        HeroCard(title: "Word of God", subtitle: "Welcome back", icon: "book.fill", tint: .blue, titleFont: Font.largeTitle, titleFontWeight: Font.Weight.black) {
             HStack(alignment: .center, spacing: 8) {
                 Image(systemName: "person.wave.2.fill")
                     .foregroundStyle(.blue)
@@ -238,7 +261,7 @@ struct HomeView: View {
             subtitle: nil,
             icon: verseCardIcon,
             tint: .orange,
-            trailingAccessory: AnyView(
+            trailingAccessory: {
                 HStack(spacing: 8) {
                     if verseOfDayPaused {
                         Text("Paused")
@@ -263,14 +286,8 @@ struct HomeView: View {
                             storedVerseText = v.verseText
                         }
                         // Mirror current stored verse to App Group for widget sync
-                        if let shared = UserDefaults(suiteName: "group.bible.app") {
-                            shared.set(storedVerseBook, forKey: "verseOfDayBook")
-                            shared.set(storedVerseChapter, forKey: "verseOfDayChapter")
-                            shared.set(storedVerseNumber, forKey: "verseOfDayNumber")
-                            shared.set(storedVerseText, forKey: "verseOfDayText")
-                        }
+                        mirrorVerseToAppGroup(book: storedVerseBook, chapter: storedVerseChapter, verse: storedVerseNumber, text: storedVerseText)
                         // Prompt widgets to refresh
-                        WidgetCenter.shared.reloadAllTimelines()
                         let generator = UIImpactFeedbackGenerator(style: .medium)
                         generator.impactOccurred()
                     }) {
@@ -282,7 +299,7 @@ struct HomeView: View {
                     .accessibilityLabel(verseOfDayPaused ? "Unpause Verse Refresh" : "Pause Verse Refresh")
                     .help(verseOfDayPaused ? "Unpause Verse Refresh" : "Pause Verse Refresh")
                 }
-            )
+            }
         ) {
             VStack(alignment: .leading, spacing: 10) {
                 if let v = verseOfDay {
@@ -386,15 +403,7 @@ struct HomeView: View {
                         strokeColor: isTimerRunning ? timerTintColor.opacity(0.35) : nil
                     ) {
                         VStack(spacing: 10) {
-                            // Mode picker
-                            Picker("Mode", selection: $prayerMode) {
-                                Text("Timer").tag(PrayerMode.timer)
-                                Text("Stopwatch").tag(PrayerMode.stopwatch)
-                                Text("Focus").tag(PrayerMode.focus)
-                            }
-                            .pickerStyle(.segmented)
-                            .controlSize(.small)
-                            .disabled(isTimerRunning || stopwatchRunning)
+                            ModePicker(disabled: isTimerRunning || stopwatchRunning)
 
                             Text(formattedTime(remainingSeconds))
                                 .font(.system(size: 36, weight: .semibold, design: .monospaced))
@@ -443,24 +452,14 @@ struct HomeView: View {
                         tint: .blue
                     ) {
                         VStack(spacing: 12) {
-                            // Mode picker
-                            Picker("Mode", selection: $prayerMode) {
-                                Text("Timer").tag(PrayerMode.timer)
-                                Text("Stopwatch").tag(PrayerMode.stopwatch)
-                                Text("Focus").tag(PrayerMode.focus)
-                            }
-                            .pickerStyle(.segmented)
-                            .controlSize(.small)
-                            .disabled(isTimerRunning || stopwatchRunning)
+                            ModePicker(disabled: isTimerRunning || stopwatchRunning)
 
                             HStack(spacing: 12) {
                                 // Custom
                                 Button {
                                     if isHealthKitAvailable && !healthKitPrompted {
-                                        HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
-                                            Task { @MainActor in
-                                                self.healthKitPrompted = true
-                                            }
+                                        Task {
+                                            await requestHealthKitIfNeeded()
                                         }
                                     }
                                     let generator = UIImpactFeedbackGenerator(style: .light)
@@ -576,77 +575,17 @@ struct HomeView: View {
                     tint: .blue
                 ) {
                     VStack(spacing: 10) {
-                        // Mode picker
-                        Picker("Mode", selection: $prayerMode) {
-                            Text("Timer").tag(PrayerMode.timer)
-                            Text("Stopwatch").tag(PrayerMode.stopwatch)
-                            Text("Focus").tag(PrayerMode.focus)
-                        }
-                        .pickerStyle(.segmented)
-                        .controlSize(.small)
-                        .disabled(isTimerRunning || stopwatchRunning)
+                        ModePicker(disabled: isTimerRunning || stopwatchRunning)
 
                         Text(formattedHMS(stopwatchElapsed))
                             .font(.system(size: 36, weight: .semibold, design: .monospaced))
                         HStack(spacing: 24) {
                             if stopwatchRunning {
-                                Button(action: { pauseStopwatch() }) {
-                                    Image(systemName: "pause.circle.fill")
-                                        .font(.system(size: 44))
-                                        .foregroundStyle(.yellow)
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("Pause")
-
-                                Button(action: {}) {
-                                    Image(systemName: "play.circle")
-                                        .font(.system(size: 44))
-                                        .foregroundStyle(.secondary)
-                                }
-                                .buttonStyle(.plain)
-                                .disabled(true)
-                                .accessibilityLabel("Resume (inactive)")
-
-                                Button(action: { stopStopwatch() }) {
-                                    Image(systemName: "stop.circle.fill")
-                                        .font(.system(size: 44))
-                                }
-                                .buttonStyle(.plain)
-                                .foregroundStyle(.red)
-                                .accessibilityLabel("Stop")
+                                stopwatchRunningControls()
                             } else if stopwatchElapsed > 0 {
-                                Button(action: {}) {
-                                    Image(systemName: "pause.circle")
-                                        .font(.system(size: 44))
-                                        .foregroundStyle(.secondary)
-                                }
-                                .buttonStyle(.plain)
-                                .disabled(true)
-                                .accessibilityLabel("Pause (inactive)")
-
-                                Button(action: { startStopwatch() }) {
-                                    Image(systemName: "play.circle.fill")
-                                        .font(.system(size: 44))
-                                        .foregroundStyle(.green)
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("Resume")
-
-                                Button(action: { stopStopwatch() }) {
-                                    Image(systemName: "stop.circle.fill")
-                                        .font(.system(size: 44))
-                                }
-                                .buttonStyle(.plain)
-                                .foregroundStyle(.red)
-                                .accessibilityLabel("Stop")
+                                stopwatchPausedControls()
                             } else {
-                                Button(action: { startStopwatch() }) {
-                                    Image(systemName: "play.circle.fill")
-                                        .font(.system(size: 56))
-                                        .foregroundStyle(.green)
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("Start")
+                                stopwatchReadyControls()
                             }
                         }
                     }
@@ -661,15 +600,7 @@ struct HomeView: View {
                     tint: .purple
                 ) {
                     VStack(spacing: 12) {
-                        // Mode picker
-                        Picker("Mode", selection: $prayerMode) {
-                            Text("Timer").tag(PrayerMode.timer)
-                            Text("Stopwatch").tag(PrayerMode.stopwatch)
-                            Text("Focus").tag(PrayerMode.focus)
-                        }
-                        .pickerStyle(.segmented)
-                        .controlSize(.small)
-                        .disabled(isTimerRunning || stopwatchRunning)
+                        ModePicker(disabled: isTimerRunning || stopwatchRunning)
 
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Title")
@@ -888,23 +819,13 @@ struct HomeView: View {
                 // Restore last verse without refreshing when paused
                 if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
                     verseOfDay = HomeVerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
-                    if let shared = UserDefaults(suiteName: "group.bible.app") {
-                        shared.set(storedVerseBook, forKey: "verseOfDayBook")
-                        shared.set(storedVerseChapter, forKey: "verseOfDayChapter")
-                        shared.set(storedVerseNumber, forKey: "verseOfDayNumber")
-                        shared.set(storedVerseText, forKey: "verseOfDayText")
-                    }
+                    mirrorVerseToAppGroup(book: storedVerseBook, chapter: storedVerseChapter, verse: storedVerseNumber, text: storedVerseText)
                 }
             } else {
                 // Do not arbitrarily refresh; show the last stored verse if available, otherwise seed an initial verse.
                 if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
                     verseOfDay = HomeVerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
-                    if let shared = UserDefaults(suiteName: "group.bible.app") {
-                        shared.set(storedVerseBook, forKey: "verseOfDayBook")
-                        shared.set(storedVerseChapter, forKey: "verseOfDayChapter")
-                        shared.set(storedVerseNumber, forKey: "verseOfDayNumber")
-                        shared.set(storedVerseText, forKey: "verseOfDayText")
-                    }
+                    mirrorVerseToAppGroup(book: storedVerseBook, chapter: storedVerseChapter, verse: storedVerseNumber, text: storedVerseText)
                 } else {
                     loadRandomVerse()
                 }
@@ -920,7 +841,7 @@ struct HomeView: View {
             }
 
             // Initialize saved focus state from shared defaults
-            if let shared = UserDefaults(suiteName: "group.bible.app") {
+            if let shared = sharedDefaults {
                 let savedTitle = (shared.string(forKey: "focusTitle") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
                 let savedBody = (shared.string(forKey: "focusBody") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
                 hasSavedFocus = !(savedTitle.isEmpty && savedBody.isEmpty)
@@ -1046,22 +967,9 @@ struct HomeView: View {
 
     private func startTimer(minutes: Int) {
         // Defer and request permissions on first use
-        if !didRequestNotifications {
-            Task {
-                await Task.yield()
-                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
-                didRequestNotifications = true
-            }
-        }
+        Task { await requestNotificationsIfNeeded() }
         if isHealthKitAvailable && !healthKitPrompted {
-            Task {
-                await Task.yield()
-                HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
-                    Task { @MainActor in
-                        self.healthKitPrompted = true
-                    }
-                }
-            }
+            Task { await requestHealthKitIfNeeded() }
         }
 
         let secs = max(1, minutes) * 60
@@ -1291,13 +1199,7 @@ struct HomeView: View {
         storedVerseNumber = verse.number
         storedVerseText = verse.text
         // Mirror to App Group for widget sync
-        if let shared = UserDefaults(suiteName: "group.bible.app") {
-            shared.set(book.name, forKey: "verseOfDayBook")
-            shared.set(chapter.number, forKey: "verseOfDayChapter")
-            shared.set(verse.number, forKey: "verseOfDayNumber")
-            shared.set(verse.text, forKey: "verseOfDayText")
-        }
-        WidgetCenter.shared.reloadAllTimelines()
+        mirrorVerseToAppGroup(book: book.name, chapter: chapter.number, verse: verse.number, text: verse.text)
     }
 
     private func copyVerse(_ v: HomeVerseRef) {
@@ -1330,14 +1232,7 @@ struct HomeView: View {
     private func startStopwatch() {
         // Request HealthKit on first use (deferred)
         if isHealthKitAvailable && !healthKitPrompted {
-            Task {
-                await Task.yield()
-                HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
-                    Task { @MainActor in
-                        self.healthKitPrompted = true
-                    }
-                }
-            }
+            Task { await requestHealthKitIfNeeded() }
         }
 
         let now = Date().timeIntervalSince1970
@@ -1384,7 +1279,7 @@ struct HomeView: View {
     }
     
     private func handlePrayerTimerPendingAction() {
-        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
+        guard let shared = sharedDefaults else { return }
         guard let action = shared.string(forKey: "prayerTimerPendingAction") else { return }
         // Clear immediately to avoid reprocessing
         shared.removeObject(forKey: "prayerTimerPendingAction")
@@ -1407,7 +1302,7 @@ struct HomeView: View {
     }
 
     private func handleStopwatchPendingAction() {
-        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
+        guard let shared = sharedDefaults else { return }
         guard let action = shared.string(forKey: "stopwatchPendingAction") else { return }
         // Clear immediately to avoid reprocessing
         shared.removeObject(forKey: "stopwatchPendingAction")
@@ -1426,6 +1321,78 @@ struct HomeView: View {
             break
         }
     }
+
+    // MARK: - Stopwatch control subviews
+
+    @ViewBuilder
+    private func stopwatchRunningControls() -> some View {
+        Button(action: { pauseStopwatch() }) {
+            Image(systemName: "pause.circle.fill")
+                .font(.system(size: 44))
+                .foregroundStyle(.yellow)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Pause")
+
+        Button(action: { stopStopwatch() }) {
+            Image(systemName: "stop.circle.fill")
+                .font(.system(size: 44))
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(.red)
+        .accessibilityLabel("Stop")
+    }
+
+    @ViewBuilder
+    private func stopwatchPausedControls() -> some View {
+        Button(action: { startStopwatch() }) {
+            Image(systemName: "play.circle.fill")
+                .font(.system(size: 44))
+                .foregroundStyle(.green)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Resume")
+
+        Button(action: { stopStopwatch() }) {
+            Image(systemName: "stop.circle.fill")
+                .font(.system(size: 44))
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(.red)
+        .accessibilityLabel("Stop")
+    }
+
+    @ViewBuilder
+    private func stopwatchReadyControls() -> some View {
+        Button(action: { startStopwatch() }) {
+            Image(systemName: "play.circle.fill")
+                .font(.system(size: 56))
+                .foregroundStyle(.green)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Start")
+    }
+
+    // MARK: - Permissions (async/await)
+
+    private func requestNotificationsIfNeeded() async {
+        guard !didRequestNotifications else { return }
+        let center = UNUserNotificationCenter.current()
+        _ = try? await center.requestAuthorization(options: [.alert, .sound, .badge])
+        didRequestNotifications = true
+    }
+
+    private func requestHealthKitIfNeeded() async {
+        guard isHealthKitAvailable && !healthKitPrompted else { return }
+        await withCheckedContinuation { continuation in
+            HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
+                Task { @MainActor in
+                    self.healthKitPrompted = true
+                }
+                continuation.resume()
+            }
+        }
+    }
 }
 
 private let oldTestamentBooks: Set<String> = [
@@ -1442,14 +1409,15 @@ private let oldTestamentBooks: Set<String> = [
     "Haggai","Zechariah","Malachi"
 ]
 
-private struct HeroCard<Content: View>: View {
+// Generic HeroCard with a trailing accessory closure (no AnyView)
+private struct HeroCard<Content: View, TrailingAccessory: View = EmptyView>: View {
     let title: String
     let subtitle: String?
     let icon: String?
     let tint: Color
     let backgroundColor: Color?
     let strokeColor: Color?
-    let trailingAccessory: AnyView?
+    let trailingAccessory: (() -> TrailingAccessory)?
     let titleFont: Font
     let titleFontWeight: Font.Weight
     let centerHeader: Bool
@@ -1457,6 +1425,7 @@ private struct HeroCard<Content: View>: View {
 
     @Environment(\.colorScheme) private var colorScheme
 
+    // Init without trailing accessory (infers TrailingAccessory == EmptyView)
     init(
         title: String,
         subtitle: String? = nil,
@@ -1464,7 +1433,33 @@ private struct HeroCard<Content: View>: View {
         tint: Color = .accentColor,
         backgroundColor: Color? = nil,
         strokeColor: Color? = nil,
-        trailingAccessory: AnyView? = nil,
+        titleFont: Font = .headline,
+        titleFontWeight: Font.Weight = .bold,
+        centerHeader: Bool = false,
+        @ViewBuilder content: () -> Content
+    ) where TrailingAccessory == EmptyView {
+        self.title = title
+        self.subtitle = subtitle
+        self.icon = icon
+        self.tint = tint
+        self.backgroundColor = backgroundColor
+        self.strokeColor = strokeColor
+        self.trailingAccessory = nil
+        self.titleFont = titleFont
+        self.titleFontWeight = titleFontWeight
+        self.centerHeader = centerHeader
+        self.content = content()
+    }
+
+    // Init with trailing accessory
+    init(
+        title: String,
+        subtitle: String? = nil,
+        icon: String? = nil,
+        tint: Color = .accentColor,
+        backgroundColor: Color? = nil,
+        strokeColor: Color? = nil,
+        trailingAccessory: @escaping () -> TrailingAccessory,
         titleFont: Font = .headline,
         titleFontWeight: Font.Weight = .bold,
         centerHeader: Bool = false,
@@ -1528,7 +1523,7 @@ private struct HeroCard<Content: View>: View {
                         }
                         Spacer()
                         if let trailingAccessory {
-                            trailingAccessory
+                            trailingAccessory()
                         }
                     }
                 }

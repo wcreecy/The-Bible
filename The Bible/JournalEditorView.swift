@@ -2,6 +2,12 @@ import SwiftUI
 import SwiftData
 import UIKit
 
+private enum JournalNotifications {
+    static let openScripturePreview = Notification.Name("OpenScripturePreview")
+    static let entryCreated = Notification.Name("JournalEntryCreated")
+    static let entryUpdated = Notification.Name("JournalEntryUpdated")
+}
+
 struct JournalEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var ctx
@@ -44,7 +50,7 @@ struct JournalEditorView: View {
         // Map caret (UTF16) to String.Index
         let caretLoc = textSelectionRange.location
         let utf16 = text.utf16
-        let clamped = min(caretLoc, utf16.count)
+        let clamped = min(max(caretLoc, 0), utf16.count)
         guard let caretUTF16Index = utf16.index(utf16.startIndex, offsetBy: clamped, limitedBy: utf16.endIndex),
               let caretIndex = caretUTF16Index.samePosition(in: text) else {
             showBookSuggestions = false
@@ -183,15 +189,15 @@ struct JournalEditorView: View {
     // Debounced/cached linkify to reduce recomputation while typing
     @State private var linkedContent: AttributedString = AttributedString("")
     @State private var linkifyTask: Task<Void, Never>? = nil
+
     private func scheduleLinkify(for text: String) {
         linkifyTask?.cancel()
-        linkifyTask = Task.detached(priority: .userInitiated) {
+        linkifyTask = Task(priority: .userInitiated) {
             try? await Task.sleep(nanoseconds: 150_000_000) // 150ms debounce
             if Task.isCancelled { return }
-            // Call the MainActor-isolated linkify on the MainActor
-            let result: AttributedString = await MainActor.run {
-                BibleReferenceLinker.linkify(text)
-            }
+            // Heavy regex on a background thread
+            let result = BibleReferenceLinker.linkify(text)
+            // Assign on main
             await MainActor.run {
                 self.linkedContent = result
             }
@@ -206,14 +212,22 @@ struct JournalEditorView: View {
     }
 
     private func colorBinding(for tag: String) -> Binding<Color> {
-        let initial = TagColorStore.color(for: tag) ?? .accentColor
-        var current = initial
+        let fallback = TagColorStore.color(for: tag) ?? .accentColor
         return Binding<Color>(
-            get: { TagColorStore.color(for: tag) ?? current },
+            get: { TagColorStore.color(for: tag) ?? fallback },
             set: { newValue in
                 TagColorStore.setColor(newValue, for: tag)
             }
         )
+    }
+
+    // Centralized debounce for suggestions to avoid repeated code
+    private func scheduleSuggestionsUpdate() {
+        suggestionsDebounceTask?.cancel()
+        suggestionsDebounceTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 120_000_000)
+            updateBookSuggestions()
+        }
     }
 
     init(verseRef: VerseRef?, initialBody: String? = nil, showTagColors: Bool = false, editingEntry: JournalEntry? = nil, onClose: (() -> Void)? = nil) {
@@ -256,17 +270,18 @@ struct JournalEditorView: View {
                 Text(saveErrorMessage)
             }
             .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
-            .onChange(of: textSelectionRange) { _ in
+            .onChange(of: textSelectionRange) { _, _ in
                 // Debounce suggestions when caret moves
-                suggestionsDebounceTask?.cancel()
-                suggestionsDebounceTask = Task { @MainActor in
-                    try? await Task.sleep(nanoseconds: 120_000_000)
-                    updateBookSuggestions()
-                }
+                scheduleSuggestionsUpdate()
             }
             .onAppear {
                 // Seed linkified content
                 scheduleLinkify(for: content)
+            }
+            .onDisappear {
+                // Cancel any pending async work to avoid late state updates after teardown
+                suggestionsDebounceTask?.cancel()
+                linkifyTask?.cancel()
             }
         }
     }
@@ -391,11 +406,7 @@ struct JournalEditorView: View {
                 onChange: { newText in
                     // Debounce both linkify and suggestions
                     scheduleLinkify(for: newText)
-                    suggestionsDebounceTask?.cancel()
-                    suggestionsDebounceTask = Task { @MainActor in
-                        try? await Task.sleep(nanoseconds: 120_000_000)
-                        updateBookSuggestions()
-                    }
+                    scheduleSuggestionsUpdate()
                 }
             )
             .frame(minHeight: 400)
@@ -452,7 +463,7 @@ struct JournalEditorView: View {
                             if hSize == .regular {
                                 // Request 3rd-column scripture preview via NotificationCenter
                                 NotificationCenter.default.post(
-                                    name: Notification.Name("OpenScripturePreview"),
+                                    name: JournalNotifications.openScripturePreview,
                                     object: nil,
                                     userInfo: [
                                         "book": ref.bookName,
@@ -584,11 +595,7 @@ struct JournalEditorView: View {
                         caretRect: $caretRect,
                         onChange: { newText in
                             scheduleLinkify(for: newText)
-                            suggestionsDebounceTask?.cancel()
-                            suggestionsDebounceTask = Task { @MainActor in
-                                try? await Task.sleep(nanoseconds: 120_000_000)
-                                updateBookSuggestions()
-                            }
+                            scheduleSuggestionsUpdate()
                         }
                     )
                     .frame(minHeight: 200)
@@ -712,14 +719,14 @@ struct JournalEditorView: View {
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
 
-        if var entry = editingEntry {
+        if let entry = editingEntry {
             entry.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
             entry.body = content.trimmingCharacters(in: .whitespacesAndNewlines)
             entry.tags = tags
             entry.updatedAt = Date()
             do {
                 try ctx.save()
-                NotificationCenter.default.post(name: Notification.Name("JournalEntryUpdated"), object: nil, userInfo: ["id": entry.id.uuidString])
+                NotificationCenter.default.post(name: JournalNotifications.entryUpdated, object: nil, userInfo: ["id": entry.id.uuidString])
                 if let onClose { onClose() } else { dismiss() }
             } catch {
                 saveErrorMessage = error.localizedDescription
@@ -740,7 +747,7 @@ struct JournalEditorView: View {
         ctx.insert(entry)
         do {
             try ctx.save()
-            NotificationCenter.default.post(name: Notification.Name("JournalEntryCreated"), object: nil, userInfo: ["id": entry.id.uuidString])
+            NotificationCenter.default.post(name: JournalNotifications.entryCreated, object: nil, userInfo: ["id": entry.id.uuidString])
             if let onClose { onClose() } else { dismiss() }
         } catch {
             saveErrorMessage = error.localizedDescription
@@ -778,6 +785,10 @@ private struct CursorTextView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UITextView, context: Context) {
+        // Mark that we're in SwiftUI's update cycle to suppress @State writes
+        context.coordinator.isInSwiftUIUpdate = true
+        defer { context.coordinator.isInSwiftUIUpdate = false }
+
         // Prevent delegate from feeding back into SwiftUI while we perform programmatic updates
         if uiView.text != text {
             context.coordinator.isProgrammaticUpdate = true
@@ -785,11 +796,14 @@ private struct CursorTextView: UIViewRepresentable {
             context.coordinator.isProgrammaticUpdate = false
         }
         if uiView.selectedRange != selection {
-            // Clamp selection to valid range
-            let maxLoc = (uiView.text as NSString).length
-            let loc = min(selection.location, maxLoc)
+            // Clamp selection to valid range (both location and length)
+            let maxLoc = max(0, (uiView.text as NSString).length)
+            let newLoc = min(max(selection.location, 0), maxLoc)
+            let maxLen = max(0, maxLoc - newLoc)
+            let newLen = min(max(selection.length, 0), maxLen)
+
             context.coordinator.isProgrammaticUpdate = true
-            uiView.selectedRange = NSRange(location: loc, length: selection.length)
+            uiView.selectedRange = NSRange(location: newLoc, length: newLen)
             context.coordinator.isProgrammaticUpdate = false
         }
         // Keep caret rect fresh (e.g., dynamic type or size changes)
@@ -802,6 +816,8 @@ private struct CursorTextView: UIViewRepresentable {
         var parent: CursorTextView
         // Reentrancy flag to avoid "modifying state during view update"
         var isProgrammaticUpdate: Bool = false
+        // True while updateUIView is running
+        var isInSwiftUIUpdate: Bool = false
         private var lastCaretRect: CGRect = .null
 
         init(parent: CursorTextView) { self.parent = parent }
@@ -809,11 +825,18 @@ private struct CursorTextView: UIViewRepresentable {
         func textViewDidChange(_ textView: UITextView) {
             // Ignore delegate callbacks triggered by programmatic updates
             if isProgrammaticUpdate { return }
-            parent.text = textView.text
+            let newText = textView.text ?? ""
+            if parent.text != newText {
+                DispatchQueue.main.async {
+                    self.parent.text = newText
+                }
+            }
             // Ensure caret position in SwiftUI is current before triggering onChange
             let newRange = textView.selectedRange
             if parent.selection != newRange {
-                parent.selection = newRange
+                DispatchQueue.main.async {
+                    self.parent.selection = newRange
+                }
             }
             updateCaretRect(textView)
             // Defer the callback to the next runloop so caret/selection are fully settled
@@ -827,7 +850,9 @@ private struct CursorTextView: UIViewRepresentable {
             if isProgrammaticUpdate { return }
             let newRange = textView.selectedRange
             if parent.selection != newRange {
-                parent.selection = newRange
+                DispatchQueue.main.async {
+                    self.parent.selection = newRange
+                }
             }
             updateCaretRect(textView)
             // Also trigger suggestion update when the caret moves
@@ -842,9 +867,12 @@ private struct CursorTextView: UIViewRepresentable {
         }
 
         func updateCaretRect(_ textView: UITextView, deferBindingUpdate: Bool = false) {
+            // If we're in SwiftUI's update pass, never touch @State here.
+            let shouldDefer = deferBindingUpdate || isInSwiftUIUpdate
+
             guard let range = textView.selectedTextRange else {
                 // When we shouldn't touch SwiftUI state (e.g. from updateUIView), just reset our cache.
-                if deferBindingUpdate {
+                if shouldDefer {
                     self.lastCaretRect = .null
                     return
                 }
@@ -855,6 +883,7 @@ private struct CursorTextView: UIViewRepresentable {
                 DispatchQueue.main.async { applyNil() }
                 return
             }
+
             let rect = textView.caretRect(for: range.start)
             let needsUpdate = lastCaretRect.isNull
                 || abs(rect.minX - lastCaretRect.minX) > 0.5
@@ -866,7 +895,7 @@ private struct CursorTextView: UIViewRepresentable {
             self.lastCaretRect = rect
 
             // If we're being called from a SwiftUI update cycle, don't write to @State here.
-            if deferBindingUpdate {
+            if shouldDefer {
                 return
             }
 
