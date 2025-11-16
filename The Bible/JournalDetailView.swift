@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct JournalDetailView: View {
     @Environment(\.modelContext) private var ctx
@@ -13,16 +14,21 @@ struct JournalDetailView: View {
 
     // Cache/debounce linkified body to avoid recomputation each render
     @State private var linkedBody: AttributedString = AttributedString("")
+    @State private var linkifyTask: Task<Void, Never>? = nil
 
     private func computeLinkedBodyDebounced(for text: String) {
-        // Cancel any in-flight task by bumping token
+        // Cancel any in-flight task
+        linkifyTask?.cancel()
+
         let currentText = text
-        Task.detached(priority: .userInitiated) {
+        linkifyTask = Task { @MainActor in
+            // Simple debounce
+            try? await Task.sleep(for: .milliseconds(150))
+            guard !Task.isCancelled else { return }
+
+            // linkify is @MainActor-isolated; call it on the main actor
             let result = BibleReferenceLinker.linkify(currentText)
-            await MainActor.run {
-                // Assign if still relevant
-                self.linkedBody = result
-            }
+            self.linkedBody = result
         }
     }
 
@@ -169,6 +175,9 @@ struct JournalDetailView: View {
         .onChange(of: entry.body) { _, newValue in
             computeLinkedBodyDebounced(for: newValue)
         }
+        .onDisappear {
+            linkifyTask?.cancel()
+        }
     }
 }
 
@@ -183,4 +192,3 @@ struct JournalDetailView: View {
     )
     NavigationStack { JournalDetailView(entry: entry) }
 }
-

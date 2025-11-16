@@ -49,7 +49,7 @@ struct LinkedTextView: View {
         Text(attributed)
             .font(font)
             .textSelectable(selectable)
-            .environment(\._openURL, OpenURLAction { url in
+            .environment(\._openURL, OpenURLAction { (url: URL) -> OpenURLAction.Result in
                 if let ref = BibleReferenceLinker.parse(url: url) {
                     onOpenScripture?(ref)
                     return .handled
@@ -58,13 +58,14 @@ struct LinkedTextView: View {
             })
             .onAppear { scheduleLinkify(for: text) }
             .onChange(of: text) { _, newValue in scheduleLinkify(for: newValue) }
+            .onDisappear { task?.cancel() }
     }
 
     private func scheduleLinkify(for value: String) {
         // Cancel any in-flight work
         task?.cancel()
         // If text is small, the sync path is already fast; we still offload to keep UI smooth.
-        task = Task.detached(priority: .userInitiated) {
+        task = Task(priority: .userInitiated) {
             // Tiny debounce to coalesce rapid changes (typing)
             try? await Task.sleep(nanoseconds: 120_000_000)
             if Task.isCancelled { return }

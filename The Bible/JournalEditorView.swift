@@ -188,7 +188,10 @@ struct JournalEditorView: View {
         linkifyTask = Task.detached(priority: .userInitiated) {
             try? await Task.sleep(nanoseconds: 150_000_000) // 150ms debounce
             if Task.isCancelled { return }
-            let result = BibleReferenceLinker.linkify(text)
+            // Call the MainActor-isolated linkify on the MainActor
+            let result: AttributedString = await MainActor.run {
+                BibleReferenceLinker.linkify(text)
+            }
             await MainActor.run {
                 self.linkedContent = result
             }
@@ -769,7 +772,7 @@ private struct CursorTextView: UIViewRepresentable {
         tv.textContainerInset = UIEdgeInsets(top: 8, left: 4, bottom: 8, right: 4)
         // Initial caret update on next runloop
         DispatchQueue.main.async {
-            context.coordinator.updateCaretRect(tv)
+            context.coordinator.updateCaretRect(tv, deferBindingUpdate: true)
         }
         return tv
     }
@@ -790,7 +793,7 @@ private struct CursorTextView: UIViewRepresentable {
             context.coordinator.isProgrammaticUpdate = false
         }
         // Keep caret rect fresh (e.g., dynamic type or size changes)
-        context.coordinator.updateCaretRect(uiView)
+        context.coordinator.updateCaretRect(uiView, deferBindingUpdate: true)
     }
 
     func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
@@ -838,18 +841,41 @@ private struct CursorTextView: UIViewRepresentable {
             updateCaretRect(tv)
         }
 
-        func updateCaretRect(_ textView: UITextView) {
+        func updateCaretRect(_ textView: UITextView, deferBindingUpdate: Bool = false) {
             guard let range = textView.selectedTextRange else {
-                parent.caretRect = nil
-                lastCaretRect = .null
+                // When we shouldn't touch SwiftUI state (e.g. from updateUIView), just reset our cache.
+                if deferBindingUpdate {
+                    self.lastCaretRect = .null
+                    return
+                }
+                let applyNil: () -> Void = {
+                    self.parent.caretRect = nil
+                    self.lastCaretRect = .null
+                }
+                DispatchQueue.main.async { applyNil() }
                 return
             }
             let rect = textView.caretRect(for: range.start)
-            // Only propagate meaningful changes to reduce state churn
-            if lastCaretRect.isNull || abs(rect.minX - lastCaretRect.minX) > 0.5 || abs(rect.minY - lastCaretRect.minY) > 0.5 {
-                lastCaretRect = rect
-                parent.caretRect = rect
+            let needsUpdate = lastCaretRect.isNull
+                || abs(rect.minX - lastCaretRect.minX) > 0.5
+                || abs(rect.minY - lastCaretRect.minY) > 0.5
+
+            guard needsUpdate else { return }
+
+            // Always update our local cache immediately
+            self.lastCaretRect = rect
+
+            // If we're being called from a SwiftUI update cycle, don't write to @State here.
+            if deferBindingUpdate {
+                return
             }
+
+            let apply: () -> Void = {
+                self.parent.caretRect = rect
+            }
+
+            // Defer binding updates to avoid "modifying state during view update"
+            DispatchQueue.main.async { apply() }
         }
     }
 }

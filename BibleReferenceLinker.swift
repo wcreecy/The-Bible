@@ -1,5 +1,4 @@
 import Foundation
-import SwiftUI
 
 struct ScriptureRef: Equatable {
     let bookName: String
@@ -182,9 +181,8 @@ enum BibleReferenceLinker {
                 if let lower = AttributedString.Index(strRange.lowerBound, within: attributed),
                    let upper = AttributedString.Index(strRange.upperBound, within: attributed) {
                     let attrRange: Range<AttributedString.Index> = lower..<upper
+                    // Only set the link attribute; styling can be applied in SwiftUI if desired.
                     attributed[attrRange].link = url
-                    attributed[attrRange].foregroundColor = .blue
-                    attributed[attrRange].underlineStyle = .single
                 }
             }
         }
@@ -217,4 +215,3 @@ enum BibleReferenceLinker {
         return (title, selected)
     }
 }
-
