@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var coordinator = NavigationCoordinator()
+    // Separate coordinators per tab to avoid path leakage/corruption
+    @StateObject private var homeCoordinator = NavigationCoordinator()
+    @StateObject private var bibleCoordinator = NavigationCoordinator()
+    // Favorites, Search, Settings don’t currently push via coordinator; no path binding needed.
+
     @StateObject private var journalComposer = JournalComposer()
     @State private var selectedTab: Int = 0
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
@@ -33,237 +37,93 @@ struct ContentView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            NavigationStack(path: $coordinator.path) {
+            // Home tab: its own NavigationStack and coordinator/path
+            NavigationStack(path: $homeCoordinator.path) {
                 HomeView()
-                    .navigationDestination(for: Route.self) { route in
-                        switch route {
-                        case let .book(book):
-                            ChaptersView(book: book)
-                                .navigationBarTitleDisplayMode(.inline)
-                        case let .chapter(book, chapter):
-                            VersesView(book: book, chapter: chapter)
-                                .navigationBarTitleDisplayMode(.inline)
-                        case let .reader(book, chapter, startVerse):
-                            ReadingView(book: book, chapter: chapter, startVerse: startVerse)
-                                .navigationBarTitleDisplayMode(.inline)
-                                .font(.system(size: readerFontSize))
-                                .toolbar {
-                                    if isPad {
-                                        ToolbarItemGroup(placement: .topBarTrailing) {
-                                            Button {
-                                                readerFontSize = max(12, readerFontSize - 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.smaller")
-                                            }
-                                            .accessibilityLabel("Decrease font size")
-
-                                            Button {
-                                                readerFontSize = min(30, readerFontSize + 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.larger")
-                                            }
-                                            .accessibilityLabel("Increase font size")
-                                        }
-                                    }
-                                }
-                        }
-                    }
+                    .appDestinations(readerFontSize: $readerFontSize, isPad: isPad)
             }
+            .environmentObject(homeCoordinator)
             .tabItem { Label("Home", systemImage: "house") }
             .tag(0)
             
+            // Bible tab
             if isPad {
                 BibleSplitView()
                     .tabItem { Label("Bible", systemImage: "book") }
                     .tag(1)
             } else {
-                NavigationStack(path: $coordinator.path) {
+                NavigationStack(path: $bibleCoordinator.path) {
                     BooksView(books: BibleData.books)
-                        .navigationDestination(for: Route.self) { route in
-                            switch route {
-                            case let .book(book):
-                                ChaptersView(book: book)
-                                    .navigationBarTitleDisplayMode(.inline)
-                            case let .chapter(book, chapter):
-                                VersesView(book: book, chapter: chapter)
-                                    .navigationBarTitleDisplayMode(.inline)
-                            case let .reader(book, chapter, startVerse):
-                                ReadingView(book: book, chapter: chapter, startVerse: startVerse)
-                                    .navigationBarTitleDisplayMode(.inline)
-                                    .font(.system(size: readerFontSize))
-                                    .toolbar {
-                                        if isPad {
-                                            ToolbarItemGroup(placement: .topBarTrailing) {
-                                                Button {
-                                                    readerFontSize = max(12, readerFontSize - 1)
-                                                } label: {
-                                                    Image(systemName: "textformat.size.smaller")
-                                                }
-                                                .accessibilityLabel("Decrease font size")
-
-                                                Button {
-                                                    readerFontSize = min(30, readerFontSize + 1)
-                                                } label: {
-                                                    Image(systemName: "textformat.size.larger")
-                                                }
-                                                .accessibilityLabel("Increase font size")
-                                            }
-                                        }
-                                    }
-                            }
-                        }
+                        .appDestinations(readerFontSize: $readerFontSize, isPad: isPad)
                 }
+                .environmentObject(bibleCoordinator)
                 .tabItem { Label("Bible", systemImage: "book") }
                 .tag(1)
             }
             
+            // Journal tab manages its own navigation
             JournalTabView()
                 .tabItem { Label("Journal", systemImage: "book.closed") }
                 .tag(2)
             
+            // Games tab: no shared path
             NavigationStack {
                 GamesView()
             }
             .tabItem { Label("Games", systemImage: "gamecontroller") }
             .tag(3)
             
-            NavigationStack(path: $coordinator.path) {
+            // Favorites tab: uses direct NavigationLinks; no shared path
+            NavigationStack {
                 FavoritesView()
-                    .navigationDestination(for: Route.self) { route in
-                        switch route {
-                        case let .book(book):
-                            ChaptersView(book: book)
-                                .navigationBarTitleDisplayMode(.inline)
-                        case let .chapter(book, chapter):
-                            VersesView(book: book, chapter: chapter)
-                                .navigationBarTitleDisplayMode(.inline)
-                        case let .reader(book, chapter, startVerse):
-                            ReadingView(book: book, chapter: chapter, startVerse: startVerse)
-                                .navigationBarTitleDisplayMode(.inline)
-                                .font(.system(size: readerFontSize))
-                                .toolbar {
-                                    if isPad {
-                                        ToolbarItemGroup(placement: .topBarTrailing) {
-                                            Button {
-                                                readerFontSize = max(12, readerFontSize - 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.smaller")
-                                            }
-                                            .accessibilityLabel("Decrease font size")
-
-                                            Button {
-                                                readerFontSize = min(30, readerFontSize + 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.larger")
-                                            }
-                                            .accessibilityLabel("Increase font size")
-                                        }
-                                    }
-                                }
-                        }
-                    }
+                    .appDestinations(readerFontSize: $readerFontSize, isPad: isPad)
             }
             .tabItem { Label("Favorites", systemImage: "heart") }
             .tag(4)
             
-            NavigationStack(path: $coordinator.path) {
+            // Search tab: uses direct NavigationLinks; no shared path
+            NavigationStack {
                 SearchView()
-                    .navigationDestination(for: Route.self) { route in
-                        switch route {
-                        case let .book(book):
-                            ChaptersView(book: book)
-                                .navigationBarTitleDisplayMode(.inline)
-                        case let .chapter(book, chapter):
-                            VersesView(book: book, chapter: chapter)
-                                .navigationBarTitleDisplayMode(.inline)
-                        case let .reader(book, chapter, startVerse):
-                            ReadingView(book: book, chapter: chapter, startVerse: startVerse)
-                                .navigationBarTitleDisplayMode(.inline)
-                                .font(.system(size: readerFontSize))
-                                .toolbar {
-                                    if isPad {
-                                        ToolbarItemGroup(placement: .topBarTrailing) {
-                                            Button {
-                                                readerFontSize = max(12, readerFontSize - 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.smaller")
-                                            }
-                                            .accessibilityLabel("Decrease font size")
-
-                                            Button {
-                                                readerFontSize = min(30, readerFontSize + 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.larger")
-                                            }
-                                            .accessibilityLabel("Increase font size")
-                                        }
-                                    }
-                                }
-                        }
-                    }
+                    .appDestinations(readerFontSize: $readerFontSize, isPad: isPad)
             }
             .tabItem { Label("Search", systemImage: "magnifyingglass") }
             .tag(5)
             
-            NavigationStack(path: $coordinator.path) {
+            // Settings tab
+            NavigationStack {
                 SettingsView()
-                    .navigationDestination(for: Route.self) { route in
-                        switch route {
-                        case let .book(book):
-                            ChaptersView(book: book)
-                                .navigationBarTitleDisplayMode(.inline)
-                        case let .chapter(book, chapter):
-                            VersesView(book: book, chapter: chapter)
-                                .navigationBarTitleDisplayMode(.inline)
-                        case let .reader(book, chapter, startVerse):
-                            ReadingView(book: book, chapter: chapter, startVerse: startVerse)
-                                .navigationBarTitleDisplayMode(.inline)
-                                .font(.system(size: readerFontSize))
-                                .toolbar {
-                                    if isPad {
-                                        ToolbarItemGroup(placement: .topBarTrailing) {
-                                            Button {
-                                                readerFontSize = max(12, readerFontSize - 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.smaller")
-                                            }
-                                            .accessibilityLabel("Decrease font size")
-
-                                            Button {
-                                                readerFontSize = min(30, readerFontSize + 1)
-                                            } label: {
-                                                Image(systemName: "textformat.size.larger")
-                                            }
-                                            .accessibilityLabel("Increase font size")
-                                        }
-                                    }
-                                }
-                        }
-                    }
+                    .appDestinations(readerFontSize: $readerFontSize, isPad: isPad)
             }
             .tabItem { Label("Settings", systemImage: "gear") }
             .tag(6)
         }
-        .environmentObject(coordinator)
+        // Only share the journal composer globally
         .environmentObject(journalComposer)
         .preferredColorScheme(preferredScheme)
         .dynamicTypeSize(preferredDynamicType ?? .large)
         .font(preferredCustomFontName != nil ? .custom(preferredCustomFontName!, size: baseFontSize) : .system(size: baseFontSize))
         .fontDesign(preferredFontDesign ?? .default)
         .onAppear {
-            // One-time cleanup of deprecated app time keys
+            // One-time cleanup of deprecated app time keys (cheap)
             if !didCleanupAppTimeKeys {
                 UserDefaults.standard.removeObject(forKey: "appTotalActiveSeconds")
                 UserDefaults.standard.removeObject(forKey: "appActiveStart")
                 didCleanupAppTimeKeys = true
             }
-            // Ensure Focus Live Activity is visible on Lock Screen/Dynamic Island across the app
-            if let shared = UserDefaults(suiteName: "group.bible.app") {
-                let title = shared.string(forKey: "focusTitle")?.trimmingCharacters(in: .whitespacesAndNewlines)
-                let body = shared.string(forKey: "focusBody")?.trimmingCharacters(in: .whitespacesAndNewlines)
-                let hasContent = ((title?.isEmpty == false) || (body?.isEmpty == false))
-                if hasContent {
-                    PrayerTimerActivityController.shared.ensureFocusIfNone(title: title?.isEmpty == true ? nil : title, body: body?.isEmpty == true ? nil : body)
+            // Defer Live Activity "ensure" to the next runloop/frame, and only if Home is visible now.
+            Task { @MainActor in
+                await Task.yield()
+                if selectedTab == 0 {
+                    ensureSavedFocusLiveActivityIfNeeded()
+                }
+            }
+        }
+        // If the user switches to Home later, ensure Focus activity then (still lightweight).
+        .onChange(of: selectedTab) { _, newValue in
+            if newValue == 0 {
+                Task { @MainActor in
+                    await Task.yield()
+                    ensureSavedFocusLiveActivityIfNeeded()
                 }
             }
         }
@@ -311,6 +171,22 @@ struct ContentView: View {
             default:
                 break
             }
+        }
+    }
+
+    // MARK: - Helpers
+
+    @MainActor
+    private func ensureSavedFocusLiveActivityIfNeeded() {
+        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
+        let title = shared.string(forKey: "focusTitle")?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let body = shared.string(forKey: "focusBody")?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let hasContent = ((title?.isEmpty == false) || (body?.isEmpty == false))
+        if hasContent {
+            PrayerTimerActivityController.shared.ensureFocusIfNone(
+                title: title?.isEmpty == true ? nil : title,
+                body: body?.isEmpty == true ? nil : body
+            )
         }
     }
 }

@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		2C135C3B2EC650D900306AD5 /* GameScoreboardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */; };
-		2C135DEB2EC6681A00306AD5 /* UserGuide.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2C135DEA2EC6681A00306AD5 /* UserGuide.rtf */; };
-		2C135DED2EC668EF00306AD5 /* UserGuide.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2C135DEC2EC668EF00306AD5 /* UserGuide.pdf */; };
 		2C275BC02EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2C275BBF2EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf */; };
 		2C3F38102EC4042D002CA795 /* Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3F380F2EC4042D002CA795 /* Styles.swift */; };
 		2C49CF462EBE10000006FF79 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D972EB3895400A657FA /* HomeView.swift */; };
@@ -99,8 +97,6 @@
 
 /* Begin PBXFileReference section */
 		2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScoreboardCard.swift; sourceTree = "<group>"; };
-		2C135DEA2EC6681A00306AD5 /* UserGuide.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = UserGuide.rtf; sourceTree = "<group>"; };
-		2C135DEC2EC668EF00306AD5 /* UserGuide.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = UserGuide.pdf; sourceTree = "<group>"; };
 		2C275BBF2EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = "TheBibleApp-UserGuide.rtf"; sourceTree = "<group>"; };
 		2C279CFF2EBCC62A0023C46B /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		2C279D012EBCC62C0023C46B /* NavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationCoordinator.swift; sourceTree = "<group>"; };
@@ -323,8 +319,6 @@
 				2CB309D22EC2CE2D0032CB7D /* BibleReferenceLinker.swift */,
 				2C3F380F2EC4042D002CA795 /* Styles.swift */,
 				2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */,
-				2C135DEA2EC6681A00306AD5 /* UserGuide.rtf */,
-				2C135DEC2EC668EF00306AD5 /* UserGuide.pdf */,
 			);
 			sourceTree = "<group>";
 		};
@@ -651,8 +645,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2C275BC02EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf in Resources */,
-				2C135DEB2EC6681A00306AD5 /* UserGuide.rtf in Resources */,
-				2C135DED2EC668EF00306AD5 /* UserGuide.pdf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

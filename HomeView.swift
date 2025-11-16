@@ -865,28 +865,14 @@ struct HomeView: View {
         .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
         .appToast(isPresented: $showFocusSavedToast, symbol: "checkmark.seal.fill", text: "Focus Saved", tint: .green)
         .onAppear {
-            // Request notification permission once
-            if !didRequestNotifications {
-                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
-                didRequestNotifications = true
-            }
-
+            // Defer prompts: DO NOT request notifications/HealthKit here.
             // Restore persisted state
             isTimerRunning = storedRunning
             isPaused = storedPaused
             // Cache HealthKit availability
             isHealthKitAvailable = HealthKitManager.shared.isAvailable()
-            // Request HealthKit authorization and start mindful logging on app open
-            if isHealthKitAvailable && !healthKitPrompted {
-                HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
-                    Task { @MainActor in
-                        self.healthKitPrompted = true
-                        startMindfulLoggingIfNeeded()
-                    }
-                }
-            } else {
-                startMindfulLoggingIfNeeded()
-            }
+            // Do not request HealthKit authorization here; defer to first timer/stopwatch start.
+
             if storedRunning {
                 if isPaused {
                     remainingSeconds = storedRemainingWhenPaused
@@ -1059,6 +1045,25 @@ struct HomeView: View {
     }
 
     private func startTimer(minutes: Int) {
+        // Defer and request permissions on first use
+        if !didRequestNotifications {
+            Task {
+                await Task.yield()
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
+                didRequestNotifications = true
+            }
+        }
+        if isHealthKitAvailable && !healthKitPrompted {
+            Task {
+                await Task.yield()
+                HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
+                    Task { @MainActor in
+                        self.healthKitPrompted = true
+                    }
+                }
+            }
+        }
+
         let secs = max(1, minutes) * 60
         remainingSeconds = secs
         storedTotalSeconds = secs
@@ -1073,15 +1078,6 @@ struct HomeView: View {
         storedStartDate = start.timeIntervalSince1970
         storedEndDate = end.timeIntervalSince1970
         storedRemainingWhenPaused = 0
-
-        // HealthKit: request authorization on first use
-        if isHealthKitAvailable && !healthKitPrompted {
-            HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
-                Task { @MainActor in
-                    self.healthKitPrompted = true
-                }
-            }
-        }
 
         startMindfulLoggingIfNeeded()
 
@@ -1332,6 +1328,18 @@ struct HomeView: View {
     // Stopwatch helper methods
 
     private func startStopwatch() {
+        // Request HealthKit on first use (deferred)
+        if isHealthKitAvailable && !healthKitPrompted {
+            Task {
+                await Task.yield()
+                HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
+                    Task { @MainActor in
+                        self.healthKitPrompted = true
+                    }
+                }
+            }
+        }
+
         let now = Date().timeIntervalSince1970
         if stopwatchStartDate == 0 { stopwatchStartDate = now }
         stopwatchRunning = true
@@ -1621,4 +1629,4 @@ private struct PrayerStudyTimerSetupView: View {
         .padding()
     }
 }
-// Note: HealthKit logging is handled in HomeView, no changes needed here.
+// Note: HealthKit logging is handled in HomeView, prompts are now deferred until first use.
