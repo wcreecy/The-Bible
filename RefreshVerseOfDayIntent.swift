@@ -33,8 +33,8 @@ struct RefreshVerseOfDayIntent: AppIntent {
             shared.set(text, forKey: "verseOfDayText")
         }
 
-        // Reload all widget timelines
-        WidgetCenter.shared.reloadAllTimelines()
+        // Reload only the Verse widget timelines (debounce not available in intents; rate-limits still apply)
+        WidgetCenter.shared.reloadTimelines(ofKind: "VerseWidget")
         return .result()
     }
 

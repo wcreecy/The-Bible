@@ -1,19 +1,22 @@
 import Foundation
 
 struct Verse: Identifiable, Hashable {
-    let id = UUID()
+    // Stable, allocation-free ID derived from verse number within a chapter
+    var id: String { "\(number)" }
     let number: Int
     let text: String
 }
 
 struct Chapter: Identifiable, Hashable {
-    let id = UUID()
+    // Stable, allocation-free ID derived from chapter number within a book
+    var id: String { "\(number)" }
     let number: Int
     let verses: [Verse]
 }
 
 struct Book: Identifiable, Hashable {
-    let id = UUID()
+    // Stable, allocation-free ID derived from the book name
+    var id: String { name }
     let name: String
     let chapters: [Chapter]
 }
@@ -67,7 +70,7 @@ enum BibleData {
                 let data = try Data(contentsOf: url)
                 let decoder = JSONDecoder()
                 let dtoBooks = try decoder.decode([KJVBookDTO].self, from: data)
-                return dtoBooks.enumerated().map { (_, dto) in
+                return dtoBooks.map { dto in
                     let fullName = dto.name ?? BookNames.fullName(for: dto.abbrev)
                     return Book(
                         name: fullName,

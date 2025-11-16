@@ -27,30 +27,37 @@ struct ReadingView: View {
     @AppStorage("keepScreenOn") private var keepScreenOn: Bool = false
     @State private var pinVerse: Int? = nil
 
+    @StateObject private var bibleStore = BibleStore.shared
+
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
         self.chapter = chapter
         self.startVerse = startVerse
         _currentVerse = State(initialValue: startVerse)
-
-        // Initialize indices based on incoming selection to avoid defaulting to Genesis 1:1
-        let books = BibleData.books
-        if let bIdx = books.firstIndex(where: { $0.name == book.name }) {
-            _currentBookIndex = State(initialValue: bIdx)
-            let chapters = books[bIdx].chapters
-            if let cIdx = chapters.firstIndex(where: { $0.number == chapter.number }) {
-                _currentChapterIndex = State(initialValue: cIdx)
-            }
-        }
     }
 
-    private var allBooks: [Book] { BibleData.books }
+    private var allBooks: [Book] {
+        if bibleStore.isReady { return bibleStore.books }
+        return [book] // Minimal fallback before store loads
+    }
 
     private var allChapters: [Chapter] { currentBook.chapters }
 
-    private var currentBook: Book { allBooks[currentBookIndex] }
+    private var currentBook: Book {
+        if allBooks.indices.contains(currentBookIndex) {
+            return allBooks[currentBookIndex]
+        }
+        // Fallback to passed-in book
+        return book
+    }
 
-    private var currentChapter: Chapter { allChapters[currentChapterIndex] }
+    private var currentChapter: Chapter {
+        if allChapters.indices.contains(currentChapterIndex) {
+            return allChapters[currentChapterIndex]
+        }
+        // Fallback to passed-in chapter
+        return chapter
+    }
 
     var body: some View {
         content
@@ -58,12 +65,36 @@ struct ReadingView: View {
             .navigationBarTitleDisplayMode(.inline)
             .onAppear(perform: onAppear)
             .onAppear {
+                bibleStore.ensureLoaded()
                 if keepScreenOn {
                     UIApplication.shared.isIdleTimerDisabled = true
                 }
+                // Initialize indices based on incoming selection
+                Task { @MainActor in
+                    if bibleStore.isReady {
+                        if let bIdx = bibleStore.books.firstIndex(where: { $0.name == book.name }) {
+                            currentBookIndex = bIdx
+                            let chapters = bibleStore.books[bIdx].chapters
+                            if let cIdx = chapters.firstIndex(where: { $0.number == chapter.number }) {
+                                currentChapterIndex = cIdx
+                            }
+                        }
+                    } else {
+                        // Update once ready
+                        Task { @MainActor in
+                            while !BibleStore.shared.isReady { try? await Task.sleep(nanoseconds: 20_000_000) }
+                            if let bIdx = BibleStore.shared.books.firstIndex(where: { $0.name == book.name }) {
+                                currentBookIndex = bIdx
+                                let chapters = BibleStore.shared.books[bIdx].chapters
+                                if let cIdx = chapters.firstIndex(where: { $0.number == chapter.number }) {
+                                    currentChapterIndex = cIdx
+                                }
+                            }
+                        }
+                    }
+                }
             }
             .onDisappear {
-                // Restore default behavior when leaving the reader
                 UIApplication.shared.isIdleTimerDisabled = false
             }
             .onChange(of: keepScreenOn) { _, newValue in
@@ -116,7 +147,6 @@ struct ReadingView: View {
                             selectedVerse = verse.number
                             currentVerse = verse.number
                             saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number)
-                            // Dismiss any open menu when tapping to select
                             if menuVerse != nil { menuVerse = nil }
                             let haptic = UIImpactFeedbackGenerator(style: .light); haptic.impactOccurred()
                             withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
@@ -149,7 +179,6 @@ struct ReadingView: View {
                                 }
                                 .foregroundStyle(.blue)
                                 Button(action: {
-                                    // Build a verse reference string and open JournalEditorView with it in the body
                                     let bookName = currentBook.name
                                     let chapterNum = currentChapter.number
                                     let verseNum = verse.number
@@ -173,7 +202,6 @@ struct ReadingView: View {
                             .transition(.opacity)
                         }
 
-                        // Divider between verses
                         if verse.number != currentChapter.verses.count {
                             Divider()
                         }
@@ -185,7 +213,6 @@ struct ReadingView: View {
                     menuVerse = nil
                     highlightedVerse = nil
                     selectedVerse = nil
-                    // When chapter changes, scroll to the top
                     topVisibleVerseID = rowID(for: 1)
                 }
                 .onAppear {
@@ -214,13 +241,10 @@ struct ReadingView: View {
                 .onEnded { value in
                     let horizontal = value.translation.width
                     let vertical = value.translation.height
-                    // Only act on mostly-horizontal swipes with sufficient distance
                     if abs(horizontal) > abs(vertical) && abs(horizontal) > 40 {
                         if horizontal < 0 {
-                            // Swipe left: next chapter
                             nextChapter()
                         } else {
-                            // Swipe right: previous chapter
                             previousChapter()
                         }
                     }
@@ -229,7 +253,6 @@ struct ReadingView: View {
     }
 
     private func onAppear() {
-        // Update progress to the current location
         saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: startVerse)
         DispatchQueue.main.async {
             withAnimation(.easeInOut(duration: 0.35)) {
@@ -254,8 +277,10 @@ struct ReadingView: View {
             currentChapterIndex -= 1
         } else {
             // Move to previous book's last chapter
-            currentBookIndex -= 1
-            currentChapterIndex = max(0, currentBook.chapters.count - 1)
+            if currentBookIndex > 0 {
+                currentBookIndex -= 1
+                currentChapterIndex = max(0, currentBook.chapters.count - 1)
+            }
         }
         currentVerse = 1
         saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: currentVerse)
@@ -266,7 +291,6 @@ struct ReadingView: View {
         if currentChapterIndex < allChapters.count - 1 {
             currentChapterIndex += 1
         } else if currentBookIndex < allBooks.count - 1 {
-            // Move to next book's first chapter
             currentBookIndex += 1
             currentChapterIndex = 0
         } else {

@@ -54,7 +54,6 @@ struct HomeView: View {
     @FocusState private var focusTitleIsFocused: Bool
     @FocusState private var focusBodyIsFocused: Bool
 
-    // NEW: controls whether the focus body is shown
     @State private var isFocusBodyExpanded: Bool = false
 
     private struct ModernPillButtonStyle: ButtonStyle {
@@ -80,9 +79,8 @@ struct HomeView: View {
         }
     }
 
-    @State private var unifiedTick: Int = 0
-    private let unifiedTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-
+    // On-demand ticker: only active during timer/stopwatch sessions
+    @State private var tickerCancellable: AnyCancellable?
     @State private var showFinishedAlert: Bool = false
     @State private var finishHapticTimer: Timer? = nil
 
@@ -98,9 +96,7 @@ struct HomeView: View {
     @State private var isHealthKitAvailable: Bool = HealthKitManager.shared.isAvailable()
 
     @Environment(\.scenePhase) private var scenePhase
-    @Environment(\.horizontalSizeClass) private var hSize
 
-    private static let sharedGridColumns: [GridItem] = [GridItem(.flexible())]
     private static let notificationID = "PrayerStudyTimerFinished"
     private static let notificationTitle = "Prayer/Study Finished"
     private static let notificationBody = "Your prayer/study timer has completed."
@@ -130,8 +126,6 @@ struct HomeView: View {
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
     private var iPadCardHeight: CGFloat { 200 }
 
-    private var gridColumns: [GridItem] { Self.sharedGridColumns }
-
     private var isEditingFocus: Bool {
         prayerMode == .focus && (focusTitleIsFocused || focusBodyIsFocused)
     }
@@ -140,11 +134,24 @@ struct HomeView: View {
         progressList.first
     }
 
-    // Configurable auto-refresh times (defaults to 6:00 AM and 6:00 PM)
+    // Verse-of-the-Day: configurable times and scheduler
     @AppStorage("votdRefresh1Hour") private var votdRefresh1Hour: Int = 6
     @AppStorage("votdRefresh1Minute") private var votdRefresh1Minute: Int = 0
     @AppStorage("votdRefresh2Hour") private var votdRefresh2Hour: Int = 18
     @AppStorage("votdRefresh2Minute") private var votdRefresh2Minute: Int = 0
+    @State private var nextRefreshTimer: Timer?
+
+    // Bible store for async/on-demand loading
+    @StateObject private var bibleStore = BibleStore.shared
+
+    // Debounced widget reload helper
+    private func debouncedReloadAllWidgets() {
+        DebouncedWidgetReloader.shared.reloadAll()
+    }
+
+    private func debouncedReload(kind: String) {
+        DebouncedWidgetReloader.shared.reload(kind: kind)
+    }
 
     private func startMindfulLoggingIfNeeded() {
         guard isHealthKitAvailable else { return }
@@ -165,7 +172,7 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Next Verse Auto-Refresh Helpers
+    // MARK: - Next Verse Auto-Refresh Helpers (one-shot scheduler)
 
     private func dateForToday(hour: Int, minute: Int, from now: Date = Date()) -> Date? {
         let cal = Calendar.current
@@ -179,40 +186,35 @@ struct HomeView: View {
               let t2 = dateForToday(hour: votdRefresh2Hour, minute: votdRefresh2Minute, from: now) else {
             return now
         }
-
-        if now < t1 {
-            return t1
-        } else if now < t2 {
-            return t2
-        } else {
-            // Tomorrow at t1
-            let tomorrow = cal.date(byAdding: .day, value: 1, to: now) ?? now
-            return dateForToday(hour: votdRefresh1Hour, minute: votdRefresh1Minute, from: tomorrow) ?? now
-        }
+        if now < t1 { return t1 }
+        if now < t2 { return t2 }
+        let tomorrow = cal.date(byAdding: .day, value: 1, to: now) ?? now
+        return dateForToday(hour: votdRefresh1Hour, minute: votdRefresh1Minute, from: tomorrow) ?? now
     }
 
     private var nextVerseRefreshDescription: String {
-        if verseOfDayPaused {
-            return "Auto refresh is paused."
-        }
+        if verseOfDayPaused { return "Auto refresh is paused." }
         let now = Date()
         let next = nextAutoRefreshDate(from: now)
         let cal = Calendar.current
-
         let isSameDay = cal.isDate(now, inSameDayAs: next)
         let isTomorrow = cal.isDate(next, inSameDayAs: cal.date(byAdding: .day, value: 1, to: now) ?? next)
-
-        let dayString: String
-        if isSameDay {
-            dayString = "Today"
-        } else if isTomorrow {
-            dayString = "Tomorrow"
-        } else {
-            dayString = next.formatted(date: .abbreviated, time: .omitted)
-        }
-
+        let dayString: String = isSameDay ? "Today" : (isTomorrow ? "Tomorrow" : next.formatted(date: .abbreviated, time: .omitted))
         let timeString = next.formatted(date: .omitted, time: .shortened)
         return "Next auto refresh: \(dayString) at \(timeString)"
+    }
+
+    private func scheduleNextVerseRefreshTimer() {
+        nextRefreshTimer?.invalidate()
+        guard !verseOfDayPaused else { return }
+        let next = nextAutoRefreshDate()
+        let interval = max(1, next.timeIntervalSinceNow)
+        nextRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
+            loadRandomVerse()
+            // Schedule the next one
+            scheduleNextVerseRefreshTimer()
+        }
+        RunLoop.main.add(nextRefreshTimer!, forMode: .common)
     }
 
     // MARK: - Shared Small Views / Helpers
@@ -235,15 +237,16 @@ struct HomeView: View {
         shared.set(chapter, forKey: "verseOfDayChapter")
         shared.set(verse, forKey: "verseOfDayNumber")
         shared.set(text, forKey: "verseOfDayText")
-        WidgetCenter.shared.reloadAllTimelines()
+        // Reload only the Verse widget, debounced
+        DebouncedWidgetReloader.shared.reload(kind: "VerseWidget")
     }
 
-    // Mirror last read to App Group for Last Read widget
     private func mirrorLastReadToAppGroup() {
         guard let shared = sharedDefaults else { return }
         guard let p = progress else { return }
-        // Lookup verse text from BibleData
-        if let book = BibleData.books.first(where: { $0.name == p.bookName }),
+        // Use bibleStore if available to avoid synchronous decode
+        let books = bibleStore.isReady ? bibleStore.books : []
+        if let book = books.first(where: { $0.name == p.bookName }),
            let chapter = book.chapters.first(where: { $0.number == p.chapterNumber }),
            let verse = chapter.verses.first(where: { $0.number == p.verseNumber }) {
             shared.set(p.bookName, forKey: "lastReadBook")
@@ -251,22 +254,22 @@ struct HomeView: View {
             shared.set(p.verseNumber, forKey: "lastReadVerse")
             shared.set(verse.text, forKey: "lastReadText")
             shared.set(Date().timeIntervalSince1970, forKey: "lastReadUpdatedAt")
-            WidgetCenter.shared.reloadAllTimelines()
+            // Reload only the Last Read widget, debounced
+            DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
         }
     }
 
-    // Handle deep link from Last Read widget
     private func handleOpenPendingVerse() {
         guard let shared = sharedDefaults else { return }
         guard let book = shared.string(forKey: "pendingOpenBook"),
               let chapter = shared.value(forKey: "pendingOpenChapter") as? Int,
               let verse = shared.value(forKey: "pendingOpenVerse") as? Int else { return }
-        // Clear pending keys
         shared.removeObject(forKey: "pendingOpenBook")
         shared.removeObject(forKey: "pendingOpenChapter")
         shared.removeObject(forKey: "pendingOpenVerse")
 
-        guard let b = BibleData.books.first(where: { $0.name == book }),
+        let books = bibleStore.isReady ? bibleStore.books : []
+        guard let b = books.first(where: { $0.name == book }),
               let c = b.chapters.first(where: { $0.number == chapter }) else { return }
         coordinator.push(.reader(book: b, chapter: c, startVerse: verse))
     }
@@ -321,9 +324,13 @@ struct HomeView: View {
                             storedVerseNumber = v.verseNumber
                             storedVerseText = v.verseText
                         }
-                        // Mirror current stored verse to App Group for widget sync
                         mirrorVerseToAppGroup(book: storedVerseBook, chapter: storedVerseChapter, verse: storedVerseNumber, text: storedVerseText)
-                        // Prompt widgets to refresh
+                        if verseOfDayPaused {
+                            nextRefreshTimer?.invalidate()
+                            nextRefreshTimer = nil
+                        } else {
+                            scheduleNextVerseRefreshTimer()
+                        }
                         let generator = UIImpactFeedbackGenerator(style: .medium)
                         generator.impactOccurred()
                     }) {
@@ -356,7 +363,7 @@ struct HomeView: View {
                         .foregroundStyle(verseOfDayPaused ? AnyShapeStyle(.secondary) : AnyShapeStyle(.green))
                         .font(.title3)
                         .help("Refresh")
-                        .disabled(verseOfDayPaused)
+                        .disabled(verseOfDayPaused || !bibleStore.isReady)
 
                         Button(action: {
                             copyVerse(v)
@@ -382,16 +389,22 @@ struct HomeView: View {
                     }
                     .frame(maxWidth: .infinity)
 
-                    // Next auto-refresh description
                     Text(nextVerseRefreshDescription)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .padding(.top, 4)
                 } else {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Verse will refresh automatically at your selected times.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                        if !bibleStore.isReady {
+                            Text("Loading verse data…")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .redacted(reason: .placeholder)
+                        } else {
+                            Text("Verse will refresh automatically at your selected times.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
                         Text(nextVerseRefreshDescription)
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -402,8 +415,8 @@ struct HomeView: View {
             .onTapGesture {
                 let generator = UIImpactFeedbackGenerator(style: .heavy)
                 generator.impactOccurred()
-                guard let v = verseOfDay,
-                      let book = BibleData.books.first(where: { $0.name == v.bookName }),
+                guard let v = verseOfDay, bibleStore.isReady,
+                      let book = bibleStore.books.first(where: { $0.name == v.bookName }),
                       let chapter = book.chapters.first(where: { $0.number == v.chapterNumber }) else { return }
                 coordinator.push(.reader(book: book, chapter: chapter, startVerse: v.verseNumber))
             }
@@ -445,7 +458,6 @@ struct HomeView: View {
                                 .font(.system(size: 36, weight: .semibold, design: .monospaced))
                                 .foregroundStyle(timerTintColor)
                             HStack(spacing: 24) {
-                                // Pause or Resume toggle
                                 Button(action: { togglePause() }) {
                                     Image(systemName: isPaused ? "play.circle.fill" : "pause.circle.fill")
                                         .font(.system(size: 56))
@@ -454,7 +466,6 @@ struct HomeView: View {
                                 .buttonStyle(.plain)
                                 .accessibilityLabel(isPaused ? "Resume" : "Pause")
 
-                                // Stop (red) — placed next to Pause
                                 Button(action: { stopTimer() }) {
                                     Image(systemName: "stop.circle.fill")
                                         .font(.system(size: 56))
@@ -463,7 +474,6 @@ struct HomeView: View {
                                 .buttonStyle(.plain)
                                 .accessibilityLabel("Stop")
 
-                                // +5 minutes — blue button with "+5" label
                                 Button(action: { addFiveMinutes() }) {
                                     Text("+5")
                                         .font(.subheadline.weight(.semibold))
@@ -491,12 +501,9 @@ struct HomeView: View {
                             ModePicker(disabled: isTimerRunning || stopwatchRunning)
 
                             HStack(spacing: 12) {
-                                // Custom
                                 Button {
                                     if isHealthKitAvailable && !healthKitPrompted {
-                                        Task {
-                                            await requestHealthKitIfNeeded()
-                                        }
+                                        Task { await requestHealthKitIfNeeded() }
                                     }
                                     let generator = UIImpactFeedbackGenerator(style: .light)
                                     generator.impactOccurred()
@@ -516,84 +523,19 @@ struct HomeView: View {
                                 .buttonStyle(.plain)
                                 .accessibilityLabel("Custom duration")
 
-                                // 5
-                                Button { startTimer(minutes: 5) } label: {
-                                    Text("5")
-                                        .font(.subheadline.weight(.semibold))
-                                        .frame(width: 40, height: 40)
-                                        .foregroundStyle(.primary)
-                                        .background(
-                                            Circle().fill(Color(.secondarySystemBackground))
-                                        )
-                                        .overlay(
-                                            Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                                        )
-                                }
-                                .buttonStyle(.plain)
+                                Button { startTimer(minutes: 5) } label: { presetCircle("5") }
                                 .accessibilityLabel("Start 5 minutes")
 
-                                // 10
-                                Button { startTimer(minutes: 10) } label: {
-                                    Text("10")
-                                        .font(.subheadline.weight(.semibold))
-                                        .frame(width: 40, height: 40)
-                                        .foregroundStyle(.primary)
-                                        .background(
-                                            Circle().fill(Color(.secondarySystemBackground))
-                                        )
-                                        .overlay(
-                                            Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                                        )
-                                }
-                                .buttonStyle(.plain)
+                                Button { startTimer(minutes: 10) } label: { presetCircle("10") }
                                 .accessibilityLabel("Start 10 minutes")
 
-                                // 15
-                                Button { startTimer(minutes: 15) } label: {
-                                    Text("15")
-                                        .font(.subheadline.weight(.semibold))
-                                        .frame(width: 40, height: 40)
-                                        .foregroundStyle(.primary)
-                                        .background(
-                                            Circle().fill(Color(.secondarySystemBackground))
-                                        )
-                                        .overlay(
-                                            Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                                        )
-                                }
-                                .buttonStyle(.plain)
+                                Button { startTimer(minutes: 15) } label: { presetCircle("15") }
                                 .accessibilityLabel("Start 15 minutes")
 
-                                // 20
-                                Button { startTimer(minutes: 20) } label: {
-                                    Text("20")
-                                        .font(.subheadline.weight(.semibold))
-                                        .frame(width: 40, height: 40)
-                                        .foregroundStyle(.primary)
-                                        .background(
-                                            Circle().fill(Color(.secondarySystemBackground))
-                                        )
-                                        .overlay(
-                                            Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                                        )
-                                }
-                                .buttonStyle(.plain)
+                                Button { startTimer(minutes: 20) } label: { presetCircle("20") }
                                 .accessibilityLabel("Start 20 minutes")
 
-                                // 30
-                                Button { startTimer(minutes: 30) } label: {
-                                    Text("30")
-                                        .font(.subheadline.weight(.semibold))
-                                        .frame(width: 40, height: 40)
-                                        .foregroundStyle(.primary)
-                                        .background(
-                                            Circle().fill(Color(.secondarySystemBackground))
-                                        )
-                                        .overlay(
-                                            Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                                        )
-                                }
-                                .buttonStyle(.plain)
+                                Button { startTimer(minutes: 30) } label: { presetCircle("30") }
                                 .accessibilityLabel("Start 30 minutes")
                             }
                             .frame(maxWidth: .infinity)
@@ -603,7 +545,7 @@ struct HomeView: View {
                     .padding(.horizontal, 16)
                     .frame(height: isPad ? iPadCardHeight : nil)
                 }
-            } else if prayerMode == .stopwatch { // Stopwatch mode
+            } else if prayerMode == .stopwatch {
                 HeroCard(
                     title: "Stopwatch",
                     subtitle: stopwatchRunning ? "Running" : (stopwatchElapsed > 0 ? "Paused" : "Ready"),
@@ -628,7 +570,7 @@ struct HomeView: View {
                 }
                 .padding(.horizontal, 16)
                 .frame(height: isPad ? iPadCardHeight : nil)
-            } else { // Focus mode
+            } else {
                 HeroCard(
                     title: "Daily Focus",
                     subtitle: "What's something you want to focus on today?",
@@ -650,7 +592,6 @@ struct HomeView: View {
 
                         let hasTitle = !focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
 
-                        // Body stays hidden unless explicitly expanded via the arrow button.
                         if hasTitle && isFocusBodyExpanded {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Body")
@@ -683,21 +624,16 @@ struct HomeView: View {
 
                         HStack(spacing: 12) {
                             Button {
-                                // Save focus to shared defaults and update Live Activity/Dynamic Island
                                 sharedDefaults?.set(focusTitle, forKey: "focusTitle")
                                 sharedDefaults?.set(focusBody, forKey: "focusBody")
-                                // Ensure only one activity is active: stop stopwatch
                                 StopwatchActivityController.shared.cancel()
-                                // Ensure Focus is active in Live Activity/DI with compact leading/trailing via focusTitle and body
                                 PrayerTimerActivityController.shared.ensureActivityForFocus(
                                     title: focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : focusTitle,
                                     body: focusBody.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : focusBody
                                 )
-                                // Mark as saved and dismiss keyboard
                                 hasSavedFocus = true
                                 focusTitleIsFocused = false
                                 focusBodyIsFocused = false
-                                // Show confirmation toast
                                 withAnimation(.spring()) { showFocusSavedToast = true }
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
                                     withAnimation(.easeOut) { showFocusSavedToast = false }
@@ -712,18 +648,14 @@ struct HomeView: View {
                             .disabled(!hasTypedLetter)
 
                             Button {
-                                // Clear focus fields and update shared defaults/live activity
                                 focusTitle = ""
                                 focusBody = ""
                                 sharedDefaults?.set("", forKey: "focusTitle")
                                 sharedDefaults?.set("", forKey: "focusBody")
-                                // Remove Focus from Live Activity/Dynamic Island
                                 PrayerTimerActivityController.shared.cancel()
-                                // Mark as not saved and dismiss keyboard
                                 hasSavedFocus = false
                                 focusTitleIsFocused = false
                                 focusBodyIsFocused = false
-                                // Also collapse body
                                 isFocusBodyExpanded = false
                             } label: {
                                 Label("Clear", systemImage: "xmark.circle.fill")
@@ -734,13 +666,11 @@ struct HomeView: View {
                             .accessibilityHint("Clears your daily focus and removes it from the Dynamic Island")
                             .disabled(!hasSavedFocus)
 
-                            // Down arrow to expand/collapse the body
                             Button {
                                 withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
                                     isFocusBodyExpanded.toggle()
                                 }
                                 if !isFocusBodyExpanded {
-                                    // Dismiss body focus when collapsing
                                     focusBodyIsFocused = false
                                 }
                             } label: {
@@ -762,10 +692,21 @@ struct HomeView: View {
         }
     }
 
+    private func presetCircle(_ label: String) -> some View {
+        Text(label)
+            .font(.subheadline.weight(.semibold))
+            .frame(width: 40, height: 40)
+            .foregroundStyle(.primary)
+            .background(Circle().fill(Color(.secondarySystemBackground)))
+            .overlay(Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1))
+            .buttonStyle(.plain)
+    }
+
     @ViewBuilder
     private var resumeCard: some View {
         if let progress = progress,
-           let book = BibleData.books.first(where: { $0.name == progress.bookName }),
+           bibleStore.isReady,
+           let book = bibleStore.books.first(where: { $0.name == progress.bookName }),
            let chapter = book.chapters.first(where: { $0.number == progress.chapterNumber }) {
             Button(action: {
                 coordinator.push(.reader(book: book, chapter: chapter, startVerse: progress.verseNumber))
@@ -813,17 +754,17 @@ struct HomeView: View {
                         Text("Resume")
                             .font(.headline)
                             .bold()
-                        Text("Continue where you left off")
+                        Text(bibleStore.isReady ? "Continue where you left off" : "Loading…")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
-                        Text("Start reading from the Bible tab")
+                        Text(bibleStore.isReady ? "Start reading from the Bible tab" : "")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
                 }
             }
-            .redacted(reason: .placeholder)
+            .redacted(reason: bibleStore.isReady ? [] : .placeholder)
             .padding(.horizontal, 16)
             .frame(height: isPad ? iPadCardHeight : nil)
         }
@@ -832,16 +773,9 @@ struct HomeView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                // Title Card
                 titleCard
-
-                // Verse of the Day Card
                 verseOfDayCard
-
-                // Timer / Stopwatch Card
                 timerCard
-
-                // Resume Card
                 resumeCard
             }
             .padding(.horizontal, 0)
@@ -851,13 +785,12 @@ struct HomeView: View {
         .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
         .appToast(isPresented: $showFocusSavedToast, symbol: "checkmark.seal.fill", text: "Focus Saved", tint: .green)
         .onAppear {
-            // Defer prompts: DO NOT request notifications/HealthKit here.
+            bibleStore.ensureLoaded()
+
             // Restore persisted state
             isTimerRunning = storedRunning
             isPaused = storedPaused
-            // Cache HealthKit availability
             isHealthKitAvailable = HealthKitManager.shared.isAvailable()
-            // Do not request HealthKit authorization here; defer to first timer/stopwatch start.
 
             if storedRunning {
                 if isPaused {
@@ -865,28 +798,33 @@ struct HomeView: View {
                 } else if storedEndDate > 0 {
                     let remaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
                     remainingSeconds = remaining
-                    if remaining == 0 {
-                        handleTimerFinished()
-                    }
+                    if remaining == 0 { handleTimerFinished() }
                 }
             }
+
             if verseOfDayPaused {
-                // Restore last verse without refreshing when paused
                 if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
                     verseOfDay = HomeVerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
                     mirrorVerseToAppGroup(book: storedVerseBook, chapter: storedVerseChapter, verse: storedVerseNumber, text: storedVerseText)
                 }
             } else {
-                // Do not arbitrarily refresh; show the last stored verse if available, otherwise seed an initial verse.
                 if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
                     verseOfDay = HomeVerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
                     mirrorVerseToAppGroup(book: storedVerseBook, chapter: storedVerseChapter, verse: storedVerseNumber, text: storedVerseText)
                 } else {
-                    loadRandomVerse()
+                    // Wait for bibleStore to be ready before generating a verse
+                    if bibleStore.isReady {
+                        loadRandomVerse()
+                    } else {
+                        // Once ready, load an initial verse
+                        Task { @MainActor in
+                            while !bibleStore.isReady { try? await Task.sleep(nanoseconds: 20_000_000) }
+                            loadRandomVerse()
+                        }
+                    }
                 }
             }
 
-            // Initialize stopwatch elapsed from stored state
             if stopwatchRunning {
                 let now = Date().timeIntervalSince1970
                 let base = stopwatchAccumulated + Int(max(0, now - stopwatchStartDate))
@@ -895,7 +833,6 @@ struct HomeView: View {
                 stopwatchElapsed = stopwatchAccumulated
             }
 
-            // Initialize saved focus state from shared defaults
             if let shared = sharedDefaults {
                 let savedTitle = (shared.string(forKey: "focusTitle") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
                 let savedBody = (shared.string(forKey: "focusBody") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
@@ -904,72 +841,29 @@ struct HomeView: View {
                 hasSavedFocus = false
             }
 
-            // Seed/mirror last read for widget
             mirrorLastReadToAppGroup()
             handleOpenPendingVerse()
 
             handlePrayerTimerPendingAction()
             handleStopwatchPendingAction()
+
+            // Start one-shot scheduler for VOTD
+            scheduleNextVerseRefreshTimer()
+
+            // Start ticker if needed
+            updateTickerSubscription()
         }
-        .onReceive(unifiedTimer) { _ in
-            // Process any pending Live Activity actions promptly
-            handlePrayerTimerPendingAction()
-
-            // Increment a unified tick counter
-            unifiedTick &+= 1
-
-            // If the user is actively typing in Focus, skip per-second background work to keep the UI responsive
-            if isEditingFocus {
-                return
-            }
-            let shouldUpdateLiveActivities = true
-
-            // Timer logic: update remaining seconds when running and not paused
-            if isTimerRunning && !isPaused && storedEndDate > 0 {
-                let remaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
-                remainingSeconds = remaining
-                if remaining == 0 {
-                    handleTimerFinished()
-                }
-
-                // Live Activity: update each tick
-                if shouldUpdateLiveActivities {
-                    PrayerTimerActivityController.shared.update(
-                        remainingSeconds: remainingSeconds,
-                        totalSeconds: storedTotalSeconds,
-                        isPaused: isPaused
-                    )
-                }
-            }
-
-            // Stopwatch logic: update elapsed when running
-            if stopwatchRunning {
-                let now = Date().timeIntervalSince1970
-                let base = stopwatchAccumulated + Int(max(0, now - stopwatchStartDate))
-                stopwatchElapsed = base
-
-                // Live Activity: update stopwatch each tick
-                if shouldUpdateLiveActivities {
-                    StopwatchActivityController.shared.update(elapsed: stopwatchElapsed, isRunning: true)
-                }
-            }
-
-            // Minute tick: every 60 seconds, update marker and check auto verse refresh
-            if unifiedTick % 60 == 0 {
-                timeMarker = (timeMarker + 1) % 60
-                checkAutoVerseRefresh()
-            }
+        .onChange(of: progressList) { _, _ in
+            mirrorLastReadToAppGroup()
         }
-        .onChange(of: scenePhase) { oldPhase, newPhase in
+        .onChange(of: scenePhase) { _, newPhase in
             switch newPhase {
             case .active:
-                // App became active: start logging if available
                 startMindfulLoggingIfNeeded()
                 handlePrayerTimerPendingAction()
                 handleStopwatchPendingAction()
                 handleOpenPendingVerse()
             case .inactive, .background:
-                // Stop logging only if the timer is not running and stopwatch is not running; keep logging while either runs
                 if !isTimerRunning && !stopwatchRunning {
                     stopMindfulLogging()
                 }
@@ -977,10 +871,12 @@ struct HomeView: View {
                 break
             }
         }
-        .onChange(of: progressList) { _, _ in
-            // Mirror last read to the widget whenever progress changes
-            mirrorLastReadToAppGroup()
-        }
+        .onChange(of: isTimerRunning) { _, _ in updateTickerSubscription() }
+        .onChange(of: stopwatchRunning) { _, _ in updateTickerSubscription() }
+        .onChange(of: votdRefresh1Hour) { _, _ in scheduleNextVerseRefreshTimer() }
+        .onChange(of: votdRefresh1Minute) { _, _ in scheduleNextVerseRefreshTimer() }
+        .onChange(of: votdRefresh2Hour) { _, _ in scheduleNextVerseRefreshTimer() }
+        .onChange(of: votdRefresh2Minute) { _, _ in scheduleNextVerseRefreshTimer() }
         .sheet(isPresented: $showPrayerStudySheet) {
             PrayerStudyTimerSetupView(onStart: { minutes in
                 startTimer(minutes: minutes)
@@ -998,39 +894,51 @@ struct HomeView: View {
         }
     }
 
-    private func checkAutoVerseRefresh() {
-        guard !verseOfDayPaused else { return }
-        let now = Date()
-        let cal = Calendar.current
-        let comps = cal.dateComponents([.year, .month, .day, .hour, .minute], from: now)
-        guard let hour = comps.hour, let minute = comps.minute,
-              let year = comps.year, let month = comps.month, let day = comps.day else { return }
-
-        func tokenFor(slot: Int) -> String {
-            return "\(year)-\(month)-\(day)-\(slot)-\(minute)"
-        }
-
-        // Only refresh exactly when the current time matches either configured refresh time
-        if hour == votdRefresh1Hour && minute == votdRefresh1Minute {
-            let token = tokenFor(slot: 1)
-            if token != lastVerseAutoRefreshToken {
-                lastVerseAutoRefreshToken = token
-                loadRandomVerse()
+    // Ticker management
+    private func updateTickerSubscription() {
+        if isTimerRunning || stopwatchRunning {
+            if tickerCancellable == nil {
+                tickerCancellable = Timer.publish(every: 1, on: .main, in: .common)
+                    .autoconnect()
+                    .sink { _ in tick() }
             }
-            return
-        }
-        if hour == votdRefresh2Hour && minute == votdRefresh2Minute {
-            let token = tokenFor(slot: 2)
-            if token != lastVerseAutoRefreshToken {
-                lastVerseAutoRefreshToken = token
-                loadRandomVerse()
-            }
-            return
+        } else {
+            tickerCancellable?.cancel()
+            tickerCancellable = nil
         }
     }
 
+    private func tick() {
+        if isEditingFocus { return }
+        let shouldUpdateLiveActivities = true
+
+        if isTimerRunning && !isPaused && storedEndDate > 0 {
+            let remaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
+            remainingSeconds = remaining
+            if remaining == 0 { handleTimerFinished() }
+            if shouldUpdateLiveActivities {
+                PrayerTimerActivityController.shared.update(
+                    remainingSeconds: remainingSeconds,
+                    totalSeconds: storedTotalSeconds,
+                    isPaused: isPaused
+                )
+            }
+        }
+
+        if stopwatchRunning {
+            let now = Date().timeIntervalSince1970
+            let base = stopwatchAccumulated + Int(max(0, now - stopwatchStartDate))
+            stopwatchElapsed = base
+            if shouldUpdateLiveActivities {
+                StopwatchActivityController.shared.update(elapsed: stopwatchElapsed, isRunning: true)
+            }
+        }
+
+        // Track minute boundary for potential UI updates
+        timeMarker = (timeMarker + 1) % 60
+    }
+
     private func startTimer(minutes: Int) {
-        // Defer and request permissions on first use
         Task { await requestNotificationsIfNeeded() }
         if isHealthKitAvailable && !healthKitPrompted {
             Task { await requestHealthKitIfNeeded() }
@@ -1044,7 +952,6 @@ struct HomeView: View {
         isPaused = false
         isTimerRunning = true
 
-        // Persist
         storedRunning = true
         storedPaused = false
         storedStartDate = start.timeIntervalSince1970
@@ -1052,19 +959,17 @@ struct HomeView: View {
         storedRemainingWhenPaused = 0
 
         startMindfulLoggingIfNeeded()
-
         scheduleNotification(at: end)
 
-        // Cancel any running stopwatch activity to enforce single active Live Activity
         StopwatchActivityController.shared.cancel()
-
-        // Live Activity: start Prayer/Study timer activity
         PrayerTimerActivityController.shared.start(
             sessionName: "Prayer/Study",
             totalSeconds: storedTotalSeconds,
             remainingSeconds: remainingSeconds,
             isPaused: false
         )
+
+        updateTickerSubscription()
     }
 
     private func togglePause() {
@@ -1072,21 +977,16 @@ struct HomeView: View {
         isPaused.toggle()
         storedPaused = isPaused
         if isPaused {
-            // Freeze remaining based on stored end date for robustness
             let now = Date().timeIntervalSince1970
             storedRemainingWhenPaused = Int(max(0, storedEndDate - now))
-            // Keep UI in sync
             remainingSeconds = storedRemainingWhenPaused
             cancelNotification()
         } else {
-            // Resume: compute new end date from remaining
             let newEnd = Date().addingTimeInterval(TimeInterval(remainingSeconds))
             storedEndDate = newEnd.timeIntervalSince1970
             storedRemainingWhenPaused = 0
             scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
         }
-
-        // Live Activity: reflect pause/resume
         PrayerTimerActivityController.shared.update(
             remainingSeconds: remainingSeconds,
             totalSeconds: storedTotalSeconds,
@@ -1098,33 +998,26 @@ struct HomeView: View {
         guard isTimerRunning else { return }
         let delta: Int = 300
         if isPaused {
-            // Extend paused remaining and total
             remainingSeconds += delta
             storedRemainingWhenPaused += delta
             storedTotalSeconds += delta
-            // Update Live Activity
             PrayerTimerActivityController.shared.update(
                 remainingSeconds: remainingSeconds,
                 totalSeconds: storedTotalSeconds,
                 isPaused: isPaused
             )
         } else {
-            // Extend end date and total
             storedEndDate += TimeInterval(delta)
             storedTotalSeconds += delta
-            // Refresh remaining now for immediate UI feedback
             let newRemaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
             remainingSeconds = newRemaining
-            // Reschedule notification at new end time
             scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
-            // Update Live Activity
             PrayerTimerActivityController.shared.update(
                 remainingSeconds: remainingSeconds,
                 totalSeconds: storedTotalSeconds,
                 isPaused: isPaused
             )
         }
-        // Optional: light haptic to confirm action
         let gen = UIImpactFeedbackGenerator(style: .light)
         gen.impactOccurred()
     }
@@ -1143,19 +1036,15 @@ struct HomeView: View {
     }
 
     private func stopTimer() {
-        // End global mindful logging if app is not active; if active, continue logging app-open time
         if scenePhase != .active {
             stopMindfulLogging()
         }
-
         resetTimerState()
-
         cancelNotification()
         stopFinishAlerts()
-
-        // Live Activity: cancel
         PrayerTimerActivityController.shared.cancel()
         showFinishedAlert = false
+        updateTickerSubscription()
     }
 
     private func formattedTime(_ totalSeconds: Int) -> String {
@@ -1171,7 +1060,6 @@ struct HomeView: View {
 
     private func scheduleNotification(at date: Date) {
         let center = UNUserNotificationCenter.current()
-        // Remove any existing pending timer notification
         center.removePendingNotificationRequests(withIdentifiers: [Self.notificationID])
 
         let content = UNMutableNotificationContent()
@@ -1190,39 +1078,23 @@ struct HomeView: View {
     }
 
     private func handleTimerFinished() {
-        // Ensure we only fire once
         if !isTimerRunning { return }
-
-        // End global mindful logging if app is not active; if active, continue logging app-open time
-        if scenePhase != .active {
-            stopMindfulLogging()
-        }
-
-        // Ensure no pending local notification fires now that we're handling the finish in the foreground
+        if scenePhase != .active { stopMindfulLogging() }
         cancelNotification()
-
         resetTimerState()
-
-        // Live Activity: finish
         PrayerTimerActivityController.shared.finish()
-
-        // Start foreground alert with repeating vibration if alert is shown
         showFinishedAlert = true
         startFinishAlerts()
+        updateTickerSubscription()
     }
 
     private func startFinishAlerts() {
         stopFinishAlerts()
-        // Cache the selected sound ID to avoid capturing self in the timer closure
         let soundID = selectedFinishSoundID
-        // Repeating sound + vibration every 1.5 seconds while alert is shown
         finishHapticTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { _ in
-            // Play audible system sound
             AudioServicesPlaySystemSound(soundID)
-            // Vibrate
             AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
         }
-        // Also play immediately
         AudioServicesPlaySystemSound(soundID)
         AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
     }
@@ -1234,11 +1106,11 @@ struct HomeView: View {
 
     private func loadRandomVerse() {
         if verseOfDayPaused { return }
-        let allBooks = BibleData.books
+        guard bibleStore.isReady else { return }
+        let allBooks = bibleStore.books
         guard !allBooks.isEmpty else { return }
 
         let scope = VerseScope(rawValue: verseScopeRaw) ?? .whole
-
         let books: [Book]
         switch scope {
         case .old:
@@ -1251,18 +1123,20 @@ struct HomeView: View {
             if let chosen = allBooks.first(where: { $0.name == verseSpecificBook }) {
                 books = [chosen]
             } else {
-                // Fallback to whole if not chosen
                 books = allBooks
             }
         }
 
-        guard let book = books.randomElement(), let chapter = book.chapters.randomElement(), !chapter.verses.isEmpty, let verse = chapter.verses.randomElement() else { return }
+        guard let book = books.randomElement(),
+              let chapter = book.chapters.randomElement(),
+              !chapter.verses.isEmpty,
+              let verse = chapter.verses.randomElement() else { return }
+
         verseOfDay = HomeVerseRef(bookName: book.name, chapterNumber: chapter.number, verseNumber: verse.number, verseText: verse.text)
         storedVerseBook = book.name
         storedVerseChapter = chapter.number
         storedVerseNumber = verse.number
         storedVerseText = verse.text
-        // Mirror to App Group for widget sync
         mirrorVerseToAppGroup(book: book.name, chapter: chapter.number, verse: verse.number, text: verse.text)
     }
 
@@ -1294,19 +1168,16 @@ struct HomeView: View {
     // Stopwatch helper methods
 
     private func startStopwatch() {
-        // Request HealthKit on first use (deferred)
         if isHealthKitAvailable && !healthKitPrompted {
             Task { await requestHealthKitIfNeeded() }
         }
-
         let now = Date().timeIntervalSince1970
         if stopwatchStartDate == 0 { stopwatchStartDate = now }
         stopwatchRunning = true
         startMindfulLoggingIfNeeded()
-        // Cancel Prayer/Study timer/focus Live Activity to enforce single active activity
         PrayerTimerActivityController.shared.cancel()
-        // Live Activity: start stopwatch
         StopwatchActivityController.shared.start(sessionName: "Stopwatch", initialElapsed: stopwatchElapsed)
+        updateTickerSubscription()
     }
 
     private func pauseStopwatch() {
@@ -1318,12 +1189,11 @@ struct HomeView: View {
             stopwatchStartDate = 0
         }
         stopwatchRunning = false
-        // Live Activity: update paused state
         StopwatchActivityController.shared.update(elapsed: stopwatchElapsed, isRunning: false)
+        updateTickerSubscription()
     }
 
     private func stopStopwatch() {
-        // End global mindful logging if app is not active; if active, continue logging app-open time
         if scenePhase != .active {
             stopMindfulLogging()
         }
@@ -1331,8 +1201,8 @@ struct HomeView: View {
         stopwatchStartDate = 0
         stopwatchAccumulated = 0
         stopwatchElapsed = 0
-        // Live Activity: finish stopwatch
         StopwatchActivityController.shared.finish(finalStatus: "Stopped")
+        updateTickerSubscription()
     }
 
     private func formattedHMS(_ totalSeconds: Int) -> String {
@@ -1345,21 +1215,14 @@ struct HomeView: View {
     private func handlePrayerTimerPendingAction() {
         guard let shared = sharedDefaults else { return }
         guard let action = shared.string(forKey: "prayerTimerPendingAction") else { return }
-        // Clear immediately to avoid reprocessing
         shared.removeObject(forKey: "prayerTimerPendingAction")
         switch action {
         case "togglePause":
-            if isTimerRunning {
-                togglePause()
-            }
+            if isTimerRunning { togglePause() }
         case "add5":
-            if isTimerRunning {
-                addFiveMinutes()
-            }
+            if isTimerRunning { addFiveMinutes() }
         case "stop":
-            if isTimerRunning {
-                stopTimer()
-            }
+            if isTimerRunning { stopTimer() }
         default:
             break
         }
@@ -1368,19 +1231,12 @@ struct HomeView: View {
     private func handleStopwatchPendingAction() {
         guard let shared = sharedDefaults else { return }
         guard let action = shared.string(forKey: "stopwatchPendingAction") else { return }
-        // Clear immediately to avoid reprocessing
         shared.removeObject(forKey: "stopwatchPendingAction")
         switch action {
         case "togglePause":
-            if stopwatchRunning {
-                pauseStopwatch()
-            } else {
-                startStopwatch()
-            }
+            if stopwatchRunning { pauseStopwatch() } else { startStopwatch() }
         case "stop":
-            if stopwatchRunning || stopwatchElapsed > 0 {
-                stopStopwatch()
-            }
+            if stopwatchRunning || stopwatchElapsed > 0 { stopStopwatch() }
         default:
             break
         }
@@ -1489,7 +1345,6 @@ private struct HeroCard<Content: View, TrailingAccessory: View>: View {
 
     @Environment(\.colorScheme) private var colorScheme
 
-    // Init without trailing accessory (infers TrailingAccessory == EmptyView)
     init(
         title: String,
         subtitle: String? = nil,
@@ -1515,7 +1370,6 @@ private struct HeroCard<Content: View, TrailingAccessory: View>: View {
         self.content = content()
     }
 
-    // Init with trailing accessory
     init(
         title: String,
         subtitle: String? = nil,
@@ -1688,4 +1542,45 @@ private struct PrayerStudyTimerSetupView: View {
         .padding()
     }
 }
-// Note: HealthKit logging is handled in HomeView, prompts are now deferred until first use.
+
+// Debounced widget reloader to minimize reloadAllTimelines churn
+private final class DebouncedWidgetReloader {
+    static let shared = DebouncedWidgetReloader()
+    private init() {}
+
+    private var workItem: DispatchWorkItem?
+    private let queue = DispatchQueue(label: "DebouncedWidgetReloader")
+    private var pendingKinds = Set<String>()
+    private let lock = NSLock()
+
+    func reloadAll() {
+        schedule {
+            WidgetCenter.shared.reloadAllTimelines()
+        }
+    }
+
+    func reload(kind: String) {
+        lock.lock()
+        pendingKinds.insert(kind)
+        lock.unlock()
+        schedule { [weak self] in
+            guard let self else { return }
+            self.lock.lock()
+            let kinds = Array(self.pendingKinds)
+            self.pendingKinds.removeAll()
+            self.lock.unlock()
+            if kinds.isEmpty {
+                WidgetCenter.shared.reloadAllTimelines()
+            } else {
+                kinds.forEach { WidgetCenter.shared.reloadTimelines(ofKind: $0) }
+            }
+        }
+    }
+
+    private func schedule(_ action: @escaping () -> Void) {
+        workItem?.cancel()
+        let item = DispatchWorkItem { action() }
+        workItem = item
+        queue.asyncAfter(deadline: .now() + 0.6, execute: item)
+    }
+}

@@ -2,31 +2,40 @@ import SwiftUI
 
 struct BookSelectionLink: View {
     @Binding var selectedBookName: String?
+    @StateObject private var bibleStore = BibleStore.shared
 
     var body: some View {
         NavigationLink {
             List {
-                ForEach(BibleData.books, id: \.name) { book in
-                    HStack {
-                        Text(book.name)
-                        Spacer()
-                        if selectedBookName == book.name {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(.accentColor)
+                if bibleStore.isReady {
+                    ForEach(bibleStore.books, id: \.name) { book in
+                        HStack {
+                            Text(book.name)
+                            Spacer()
+                            if selectedBookName == book.name {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.accentColor)
+                            }
                         }
+                        .contentShape(Rectangle())
+                        .onTapGesture { selectedBookName = book.name }
+                        .accessibilityIdentifier("book_\(book.name)")
                     }
-                    .contentShape(Rectangle())
-                    .onTapGesture { selectedBookName = book.name }
-                    .accessibilityIdentifier("book_\(book.name)")
+                } else {
+                    ForEach(0..<10, id: \.self) { _ in
+                        Text("Loading…")
+                            .redacted(reason: .placeholder)
+                    }
                 }
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Select Book")
+            .onAppear { bibleStore.ensureLoaded() }
         } label: {
             HStack {
                 Text("Book")
                 Spacer()
-                Text(selectedBookName ?? "Choose…")
+                Text(selectedBookName ?? (bibleStore.isReady ? "Choose…" : "Loading…"))
                     .foregroundColor(.secondary)
             }
         }
