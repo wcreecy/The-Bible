@@ -117,7 +117,7 @@ enum BibleReferenceLinker {
         let cleaned = spaced.replacingOccurrences(of: ".", with: " ")
             .replacingOccurrences(of: "_", with: " ")
             .replacingOccurrences(of: "-", with: " ")
-        var tokens = cleaned.split { $0.isWhitespace }.map { String($0) }
+        let tokens = cleaned.split { $0.isWhitespace }.map { String($0) }
         // Map abbreviations
         let mapped = tokens.enumerated().map { (idx, t) -> String in
             let lower = t.lowercased()

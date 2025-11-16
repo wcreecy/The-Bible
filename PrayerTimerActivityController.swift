@@ -109,7 +109,14 @@ final class PrayerTimerActivityController {
     func cancel() {
         guard #available(iOS 16.1, *), let activity else { return }
         Task {
-            await activity.end(dismissalPolicy: ActivityUIDismissalPolicy.immediate)
+            if #available(iOS 17.0, *) {
+                let current = activity.content.state
+                let content = ActivityContent(state: current, staleDate: nil)
+                await activity.end(content, dismissalPolicy: ActivityUIDismissalPolicy.immediate)
+            } else {
+                let current = activity.contentState
+                await activity.end(using: current, dismissalPolicy: ActivityUIDismissalPolicy.immediate)
+            }
         }
         self.activity = nil
     }
@@ -135,4 +142,3 @@ final class PrayerTimerActivityController {
         }
     }
 }
-

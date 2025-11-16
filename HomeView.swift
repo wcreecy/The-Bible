@@ -703,7 +703,7 @@ struct HomeView: View {
                                     withAnimation(.easeOut) { showFocusSavedToast = false }
                                 }
                             } label: {
-                                Label("Save Focus", systemImage: "square.and.arrow.down")
+                                Label("Save", systemImage: "square.and.arrow.down")
                             }
                             .buttonStyle(ModernPillButtonStyle(tint: .green))
                             .controlSize(.regular)
@@ -726,7 +726,7 @@ struct HomeView: View {
                                 // Also collapse body
                                 isFocusBodyExpanded = false
                             } label: {
-                                Label("Clear Focus", systemImage: "xmark.circle.fill")
+                                Label("Clear", systemImage: "xmark.circle.fill")
                             }
                             .buttonStyle(ModernPillButtonStyle(tint: .red))
                             .controlSize(.regular)

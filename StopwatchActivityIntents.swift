@@ -3,11 +3,11 @@ import ActivityKit
 import Foundation
 
 @available(iOS 16.0, *)
-@MainActor
 struct PauseStopwatchIntent: AppIntent {
     static var title: LocalizedStringResource = "Pause Stopwatch"
     static var openAppWhenRun = false
 
+    @MainActor
     func perform() async throws -> some IntentResult {
         guard let activity = Self.currentActivity() else {
             return .result()
@@ -32,17 +32,18 @@ struct PauseStopwatchIntent: AppIntent {
         return .result()
     }
     
+    @MainActor
     private static func currentActivity() -> Activity<StopwatchAttributes>? {
         Activity<StopwatchAttributes>.activities.first
     }
 }
 
 @available(iOS 16.0, *)
-@MainActor
 struct ResumeStopwatchIntent: AppIntent {
     static var title: LocalizedStringResource = "Resume Stopwatch"
     static var openAppWhenRun = false
 
+    @MainActor
     func perform() async throws -> some IntentResult {
         guard let activity = Self.currentActivity() else {
             return .result()
@@ -67,17 +68,18 @@ struct ResumeStopwatchIntent: AppIntent {
         return .result()
     }
     
+    @MainActor
     private static func currentActivity() -> Activity<StopwatchAttributes>? {
         Activity<StopwatchAttributes>.activities.first
     }
 }
 
 @available(iOS 16.0, *)
-@MainActor
 struct StopStopwatchIntent: AppIntent {
     static var title: LocalizedStringResource = "Stop Stopwatch"
     static var openAppWhenRun = false
 
+    @MainActor
     func perform() async throws -> some IntentResult {
         guard let activity = Self.currentActivity() else {
             return .result()
@@ -100,6 +102,7 @@ struct StopStopwatchIntent: AppIntent {
         return .result()
     }
     
+    @MainActor
     private static func currentActivity() -> Activity<StopwatchAttributes>? {
         Activity<StopwatchAttributes>.activities.first
     }

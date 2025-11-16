@@ -13,7 +13,7 @@ final class StopwatchActivityController {
         let attributes = StopwatchAttributes(sessionName: sessionName)
         let state = StopwatchAttributes.ContentState(status: "Running", elapsed: initialElapsed)
         do {
-            if #available(iOS 17.0, *) {
+            if #available(iOS 16.2, *) {
                 let content = ActivityContent(state: state, staleDate: .now.addingTimeInterval(60))
                 activity = try Activity.request(attributes: attributes, content: content, pushType: nil)
             } else {
@@ -29,7 +29,7 @@ final class StopwatchActivityController {
         let status = isRunning ? "Running" : "Paused"
         let state = StopwatchAttributes.ContentState(status: status, elapsed: elapsed)
         Task {
-            if #available(iOS 17.0, *) {
+            if #available(iOS 16.2, *) {
                 let content = ActivityContent(state: state, staleDate: .now.addingTimeInterval(60))
                 await activity.update(content)
             } else {
@@ -42,7 +42,7 @@ final class StopwatchActivityController {
         guard #available(iOS 16.1, *), let activity else { return }
         let final = StopwatchAttributes.ContentState(status: finalStatus, elapsed: 0)
         Task {
-            if #available(iOS 17.0, *) {
+            if #available(iOS 16.2, *) {
                 let content = ActivityContent(state: final, staleDate: nil)
                 await activity.end(content, dismissalPolicy: .immediate)
             } else {
@@ -54,7 +54,13 @@ final class StopwatchActivityController {
 
     func cancel() {
         guard #available(iOS 16.1, *), let activity else { return }
-        Task { await activity.end(dismissalPolicy: .immediate) }
+        Task {
+            if #available(iOS 16.2, *) {
+                await activity.end(activity.content, dismissalPolicy: .immediate)
+            } else {
+                await activity.end(dismissalPolicy: .immediate)
+            }
+        }
         self.activity = nil
     }
 }
