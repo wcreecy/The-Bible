@@ -39,6 +39,7 @@ struct The_Bible_WidgetsBundle: WidgetBundle {
     var body: some Widget {
         VerseWidget()
         LastReadWidget()
+        PinnedVerseWidget()        // <- New pinned verse widget
         PrayerTimerLiveActivity()
         StopwatchLiveActivity()
     }

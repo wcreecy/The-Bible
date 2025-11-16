@@ -2,7 +2,7 @@ import SwiftUI
 import WidgetKit
 
 struct PinnedVerseWidgetEntryView: View {
-    var entry: PinnedVerseProvider.Entry
+    var entry: PinnedVerseEntry
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -28,7 +28,7 @@ struct PinnedVerseWidgetEntryView: View {
                     .font(.caption2)
                     .foregroundStyle(.white.opacity(0.7))
             } else {
-                Text("Select a verse in widget settings.")
+                Text("Set a pinned verse in the app’s Settings.")
                     .font(.footnote)
                     .foregroundStyle(.white.opacity(0.7))
             }
@@ -58,11 +58,12 @@ struct PinnedVerseWidget: Widget {
     let kind: String = "PinnedVerseWidget"
 
     var body: some WidgetConfiguration {
-        AppIntentConfiguration(kind: kind, intent: PinnedVerseConfiguration.self, provider: PinnedVerseProvider()) { entry in
+        StaticConfiguration(kind: kind, provider: PinnedVerseProvider()) { (entry: PinnedVerseEntry) in
             PinnedVerseWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Pinned Verse")
-        .description("Always show a verse you choose.")
+        .description("Always show a verse you choose in Settings.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
+

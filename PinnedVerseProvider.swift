@@ -10,41 +10,54 @@ struct PinnedVerseEntry: TimelineEntry {
     let text: String
 }
 
-struct PinnedVerseProvider: AppIntentTimelineProvider {
+struct PinnedVerseProvider: TimelineProvider {
     typealias Entry = PinnedVerseEntry
-    typealias Intent = PinnedVerseConfiguration
 
     func placeholder(in context: Context) -> Entry {
         Entry(date: Date(), book: "John", chapter: 3, verse: 16, text: "For God so loved the world…")
     }
 
-    func snapshot(for configuration: Intent, in context: Context) async -> Entry {
-        let (book, chapter, verse, text) = lookup(configuration: configuration)
-        return Entry(date: Date(), book: book, chapter: chapter, verse: verse, text: text)
+    func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
+        let entry = loadCurrentEntry()
+        completion(entry)
     }
 
-    func timeline(for configuration: Intent, in context: Context) async -> Timeline<Entry> {
-        let (book, chapter, verse, text) = lookup(configuration: configuration)
-        let entry = Entry(date: Date(), book: book, chapter: chapter, verse: verse, text: text)
-        // Static content; no auto-refresh until user reconfigures
-        return Timeline(entries: [entry], policy: .never)
+    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+        let entry = loadCurrentEntry()
+        // Static content; no auto-refresh until the app changes the pinned verse and reloads timelines.
+        let timeline = Timeline(entries: [entry], policy: .never)
+        completion(timeline)
     }
 
-    // Resolve the selected verse text from BibleData safely
-    private func lookup(configuration: Intent) -> (String, Int, Int, String) {
-        let bookName = configuration.book.rawValue
-        let chapter = max(1, configuration.chapter)
-        let verse = max(1, configuration.verse)
+    // MARK: - Helpers
 
-        guard let book = BibleData.books.first(where: { $0.name == bookName }) else {
-            return (bookName, chapter, verse, "")
+    private func loadCurrentEntry() -> Entry {
+        if let (book, chapter, verse, text) = loadPinnedFromShared() {
+            return Entry(date: Date(), book: book, chapter: chapter, verse: verse, text: text)
+        } else {
+            // No pinned verse set yet
+            return Entry(date: Date(), book: "", chapter: 0, verse: 0, text: "")
         }
-        guard let c = book.chapters.first(where: { $0.number == chapter }) else {
-            return (bookName, chapter, verse, "")
+    }
+
+    private func loadPinnedFromShared() -> (String, Int, Int, String)? {
+        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return nil }
+        let book = (shared.string(forKey: "pinnedVerseBook") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let chapter = shared.integer(forKey: "pinnedVerseChapter")
+        let verse = shared.integer(forKey: "pinnedVerseNumber")
+        var text = (shared.string(forKey: "pinnedVerseText") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !book.isEmpty, chapter > 0, verse > 0 else { return nil }
+
+        if text.isEmpty {
+            // Fill text from BibleData if only reference was stored
+            if let b = BibleData.books.first(where: { $0.name == book }),
+               let c = b.chapters.first(where: { $0.number == chapter }),
+               let v = c.verses.first(where: { $0.number == verse }) {
+                text = v.text
+            }
         }
-        guard let v = c.verses.first(where: { $0.number == verse }) else {
-            return (bookName, chapter, verse, "")
-        }
-        return (bookName, chapter, verse, v.text)
+        return (book, max(1, chapter), max(1, verse), text)
     }
 }
+

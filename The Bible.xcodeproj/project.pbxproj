@@ -46,6 +46,11 @@
 		2CD7D8252EC9FF9A00849235 /* LastReadWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D8242EC9FF9A00849235 /* LastReadWidget.swift */; };
 		2CD7D8262ECA004300849235 /* LastReadProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D8222EC9FF9A00849235 /* LastReadProvider.swift */; };
 		2CD7D8272ECA004A00849235 /* LastReadWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D8242EC9FF9A00849235 /* LastReadWidget.swift */; };
+		2CD7D8292ECA125200849235 /* PinnedVerseIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D8282ECA125200849235 /* PinnedVerseIntent.swift */; };
+		2CD7D82B2ECA125E00849235 /* PinnedVerseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */; };
+		2CD7D82D2ECA126500849235 /* PinnedVerseWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */; };
+		2CD7D8312ECA163A00849235 /* PinnedVerseWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */; };
+		2CD7D8342ECA16BE00849235 /* PinnedVerseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -142,6 +147,9 @@
 		2CD7D7462EC96AB200849235 /* LinkedTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedTextView.swift; sourceTree = "<group>"; };
 		2CD7D8222EC9FF9A00849235 /* LastReadProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastReadProvider.swift; sourceTree = "<group>"; };
 		2CD7D8242EC9FF9A00849235 /* LastReadWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastReadWidget.swift; sourceTree = "<group>"; };
+		2CD7D8282ECA125200849235 /* PinnedVerseIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseIntent.swift; sourceTree = "<group>"; };
+		2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseProvider.swift; sourceTree = "<group>"; };
+		2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseWidget.swift; sourceTree = "<group>"; };
 		2CEA02D52EBE677900039D4B /* The Bible WidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "The Bible WidgetsExtension.entitlements"; sourceTree = "<group>"; };
 		2CF6F1702EB83C2100E59640 /* TimerSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerSound.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -168,6 +176,13 @@
 			);
 			target = 2C49CEFF2EBE0F6C0006FF79 /* The Bible (iOS) */;
 		};
+		2CD7D8362ECA170800849235 /* Exceptions for "The Bible" folder in "The Bible WidgetsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				BibleData.swift,
+			);
+			target = 2C49CF5C2EBE16090006FF79 /* The Bible WidgetsExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -175,6 +190,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				2C49CF7D2EBE1A030006FF79 /* Exceptions for "The Bible" folder in "The Bible (iOS)" target */,
+				2CD7D8362ECA170800849235 /* Exceptions for "The Bible" folder in "The Bible WidgetsExtension" target */,
 			);
 			path = "The Bible";
 			sourceTree = "<group>";
@@ -330,6 +346,9 @@
 				2CD7D7462EC96AB200849235 /* LinkedTextView.swift */,
 				2CD7D8222EC9FF9A00849235 /* LastReadProvider.swift */,
 				2CD7D8242EC9FF9A00849235 /* LastReadWidget.swift */,
+				2CD7D8282ECA125200849235 /* PinnedVerseIntent.swift */,
+				2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */,
+				2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -743,14 +762,17 @@
 				2C49CF542EBE10310006FF79 /* Route.swift in Sources */,
 				2C49CF552EBE10310006FF79 /* TimerSound.swift in Sources */,
 				2C135C3B2EC650D900306AD5 /* GameScoreboardCard.swift in Sources */,
+				2CD7D82D2ECA126500849235 /* PinnedVerseWidget.swift in Sources */,
 				2CD7D7472EC96AB200849235 /* LinkedTextView.swift in Sources */,
 				2C49CF562EBE10310006FF79 /* SegmentedPicker.swift in Sources */,
 				2C49CF572EBE10310006FF79 /* GamesView.swift in Sources */,
 				2C49CF582EBE10310006FF79 /* ReferenceMatchGameView.swift in Sources */,
 				2C49CF932EBE4D540006FF79 /* RefreshVerseOfDayIntent.swift in Sources */,
+				2CD7D82B2ECA125E00849235 /* PinnedVerseProvider.swift in Sources */,
 				2C49CF462EBE10000006FF79 /* HomeView.swift in Sources */,
 				2C49CF472EBE10070006FF79 /* Toast.swift in Sources */,
 				2CB309D32EC2CE2D0032CB7D /* BibleReferenceLinker.swift in Sources */,
+				2CD7D8292ECA125200849235 /* PinnedVerseIntent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -777,6 +799,8 @@
 				2C49CF802EBE27C40006FF79 /* PrayerTimerAttributes.swift in Sources */,
 				2C49CF8A2EBE2EC40006FF79 /* StopwatchAttributes.swift in Sources */,
 				2CD7D8262ECA004300849235 /* LastReadProvider.swift in Sources */,
+				2CD7D8312ECA163A00849235 /* PinnedVerseWidget.swift in Sources */,
+				2CD7D8342ECA16BE00849235 /* PinnedVerseProvider.swift in Sources */,
 				2C49CF8B2EBE31CB0006FF79 /* StopwatchLiveActivity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
