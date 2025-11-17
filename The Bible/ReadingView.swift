@@ -12,9 +12,15 @@ struct ReadingView: View {
     let chapter: Chapter
     let startVerse: Int
 
-    @State private var currentChapterIndex: Int = 0
+    // Current state for navigation
+    @State private var currentBook: Book
+    @State private var currentChapterIndex: Int
     @State private var currentVerse: Int
-    @State private var currentBookIndex: Int = 0
+    @State private var currentBookNameIndex: Int? = nil
+
+    // Ordered list of book names (canonical order)
+    @State private var orderedBookNames: [String] = []
+
     @State private var highlightOnAppear: Bool = true
     @State private var highlightedVerse: Int? = nil
     @State private var menuVerse: Int? = nil
@@ -27,36 +33,23 @@ struct ReadingView: View {
     @AppStorage("keepScreenOn") private var keepScreenOn: Bool = false
     @State private var pinVerse: Int? = nil
 
+    // Lazy BibleStore
     @StateObject private var bibleStore = BibleStore.shared
 
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
         self.chapter = chapter
         self.startVerse = startVerse
+        _currentBook = State(initialValue: book)
+        _currentChapterIndex = State(initialValue: max(0, chapter.number - 1))
         _currentVerse = State(initialValue: startVerse)
     }
 
-    private var allBooks: [Book] {
-        if bibleStore.isReady { return bibleStore.books }
-        return [book] // Minimal fallback before store loads
-    }
-
-    private var allChapters: [Chapter] { currentBook.chapters }
-
-    private var currentBook: Book {
-        if allBooks.indices.contains(currentBookIndex) {
-            return allBooks[currentBookIndex]
-        }
-        // Fallback to passed-in book
-        return book
-    }
-
     private var currentChapter: Chapter {
-        if allChapters.indices.contains(currentChapterIndex) {
-            return allChapters[currentChapterIndex]
+        if currentBook.chapters.indices.contains(currentChapterIndex) {
+            return currentBook.chapters[currentChapterIndex]
         }
-        // Fallback to passed-in chapter
-        return chapter
+        return currentBook.chapters.first ?? chapter
     }
 
     var body: some View {
@@ -65,33 +58,12 @@ struct ReadingView: View {
             .navigationBarTitleDisplayMode(.inline)
             .onAppear(perform: onAppear)
             .onAppear {
-                bibleStore.ensureLoaded()
                 if keepScreenOn {
                     UIApplication.shared.isIdleTimerDisabled = true
                 }
-                // Initialize indices based on incoming selection
+                // Load canonical book order once
                 Task { @MainActor in
-                    if bibleStore.isReady {
-                        if let bIdx = bibleStore.books.firstIndex(where: { $0.name == book.name }) {
-                            currentBookIndex = bIdx
-                            let chapters = bibleStore.books[bIdx].chapters
-                            if let cIdx = chapters.firstIndex(where: { $0.number == chapter.number }) {
-                                currentChapterIndex = cIdx
-                            }
-                        }
-                    } else {
-                        // Update once ready
-                        Task { @MainActor in
-                            while !BibleStore.shared.isReady { try? await Task.sleep(nanoseconds: 20_000_000) }
-                            if let bIdx = BibleStore.shared.books.firstIndex(where: { $0.name == book.name }) {
-                                currentBookIndex = bIdx
-                                let chapters = BibleStore.shared.books[bIdx].chapters
-                                if let cIdx = chapters.firstIndex(where: { $0.number == chapter.number }) {
-                                    currentChapterIndex = cIdx
-                                }
-                            }
-                        }
-                    }
+                    await loadOrderedBookNames()
                 }
             }
             .onDisappear {
@@ -243,15 +215,16 @@ struct ReadingView: View {
                     let vertical = value.translation.height
                     if abs(horizontal) > abs(vertical) && abs(horizontal) > 40 {
                         if horizontal < 0 {
-                            nextChapter()
+                            Task { await nextChapter() }
                         } else {
-                            previousChapter()
+                            Task { await previousChapter() }
                         }
                     }
                 }
         )
     }
 
+    @MainActor
     private func onAppear() {
         saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: startVerse)
         DispatchQueue.main.async {
@@ -261,6 +234,21 @@ struct ReadingView: View {
         }
     }
 
+    // Load canonical book names and set the current index
+    @MainActor
+    private func loadOrderedBookNames() async {
+        let names = await bibleStore.bookNames()
+        // Order according to BibleData order (fallback to names order for any unknowns)
+        let canonical = BibleData.books.map { $0.name }
+        let pos = Dictionary(uniqueKeysWithValues: canonical.enumerated().map { ($1, $0) })
+        let ordered = names.sorted { (a, b) in
+            (pos[a] ?? Int.max) < (pos[b] ?? Int.max)
+        }
+        orderedBookNames = ordered.isEmpty ? canonical : ordered
+        currentBookNameIndex = orderedBookNames.firstIndex(of: currentBook.name) ?? currentBookNameIndex
+    }
+
+    @MainActor
     private func saveProgress(bookName: String, chapter: Int, verse: Int) {
         let progress = progressList.first ?? ReadingProgress(bookName: bookName, chapterNumber: chapter, verseNumber: verse)
         if progressList.isEmpty { modelContext.insert(progress) }
@@ -270,38 +258,53 @@ struct ReadingView: View {
         try? modelContext.save()
     }
 
-    private func previousChapter() {
+    // Navigation helpers
+
+    @MainActor
+    private func previousChapter() async {
         highlightOnAppear = false
-        guard currentChapterIndex > 0 || currentBookIndex > 0 else { return }
         if currentChapterIndex > 0 {
             currentChapterIndex -= 1
-        } else {
-            // Move to previous book's last chapter
-            if currentBookIndex > 0 {
-                currentBookIndex -= 1
-                currentChapterIndex = max(0, currentBook.chapters.count - 1)
-            }
-        }
-        currentVerse = 1
-        saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: currentVerse)
-    }
-
-    private func nextChapter() {
-        highlightOnAppear = false
-        if currentChapterIndex < allChapters.count - 1 {
-            currentChapterIndex += 1
-        } else if currentBookIndex < allBooks.count - 1 {
-            currentBookIndex += 1
-            currentChapterIndex = 0
-        } else {
+            currentVerse = 1
+            saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: currentVerse)
             return
         }
-        currentVerse = 1
-        saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: currentVerse)
+        // Move to previous book's last chapter
+        guard let idx = currentBookNameIndex, idx > 0 else { return }
+        let prevIdx = idx - 1
+        let prevName = orderedBookNames[prevIdx]
+        if let newBook = await bibleStore.book(named: prevName) {
+            currentBook = newBook
+            currentBookNameIndex = prevIdx
+            currentChapterIndex = max(0, newBook.chapters.count - 1)
+            currentVerse = 1
+            saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: currentVerse)
+        }
+    }
+
+    @MainActor
+    private func nextChapter() async {
+        if currentChapterIndex < max(0, currentBook.chapters.count - 1) {
+            currentChapterIndex += 1
+            currentVerse = 1
+            saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: currentVerse)
+            return
+        }
+        // Move to next book's first chapter
+        guard let idx = currentBookNameIndex, idx < max(0, orderedBookNames.count - 1) else { return }
+        let nextIdx = idx + 1
+        let nextName = orderedBookNames[nextIdx]
+        if let newBook = await bibleStore.book(named: nextName) {
+            currentBook = newBook
+            currentBookNameIndex = nextIdx
+            currentChapterIndex = 0
+            currentVerse = 1
+            saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: currentVerse)
+        }
     }
 
     private func rowID(for verse: Int) -> String {
-        "\(currentBookIndex)-\(currentChapterIndex)-\(verse)"
+        "\(currentBookNameIndex ?? 0)-\(currentChapterIndex)-\(verse)"
     }
 
     private func isFavorited(_ verse: Verse) -> Bool {
