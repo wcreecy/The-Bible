@@ -395,8 +395,8 @@ struct SettingsView: View {
     // MARK: - Pinned Verse storage & updates
 
     private func updatePinnedStorageAndWidget() {
-        if bibleStore.isReady,
-           let b = bibleStore.books.first(where: { $0.name == pinnedBookName }),
+        // Resolve preview text immediately using BibleData (fast, always available)
+        if let b = BibleData.books.first(where: { $0.name == pinnedBookName }),
            let c = b.chapters.first(where: { $0.number == pinnedChapter }),
            let v = c.verses.first(where: { $0.number == pinnedVerse }) {
             pinnedText = v.text
@@ -427,8 +427,7 @@ struct SettingsView: View {
             pinnedVerse = verse
             if !text.isEmpty {
                 pinnedText = text
-            } else if bibleStore.isReady,
-                      let b = bibleStore.books.first(where: { $0.name == book }),
+            } else if let b = BibleData.books.first(where: { $0.name == book }),
                       let c = b.chapters.first(where: { $0.number == chapter }),
                       let v = c.verses.first(where: { $0.number == verse }) {
                 pinnedText = v.text

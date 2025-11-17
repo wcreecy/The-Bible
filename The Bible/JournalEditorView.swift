@@ -44,11 +44,55 @@ struct JournalEditorView: View {
     @State private var isTitleExpanded: Bool = true
     @State private var isTagsExpanded: Bool = true
 
-    // Precomputed book names to avoid rebuilding arrays per keystroke
-    private static let allBookNames: [String] = BibleData.books.map { $0.name }
-    private static let allBookNamesLower: [String] = allBookNames.map { $0.lowercased() }
+    // Avoid main-thread JSON decode: load names lazily via BibleLibrary and keep a tiny canonical list for ordering only.
+    private static let canonicalBookOrder: [String] = [
+        "Genesis","Exodus","Leviticus","Numbers","Deuteronomy",
+        "Joshua","Judges","Ruth",
+        "1 Samuel","2 Samuel",
+        "1 Kings","2 Kings",
+        "1 Chronicles","2 Chronicles",
+        "Ezra","Nehemiah","Esther",
+        "Job","Psalms","Proverbs","Ecclesiastes","Song of Solomon",
+        "Isaiah","Jeremiah","Lamentations","Ezekiel","Daniel",
+        "Hosea","Joel","Amos","Obadiah","Jonah",
+        "Micah","Nahum","Habakkuk","Zephaniah",
+        "Haggai","Zechariah","Malachi",
+        "Matthew","Mark","Luke","John",
+        "Acts","Romans",
+        "1 Corinthians","2 Corinthians",
+        "Galatians","Ephesians","Philippians","Colossians",
+        "1 Thessalonians","2 Thessalonians",
+        "1 Timothy","2 Timothy",
+        "Titus","Philemon",
+        "Hebrews","James",
+        "1 Peter","2 Peter",
+        "1 John","2 John","3 John",
+        "Jude","Revelation"
+    ]
+    @State private var allBookNames: [String] = []
+    @State private var allBookNamesLower: [String] = []
+
+    private func loadBookNamesIfNeeded() {
+        guard allBookNames.isEmpty else { return }
+        Task {
+            // Get names quickly without decoding verse text
+            let names = await BibleLibrary.shared.bookNames()
+            // Order according to our canonical sequence (unknowns go last in original order)
+            let pos = Dictionary(uniqueKeysWithValues: Self.canonicalBookOrder.enumerated().map { ($1, $0) })
+            let ordered = names.sorted { (a, b) in
+                (pos[a] ?? Int.max) < (pos[b] ?? Int.max)
+            }
+            await MainActor.run {
+                self.allBookNames = ordered.isEmpty ? Self.canonicalBookOrder : ordered
+                self.allBookNamesLower = self.allBookNames.map { $0.lowercased() }
+            }
+        }
+    }
 
     private func updateBookSuggestions() {
+        // Ensure names are loaded the first time suggestions are needed
+        if allBookNames.isEmpty { loadBookNamesIfNeeded() }
+
         let text = content
 
         // Map caret (UTF16) to String.Index
@@ -101,8 +145,10 @@ struct JournalEditorView: View {
     }
 
     private var filteredBooksForQuery: [String] {
-        let names = Self.allBookNames
-        let lower = Self.allBookNamesLower
+        let names = allBookNames
+        let lower = allBookNamesLower
+        if names.isEmpty { return [] }
+
         let q = bookQuery.trimmingCharacters(in: .whitespacesAndNewlines)
         if q.isEmpty { return Array(names.prefix(10)) }
         let qLower = q.lowercased()
@@ -289,6 +335,8 @@ struct JournalEditorView: View {
                 scheduleSuggestionsUpdate()
             }
             .onAppear {
+                // Start loading book names (asynchronously, no UI block)
+                loadBookNamesIfNeeded()
                 // Seed linkified content
                 scheduleLinkify(for: content)
             }

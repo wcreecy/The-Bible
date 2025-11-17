@@ -89,9 +89,6 @@ struct HomeView: View {
     @EnvironmentObject private var coordinator: NavigationCoordinator
     @State private var verseOfDay: HomeVerseRef? = nil
 
-    // For lazy resume card resolution
-    @State private var resumeBook: Book? = nil
-
     @State private var showCopyToast: Bool = false
     @State private var showFocusSavedToast: Bool = false
     @State private var timeMarker: Int = 0
@@ -144,7 +141,7 @@ struct HomeView: View {
     @AppStorage("votdRefresh2Minute") private var votdRefresh2Minute: Int = 0
     @State private var nextRefreshTimer: Timer?
 
-    // Bible store for async/on-demand loading (now lazy)
+    // Bible store for async/on-demand loading
     @StateObject private var bibleStore = BibleStore.shared
 
     // Debounced widget reload helper
@@ -213,7 +210,7 @@ struct HomeView: View {
         let next = nextAutoRefreshDate()
         let interval = max(1, next.timeIntervalSinceNow)
         nextRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
-            Task { await loadRandomVerse() }
+            loadRandomVerse()
             // Schedule the next one
             scheduleNextVerseRefreshTimer()
         }
@@ -244,11 +241,11 @@ struct HomeView: View {
         DebouncedWidgetReloader.shared.reload(kind: "VerseWidget")
     }
 
-    private func mirrorLastReadToAppGroup() async {
+    private func mirrorLastReadToAppGroup() {
         guard let shared = sharedDefaults else { return }
         guard let p = progress else { return }
-        // Load only the needed book lazily
-        if let book = await BibleStore.shared.book(named: p.bookName),
+        // Resolve using BibleData (always available)
+        if let book = BibleData.books.first(where: { $0.name == p.bookName }),
            let chapter = book.chapters.first(where: { $0.number == p.chapterNumber }),
            let verse = chapter.verses.first(where: { $0.number == p.verseNumber }) {
             shared.set(p.bookName, forKey: "lastReadBook")
@@ -261,7 +258,7 @@ struct HomeView: View {
         }
     }
 
-    private func handleOpenPendingVerse() async {
+    private func handleOpenPendingVerse() {
         guard let shared = sharedDefaults else { return }
         guard let book = shared.string(forKey: "pendingOpenBook"),
               let chapter = shared.value(forKey: "pendingOpenChapter") as? Int,
@@ -270,7 +267,8 @@ struct HomeView: View {
         shared.removeObject(forKey: "pendingOpenChapter")
         shared.removeObject(forKey: "pendingOpenVerse")
 
-        guard let b = await BibleStore.shared.book(named: book),
+        let books = bibleStore.isReady ? bibleStore.books : []
+        guard let b = books.first(where: { $0.name == book }),
               let c = b.chapters.first(where: { $0.number == chapter }) else { return }
         coordinator.push(.reader(book: b, chapter: c, startVerse: verse))
     }
@@ -357,14 +355,14 @@ struct HomeView: View {
                         .foregroundStyle(.secondary)
 
                     HStack(spacing: 24) {
-                        Button(action: { Task { await loadRandomVerse() } }) {
+                        Button(action: { loadRandomVerse() }) {
                             Label("Refresh", systemImage: "arrow.clockwise")
                         }
                         .labelStyle(.iconOnly)
                         .foregroundStyle(verseOfDayPaused ? AnyShapeStyle(.secondary) : AnyShapeStyle(.green))
                         .font(.title3)
                         .help("Refresh")
-                        .disabled(verseOfDayPaused)
+                        .disabled(verseOfDayPaused || !bibleStore.isReady)
 
                         Button(action: {
                             copyVerse(v)
@@ -396,9 +394,16 @@ struct HomeView: View {
                         .padding(.top, 4)
                 } else {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Verse will refresh automatically at your selected times.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                        if !bibleStore.isReady {
+                            Text("Loading verse data…")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .redacted(reason: .placeholder)
+                        } else {
+                            Text("Verse will refresh automatically at your selected times.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
                         Text(nextVerseRefreshDescription)
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -409,13 +414,10 @@ struct HomeView: View {
             .onTapGesture {
                 let generator = UIImpactFeedbackGenerator(style: .heavy)
                 generator.impactOccurred()
-                guard let v = verseOfDay else { return }
-                Task {
-                    if let b = await BibleStore.shared.book(named: v.bookName),
-                       let c = b.chapters.first(where: { $0.number == v.chapterNumber }) {
-                        coordinator.push(.reader(book: b, chapter: c, startVerse: v.verseNumber))
-                    }
-                }
+                guard let v = verseOfDay, bibleStore.isReady,
+                      let book = bibleStore.books.first(where: { $0.name == v.bookName }),
+                      let chapter = book.chapters.first(where: { $0.number == v.chapterNumber }) else { return }
+                coordinator.push(.reader(book: book, chapter: chapter, startVerse: v.verseNumber))
             }
             .contextMenu {
                 if let v = verseOfDay {
@@ -702,7 +704,7 @@ struct HomeView: View {
     @ViewBuilder
     private var resumeCard: some View {
         if let progress = progress,
-           let book = resumeBook,
+           let book = BibleData.books.first(where: { $0.name == progress.bookName }),
            let chapter = book.chapters.first(where: { $0.number == progress.chapterNumber }) {
             Button(action: {
                 coordinator.push(.reader(book: book, chapter: chapter, startVerse: progress.verseNumber))
@@ -753,6 +755,9 @@ struct HomeView: View {
                         Text("Continue where you left off")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
+                        Text("Start reading from the Bible tab")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                     }
                     Spacer()
                 }
@@ -777,6 +782,11 @@ struct HomeView: View {
         .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
         .appToast(isPresented: $showFocusSavedToast, symbol: "checkmark.seal.fill", text: "Focus Saved", tint: .green)
         .onAppear {
+            // Pre-warm book names so first-time suggestions are instant
+            Task { _ = await BibleLibrary.shared.bookNames() }
+
+            bibleStore.ensureLoaded()
+
             // Restore persisted state
             isTimerRunning = storedRunning
             isPaused = storedPaused
@@ -802,7 +812,16 @@ struct HomeView: View {
                     verseOfDay = HomeVerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
                     mirrorVerseToAppGroup(book: storedVerseBook, chapter: storedVerseChapter, verse: storedVerseNumber, text: storedVerseText)
                 } else {
-                    Task { await loadRandomVerse() }
+                    // Wait for bibleStore to be ready before generating a verse
+                    if bibleStore.isReady {
+                        loadRandomVerse()
+                    } else {
+                        // Once ready, load an initial verse
+                        Task { @MainActor in
+                            while !BibleStore.shared.isReady { try? await Task.sleep(nanoseconds: 20_000_000) }
+                            loadRandomVerse()
+                        }
+                    }
                 }
             }
 
@@ -822,14 +841,8 @@ struct HomeView: View {
                 hasSavedFocus = false
             }
 
-            Task {
-                await mirrorLastReadToAppGroup()
-                await handleOpenPendingVerse()
-                // Resolve resume book lazily for the Resume card
-                if let p = progress {
-                    resumeBook = await BibleStore.shared.book(named: p.bookName)
-                }
-            }
+            mirrorLastReadToAppGroup()
+            handleOpenPendingVerse()
 
             handlePrayerTimerPendingAction()
             handleStopwatchPendingAction()
@@ -841,14 +854,7 @@ struct HomeView: View {
             updateTickerSubscription()
         }
         .onChange(of: progressList) { _, _ in
-            Task {
-                await mirrorLastReadToAppGroup()
-                if let p = progress {
-                    resumeBook = await BibleStore.shared.book(named: p.bookName)
-                } else {
-                    resumeBook = nil
-                }
-            }
+            mirrorLastReadToAppGroup()
         }
         .onChange(of: scenePhase) { _, newPhase in
             switch newPhase {
@@ -856,7 +862,7 @@ struct HomeView: View {
                 startMindfulLoggingIfNeeded()
                 handlePrayerTimerPendingAction()
                 handleStopwatchPendingAction()
-                Task { await handleOpenPendingVerse() }
+                handleOpenPendingVerse()
             case .inactive, .background:
                 if !isTimerRunning && !stopwatchRunning {
                     stopMindfulLogging()
@@ -1098,38 +1104,40 @@ struct HomeView: View {
         finishHapticTimer = nil
     }
 
-    // New async VOTD loader that uses bookNames + per-book load
-    private func loadRandomVerse() async {
+    private func loadRandomVerse() {
         if verseOfDayPaused { return }
-        let allNames = await bibleStore.bookNames()
-        guard !allNames.isEmpty else { return }
+        guard bibleStore.isReady else { return }
+        let allBooks = bibleStore.books
+        guard !allBooks.isEmpty else { return }
 
         let scope = VerseScope(rawValue: verseScopeRaw) ?? .whole
-        let names: [String]
+        let books: [Book]
         switch scope {
         case .old:
-            names = allNames.filter { oldTestamentBooks.contains($0) }
+            books = allBooks.filter { oldTestamentBooks.contains($0.name) }
         case .new:
-            names = allNames.filter { !oldTestamentBooks.contains($0) }
+            books = allBooks.filter { !oldTestamentBooks.contains($0.name) }
         case .whole:
-            names = allNames
+            books = allBooks
         case .book:
-            names = allNames.filter { $0 == verseSpecificBook }
+            if let chosen = allBooks.first(where: { $0.name == verseSpecificBook }) {
+                books = [chosen]
+            } else {
+                books = allBooks
+            }
         }
 
-        guard let bookName = names.randomElement(),
-              let book = await bibleStore.book(named: bookName),
+        guard let book = books.randomElement(),
               let chapter = book.chapters.randomElement(),
               !chapter.verses.isEmpty,
               let verse = chapter.verses.randomElement() else { return }
 
-        let v = HomeVerseRef(bookName: book.name, chapterNumber: chapter.number, verseNumber: verse.number, verseText: verse.text)
-        verseOfDay = v
-        storedVerseBook = v.bookName
-        storedVerseChapter = v.chapterNumber
-        storedVerseNumber = v.verseNumber
-        storedVerseText = v.verseText
-        mirrorVerseToAppGroup(book: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText)
+        verseOfDay = HomeVerseRef(bookName: book.name, chapterNumber: chapter.number, verseNumber: verse.number, verseText: verse.text)
+        storedVerseBook = book.name
+        storedVerseChapter = chapter.number
+        storedVerseNumber = verse.number
+        storedVerseText = verse.text
+        mirrorVerseToAppGroup(book: book.name, chapter: chapter.number, verse: verse.number, text: verse.text)
     }
 
     private func copyVerse(_ v: HomeVerseRef) {
