@@ -362,7 +362,7 @@ struct HomeView: View {
                         .foregroundStyle(verseOfDayPaused ? AnyShapeStyle(.secondary) : AnyShapeStyle(.green))
                         .font(.title3)
                         .help("Refresh")
-                        .disabled(verseOfDayPaused || !bibleStore.isReady)
+                        .disabled(verseOfDayPaused)
 
                         Button(action: {
                             copyVerse(v)
@@ -414,8 +414,9 @@ struct HomeView: View {
             .onTapGesture {
                 let generator = UIImpactFeedbackGenerator(style: .heavy)
                 generator.impactOccurred()
-                guard let v = verseOfDay, bibleStore.isReady,
-                      let book = bibleStore.books.first(where: { $0.name == v.bookName }),
+                // Use BibleData (always available) to navigate directly to the verse
+                guard let v = verseOfDay,
+                      let book = BibleData.books.first(where: { $0.name == v.bookName }),
                       let chapter = book.chapters.first(where: { $0.number == v.chapterNumber }) else { return }
                 coordinator.push(.reader(book: book, chapter: chapter, startVerse: v.verseNumber))
             }
