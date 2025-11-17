@@ -1,20 +1,20 @@
 import Foundation
 
-struct Verse: Identifiable, Hashable {
+struct Verse: Identifiable, Hashable, Sendable {
     // Stable, allocation-free ID derived from verse number within a chapter
     var id: String { "\(number)" }
     let number: Int
     let text: String
 }
 
-struct Chapter: Identifiable, Hashable {
+struct Chapter: Identifiable, Hashable, Sendable {
     // Stable, allocation-free ID derived from chapter number within a book
     var id: String { "\(number)" }
     let number: Int
     let verses: [Verse]
 }
 
-struct Book: Identifiable, Hashable {
+struct Book: Identifiable, Hashable, Sendable {
     // Stable, allocation-free ID derived from the book name
     var id: String { name }
     let name: String

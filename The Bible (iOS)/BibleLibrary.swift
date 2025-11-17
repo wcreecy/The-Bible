@@ -25,8 +25,8 @@ actor BibleLibrary {
             return try await task.value
         }
 
+        // Build a task that only does I/O and model construction (no actor mutation inside).
         let task = Task<[Book], Error> {
-            let books: [Book]
             do {
                 let loaded: [Book] = try await withCheckedThrowingContinuation { continuation in
                     DispatchQueue.global(qos: .userInitiated).async {
@@ -89,20 +89,20 @@ actor BibleLibrary {
                         }
                     }
                 }
-                books = loaded
+                return loaded
             } catch {
                 // Fallback to the static BibleData if kjv.json is missing or failed to load.
-                books = await MainActor.run { BibleData.books }
+                return await BibleData.books
             }
-
-            // Cache results
-            await self.setAllBooksCache(books)
-            return books
         }
 
         allBooksTask = task
         do {
             let result = try await task.value
+            // Back on the actor: cache results synchronously (no await).
+            setAllBooksCache(result)
+            // Optionally clear the task to free memory; future calls will hit the cache.
+            allBooksTask = nil
             return result
         } catch {
             // Clear failed task so future calls can retry
@@ -123,7 +123,7 @@ actor BibleLibrary {
             return try await inFlight.value
         }
 
-        // Create task
+        // Create task that only performs I/O and building the model, without touching actor state.
         let task = Task<Book?, Error> {
             // Try per-book file
             if let url = Bundle.main.url(forResource: name, withExtension: "json", subdirectory: "kjv_books") {
@@ -149,7 +149,6 @@ actor BibleLibrary {
                         }
                     }
                 }
-                await self.cache(book: book)
                 return book
             }
 
@@ -162,6 +161,10 @@ actor BibleLibrary {
         defer { perBookTasks[name] = nil }
 
         let result = try await task.value
+        if let book = result {
+            // We are back on the actor; safe to mutate cache synchronously without 'await'.
+            self.cache(book: book)
+        }
         return result
     }
 
@@ -192,7 +195,7 @@ actor BibleLibrary {
         } else if let names = try? await loadAllBooks().map({ $0.name }) {
             return names
         } else {
-            return await MainActor.run { BibleData.books.map { $0.name } }
+            return await BibleData.books.map { $0.name }
         }
     }
 }
