@@ -10,7 +10,12 @@ struct PinnedVerseWidgetEntryView: View {
             HStack(spacing: 6) {
                 Image(systemName: "bookmark.fill")
                     .font(.caption2)
-                    .foregroundStyle(.white.opacity(0.7))
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(
+                        Color.red.opacity(0.9),     // bookmark body
+                        Color.white.opacity(0.9)    // cutout/inner
+                    )
+
                 Text("Pinned Verse")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.7))
@@ -66,4 +71,3 @@ struct PinnedVerseWidget: Widget {
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
-

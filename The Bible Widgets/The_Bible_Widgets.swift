@@ -18,7 +18,13 @@ struct VerseWidgetEntryView: View {
             HStack(spacing: 6) {
                 Image(systemName: headerIcon)
                     .font(.caption2)
-                    .foregroundStyle(.white.opacity(0.7))
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(
+                        isEvening
+                        ? .purple.opacity(0.9) : .yellow, // primary layer
+                        .white.opacity(0.9)               // secondary layer (stars/rays where applicable)
+                    )
+
                 Text(headerTitle)
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.7))

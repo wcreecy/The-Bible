@@ -83,7 +83,7 @@ struct ScripturePickerView: View {
             } header: {
                 Text("Scripture")
             } footer: {
-                Text("Tap Book, Chapter, or Verse to choose. Swipe to adjust. The center row is your selection.")
+                Text("Tap Book, Chapter, or Verse to choose. The wheel now snaps precisely to the nearest option.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -154,7 +154,11 @@ struct ScripturePickerView: View {
                                 selection: $bookSelection
                             )
                         }
-                        .onChange(of: bookSelection) { _, newValue in
+                        .onChangeCompat(of: bookSelection) { _, newValue in
+                            let h = UISelectionFeedbackGenerator(); h.selectionChanged()
+                            loadTask?.cancel()
+                            loadTask = Task { await loadBook(named: newValue, seedChapter: nil, seedVerse: nil) }
+                        } legacy: { newValue in
                             let h = UISelectionFeedbackGenerator(); h.selectionChanged()
                             loadTask?.cancel()
                             loadTask = Task { await loadBook(named: newValue, seedChapter: nil, seedVerse: nil) }
@@ -170,7 +174,15 @@ struct ScripturePickerView: View {
                                     selection: $selectedChapter
                                 )
                             }
-                            .onChange(of: selectedChapter) { _, newValue in
+                            .onChangeCompat(of: selectedChapter) { _, newValue in
+                                let h = UISelectionFeedbackGenerator(); h.selectionChanged()
+                                // Clamp verse for new chapter
+                                guard let ch = book.chapters.first(where: { $0.number == newValue }) else { return }
+                                let first = ch.verses.first?.number ?? 1
+                                let last = ch.verses.last?.number ?? first
+                                selectedVerse = min(max(selectedVerse, first), last)
+                                updatePreviewText()
+                            } legacy: { newValue in
                                 let h = UISelectionFeedbackGenerator(); h.selectionChanged()
                                 // Clamp verse for new chapter
                                 guard let ch = book.chapters.first(where: { $0.number == newValue }) else { return }
@@ -194,7 +206,10 @@ struct ScripturePickerView: View {
                                     selection: $selectedVerse
                                 )
                             }
-                            .onChange(of: selectedVerse) { _, _ in
+                            .onChangeCompat(of: selectedVerse) { _, _ in
+                                let h = UISelectionFeedbackGenerator(); h.selectionChanged()
+                                updatePreviewText()
+                            } legacy: { _ in
                                 let h = UISelectionFeedbackGenerator(); h.selectionChanged()
                                 updatePreviewText()
                             }
@@ -384,7 +399,7 @@ private struct ModernWheelCard<Content: View>: View {
     }
 }
 
-// MARK: - PreferenceKey to track scroll offset
+// MARK: - PreferenceKeys to track scroll offset and row centers
 private struct ScrollOffsetPreferenceKey: PreferenceKey {
     static var defaultValue: CGFloat = 0
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
@@ -392,7 +407,14 @@ private struct ScrollOffsetPreferenceKey: PreferenceKey {
     }
 }
 
-// MARK: - Modern, snapping, scalable wheel picker (iOS 16+)
+private struct RowCentersPreferenceKey<ID: Hashable>: PreferenceKey {
+    static var defaultValue: [ID: CGFloat] { [:] }
+    static func reduce(value: inout [ID: CGFloat], nextValue: () -> [ID: CGFloat]) {
+        value.merge(nextValue(), uniquingKeysWith: { $1 })
+    }
+}
+
+// MARK: - Modern, snapping, scalable wheel picker (iOS 16+, uses native snapping on iOS 17)
 private struct ModernWheelPicker<Item: Hashable, ID: Hashable, Label: View>: View {
     let items: [Item]
     let id: KeyPath<Item, ID>
@@ -407,7 +429,9 @@ private struct ModernWheelPicker<Item: Hashable, ID: Hashable, Label: View>: Vie
     private let selectionBandHeight: CGFloat = 34
 
     @State private var scrollOffset: CGFloat = 0
-    @State private var contentHeight: CGFloat = 0
+    @State private var rowCenters: [ID: CGFloat] = [:]
+    @State private var isDragging: Bool = false
+    @State private var snapWorkItem: DispatchWorkItem?
 
     var body: some View {
         ZStack {
@@ -439,6 +463,16 @@ private struct ModernWheelPicker<Item: Hashable, ID: Hashable, Label: View>: Vie
                                 rowView(for: item, centerY: centerY)
                                     .frame(height: rowHeight)
                                     .id(item[keyPath: id])
+                                    .background(
+                                        GeometryReader { rowGeo in
+                                            let mid = rowGeo.frame(in: .named("scroll")).midY
+                                            Color.clear
+                                                .preference(
+                                                    key: RowCentersPreferenceKey<ID>.self,
+                                                    value: [item[keyPath: id]: mid]
+                                                )
+                                        }
+                                    )
                             }
 
                             // Bottom padding
@@ -453,8 +487,12 @@ private struct ModernWheelPicker<Item: Hashable, ID: Hashable, Label: View>: Vie
                         )
                     }
                     .coordinateSpace(name: "scroll")
-                    .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                        scrollOffset = value
+                    .onPreferenceChange(ScrollOffsetPreferenceKey.self) { _ in
+                        // Debounce snapping to allow deceleration to finish
+                        scheduleSnap(proxy: proxy, containerCenterY: centerY)
+                    }
+                    .onPreferenceChange(RowCentersPreferenceKey<ID>.self) { centers in
+                        rowCenters = centers
                     }
                     .onAppear {
                         // Scroll initial selection into center
@@ -463,12 +501,20 @@ private struct ModernWheelPicker<Item: Hashable, ID: Hashable, Label: View>: Vie
                         }
                     }
                     .gesture(
-                        DragGesture().onEnded { _ in
-                            // Snap to nearest row on drag end
-                            snapToNearest(with: proxy, containerHeight: geo.size.height)
-                        }
+                        DragGesture()
+                            .onChanged { _ in isDragging = true }
+                            .onEnded { _ in
+                                isDragging = false
+                                // Snap immediately when drag ends
+                                snapNow(proxy: proxy, containerCenterY: centerY)
+                            }
                     )
-                    .onChange(of: selection) { _, newValue in
+                    .onChangeCompat(of: selection) { _, newValue in
+                        // Programmatically scroll if selection changed externally
+                        withAnimation(.spring(response: 0.28, dampingFraction: 0.88)) {
+                            proxy.scrollTo(newValue[keyPath: id], anchor: .center)
+                        }
+                    } legacy: { newValue in
                         // Programmatically scroll if selection changed externally
                         withAnimation(.spring(response: 0.28, dampingFraction: 0.88)) {
                             proxy.scrollTo(newValue[keyPath: id], anchor: .center)
@@ -526,23 +572,51 @@ private struct ModernWheelPicker<Item: Hashable, ID: Hashable, Label: View>: Vie
         }
     }
 
-    private func snapToNearest(with proxy: ScrollViewProxy, containerHeight: CGFloat) {
-        // Compute which item is closest to center by inspecting the current offset
-        // We approximate by converting offset to index.
-        let totalRows = items.count
-        guard totalRows > 0 else { return }
+    // Debounced snapping while scrolling (helps after deceleration)
+    private func scheduleSnap(proxy: ScrollViewProxy, containerCenterY: CGFloat) {
+        snapWorkItem?.cancel()
+        let item = DispatchWorkItem { [isDragging] in
+            if !isDragging {
+                snapNow(proxy: proxy, containerCenterY: containerCenterY)
+            }
+        }
+        snapWorkItem = item
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12, execute: item)
+    }
 
-        // Convert current selection to an index baseline
-        let currentIndex = items.firstIndex(of: selection) ?? 0
-
-        // Heuristic: find the row whose center is closest to the ScrollView center
-        // We can estimate based on the ScrollView's current position by reading the visible rows’ geometry,
-        // but since we’ve already got tap-to-select and onChange snapping, we’ll bias to the currentIndex.
-        // This keeps the snapping stable. If you want to compute exact nearest, we can track each row’s midY via another preference.
-
-        // Simply snap to the currently most visually emphasized row: keep selection as-is and re-center it.
+    private func snapNow(proxy: ScrollViewProxy, containerCenterY: CGFloat) {
+        guard let nearest = nearestItem(to: containerCenterY) else { return }
+        if nearest != selection {
+            selection = nearest
+        }
         withAnimation(.spring(response: 0.28, dampingFraction: 0.88)) {
-            proxy.scrollTo(items[currentIndex][keyPath: id], anchor: .center)
+            proxy.scrollTo(nearest[keyPath: id], anchor: .center)
+        }
+    }
+
+    private func nearestItem(to centerY: CGFloat) -> Item? {
+        // Find the ID whose midY is closest to centerY
+        guard !rowCenters.isEmpty else { return nil }
+        let closest = rowCenters.min(by: { abs($0.value - centerY) < abs($1.value - centerY) })
+        guard let closestID = closest?.key else { return nil }
+        return items.first(where: { $0[keyPath: id] == closestID })
+    }
+}
+
+// MARK: - Backward-compatible onChange helper
+private extension View {
+    @ViewBuilder
+    func onChangeCompat<V: Equatable>(
+        of value: V,
+        perform: @escaping (_ oldValue: V, _ newValue: V) -> Void,
+        legacy: @escaping (_ newValue: V) -> Void
+    ) -> some View {
+        if #available(iOS 17.0, *) {
+            self.onChange(of: value) { oldValue, newValue in
+                perform(oldValue, newValue)
+            }
+        } else {
+            self.onChange(of: value, perform: legacy)
         }
     }
 }

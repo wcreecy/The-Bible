@@ -11,7 +11,11 @@ struct LastReadWidgetEntryView: View {
             HStack(spacing: 6) {
                 Image(systemName: "book")
                     .font(.caption2)
-                    .foregroundStyle(.white.opacity(0.7))
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(
+                        Color.blue.opacity(0.9),
+                        Color.white.opacity(0.9)
+                    )
                 Text("Last Read")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.7))
@@ -36,9 +40,9 @@ struct LastReadWidgetEntryView: View {
             }
         }
         .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .widgetURL(deepLinkURL(book: entry.book, chapter: entry.chapter, verse: entry.verse))
-        .background(Color.black) // Fallback for older systems
-        .applyiOS17WidgetStyling()
+        .applyWidgetBackground()
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Last Read widget")
     }
@@ -57,23 +61,20 @@ struct LastReadWidgetEntryView: View {
     }
 }
 
-#if compiler(>=5.9)
-// iOS 17-only styling for widgets, compiled only with SDKs that have these APIs
-@available(iOS 17.0, *)
 private extension View {
-    func applyiOS17WidgetStyling() -> some View {
-        self
-            .containerBackground(for: .widget) {
-                Color.black
-            }
-            .contentMargins(.all, 0)
+    // Use the widget-aware background on iOS 17+, and a fallback on iOS 16.
+    func applyWidgetBackground() -> some View {
+        if #available(iOS 17.0, *) {
+            return AnyView(
+                self
+                    .containerBackground(Color.black, for: .widget)
+                    .contentMargins(.all, 0)
+            )
+        } else {
+            return AnyView(
+                self
+                    .background(Color.black)
+            )
+        }
     }
 }
-#else
-// Fallback for older compilers/SDKs (no-op)
-private extension View {
-    func applyiOS17WidgetStyling() -> some View {
-        self
-    }
-}
-#endif

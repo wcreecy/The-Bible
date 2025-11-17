@@ -4,7 +4,6 @@ import WidgetKit
 struct SettingsView: View {
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
     @AppStorage("fontSizePreference") private var fontSizePreferenceRaw: String = FontSizePreference.system.rawValue
-    @AppStorage("keepScreenOn") private var keepScreenOn: Bool = false
     @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = FontFamilyPreference.system.rawValue
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
@@ -196,14 +195,6 @@ struct SettingsView: View {
                 Text("Choose an easy-to-read typeface for the interface and reading.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-            }
-            .headerProminence(.increased)
-
-            Section(header: Text("Reading"), footer: Text("Keeping the screen on may increase battery usage.").font(.footnote).foregroundStyle(.secondary)) {
-                Toggle(isOn: $keepScreenOn) {
-                    Label("Keep Screen On While Reading", systemImage: "display.sleep")
-                }
-                .accessibilityIdentifier("keepScreenOnToggle")
             }
             .headerProminence(.increased)
 

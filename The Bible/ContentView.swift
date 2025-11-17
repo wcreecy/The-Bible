@@ -25,6 +25,8 @@ struct ContentView: View {
     
     // One-time cleanup flag for deprecated app time keys
     @AppStorage("didCleanupAppTimeKeys") private var didCleanupAppTimeKeys: Bool = false
+    // One-time cleanup for deprecated keepScreenOn setting
+    @AppStorage("didCleanupKeepScreenOnKey") private var didCleanupKeepScreenOnKey: Bool = false
     
     private var preferredScheme: ColorScheme? { (ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme }
     private var preferredDynamicType: DynamicTypeSize? { (FontSizePreference(rawValue: fontSizePreferenceRaw) ?? .system).dynamicTypeSize }
@@ -109,6 +111,11 @@ struct ContentView: View {
                 UserDefaults.standard.removeObject(forKey: "appTotalActiveSeconds")
                 UserDefaults.standard.removeObject(forKey: "appActiveStart")
                 didCleanupAppTimeKeys = true
+            }
+            // One-time cleanup of deprecated keepScreenOn setting
+            if !didCleanupKeepScreenOnKey {
+                UserDefaults.standard.removeObject(forKey: "keepScreenOn")
+                didCleanupKeepScreenOnKey = true
             }
             // Defer Live Activity "ensure" to the next runloop/frame, and only if Home is visible now.
             Task { @MainActor in

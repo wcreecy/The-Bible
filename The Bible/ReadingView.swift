@@ -30,7 +30,6 @@ struct ReadingView: View {
     @State private var favoriteToastText: String = "Added to Favorites"
     @State private var favoriteToastSymbol: String = "heart.fill"
     @State private var favoriteToastTint: Color = .pink
-    @AppStorage("keepScreenOn") private var keepScreenOn: Bool = false
     @State private var pinVerse: Int? = nil
 
     // Lazy BibleStore
@@ -58,19 +57,10 @@ struct ReadingView: View {
             .navigationBarTitleDisplayMode(.inline)
             .onAppear(perform: onAppear)
             .onAppear {
-                if keepScreenOn {
-                    UIApplication.shared.isIdleTimerDisabled = true
-                }
                 // Load canonical book order once
                 Task { @MainActor in
                     await loadOrderedBookNames()
                 }
-            }
-            .onDisappear {
-                UIApplication.shared.isIdleTimerDisabled = false
-            }
-            .onChange(of: keepScreenOn) { _, newValue in
-                UIApplication.shared.isIdleTimerDisabled = newValue
             }
             .appToast(isPresented: $showFavoriteToast, symbol: favoriteToastSymbol, text: favoriteToastText, tint: favoriteToastTint)
     }

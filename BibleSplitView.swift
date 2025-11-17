@@ -13,6 +13,9 @@ struct BibleSplitView: View {
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
     @State private var readerUseTwoColumns: Bool = false
 
+    // Shared preference for sort mode across iPhone/iPad
+    @AppStorage("bibleBooksSortAlphabetical") private var sortAlphabetically: Bool = false
+
     private enum SearchScope: String, CaseIterable, Identifiable {
         case all = "All"
         case ot = "OT"
@@ -78,6 +81,13 @@ struct BibleSplitView: View {
         guard !q.isEmpty else { return base }
         return base.filter { $0.name.localizedCaseInsensitiveContains(q) }
     }
+
+    private var filteredAllBooksAZ: [Book] {
+        let q = filteredSidebarQuery
+        let base = canon
+        let filtered = q.isEmpty ? base : base.filter { $0.name.localizedCaseInsensitiveContains(q) }
+        return filtered.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+    }
     
     private var shouldSearch: Bool {
         let words = debouncedText
@@ -138,9 +148,10 @@ struct BibleSplitView: View {
                         }
                     }
             }
-            if !filteredOTBooks.isEmpty {
+            if sortAlphabetically {
+                // Single A–Z section
                 Section {
-                    ForEach(filteredOTBooks, id: \.name) { book in
+                    ForEach(filteredAllBooksAZ, id: \.name) { book in
                         Button {
                             selectedBook = book
                             selectedChapter = nil
@@ -159,35 +170,84 @@ struct BibleSplitView: View {
                         .buttonStyle(.plain)
                     }
                 } header: {
-                    Text("Old Testament (\(filteredOTBooks.count))").font(.footnote).foregroundStyle(.secondary)
+                    Text("All Books (\(filteredAllBooksAZ.count))").font(.footnote).foregroundStyle(.secondary)
                 }
-            }
-            if !filteredNTBooks.isEmpty {
-                Section {
-                    ForEach(filteredNTBooks, id: \.name) { book in
-                        Button {
-                            selectedBook = book
-                            selectedChapter = nil
-                            navStartVerse = 1
-                            searchText = ""
-                            detailPath = NavigationPath()
-                        } label: {
-                            HStack {
-                                Text(book.name)
-                                if selectedBook?.name == book.name {
-                                    Spacer()
-                                    Image(systemName: "checkmark").foregroundStyle(.blue)
+            } else {
+                // Canonical OT/NT grouping
+                if !filteredOTBooks.isEmpty {
+                    Section {
+                        ForEach(filteredOTBooks, id: \.name) { book in
+                            Button {
+                                selectedBook = book
+                                selectedChapter = nil
+                                navStartVerse = 1
+                                searchText = ""
+                                detailPath = NavigationPath()
+                            } label: {
+                                HStack {
+                                    Text(book.name)
+                                    if selectedBook?.name == book.name {
+                                        Spacer()
+                                        Image(systemName: "checkmark").foregroundStyle(.blue)
+                                    }
                                 }
                             }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
+                    } header: {
+                        Text("Old Testament (\(filteredOTBooks.count))").font(.footnote).foregroundStyle(.secondary)
                     }
-                } header: {
-                    Text("New Testament (\(filteredNTBooks.count))").font(.footnote).foregroundStyle(.secondary)
+                }
+                if !filteredNTBooks.isEmpty {
+                    Section {
+                        ForEach(filteredNTBooks, id: \.name) { book in
+                            Button {
+                                selectedBook = book
+                                selectedChapter = nil
+                                navStartVerse = 1
+                                searchText = ""
+                                detailPath = NavigationPath()
+                            } label: {
+                                HStack {
+                                    Text(book.name)
+                                    if selectedBook?.name == book.name {
+                                        Spacer()
+                                        Image(systemName: "checkmark").foregroundStyle(.blue)
+                                    }
+                                }
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    } header: {
+                        Text("New Testament (\(filteredNTBooks.count))").font(.footnote).foregroundStyle(.secondary)
+                    }
                 }
             }
         }
         .navigationTitle("Books")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Button {
+                        sortAlphabetically = false
+                    } label: {
+                        Label("Canonical", systemImage: "list.number")
+                    }
+                    .disabled(!sortAlphabetically)
+
+                    Button {
+                        sortAlphabetically = true
+                    } label: {
+                        Label("A–Z", systemImage: "textformat.abc")
+                    }
+                    .disabled(sortAlphabetically)
+                } label: {
+                    Image(systemName: "arrow.up.arrow.down")
+                }
+                .accessibilityLabel("Sort")
+                .accessibilityHint("Choose canonical or alphabetical order")
+            }
+        }
     }
     
     private struct SearchResultsList: View {
