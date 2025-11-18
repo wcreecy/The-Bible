@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import UIKit
+import WidgetKit
 
 struct ReadingView: View {
     @Environment(\.modelContext) private var modelContext
@@ -90,8 +91,8 @@ struct ReadingView: View {
                         .animation(.easeInOut(duration: 0.2), value: selectedVerse)
                         .overlay(alignment: .trailing) {
                             if pinVerse == verse.number {
-                                Image(systemName: "mappin.circle.fill")
-                                    .symbolRenderingMode(.multicolor)
+                                Image(systemName: "pin.fill")
+                                    .foregroundStyle(.red)
                                     .padding(.trailing, 12)
                                     .transition(.opacity)
                                     .opacity(0.9)
@@ -136,10 +137,12 @@ struct ReadingView: View {
                                     withAnimation(.easeInOut) { menuVerse = nil }
                                 }) { Image(systemName: "doc.on.doc") }
                                     .foregroundStyle(.blue)
+
                                 ShareLink(item: shareText(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number, text: verse.text)) {
                                     Image(systemName: "square.and.arrow.up")
                                 }
                                 .foregroundStyle(.blue)
+
                                 Button(action: {
                                     let bookName = currentBook.name
                                     let chapterNum = currentChapter.number
@@ -151,6 +154,24 @@ struct ReadingView: View {
                                     Image(systemName: "book.closed")
                                 }
                                 .foregroundStyle(.brown)
+
+                                // New: Pin to widget
+                                Button(action: {
+                                    setPinnedVerse(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number, text: verse.text)
+                                    let gen = UINotificationFeedbackGenerator(); gen.notificationOccurred(.success)
+                                    favoriteToastSymbol = "pin.fill"
+                                    favoriteToastTint = .red
+                                    favoriteToastText = "Pinned to Widget"
+                                    withAnimation(.spring()) { showFavoriteToast = true }
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                        withAnimation(.easeOut) { showFavoriteToast = false }
+                                    }
+                                    withAnimation(.easeInOut) { menuVerse = nil }
+                                }) {
+                                    Image(systemName: "pin.fill")
+                                }
+                                .foregroundStyle(.red)
+
                                 Button(action: {
                                     toggleFavorite(for: verse)
                                     withAnimation(.easeInOut) { menuVerse = nil }
@@ -341,6 +362,18 @@ struct ReadingView: View {
     
     private func openJournalForReference(text: String) {
         journalComposer.present(initialBody: text, verseRef: nil, showTagColors: false)
+    }
+
+    // MARK: - Pin to widget
+
+    private func setPinnedVerse(bookName: String, chapter: Int, verse: Int, text: String) {
+        if let shared = UserDefaults(suiteName: "group.bible.app") {
+            shared.set(bookName, forKey: "pinnedVerseBook")
+            shared.set(chapter, forKey: "pinnedVerseChapter")
+            shared.set(verse, forKey: "pinnedVerseNumber")
+            shared.set(text, forKey: "pinnedVerseText")
+        }
+        WidgetCenter.shared.reloadTimelines(ofKind: "PinnedVerseWidget")
     }
 }
 

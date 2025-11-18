@@ -8,13 +8,9 @@ struct PinnedVerseWidgetEntryView: View {
         VStack(alignment: .leading, spacing: 6) {
             // Optional header to self-identify
             HStack(spacing: 6) {
-                Image(systemName: "bookmark.fill")
+                Image(systemName: "pin.fill")
                     .font(.caption2)
-                    .symbolRenderingMode(.palette)
-                    .foregroundStyle(
-                        Color.red.opacity(0.9),     // bookmark body
-                        Color.white.opacity(0.9)    // cutout/inner
-                    )
+                    .foregroundStyle(.red)
 
                 Text("Pinned Verse")
                     .font(.caption2.weight(.semibold))

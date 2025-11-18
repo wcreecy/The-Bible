@@ -362,7 +362,7 @@ struct HomeView: View {
                         .foregroundStyle(verseOfDayPaused ? AnyShapeStyle(.secondary) : AnyShapeStyle(.green))
                         .font(.title3)
                         .help("Refresh")
-                        .disabled(verseOfDayPaused || !bibleStore.isReady)
+                        .disabled(verseOfDayPaused)
 
                         Button(action: {
                             copyVerse(v)
@@ -414,8 +414,8 @@ struct HomeView: View {
             .onTapGesture {
                 let generator = UIImpactFeedbackGenerator(style: .heavy)
                 generator.impactOccurred()
-                guard let v = verseOfDay, bibleStore.isReady,
-                      let book = bibleStore.books.first(where: { $0.name == v.bookName }),
+                guard let v = verseOfDay,
+                      let book = BibleData.books.first(where: { $0.name == v.bookName }),
                       let chapter = book.chapters.first(where: { $0.number == v.chapterNumber }) else { return }
                 coordinator.push(.reader(book: book, chapter: chapter, startVerse: v.verseNumber))
             }
@@ -663,7 +663,7 @@ struct HomeView: View {
                             .controlSize(.regular)
                             .accessibilityLabel("Clear Focus")
                             .accessibilityHint("Clears your daily focus and removes it from the Dynamic Island")
-                            .disabled(!hasSavedFocus)
+                            .disabled(!hasTitle)
 
                             Button {
                                 withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
@@ -812,16 +812,8 @@ struct HomeView: View {
                     verseOfDay = HomeVerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
                     mirrorVerseToAppGroup(book: storedVerseBook, chapter: storedVerseChapter, verse: storedVerseNumber, text: storedVerseText)
                 } else {
-                    // Wait for bibleStore to be ready before generating a verse
-                    if bibleStore.isReady {
-                        loadRandomVerse()
-                    } else {
-                        // Once ready, load an initial verse
-                        Task { @MainActor in
-                            while !BibleStore.shared.isReady { try? await Task.sleep(nanoseconds: 20_000_000) }
-                            loadRandomVerse()
-                        }
-                    }
+                    // Use BibleData immediately; no need to wait for bibleStore readiness
+                    loadRandomVerse()
                 }
             }
 
@@ -1106,8 +1098,8 @@ struct HomeView: View {
 
     private func loadRandomVerse() {
         if verseOfDayPaused { return }
-        guard bibleStore.isReady else { return }
-        let allBooks = bibleStore.books
+        // Use BibleData (always available) so Refresh and tap work immediately
+        let allBooks = BibleData.books
         guard !allBooks.isEmpty else { return }
 
         let scope = VerseScope(rawValue: verseScopeRaw) ?? .whole
