@@ -3,39 +3,51 @@ import SwiftUI
 struct BookSelectionLink: View {
     @Binding var selectedBookName: String?
     @StateObject private var bibleStore = BibleStore.shared
+    @State private var bookNames: [String] = []
 
     var body: some View {
         NavigationLink {
             List {
-                if bibleStore.isReady {
-                    ForEach(bibleStore.books, id: \.name) { book in
+                if bookNames.isEmpty {
+                    ForEach(0..<10, id: \.self) { _ in
+                        Text("Loading…")
+                            .redacted(reason: .placeholder)
+                    }
+                } else {
+                    ForEach(bookNames, id: \.self) { name in
                         HStack {
-                            Text(book.name)
+                            Text(name)
                             Spacer()
-                            if selectedBookName == book.name {
+                            if selectedBookName == name {
                                 Image(systemName: "checkmark")
                                     .foregroundColor(.accentColor)
                             }
                         }
                         .contentShape(Rectangle())
-                        .onTapGesture { selectedBookName = book.name }
-                        .accessibilityIdentifier("book_\(book.name)")
-                    }
-                } else {
-                    ForEach(0..<10, id: \.self) { _ in
-                        Text("Loading…")
-                            .redacted(reason: .placeholder)
+                        .onTapGesture { selectedBookName = name }
+                        .accessibilityIdentifier("book_\(name)")
                     }
                 }
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Select Book")
-            .onAppear { bibleStore.ensureLoaded() }
+            .task {
+                if bookNames.isEmpty {
+                    // Load names asynchronously (fast, and uses per-book files if available).
+                    let names = await bibleStore.bookNames()
+                    // Fallback to static order if async result is empty
+                    if names.isEmpty {
+                        bookNames = BibleData.books.map { $0.name }
+                    } else {
+                        bookNames = names
+                    }
+                }
+            }
         } label: {
             HStack {
                 Text("Book")
                 Spacer()
-                Text(selectedBookName ?? (bibleStore.isReady ? "Choose…" : "Loading…"))
+                Text(selectedBookName ?? (bookNames.isEmpty ? "Loading…" : "Choose…"))
                     .foregroundColor(.secondary)
             }
         }
