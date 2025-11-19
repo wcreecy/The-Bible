@@ -87,6 +87,7 @@ struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
     @EnvironmentObject private var coordinator: NavigationCoordinator
+    @EnvironmentObject private var journalComposer: JournalComposer
     @State private var verseOfDay: HomeVerseRef? = nil
 
     @State private var showCopyToast: Bool = false
@@ -378,6 +379,17 @@ struct HomeView: View {
                         .font(.title3)
                         .help("Share")
 
+                        // Journal entry (same icon/behavior as ReadingView)
+                        Button(action: {
+                            let refText = "\(v.bookName) \(v.chapterNumber):\(v.verseNumber)"
+                            openJournalForReference(text: refText)
+                        }) {
+                            Image(systemName: "book.closed")
+                        }
+                        .font(.title3)
+                        .foregroundStyle(.brown)
+                        .help("Journal")
+
                         Button(action: { toggleFavorite(for: v) }) {
                             Image(systemName: isFavorited(v) ? "heart.fill" : "heart")
                                 .foregroundStyle(.red)
@@ -633,9 +645,6 @@ struct HomeView: View {
                                 focusTitleIsFocused = false
                                 focusBodyIsFocused = false
                                 withAnimation(.spring()) { showFocusSavedToast = true }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                                    withAnimation(.easeOut) { showFocusSavedToast = false }
-                                }
                             } label: {
                                 Label("Save", systemImage: "square.and.arrow.down")
                             }
@@ -1144,9 +1153,6 @@ struct HomeView: View {
     private func copyVerse(_ v: HomeVerseRef) {
         UIPasteboard.general.string = shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText)
         withAnimation(.spring()) { showCopyToast = true }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-            withAnimation(.easeOut) { showCopyToast = false }
-        }
     }
 
     private func isFavorited(_ v: HomeVerseRef) -> Bool {
@@ -1313,6 +1319,12 @@ struct HomeView: View {
                 continuation.resume()
             }
         }
+    }
+
+    // MARK: - Journal helper (matching ReadingView behavior)
+
+    private func openJournalForReference(text: String) {
+        journalComposer.present(initialBody: text, verseRef: nil, showTagColors: false)
     }
 }
 

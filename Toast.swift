@@ -38,6 +38,10 @@ public struct ToastPresenter: ViewModifier {
     let text: String
     let tint: Color
 
+    // Auto-dismiss task so we can cancel/reschedule when the toast is re-shown
+    @State private var dismissTask: Task<Void, Never>? = nil
+    private let autoDismissSeconds: Double = 2.0
+
     public func body(content: Content) -> some View {
         content
             .overlay(alignment: .bottom) {
@@ -47,6 +51,36 @@ public struct ToastPresenter: ViewModifier {
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
+            .onChange(of: isPresented) { oldValue, newValue in
+                if newValue {
+                    scheduleAutoDismiss()
+                } else {
+                    cancelAutoDismiss()
+                }
+            }
+            .onDisappear {
+                cancelAutoDismiss()
+            }
+    }
+
+    private func scheduleAutoDismiss() {
+        cancelAutoDismiss()
+        dismissTask = Task {
+            // Sleep for the configured duration, then hide if still presented
+            let ns = UInt64(autoDismissSeconds * 1_000_000_000)
+            try? await Task.sleep(nanoseconds: ns)
+            guard !Task.isCancelled else { return }
+            await MainActor.run {
+                if isPresented {
+                    withAnimation(.easeOut) { isPresented = false }
+                }
+            }
+        }
+    }
+
+    private func cancelAutoDismiss() {
+        dismissTask?.cancel()
+        dismissTask = nil
     }
 }
 

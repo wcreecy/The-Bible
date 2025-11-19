@@ -144,9 +144,6 @@ struct ReadingView: View {
                                     favoriteToastTint = .blue
                                     favoriteToastText = "Copied to Clipboard"
                                     withAnimation(.spring()) { showFavoriteToast = true }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                                        withAnimation(.easeOut) { showFavoriteToast = false }
-                                    }
                                     withAnimation(.easeInOut) { menuVerse = nil }
                                 }) { Image(systemName: "doc.on.doc") }
                                     .foregroundStyle(.blue)
@@ -184,9 +181,6 @@ struct ReadingView: View {
                                         favoriteToastText = "Pinned to Widget"
                                     }
                                     withAnimation(.spring()) { showFavoriteToast = true }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                                        withAnimation(.easeOut) { showFavoriteToast = false }
-                                    }
                                     withAnimation(.easeInOut) { menuVerse = nil }
                                 }) {
                                     Image(systemName: isPinned(verse.number) ? "pin.fill" : "pin")
@@ -227,7 +221,7 @@ struct ReadingView: View {
                     }
                     if highlightOnAppear {
                         highlightedVerse = currentVerse
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
                             withAnimation { highlightedVerse = nil }
                         }
                         highlightOnAppear = false
@@ -357,9 +351,6 @@ struct ReadingView: View {
             favoriteToastTint = .red
             favoriteToastText = "Removed Favorite \(currentBook.name) \(currentChapter.number):\(verse.number)"
             withAnimation(.spring()) { showFavoriteToast = true }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                withAnimation(.easeOut) { showFavoriteToast = false }
-            }
         } else {
             let fav = Favorite(
                 bookName: currentBook.name,
@@ -375,9 +366,6 @@ struct ReadingView: View {
             favoriteToastTint = .pink
             favoriteToastText = "Favorited \(currentBook.name) \(currentChapter.number):\(verse.number)"
             withAnimation(.spring()) { showFavoriteToast = true }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                withAnimation(.easeOut) { showFavoriteToast = false }
-            }
         }
     }
     

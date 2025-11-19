@@ -241,9 +241,6 @@ struct JournalEditorView: View {
     private func copy(_ ref: ScriptureRef) {
         UIPasteboard.general.string = displayString(for: ref)
         withAnimation(.spring()) { showCopyToast = true }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            withAnimation(.easeOut) { showCopyToast = false }
-        }
     }
 
     // Debounced/cached linkify to reduce recomputation while typing
@@ -589,9 +586,6 @@ struct JournalEditorView: View {
                     let copyText = content.title + "\n" + verseLines
                     UIPasteboard.general.string = copyText
                     withAnimation(.spring()) { showCopyToast = true }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                        withAnimation(.easeOut) { showCopyToast = false }
-                    }
                 }) {
                     Image(systemName: "doc.on.doc")
                         .foregroundStyle(.blue)
@@ -966,3 +960,4 @@ private struct CursorTextView: UIViewRepresentable {
         }
     }
 }
+

@@ -74,9 +74,6 @@ struct VersesView: View {
                             toastTint = .blue
                             toastText = "Copied to Clipboard"
                             withAnimation(.spring()) { showToast = true }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                                withAnimation(.easeOut) { showToast = false }
-                            }
                         } label: {
                             Image(systemName: "doc.on.doc")
                         }
@@ -129,9 +126,6 @@ struct VersesView: View {
             toastText = "Favorited \(book.name) \(chapter.number):\(verse.number)"
         }
         withAnimation(.spring()) { showToast = true }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            withAnimation(.easeOut) { showToast = false }
-        }
     }
 }
 
@@ -141,3 +135,4 @@ struct VersesView: View {
             .environmentObject(NavigationCoordinator())
     }
 }
+
