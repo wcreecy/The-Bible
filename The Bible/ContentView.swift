@@ -98,17 +98,26 @@ struct ContentView: View {
             // Settings tab
             NavigationStack {
                 SettingsView()
-                    .appDestinations(readerFontSize: $readerFontSize, isPad: isPad)
+                    // Make Settings independent of global font overrides to avoid recursive updates
+                    .environment(\.font, nil)
+                    .fontDesign(.default)
             }
+            // Disable animations in Settings to avoid CA animation feedback during environment changes
+            .transaction { tx in tx.disablesAnimations = true }
             .tabItem { Label("Settings", systemImage: "gear") }
             .tag(6)
         }
         // Only share the journal composer globally
         .environmentObject(journalComposer)
-        .preferredColorScheme(preferredScheme)
-        .dynamicTypeSize(preferredDynamicType ?? .large)
-        .font(preferredCustomFontName != nil ? .custom(preferredCustomFontName!, size: baseFontSize) : .system(size: baseFontSize))
-        .fontDesign(preferredFontDesign ?? .default)
+        // Apply global app appearance only when NOT on the Settings tab to avoid feedback loops
+        .preferredColorScheme(selectedTab == 6 ? nil : preferredScheme)
+        .dynamicTypeSize(selectedTab == 6 ? .large : (preferredDynamicType ?? .large))
+        .font(
+            selectedTab == 6
+            ? .system(size: baseFontSize)
+            : (preferredCustomFontName != nil ? .custom(preferredCustomFontName!, size: baseFontSize) : .system(size: baseFontSize))
+        )
+        .fontDesign(selectedTab == 6 ? .default : (preferredFontDesign ?? .default))
         .onAppear {
             // One-time cleanup of deprecated app time keys (cheap)
             if !didCleanupAppTimeKeys {

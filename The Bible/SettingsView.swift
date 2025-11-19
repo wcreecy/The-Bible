@@ -117,7 +117,7 @@ struct SettingsView: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                 VStack(alignment: .leading, spacing: 8) {
-                    Label("Text Size", systemImage: "textformat.size")
+                    Label("App Text Size", systemImage: "textformat.size")
                     HStack(spacing: 0) {
                         fontSizeSegmentButton(.system)
                         verticalSeparator()
@@ -141,7 +141,7 @@ struct SettingsView: View {
                     )
                     .accessibilityIdentifier("textSizePicker")
                 }
-                Text("Adjust the overall text size used throughout the app.")
+                Text("This affects all app UI. Bible text size is controlled in the Reader.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                 VStack(alignment: .leading, spacing: 8) {
@@ -172,6 +172,37 @@ struct SettingsView: View {
                 Text("Choose an easy-to-read typeface for the interface and reading.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+
+                // Live Preview (local-only, does not affect the whole app while on Settings)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Preview")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(Color(.secondarySystemBackground))
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Sample Heading")
+                                .font(.headline)
+                            Text("This is how your app text will look with the current settings.")
+                                .font(.body)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(2)
+                        }
+                        .padding(12)
+                    }
+                    // Apply only to this preview
+                    .preferredColorScheme((ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme)
+                    .dynamicTypeSize((FontSizePreference(rawValue: fontSizePreferenceRaw) ?? .system).dynamicTypeSize ?? .large)
+                    .font(
+                        (FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).customFontName != nil
+                        ? .custom((FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).customFontName!, size: 17)
+                        : .system(size: 17)
+                    )
+                    .fontDesign((FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).fontDesign ?? .default)
+                }
+                .padding(.top, 8)
             }
             .headerProminence(.increased)
 

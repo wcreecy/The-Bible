@@ -364,8 +364,7 @@ struct BibleSplitView: View {
                    let chapter = book.chapters.first(where: { $0.number == route.chapterNumber }) {
                     ReadingView(book: book, chapter: chapter, startVerse: route.verseNumber)
                         .id("\(route.bookName)-\(route.chapterNumber)-\(route.verseNumber)")
-                        // Propagate a base font size to all text in the reader
-                        .font(.system(size: readerFontSize))
+                        // No font applied here; ReadingView controls its own font size via @AppStorage("readerFontSize")
                         .toolbar {
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 Button {

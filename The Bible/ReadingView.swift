@@ -41,6 +41,9 @@ struct ReadingView: View {
     // Lazy BibleStore
     @StateObject private var bibleStore = BibleStore.shared
 
+    // Reader-specific font size (independent from global app UI font)
+    @AppStorage("readerFontSize") private var readerFontSize: Double = 17
+
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
         self.chapter = chapter
@@ -59,6 +62,8 @@ struct ReadingView: View {
 
     var body: some View {
         content
+            // Opt out of the app-wide .font set in ContentView so the reader can control its own size
+            .environment(\.font, nil)
             .navigationTitle("\(currentBook.name) \(currentChapter.number)")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear(perform: onAppear)
@@ -82,6 +87,7 @@ struct ReadingView: View {
                         Group {
                             VStack(alignment: .leading, spacing: 6) {
                                 Text(verse.text)
+                                    .font(.system(size: readerFontSize))
                                     .foregroundStyle(.primary)
                                     .fixedSize(horizontal: false, vertical: true)
                                 Text("\(currentBook.name) \(currentChapter.number):\(verse.number)")
