@@ -29,7 +29,7 @@ struct PinnedVerseWidgetEntryView: View {
                     .font(.caption2)
                     .foregroundStyle(.white.opacity(0.7))
             } else {
-                Text("Set a pinned verse in the app’s Settings.")
+                Text("Long‑press a verse in the app to pin it here.")
                     .font(.footnote)
                     .foregroundStyle(.white.opacity(0.7))
             }
@@ -63,7 +63,7 @@ struct PinnedVerseWidget: Widget {
             PinnedVerseWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Pinned Verse")
-        .description("Always show a verse you choose in Settings.")
+        .description("Long‑press a verse in the app to pin it to this widget.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }

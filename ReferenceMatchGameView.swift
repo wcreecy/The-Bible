@@ -112,11 +112,11 @@ struct ReferenceMatchGameView: View {
                         .frame(maxWidth: 240)
                     Spacer(minLength: 32)
                 } else {
-                    // Scoreboard (Quiz-style)
+                    // Scoreboard (shared)
                     GameScoreboardCard(
                         currentCorrect: score,
                         currentAnswered: answered,
-                        currentStreak: currentBestStreak,
+                        currentStreak: currentStreak,
                         allTimeCorrect: allTimeCorrect,
                         allTimeAnswered: allTimeAnswered,
                         allTimeBestStreak: allTimeBestStreak
@@ -473,4 +473,3 @@ struct ReferenceMatchGameView: View {
 #Preview {
     NavigationStack { ReferenceMatchGameView() }
 }
-

@@ -124,11 +124,11 @@ struct BeatTheClockGameView: View {
                     Spacer(minLength: 32)
                 } else {
                     VStack(alignment: .leading, spacing: 12) {
-                        // Scoreboard (Quiz-style)
+                        // Scoreboard (shared)
                         GameScoreboardCard(
                             currentCorrect: score,
                             currentAnswered: answered,
-                            currentStreak: currentBestStreak,
+                            currentStreak: currentStreak,
                             allTimeCorrect: allTimeCorrect,
                             allTimeAnswered: allTimeAnswered,
                             allTimeBestStreak: allTimeBestStreak
@@ -467,4 +467,3 @@ struct BeatTheClockGameView: View {
 #Preview {
     NavigationStack { BeatTheClockGameView() }
 }
-

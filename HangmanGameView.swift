@@ -246,11 +246,11 @@ struct HangmanGameView: View {
                         }
                     }
 
-                    // Scoreboard (Quiz-style)
+                    // Scoreboard (shared)
                     GameScoreboardCard(
                         currentCorrect: score,
                         currentAnswered: answered,
-                        currentStreak: currentBestStreak,
+                        currentStreak: currentStreak,
                         allTimeCorrect: allTimeCorrect,
                         allTimeAnswered: allTimeAnswered,
                         allTimeBestStreak: allTimeBestStreak
@@ -490,7 +490,7 @@ struct HangmanGameView: View {
         roundOver = true
         didWin = win
 
-        // Save a snapshot of this completed round for Previous
+        // Save a snapshot of this completed round for "Previous"
         let snapshot = HangmanSnapshot(
             category: currentRoundCategory,
             targetWord: targetWord,
@@ -784,4 +784,3 @@ private struct ConfettiView: View {
 #Preview {
     NavigationStack { HangmanGameView() }
 }
-

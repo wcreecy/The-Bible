@@ -1,5 +1,5 @@
 import SwiftUI
-import WidgetKit
+import AudioToolbox
 
 struct SettingsView: View {
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
@@ -19,15 +19,6 @@ struct SettingsView: View {
 
     // Live Activities master toggle
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
-
-    // Pinned Verse (stored in shared App Group and mirrored locally for UI)
-    @State private var pinnedBookName: String = ""
-    @State private var pinnedChapter: Int = 1
-    @State private var pinnedVerse: Int = 1
-    @State private var pinnedText: String = ""
-
-    // Bible store
-    @StateObject private var bibleStore = BibleStore.shared
 
     private var selectionBinding: Binding<ColorSchemePreference> {
         Binding<ColorSchemePreference>(
@@ -96,20 +87,6 @@ struct SettingsView: View {
                 votdRefresh2Minute = c.minute ?? 0
             }
         )
-    }
-
-    private var selectedBook: Book? {
-        guard bibleStore.isReady else { return nil }
-        return bibleStore.books.first(where: { $0.name == pinnedBookName })
-    }
-    private var chapterRange: [Int] {
-        guard let b = selectedBook else { return [] }
-        return b.chapters.map { $0.number }.sorted()
-    }
-    private var verseRange: [Int] {
-        guard let b = selectedBook,
-              let c = b.chapters.first(where: { $0.number == pinnedChapter }) else { return [] }
-        return c.verses.map { $0.number }.sorted()
     }
 
     var body: some View {
@@ -214,62 +191,6 @@ struct SettingsView: View {
             }
             .headerProminence(.increased)
 
-            // Pinned Verse Section
-            Section(header: Text("Pinned Verse Widget"), footer: Text("Choose the verse shown in the Pinned Verse widget.").font(.footnote).foregroundStyle(.secondary)) {
-                NavigationLink {
-                    ScripturePickerView(
-                        initialBook: pinnedBookName.isEmpty ? nil : pinnedBookName,
-                        initialChapter: pinnedBookName.isEmpty ? nil : pinnedChapter,
-                        initialVerse: pinnedBookName.isEmpty ? nil : pinnedVerse
-                    ) { book, chapter, verse in
-                        pinnedBookName = book
-                        pinnedChapter = chapter
-                        pinnedVerse = verse
-                        updatePinnedStorageAndWidget()
-                    }
-                } label: {
-                    HStack {
-                        Text("Scripture")
-                        Spacer()
-                        if pinnedBookName.isEmpty {
-                            Text("Choose…").foregroundStyle(.secondary)
-                        } else {
-                            Text("\(pinnedBookName) \(pinnedChapter):\(pinnedVerse)")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
-                .accessibilityIdentifier("pinnedVerseScripturePicker")
-
-                if !pinnedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Preview")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Text("“\(pinnedText)”")
-                            .font(.body)
-                        if !pinnedBookName.isEmpty {
-                            Text("\(pinnedBookName) \(pinnedChapter):\(pinnedVerse)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
-
-                HStack {
-                    Spacer()
-                    Button(role: .destructive) {
-                        clearPinnedVerse()
-                    } label: {
-                        Label("Clear", systemImage: "trash")
-                    }
-                    .disabled(pinnedBookName.isEmpty)
-                    Spacer()
-                }
-                .padding(.top, 4)
-            }
-            .headerProminence(.increased)
-
             Section(header: Text("Verse of the Day"), footer: Text("Choose which part of the Bible the Verse of the Day is selected from. You can also set two daily auto-refresh times; the verse will refresh at those times unless paused on the Home page.").font(.footnote).foregroundStyle(.secondary)) {
                 VStack(spacing: 8) {
                     HStack(spacing: 0) {
@@ -321,18 +242,34 @@ struct SettingsView: View {
             .headerProminence(.increased)
 
             Section(header: Text("Timer"), footer: Text("Choose the sound that plays when the prayer/study timer finishes.").font(.footnote).foregroundStyle(.secondary)) {
-                Picker(selection: Binding<String>(
-                    get: { timerSoundSelection },
-                    set: { timerSoundSelection = $0 }
-                )) {
-                    ForEach(TimerSound.allCases) { sound in
-                        Text(sound.title).tag(sound.rawValue)
+                LabeledContent {
+                    HStack(spacing: 10) {
+                        Picker("", selection: Binding<String>(
+                            get: { timerSoundSelection },
+                            set: { timerSoundSelection = $0 }
+                        )) {
+                            ForEach(TimerSound.allCases) { sound in
+                                Text(sound.title).tag(sound.rawValue)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .accessibilityIdentifier("timerSoundPicker")
+
+                        Button {
+                            let sound = TimerSound(rawValue: timerSoundSelection) ?? .default
+                            AudioServicesPlaySystemSound(sound.systemSoundID)
+                        } label: {
+                            Image(systemName: "play.circle.fill")
+                                .font(.title3)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(.blue)
+                        .accessibilityLabel("Play Preview")
+                        .accessibilityHint("Plays the selected timer sound")
                     }
                 } label: {
                     Label("Timer Sound", systemImage: "speaker.wave.2")
                 }
-                .pickerStyle(.menu)
-                .accessibilityIdentifier("timerSoundPicker")
             }
             .headerProminence(.increased)
 
@@ -370,82 +307,6 @@ struct SettingsView: View {
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         .formStyle(.grouped)
-        .onAppear {
-            bibleStore.ensureLoaded()
-            loadPinnedFromShared()
-        }
-        .onChange(of: pinnedBookName) { _, _ in
-            if pinnedBookName.isEmpty {
-                pinnedChapter = 1
-                pinnedVerse = 1
-                pinnedText = ""
-            }
-        }
-    }
-
-    // MARK: - Pinned Verse storage & updates
-
-    private func updatePinnedStorageAndWidget() {
-        // Resolve preview text immediately using BibleData (fast, always available)
-        if let b = BibleData.books.first(where: { $0.name == pinnedBookName }),
-           let c = b.chapters.first(where: { $0.number == pinnedChapter }),
-           let v = c.verses.first(where: { $0.number == pinnedVerse }) {
-            pinnedText = v.text
-        } else {
-            pinnedText = ""
-        }
-
-        if let shared = UserDefaults(suiteName: "group.bible.app") {
-            shared.set(pinnedBookName, forKey: "pinnedVerseBook")
-            shared.set(pinnedChapter, forKey: "pinnedVerseChapter")
-            shared.set(pinnedVerse, forKey: "pinnedVerseNumber")
-            shared.set(pinnedText, forKey: "pinnedVerseText")
-        }
-        // Reload only the Pinned Verse widget timelines
-        WidgetCenter.shared.reloadTimelines(ofKind: "PinnedVerseWidget")
-    }
-
-    private func loadPinnedFromShared() {
-        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
-        let book = (shared.string(forKey: "pinnedVerseBook") ?? "")
-        let chapter = shared.integer(forKey: "pinnedVerseChapter")
-        let verse = shared.integer(forKey: "pinnedVerseNumber")
-        let text = (shared.string(forKey: "pinnedVerseText") ?? "")
-
-        if !book.isEmpty && chapter > 0 && verse > 0 {
-            pinnedBookName = book
-            pinnedChapter = chapter
-            pinnedVerse = verse
-            if !text.isEmpty {
-                pinnedText = text
-            } else if let b = BibleData.books.first(where: { $0.name == book }),
-                      let c = b.chapters.first(where: { $0.number == chapter }),
-                      let v = c.verses.first(where: { $0.number == verse }) {
-                pinnedText = v.text
-            } else {
-                pinnedText = ""
-            }
-        } else {
-            pinnedBookName = ""
-            pinnedChapter = 1
-            pinnedVerse = 1
-            pinnedText = ""
-        }
-    }
-
-    private func clearPinnedVerse() {
-        pinnedBookName = ""
-        pinnedChapter = 1
-        pinnedVerse = 1
-        pinnedText = ""
-        if let shared = UserDefaults(suiteName: "group.bible.app") {
-            shared.removeObject(forKey: "pinnedVerseBook")
-            shared.removeObject(forKey: "pinnedVerseChapter")
-            shared.removeObject(forKey: "pinnedVerseNumber")
-            shared.removeObject(forKey: "pinnedVerseText")
-        }
-        // Reload only the Pinned Verse widget timelines
-        WidgetCenter.shared.reloadTimelines(ofKind: "PinnedVerseWidget")
     }
 
     // MARK: - Existing UI helpers

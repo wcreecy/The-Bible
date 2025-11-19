@@ -1,7 +1,7 @@
 import SwiftUI
 
 public struct GameScoreboardCard: View {
-    // Current session
+    // Current session (live)
     let currentCorrect: Int
     let currentAnswered: Int
     let currentStreak: Int
@@ -33,23 +33,23 @@ public struct GameScoreboardCard: View {
                 HStack(spacing: 10) {
                     Text("Current")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                         .frame(width: 60, alignment: .leading)
-                    statPill(title: "Correct", value: "\(currentCorrect)", tint: .blue)
-                    statPill(title: "Total", value: "\(currentAnswered)", tint: .orange)
-                    statPill(title: "Streak", value: "\(currentStreak)", tint: .green)
-                    statPill(title: "Percent", value: percentString(correct: currentCorrect, answered: currentAnswered), tint: .purple)
+                    statPill(title: "Correct", value: "\(currentCorrect)")
+                    statPill(title: "Total", value: "\(currentAnswered)")
+                    streakPill(title: "Streak", current: currentStreak, allTimeBest: allTimeBestStreak)
+                    statPill(title: "Percent", value: percentString(correct: currentCorrect, answered: currentAnswered))
                 }
                 // All-time stats
                 HStack(spacing: 10) {
                     Text("All-time")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                         .frame(width: 60, alignment: .leading)
-                    statPill(title: "Correct", value: "\(allTimeCorrect)", tint: .blue)
-                    statPill(title: "Total", value: "\(allTimeAnswered)", tint: .orange)
-                    statPill(title: "Streak", value: "\(allTimeBestStreak)", tint: .green)
-                    statPill(title: "Percent", value: percentString(correct: allTimeCorrect, answered: allTimeAnswered), tint: .purple)
+                    statPill(title: "Correct", value: "\(allTimeCorrect)")
+                    statPill(title: "Total", value: "\(allTimeAnswered)")
+                    statPill(title: "Streak", value: "\(allTimeBestStreak)")
+                    statPill(title: "Percent", value: percentString(correct: allTimeCorrect, answered: allTimeAnswered))
                 }
             }
             .padding(8)
@@ -70,21 +70,52 @@ public struct GameScoreboardCard: View {
         )
     }
 
+    // Neutral stat pill (no per-category color)
     @ViewBuilder
-    private func statPill(title: String, value: String, tint: Color) -> some View {
+    private func statPill(title: String, value: String) -> some View {
         VStack(spacing: 2) {
             Text(title)
                 .font(.caption2)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
             Text(value)
                 .font(.subheadline.weight(.semibold))
-                .foregroundColor(tint)
+                .foregroundStyle(.primary)
         }
         .padding(6)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(tint.opacity(0.12))
+                .fill(Color(.secondarySystemBackground))
         )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+        )
+    }
+
+    // Current streak pill with special green highlight when tying/exceeding all-time best streak
+    @ViewBuilder
+    private func streakPill(title: String, current: Int, allTimeBest: Int) -> some View {
+        let highlightThreshold = max(1, allTimeBest)
+        let isHighlighted = current >= highlightThreshold
+        VStack(spacing: 2) {
+            Text(title)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            Text("\(current)")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(isHighlighted ? Color.green : Color.primary)
+                .animation(.default, value: isHighlighted)
+        }
+        .padding(6)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+        )
+        .accessibilityHint(isHighlighted ? "Tied or exceeded all-time best streak" : "")
     }
 
     private func percentString(correct: Int, answered: Int) -> String {
@@ -99,7 +130,7 @@ public struct GameScoreboardCard: View {
         GameScoreboardCard(
             currentCorrect: 7,
             currentAnswered: 10,
-            currentStreak: 3,
+            currentStreak: 9,
             allTimeCorrect: 120,
             allTimeAnswered: 200,
             allTimeBestStreak: 9

@@ -35,28 +35,23 @@ struct JournalDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                // Title + metadata
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(entry.title.isEmpty ? "Untitled" : entry.title)
-                        .font(.title).bold()
-                        .multilineTextAlignment(.leading)
-                    HStack(spacing: 8) {
-                        if let ref = entry.verseRef {
-                            Label(ref.display, systemImage: "bookmark")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        if entry.isFavorite {
-                            Image(systemName: "heart.fill")
-                                .foregroundStyle(.pink)
-                                .accessibilityLabel("Favorited")
-                        }
-                        if entry.isPinned {
-                            Image(systemName: "pin.fill")
-                                .foregroundStyle(.secondary)
-                                .accessibilityLabel("Pinned")
-                        }
+                // Metadata (title now appears only in the navigation bar)
+                HStack(spacing: 8) {
+                    if let ref = entry.verseRef {
+                        Label(ref.display, systemImage: "bookmark")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    if entry.isFavorite {
+                        Image(systemName: "heart.fill")
+                            .foregroundStyle(.pink)
+                            .accessibilityLabel("Favorited")
+                    }
+                    if entry.isPinned {
+                        Image(systemName: "pin.fill")
+                            .foregroundStyle(.secondary)
+                            .accessibilityLabel("Pinned")
                     }
                 }
 
@@ -159,7 +154,7 @@ struct JournalDetailView: View {
             }
             .padding(16)
         }
-        .navigationTitle("Entry")
+        .navigationTitle(entry.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled" : entry.title)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {

@@ -309,7 +309,19 @@ struct JournalEditorView: View {
                     compactLayout
                 }
             }
-            .navigationTitle(editingEntry == nil ? "New Entry" : "Edit Entry")
+            // Title behavior:
+            // - Editing existing entry: show its current title (or Untitled if empty)
+            // - Creating new entry: show "New Entry" until the user types a title; then reflect that live
+            .navigationTitle(
+                {
+                    let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+                    if editingEntry != nil {
+                        return trimmed.isEmpty ? "Untitled" : trimmed
+                    } else {
+                        return trimmed.isEmpty ? "New Entry" : trimmed
+                    }
+                }()
+            )
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") {

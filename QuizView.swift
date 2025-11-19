@@ -194,49 +194,16 @@ struct QuizView: View {
                     Spacer(minLength: 48)
                 } else {
                     VStack(spacing: 16) {
-                        // Top card with title and streak badges
-                        VStack {
-                            VStack(alignment: .leading, spacing: 12) {
-                                // Current session stats
-                                HStack(spacing: 12) {
-                                    Text("Current")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                        .frame(width: 70, alignment: .leading)
-                                    statPill(title: "Correct", value: "\(score)", tint: .blue)
-                                    statPill(title: "Total", value: "\(sessionAnswered)", tint: .orange)
-                                    statPill(title: "Streak", value: "\(currentStreak)", tint: .green)
-                                    statPill(title: "Percent", value: percentString(correct: score, answered: sessionAnswered), tint: .purple)
-                                }
-                                // All-time stats
-                                HStack(spacing: 12) {
-                                    Text("All-time")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                        .frame(width: 70, alignment: .leading)
-                                    statPill(title: "Correct", value: "\(allTimeCorrect)", tint: .blue)
-                                    statPill(title: "Total", value: "\(allTimeAnswered)", tint: .orange)
-                                    statPill(title: "Streak", value: "\(allTimeBestStreak)", tint: .green)
-                                    statPill(title: "Percent", value: percentString(correct: allTimeCorrect, answered: allTimeAnswered), tint: .purple)
-                                }
-                            }
-                            .padding()
-                        }
-                        .background(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .fill(
-                                    LinearGradient(
-                                        colors: [Color(UIColor.systemBackground), Color(UIColor.secondarySystemBackground)],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
+                        // Shared scoreboard
+                        GameScoreboardCard(
+                            currentCorrect: score,
+                            currentAnswered: sessionAnswered,
+                            currentStreak: currentStreak,
+                            allTimeCorrect: allTimeCorrect,
+                            allTimeAnswered: allTimeAnswered,
+                            allTimeBestStreak: allTimeBestStreak
                         )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .stroke(Color.black.opacity(0.06), lineWidth: 1)
-                        )
-                        
+
                         // Verse card
                         VStack {
                             Text("“\(currentVerseText)”")
@@ -561,23 +528,6 @@ struct QuizView: View {
         return .primary
     }
     
-    @ViewBuilder
-    private func statPill(title: String, value: String, tint: Color) -> some View {
-        VStack(spacing: 2) {
-            Text(title)
-                .font(.caption2)
-                .foregroundColor(.secondary)
-            Text(value)
-                .font(.headline)
-                .foregroundColor(tint)
-        }
-        .padding(8)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(tint.opacity(0.12))
-        )
-    }
-    
     private func labelForOption(_ option: String) -> String {
         if showAnswerReveal && option == correctBook {
             return "\(correctBook) \(currentChapterNumber):\(currentVerseNumber)"
@@ -585,12 +535,6 @@ struct QuizView: View {
         return option
     }
 
-    private func percentString(correct: Int, answered: Int) -> String {
-        guard answered > 0 else { return "0%" }
-        let pct = Int(round((Double(correct) / Double(answered)) * 100.0))
-        return "\(pct)%"
-    }
-    
     private func timerColor(for seconds: Int) -> Color {
         switch quizDifficulty {
         case "normal":
@@ -670,4 +614,3 @@ struct QuizView: View {
         QuizView()
     }
 }
-

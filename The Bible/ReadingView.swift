@@ -33,6 +33,11 @@ struct ReadingView: View {
     @State private var favoriteToastTint: Color = .pink
     @State private var pinVerse: Int? = nil
 
+    // Track currently pinned verse for the widget (mirrors shared defaults)
+    @State private var pinnedBookName: String = ""
+    @State private var pinnedChapterNumber: Int = 0
+    @State private var pinnedVerseNumber: Int = 0
+
     // Lazy BibleStore
     @StateObject private var bibleStore = BibleStore.shared
 
@@ -62,6 +67,8 @@ struct ReadingView: View {
                 Task { @MainActor in
                     await loadOrderedBookNames()
                 }
+                // Load current pinned verse state from shared defaults
+                loadPinnedFromShared()
             }
             .appToast(isPresented: $showFavoriteToast, symbol: favoriteToastSymbol, text: favoriteToastText, tint: favoriteToastTint)
     }
@@ -91,8 +98,8 @@ struct ReadingView: View {
                         .animation(.easeInOut(duration: 0.2), value: selectedVerse)
                         .overlay(alignment: .trailing) {
                             if pinVerse == verse.number {
-                                Image(systemName: "pin.fill")
-                                    .foregroundStyle(.red)
+                                Image(systemName: "bookmark.fill")
+                                    .foregroundStyle(.blue)
                                     .padding(.trailing, 12)
                                     .transition(.opacity)
                                     .opacity(0.9)
@@ -155,20 +162,28 @@ struct ReadingView: View {
                                 }
                                 .foregroundStyle(.brown)
 
-                                // New: Pin to widget
+                                // Pin / Unpin to widget (toggle)
                                 Button(action: {
-                                    setPinnedVerse(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number, text: verse.text)
-                                    let gen = UINotificationFeedbackGenerator(); gen.notificationOccurred(.success)
-                                    favoriteToastSymbol = "pin.fill"
-                                    favoriteToastTint = .red
-                                    favoriteToastText = "Pinned to Widget"
+                                    if isPinned(verse.number) {
+                                        clearPinnedVerse()
+                                        let gen = UINotificationFeedbackGenerator(); gen.notificationOccurred(.success)
+                                        favoriteToastSymbol = "pin"
+                                        favoriteToastTint = .red
+                                        favoriteToastText = "Unpinned from Widget"
+                                    } else {
+                                        setPinnedVerse(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number, text: verse.text)
+                                        let gen = UINotificationFeedbackGenerator(); gen.notificationOccurred(.success)
+                                        favoriteToastSymbol = "pin.fill"
+                                        favoriteToastTint = .red
+                                        favoriteToastText = "Pinned to Widget"
+                                    }
                                     withAnimation(.spring()) { showFavoriteToast = true }
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                         withAnimation(.easeOut) { showFavoriteToast = false }
                                     }
                                     withAnimation(.easeInOut) { menuVerse = nil }
                                 }) {
-                                    Image(systemName: "pin.fill")
+                                    Image(systemName: isPinned(verse.number) ? "pin.fill" : "pin")
                                 }
                                 .foregroundStyle(.red)
 
@@ -366,6 +381,26 @@ struct ReadingView: View {
 
     // MARK: - Pin to widget
 
+    private func isPinned(_ verseNumber: Int) -> Bool {
+        pinnedBookName == currentBook.name &&
+        pinnedChapterNumber == currentChapter.number &&
+        pinnedVerseNumber == verseNumber
+    }
+
+    private func loadPinnedFromShared() {
+        guard let shared = UserDefaults(suiteName: "group.bible.app") else {
+            pinnedBookName = ""; pinnedChapterNumber = 0; pinnedVerseNumber = 0
+            return
+        }
+        pinnedBookName = shared.string(forKey: "pinnedVerseBook") ?? ""
+        pinnedChapterNumber = shared.integer(forKey: "pinnedVerseChapter")
+        pinnedVerseNumber = shared.integer(forKey: "pinnedVerseNumber")
+        // If no valid values, reset to empty
+        if pinnedBookName.isEmpty || pinnedChapterNumber <= 0 || pinnedVerseNumber <= 0 {
+            pinnedBookName = ""; pinnedChapterNumber = 0; pinnedVerseNumber = 0
+        }
+    }
+
     private func setPinnedVerse(bookName: String, chapter: Int, verse: Int, text: String) {
         if let shared = UserDefaults(suiteName: "group.bible.app") {
             shared.set(bookName, forKey: "pinnedVerseBook")
@@ -373,6 +408,23 @@ struct ReadingView: View {
             shared.set(verse, forKey: "pinnedVerseNumber")
             shared.set(text, forKey: "pinnedVerseText")
         }
+        // Update local state for immediate UI reflection
+        pinnedBookName = bookName
+        pinnedChapterNumber = chapter
+        pinnedVerseNumber = verse
+        WidgetCenter.shared.reloadTimelines(ofKind: "PinnedVerseWidget")
+    }
+
+    private func clearPinnedVerse() {
+        if let shared = UserDefaults(suiteName: "group.bible.app") {
+            shared.removeObject(forKey: "pinnedVerseBook")
+            shared.removeObject(forKey: "pinnedVerseChapter")
+            shared.removeObject(forKey: "pinnedVerseNumber")
+            shared.removeObject(forKey: "pinnedVerseText")
+        }
+        pinnedBookName = ""
+        pinnedChapterNumber = 0
+        pinnedVerseNumber = 0
         WidgetCenter.shared.reloadTimelines(ofKind: "PinnedVerseWidget")
     }
 }

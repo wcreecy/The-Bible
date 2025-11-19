@@ -9,13 +9,10 @@ struct LastReadWidgetEntryView: View {
         VStack(alignment: .leading, spacing: 6) {
             // Self-identifying header so users know which widget this is
             HStack(spacing: 6) {
-                Image(systemName: "book")
+                Image(systemName: "bookmark.fill")
                     .font(.caption2)
-                    .symbolRenderingMode(.palette)
-                    .foregroundStyle(
-                        Color.blue.opacity(0.9),
-                        Color.white.opacity(0.9)
-                    )
+                    .symbolRenderingMode(.monochrome)
+                    .foregroundStyle(Color.blue)
                 Text("Last Read")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.7))

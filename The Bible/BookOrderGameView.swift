@@ -81,11 +81,11 @@ struct BookOrderGameView: View {
                 Spacer()
             } else {
                 VStack(spacing: 12) {
-                    // Scoreboard (Quiz-style)
+                    // Scoreboard (shared)
                     GameScoreboardCard(
                         currentCorrect: vm.score,
                         currentAnswered: vm.answered,
-                        currentStreak: vm.currentBestStreak,
+                        currentStreak: vm.currentStreak,
                         allTimeCorrect: vm.allTimeCorrect,
                         allTimeAnswered: vm.allTimeAnswered,
                         allTimeBestStreak: vm.allTimeBestStreak
