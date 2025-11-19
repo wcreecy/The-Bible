@@ -163,10 +163,10 @@ struct HomeView: View {
     private func stopMindfulLogging() {
         guard isHealthKitAvailable else { return }
         if mindfulStartDate > 0 {
-            let start = Date(timeIntervalSince1970: mindfulStartDate)
-            let end = Date()
-            if end > start {
-                HealthKitManager.shared.saveMindfulSession(start: start, end: end, completion: nil)
+            let startDate = Date(timeIntervalSince1970: mindfulStartDate)
+            let endDate = Date()
+            if endDate > startDate {
+                HealthKitManager.shared.saveMindfulSession(start: startDate, end: endDate, completion: nil)
             }
             mindfulStartDate = 0
         }
@@ -252,7 +252,6 @@ struct HomeView: View {
             shared.set(p.chapterNumber, forKey: "lastReadChapter")
             shared.set(p.verseNumber, forKey: "lastReadVerse")
             shared.set(verse.text, forKey: "lastReadText")
-            shared.set(Date().timeIntervalSince1970, forKey: "lastReadUpdatedAt")
             // Reload only the Last Read widget, debounced
             DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
         }
@@ -706,6 +705,7 @@ struct HomeView: View {
         if let progress = progress,
            let book = BibleData.books.first(where: { $0.name == progress.bookName }),
            let chapter = book.chapters.first(where: { $0.number == progress.chapterNumber }) {
+            let verseText = chapter.verses.first(where: { $0.number == progress.verseNumber })?.text
             Button(action: {
                 coordinator.push(.reader(book: book, chapter: chapter, startVerse: progress.verseNumber))
             }) {
@@ -716,19 +716,28 @@ struct HomeView: View {
                     tint: .blue
                 ) {
                     HStack(alignment: .center, spacing: 12) {
-                        Image(systemName: "arrow.uturn.backward.circle")
+                        Image(systemName: "bookmark.fill")
                             .font(.system(size: 28, weight: .semibold))
                             .foregroundStyle(.blue)
-                        VStack(alignment: .leading, spacing: 2) {
+                        VStack(alignment: .leading, spacing: 6) {
                             Text("Resume")
                                 .font(.headline)
                                 .bold()
                             Text("Continue where you left off")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
-                            Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                if isPad, let verseText, !verseText.isEmpty {
+                                    Text("“\(verseText)”")
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                        .lineLimit(2)
+                                        .truncationMode(.tail)
+                                }
+                            }
                         }
                         Spacer()
                     }
@@ -745,7 +754,7 @@ struct HomeView: View {
                 tint: .blue
             ) {
                 HStack(alignment: .center, spacing: 12) {
-                    Image(systemName: "arrow.uturn.backward.circle")
+                    Image(systemName: "bookmark.fill")
                         .font(.system(size: 28, weight: .semibold))
                         .foregroundStyle(.blue)
                     VStack(alignment: .leading, spacing: 2) {

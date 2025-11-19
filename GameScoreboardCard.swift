@@ -10,6 +10,25 @@ public struct GameScoreboardCard: View {
     let allTimeAnswered: Int
     let allTimeBestStreak: Int
 
+    @Environment(\.horizontalSizeClass) private var hSize
+
+    // Treat iPad (or any regular width) as “roomier” for bigger UI
+    private var isPadLike: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad || hSize == .regular
+    }
+
+    // Typography and layout metrics that scale on iPad
+    private var sectionLabelFont: Font { isPadLike ? .headline : .caption }
+    private var pillTitleFont: Font { isPadLike ? .footnote : .caption2 }
+    private var pillValueFont: Font { isPadLike ? .title3.weight(.semibold) : .subheadline.weight(.semibold) }
+    private var rowSpacing: CGFloat { isPadLike ? 16 : 10 }
+    private var containerPadding: CGFloat { isPadLike ? 14 : 8 }
+    private var pillPadding: CGFloat { isPadLike ? 10 : 6 }
+    private var sectionLabelWidth: CGFloat { isPadLike ? 90 : 60 }
+    private var pillCornerRadius: CGFloat { isPadLike ? 14 : 12 }
+    private var cardCornerRadius: CGFloat { isPadLike ? 18 : 16 }
+    private var cardStrokeOpacity: Double { 0.06 }
+
     public init(
         currentCorrect: Int,
         currentAnswered: Int,
@@ -28,34 +47,34 @@ public struct GameScoreboardCard: View {
 
     public var body: some View {
         VStack {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: rowSpacing) {
                 // Current session stats
-                HStack(spacing: 10) {
+                HStack(spacing: rowSpacing) {
                     Text("Current")
-                        .font(.caption)
+                        .font(sectionLabelFont)
                         .foregroundStyle(.secondary)
-                        .frame(width: 60, alignment: .leading)
+                        .frame(width: sectionLabelWidth, alignment: .leading)
                     statPill(title: "Correct", value: "\(currentCorrect)")
                     statPill(title: "Total", value: "\(currentAnswered)")
                     streakPill(title: "Streak", current: currentStreak, allTimeBest: allTimeBestStreak)
                     statPill(title: "Percent", value: percentString(correct: currentCorrect, answered: currentAnswered))
                 }
                 // All-time stats
-                HStack(spacing: 10) {
+                HStack(spacing: rowSpacing) {
                     Text("All-time")
-                        .font(.caption)
+                        .font(sectionLabelFont)
                         .foregroundStyle(.secondary)
-                        .frame(width: 60, alignment: .leading)
+                        .frame(width: sectionLabelWidth, alignment: .leading)
                     statPill(title: "Correct", value: "\(allTimeCorrect)")
                     statPill(title: "Total", value: "\(allTimeAnswered)")
                     statPill(title: "Streak", value: "\(allTimeBestStreak)")
                     statPill(title: "Percent", value: percentString(correct: allTimeCorrect, answered: allTimeAnswered))
                 }
             }
-            .padding(8)
+            .padding(containerPadding)
         }
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
                 .fill(
                     LinearGradient(
                         colors: [Color(UIColor.systemBackground), Color(UIColor.secondarySystemBackground)],
@@ -65,29 +84,29 @@ public struct GameScoreboardCard: View {
                 )
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.black.opacity(0.06), lineWidth: 1)
+            RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
+                .stroke(Color.black.opacity(cardStrokeOpacity), lineWidth: 1)
         )
     }
 
     // Neutral stat pill (no per-category color)
     @ViewBuilder
     private func statPill(title: String, value: String) -> some View {
-        VStack(spacing: 2) {
+        VStack(spacing: 3) {
             Text(title)
-                .font(.caption2)
+                .font(pillTitleFont)
                 .foregroundStyle(.secondary)
             Text(value)
-                .font(.subheadline.weight(.semibold))
+                .font(pillValueFont)
                 .foregroundStyle(.primary)
         }
-        .padding(6)
+        .padding(pillPadding)
         .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
+            RoundedRectangle(cornerRadius: pillCornerRadius, style: .continuous)
                 .fill(Color(.secondarySystemBackground))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
+            RoundedRectangle(cornerRadius: pillCornerRadius, style: .continuous)
                 .stroke(Color.primary.opacity(0.08), lineWidth: 1)
         )
     }
@@ -97,22 +116,22 @@ public struct GameScoreboardCard: View {
     private func streakPill(title: String, current: Int, allTimeBest: Int) -> some View {
         let highlightThreshold = max(1, allTimeBest)
         let isHighlighted = current >= highlightThreshold
-        VStack(spacing: 2) {
+        VStack(spacing: 3) {
             Text(title)
-                .font(.caption2)
+                .font(pillTitleFont)
                 .foregroundStyle(.secondary)
             Text("\(current)")
-                .font(.subheadline.weight(.semibold))
+                .font(pillValueFont)
                 .foregroundStyle(isHighlighted ? Color.green : Color.primary)
                 .animation(.default, value: isHighlighted)
         }
-        .padding(6)
+        .padding(pillPadding)
         .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
+            RoundedRectangle(cornerRadius: pillCornerRadius, style: .continuous)
                 .fill(Color(.secondarySystemBackground))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
+            RoundedRectangle(cornerRadius: pillCornerRadius, style: .continuous)
                 .stroke(Color.primary.opacity(0.08), lineWidth: 1)
         )
         .accessibilityHint(isHighlighted ? "Tied or exceeded all-time best streak" : "")

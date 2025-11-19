@@ -1,5 +1,9 @@
 import SwiftUI
 
+private extension Notification.Name {
+    static let openBibleReference = Notification.Name("OpenBibleReference")
+}
+
 struct BibleSplitView: View {
     @State private var selectedBook: Book? = nil
     @State private var selectedChapter: Chapter? = nil
@@ -389,6 +393,26 @@ struct BibleSplitView: View {
         .searchScopes($searchScope) {
             ForEach(SearchScope.allCases) { scope in
                 Text(scope.rawValue)
+            }
+        }
+        // Listen for deep links from ContentView (iPad path)
+        .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { note in
+            guard
+                let bookName = note.userInfo?["book"] as? String,
+                let chapterNum = note.userInfo?["chapter"] as? Int,
+                let verseNum = note.userInfo?["verse"] as? Int,
+                let book = BibleData.books.first(where: { $0.name == bookName })
+            else { return }
+
+            // Select the book in the sidebar and push the reader route in the detail stack
+            selectedBook = book
+            selectedChapter = nil
+            navStartVerse = verseNum
+            searchText = ""
+            // Ensure the selection applies before pushing the route
+            DispatchQueue.main.async {
+                detailPath = NavigationPath()
+                detailPath.append(ReadingRoute(bookName: book.name, chapterNumber: chapterNum, verseNumber: verseNum))
             }
         }
     }
