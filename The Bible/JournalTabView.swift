@@ -138,37 +138,53 @@ struct JournalTabView: View {
             NavigationSplitView(columnVisibility: $splitVisibility) {
                 sidebarList
                     .id(refreshToken)
-                    .navigationTitle("Journal Entries")
+                    .navigationTitle("Journal")
                     .toolbar {
+                        // Leading: optional filters clear chip
                         ToolbarItem(placement: .topBarLeading) {
                             if !selectedTags.isEmpty {
-                                Button("Clear Filters") { selectedTags.removeAll() }
+                                Button {
+                                    selectedTags.removeAll()
+                                } label: {
+                                    Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle")
+                                }
+                                .accessibilityLabel("Clear Filters")
                             }
                         }
+                        // Trailing: action buttons
                         ToolbarItemGroup(placement: .topBarTrailing) {
                             if selectionMode {
                                 Button(role: .destructive) {
                                     deleteSelectedEntries()
                                 } label: {
-                                    Label("Delete", systemImage: "trash")
+                                    Image(systemName: "trash")
                                 }
-                                Button("Cancel") {
+                                .accessibilityLabel("Delete Selected")
+
+                                Button {
                                     selectionMode = false
                                     selectedForDeletion.removeAll()
+                                } label: {
+                                    Image(systemName: "xmark")
                                 }
+                                .accessibilityLabel("Cancel Selection")
                             } else {
                                 Button {
                                     inlineEditorEditingEntry = nil
                                     inlineEditorInitialBody = nil
                                     showingInlineEditor = true
                                 } label: {
-                                    Label("New Entry", systemImage: "square.and.pencil")
+                                    Image(systemName: "square.and.pencil")
                                 }
+                                .tint(.blue)
+                                .accessibilityLabel("New Entry")
+
                                 Button {
                                     selectionMode = true
                                 } label: {
-                                    Label("Select", systemImage: "checkmark.circle")
+                                    Image(systemName: "checkmark.circle")
                                 }
+                                .accessibilityLabel("Select")
                             }
                         }
                     }
@@ -194,7 +210,8 @@ struct JournalTabView: View {
                 } else if let e = selectedEntry {
                     if isEditing {
                         HStack(spacing: 0) {
-                            editorPane(entry: e, showInlinePreview: false)
+                            // Option A: enable inline preview so taps open third column
+                            editorPane(entry: e, showInlinePreview: true)
                                 .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                                 .layoutPriority(1)
                             Divider()
@@ -203,8 +220,18 @@ struct JournalTabView: View {
                         }
                         .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
                         .toolbar {
-                            ToolbarItem(placement: .confirmationAction) {
-                                Button("Done") {
+                            // Place Cancel and Done together as icon buttons on the trailing side
+                            ToolbarItemGroup(placement: .topBarTrailing) {
+                                Button {
+                                    // Cancel editing; discard tag text changes
+                                    isEditing = false
+                                } label: {
+                                    Image(systemName: "xmark.circle")
+                                }
+                                .buttonStyle(.plain) // remove background styling
+                                .accessibilityLabel("Cancel")
+
+                                Button {
                                     let tags = editingTagsText
                                         .split(separator: ",")
                                         .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -214,10 +241,11 @@ struct JournalTabView: View {
                                     isEditing = false
                                     try? ctx.save()
                                     recomputeFilteredEntries()
+                                } label: {
+                                    Image(systemName: "checkmark.circle")
                                 }
-                            }
-                            ToolbarItem(placement: .cancellationAction) {
-                                Button("Cancel") { isEditing = false }
+                                .buttonStyle(.plain) // remove background styling
+                                .accessibilityLabel("Done")
                             }
                         }
                     } else {
@@ -242,10 +270,13 @@ struct JournalTabView: View {
                         .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
                         .toolbar {
                             ToolbarItem(placement: .primaryAction) {
-                                Button("Edit") {
+                                Button {
                                     editingTagsText = e.tags.joined(separator: ", ")
                                     isEditing = true
+                                } label: {
+                                    Image(systemName: "pencil")
                                 }
+                                .accessibilityLabel("Edit")
                             }
                         }
                     }
@@ -306,7 +337,11 @@ struct JournalTabView: View {
                 .toolbar {
                     if !selectedTags.isEmpty {
                         ToolbarItem(placement: .topBarLeading) {
-                            Button("Clear Filters") { selectedTags.removeAll() }
+                            Button {
+                                selectedTags.removeAll()
+                            } label: {
+                                Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle")
+                            }
                         }
                     }
                     ToolbarItemGroup(placement: .topBarTrailing) {
@@ -314,26 +349,35 @@ struct JournalTabView: View {
                             Button(role: .destructive) {
                                 deleteSelectedEntries()
                             } label: {
-                                Label("Delete", systemImage: "trash")
+                                Image(systemName: "trash")
                             }
-                            Button("Cancel") {
+                            .accessibilityLabel("Delete Selected")
+
+                            Button {
                                 selectionMode = false
                                 selectedForDeletion.removeAll()
+                            } label: {
+                                Image(systemName: "xmark")
                             }
+                            .accessibilityLabel("Cancel Selection")
                         } else {
                             Button {
                                 journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
                             } label: {
-                                Label("New Entry", systemImage: "square.and.pencil")
+                                Image(systemName: "square.and.pencil")
                             }
+                            .accessibilityLabel("New Entry")
+
                             Button {
                                 selectionMode = true
                             } label: {
-                                Label("Select", systemImage: "checkmark.circle")
+                                Image(systemName: "checkmark.circle")
                             }
+                            .accessibilityLabel("Select")
                         }
                     }
                 }
+                .navigationTitle("Journal")
                 .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
                 .environment(\.editMode, .constant(selectionMode ? .active : .inactive))
                 .navigationDestination(for: JournalEntry.self) { entry in
@@ -635,95 +679,28 @@ struct JournalTabView: View {
                         // Inline smart link overlay (non-interactive)
                         Text(linkOverlayBody)
                             .font(.body)
-                            .frame(maxWidth: .infinity, minHeight: 240, alignment: .topLeading)
+                            .frame(maxWidth: .infinity, minHeight: hSize == .regular ? 360 : 240, alignment: .topLeading) // taller on iPad
                             .padding(.top, 8)
                             .padding(.leading, 5)
                             .allowsHitTesting(false)
                     }
                     // Actual editor
                     TextEditor(text: Binding(get: { entry.body }, set: { entry.body = $0; entry.updatedAt = Date(); try? ctx.save() }))
-                        .frame(minHeight: 240)
+                        .frame(minHeight: hSize == .regular ? 360 : 240) // taller on iPad
                         .overlay(
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 .stroke(Color.gray.opacity(0.25), lineWidth: 1)
                         )
                 }
             }
-            if showInlinePreview {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Live Preview")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-
-                    Text(linkedBody)
-                        .frame(minHeight: 60, alignment: .topLeading)
-                        .textSelection(.enabled)
-                        .environment(\._openURL, OpenURLAction { url in
-                            if let ref = BibleReferenceLinker.parse(url: url), let content = BibleReferenceLinker.loadVerses(for: ref) {
-                                previewRef = ref
-                                previewContent = content
-                                withAnimation(.spring()) { showPreview = true }
-                                return .handled
-                            }
-                            return .systemAction
-                        })
-
-                    if showPreview, let content = previewContent {
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack(spacing: 8) {
-                                Text(content.title)
-                                    .font(.headline)
-                                Spacer()
-                                Button(action: {
-                                    let verseLines = content.verses.map { "\($0.number). \($0.text)" }.joined(separator: "\n")
-                                    let copyText = content.title + "\n" + verseLines
-                                    UIPasteboard.general.string = copyText
-                                }) {
-                                    Image(systemName: "doc.on.doc")
-                                        .foregroundStyle(.blue)
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("Copy scripture")
-
-                                Button(action: { withAnimation(.easeOut) { showPreview = false } }) {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .foregroundStyle(.secondary)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                            ForEach(content.verses, id: \.number) { v in
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(v.text)
-                                        .font(.body)
-                                    Text("\(previewRef?.bookName ?? "") \(previewRef?.chapter ?? 0):\(v.number)")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                                if v.number != content.verses.last?.number { Divider().padding(.vertical, 4) }
-                            }
-                        }
-                        .padding(12)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .fill(Color(.secondarySystemBackground))
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                        )
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                    }
-                }
-                .padding(.top, 8)
-            }
+            // Live preview under Body was removed previously
         }
         .onAppear { editingTagsText = entry.tags.joined(separator: ", ") }
     }
 
     @ViewBuilder
     private func previewPane(entry: JournalEntry) -> some View {
-        let linked = BibleReferenceLinker.linkify(entry.body)
-
+        // Extract scripture references (smart links) from the entry body
         let refs: [ScriptureRef] = {
             let linkedForRefs = BibleReferenceLinker.linkify(entry.body)
             var refs: [ScriptureRef] = []
@@ -742,24 +719,13 @@ struct JournalTabView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                // Stats & Links
-                Text("Entry Stats & Links")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                HStack(spacing: 12) {
-                    let wc = entry.body.split { $0.isWhitespace || $0.isNewline }.count
-                    let cc = entry.body.count
-                    Label("\(wc) words", systemImage: "textformat")
-                    Label("\(cc) chars", systemImage: "character.book.closed")
-                }
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                // Title only
+                Text(entry.title.isEmpty ? "Untitled" : entry.title)
+                    .font(.title3).bold()
 
+                // Smart links list (no stats, no body preview)
                 if !refs.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Scripture Links")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
                         ForEach(Array(refs.enumerated()), id: \.offset) { _, r in
                             HStack(spacing: 8) {
                                 Button(action: {
@@ -780,29 +746,23 @@ struct JournalTabView: View {
                                         .underline()
                                 }
                                 .buttonStyle(.plain)
-                                Button { UIPasteboard.general.string = (r.endVerse != nil && r.endVerse != r.startVerse) ? "\(r.bookName) \(r.chapter):\(r.startVerse)-\(r.endVerse!)" : "\(r.bookName) \(r.chapter):\(r.startVerse)" } label: { Image(systemName: "doc.on.doc") }
-                                    .buttonStyle(.plain)
-                                    .foregroundStyle(.blue)
-                                    .accessibilityLabel("Copy reference")
+
+                                Button {
+                                    UIPasteboard.general.string = (r.endVerse != nil && r.endVerse != r.startVerse)
+                                    ? "\(r.bookName) \(r.chapter):\(r.startVerse)-\(r.endVerse!)"
+                                    : "\(r.bookName) \(r.chapter):\(r.startVerse)"
+                                } label: {
+                                    Image(systemName: "doc.on.doc")
+                                }
+                                .buttonStyle(.plain)
+                                .foregroundStyle(.blue)
+                                .accessibilityLabel("Copy reference")
                             }
                         }
                     }
                 }
 
-                Text(entry.title.isEmpty ? "Untitled" : entry.title)
-                    .font(.title3).bold()
-                Text(linked)
-                    .font(.body)
-                    .textSelection(.enabled)
-                    .environment(\._openURL, OpenURLAction { url in
-                        if let r = BibleReferenceLinker.parse(url: url), let content = BibleReferenceLinker.loadVerses(for: r) {
-                            previewRef = r
-                            previewContent = content
-                            withAnimation(.spring()) { showPreview = true }
-                            return .handled
-                        }
-                        return .systemAction
-                    })
+                // Scripture preview for selected link (if any)
                 if showPreview, let content = previewContent {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack(spacing: 8) {
@@ -858,4 +818,3 @@ struct JournalTabView: View {
 #Preview {
     JournalTabView()
 }
-

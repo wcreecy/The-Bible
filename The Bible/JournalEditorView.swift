@@ -321,16 +321,20 @@ struct JournalEditorView: View {
             )
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
+                    Button(action: {
                         showBookSuggestions = false
                         if let onClose { onClose() } else { dismiss() }
+                    }) {
+                        Image(systemName: "xmark.circle")
                     }
+                    .accessibilityLabel("Cancel")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: save) {
-                        Label("Save", systemImage: "square.and.arrow.down")
+                        Image(systemName: "square.and.arrow.down")
                     }
                     .bold()
+                    .accessibilityLabel("Save")
                 }
             }
             .alert("Couldn’t Save Entry", isPresented: $showSaveError) {
@@ -510,9 +514,6 @@ struct JournalEditorView: View {
             VStack(alignment: .leading, spacing: 12) {
                 Text(title.isEmpty ? "Untitled" : title)
                     .font(.title3).bold()
-                Text("Entry Stats & Links")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
 
                 let refs: [ScriptureRef] = detectedScriptureRefs()
                 scriptureLinksView(refs: refs)
@@ -960,4 +961,3 @@ private struct CursorTextView: UIViewRepresentable {
         }
     }
 }
-

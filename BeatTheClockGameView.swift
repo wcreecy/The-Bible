@@ -53,7 +53,11 @@ struct BeatTheClockGameView: View {
     }
 
     private var roundTime: Int {
-        switch difficulty { case .easy: return 13; case .medium: return 10; case .hard: return 7 }
+        switch difficulty {
+        case .easy: return 13
+        case .medium: return 15
+        case .hard: return 10
+        }
     }
 
     private var canSubmit: Bool {
@@ -90,8 +94,8 @@ struct BeatTheClockGameView: View {
                             DisclosureGroup(isExpanded: $difficultyExpanded) {
                                 VStack(alignment: .leading, spacing: 6) {
                                     Text("• Easy: No timer pressure; focus on accuracy.")
-                                    Text("• Medium: 10 seconds per round.")
-                                    Text("• Hard: 7 seconds per round; wrong options are more similar.")
+                                    Text("• Medium: 15 seconds per round.")
+                                    Text("• Hard: 10 seconds per round; wrong options are more similar.")
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             } label: {
@@ -261,11 +265,14 @@ struct BeatTheClockGameView: View {
         }
         .onReceive(timer) { _ in
             guard started, !selectionLocked else { return }
-            // Pulse big at the start of each second, then shrink back quickly; haptic every second
+            // Pulse big at the start of each second, then shrink back quickly
             if remainingSeconds > 0 {
                 pulse = true
-                let generator = UIImpactFeedbackGenerator(style: .heavy)
-                generator.impactOccurred()
+                // Haptics only when timer is in red zone (<= 5 seconds)
+                if remainingSeconds <= 5 {
+                    let generator = UIImpactFeedbackGenerator(style: .heavy)
+                    generator.impactOccurred()
+                }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                     pulse = false
                 }

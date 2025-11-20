@@ -73,7 +73,9 @@ struct ReferenceMatchGameView: View {
                         GroupBox {
                             DisclosureGroup(isExpanded: $difficultyExpanded) {
                                 VStack(alignment: .leading, spacing: 6) {
-                                    Text("• Easy / Medium / Hard: Affects all-time stats buckets; gameplay remains untimed.")
+                                    Text("• Easy: Possible answers can come from any book of the Bible.")
+                                    Text("• Medium: Possible answers are limited to the same testament (Old or New) as the reference.")
+                                    Text("• Hard: Possible answers all come from the same book as the reference.")
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             } label: {
@@ -313,27 +315,80 @@ struct ReferenceMatchGameView: View {
             verseText: correctFull
         )
 
-        // Build distractors: pick from other verses (avoid duplicate snippets)
+        // Build distractors per difficulty
+        let correctIsOT = oldTestamentSet.contains(book.name)
+        let correctIsNT = newTestamentSet.contains(book.name)
+
+        // Candidate books pool for distractors
+        let distractorBooks: [Book] = {
+            switch difficulty {
+            case .easy:
+                // Any book (respecting verseScopeRaw via filteredBooks)
+                return filteredBooks
+            case .medium:
+                // Same testament as the correct book
+                if correctIsOT {
+                    return filteredBooks.filter { oldTestamentSet.contains($0.name) }
+                } else if correctIsNT {
+                    return filteredBooks.filter { newTestamentSet.contains($0.name) }
+                } else {
+                    return filteredBooks
+                }
+            case .hard:
+                // Same book only
+                return filteredBooks.filter { $0.name == book.name }
+            }
+        }()
+
         var distractors: [AnswerOption] = []
         var snippetSet: Set<String> = [correct.snippet]
         var safety = 0
-        while distractors.count < 3 && safety < 3000 {
+
+        while distractors.count < 3 && safety < 5000 {
             safety += 1
-            guard let b = filteredBooks.randomElement(),
-                  let c = b.chapters.randomElement(),
-                  let v = c.verses.randomElement() else { continue }
-            let snip = snippet(for: v.text)
-            if !snippetSet.contains(snip) {
-                snippetSet.insert(snip)
-                distractors.append(AnswerOption(
-                    snippet: snip,
-                    bookName: b.name,
-                    chapterNumber: c.number,
-                    verseNumber: v.number,
-                    verseText: v.text
-                ))
+
+            // Pick a book from the allowed pool
+            guard let b = distractorBooks.randomElement() else { continue }
+
+            // For hard mode, ensure we can pick a verse from the same book but not the exact same reference
+            if difficulty == .hard {
+                guard let c = b.chapters.randomElement(),
+                      let v = c.verses.randomElement()
+                else { continue }
+                // Avoid identical reference to correct
+                if b.name == book.name && c.number == chapter.number && v.number == verse.number { continue }
+                let snip = snippet(for: v.text)
+                if !snippetSet.contains(snip) {
+                    snippetSet.insert(snip)
+                    distractors.append(AnswerOption(
+                        snippet: snip,
+                        bookName: b.name,
+                        chapterNumber: c.number,
+                        verseNumber: v.number,
+                        verseText: v.text
+                    ))
+                }
+            } else {
+                // Easy/Medium: any verse from the candidate book
+                guard let c = b.chapters.randomElement(),
+                      let v = c.verses.randomElement()
+                else { continue }
+                // Avoid identical reference to correct
+                if b.name == book.name && c.number == chapter.number && v.number == verse.number { continue }
+                let snip = snippet(for: v.text)
+                if !snippetSet.contains(snip) {
+                    snippetSet.insert(snip)
+                    distractors.append(AnswerOption(
+                        snippet: snip,
+                        bookName: b.name,
+                        chapterNumber: c.number,
+                        verseNumber: v.number,
+                        verseText: v.text
+                    ))
+                }
             }
         }
+
         var allOptions = distractors
         allOptions.append(correct)
         allOptions.shuffle()
