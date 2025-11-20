@@ -381,10 +381,11 @@ struct SmartLinkSheet: View {
     private func clampChapterAndVerses() {
         guard let b = loadedBook else { return }
 
-        // Clamp chapter only if user entered a number
+        // Determine valid chapter bounds
         let minChapter = b.chapters.first?.number ?? 1
         let maxChapter = b.chapters.last?.number ?? minChapter
 
+        // Clamp chapter only if a numeric value was entered
         var resolvedChapter: Int? = nil
         if let chapInt = Int(chapter) {
             let clampedChap = min(max(chapInt, minChapter), maxChapter)
@@ -394,16 +395,17 @@ struct SmartLinkSheet: View {
             resolvedChapter = clampedChap
         }
 
-        // Clamp verses only if we have a valid numeric chapter
+        // If chapter isn't a valid number yet, don't prefill anything else
         guard let chapNumber = resolvedChapter,
               let ch = b.chapters.first(where: { $0.number == chapNumber }) else {
             return
         }
 
+        // Verse bounds for the selected chapter
         let minV = ch.verses.first?.number ?? 1
         let maxV = ch.verses.last?.number ?? minV
 
-        // Clamp start only if user entered a number
+        // Clamp start only if a numeric value was entered
         var resolvedStart: Int? = nil
         if let svInt = Int(startVerse) {
             let clampedSV = min(max(svInt, minV), maxV)
@@ -413,7 +415,7 @@ struct SmartLinkSheet: View {
             resolvedStart = clampedSV
         }
 
-        // Clamp end only if user entered something
+        // Clamp end only if user entered something numeric
         if !endVerse.isEmpty, let evInt = Int(endVerse) {
             let lowerBound = resolvedStart ?? minV
             let clampedEV = min(max(evInt, lowerBound), maxV)

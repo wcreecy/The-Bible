@@ -194,7 +194,8 @@ struct JournalTabView: View {
                 if let e = selectedEntry {
                     if isEditing {
                         HStack(spacing: 0) {
-                            editorPane(entry: e, showInlinePreview: true)
+                            // Disable inline overlay since the 3rd column shows links
+                            editorPane(entry: e, showInlinePreview: false)
                                 .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                                 .layoutPriority(1)
                             Divider()
