@@ -52,6 +52,7 @@
 		2CD7D8312ECA163A00849235 /* PinnedVerseWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */; };
 		2CD7D8342ECA16BE00849235 /* PinnedVerseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */; };
 		2CE599542ECF403500A24C9F /* SharedJournalViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE599532ECF403500A24C9F /* SharedJournalViews.swift */; };
+		2CE599562ECF4D9600A24C9F /* SmartLinkSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE599552ECF4D9600A24C9F /* SmartLinkSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -152,6 +153,7 @@
 		2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseProvider.swift; sourceTree = "<group>"; };
 		2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseWidget.swift; sourceTree = "<group>"; };
 		2CE599532ECF403500A24C9F /* SharedJournalViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedJournalViews.swift; sourceTree = "<group>"; };
+		2CE599552ECF4D9600A24C9F /* SmartLinkSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartLinkSheet.swift; sourceTree = "<group>"; };
 		2CEA02D52EBE677900039D4B /* The Bible WidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "The Bible WidgetsExtension.entitlements"; sourceTree = "<group>"; };
 		2CF6F1702EB83C2100E59640 /* TimerSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerSound.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -352,6 +354,7 @@
 				2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */,
 				2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */,
 				2CE599532ECF403500A24C9F /* SharedJournalViews.swift */,
+				2CE599552ECF4D9600A24C9F /* SmartLinkSheet.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -748,6 +751,7 @@
 				2C49CF852EBE2E940006FF79 /* StopwatchAttributes.swift in Sources */,
 				2C49CF892EBE2EA30006FF79 /* StopwatchLiveActivity.swift in Sources */,
 				2C49CF8D2EBE33010006FF79 /* StopwatchActivityIntents.swift in Sources */,
+				2CE599562ECF4D9600A24C9F /* SmartLinkSheet.swift in Sources */,
 				2C49CF7F2EBE27AE0006FF79 /* PrayerTimerAttributes.swift in Sources */,
 				2C49CF4C2EBE10260006FF79 /* QuizView.swift in Sources */,
 				2C49CF4D2EBE10310006FF79 /* BibleSplitView.swift in Sources */,

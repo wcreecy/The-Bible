@@ -7,14 +7,13 @@ struct JournalEditorView: View {
     @Environment(\.modelContext) private var ctx
     @Environment(\.horizontalSizeClass) private var hSize
 
-    // If invoked from a verse, we’ll seed the title smartly
     let verseRef: VerseRef?
     let showTagColors: Bool
     let onClose: (() -> Void)?
 
     @State private var title: String = ""
-    @State private var content: String = ""      // <-- renamed from `body`
-    @State private var tagsText: String = ""     // comma-separated
+    @State private var content: String = ""
+    @State private var tagsText: String = ""
 
     @State private var previewRef: ScriptureRef? = nil
     @State private var previewContent: (title: String, verses: [Verse])? = nil
@@ -25,11 +24,7 @@ struct JournalEditorView: View {
     @State private var showCopyToast: Bool = false
     @State private var editingEntry: JournalEntry? = nil
 
-    // MARK: - Smart Link Composer (book suggestions with # trigger)
-    @State private var showBookSuggestions: Bool = false
-    @State private var bookQuery: String = ""
-    @State private var suggestionsDebounceTask: Task<Void, Never>? = nil
-
+    // Caret/selection tracking
     @State private var textSelectionRange: NSRange = NSRange(location: 0, length: 0)
     @State private var caretRect: CGRect? = nil
 
@@ -37,219 +32,13 @@ struct JournalEditorView: View {
     @State private var isTitleExpanded: Bool = true
     @State private var isTagsExpanded: Bool = true
 
-    // Avoid main-thread JSON decode: load names lazily via BibleLibrary and keep a tiny canonical list for ordering only.
-    private static let canonicalBookOrder: [String] = [
-        "Genesis","Exodus","Leviticus","Numbers","Deuteronomy",
-        "Joshua","Judges","Ruth",
-        "1 Samuel","2 Samuel",
-        "1 Kings","2 Kings",
-        "1 Chronicles","2 Chronicles",
-        "Ezra","Nehemiah","Esther",
-        "Job","Psalms","Proverbs","Ecclesiastes","Song of Solomon",
-        "Isaiah","Jeremiah","Lamentations","Ezekiel","Daniel",
-        "Hosea","Joel","Amos","Obadiah","Jonah",
-        "Micah","Nahum","Habakkuk","Zephaniah",
-        "Haggai","Zechariah","Malachi",
-        "Matthew","Mark","Luke","John",
-        "Acts","Romans",
-        "1 Corinthians","2 Corinthians",
-        "Galatians","Ephesians","Philippians","Colossians",
-        "1 Thessalonians","2 Thessalonians",
-        "1 Timothy","2 Timothy",
-        "Titus","Philemon",
-        "Hebrews","James",
-        "1 Peter","2 Peter",
-        "1 John","2 John","3 John",
-        "Jude","Revelation"
-    ]
-    @State private var allBookNames: [String] = []
-    @State private var allBookNamesLower: [String] = []
-
-    private func loadBookNamesIfNeeded() {
-        guard allBookNames.isEmpty else { return }
-        Task {
-            let names = await BibleLibrary.shared.bookNames()
-            let pos = Dictionary(uniqueKeysWithValues: Self.canonicalBookOrder.enumerated().map { ($1, $0) })
-            let ordered = names.sorted { (a, b) in
-                (pos[a] ?? Int.max) < (pos[b] ?? Int.max)
-            }
-            await MainActor.run {
-                self.allBookNames = ordered.isEmpty ? Self.canonicalBookOrder : ordered
-                self.allBookNamesLower = self.allBookNames.map { $0.lowercased() }
-            }
-        }
-    }
-
-    private func updateBookSuggestions() {
-        if allBookNames.isEmpty { loadBookNamesIfNeeded() }
-
-        let text = content
-        let caretLoc = textSelectionRange.location
-        let utf16 = text.utf16
-        let clamped = min(max(caretLoc, 0), utf16.count)
-        guard let caretUTF16Index = utf16.index(utf16.startIndex, offsetBy: clamped, limitedBy: utf16.endIndex),
-              let caretIndex = caretUTF16Index.samePosition(in: text) else {
-            showBookSuggestions = false
-            bookQuery = ""
-            return
-        }
-
-        let allowed: CharacterSet = CharacterSet.letters
-            .union(.decimalDigits)
-            .union(CharacterSet(charactersIn: "."))
-
-        var i = caretIndex
-        var foundHash: String.Index? = nil
-        while i > text.startIndex {
-            i = text.index(before: i)
-            let ch = text[i]
-            if ch == "#" {
-                foundHash = i
-                break
-            }
-            if ch.isWhitespace || ch == "\n" { break }
-            if let scalar = ch.unicodeScalars.first, !allowed.contains(scalar) { break }
-        }
-
-        guard let hashIdx = foundHash else {
-            showBookSuggestions = false
-            bookQuery = ""
-            return
-        }
-
-        let afterHash = text.index(after: hashIdx)
-        guard afterHash <= caretIndex else {
-            showBookSuggestions = false
-            bookQuery = ""
-            return
-        }
-
-        let rawQuery = String(text[afterHash..<caretIndex])
-        let cleaned = rawQuery.trimmingCharacters(in: .whitespacesAndNewlines)
-        bookQuery = cleaned
-        showBookSuggestions = true
-    }
-
-    private var filteredBooksForQuery: [String] {
-        let names = allBookNames
-        let lower = allBookNamesLower
-        if names.isEmpty { return [] }
-
-        let q = bookQuery.trimmingCharacters(in: .whitespacesAndNewlines)
-        if q.isEmpty { return Array(names.prefix(10)) }
-        let qLower = q.lowercased()
-
-        var results: [String] = []
-        var seen = Set<String>()
-
-        func appendIfNew(_ idx: Int) {
-            let key = lower[idx]
-            if !seen.contains(key) {
-                results.append(names[idx])
-                seen.insert(key)
-            }
-        }
-
-        for (idx, nameLower) in lower.enumerated() where nameLower.hasPrefix(qLower) {
-            appendIfNew(idx)
-            if results.count == 10 { return results }
-        }
-
-        if results.count < 10 {
-            for (idx, nameLower) in lower.enumerated() where nameLower.contains(qLower) {
-                appendIfNew(idx)
-                if results.count == 10 { break }
-            }
-        }
-
-        return results
-    }
-
-    private func replaceCurrentTrigger(with bookName: String) {
-        var t = content
-        guard let hashRange = t.range(of: "#", options: .backwards) else {
-            showBookSuggestions = false
-            bookQuery = ""
-            return
-        }
-        let tokenStart = hashRange.lowerBound
-        var tokenEnd = t.endIndex
-        var idx = t.index(after: tokenStart)
-        while idx < t.endIndex {
-            let ch = t[idx]
-            if ch == "\n" || ch.isWhitespace { break }
-            idx = t.index(after: idx)
-        }
-        tokenEnd = idx
-        let insertion = "\(bookName) "
-        let utf16BeforeToken = t[..<tokenStart].utf16.count
-        t.replaceSubrange(tokenStart..<tokenEnd, with: insertion)
-        content = t
-        let caretLocation = utf16BeforeToken + insertion.utf16.count
-        textSelectionRange = NSRange(location: caretLocation, length: 0)
-        showBookSuggestions = false
-        bookQuery = ""
-    }
-
-    // MARK: - Stats & Links Helpers
-
-    private func displayString(for ref: ScriptureRef) -> String {
-        if let end = ref.endVerse, end != ref.startVerse {
-            return "\(ref.bookName) \(ref.chapter):\(ref.startVerse)-\(end)"
-        } else {
-            return "\(ref.bookName) \(ref.chapter):\(ref.startVerse)"
-        }
-    }
-
-    private func detectedScriptureRefs() -> [ScriptureRef] {
-        ScriptureRefExtractor.refs(in: linkedContent)
-    }
-
-    private func copy(_ ref: ScriptureRef) {
-        UIPasteboard.general.string = displayString(for: ref)
-        withAnimation(.spring()) { showCopyToast = true }
-    }
-
-    // Debounced/cached linkify to reduce recomputation while typing
+    // Linkify cache
     @State private var linkedContent: AttributedString = AttributedString("")
     @State private var linkifyTask: Task<Void, Never>? = nil
 
-    private func scheduleLinkify(for text: String) {
-        linkifyTask?.cancel()
-        linkifyTask = Task(priority: .userInitiated) {
-            try? await Task.sleep(nanoseconds: 150_000_000) // 150ms debounce
-            if Task.isCancelled { return }
-            let result = BibleReferenceLinker.linkify(text)
-            await MainActor.run {
-                self.linkedContent = result
-            }
-        }
-    }
-
-    private var parsedTags: [String] {
-        tagsText
-            .split(separator: ",")
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
-    }
-
-    private func colorBinding(for tag: String) -> Binding<Color> {
-        let fallback = TagColorStore.color(for: tag) ?? .accentColor
-        return Binding<Color>(
-            get: { TagColorStore.color(for: tag) ?? fallback },
-            set: { newValue in
-                TagColorStore.setColor(newValue, for: tag)
-            }
-        )
-    }
-
-    private func scheduleSuggestionsUpdate() {
-        suggestionsDebounceTask?.cancel()
-        suggestionsDebounceTask = Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 120_000_000)
-            updateBookSuggestions()
-        }
-    }
+    // SmartLink sheet
+    @State private var showSmartLinkSheet: Bool = false
+    @State private var pendingTriggerRange: NSRange? = nil
 
     init(verseRef: VerseRef?, initialBody: String? = nil, showTagColors: Bool = false, editingEntry: JournalEntry? = nil, onClose: (() -> Void)? = nil) {
         self.verseRef = verseRef
@@ -283,7 +72,6 @@ struct JournalEditorView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
-                        showBookSuggestions = false
                         if let onClose { onClose() } else { dismiss() }
                     }) {
                         Image(systemName: "xmark.circle")
@@ -306,16 +94,17 @@ struct JournalEditorView: View {
                 Text(saveErrorMessage)
             }
             .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
-            .onChange(of: textSelectionRange) { _, _ in
-                scheduleSuggestionsUpdate()
-            }
             .onAppear {
-                loadBookNamesIfNeeded()
                 scheduleLinkify(for: content)
             }
             .onDisappear {
-                suggestionsDebounceTask?.cancel()
                 linkifyTask?.cancel()
+            }
+            .sheet(isPresented: $showSmartLinkSheet) {
+                SmartLinkSheet { refText in
+                    insertSmartLink(refText)
+                }
+                .presentationDetents([.medium, .large])
             }
         }
     }
@@ -323,14 +112,9 @@ struct JournalEditorView: View {
     private var regularLayout: some View {
         HStack(spacing: 0) {
             editorColumn
-                .zIndex(showBookSuggestions ? 2 : 0)
-
             Divider()
-
             previewColumn
-                .zIndex(1)
                 .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-
             if showTagColors {
                 Divider()
                 tagColorsColumn
@@ -353,11 +137,47 @@ struct JournalEditorView: View {
 
                 tagChipsView
 
-                textEditorWithSuggestions
-                    .zIndex(showBookSuggestions ? 10 : 0)
+                textEditorWithSmartLinks
             }
             .padding(20)
         }
+    }
+
+    private var compactLayout: some View {
+        Form {
+            Section {
+                DisclosureGroup(isExpanded: $isTitleExpanded) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        TextField("Title", text: $title)
+                            .foregroundStyle(.primary)
+                        if let ref = verseRef {
+                            LabeledContent("Linked Verse", value: ref.display)
+                        }
+                    }
+                } label: {
+                    Text("Title").font(.headline)
+                }
+            }
+
+            Section {
+                DisclosureGroup(isExpanded: $isTagsExpanded) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        TextField("sermon notes, prayer, study…", text: $tagsText)
+                            .textInputAutocapitalization(.never)
+                            .foregroundStyle(.primary)
+                        tagChipsView
+                    }
+                } label: {
+                    Text("Tags").font(.headline)
+                }
+            }
+
+            Section("Body") {
+                textEditorWithSmartLinks
+                    .frame(minHeight: 280)
+            }
+        }
+        .clipped(antialiased: false)
     }
 
     @ViewBuilder
@@ -370,6 +190,93 @@ struct JournalEditorView: View {
                 onTap: nil,
                 onColorChange: { tag, color in TagColorStore.setColor(color, for: tag) }
             )
+        }
+    }
+
+    private var textEditorWithSmartLinks: some View {
+        ZStack(alignment: .topLeading) {
+            if content.isEmpty {
+                Text("Write your thoughts here…")
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 8)
+                    .padding(.leading, 5)
+            }
+            CursorTextView(
+                text: $content,
+                selection: $textSelectionRange,
+                caretRect: $caretRect,
+                onChange: { newText in
+                    scheduleLinkify(for: newText)
+                    detectHashTrigger()
+                }
+            )
+            .frame(minHeight: 400)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+            )
+        }
+    }
+
+    private var previewColumn: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(title.isEmpty ? "Untitled" : title)
+                    .font(.title3).bold()
+
+                let refs: [ScriptureRef] = ScriptureRefExtractor.refs(in: linkedContent)
+                if !refs.isEmpty {
+                    Text("Scripture Links")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    ScriptureLinksList(
+                        refs: refs,
+                        onTap: { ref in
+                            if hSize == .regular {
+                                NotificationCenter.default.post(
+                                    name: JournalNotifications.openScripturePreview,
+                                    object: nil,
+                                    userInfo: [
+                                        "book": ref.bookName,
+                                        "chapter": ref.chapter,
+                                        "start": ref.startVerse,
+                                        "end": ref.endVerse as Any
+                                    ]
+                                )
+                            } else {
+                                if let content = BibleReferenceLinker.loadVerses(for: ref) {
+                                    previewRef = ref
+                                    previewContent = content
+                                    withAnimation(.spring()) { showPreview = true }
+                                }
+                            }
+                        },
+                        onCopy: { ref in
+                            let s: String = {
+                                if let end = ref.endVerse, end != ref.startVerse {
+                                    return "\(ref.bookName) \(ref.chapter):\(ref.startVerse)-\(end)"
+                                }
+                                return "\(ref.bookName) \(ref.chapter):\(ref.startVerse)"
+                            }()
+                            UIPasteboard.general.string = s
+                            withAnimation(.spring()) { showCopyToast = true }
+                        }
+                    )
+                }
+
+                if hSize != .regular, showPreview, let content = previewContent {
+                    ScripturePreviewCard(content: content, refContext: previewRef, onCopy: {
+                        let verseLines = content.verses.map { "\($0.number). \($0.text)" }.joined(separator: "\n")
+                        let copyText = content.title + "\n" + verseLines
+                        UIPasteboard.general.string = copyText
+                        withAnimation(.spring()) { showCopyToast = true }
+                    }, onClose: {
+                        withAnimation(.easeOut) { showPreview = false }
+                    })
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
+            .padding(20)
         }
     }
 
@@ -399,221 +306,105 @@ struct JournalEditorView: View {
         }
     }
 
-    private var textEditorWithSuggestions: some View {
-        ZStack(alignment: .topLeading) {
-            if content.isEmpty {
-                Text("Write your thoughts here…")
-                    .foregroundStyle(.secondary)
-                    .padding(.top, 8)
-                    .padding(.leading, 5)
-            }
-            CursorTextView(
-                text: $content,
-                selection: $textSelectionRange,
-                caretRect: $caretRect,
-                onChange: { newText in
-                    scheduleLinkify(for: newText)
-                    scheduleSuggestionsUpdate()
-                }
-            )
-            .frame(minHeight: 400)
-            .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-            )
+    // MARK: - Helpers
 
-            if showBookSuggestions, let caret = caretRect {
-                GeometryReader { geo in
-                    suggestionsPopup
-                        .fixedSize(horizontal: false, vertical: true)
-                        .frame(maxWidth: min(geo.size.width * 0.9, 320))
-                        .offset(x: clampX(caret.minX, geo: geo), y: clampY(caret.maxY + 6, geo: geo))
-                        .zIndex(1000)
-                }
-                .zIndex(1000)
-                .transition(.opacity)
+    private var parsedTags: [String] {
+        tagsText
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+    }
+
+    private func scheduleLinkify(for text: String) {
+        linkifyTask?.cancel()
+        linkifyTask = Task(priority: .userInitiated) {
+            try? await Task.sleep(nanoseconds: 150_000_000)
+            if Task.isCancelled { return }
+            let result = BibleReferenceLinker.linkify(text)
+            await MainActor.run {
+                self.linkedContent = result
             }
         }
     }
 
-    private var previewColumn: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                Text(title.isEmpty ? "Untitled" : title)
-                    .font(.title3).bold()
+    private func detectHashTrigger() {
+        // Look backwards from caret for a '#' token start; if found, present the sheet
+        let t = content
+        let caretLoc = textSelectionRange.location
+        let utf16 = t.utf16
+        let clamped = min(max(caretLoc, 0), utf16.count)
+        guard let caretUTF16Index = utf16.index(utf16.startIndex, offsetBy: clamped, limitedBy: utf16.endIndex),
+              let caretIndex = caretUTF16Index.samePosition(in: t) else {
+            return
+        }
 
-                let refs: [ScriptureRef] = detectedScriptureRefs()
-                if !refs.isEmpty {
-                    Text("Scripture Links")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    ScriptureLinksList(
-                        refs: refs,
-                        onTap: { ref in
-                            if hSize == .regular {
-                                NotificationCenter.default.post(
-                                    name: JournalNotifications.openScripturePreview,
-                                    object: nil,
-                                    userInfo: [
-                                        "book": ref.bookName,
-                                        "chapter": ref.chapter,
-                                        "start": ref.startVerse,
-                                        "end": ref.endVerse as Any
-                                    ]
-                                )
-                            } else {
-                                if let content = BibleReferenceLinker.loadVerses(for: ref) {
-                                    previewRef = ref
-                                    previewContent = content
-                                    withAnimation(.spring()) { showPreview = true }
-                                }
-                            }
-                        },
-                        onCopy: { ref in
-                            copy(ref)
-                        }
-                    )
-                }
+        // Walk back to find '#', stop at whitespace/newline or non-token char
+        let allowed: CharacterSet = CharacterSet.letters
+            .union(.decimalDigits)
+            .union(CharacterSet(charactersIn: ".:-")) // allow separators while typing
+        var i = caretIndex
+        var foundHash: String.Index? = nil
+        while i > t.startIndex {
+            i = t.index(before: i)
+            let ch = t[i]
+            if ch == "#" { foundHash = i; break }
+            if ch.isWhitespace || ch == "\n" { break }
+            if let scalar = ch.unicodeScalars.first, !allowed.contains(scalar) { break }
+        }
+        guard let hashIdx = foundHash else { return }
 
-                if hSize != .regular, showPreview, let content = previewContent {
-                    ScripturePreviewCard(content: content, refContext: previewRef, onCopy: {
-                        let verseLines = content.verses.map { "\($0.number). \($0.text)" }.joined(separator: "\n")
-                        let copyText = content.title + "\n" + verseLines
-                        UIPasteboard.general.string = copyText
-                        withAnimation(.spring()) { showCopyToast = true }
-                    }, onClose: {
-                        withAnimation(.easeOut) { showPreview = false }
-                    })
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                }
-            }
-            .padding(20)
+        // Compute the token’s end (until whitespace/newline)
+        var endIdx = t.index(after: hashIdx)
+        while endIdx < t.endIndex {
+            let ch = t[endIdx]
+            if ch.isWhitespace || ch == "\n" { break }
+            endIdx = t.index(after: endIdx)
+        }
+
+        // Convert to NSRange in UTF-16
+        let startUTF16 = t.utf16.distance(from: t.utf16.startIndex, to: hashIdx)
+        let endUTF16 = t.utf16.distance(from: t.utf16.startIndex, to: endIdx)
+        let range = NSRange(location: startUTF16, length: endUTF16 - startUTF16)
+        pendingTriggerRange = range
+
+        // Present sheet once per detection when user is at/after token; avoid re-presenting continuously
+        if !showSmartLinkSheet {
+            showSmartLinkSheet = true
         }
     }
 
-    private var compactLayout: some View {
-        Form {
-            Section {
-                DisclosureGroup(isExpanded: $isTitleExpanded) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        TextField("Title", text: $title)
-                            .foregroundStyle(.primary)
-                        if let ref = verseRef {
-                            LabeledContent("Linked Verse", value: ref.display)
-                        }
-                    }
-                } label: {
-                    Text("Title")
-                        .font(.headline)
-                }
-            }
+    private func insertSmartLink(_ refText: String) {
+        var t = content
+        let insertion = refText
 
-            Section {
-                DisclosureGroup(isExpanded: $isTagsExpanded) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        TextField("sermon notes, prayer, study…", text: $tagsText)
-                            .textInputAutocapitalization(.never)
-                            .foregroundStyle(.primary)
-                        TagChipRow(
-                            tags: parsedTags,
-                            selectedTags: [],
-                            showColorPicker: true,
-                            onTap: nil,
-                            onColorChange: { tag, color in TagColorStore.setColor(color, for: tag) }
-                        )
-                    }
-                } label: {
-                    Text("Tags")
-                        .font(.headline)
-                }
-            }
-
-            Section("Body") {
-                ZStack(alignment: .topLeading) {
-                    if content.isEmpty {
-                        Text("Write your thoughts here.  To create smart links, type # in front of the book name, e.g. #Romans 1:2-3")
-                            .foregroundStyle(.secondary)
-                            .padding(.top, 8)
-                            .padding(.leading, 5)
-                    }
-                    CursorTextView(
-                        text: $content,
-                        selection: $textSelectionRange,
-                        caretRect: $caretRect,
-                        onChange: { newText in
-                            scheduleLinkify(for: newText)
-                            scheduleSuggestionsUpdate()
-                        }
-                    )
-                    .frame(minHeight: 280)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                    )
-
-                    if showBookSuggestions, let caret = caretRect {
-                        GeometryReader { geo in
-                            suggestionsPopup
-                                .fixedSize(horizontal: false, vertical: true)
-                                .frame(maxWidth: min(geo.size.width * 0.95, 320))
-                                .offset(x: clampX(caret.minX, geo: geo), y: clampY(caret.maxY + 6, geo: geo))
-                                .zIndex(1000)
-                        }
-                        .zIndex(1000)
-                        .transition(.opacity)
-                    }
-                }
-                .zIndex(2)
-            }
-        }
-        .clipped(antialiased: false)
-    }
-
-    private var suggestionsPopup: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            if !filteredBooksForQuery.isEmpty {
-                ForEach(filteredBooksForQuery, id: \.self) { name in
-                    Button(action: { replaceCurrentTrigger(with: name) }) {
-                        HStack {
-                            Text(name)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 10)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .fill(Color(.secondarySystemBackground))
-                        )
-                    }
-                    .buttonStyle(.plain)
-                }
+        if let range = pendingTriggerRange {
+            if let strRange = Range(range, in: t) {
+                t.replaceSubrange(strRange, with: insertion)
+                content = t
+                let newLoc = range.location + insertion.utf16.count
+                textSelectionRange = NSRange(location: newLoc, length: 0)
             } else {
-                Text("No matches")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 10)
+                // Fallback: insert at caret
+                let loc = min(max(textSelectionRange.location, 0), (t as NSString).length)
+                if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
+                    t.insert(contentsOf: insertion, at: idx)
+                    content = t
+                    textSelectionRange = NSRange(location: loc + insertion.utf16.count, length: 0)
+                }
+            }
+        } else {
+            // No pending token; insert at caret
+            let loc = min(max(textSelectionRange.location, 0), (t as NSString).length)
+            if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
+                t.insert(contentsOf: insertion, at: idx)
+                content = t
+                textSelectionRange = NSRange(location: loc + insertion.utf16.count, length: 0)
             }
         }
-        .padding(8)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color(.systemBackground))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-        )
-        .shadow(color: .black.opacity(0.12), radius: 10, x: 0, y: 6)
-    }
 
-    private func clampX(_ desiredX: CGFloat, geo: GeometryProxy) -> CGFloat {
-        let maxX = geo.size.width - 16
-        return max(0, min(desiredX, maxX))
-    }
-    private func clampY(_ desiredY: CGFloat, geo: GeometryProxy) -> CGFloat {
-        let maxY = geo.size.height - 16
-        return max(0, min(desiredY, maxY))
+        pendingTriggerRange = nil
+        showSmartLinkSheet = false
+        scheduleLinkify(for: content)
     }
 
     private func save() {
@@ -659,7 +450,7 @@ struct JournalEditorView: View {
     }
 }
 
-private struct CursorTextView: UIViewRepresentable {
+struct CursorTextView: UIViewRepresentable {
     @Binding var text: String
     @Binding var selection: NSRange
     @Binding var caretRect: CGRect?
@@ -789,4 +580,3 @@ private struct CursorTextView: UIViewRepresentable {
         }
     }
 }
-

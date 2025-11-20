@@ -25,11 +25,9 @@ struct JournalTabView: View {
     @State private var refreshToken: String = ""
     @State private var splitVisibility: NavigationSplitViewVisibility = .all
 
-    // Cached filtered list to avoid recomputing every render
     @State private var cachedFilteredEntries: [JournalEntry] = []
     @State private var filterDebounceTask: Task<Void, Never>? = nil
 
-    // Pin cache (avoid repeated split/join)
     @AppStorage("journalPinnedIDs") private var pinnedIDsRaw: String = ""
     @State private var pinnedIDs: Set<String> = []
 
@@ -40,6 +38,14 @@ struct JournalTabView: View {
     @State private var inlineLinkedBody: AttributedString = AttributedString("")
     @State private var inlineLinkifyTask: Task<Void, Never>? = nil
     @State private var inlineLinkifySourceID: UUID = UUID()
+
+    // Smart link sheet for edit mode
+    @State private var showSmartLinkSheet: Bool = false
+    @State private var pendingTriggerRange: NSRange? = nil
+
+    // Caret tracking for edit mode body
+    @State private var editSelection: NSRange = NSRange(location: 0, length: 0)
+    @State private var editCaretRect: CGRect? = nil
 
     private func loadPins() {
         let parts = pinnedIDsRaw.split(separator: ",").map { String($0) }
@@ -107,9 +113,8 @@ struct JournalTabView: View {
 
         filterDebounceTask?.cancel()
         filterDebounceTask = Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 120_000_000) // 120ms debounce
+            try? await Task.sleep(nanoseconds: 120_000_000)
             var list = currentEntries
-            // Tag filter (AND across selected tags)
             if !currentTags.isEmpty {
                 let target = Set(currentTags.map { $0.lowercased() })
                 list = list.filter { entry in
@@ -117,7 +122,6 @@ struct JournalTabView: View {
                     return target.isSubset(of: entryTags)
                 }
             }
-            // Search filter across title, tags, and body
             if !currentQuery.isEmpty {
                 list = list.filter { entry in
                     let titleMatch = entry.title.localizedCaseInsensitiveContains(currentQuery)
@@ -126,7 +130,6 @@ struct JournalTabView: View {
                     return titleMatch || tagsMatch || bodyMatch
                 }
             }
-            // Sort: pinned first, then preserve original order based on the original entries array
             let indexMap: [UUID: Int] = Dictionary(uniqueKeysWithValues: currentEntries.enumerated().map { ($1.id, $0) })
             list.sort { lhs, rhs in
                 let lp = currentPins.contains(lhs.id.uuidString)
@@ -147,7 +150,6 @@ struct JournalTabView: View {
                     .id(refreshToken)
                     .navigationTitle("Journal")
                     .toolbar {
-                        // Leading: optional filters clear chip
                         ToolbarItem(placement: .topBarLeading) {
                             if !selectedTags.isEmpty {
                                 Button {
@@ -155,10 +157,8 @@ struct JournalTabView: View {
                                 } label: {
                                     Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle")
                                 }
-                                .accessibilityLabel("Clear Filters")
                             }
                         }
-                        // Trailing: action buttons
                         ToolbarItemGroup(placement: .topBarTrailing) {
                             if selectionMode {
                                 Button(role: .destructive) {
@@ -166,15 +166,12 @@ struct JournalTabView: View {
                                 } label: {
                                     Image(systemName: "trash")
                                 }
-                                .accessibilityLabel("Delete Selected")
-
                                 Button {
                                     selectionMode = false
                                     selectedForDeletion.removeAll()
                                 } label: {
                                     Image(systemName: "xmark")
                                 }
-                                .accessibilityLabel("Cancel Selection")
                             } else {
                                 Button {
                                     journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
@@ -182,14 +179,12 @@ struct JournalTabView: View {
                                     Image(systemName: "square.and.pencil")
                                 }
                                 .tint(.blue)
-                                .accessibilityLabel("New Entry")
 
                                 Button {
                                     selectionMode = true
                                 } label: {
                                     Image(systemName: "checkmark.circle")
                                 }
-                                .accessibilityLabel("Select")
                             }
                         }
                     }
@@ -210,13 +205,11 @@ struct JournalTabView: View {
                         .toolbar {
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 Button {
-                                    // Cancel editing; discard tag text changes
                                     isEditing = false
                                 } label: {
                                     Image(systemName: "xmark.circle")
                                 }
                                 .buttonStyle(.plain)
-                                .accessibilityLabel("Cancel")
 
                                 Button {
                                     let tags = editingTagsText
@@ -232,8 +225,13 @@ struct JournalTabView: View {
                                     Image(systemName: "checkmark.circle")
                                 }
                                 .buttonStyle(.plain)
-                                .accessibilityLabel("Done")
                             }
+                        }
+                        .sheet(isPresented: $showSmartLinkSheet) {
+                            SmartLinkSheet { refText in
+                                insertSmartLink(refText, into: e)
+                            }
+                            .presentationDetents([.medium, .large])
                         }
                     } else {
                         Group {
@@ -259,7 +257,6 @@ struct JournalTabView: View {
                                 } label: {
                                     Image(systemName: "pencil")
                                 }
-                                .accessibilityLabel("Edit")
                             }
                         }
                     }
@@ -340,29 +337,23 @@ struct JournalTabView: View {
                             } label: {
                                 Image(systemName: "trash")
                             }
-                            .accessibilityLabel("Delete Selected")
-
                             Button {
                                 selectionMode = false
                                 selectedForDeletion.removeAll()
                             } label: {
                                 Image(systemName: "xmark")
                             }
-                            .accessibilityLabel("Cancel Selection")
                         } else {
                             Button {
                                 journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
                             } label: {
                                 Image(systemName: "square.and.pencil")
                             }
-                            .accessibilityLabel("New Entry")
-
                             Button {
                                 selectionMode = true
                             } label: {
                                 Image(systemName: "checkmark.circle")
                             }
-                            .accessibilityLabel("Select")
                         }
                     }
                 }
@@ -495,13 +486,13 @@ struct JournalTabView: View {
                 ) : AnyView(EmptyView())
             )
             if hSize == .regular {
-                Divider()
-                    .padding(.top, 3)
+                Divider().padding(.top, 3)
             }
         }
         .padding(.vertical, 1)
     }
 
+    // Read-only, unchanged
     @ViewBuilder
     private func readOnlyPane(entry: JournalEntry) -> some View {
         let linkedBody = BibleReferenceLinker.linkify(entry.body)
@@ -557,7 +548,7 @@ struct JournalTabView: View {
     private func scheduleAutosave() {
         autosaveTask?.cancel()
         autosaveTask = Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 400_000_000) // 400ms
+            try? await Task.sleep(nanoseconds: 400_000_000)
             try? ctx.save()
         }
     }
@@ -567,7 +558,7 @@ struct JournalTabView: View {
         inlineLinkifyTask?.cancel()
         let sourceID = inlineLinkifySourceID
         inlineLinkifyTask = Task(priority: .userInitiated) {
-            try? await Task.sleep(nanoseconds: 180_000_000) // 180ms
+            try? await Task.sleep(nanoseconds: 180_000_000)
             if Task.isCancelled { return }
             let result = BibleReferenceLinker.linkify(text)
             await MainActor.run {
@@ -617,16 +608,23 @@ struct JournalTabView: View {
                             .padding(.leading, 5)
                             .allowsHitTesting(false)
                     }
-                    TextEditor(text: Binding(
-                        get: { entry.body },
-                        set: { new in
-                            entry.body = new
-                            entry.updatedAt = Date()
-                            inlineLinkifySourceID = UUID()
-                            scheduleInlineLinkify(for: new)
-                            scheduleAutosave()
+                    CursorTextView(
+                        text: Binding(
+                            get: { entry.body },
+                            set: { new in
+                                entry.body = new
+                                entry.updatedAt = Date()
+                                inlineLinkifySourceID = UUID()
+                                scheduleInlineLinkify(for: new)
+                                scheduleAutosave()
+                            }
+                        ),
+                        selection: $editSelection,
+                        caretRect: $editCaretRect,
+                        onChange: { _ in
+                            detectHashTriggerInEdit(entry: entry)
                         }
-                    ))
+                    )
                     .frame(minHeight: hSize == .regular ? 360 : 240)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -645,12 +643,10 @@ struct JournalTabView: View {
             inlineLinkifyTask?.cancel()
             inlineLinkifyTask = nil
             inlineLinkifySourceID = UUID()
-            // Final save on exit edit pane
             try? ctx.save()
         }
     }
 
-    // Make non-link text transparent, style links blue/underlined
     private func inlineLinkedBodyMasked(from linked: AttributedString) -> AttributedString {
         var s = linked
         s.foregroundColor = .clear
@@ -712,9 +708,80 @@ struct JournalTabView: View {
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
     }
-}
 
-#Preview {
-    JournalTabView()
-}
+    // MARK: - Smart link handling in edit mode
 
+    private func detectHashTriggerInEdit(entry: JournalEntry) {
+        let t = entry.body
+        let caretLoc = editSelection.location
+        let utf16 = t.utf16
+        let clamped = min(max(caretLoc, 0), utf16.count)
+        guard let caretUTF16Index = utf16.index(utf16.startIndex, offsetBy: clamped, limitedBy: utf16.endIndex),
+              let caretIndex = caretUTF16Index.samePosition(in: t) else {
+            return
+        }
+
+        let allowed: CharacterSet = CharacterSet.letters
+            .union(.decimalDigits)
+            .union(CharacterSet(charactersIn: ".:-"))
+        var i = caretIndex
+        var foundHash: String.Index? = nil
+        while i > t.startIndex {
+            i = t.index(before: i)
+            let ch = t[i]
+            if ch == "#" { foundHash = i; break }
+            if ch.isWhitespace || ch == "\n" { break }
+            if let scalar = ch.unicodeScalars.first, !allowed.contains(scalar) { break }
+        }
+        guard let hashIdx = foundHash else { return }
+
+        var endIdx = t.index(after: hashIdx)
+        while endIdx < t.endIndex {
+            let ch = t[endIdx]
+            if ch.isWhitespace || ch == "\n" { break }
+            endIdx = t.index(after: endIdx)
+        }
+
+        let startUTF16 = t.utf16.distance(from: t.utf16.startIndex, to: hashIdx)
+        let endUTF16 = t.utf16.distance(from: t.utf16.startIndex, to: endIdx)
+        let range = NSRange(location: startUTF16, length: endUTF16 - startUTF16)
+        pendingTriggerRange = range
+
+        if !showSmartLinkSheet {
+            showSmartLinkSheet = true
+        }
+    }
+
+    private func insertSmartLink(_ refText: String, into entry: JournalEntry) {
+        var t = entry.body
+        let insertion = refText
+        if let range = pendingTriggerRange {
+            if let strRange = Range(range, in: t) {
+                t.replaceSubrange(strRange, with: insertion)
+                entry.body = t
+                let newLoc = range.location + insertion.utf16.count
+                editSelection = NSRange(location: newLoc, length: 0)
+            } else {
+                let loc = min(max(editSelection.location, 0), (t as NSString).length)
+                if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
+                    t.insert(contentsOf: insertion, at: idx)
+                    entry.body = t
+                    editSelection = NSRange(location: loc + insertion.utf16.count, length: 0)
+                }
+            }
+        } else {
+            let loc = min(max(editSelection.location, 0), (t as NSString).length)
+            if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
+                t.insert(contentsOf: insertion, at: idx)
+                entry.body = t
+                editSelection = NSRange(location: loc + insertion.utf16.count, length: 0)
+            }
+        }
+        pendingTriggerRange = nil
+        showSmartLinkSheet = false
+        inlineLinkifySourceID = UUID()
+        scheduleInlineLinkify(for: entry.body)
+        entry.updatedAt = Date()
+        scheduleAutosave()
+    }
+}
