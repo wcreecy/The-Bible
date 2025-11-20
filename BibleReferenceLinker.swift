@@ -150,9 +150,11 @@ enum BibleReferenceLinker {
             let chapterRange = m.range(at: 3)
             let startRange = m.range(at: 4)
             let endRange = m.range(at: 5)
+
             let rawBook = ns.substring(with: bookRange)
             // Resolve raw token (may be shorthand) to a canonical book name
             guard let resolvedBook = resolveBook(named: rawBook) else { continue }
+
             let chapStr = ns.substring(with: chapterRange)
             let startStr = ns.substring(with: startRange)
             let endStr: String? = endRange.location != NSNotFound ? ns.substring(with: endRange) : nil
@@ -171,10 +173,15 @@ enum BibleReferenceLinker {
             if let end = end { comps.queryItems?.append(URLQueryItem(name: "end", value: String(end))) }
             guard let url = comps.url else { continue }
 
-            // Build the hyperlink range from the beginning of the book through the end of the full match
-            let overall = m.range(at: 0)
+            // Build the hyperlink range strictly from the beginning of the book token
+            // through the end of the captured verse/range, independent of the boundary.
+            // Determine the last captured numeric range to include:
+            let lastNumericRange: NSRange = (endRange.location != NSNotFound) ? endRange : startRange
+            // Compute an NSRange that spans from book start to end of last numeric group
             let linkStart = bookRange.location
-            let linkLength = overall.location + overall.length - linkStart
+            let linkEndExclusive = lastNumericRange.location + lastNumericRange.length
+            let linkLength = max(0, linkEndExclusive - linkStart)
+            guard linkLength > 0 else { continue }
             let fullLinkRange = NSRange(location: linkStart, length: linkLength)
 
             if let strRange = Range(fullLinkRange, in: text) {

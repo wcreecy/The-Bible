@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SmartLinkSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.horizontalSizeClass) private var hSize
 
     let onConfirm: (String) -> Void
 
@@ -36,142 +37,27 @@ struct SmartLinkSheet: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 12) {
-                // One row of columns; each column has its own label + field(s)
-                HStack(alignment: .top, spacing: 12) {
-                    // Book column
-                    VStack(alignment: .leading, spacing: 6) {
-                        fieldLabel("Book")
-                        VStack(alignment: .leading, spacing: 6) {
-                            TextField("Book", text: $bookQuery)
-                                .textInputAutocapitalization(.words)
-                                .autocorrectionDisabled(true)
-                                .focused($focusedField, equals: .book)
-                                .textFieldStyle(.roundedBorder)
-                                .onChange(of: bookQuery) { _, newValue in
-                                    filterBooks(with: newValue)
-                                    if let sel = selectedBookName, sel.caseInsensitiveCompare(newValue) != .orderedSame {
-                                        selectedBookName = nil
-                                        loadedBook = nil
-                                    }
-                                }
-                                .overlay(alignment: .trailing) {
-                                    if !bookQuery.isEmpty {
-                                        Button {
-                                            bookQuery = ""
-                                            filteredBooks = allBookNames.prefix(10).map { $0 }
-                                        } label: {
-                                            Image(systemName: "xmark.circle.fill")
-                                                .foregroundStyle(.secondary)
-                                        }
-                                        .buttonStyle(.plain)
-                                        .padding(.trailing, 8)
-                                    }
-                                }
-
-                            // Inline suggestions directly below the TextField
-                            if focusedField == .book, !isLoadingBooks, !filteredBooks.isEmpty {
-                                ScrollView {
-                                    VStack(alignment: .leading, spacing: 6) {
-                                        ForEach(filteredBooks.prefix(8), id: \.self) { name in
-                                            Button {
-                                                pickBook(name)
-                                                // Move focus to Chapter, but do not jump further
-                                                selectAllOnNextFocus(.chapter)
-                                            } label: {
-                                                HStack {
-                                                    Text(name)
-                                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                                }
-                                                .padding(.vertical, 6)
-                                                .padding(.horizontal, 10)
-                                                .background(
-                                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                                        .fill(Color(.secondarySystemBackground))
-                                                )
-                                            }
-                                            .buttonStyle(.plain)
-                                        }
-                                    }
-                                    .padding(.vertical, 4)
-                                }
-                                .frame(maxHeight: 160)
-                                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                                .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 3)
-                                .zIndex(10)
-                            }
-                        }
-                        .frame(minWidth: 160)
+                if hSize == .regular {
+                    // iPad / regular width: original single row layout
+                    HStack(alignment: .top, spacing: 12) {
+                        bookColumn
+                            .frame(minWidth: 160)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        chapterColumn
+                        startColumn
+                        endColumn
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                    // Chapter column
-                    VStack(alignment: .leading, spacing: 6) {
-                        fieldLabel("Chapter")
-                        HStack(spacing: 6) {
-                            TextField("1", text: $chapter)
-                                .keyboardType(.numberPad)
-                                .focused($focusedField, equals: .chapter)
-                                .textFieldStyle(.roundedBorder)
-                                .frame(width: 56) // 3 digits max
-                                .onChange(of: chapter) { _, _ in
-                                    clampChapterAndVerses()
-                                    // Keep focus in Chapter; do not auto-advance
-                                }
-                            Button {
-                                if loadedBook != nil { showChapterPicker = true }
-                            } label: {
-                                Image(systemName: "chevron.down.circle")
-                            }
-                            .buttonStyle(.plain)
-                            .foregroundStyle(loadedBook == nil ? AnyShapeStyle(.tertiary) : AnyShapeStyle(.blue))
-                            .disabled(loadedBook == nil)
-                        }
-                    }
-
-                    // Start column
-                    VStack(alignment: .leading, spacing: 6) {
-                        fieldLabel("Start")
-                        HStack(spacing: 6) {
-                            TextField("1", text: $startVerse)
-                                .keyboardType(.numberPad)
-                                .focused($focusedField, equals: .start)
-                                .textFieldStyle(.roundedBorder)
-                                .frame(width: 56) // 3 digits max
-                                .onChange(of: startVerse) { _, _ in
-                                    clampChapterAndVerses()
-                                    // Keep focus unless user moves
-                                }
-                            Button {
-                                if loadedBook != nil, currentChapter() != nil { showStartPicker = true }
-                            } label: {
-                                Image(systemName: "chevron.down.circle")
-                            }
-                            .buttonStyle(.plain)
-                            .foregroundStyle(!(loadedBook != nil && currentChapter() != nil) ? AnyShapeStyle(.tertiary) : AnyShapeStyle(.blue))
-                            .disabled(!(loadedBook != nil && currentChapter() != nil))
-                        }
-                    }
-
-                    // End column
-                    VStack(alignment: .leading, spacing: 6) {
-                        fieldLabel("End")
-                        HStack(spacing: 6) {
-                            TextField("—", text: $endVerse)
-                                .keyboardType(.numberPad)
-                                .focused($focusedField, equals: .end)
-                                .textFieldStyle(.roundedBorder)
-                                .frame(width: 56) // 3 digits max
-                                .onChange(of: endVerse) { _, _ in
-                                    clampChapterAndVerses()
-                                }
-                            Button {
-                                if loadedBook != nil, currentChapter() != nil { showEndPicker = true }
-                            } label: {
-                                Image(systemName: "chevron.down.circle")
-                            }
-                            .buttonStyle(.plain)
-                            .foregroundStyle(!(loadedBook != nil && currentChapter() != nil) ? AnyShapeStyle(.tertiary) : AnyShapeStyle(.blue))
-                            .disabled(!(loadedBook != nil && currentChapter() != nil))
+                } else {
+                    // iPhone / compact width: Book on first row, Chapter/Start/End on second row
+                    VStack(spacing: 12) {
+                        bookColumn
+                        HStack(alignment: .top, spacing: 12) {
+                            chapterColumn
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            startColumn
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            endColumn
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
                 }
@@ -229,9 +115,7 @@ struct SmartLinkSheet: View {
                             set: { newValue in
                                 chapter = String(newValue)
                                 clampChapterAndVerses()
-                                // Stay on Chapter
                                 selectAllOnNextFocus(.chapter)
-                                // Dismiss on selection
                                 showChapterPicker = false
                             }
                         )
@@ -248,9 +132,7 @@ struct SmartLinkSheet: View {
                             set: { newValue in
                                 startVerse = String(newValue)
                                 clampChapterAndVerses()
-                                // Stay on Start
                                 selectAllOnNextFocus(.start)
-                                // Dismiss on selection
                                 showStartPicker = false
                             }
                         )
@@ -264,15 +146,14 @@ struct SmartLinkSheet: View {
                         items: ch.verses.map { $0.number },
                         selection: Binding(
                             get: {
-                                if let e = Int(endVerse) { return e }
-                                return Int(startVerse) ?? (ch.verses.first?.number ?? 1)
+                                if let e = Int(endVerse), ch.verses.contains(where: { $0.number == e }) { return e }
+                                if let s = Int(startVerse), ch.verses.contains(where: { $0.number == s }) { return s }
+                                return ch.verses.first?.number ?? 1
                             },
                             set: { newValue in
                                 endVerse = String(newValue)
                                 clampChapterAndVerses()
-                                // Stay on End
                                 selectAllOnNextFocus(.end)
-                                // Dismiss on selection
                                 showEndPicker = false
                             }
                         )
@@ -280,7 +161,145 @@ struct SmartLinkSheet: View {
                 }
             }
         }
-        .presentationDetents([.medium])
+        // Keep sheet size modest on iPhone
+        .presentationDetents([.medium, .large])
+    }
+
+    // MARK: - Columns
+
+    private var bookColumn: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            fieldLabel("Book")
+            VStack(alignment: .leading, spacing: 6) {
+                TextField("Book", text: $bookQuery)
+                    .textInputAutocapitalization(.words)
+                    .autocorrectionDisabled(true)
+                    .focused($focusedField, equals: .book)
+                    .textFieldStyle(.roundedBorder)
+                    .onChange(of: bookQuery) { _, newValue in
+                        filterBooks(with: newValue)
+                        if let sel = selectedBookName, sel.caseInsensitiveCompare(newValue) != .orderedSame {
+                            selectedBookName = nil
+                            loadedBook = nil
+                        }
+                    }
+                    .overlay(alignment: .trailing) {
+                        if !bookQuery.isEmpty {
+                            Button {
+                                bookQuery = ""
+                                filteredBooks = allBookNames.prefix(10).map { $0 }
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                            .buttonStyle(.plain)
+                            .padding(.trailing, 8)
+                        }
+                    }
+
+                if focusedField == .book, !isLoadingBooks, !filteredBooks.isEmpty {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 6) {
+                            ForEach(filteredBooks.prefix(8), id: \.self) { name in
+                                Button {
+                                    pickBook(name)
+                                    selectAllOnNextFocus(.chapter)
+                                } label: {
+                                    HStack {
+                                        Text(name)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 10)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                            .fill(Color(.secondarySystemBackground))
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    .frame(maxHeight: 160)
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 3)
+                    .zIndex(10)
+                }
+            }
+        }
+    }
+
+    private var chapterColumn: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            fieldLabel("Chapter")
+            HStack(spacing: 6) {
+                TextField("1", text: $chapter)
+                    .keyboardType(.numberPad)
+                    .focused($focusedField, equals: .chapter)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 56)
+                    .onChange(of: chapter) { _, _ in
+                        clampChapterAndVerses()
+                    }
+                Button {
+                    if loadedBook != nil { showChapterPicker = true }
+                } label: {
+                    Image(systemName: "chevron.down.circle")
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(loadedBook == nil ? AnyShapeStyle(.tertiary) : AnyShapeStyle(.blue))
+                .disabled(loadedBook == nil)
+            }
+        }
+    }
+
+    private var startColumn: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            fieldLabel("Start")
+            HStack(spacing: 6) {
+                TextField("1", text: $startVerse)
+                    .keyboardType(.numberPad)
+                    .focused($focusedField, equals: .start)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 56)
+                    .onChange(of: startVerse) { _, _ in
+                        clampChapterAndVerses()
+                    }
+                Button {
+                    if loadedBook != nil, currentChapter() != nil { showStartPicker = true }
+                } label: {
+                    Image(systemName: "chevron.down.circle")
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(!(loadedBook != nil && currentChapter() != nil) ? AnyShapeStyle(.tertiary) : AnyShapeStyle(.blue))
+                .disabled(!(loadedBook != nil && currentChapter() != nil))
+            }
+        }
+    }
+
+    private var endColumn: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            fieldLabel("End")
+            HStack(spacing: 6) {
+                TextField("—", text: $endVerse)
+                    .keyboardType(.numberPad)
+                    .focused($focusedField, equals: .end)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 56)
+                    .onChange(of: endVerse) { _, _ in
+                        clampChapterAndVerses()
+                    }
+                Button {
+                    if loadedBook != nil, currentChapter() != nil { showEndPicker = true }
+                } label: {
+                    Image(systemName: "chevron.down.circle")
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(!(loadedBook != nil && currentChapter() != nil) ? AnyShapeStyle(.tertiary) : AnyShapeStyle(.blue))
+                .disabled(!(loadedBook != nil && currentChapter() != nil))
+            }
+        }
     }
 
     // MARK: - UI helpers
@@ -289,7 +308,6 @@ struct SmartLinkSheet: View {
         Text(text)
             .font(.caption)
             .foregroundStyle(.secondary)
-            // No infinite width here so labels align with their own fields
             .frame(alignment: .leading)
     }
 
@@ -406,19 +424,16 @@ struct SmartLinkSheet: View {
         let maxV = ch.verses.last?.number ?? minV
 
         // Clamp start only if a numeric value was entered
-        var resolvedStart: Int? = nil
         if let svInt = Int(startVerse) {
             let clampedSV = min(max(svInt, minV), maxV)
             if startVerse != String(clampedSV) {
                 startVerse = String(clampedSV)
             }
-            resolvedStart = clampedSV
         }
 
-        // Clamp end only if user entered something numeric
-        if !endVerse.isEmpty, let evInt = Int(endVerse) {
-            let lowerBound = resolvedStart ?? minV
-            let clampedEV = min(max(evInt, lowerBound), maxV)
+        // Clamp end only to chapter bounds; do NOT auto-raise it to start.
+        if let evInt = Int(endVerse) {
+            let clampedEV = min(max(evInt, minV), maxV)
             if endVerse != String(clampedEV) {
                 endVerse = String(clampedEV)
             }
@@ -427,25 +442,8 @@ struct SmartLinkSheet: View {
 
     // MARK: - Validity helpers and select-all behavior
 
-    private func isChapterValid() -> Bool {
-        guard let b = loadedBook, let chap = Int(chapter) else { return false }
-        return chap >= (b.chapters.first?.number ?? 1) && chap <= (b.chapters.last?.number ?? 1)
-    }
-
-    private func isStartValid() -> Bool {
-        guard let ch = currentChapter(), let sv = Int(startVerse) else { return false }
-        let minV = ch.verses.first?.number ?? 1
-        let maxV = ch.verses.last?.number ?? minV
-        return sv >= minV && sv <= maxV
-    }
-
     private func selectAllOnNextFocus(_ field: Field) {
-        DispatchQueue.main.async {
-            focusedField = field
-            // Note: SwiftUI TextField doesn’t expose programmatic select-all;
-            // focusing the field with a prefilled value allows immediate typing to replace.
-            // If needed later, swap to a UIKit-backed field to set selection range.
-        }
+        DispatchQueue.main.async { focusedField = field }
     }
 }
 

@@ -128,7 +128,7 @@ struct ContentView: View {
 
             // Prewarm linkify and book names to reduce first-typing latency in Journal
             Task.detached {
-                _ = BibleReferenceLinker.linkify("")
+                _ = await BibleReferenceLinker.linkify("")
                 _ = await BibleLibrary.shared.bookNames()
             }
 
