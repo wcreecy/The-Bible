@@ -594,7 +594,7 @@ struct HomeView: View {
                             Text("Today's Focus")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
-                            TextField("Shown on Dynamic Island", text: $focusTitle)
+                            TextField("What's your focus on today?", text: $focusTitle)
                                 .textFieldStyle(.roundedBorder)
                                 .submitLabel(.done)
                                 .focused($focusTitleIsFocused)

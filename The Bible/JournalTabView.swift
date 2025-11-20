@@ -25,74 +25,40 @@ struct JournalTabView: View {
     @State private var refreshToken: String = ""
     @State private var splitVisibility: NavigationSplitViewVisibility = .all
 
-    @AppStorage("journalPinnedIDs") private var pinnedIDsRaw: String = ""
-
-    @State private var showingInlineEditor: Bool = false
-    @State private var inlineEditorInitialBody: String? = nil
-    @State private var inlineEditorEditingEntry: JournalEntry? = nil
-
     // Cached filtered list to avoid recomputing every render
     @State private var cachedFilteredEntries: [JournalEntry] = []
     @State private var filterDebounceTask: Task<Void, Never>? = nil
 
-    private func recomputeFilteredEntries() {
-        let currentEntries = entries
-        let currentTags = selectedTags
-        let currentQuery = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    // Pin cache (avoid repeated split/join)
+    @AppStorage("journalPinnedIDs") private var pinnedIDsRaw: String = ""
+    @State private var pinnedIDs: Set<String> = []
 
-        filterDebounceTask?.cancel()
-        filterDebounceTask = Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 120_000_000) // 120ms debounce
-            var list = currentEntries
-            // Tag filter (AND across selected tags)
-            if !currentTags.isEmpty {
-                let target = Set(currentTags.map { $0.lowercased() })
-                list = list.filter { entry in
-                    let entryTags = Set(entry.tags.map { $0.lowercased() })
-                    return target.isSubset(of: entryTags)
-                }
-            }
-            // Search filter across title, tags, and body
-            if !currentQuery.isEmpty {
-                list = list.filter { entry in
-                    let titleMatch = entry.title.localizedCaseInsensitiveContains(currentQuery)
-                    let tagsMatch = entry.tags.contains { $0.localizedCaseInsensitiveContains(currentQuery) }
-                    let bodyMatch = entry.body.localizedCaseInsensitiveContains(currentQuery)
-                    return titleMatch || tagsMatch || bodyMatch
-                }
-            }
-            // Sort: pinned first, then preserve original order based on the original entries array
-            let indexMap: [UUID: Int] = Dictionary(uniqueKeysWithValues: currentEntries.enumerated().map { ($1.id, $0) })
-            let pins = readPinnedIDs()
-            list.sort { lhs, rhs in
-                let lp = pins.contains(lhs.id.uuidString)
-                let rp = pins.contains(rhs.id.uuidString)
-                if lp != rp { return lp && !rp }
-                let li = indexMap[lhs.id] ?? 0
-                let ri = indexMap[rhs.id] ?? 0
-                return li < ri
-            }
-            cachedFilteredEntries = list
-        }
-    }
+    // Inline editor autosave
+    @State private var autosaveTask: Task<Void, Never>? = nil
 
-    private func readPinnedIDs() -> Set<String> {
+    // Inline linkify cache for preview overlay (debounced)
+    @State private var inlineLinkedBody: AttributedString = AttributedString("")
+    @State private var inlineLinkifyTask: Task<Void, Never>? = nil
+    @State private var inlineLinkifySourceID: UUID = UUID()
+
+    private func loadPins() {
         let parts = pinnedIDsRaw.split(separator: ",").map { String($0) }
-        return Set(parts)
+        pinnedIDs = Set(parts)
     }
-    private func writePinnedIDs(_ set: Set<String>) {
-        pinnedIDsRaw = set.joined(separator: ",")
+    private func persistPins() {
+        pinnedIDsRaw = pinnedIDs.joined(separator: ",")
     }
     private func isPinned(_ entry: JournalEntry) -> Bool {
-        let pins = readPinnedIDs()
-        return pins.contains(entry.id.uuidString)
+        pinnedIDs.contains(entry.id.uuidString)
     }
     private func togglePin(_ entry: JournalEntry) {
-        var pins = readPinnedIDs()
         let key = entry.id.uuidString
-        if pins.contains(key) { pins.remove(key) } else { pins.insert(key) }
-        writePinnedIDs(pins)
-        // Recompute ordering to reflect pin change
+        if pinnedIDs.contains(key) {
+            pinnedIDs.remove(key)
+        } else {
+            pinnedIDs.insert(key)
+        }
+        persistPins()
         recomputeFilteredEntries()
     }
 
@@ -133,6 +99,47 @@ struct JournalTabView: View {
         recomputeFilteredEntries()
     }
 
+    private func recomputeFilteredEntries() {
+        let currentEntries = entries
+        let currentTags = selectedTags
+        let currentQuery = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let currentPins = pinnedIDs
+
+        filterDebounceTask?.cancel()
+        filterDebounceTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 120_000_000) // 120ms debounce
+            var list = currentEntries
+            // Tag filter (AND across selected tags)
+            if !currentTags.isEmpty {
+                let target = Set(currentTags.map { $0.lowercased() })
+                list = list.filter { entry in
+                    let entryTags = Set(entry.tags.map { $0.lowercased() })
+                    return target.isSubset(of: entryTags)
+                }
+            }
+            // Search filter across title, tags, and body
+            if !currentQuery.isEmpty {
+                list = list.filter { entry in
+                    let titleMatch = entry.title.localizedCaseInsensitiveContains(currentQuery)
+                    let tagsMatch = entry.tags.contains { $0.localizedCaseInsensitiveContains(currentQuery) }
+                    let bodyMatch = entry.body.localizedCaseInsensitiveContains(currentQuery)
+                    return titleMatch || tagsMatch || bodyMatch
+                }
+            }
+            // Sort: pinned first, then preserve original order based on the original entries array
+            let indexMap: [UUID: Int] = Dictionary(uniqueKeysWithValues: currentEntries.enumerated().map { ($1.id, $0) })
+            list.sort { lhs, rhs in
+                let lp = currentPins.contains(lhs.id.uuidString)
+                let rp = currentPins.contains(rhs.id.uuidString)
+                if lp != rp { return lp && !rp }
+                let li = indexMap[lhs.id] ?? 0
+                let ri = indexMap[rhs.id] ?? 0
+                return li < ri
+            }
+            cachedFilteredEntries = list
+        }
+    }
+
     var body: some View {
         if hSize == .regular {
             NavigationSplitView(columnVisibility: $splitVisibility) {
@@ -170,9 +177,7 @@ struct JournalTabView: View {
                                 .accessibilityLabel("Cancel Selection")
                             } else {
                                 Button {
-                                    inlineEditorEditingEntry = nil
-                                    inlineEditorInitialBody = nil
-                                    showingInlineEditor = true
+                                    journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
                                 } label: {
                                     Image(systemName: "square.and.pencil")
                                 }
@@ -191,26 +196,9 @@ struct JournalTabView: View {
                     .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
                     .frame(minWidth: 280)
             } detail: {
-                if showingInlineEditor {
-                    // Inline editor in right column using the same sheet UI
-                    JournalEditorView(
-                        verseRef: nil,
-                        initialBody: inlineEditorInitialBody,
-                        showTagColors: false,
-                        editingEntry: inlineEditorEditingEntry,
-                        onClose: {
-                            showingInlineEditor = false
-                            inlineEditorEditingEntry = nil
-                            inlineEditorInitialBody = nil
-                            // Refresh list after create or update
-                            refreshToken = UUID().uuidString
-                            recomputeFilteredEntries()
-                        }
-                    )
-                } else if let e = selectedEntry {
+                if let e = selectedEntry {
                     if isEditing {
                         HStack(spacing: 0) {
-                            // Option A: enable inline preview so taps open third column
                             editorPane(entry: e, showInlinePreview: true)
                                 .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                                 .layoutPriority(1)
@@ -220,7 +208,6 @@ struct JournalTabView: View {
                         }
                         .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
                         .toolbar {
-                            // Place Cancel and Done together as icon buttons on the trailing side
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 Button {
                                     // Cancel editing; discard tag text changes
@@ -228,7 +215,7 @@ struct JournalTabView: View {
                                 } label: {
                                     Image(systemName: "xmark.circle")
                                 }
-                                .buttonStyle(.plain) // remove background styling
+                                .buttonStyle(.plain)
                                 .accessibilityLabel("Cancel")
 
                                 Button {
@@ -238,13 +225,13 @@ struct JournalTabView: View {
                                         .filter { !$0.isEmpty }
                                     e.tags = tags
                                     e.updatedAt = Date()
-                                    isEditing = false
                                     try? ctx.save()
+                                    isEditing = false
                                     recomputeFilteredEntries()
                                 } label: {
                                     Image(systemName: "checkmark.circle")
                                 }
-                                .buttonStyle(.plain) // remove background styling
+                                .buttonStyle(.plain)
                                 .accessibilityLabel("Done")
                             }
                         }
@@ -252,14 +239,10 @@ struct JournalTabView: View {
                         Group {
                             if showPreview, previewContent != nil {
                                 HStack(spacing: 0) {
-                                    // Left: Read-only entry content
                                     readOnlyPane(entry: e)
                                         .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                                         .layoutPriority(1)
-
                                     Divider()
-
-                                    // Right: Scripture preview (third column)
                                     ScrollView { previewPane(entry: e) }
                                         .frame(minWidth: 320, idealWidth: 360, maxWidth: 420, maxHeight: .infinity, alignment: .topLeading)
                                 }
@@ -285,15 +268,17 @@ struct JournalTabView: View {
                 }
             }
             .navigationSplitViewStyle(.balanced)
-            .onAppear { splitVisibility = .all }
+            .onAppear {
+                splitVisibility = .all
+                loadPins()
+                recomputeFilteredEntries()
+            }
             .onChange(of: hSize) { _, _ in splitVisibility = .all }
-            .onAppear { recomputeFilteredEntries() }
             .onChange(of: entries) { _, _ in recomputeFilteredEntries() }
             .onChange(of: searchText) { _, _ in recomputeFilteredEntries() }
             .onChange(of: selectedTags) { _, _ in recomputeFilteredEntries() }
-            .onReceive(NotificationCenter.default.publisher(for: Notification.Name("JournalEntryCreated"))) { note in
+            .onReceive(NotificationCenter.default.publisher(for: JournalNotifications.entryCreated)) { note in
                 if let id = note.userInfo?["id"] as? String {
-                    // Force a lightweight refresh; reselect the new entry if present
                     refreshToken = id
                     if let created = entries.first(where: { $0.id.uuidString == id }) {
                         selectedEntry = created
@@ -303,8 +288,12 @@ struct JournalTabView: View {
                 }
                 recomputeFilteredEntries()
             }
+            .onDisappear {
+                filterDebounceTask?.cancel()
+                filterDebounceTask = nil
+            }
         } else {
-            // Compact width: simple list + push to detail
+            // Compact width
             NavigationStack {
                 List(selection: $selectedForDeletion) {
                     Section {
@@ -383,19 +372,19 @@ struct JournalTabView: View {
                 .navigationDestination(for: JournalEntry.self) { entry in
                     JournalDetailView(entry: entry)
                 }
-                .onAppear { recomputeFilteredEntries() }
+                .onAppear {
+                    loadPins()
+                    recomputeFilteredEntries()
+                }
                 .onChange(of: entries) { _, _ in recomputeFilteredEntries() }
                 .onChange(of: searchText) { _, _ in recomputeFilteredEntries() }
                 .onChange(of: selectedTags) { _, _ in recomputeFilteredEntries() }
+                .onDisappear {
+                    filterDebounceTask?.cancel()
+                    filterDebounceTask = nil
+                }
             }
         }
-    }
-
-    private var parsedEditingTags: [String] {
-        editingTagsText
-            .split(separator: ",")
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
     }
 
     @ViewBuilder
@@ -464,7 +453,6 @@ struct JournalTabView: View {
     private func listRow(for entry: JournalEntry) -> some View {
         let isPadSelected = (hSize == .regular) && (selectedEntry?.id == entry.id)
         VStack(alignment: .leading, spacing: 2) {
-            // Content area that should be highlighted (between dividers)
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
                     if isPinned(entry) {
@@ -479,19 +467,9 @@ struct JournalTabView: View {
                     HStack(spacing: 3) {
                         ForEach(entry.tags.prefix(4), id: \.self) { t in
                             let tint = TagColorStore.color(for: t) ?? .accentColor
-                            let isSelected = selectedTags.contains(t.lowercased())
-                            Button(action: { toggleTagFilter(t) }) {
-                                Text(t)
-                                    .font(.caption2)
-                                    .padding(.horizontal, 5)
-                                    .padding(.vertical, 1)
-                                    .background((isSelected ? tint : tint).opacity(isSelected ? 0.30 : 0.15), in: Capsule())
-                                    .overlay(
-                                        Capsule().stroke((isSelected ? tint : tint).opacity(isSelected ? 0.8 : 0.4), lineWidth: isSelected ? 2 : 1)
-                                    )
-                                    .foregroundStyle(tint)
+                            TagChip(text: t, tint: tint, isSelected: selectedTags.contains(t.lowercased())) {
+                                toggleTagFilter(t)
                             }
-                            .buttonStyle(.plain)
                         }
                     }
                 }
@@ -516,8 +494,6 @@ struct JournalTabView: View {
                         .fill(Color(.tertiarySystemFill))
                 ) : AnyView(EmptyView())
             )
-
-            // Divider remains outside the highlight to visually bound the selection
             if hSize == .regular {
                 Divider()
                     .padding(.top, 3)
@@ -534,18 +510,7 @@ struct JournalTabView: View {
                 Text(entry.title.isEmpty ? "Untitled" : entry.title)
                     .font(.title2).bold()
                 if !entry.tags.isEmpty {
-                    HStack(spacing: 8) {
-                        ForEach(entry.tags, id: \.self) { t in
-                            let tint = TagColorStore.color(for: t) ?? .accentColor
-                            Text(t)
-                                .font(.caption)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(tint.opacity(0.15), in: Capsule())
-                                .overlay(Capsule().stroke(tint.opacity(0.4), lineWidth: 1))
-                                .foregroundStyle(tint)
-                        }
-                    }
+                    TagChipRow(tags: entry.tags, selectedTags: [], showColorPicker: false, onTap: nil, onColorChange: nil)
                 }
                 if let ref = entry.verseRef {
                     Text(ref.display)
@@ -566,48 +531,12 @@ struct JournalTabView: View {
                         return .systemAction
                     })
                 if hSize != .regular, let content = previewContent, showPreview {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack(spacing: 8) {
-                            Text(content.title)
-                                .font(.headline)
-                            Spacer()
-                            Button(action: {
-                                let verseLines = content.verses.map { "\($0.number). \($0.text)" }.joined(separator: "\n")
-                                let copyText = content.title + "\n" + verseLines
-                                UIPasteboard.general.string = copyText
-                            }) {
-                                Image(systemName: "doc.on.doc")
-                                    .foregroundStyle(.blue)
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel("Copy scripture")
-
-                            Button(action: { withAnimation(.easeOut) { showPreview = false } }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundStyle(.secondary)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                        ForEach(content.verses, id: \.number) { v in
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(v.text)
-                                    .font(.body)
-                                Text("\(previewRef?.bookName ?? "") \(previewRef?.chapter ?? 0):\(v.number)")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            if v.number != content.verses.last?.number { Divider().padding(.vertical, 4) }
-                        }
-                    }
-                    .padding(12)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                    )
+                    ScripturePreviewCard(content: content, refContext: previewRef, onCopy: {
+                        let verseLines = content.verses.map { "\($0.number). \($0.text)" }.joined(separator: "\n")
+                        UIPasteboard.general.string = content.title + "\n" + verseLines
+                    }, onClose: {
+                        withAnimation(.easeOut) { showPreview = false }
+                    })
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
                 Divider()
@@ -624,46 +553,51 @@ struct JournalTabView: View {
         }
     }
 
-    @ViewBuilder
-    private func editorPane(entry: JournalEntry, showInlinePreview: Bool = true) -> some View {
-        let linkedBody = BibleReferenceLinker.linkify(entry.body)
-        var linkOverlayBody: AttributedString {
-            var s = linkedBody
-            // Make everything transparent first
-            s.foregroundColor = .clear
-            // Re-color and underline only link ranges
-            for run in s.runs {
-                if run.link != nil {
-                    s[run.range].foregroundColor = .blue
-                    s[run.range].underlineStyle = .single
+    // Debounced save to improve typing performance and power use
+    private func scheduleAutosave() {
+        autosaveTask?.cancel()
+        autosaveTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 400_000_000) // 400ms
+            try? ctx.save()
+        }
+    }
+
+    // Debounced linkify for inline overlay
+    private func scheduleInlineLinkify(for text: String) {
+        inlineLinkifyTask?.cancel()
+        let sourceID = inlineLinkifySourceID
+        inlineLinkifyTask = Task(priority: .userInitiated) {
+            try? await Task.sleep(nanoseconds: 180_000_000) // 180ms
+            if Task.isCancelled { return }
+            let result = BibleReferenceLinker.linkify(text)
+            await MainActor.run {
+                if sourceID == inlineLinkifySourceID {
+                    self.inlineLinkedBody = result
                 }
             }
-            return s
         }
+    }
 
+    @ViewBuilder
+    private func editorPane(entry: JournalEntry, showInlinePreview: Bool = true) -> some View {
         Form {
             Section("Title") {
-                TextField("Title", text: Binding(get: { entry.title }, set: { entry.title = $0; entry.updatedAt = Date(); try? ctx.save() }))
+                TextField("Title", text: Binding(
+                    get: { entry.title },
+                    set: { new in
+                        entry.title = new
+                        entry.updatedAt = Date()
+                        scheduleAutosave()
+                    }
+                ))
             }
             Section("Tags") {
-                TextField(
-                    "Add tags (comma-separated)",
-                    text: $editingTagsText
-                )
-                .textInputAutocapitalization(.never)
+                TextField("Add tags (comma-separated)", text: $editingTagsText)
+                    .textInputAutocapitalization(.never)
                 if !parsedEditingTags.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        ForEach(parsedEditingTags, id: \.self) { t in
-                            HStack(spacing: 10) {
-                                Circle().fill(TagColorStore.color(for: t) ?? .accentColor).frame(width: 18, height: 18)
-                                Text(t).font(.subheadline)
-                                Spacer()
-                                ColorPicker("", selection: Binding(get: { TagColorStore.color(for: t) ?? .accentColor }, set: { TagColorStore.setColor($0, for: t) }), supportsOpacity: false)
-                                    .labelsHidden()
-                            }
-                            .padding(.vertical, 2)
-                        }
-                    }
+                    TagChipRow(tags: parsedEditingTags, selectedTags: [], showColorPicker: true, onTap: nil, onColorChange: { tag, color in
+                        TagColorStore.setColor(color, for: tag)
+                    })
                     .padding(.top, 4)
                 }
             }
@@ -676,136 +610,94 @@ struct JournalTabView: View {
                             .padding(.leading, 5)
                     }
                     if showInlinePreview {
-                        // Inline smart link overlay (non-interactive)
-                        Text(linkOverlayBody)
+                        Text(inlineLinkedBodyMasked(from: inlineLinkedBody))
                             .font(.body)
-                            .frame(maxWidth: .infinity, minHeight: hSize == .regular ? 360 : 240, alignment: .topLeading) // taller on iPad
+                            .frame(maxWidth: .infinity, minHeight: hSize == .regular ? 360 : 240, alignment: .topLeading)
                             .padding(.top, 8)
                             .padding(.leading, 5)
                             .allowsHitTesting(false)
                     }
-                    // Actual editor
-                    TextEditor(text: Binding(get: { entry.body }, set: { entry.body = $0; entry.updatedAt = Date(); try? ctx.save() }))
-                        .frame(minHeight: hSize == .regular ? 360 : 240) // taller on iPad
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                        )
+                    TextEditor(text: Binding(
+                        get: { entry.body },
+                        set: { new in
+                            entry.body = new
+                            entry.updatedAt = Date()
+                            inlineLinkifySourceID = UUID()
+                            scheduleInlineLinkify(for: new)
+                            scheduleAutosave()
+                        }
+                    ))
+                    .frame(minHeight: hSize == .regular ? 360 : 240)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                    )
                 }
             }
-            // Live preview under Body was removed previously
         }
-        .onAppear { editingTagsText = entry.tags.joined(separator: ", ") }
+        .onAppear {
+            editingTagsText = entry.tags.joined(separator: ", ")
+            inlineLinkedBody = BibleReferenceLinker.linkify(entry.body)
+        }
+        .onDisappear {
+            autosaveTask?.cancel()
+            autosaveTask = nil
+            inlineLinkifyTask?.cancel()
+            inlineLinkifyTask = nil
+            inlineLinkifySourceID = UUID()
+            // Final save on exit edit pane
+            try? ctx.save()
+        }
+    }
+
+    // Make non-link text transparent, style links blue/underlined
+    private func inlineLinkedBodyMasked(from linked: AttributedString) -> AttributedString {
+        var s = linked
+        s.foregroundColor = .clear
+        for run in s.runs where run.link != nil {
+            s[run.range].foregroundColor = .blue
+            s[run.range].underlineStyle = .single
+        }
+        return s
     }
 
     @ViewBuilder
     private func previewPane(entry: JournalEntry) -> some View {
-        // Extract scripture references (smart links) from the entry body
-        let refs: [ScriptureRef] = {
-            let linkedForRefs = BibleReferenceLinker.linkify(entry.body)
-            var refs: [ScriptureRef] = []
-            var seen: Set<String> = []
-            for run in linkedForRefs.runs {
-                if let url = run.link, let r = BibleReferenceLinker.parse(url: url) {
-                    let key: String = {
-                        if let end = r.endVerse, end != r.startVerse { return "\(r.bookName) \(r.chapter):\(r.startVerse)-\(end)" }
-                        return "\(r.bookName) \(r.chapter):\(r.startVerse)"
-                    }()
-                    if !seen.contains(key) { seen.insert(key); refs.append(r) }
-                }
-            }
-            return refs
-        }()
+        let linkedForRefs = BibleReferenceLinker.linkify(entry.body)
+        let refs: [ScriptureRef] = ScriptureRefExtractor.refs(in: linkedForRefs)
 
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                // Title only
                 Text(entry.title.isEmpty ? "Untitled" : entry.title)
                     .font(.title3).bold()
 
-                // Smart links list (no stats, no body preview)
                 if !refs.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        ForEach(Array(refs.enumerated()), id: \.offset) { _, r in
-                            HStack(spacing: 8) {
-                                Button(action: {
-                                    if let content = BibleReferenceLinker.loadVerses(for: r) {
-                                        previewRef = r
-                                        previewContent = content
-                                        withAnimation(.spring()) { showPreview = true }
-                                    }
-                                }) {
-                                    let display: String = {
-                                        if let end = r.endVerse, end != r.startVerse { return "\(r.bookName) \(r.chapter):\(r.startVerse)-\(end)" }
-                                        return "\(r.bookName) \(r.chapter):\(r.startVerse)"
-                                    }()
-                                    Text(display)
-                                        .font(.subheadline)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .foregroundStyle(.blue)
-                                        .underline()
-                                }
-                                .buttonStyle(.plain)
-
-                                Button {
-                                    UIPasteboard.general.string = (r.endVerse != nil && r.endVerse != r.startVerse)
-                                    ? "\(r.bookName) \(r.chapter):\(r.startVerse)-\(r.endVerse!)"
-                                    : "\(r.bookName) \(r.chapter):\(r.startVerse)"
-                                } label: {
-                                    Image(systemName: "doc.on.doc")
-                                }
-                                .buttonStyle(.plain)
-                                .foregroundStyle(.blue)
-                                .accessibilityLabel("Copy reference")
+                    ScriptureLinksList(
+                        refs: refs,
+                        onTap: { r in
+                            if let content = BibleReferenceLinker.loadVerses(for: r) {
+                                previewRef = r
+                                previewContent = content
+                                withAnimation(.spring()) { showPreview = true }
                             }
+                        },
+                        onCopy: { r in
+                            let display: String = {
+                                if let end = r.endVerse, end != r.startVerse { return "\(r.bookName) \(r.chapter):\(r.startVerse)-\(end)" }
+                                return "\(r.bookName) \(r.chapter):\(r.startVerse)"
+                            }()
+                            UIPasteboard.general.string = display
                         }
-                    }
+                    )
                 }
 
-                // Scripture preview for selected link (if any)
                 if showPreview, let content = previewContent {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack(spacing: 8) {
-                            Text(content.title)
-                                .font(.headline)
-                            Spacer()
-                            Button(action: {
-                                let verseLines = content.verses.map { "\($0.number). \($0.text)" }.joined(separator: "\n")
-                                let copyText = content.title + "\n" + verseLines
-                                UIPasteboard.general.string = copyText
-                            }) {
-                                Image(systemName: "doc.on.doc")
-                                    .foregroundStyle(.blue)
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel("Copy scripture")
-
-                            Button(action: { withAnimation(.easeOut) { showPreview = false } }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundStyle(.secondary)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                        ForEach(content.verses, id: \.number) { v in
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(v.text)
-                                    .font(.body)
-                                Text("\(previewRef?.bookName ?? "") \(previewRef?.chapter ?? 0):\(v.number)")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            if v.number != content.verses.last?.number { Divider().padding(.vertical, 4) }
-                        }
-                    }
-                    .padding(12)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                    )
+                    ScripturePreviewCard(content: content, refContext: previewRef, onCopy: {
+                        let verseLines = content.verses.map { "\($0.number). \($0.text)" }.joined(separator: "\n")
+                        UIPasteboard.general.string = content.title + "\n" + verseLines
+                    }, onClose: {
+                        withAnimation(.easeOut) { showPreview = false }
+                    })
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
@@ -813,8 +705,16 @@ struct JournalTabView: View {
         }
         .id(entry.body)
     }
+
+    private var parsedEditingTags: [String] {
+        editingTagsText
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+    }
 }
 
 #Preview {
     JournalTabView()
 }
+

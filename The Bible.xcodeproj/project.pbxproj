@@ -51,6 +51,7 @@
 		2CD7D82D2ECA126500849235 /* PinnedVerseWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */; };
 		2CD7D8312ECA163A00849235 /* PinnedVerseWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */; };
 		2CD7D8342ECA16BE00849235 /* PinnedVerseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */; };
+		2CE599542ECF403500A24C9F /* SharedJournalViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE599532ECF403500A24C9F /* SharedJournalViews.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -150,6 +151,7 @@
 		2CD7D8282ECA125200849235 /* PinnedVerseIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseIntent.swift; sourceTree = "<group>"; };
 		2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseProvider.swift; sourceTree = "<group>"; };
 		2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseWidget.swift; sourceTree = "<group>"; };
+		2CE599532ECF403500A24C9F /* SharedJournalViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedJournalViews.swift; sourceTree = "<group>"; };
 		2CEA02D52EBE677900039D4B /* The Bible WidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "The Bible WidgetsExtension.entitlements"; sourceTree = "<group>"; };
 		2CF6F1702EB83C2100E59640 /* TimerSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerSound.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -349,6 +351,7 @@
 				2CD7D8282ECA125200849235 /* PinnedVerseIntent.swift */,
 				2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */,
 				2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */,
+				2CE599532ECF403500A24C9F /* SharedJournalViews.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -761,6 +764,7 @@
 				2C49CF532EBE10310006FF79 /* NavigationCoordinator.swift in Sources */,
 				2C49CF542EBE10310006FF79 /* Route.swift in Sources */,
 				2C49CF552EBE10310006FF79 /* TimerSound.swift in Sources */,
+				2CE599542ECF403500A24C9F /* SharedJournalViews.swift in Sources */,
 				2C135C3B2EC650D900306AD5 /* GameScoreboardCard.swift in Sources */,
 				2CD7D82D2ECA126500849235 /* PinnedVerseWidget.swift in Sources */,
 				2CD7D7472EC96AB200849235 /* LinkedTextView.swift in Sources */,

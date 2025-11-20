@@ -98,18 +98,14 @@ struct ContentView: View {
             // Settings tab
             NavigationStack {
                 SettingsView()
-                    // Make Settings independent of global font overrides to avoid recursive updates
                     .environment(\.font, nil)
                     .fontDesign(.default)
             }
-            // Disable animations in Settings to avoid CA animation feedback during environment changes
             .transaction { tx in tx.disablesAnimations = true }
             .tabItem { Label("Settings", systemImage: "gear") }
             .tag(6)
         }
-        // Only share the journal composer globally
         .environmentObject(journalComposer)
-        // Apply global app appearance only when NOT on the Settings tab to avoid feedback loops
         .preferredColorScheme(selectedTab == 6 ? nil : preferredScheme)
         .dynamicTypeSize(selectedTab == 6 ? .large : (preferredDynamicType ?? .large))
         .font(
@@ -119,18 +115,23 @@ struct ContentView: View {
         )
         .fontDesign(selectedTab == 6 ? .default : (preferredFontDesign ?? .default))
         .onAppear {
-            // One-time cleanup of deprecated app time keys (cheap)
+            // One-time cleanup of deprecated keys
             if !didCleanupAppTimeKeys {
                 UserDefaults.standard.removeObject(forKey: "appTotalActiveSeconds")
                 UserDefaults.standard.removeObject(forKey: "appActiveStart")
                 didCleanupAppTimeKeys = true
             }
-            // One-time cleanup of deprecated keepScreenOn setting
             if !didCleanupKeepScreenOnKey {
                 UserDefaults.standard.removeObject(forKey: "keepScreenOn")
                 didCleanupKeepScreenOnKey = true
             }
-            // Defer Live Activity "ensure" to the next runloop/frame, and only if Home is visible now.
+
+            // Prewarm linkify and book names to reduce first-typing latency in Journal
+            Task.detached {
+                _ = BibleReferenceLinker.linkify("")
+                _ = await BibleLibrary.shared.bookNames()
+            }
+
             Task { @MainActor in
                 await Task.yield()
                 if selectedTab == 0 {
@@ -138,7 +139,6 @@ struct ContentView: View {
                 }
             }
         }
-        // If the user switches to Home later, ensure Focus activity then (still lightweight).
         .onChange(of: selectedTab) { _, newValue in
             if newValue == 0 {
                 Task { @MainActor in
@@ -189,7 +189,6 @@ struct ContentView: View {
                 selectedTab = 0
                 UserDefaults.standard.set("focus", forKey: "prayerMode")
             case "open":
-                // Deep link from widgets: thebible://open?book=...&chapter=...&verse=...
                 guard let comps = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
                 let q = Dictionary(uniqueKeysWithValues: (comps.queryItems ?? []).map { ($0.name.lowercased(), $0.value ?? "") })
                 let bookName = q["book"] ?? ""
@@ -200,13 +199,11 @@ struct ContentView: View {
                 if !isPad,
                    let book = BibleData.books.first(where: { $0.name == bookName }),
                    let chapter = book.chapters.first(where: { $0.number == chapterNum }) {
-                    // iPhone: push directly on the Bible tab’s coordinator
                     selectedTab = 1
                     DispatchQueue.main.async {
                         bibleCoordinator.push(.reader(book: book, chapter: chapter, startVerse: verseNum))
                     }
                 } else {
-                    // iPad: route directly to BibleSplitView via notification
                     selectedTab = 1
                     DispatchQueue.main.async {
                         NotificationCenter.default.post(
@@ -242,3 +239,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
