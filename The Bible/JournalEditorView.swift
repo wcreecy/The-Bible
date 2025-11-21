@@ -70,22 +70,18 @@ struct JournalEditorView: View {
                 }()
             )
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button(action: {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
                         if let onClose { onClose() } else { dismiss() }
-                    }) {
-                        Image(systemName: "xmark.circle")
                     }
-                    .accessibilityLabel("Cancel")
                     .keyboardShortcut("w", modifiers: [.command])
+                    .accessibilityLabel("Cancel")
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: save) {
-                        Image(systemName: "square.and.arrow.down")
-                    }
-                    .bold()
-                    .accessibilityLabel("Save")
-                    .keyboardShortcut("s", modifiers: [.command])
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save", action: save)
+                        .bold()
+                        .keyboardShortcut("s", modifiers: [.command])
+                        .accessibilityLabel("Save")
                 }
             }
             .alert("Couldn’t Save Entry", isPresented: $showSaveError) {

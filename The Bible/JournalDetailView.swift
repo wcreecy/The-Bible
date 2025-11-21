@@ -157,11 +157,11 @@ struct JournalDetailView: View {
         .navigationTitle(entry.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled" : entry.title)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
+                Button("Edit") {
                     journalComposer.presentForEditing(entry: entry)
-                } label: {
-                    Image(systemName: "pencil")
                 }
+                .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
+                .accessibilityLabel("Edit")
             }
         }
         .onAppear {

@@ -164,27 +164,25 @@ struct JournalTabView: View {
                                 Button(role: .destructive) {
                                     deleteSelectedEntries()
                                 } label: {
-                                    Image(systemName: "trash")
+                                    Label("Delete", systemImage: "trash")
                                 }
-                                Button {
+                                .buttonStyle(ToolbarPillButtonStyle(tint: .red))
+
+                                Button("Cancel") {
                                     selectionMode = false
                                     selectedForDeletion.removeAll()
-                                } label: {
-                                    Image(systemName: "xmark")
                                 }
+                                .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
                             } else {
-                                Button {
+                                Button("New") {
                                     journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
-                                } label: {
-                                    Image(systemName: "square.and.pencil")
                                 }
-                                .tint(.blue)
+                                .buttonStyle(ToolbarPillButtonStyle(tint: .blue))
 
-                                Button {
+                                Button("Select") {
                                     selectionMode = true
-                                } label: {
-                                    Image(systemName: "checkmark.circle")
                                 }
+                                .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
                             }
                         }
                     }
@@ -205,14 +203,12 @@ struct JournalTabView: View {
                         .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
                         .toolbar {
                             ToolbarItemGroup(placement: .topBarTrailing) {
-                                Button {
+                                Button("Cancel") {
                                     isEditing = false
-                                } label: {
-                                    Image(systemName: "xmark.circle")
                                 }
-                                .buttonStyle(.plain)
+                                .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
 
-                                Button {
+                                Button("Save") {
                                     let tags = editingTagsText
                                         .split(separator: ",")
                                         .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -222,10 +218,8 @@ struct JournalTabView: View {
                                     try? ctx.save()
                                     isEditing = false
                                     recomputeFilteredEntries()
-                                } label: {
-                                    Image(systemName: "checkmark.circle")
                                 }
-                                .buttonStyle(.plain)
+                                .buttonStyle(ToolbarPillButtonStyle(tint: .green))
                             }
                         }
                         .sheet(isPresented: $showSmartLinkSheet) {
@@ -252,12 +246,11 @@ struct JournalTabView: View {
                         .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
                         .toolbar {
                             ToolbarItem(placement: .primaryAction) {
-                                Button {
+                                Button("Edit") {
                                     editingTagsText = e.tags.joined(separator: ", ")
                                     isEditing = true
-                                } label: {
-                                    Image(systemName: "pencil")
                                 }
+                                .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
                             }
                         }
                     }
@@ -336,25 +329,25 @@ struct JournalTabView: View {
                             Button(role: .destructive) {
                                 deleteSelectedEntries()
                             } label: {
-                                Image(systemName: "trash")
+                                Label("Delete", systemImage: "trash")
                             }
-                            Button {
+                            .buttonStyle(ToolbarPillButtonStyle(tint: .red))
+
+                            Button("Cancel") {
                                 selectionMode = false
                                 selectedForDeletion.removeAll()
-                            } label: {
-                                Image(systemName: "xmark")
                             }
+                            .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
                         } else {
-                            Button {
+                            Button("New") {
                                 journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
-                            } label: {
-                                Image(systemName: "square.and.pencil")
                             }
-                            Button {
+                            .buttonStyle(ToolbarPillButtonStyle(tint: .blue))
+
+                            Button("Select") {
                                 selectionMode = true
-                            } label: {
-                                Image(systemName: "checkmark.circle")
                             }
+                            .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
                         }
                     }
                 }
