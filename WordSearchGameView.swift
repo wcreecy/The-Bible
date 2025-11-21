@@ -1,6 +1,10 @@
 import SwiftUI
+import SwiftData
 
 struct WordSearchGameView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query private var favorites: [Favorite]
+
     private struct PlacedWord: Identifiable, Hashable {
         let id = UUID()
         let word: String
@@ -27,12 +31,20 @@ struct WordSearchGameView: View {
     @State private var verseRef: String = ""
     @State private var verseText: String = ""
 
+    // Parsed reference for favorites
+    @State private var favBookName: String = ""
+    @State private var favChapterNumber: Int = 0
+    @State private var favVerseNumber: Int = 0
+
     // Selection/found state
     @State private var selectionStart: (row: Int, col: Int)? = nil
     @State private var selectionEnd: (row: Int, col: Int)? = nil
     @State private var foundCells: Set<String> = [] // "r,c"
     @State private var foundWords: Set<String> = []
     @State private var revealedWords: Set<String> = [] // words revealed but not found by the player
+
+    // Tap-to-select state
+    @State private var tapStart: (row: Int, col: Int)? = nil
 
     // Derived grid size based on difficulty
     private var size: Int {
@@ -61,6 +73,7 @@ struct WordSearchGameView: View {
                                     Text("• Tap Start to generate a new puzzle.")
                                     Text("• Drag across letters to select a word.")
                                     Text("• Words are hidden horizontally or vertically on Easy/Medium; on Hard they can also be diagonal or reversed.")
+                                    Text("• Tip: You can also tap a start letter, then tap an end letter to select the line between them.")
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             } label: {
@@ -106,10 +119,19 @@ struct WordSearchGameView: View {
                             Text("Word Search")
                                 .font(.headline)
                             if !verseRef.isEmpty {
-                                Text(verseRef)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                    .lineLimit(1)
+                                HStack(spacing: 8) {
+                                    Text(verseRef)
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                        .lineLimit(1)
+                                    Spacer()
+                                    Button(action: { toggleFavoriteCurrent() }) {
+                                        Image(systemName: isCurrentFavorited() ? "heart.fill" : "heart")
+                                            .foregroundStyle(.red)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .accessibilityLabel(isCurrentFavorited() ? "Remove Favorite" : "Add to Favorites")
+                                }
                             }
                             if !verseText.isEmpty {
                                 Text("“\(verseText)”")
@@ -121,7 +143,7 @@ struct WordSearchGameView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
 
-                    // Grid with drag selection
+                    // Grid with drag selection and tap-to-select
                     GeometryReader { geo in
                         let cellSize: CGFloat = 28
                         let spacing: CGFloat = 4
@@ -143,6 +165,10 @@ struct WordSearchGameView: View {
                                                 RoundedRectangle(cornerRadius: 6, style: .continuous)
                                                     .stroke(Color.black.opacity(0.1), lineWidth: 1)
                                             )
+                                            .contentShape(Rectangle())
+                                            .onTapGesture {
+                                                handleCellTap(row: r, col: c)
+                                            }
                                     }
                                 }
                             }
@@ -172,6 +198,7 @@ struct WordSearchGameView: View {
                                     validateSelection()
                                     selectionStart = nil
                                     selectionEnd = nil
+                                    tapStart = nil
                                 }
                         )
                     }
@@ -220,6 +247,30 @@ struct WordSearchGameView: View {
         }
     }
 
+    // MARK: - Tap-to-select
+
+    private func handleCellTap(row: Int, col: Int) {
+        // First tap: mark start and show single-cell selection feedback
+        if tapStart == nil {
+            tapStart = (row, col)
+            selectionStart = tapStart
+            selectionEnd = tapStart
+            return
+        }
+
+        // Second tap: constrain to allowed line, validate, then clear
+        if let start = tapStart {
+            let constrained = constrainToAllowedLine(from: start, to: (row, col))
+            selectionStart = start
+            selectionEnd = constrained
+            validateSelection()
+            // Clear transient selection visuals
+            selectionStart = nil
+            selectionEnd = nil
+            tapStart = nil
+        }
+    }
+
     // MARK: - Generation
 
     private func generatePuzzle() {
@@ -232,6 +283,7 @@ struct WordSearchGameView: View {
         revealedWords.removeAll()
         selectionStart = nil
         selectionEnd = nil
+        tapStart = nil
 
         // Pick a random verse
         guard let book = BibleData.books.randomElement(),
@@ -240,6 +292,11 @@ struct WordSearchGameView: View {
         else { return }
         verseRef = "\(book.name) \(chapter.number):\(verse.number)"
         verseText = verse.text
+
+        // Update parsed favorite fields
+        favBookName = book.name
+        favChapterNumber = chapter.number
+        favVerseNumber = verse.number
 
         // Extract keywords
         let countRange: ClosedRange<Int> = {
@@ -348,6 +405,34 @@ struct WordSearchGameView: View {
         }
     }
 
+    // MARK: - Favorites
+
+    private func isCurrentFavorited() -> Bool {
+        guard !favBookName.isEmpty, favChapterNumber > 0, favVerseNumber > 0 else { return false }
+        return favorites.contains { fav in
+            fav.bookName == favBookName &&
+            fav.chapterNumber == favChapterNumber &&
+            fav.verseNumber == favVerseNumber
+        }
+    }
+
+    private func toggleFavoriteCurrent() {
+        guard !favBookName.isEmpty, favChapterNumber > 0, favVerseNumber > 0 else { return }
+        if let existing = favorites.first(where: { $0.bookName == favBookName && $0.chapterNumber == favChapterNumber && $0.verseNumber == favVerseNumber }) {
+            modelContext.delete(existing)
+            try? modelContext.save()
+        } else {
+            let fav = Favorite(
+                bookName: favBookName,
+                chapterNumber: favChapterNumber,
+                verseNumber: favVerseNumber,
+                verseText: verseText
+            )
+            modelContext.insert(fav)
+            try? modelContext.save()
+        }
+    }
+
     // MARK: - Reveal
 
     private func revealOverlay() {
@@ -360,10 +445,7 @@ struct WordSearchGameView: View {
         }
         revealedWords = newRevealed
 
-        // Color the cells for the revealed (unfound) words in red by tracking via foundCells?:
-        // We keep foundCells for found words as green; for revealed (unfound) words we do NOT add to foundCells,
-        // instead we color via backgroundColorForCell using revealedWords membership.
-        // So nothing else to do here for cells; the board coloring reads revealedWords.
+        // Found words remain green; revealed-but-unfound are colored via backgroundColorForCell using revealedWords.
     }
 
     // MARK: - Selection helpers
