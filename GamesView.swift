@@ -8,6 +8,7 @@ struct GamesView: View {
         case referenceMatch
         case favoritesFlashcards
         case bookOrder
+        case wordSearch
     }
 
     @State private var selection: GameRoute? = nil
@@ -80,6 +81,17 @@ struct GamesView: View {
                         }
                     }
                 }
+
+                NavigationLink(value: GameRoute.wordSearch) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "grid")
+                            .foregroundStyle(.green)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Word Search").font(.headline)
+                            Text("Find 3–6 hidden words from a verse").font(.subheadline).foregroundStyle(.secondary)
+                        }
+                    }
+                }
             }
         }
         .listStyle(.insetGrouped)
@@ -98,6 +110,8 @@ struct GamesView: View {
                 FavoritesFlashcardsGameView()
             case .bookOrder:
                 BookOrderGameView()
+            case .wordSearch:
+                WordSearchGameView()
             }
         }
         .onAppear { selection = nil }
