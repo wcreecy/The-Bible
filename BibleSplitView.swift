@@ -1,9 +1,5 @@
 import SwiftUI
 
-private extension Notification.Name {
-    static let openBibleReference = Notification.Name("OpenBibleReference")
-}
-
 struct BibleSplitView: View {
     @State private var selectedBook: Book? = nil
     @State private var selectedChapter: Chapter? = nil
@@ -254,30 +250,6 @@ struct BibleSplitView: View {
         }
     }
     
-    private struct SearchResultsList: View {
-        let results: [SearchHit]
-        var body: some View {
-            if results.isEmpty {
-                ContentUnavailableView("No results", systemImage: "magnifyingglass", description: Text("Type at least two words to search Bible text."))
-            } else {
-                List(results) { hit in
-                    NavigationLink(value: ReadingRoute(bookName: hit.book.name, chapterNumber: hit.chapter.number, verseNumber: hit.verseNumber)) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("\(hit.book.name) \(hit.chapter.number):\(hit.verseNumber)")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            Text(hit.verseText)
-                                .font(.body)
-                                .lineLimit(3)
-                        }
-                        .padding(.vertical, 4)
-                    }
-                }
-                .navigationTitle("Search")
-            }
-        }
-    }
-
     private struct ChaptersListView: View {
         let book: Book
         @Binding var showInspector: Bool
@@ -317,81 +289,118 @@ struct BibleSplitView: View {
             .navigationTitle("Reading Settings")
         }
     }
+
+    // Added: Search results list view used by DetailRootContent
+    private struct SearchResultsList: View {
+        let results: [BibleSplitView.SearchHit]
+        @Binding var path: NavigationPath
+
+        var body: some View {
+            if results.isEmpty {
+                ContentUnavailableView("No results", systemImage: "magnifyingglass")
+            } else {
+                List(results) { hit in
+                    Button {
+                        path.append(BibleSplitView.ReadingRoute(
+                            bookName: hit.book.name,
+                            chapterNumber: hit.chapter.number,
+                            verseNumber: hit.verseNumber
+                        ))
+                    } label: {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("\(hit.book.name) \(hit.chapter.number):\(hit.verseNumber)")
+                                .font(.headline)
+                            Text(hit.verseText)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(3)
+                                .multilineTextAlignment(.leading)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .navigationTitle("Search Results (\(results.count))")
+            }
+        }
+    }
+
+    // Split the large conditional into a small helper view to reduce inference pressure
+    @ViewBuilder
+    private func DetailRootContent() -> some View {
+        if shouldSearch {
+            SearchResultsList(results: searchResults, path: $detailPath)
+        } else if let book = selectedBook {
+            ChaptersListView(book: book, showInspector: $showInspector)
+        } else {
+            ContentUnavailableView("Select a Book", systemImage: "book")
+        }
+    }
     
     @ViewBuilder
     private var detailView: some View {
         NavigationStack(path: $detailPath) {
-            Group {
-                if shouldSearch {
-                    SearchResultsList(results: searchResults)
-                } else if let book = selectedBook {
-                    ChaptersListView(book: book, showInspector: $showInspector)
-                } else {
-                    ContentUnavailableView("Select a Book", systemImage: "book")
-                }
-            }
-            .task(id: searchText) {
-                // Debounce input by 300ms
-                try? await Task.sleep(nanoseconds: 300_000_000)
-                if !Task.isCancelled {
-                    debouncedText = searchText
-                }
-            }
-            .navigationDestination(for: ChapterRoute.self) { route in
-                // Resolve book and chapter
-                if let book = BibleData.books.first(where: { $0.name == route.bookName }),
-                   let chapter = book.chapters.first(where: { $0.number == route.chapterNumber }) {
-                    List(chapter.verses, id: \.number) { verse in
-                        NavigationLink(value: ReadingRoute(bookName: book.name, chapterNumber: chapter.number, verseNumber: verse.number)) {
-                            VStack(alignment: .leading) {
-                                Text("Verse \(verse.number)")
-                                    .font(.headline)
-                                let preview = String(verse.text.prefix(120)) + (verse.text.count > 120 ? "…" : "")
-                                Text(preview)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+            DetailRootContent()
+                .navigationDestination(for: ChapterRoute.self) { route in
+                    if let book = BibleData.books.first(where: { $0.name == route.bookName }),
+                       let chapter = book.chapters.first(where: { $0.number == route.chapterNumber }) {
+                        List(chapter.verses, id: \.number) { verse in
+                            NavigationLink(value: ReadingRoute(bookName: book.name, chapterNumber: chapter.number, verseNumber: verse.number)) {
+                                VStack(alignment: .leading) {
+                                    Text("Verse \(verse.number)")
+                                        .font(.headline)
+                                    let preview = String(verse.text.prefix(120)) + (verse.text.count > 120 ? "…" : "")
+                                    Text(preview)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
+                                .padding(.vertical, 4)
                             }
-                            .padding(.vertical, 4)
                         }
+                        .navigationTitle("\(book.name) \(chapter.number)")
+                    } else {
+                        ContentUnavailableView("Chapter not found", systemImage: "exclamationmark.triangle")
                     }
-                    .navigationTitle("\(book.name) \(chapter.number)")
-                } else {
-                    ContentUnavailableView("Chapter not found", systemImage: "exclamationmark.triangle")
                 }
-            }
-            .navigationDestination(for: ReadingRoute.self) { route in
-                if let book = BibleData.books.first(where: { $0.name == route.bookName }),
-                   let chapter = book.chapters.first(where: { $0.number == route.chapterNumber }) {
-                    ReadingView(book: book, chapter: chapter, startVerse: route.verseNumber)
-                        .id("\(route.bookName)-\(route.chapterNumber)-\(route.verseNumber)")
-                        // No font applied here; ReadingView controls its own font size via @AppStorage("readerFontSize")
-                        .toolbar {
-                            ToolbarItemGroup(placement: .topBarTrailing) {
-                                Button {
-                                    readerFontSize = max(12, readerFontSize - 1)
-                                } label: {
-                                    Image(systemName: "textformat.size.smaller")
-                                }
-                                .accessibilityLabel("Decrease font size")
+                .navigationDestination(for: ReadingRoute.self) { route in
+                    if let book = BibleData.books.first(where: { $0.name == route.bookName }),
+                       let chapter = book.chapters.first(where: { $0.number == route.chapterNumber }) {
+                        ReadingView(book: book, chapter: chapter, startVerse: route.verseNumber)
+                            .id("\(route.bookName)-\(route.chapterNumber)-\(route.verseNumber)")
+                            .toolbar {
+                                ToolbarItemGroup(placement: .topBarTrailing) {
+                                    Button {
+                                        readerFontSize = max(12, readerFontSize - 1)
+                                    } label: {
+                                        Image(systemName: "textformat.size.smaller")
+                                    }
+                                    .accessibilityLabel("Decrease font size")
 
-                                Button {
-                                    readerFontSize = min(30, readerFontSize + 1)
-                                } label: {
-                                    Image(systemName: "textformat.size.larger")
+                                    Button {
+                                        readerFontSize = min(30, readerFontSize + 1)
+                                    } label: {
+                                        Image(systemName: "textformat.size.larger")
+                                    }
+                                    .accessibilityLabel("Increase font size")
                                 }
-                                .accessibilityLabel("Increase font size")
                             }
-                        }
-                } else {
-                    ContentUnavailableView("Passage not found", systemImage: "exclamationmark.triangle")
+                    } else {
+                        ContentUnavailableView("Passage not found", systemImage: "exclamationmark.triangle")
+                    }
                 }
-            }
         }
         .id(selectedBook?.name ?? "__no_book__")
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search Bible text")
         .searchScopes($searchScope) {
             ForEach(SearchScope.allCases) { scope in
                 Text(scope.rawValue)
+            }
+        }
+        // Move debounce task to the NavigationStack level to simplify the inner builder
+        .task(id: searchText) {
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            if !Task.isCancelled {
+                debouncedText = searchText
             }
         }
         // Listen for deep links from ContentView (iPad path)
@@ -403,12 +412,10 @@ struct BibleSplitView: View {
                 let book = BibleData.books.first(where: { $0.name == bookName })
             else { return }
 
-            // Select the book in the sidebar and push the reader route in the detail stack
             selectedBook = book
             selectedChapter = nil
             navStartVerse = verseNum
             searchText = ""
-            // Ensure the selection applies before pushing the route
             DispatchQueue.main.async {
                 detailPath = NavigationPath()
                 detailPath.append(ReadingRoute(bookName: book.name, chapterNumber: chapterNum, verseNumber: verseNum))

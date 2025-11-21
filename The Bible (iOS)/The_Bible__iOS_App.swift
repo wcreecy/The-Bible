@@ -7,13 +7,17 @@
 
 import SwiftUI
 import SwiftData
+import UIKit
+import UserNotifications
 
 @main
 struct The_Bible__iOS_App: App {
+    @Environment(\.scenePhase) private var scenePhase
+
     var sharedModelContainer: ModelContainer = {
         do {
             // Preferred: let SwiftData choose default store location
-            let container = try ModelContainer(for: 
+            let container = try ModelContainer(for:
                 ReaderSettings.self,
                 ReadingProgress.self,
                 Favorite.self,
@@ -29,7 +33,7 @@ struct The_Bible__iOS_App: App {
         // Final fallback: in-memory so the app can still run
         do {
             let memoryConfig = ModelConfiguration(isStoredInMemoryOnly: true)
-            let container = try ModelContainer(for: 
+            let container = try ModelContainer(for:
                 ReaderSettings.self,
                 ReadingProgress.self,
                 Favorite.self,
@@ -47,8 +51,17 @@ struct The_Bible__iOS_App: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onChange(of: scenePhase) { _, newPhase in
+                    switch newPhase {
+                    case .active:
+                        // Clear app icon badge and delivered notifications when app becomes active
+                        UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
+                        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+                    default:
+                        break
+                    }
+                }
         }
         .modelContainer(sharedModelContainer)
     }
 }
-

@@ -716,7 +716,16 @@ struct HomeView: View {
            let chapter = book.chapters.first(where: { $0.number == progress.chapterNumber }) {
             let verseText = chapter.verses.first(where: { $0.number == progress.verseNumber })?.text
             Button(action: {
-                coordinator.push(.reader(book: book, chapter: chapter, startVerse: progress.verseNumber))
+                // Post notification to switch to Bible tab and open reader there
+                NotificationCenter.default.post(
+                    name: .openBibleReference,
+                    object: nil,
+                    userInfo: [
+                        "book": progress.bookName,
+                        "chapter": progress.chapterNumber,
+                        "verse": progress.verseNumber
+                    ]
+                )
             }) {
                 HeroCard(
                     title: "",

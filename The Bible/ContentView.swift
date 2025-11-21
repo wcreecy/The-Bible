@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-private extension Notification.Name {
+extension Notification.Name {
     static let openBibleReference = Notification.Name("OpenBibleReference")
 }
 
@@ -217,6 +217,31 @@ struct ContentView: View {
                 break
             }
         }
+        // NEW: Handle resume tap notification to open on Bible tab
+        .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { note in
+            guard let bookName = note.userInfo?["book"] as? String,
+                  let chapterNum = note.userInfo?["chapter"] as? Int,
+                  let verseNum = note.userInfo?["verse"] as? Int else { return }
+
+            if !isPad,
+               let book = BibleData.books.first(where: { $0.name == bookName }),
+               let chapter = book.chapters.first(where: { $0.number == chapterNum }) {
+                selectedTab = 1
+                DispatchQueue.main.async {
+                    bibleCoordinator.push(.reader(book: book, chapter: chapter, startVerse: verseNum))
+                }
+            } else {
+                selectedTab = 1
+                // Forward to BibleSplitView (it listens for this notification)
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(
+                        name: .openBibleReference,
+                        object: nil,
+                        userInfo: ["book": bookName, "chapter": chapterNum, "verse": verseNum]
+                    )
+                }
+            }
+        }
     }
 
     // MARK: - Helpers
@@ -239,4 +264,3 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-
