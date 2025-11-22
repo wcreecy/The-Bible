@@ -54,7 +54,6 @@ struct The_Bible__iOS_App: App {
                 .onChange(of: scenePhase) { _, newPhase in
                     switch newPhase {
                     case .active:
-                        // Clear app icon badge and delivered notifications when app becomes active
                         UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
                         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
                     default:
