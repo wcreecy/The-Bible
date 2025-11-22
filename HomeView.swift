@@ -1,3 +1,5 @@
+// the entire code of the file with your changes goes here.
+// Do not skip over anything.
 import SwiftUI
 import SwiftData
 import Combine
@@ -230,6 +232,7 @@ struct HomeView: View {
         .pickerStyle(.segmented)
         .controlSize(.small)
         .disabled(disabled)
+        .frame(maxWidth: 280)
     }
 
     private func mirrorVerseToAppGroup(book: String, chapter: Int, verse: Int, text: String) {
@@ -454,23 +457,23 @@ struct HomeView: View {
             if prayerMode == .timer {
                 if isTimerRunning {
                     HeroCard(
-                        title: "Prayer/Study Timer",
-                        subtitle: isTimerRunning ? (isPaused ? "Paused" : "In progress") : "Start a timer with an alert when time is up.",
+                        title: "Prayer Timer",
+                        subtitle: nil, // No in-progress/paused text
                         icon: "timer",
                         tint: timerTintColor,
                         backgroundColor: isTimerRunning ? timerTintColor.opacity(0.20) : nil,
-                        strokeColor: isTimerRunning ? timerTintColor.opacity(0.35) : nil
-                    ) {
-                        VStack(spacing: 10) {
+                        strokeColor: isTimerRunning ? timerTintColor.opacity(0.35) : nil,
+                        trailingAccessory: {
                             ModePicker(disabled: isTimerRunning || stopwatchRunning)
-
-                            Text(formattedTime(remainingSeconds))
-                                .font(.system(size: 36, weight: .semibold, design: .monospaced))
-                                .foregroundStyle(timerTintColor)
-                            HStack(spacing: 24) {
+                        }
+                    ) {
+                        // Three-column layout: left controls, centered timer, right controls
+                        HStack(alignment: .center, spacing: 16) {
+                            // Left controls: Pause/Play and Stop
+                            HStack(spacing: 16) {
                                 Button(action: { togglePause() }) {
                                     Image(systemName: isPaused ? "play.circle.fill" : "pause.circle.fill")
-                                        .font(.system(size: 56))
+                                        .font(.system(size: 44))
                                         .foregroundStyle(isPaused ? Color.green : timerTintColor)
                                 }
                                 .buttonStyle(.plain)
@@ -478,38 +481,59 @@ struct HomeView: View {
 
                                 Button(action: { stopTimer() }) {
                                     Image(systemName: "stop.circle.fill")
-                                        .font(.system(size: 56))
+                                        .font(.system(size: 44))
                                         .foregroundStyle(.red)
                                 }
                                 .buttonStyle(.plain)
                                 .accessibilityLabel("Stop")
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
 
+                            // Center timer
+                            Text(formattedTime(remainingSeconds))
+                                .font(.system(size: 36, weight: .semibold, design: .monospaced))
+                                .foregroundStyle(timerTintColor)
+                                .frame(maxWidth: .infinity, alignment: .center)
+
+                            // Right controls: +5 and +10
+                            HStack(spacing: 16) {
                                 Button(action: { addFiveMinutes() }) {
                                     Text("+5")
                                         .font(.subheadline.weight(.semibold))
-                                        .frame(width: 44, height: 44)
+                                        .frame(width: 40, height: 40)
                                         .foregroundStyle(.white)
-                                        .background(
-                                            Circle().fill(Color.blue)
-                                        )
+                                        .background(Circle().fill(Color.blue))
                                 }
                                 .buttonStyle(.plain)
                                 .accessibilityLabel("Add 5 minutes")
+
+                                Button(action: { addTenMinutes() }) {
+                                    Text("+10")
+                                        .font(.subheadline.weight(.semibold))
+                                        .frame(width: 40, height: 40)
+                                        .foregroundStyle(.white)
+                                        .background(Circle().fill(Color.blue))
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Add 10 minutes")
                             }
+                            .frame(maxWidth: .infinity, alignment: .trailing)
                         }
+                        .frame(maxWidth: .infinity, alignment: .center)
                     }
                     .padding(.horizontal, 16)
                     .frame(height: isPad ? iPadCardHeight : nil)
                 } else {
                     HeroCard(
-                        title: "Prayer/Study Timer",
-                        subtitle: "Choose a preset to begin",
+                        title: "Prayer Timer",
+                        subtitle: nil,
                         icon: "timer",
-                        tint: .blue
+                        tint: .blue,
+                        trailingAccessory: {
+                            ModePicker(disabled: isTimerRunning || stopwatchRunning)
+                        }
                     ) {
                         VStack(spacing: 12) {
-                            ModePicker(disabled: isTimerRunning || stopwatchRunning)
-
                             HStack(spacing: 12) {
                                 Button {
                                     if isHealthKitAvailable && !healthKitPrompted {
@@ -550,6 +574,13 @@ struct HomeView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.top, 4)
+
+                            // Third row: always-visible timer display when idle
+                            Text(formattedTime(remainingSeconds == 0 ? 0 : remainingSeconds))
+                                .font(.system(size: 36, weight: .semibold, design: .monospaced))
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.top, 2)
                         }
                     }
                     .padding(.horizontal, 16)
@@ -560,11 +591,12 @@ struct HomeView: View {
                     title: "Stopwatch",
                     subtitle: stopwatchRunning ? "Running" : (stopwatchElapsed > 0 ? "Paused" : "Ready"),
                     icon: "stopwatch",
-                    tint: .blue
+                    tint: .blue,
+                    trailingAccessory: {
+                        ModePicker(disabled: isTimerRunning || stopwatchRunning)
+                    }
                 ) {
                     VStack(spacing: 10) {
-                        ModePicker(disabled: isTimerRunning || stopwatchRunning)
-
                         Text(formattedHMS(stopwatchElapsed))
                             .font(.system(size: 36, weight: .semibold, design: .monospaced))
                         HStack(spacing: 24) {
@@ -585,11 +617,12 @@ struct HomeView: View {
                     title: "Daily Focus",
                     subtitle: "What's something you want to focus on today?",
                     icon: "target",
-                    tint: .purple
+                    tint: .purple,
+                    trailingAccessory: {
+                        ModePicker(disabled: isTimerRunning || stopwatchRunning)
+                    }
                 ) {
                     VStack(spacing: 12) {
-                        ModePicker(disabled: isTimerRunning || stopwatchRunning)
-
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Today's Focus")
                                 .font(.subheadline)
@@ -1041,6 +1074,34 @@ struct HomeView: View {
         gen.impactOccurred()
     }
 
+    private func addTenMinutes() {
+        guard isTimerRunning else { return }
+        let delta: Int = 600
+        if isPaused {
+            remainingSeconds += delta
+            storedRemainingWhenPaused += delta
+            storedTotalSeconds += delta
+            PrayerTimerActivityController.shared.update(
+                remainingSeconds: remainingSeconds,
+                totalSeconds: storedTotalSeconds,
+                isPaused: isPaused
+            )
+        } else {
+            storedEndDate += TimeInterval(delta)
+            storedTotalSeconds += delta
+            let newRemaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
+            remainingSeconds = newRemaining
+            scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
+            PrayerTimerActivityController.shared.update(
+                remainingSeconds: remainingSeconds,
+                totalSeconds: storedTotalSeconds,
+                isPaused: isPaused
+            )
+        }
+        let gen = UIImpactFeedbackGenerator(style: .light)
+        gen.impactOccurred()
+    }
+
     private func resetTimerState() {
         isTimerRunning = false
         isPaused = false
@@ -1445,7 +1506,7 @@ private struct HeroCard<Content: View, TrailingAccessory: View>: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .center)
                 } else {
-                    HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    HStack(alignment: .center, spacing: 10) {
                         if let icon {
                             Image(systemName: icon)
                                 .foregroundStyle(tint)
