@@ -1,5 +1,3 @@
-// the entire code of the file with your changes goes here.
-// Do not skip over anything.
 import SwiftUI
 import SwiftData
 import Combine
@@ -458,7 +456,7 @@ struct HomeView: View {
                 if isTimerRunning {
                     HeroCard(
                         title: "Prayer Timer",
-                        subtitle: nil, // No in-progress/paused text
+                        subtitle: nil,
                         icon: "timer",
                         tint: timerTintColor,
                         backgroundColor: isTimerRunning ? timerTintColor.opacity(0.20) : nil,
@@ -467,9 +465,7 @@ struct HomeView: View {
                             ModePicker(disabled: isTimerRunning || stopwatchRunning)
                         }
                     ) {
-                        // Three-column layout: left controls, centered timer, right controls
                         HStack(alignment: .center, spacing: 16) {
-                            // Left controls: Pause/Play and Stop
                             HStack(spacing: 16) {
                                 Button(action: { togglePause() }) {
                                     Image(systemName: isPaused ? "play.circle.fill" : "pause.circle.fill")
@@ -489,13 +485,11 @@ struct HomeView: View {
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
 
-                            // Center timer
                             Text(formattedTime(remainingSeconds))
                                 .font(.system(size: 36, weight: .semibold, design: .monospaced))
                                 .foregroundStyle(timerTintColor)
                                 .frame(maxWidth: .infinity, alignment: .center)
 
-                            // Right controls: +5 and +10
                             HStack(spacing: 16) {
                                 Button(action: { addFiveMinutes() }) {
                                     Text("+5")
@@ -575,7 +569,6 @@ struct HomeView: View {
                             .frame(maxWidth: .infinity)
                             .padding(.top, 4)
 
-                            // Third row: always-visible timer display when idle
                             Text(formattedTime(remainingSeconds == 0 ? 0 : remainingSeconds))
                                 .font(.system(size: 36, weight: .semibold, design: .monospaced))
                                 .foregroundStyle(.secondary)
@@ -589,25 +582,81 @@ struct HomeView: View {
             } else if prayerMode == .stopwatch {
                 HeroCard(
                     title: "Stopwatch",
-                    subtitle: stopwatchRunning ? "Running" : (stopwatchElapsed > 0 ? "Paused" : "Ready"),
+                    subtitle: nil,
                     icon: "stopwatch",
                     tint: .blue,
                     trailingAccessory: {
                         ModePicker(disabled: isTimerRunning || stopwatchRunning)
                     }
                 ) {
-                    VStack(spacing: 10) {
-                        Text(formattedHMS(stopwatchElapsed))
-                            .font(.system(size: 36, weight: .semibold, design: .monospaced))
-                        HStack(spacing: 24) {
+                    // Single row: optional left control, centered counter, right control(s)
+                    HStack(alignment: .center, spacing: 16) {
+                        // Left control when running/paused: Pause or Resume; empty when ready
+                        Group {
                             if stopwatchRunning {
-                                stopwatchRunningControls()
+                                Button(action: { pauseStopwatch() }) {
+                                    Image(systemName: "pause.circle.fill")
+                                        .font(.system(size: 44))
+                                        .foregroundStyle(.yellow)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Pause")
                             } else if stopwatchElapsed > 0 {
-                                stopwatchPausedControls()
+                                Button(action: { startStopwatch() }) {
+                                    Image(systemName: "play.circle.fill")
+                                        .font(.system(size: 44))
+                                        .foregroundStyle(.green)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Resume")
                             } else {
-                                stopwatchReadyControls()
+                                // keep space so center stays centered
+                                Color.clear.frame(width: 44, height: 44)
                             }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                        // Centered counter
+                        Text(formattedStopwatch(stopwatchElapsed))
+                            .font(.system(size: 36, weight: .semibold, design: .monospaced))
+                            .monospacedDigit()
+                            .foregroundStyle(stopwatchRunning ? .primary : .secondary) // Black when running, gray when inactive
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                            .frame(maxWidth: .infinity, alignment: .center)
+
+                        // Right control(s)
+                        HStack(spacing: 16) {
+                            if stopwatchRunning {
+                                // Stop on the right when running
+                                Button(action: { stopStopwatch() }) {
+                                    Image(systemName: "stop.circle.fill")
+                                        .font(.system(size: 44))
+                                }
+                                .buttonStyle(.plain)
+                                .foregroundStyle(.red)
+                                .accessibilityLabel("Stop")
+                            } else if stopwatchElapsed > 0 {
+                                // Paused: Stop on the right
+                                Button(action: { stopStopwatch() }) {
+                                    Image(systemName: "stop.circle.fill")
+                                        .font(.system(size: 44))
+                                }
+                                .buttonStyle(.plain)
+                                .foregroundStyle(.red)
+                                .accessibilityLabel("Stop")
+                            } else {
+                                // Ready: Start on the right
+                                Button(action: { startStopwatch() }) {
+                                    Image(systemName: "play.circle.fill")
+                                        .font(.system(size: 44))
+                                        .foregroundStyle(.green)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Start")
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                 }
                 .padding(.horizontal, 16)
@@ -749,7 +798,6 @@ struct HomeView: View {
            let chapter = book.chapters.first(where: { $0.number == progress.chapterNumber }) {
             let verseText = chapter.verses.first(where: { $0.number == progress.verseNumber })?.text
             Button(action: {
-                // Post notification to switch to Bible tab and open reader there
                 NotificationCenter.default.post(
                     name: .openBibleReference,
                     object: nil,
@@ -842,12 +890,10 @@ struct HomeView: View {
         .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
         .appToast(isPresented: $showFocusSavedToast, symbol: "checkmark.seal.fill", text: "Focus Saved", tint: .green)
         .onAppear {
-            // Pre-warm book names so first-time suggestions are instant
             Task { _ = await BibleLibrary.shared.bookNames() }
 
             bibleStore.ensureLoaded()
 
-            // Restore persisted state
             isTimerRunning = storedRunning
             isPaused = storedPaused
             isHealthKitAvailable = HealthKitManager.shared.isAvailable()
@@ -872,7 +918,6 @@ struct HomeView: View {
                     verseOfDay = HomeVerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
                     mirrorVerseToAppGroup(book: storedVerseBook, chapter: storedVerseChapter, verse: storedVerseNumber, text: storedVerseText)
                 } else {
-                    // Use BibleData immediately; no need to wait for bibleStore readiness
                     loadRandomVerse()
                 }
             }
@@ -899,10 +944,7 @@ struct HomeView: View {
             handlePrayerTimerPendingAction()
             handleStopwatchPendingAction()
 
-            // Start one-shot scheduler for VOTD
             scheduleNextVerseRefreshTimer()
-
-            // Start ticker if needed
             updateTickerSubscription()
         }
         .onChange(of: progressList) { _, _ in
@@ -986,7 +1028,6 @@ struct HomeView: View {
             }
         }
 
-        // Track minute boundary for potential UI updates
         timeMarker = (timeMarker + 1) % 60
     }
 
@@ -1186,7 +1227,6 @@ struct HomeView: View {
 
     private func loadRandomVerse() {
         if verseOfDayPaused { return }
-        // Use BibleData (always available) so Refresh and tap work immediately
         let allBooks = BibleData.books
         guard !allBooks.isEmpty else { return }
 
@@ -1282,11 +1322,16 @@ struct HomeView: View {
         updateTickerSubscription()
     }
 
-    private func formattedHMS(_ totalSeconds: Int) -> String {
+    // New: mm:ss under an hour, hh:mm:ss at/after an hour
+    private func formattedStopwatch(_ totalSeconds: Int) -> String {
         let hours = totalSeconds / 3600
         let minutes = (totalSeconds % 3600) / 60
         let seconds = totalSeconds % 60
-        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        if hours > 0 {
+            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            return String(format: "%02d:%02d", minutes, seconds)
+        }
     }
     
     private func handlePrayerTimerPendingAction() {
@@ -1469,7 +1514,7 @@ private struct HeroCard<Content: View, TrailingAccessory: View>: View {
         self.title = title
         self.subtitle = subtitle
         self.icon = icon
-        self.tint = tint
+               self.tint = tint
         self.backgroundColor = backgroundColor
         self.strokeColor = strokeColor
         self.trailingAccessory = trailingAccessory
