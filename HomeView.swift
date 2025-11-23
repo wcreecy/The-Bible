@@ -941,7 +941,7 @@ struct HomeView: View {
             mirrorLastReadToAppGroup()
             handleOpenPendingVerse()
 
-            handlePrayerTimerPendingAction()
+            _ = handlePrayerTimerPendingAction()
             handleStopwatchPendingAction()
 
             scheduleNextVerseRefreshTimer()
@@ -954,7 +954,7 @@ struct HomeView: View {
             switch newPhase {
             case .active:
                 startMindfulLoggingIfNeeded()
-                handlePrayerTimerPendingAction()
+                _ = handlePrayerTimerPendingAction()
                 handleStopwatchPendingAction()
                 handleOpenPendingVerse()
             case .inactive, .background:
@@ -1002,8 +1002,19 @@ struct HomeView: View {
         }
     }
 
+    // Suppression window to prevent a stale Live Activity update immediately after +5/+10
+    @State private var suppressTimerActivityUpdatesUntil: Date = .distantPast
+
     private func tick() {
+        // Consume any pending Island actions first; if one was handled, skip this tick frame.
+        if handlePrayerTimerPendingAction() {
+            return
+        }
+        handleStopwatchPendingAction()
+
+        // Keep the previous behavior of not pushing updates while editing Focus.
         if isEditingFocus { return }
+
         let shouldUpdateLiveActivities = true
 
         if isTimerRunning && !isPaused && storedEndDate > 0 {
@@ -1011,11 +1022,14 @@ struct HomeView: View {
             remainingSeconds = remaining
             if remaining == 0 { handleTimerFinished() }
             if shouldUpdateLiveActivities {
-                PrayerTimerActivityController.shared.update(
-                    remainingSeconds: remainingSeconds,
-                    totalSeconds: storedTotalSeconds,
-                    isPaused: isPaused
-                )
+                // Skip pushing a Live Activity update during the brief suppression window after +5/+10
+                if Date() >= suppressTimerActivityUpdatesUntil {
+                    PrayerTimerActivityController.shared.update(
+                        remainingSeconds: remainingSeconds,
+                        totalSeconds: storedTotalSeconds,
+                        isPaused: isPaused
+                    )
+                }
             }
         }
 
@@ -1111,6 +1125,9 @@ struct HomeView: View {
                 isPaused: isPaused
             )
         }
+        // Suppress the next tick-driven Live Activity update briefly to avoid a stale overwrite
+        suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(0.75)
+
         let gen = UIImpactFeedbackGenerator(style: .light)
         gen.impactOccurred()
     }
@@ -1139,6 +1156,9 @@ struct HomeView: View {
                 isPaused: isPaused
             )
         }
+        // Suppress the next tick-driven Live Activity update briefly to avoid a stale overwrite
+        suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(0.75)
+
         let gen = UIImpactFeedbackGenerator(style: .light)
         gen.impactOccurred()
     }
@@ -1334,9 +1354,11 @@ struct HomeView: View {
         }
     }
     
-    private func handlePrayerTimerPendingAction() {
-        guard let shared = sharedDefaults else { return }
-        guard let action = shared.string(forKey: "prayerTimerPendingAction") else { return }
+    // Returns true if an action was consumed
+    @discardableResult
+    private func handlePrayerTimerPendingAction() -> Bool {
+        guard let shared = sharedDefaults else { return false }
+        guard let action = shared.string(forKey: "prayerTimerPendingAction") else { return false }
         shared.removeObject(forKey: "prayerTimerPendingAction")
         switch action {
         case "togglePause":
@@ -1348,6 +1370,9 @@ struct HomeView: View {
         default:
             break
         }
+        // Clear any lingering suppression from Island-triggered actions so local presses aren’t blocked.
+        suppressTimerActivityUpdatesUntil = .distantPast
+        return true
     }
 
     private func handleStopwatchPendingAction() {

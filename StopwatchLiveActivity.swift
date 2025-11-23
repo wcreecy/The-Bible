@@ -36,32 +36,6 @@ struct StopwatchLiveActivity: Widget {
                             .minimumScaleFactor(0.6)
                             .lineLimit(1)
                     }
-
-                    HStack(spacing: 16) {
-                        if context.state.status == "Running" {
-                            AppIntentButton(PauseStopwatchIntent()) {
-                                Label("Pause", systemImage: "pause.fill")
-                            }
-                            .buttonStyle(.bordered)
-
-                            AppIntentButton(StopStopwatchIntent()) {
-                                Label("Stop", systemImage: "stop.fill")
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(.red)
-                        } else {
-                            AppIntentButton(ResumeStopwatchIntent()) {
-                                Label("Resume", systemImage: "play.fill")
-                            }
-                            .buttonStyle(.bordered)
-
-                            AppIntentButton(StopStopwatchIntent()) {
-                                Label("Stop", systemImage: "stop.fill")
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(.red)
-                        }
-                    }
                 }
                 .padding()
             } else {
@@ -98,99 +72,32 @@ struct StopwatchLiveActivity: Widget {
                     Image(systemName: "stopwatch")
                 }
                 DynamicIslandExpandedRegion(.center) {
-                    VStack(spacing: 6) {
-                        Text(context.attributes.sessionName).font(.headline)
+                    // Only title + timer stacked, centered
+                    VStack(alignment: .center, spacing: 4) {
+                        Text(context.attributes.sessionName)
+                            .font(.headline)
+                            .multilineTextAlignment(.center)
+
                         let startDate = Date(timeIntervalSinceNow: -Double(context.state.elapsed))
                         if context.state.status == "Running" {
                             Text(startDate, style: .timer)
                                 .font(.title2)
                                 .monospacedDigit()
+                                .minimumScaleFactor(0.7)
+                                .lineLimit(1)
+                                .multilineTextAlignment(.center)
                         } else {
                             Text(timeString(context.state.elapsed))
                                 .font(.title2)
                                 .monospacedDigit()
+                                .minimumScaleFactor(0.7)
+                                .lineLimit(1)
+                                .multilineTextAlignment(.center)
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .center)
                 }
-                DynamicIslandExpandedRegion(.trailing) {
-#if canImport(AppIntentsUI)
-    if #available(iOS 17.0, *) {
-        HStack(spacing: 8) {
-            if context.state.status == "Running" {
-                AppIntentButton(PauseStopwatchIntent()) {
-                    Image(systemName: "pause.fill")
-                }
-                AppIntentButton(StopStopwatchIntent()) {
-                    Image(systemName: "stop.fill")
-                }
-            } else {
-                AppIntentButton(ResumeStopwatchIntent()) {
-                    Image(systemName: "play.fill")
-                }
-                AppIntentButton(StopStopwatchIntent()) {
-                    Image(systemName: "stop.fill")
-                }
-            }
-        }
-    } else {
-        HStack(spacing: 8) {
-            Text(context.state.status)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-    }
-#else
-    HStack(spacing: 8) {
-        Text(context.state.status)
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-    }
-#endif
-                }
-                DynamicIslandExpandedRegion(.bottom) {
-#if canImport(AppIntentsUI)
-        if #available(iOS 17.0, *) {
-            HStack(spacing: 16) {
-                if context.state.status == "Running" {
-                    AppIntentButton(PauseStopwatchIntent()) {
-                        Label("Pause", systemImage: "pause.fill")
-                    }
-                    .buttonStyle(.bordered)
-
-                    AppIntentButton(StopStopwatchIntent()) {
-                        Label("Stop", systemImage: "stop.fill")
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.red)
-                } else {
-                    AppIntentButton(ResumeStopwatchIntent()) {
-                        Label("Resume", systemImage: "play.fill")
-                    }
-                    .buttonStyle(.bordered)
-
-                    AppIntentButton(StopStopwatchIntent()) {
-                        Label("Stop", systemImage: "stop.fill")
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.red)
-                }
-            }
-            .padding(.top, 4)
-        } else {
-            HStack(spacing: 8) {
-                Text(context.state.status)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-        }
-#else
-        HStack(spacing: 8) {
-            Text(context.state.status)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-#endif
-    }
+                // Removed trailing and bottom regions to keep expanded island compact
             } compactLeading: {
                 Image(systemName: "stopwatch")
             } compactTrailing: {

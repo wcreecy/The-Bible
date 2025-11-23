@@ -169,6 +169,7 @@ struct PrayerTimerLiveActivity: Widget {
                             } else {
                                 Text("Focus")
                                     .font(.headline)
+                                    .multilineTextAlignment(.center)
                             }
                             if let body = (context.state.focusBody?.isEmpty == false ? context.state.focusBody : sharedFocusBody()) {
                                 Text(body)
@@ -178,24 +179,26 @@ struct PrayerTimerLiveActivity: Widget {
                                     .multilineTextAlignment(.center)
                             }
                         }
+                        .frame(maxWidth: .infinity, alignment: .center)
                     } else {
-                        VStack(spacing: 8) {
+                        // Center both the title and the timer
+                        VStack(alignment: .center, spacing: 6) {
                             Text(context.attributes.sessionName)
                                 .font(.headline)
+                                .multilineTextAlignment(.center)
+
                             Text(endDate(context.state.remaining), style: .timer)
                                 .monospacedDigit()
                                 .font(.system(size: 28, weight: .bold, design: .rounded))
                                 .foregroundStyle(timerTintColor(context))
+                                .multilineTextAlignment(.center)
                         }
+                        .frame(maxWidth: .infinity, alignment: .center)
                     }
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    if context.state.status == "Focus" {
-                        EmptyView()
-                    } else {
-                        Text(endDate(context.state.remaining), style: .timer)
-                            .monospacedDigit()
-                    }
+                    // Keep empty so nothing shows on the far right
+                    EmptyView()
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     if context.state.status == "Focus" {
@@ -325,4 +328,3 @@ struct PrayerTimerLiveActivity: Widget {
         }
     }
 }
-
