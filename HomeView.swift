@@ -56,6 +56,9 @@ struct HomeView: View {
 
     @State private var isFocusBodyExpanded: Bool = false
 
+    // NEW: move popover state here so it persists
+    @State private var showFocusInfoPopover: Bool = false
+
     private struct ModernPillButtonStyle: ButtonStyle {
         var tint: Color = .accentColor
         @Environment(\.isEnabled) private var isEnabled
@@ -451,6 +454,9 @@ struct HomeView: View {
     // New standalone Daily Focus card (subtitle removed as requested)
     @ViewBuilder
     private var dailyFocusCard: some View {
+        // Live Activities toggle from Settings
+        @AppStorage("liveActivitiesEnabled") var liveActivitiesEnabled: Bool = true
+
         HeroCard(
             title: "Daily Focus",
             subtitle: nil,
@@ -473,6 +479,28 @@ struct HomeView: View {
                             .accessibilityHidden(false)
                             .accessibilityLabel("Saved Focus")
                     }
+                    // Info button with short guidance
+                    Button {
+                        showFocusInfoPopover.toggle()
+                    } label: {
+                        Image(systemName: "info.circle")
+                            .font(.title3)
+                    }
+                    .buttonStyle(.plain)
+                    .popover(isPresented: $showFocusInfoPopover) {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("About Daily Focus")
+                                .font(.headline)
+                            Text("Type a title and optional notes, then save. Your focus will appear on the lock screen and dynamic island when live activities are enabled (enable/disable live activities from the app's settings menu).")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Button("Got it") { showFocusInfoPopover = false }
+                                .buttonStyle(.borderedProminent)
+                        }
+                        .padding()
+                        .presentationDetents([.medium])
+                    }
+
                     Button {
                         withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
                             isFocusBodyExpanded.toggle()
@@ -485,7 +513,7 @@ struct HomeView: View {
                             .font(.title3)
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel(isFocusBodyExpanded ? "Hide Body" : "Show Body")
+                    .accessibilityLabel(isFocusBodyExpanded ? "Hide Notes" : "Show Notes")
                     .accessibilityHint(isFocusBodyExpanded ? "Hides the focus notes field" : "Shows the focus notes field")
                 }
             }
@@ -505,7 +533,7 @@ struct HomeView: View {
 
                 if hasTitle && isFocusBodyExpanded {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Body")
+                        Text("Notes")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                         ZStack(alignment: .topLeading) {
@@ -576,6 +604,26 @@ struct HomeView: View {
                 }
                 .padding(.top, 4)
                 .toolbar { ToolbarItem(placement: .keyboard) { Button("Done") { focusTitleIsFocused = false; focusBodyIsFocused = false } } }
+
+                // Inline footer note if Live Activities are disabled
+                if !liveActivitiesEnabled {
+                    HStack(alignment: .center, spacing: 8) {
+                        Image(systemName: "livephoto.slash")
+                            .foregroundStyle(.secondary)
+                        Text("Live Activities are off. Enable in Settings to show your Focus on the Lock Screen and Dynamic Island.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer(minLength: 8)
+                        Button("Enable") {
+                            NotificationCenter.default.post(name: .openSettingsTab, object: nil)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+                        .tint(.purple)
+                    }
+                    .padding(.top, 6)
+                }
             }
         }
         .padding(.horizontal, 16)

@@ -9,6 +9,7 @@ import SwiftUI
 
 extension Notification.Name {
     static let openBibleReference = Notification.Name("OpenBibleReference")
+    static let openSettingsTab = Notification.Name("OpenSettingsTab")
 }
 
 struct ContentView: View {
@@ -161,86 +162,10 @@ struct ContentView: View {
             JournalEditorView(verseRef: journalComposer.verseRef, initialBody: journalComposer.initialBody, showTagColors: journalComposer.showTagColors, editingEntry: journalComposer.editingEntry)
         }
         .onOpenURL { url in
-            guard url.scheme == "thebible" else { return }
-            switch url.host?.lowercased() {
-            case "timer":
-                selectedTab = 0
-                UserDefaults.standard.set("timer", forKey: "prayerMode")
-                if let comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
-                   let action = comps.queryItems?.first(where: { $0.name == "action" })?.value,
-                   let shared = UserDefaults(suiteName: "group.bible.app") {
-                    shared.set(action, forKey: "prayerTimerPendingAction")
-                }
-            case "stopwatch":
-                selectedTab = 0
-                UserDefaults.standard.set("stopwatch", forKey: "prayerMode")
-                if let comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
-                   let action = comps.queryItems?.first(where: { $0.name == "action" })?.value,
-                   let shared = UserDefaults(suiteName: "group.bible.app") {
-                    let mapped: String
-                    switch action.lowercased() {
-                    case "pause": mapped = "togglePause"
-                    case "stop": mapped = "stop"
-                    default: mapped = action
-                    }
-                    shared.set(mapped, forKey: "stopwatchPendingAction")
-                }
-            case "focus":
-                selectedTab = 0
-                UserDefaults.standard.set("focus", forKey: "prayerMode")
-            case "open":
-                guard let comps = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
-                let q = Dictionary(uniqueKeysWithValues: (comps.queryItems ?? []).map { ($0.name.lowercased(), $0.value ?? "") })
-                let bookName = q["book"] ?? ""
-                let chapterNum = Int(q["chapter"] ?? "") ?? 0
-                let verseNum = Int(q["verse"] ?? "") ?? 0
-                guard !bookName.isEmpty, chapterNum > 0, verseNum > 0 else { return }
-
-                if !isPad,
-                   let book = BibleData.books.first(where: { $0.name == bookName }),
-                   let chapter = book.chapters.first(where: { $0.number == chapterNum }) {
-                    selectedTab = 1
-                    DispatchQueue.main.async {
-                        bibleCoordinator.push(.reader(book: book, chapter: chapter, startVerse: verseNum))
-                    }
-                } else {
-                    selectedTab = 1
-                    DispatchQueue.main.async {
-                        NotificationCenter.default.post(
-                            name: .openBibleReference,
-                            object: nil,
-                            userInfo: ["book": bookName, "chapter": chapterNum, "verse": verseNum]
-                        )
-                    }
-                }
-            default:
-                break
-            }
+            // ... unchanged ...
         }
-        // NEW: Handle resume tap notification to open on Bible tab
         .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { note in
-            guard let bookName = note.userInfo?["book"] as? String,
-                  let chapterNum = note.userInfo?["chapter"] as? Int,
-                  let verseNum = note.userInfo?["verse"] as? Int else { return }
-
-            if !isPad,
-               let book = BibleData.books.first(where: { $0.name == bookName }),
-               let chapter = book.chapters.first(where: { $0.number == chapterNum }) {
-                selectedTab = 1
-                DispatchQueue.main.async {
-                    bibleCoordinator.push(.reader(book: book, chapter: chapter, startVerse: verseNum))
-                }
-            } else {
-                selectedTab = 1
-                // Forward to BibleSplitView (it listens for this notification)
-                DispatchQueue.main.async {
-                    NotificationCenter.default.post(
-                        name: .openBibleReference,
-                        object: nil,
-                        userInfo: ["book": bookName, "chapter": chapterNum, "verse": verseNum]
-                    )
-                }
-            }
+            // ... unchanged ...
         }
     }
 
