@@ -32,6 +32,17 @@ struct JournalDetailView: View {
         }
     }
 
+    // Compose share text: title + blank line + body (if present)
+    private var shareText: String {
+        let titleText = entry.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled" : entry.title
+        let bodyText = entry.body.trimmingCharacters(in: .whitespacesAndNewlines)
+        if bodyText.isEmpty {
+            return titleText
+        } else {
+            return "\(titleText)\n\n\(bodyText)"
+        }
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -156,11 +167,15 @@ struct JournalDetailView: View {
         }
         .navigationTitle(entry.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled" : entry.title)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                // Share button: shares title + body
+                ShareLink(item: shareText) {
+                    Image(systemName: "square.and.arrow.up")
+                }
+
+                // Edit button
+                Button("Edit") {
                     journalComposer.presentForEditing(entry: entry)
-                } label: {
-                    Image(systemName: "pencil")
                 }
             }
         }

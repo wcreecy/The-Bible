@@ -22,6 +22,7 @@ struct JournalEditorView: View {
     @State private var showSaveError = false
     @State private var saveErrorMessage: String = ""
     @State private var showCopyToast: Bool = false
+    @State private var showSavedToast: Bool = false
     @State private var editingEntry: JournalEntry? = nil
 
     // Caret/selection tracking
@@ -54,9 +55,9 @@ struct JournalEditorView: View {
         NavigationStack {
             Group {
                 if hSize == .regular {
-                    regularLayout
+                    regularLayoutWithBottomSave
                 } else {
-                    compactLayout
+                    compactLayoutWithBottomSave
                 }
             }
             .navigationTitle(
@@ -71,20 +72,16 @@ struct JournalEditorView: View {
             )
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button(action: {
+                    Button("Cancel") {
                         if let onClose { onClose() } else { dismiss() }
-                    }) {
-                        Image(systemName: "xmark.circle")
                     }
-                    .accessibilityLabel("Cancel")
                     .keyboardShortcut("w", modifiers: [.command])
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: save) {
-                        Image(systemName: "square.and.arrow.down")
+                    Button("Save") {
+                        save(manual: true)
                     }
                     .bold()
-                    .accessibilityLabel("Save")
                     .keyboardShortcut("s", modifiers: [.command])
                 }
             }
@@ -93,7 +90,10 @@ struct JournalEditorView: View {
             } message: {
                 Text(saveErrorMessage)
             }
+            // Existing toasts
             .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
+            // New "Saved" toast
+            .appToast(isPresented: $showSavedToast, symbol: "checkmark.seal.fill", text: "Saved", tint: .green)
             .onAppear {
                 scheduleLinkify(for: content)
             }
@@ -109,19 +109,80 @@ struct JournalEditorView: View {
         }
     }
 
-    private var regularLayout: some View {
-        HStack(spacing: 0) {
-            editorColumn
-            Divider()
-            previewColumn
-                .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            if showTagColors {
+    // MARK: - Layouts with bottom Save
+
+    private var regularLayoutWithBottomSave: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                editorColumn
                 Divider()
-                tagColorsColumn
-                    .frame(minWidth: 280, idealWidth: 300, maxWidth: 340, maxHeight: .infinity, alignment: .topLeading)
+                previewColumn
+                    .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                if showTagColors {
+                    Divider()
+                    tagColorsColumn
+                        .frame(minWidth: 280, idealWidth: 300, maxWidth: 340, maxHeight: .infinity, alignment: .topLeading)
+                }
             }
+            .clipped(antialiased: false)
+
+            bottomSaveBar
         }
-        .clipped(antialiased: false)
+        .ignoresSafeArea(edges: .bottom)
+    }
+
+    private var compactLayoutWithBottomSave: some View {
+        VStack(spacing: 0) {
+            compactLayout
+                .clipped(antialiased: false)
+
+            bottomSaveBar
+        }
+        .ignoresSafeArea(edges: .bottom)
+    }
+
+    private var bottomSaveBar: some View {
+        ZStack {
+            // Translucent background with subtle top divider and shadow
+            VisualEffectMaterial()
+                .overlay(
+                    Rectangle()
+                        .fill(Color.black.opacity(0.08))
+                        .frame(height: 0.5)
+                        .frame(maxHeight: .infinity, alignment: .top)
+                        .opacity(0.6)
+                )
+                .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: -1)
+
+            HStack {
+                Spacer(minLength: 0)
+                Button {
+                    save(manual: true)
+                } label: {
+                    Text("Save Entry")
+                        .font(.headline)
+                        .bold()
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(LocalPillButtonStyle(tint: .accentColor))
+                .controlSize(.large)
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .padding(.bottom, 6)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private struct VisualEffectMaterial: View {
+        var body: some View {
+            Rectangle()
+                .fill(.ultraThinMaterial)
+                .frame(height: 64)
+                .frame(maxWidth: .infinity)
+                .overlay(Color.clear)
+        }
     }
 
     private var editorColumn: some View {
@@ -138,6 +199,7 @@ struct JournalEditorView: View {
                 tagChipsView
 
                 textEditorWithSmartLinks
+                    .padding(.bottom, 24)
             }
             .padding(20)
         }
@@ -177,7 +239,6 @@ struct JournalEditorView: View {
                     .frame(minHeight: 280)
             }
         }
-        .clipped(antialiased: false)
     }
 
     @ViewBuilder
@@ -328,7 +389,6 @@ struct JournalEditorView: View {
     }
 
     private func detectHashTrigger() {
-        // Look backwards from caret for a '#' token start; if found, present the sheet
         let t = content
         let caretLoc = textSelectionRange.location
         let utf16 = t.utf16
@@ -338,10 +398,9 @@ struct JournalEditorView: View {
             return
         }
 
-        // Walk back to find '#', stop at whitespace/newline or non-token char
         let allowed: CharacterSet = CharacterSet.letters
             .union(.decimalDigits)
-            .union(CharacterSet(charactersIn: ".:-")) // allow separators while typing
+            .union(CharacterSet(charactersIn: ".:-"))
         var i = caretIndex
         var foundHash: String.Index? = nil
         while i > t.startIndex {
@@ -353,7 +412,6 @@ struct JournalEditorView: View {
         }
         guard let hashIdx = foundHash else { return }
 
-        // Compute the token’s end (until whitespace/newline)
         var endIdx = t.index(after: hashIdx)
         while endIdx < t.endIndex {
             let ch = t[endIdx]
@@ -361,13 +419,11 @@ struct JournalEditorView: View {
             endIdx = t.index(after: endIdx)
         }
 
-        // Convert to NSRange in UTF-16
         let startUTF16 = t.utf16.distance(from: t.utf16.startIndex, to: hashIdx)
         let endUTF16 = t.utf16.distance(from: t.utf16.startIndex, to: endIdx)
         let range = NSRange(location: startUTF16, length: endUTF16 - startUTF16)
         pendingTriggerRange = range
 
-        // Present sheet once per detection when user is at/after token; avoid re-presenting continuously
         if !showSmartLinkSheet {
             showSmartLinkSheet = true
         }
@@ -384,7 +440,6 @@ struct JournalEditorView: View {
                 let newLoc = range.location + insertion.utf16.count
                 textSelectionRange = NSRange(location: newLoc, length: 0)
             } else {
-                // Fallback: insert at caret
                 let loc = min(max(textSelectionRange.location, 0), (t as NSString).length)
                 if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
                     t.insert(contentsOf: insertion, at: idx)
@@ -393,7 +448,6 @@ struct JournalEditorView: View {
                 }
             }
         } else {
-            // No pending token; insert at caret
             let loc = min(max(textSelectionRange.location, 0), (t as NSString).length)
             if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
                 t.insert(contentsOf: insertion, at: idx)
@@ -407,7 +461,9 @@ struct JournalEditorView: View {
         scheduleLinkify(for: content)
     }
 
-    private func save() {
+    // MARK: - Save
+
+    private func save(manual: Bool) {
         let tags = tagsText
             .split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -421,7 +477,15 @@ struct JournalEditorView: View {
             do {
                 try ctx.save()
                 NotificationCenter.default.post(name: JournalNotifications.entryUpdated, object: nil, userInfo: ["id": entry.id.uuidString])
-                if let onClose { onClose() } else { dismiss() }
+                if manual {
+                    withAnimation(.spring()) { showSavedToast = true }
+                    // Briefly show confirmation before dismiss
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                        if let onClose { onClose() } else { dismiss() }
+                    }
+                } else {
+                    if let onClose { onClose() } else { dismiss() }
+                }
             } catch {
                 saveErrorMessage = error.localizedDescription
                 showSaveError = true
@@ -442,11 +506,42 @@ struct JournalEditorView: View {
         do {
             try ctx.save()
             NotificationCenter.default.post(name: JournalNotifications.entryCreated, object: nil, userInfo: ["id": entry.id.uuidString])
-            if let onClose { onClose() } else { dismiss() }
+            if manual {
+                withAnimation(.spring()) { showSavedToast = true }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    if let onClose { onClose() } else { dismiss() }
+                }
+            } else {
+                if let onClose { onClose() } else { dismiss() }
+            }
         } catch {
             saveErrorMessage = error.localizedDescription
             showSaveError = true
         }
+    }
+}
+
+// Local pill style used for the bottom Save Entry button
+private struct LocalPillButtonStyle: ButtonStyle {
+    var tint: Color = .accentColor
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundStyle(isEnabled ? .white : .secondary)
+            .padding(.vertical, 10)
+            .padding(.horizontal, 14)
+            .background(
+                Capsule(style: .continuous)
+                    .fill(isEnabled ? tint : Color(.secondarySystemFill))
+            )
+            .overlay(
+                Capsule(style: .continuous)
+                    .stroke(tint.opacity(configuration.isPressed ? 0.6 : 0.35), lineWidth: configuration.isPressed ? 2 : 1)
+            )
+            .shadow(color: .black.opacity(configuration.isPressed ? 0.04 : 0.08), radius: configuration.isPressed ? 1 : 3, x: 0, y: configuration.isPressed ? 0 : 2)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+            .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
     }
 }
 

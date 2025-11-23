@@ -488,17 +488,21 @@ struct HomeView: View {
                     }
                     .buttonStyle(.plain)
                     .popover(isPresented: $showFocusInfoPopover) {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("About Daily Focus")
-                                .font(.headline)
-                            Text("Type a title and optional notes, then save. Your focus will appear on the lock screen and dynamic island when live activities are enabled (enable/disable live activities from the app's settings menu).")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            Button("Got it") { showFocusInfoPopover = false }
-                                .buttonStyle(.borderedProminent)
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("About Daily Focus")
+                                    .font(.headline)
+                                Text("Type a title and optional notes, then save. Your focus will appear on the dynamic island (iPhone only) and the lock screen when live activities are enabled (enable/disable live activities from the app's settings menu).")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .multilineTextAlignment(.leading)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                Button("Got it") { showFocusInfoPopover = false }
+                                    .buttonStyle(.borderedProminent)
+                            }
+                            .padding()
                         }
-                        .padding()
-                        .presentationDetents([.medium])
+                        .presentationDetents([.medium, .large])
                     }
 
                     Button {

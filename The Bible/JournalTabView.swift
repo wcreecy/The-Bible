@@ -173,17 +173,13 @@ struct JournalTabView: View {
                                     Image(systemName: "xmark")
                                 }
                             } else {
-                                Button {
+                                Button("New") {
                                     journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
-                                } label: {
-                                    Image(systemName: "square.and.pencil")
                                 }
                                 .tint(.blue)
 
-                                Button {
+                                Button("Select") {
                                     selectionMode = true
-                                } label: {
-                                    Image(systemName: "checkmark.circle")
                                 }
                             }
                         }
@@ -251,12 +247,19 @@ struct JournalTabView: View {
                         }
                         .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
                         .toolbar {
-                            ToolbarItem(placement: .primaryAction) {
-                                Button {
+                            ToolbarItemGroup(placement: .topBarTrailing) {
+                                // Share button (iPad): share title + body, matching iPhone behavior
+                                let shareTitle = e.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled" : e.title
+                                let bodyText = e.body.trimmingCharacters(in: .whitespacesAndNewlines)
+                                let shareText: String = bodyText.isEmpty ? shareTitle : "\(shareTitle)\n\n\(bodyText)"
+                                ShareLink(item: shareText) {
+                                    Image(systemName: "square.and.arrow.up")
+                                }
+
+                                // Edit button
+                                Button("Edit") {
                                     editingTagsText = e.tags.joined(separator: ", ")
                                     isEditing = true
-                                } label: {
-                                    Image(systemName: "pencil")
                                 }
                             }
                         }
@@ -345,15 +348,11 @@ struct JournalTabView: View {
                                 Image(systemName: "xmark")
                             }
                         } else {
-                            Button {
+                            Button("New") {
                                 journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
-                            } label: {
-                                Image(systemName: "square.and.pencil")
                             }
-                            Button {
+                            Button("Select") {
                                 selectionMode = true
-                            } label: {
-                                Image(systemName: "checkmark.circle")
                             }
                         }
                     }
@@ -785,4 +784,8 @@ struct JournalTabView: View {
         entry.updatedAt = Date()
         scheduleAutosave()
     }
+}
+
+#Preview {
+    NavigationStack { ReferenceMatchGameView() }
 }
