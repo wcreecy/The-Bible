@@ -11,9 +11,11 @@ import SwiftUI
 import AppIntents
 
 // MARK: - Local App Intents for Live Activity Controls (iOS 17+)
+// Keeping intents defined in case you use them elsewhere, but they won’t be shown as buttons now.
 @available(iOS 17.0, *)
 struct PrayerTimerTogglePauseIntent: AppIntent {
     static var title: LocalizedStringResource = "Pause/Resume Prayer Timer"
+    static var openAppWhenRun = false
     func perform() async throws -> some IntentResult {
         if let shared = UserDefaults(suiteName: "group.bible.app") {
             shared.set("togglePause", forKey: "prayerTimerPendingAction")
@@ -25,6 +27,7 @@ struct PrayerTimerTogglePauseIntent: AppIntent {
 @available(iOS 17.0, *)
 struct PrayerTimerAddFiveMinutesIntent: AppIntent {
     static var title: LocalizedStringResource = "+5 Minutes"
+    static var openAppWhenRun = false
     func perform() async throws -> some IntentResult {
         if let shared = UserDefaults(suiteName: "group.bible.app") {
             shared.set("add5", forKey: "prayerTimerPendingAction")
@@ -36,6 +39,7 @@ struct PrayerTimerAddFiveMinutesIntent: AppIntent {
 @available(iOS 17.0, *)
 struct PrayerTimerStopIntent: AppIntent {
     static var title: LocalizedStringResource = "Stop Prayer Timer"
+    static var openAppWhenRun = false
     func perform() async throws -> some IntentResult {
         if let shared = UserDefaults(suiteName: "group.bible.app") {
             shared.set("stop", forKey: "prayerTimerPendingAction")
@@ -81,7 +85,7 @@ private func focusLogoView() -> some View {
 struct PrayerTimerLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: PrayerTimerAttributes.self) { context in
-            // Lock Screen (and banner) UI — Larger, color-tinted, with controls
+            // Lock Screen (and banner) UI — Larger, color-tinted, no controls
             let tint = timerTintColor(context)
             VStack(spacing: 10) {
                 if context.state.status != "Focus" {
@@ -119,31 +123,6 @@ struct PrayerTimerLiveActivity: Widget {
                         .foregroundStyle(tint)
                         .minimumScaleFactor(0.6)
                         .frame(maxWidth: .infinity, alignment: .leading)
-
-                    // Controls row
-                    HStack(spacing: 20) {
-                        Link(destination: URL(string: "thebible://timer?action=togglePause")!) {
-                            Image(systemName: context.state.status == "Paused" ? "play.fill" : "pause.fill")
-                                .font(.system(size: 18, weight: .bold))
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .tint(tint)
-
-                        Link(destination: URL(string: "thebible://timer?action=add5")!) {
-                            Text("+5")
-                                .font(.system(size: 16, weight: .bold))
-                                .frame(minWidth: 36)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .tint(tint)
-
-                        Link(destination: URL(string: "thebible://timer?action=stop")!) {
-                            Image(systemName: "stop.fill")
-                                .font(.system(size: 18, weight: .bold))
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.red)
-                    }
                 }
             }
             .padding()
@@ -201,43 +180,8 @@ struct PrayerTimerLiveActivity: Widget {
                     EmptyView()
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    if context.state.status == "Focus" {
-                        if let body = (context.state.focusBody?.isEmpty == false ? context.state.focusBody : sharedFocusBody()) {
-                            Text(body)
-                                .font(.subheadline)
-                                .lineLimit(2)
-                                .truncationMode(.tail)
-                        } else if let title = (context.state.focusTitle?.isEmpty == false ? context.state.focusTitle : sharedFocusTitle()) {
-                            Text(title)
-                                .font(.subheadline)
-                                .lineLimit(1)
-                                .truncationMode(.tail)
-                        } else {
-                            Text("Focus")
-                                .font(.subheadline)
-                        }
-                    } else {
-                        HStack(spacing: 20) {
-                            Link(destination: URL(string: "thebible://timer?action=togglePause")!) {
-                                Image(systemName: context.state.status == "Paused" ? "play.fill" : "pause.fill")
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(timerTintColor(context))
-
-                            Link(destination: URL(string: "thebible://timer?action=add5")!) {
-                                Text("+5")
-                                    .fontWeight(.bold)
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(timerTintColor(context))
-
-                            Link(destination: URL(string: "thebible://timer?action=stop")!) {
-                                Image(systemName: "stop.fill")
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(.red)
-                        }
-                    }
+                    // No controls here anymore. Also avoid duplicating Focus body/title shown in center.
+                    EmptyView()
                 }
             } compactLeading: {
                 if context.state.status == "Focus" {
