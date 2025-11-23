@@ -225,7 +225,6 @@ struct HomeView: View {
         Picker("Mode", selection: $prayerMode) {
             Text("Timer").tag(PrayerMode.timer)
             Text("Stopwatch").tag(PrayerMode.stopwatch)
-            Text("Focus").tag(PrayerMode.focus)
         }
         .pickerStyle(.segmented)
         .controlSize(.small)
@@ -449,6 +448,139 @@ struct HomeView: View {
         .frame(height: isPad ? iPadCardHeight : nil)
     }
 
+    // New standalone Daily Focus card (subtitle removed as requested)
+    @ViewBuilder
+    private var dailyFocusCard: some View {
+        HeroCard(
+            title: "Daily Focus",
+            subtitle: nil,
+            icon: "target",
+            tint: .purple,
+            trailingAccessory: {
+                HStack(spacing: 8) {
+                    if hasSavedFocus {
+                        Text("Saved")
+                            .font(.caption2).bold()
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                Capsule().fill(Color.green.opacity(0.15))
+                            )
+                            .overlay(
+                                Capsule().stroke(Color.green.opacity(0.5), lineWidth: 1)
+                            )
+                            .foregroundStyle(.green)
+                            .accessibilityHidden(false)
+                            .accessibilityLabel("Saved Focus")
+                    }
+                    Button {
+                        withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+                            isFocusBodyExpanded.toggle()
+                        }
+                        if !isFocusBodyExpanded {
+                            focusBodyIsFocused = false
+                        }
+                    } label: {
+                        Image(systemName: isFocusBodyExpanded ? "chevron.up.circle" : "chevron.down.circle")
+                            .font(.title3)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(isFocusBodyExpanded ? "Hide Body" : "Show Body")
+                    .accessibilityHint(isFocusBodyExpanded ? "Hides the focus notes field" : "Shows the focus notes field")
+                }
+            }
+        ) {
+            VStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Today's Focus")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    TextField("What's your focus on today?", text: $focusTitle)
+                        .textFieldStyle(.roundedBorder)
+                        .submitLabel(.done)
+                        .focused($focusTitleIsFocused)
+                }
+
+                let hasTitle = !focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+
+                if hasTitle && isFocusBodyExpanded {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Body")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        ZStack(alignment: .topLeading) {
+                            if focusBody.isEmpty {
+                                Text("Enter your focus notes…")
+                                    .foregroundStyle(.secondary)
+                                    .padding(.top, 8)
+                                    .padding(.leading, 5)
+                            }
+                            TextEditor(text: $focusBody)
+                                .focused($focusBodyIsFocused)
+                                .frame(minHeight: 120)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                        .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                                )
+                        }
+                    }
+                }
+
+                let hasTypedLetter: Bool = {
+                    let letters = CharacterSet.letters
+                    let t = focusTitle.unicodeScalars.contains { letters.contains($0) }
+                    let b = focusBody.unicodeScalars.contains { letters.contains($0) }
+                    return t || b
+                }()
+
+                HStack(spacing: 12) {
+                    Button {
+                        sharedDefaults?.set(focusTitle, forKey: "focusTitle")
+                        sharedDefaults?.set(focusBody, forKey: "focusBody")
+                        StopwatchActivityController.shared.cancel()
+                        PrayerTimerActivityController.shared.ensureActivityForFocus(
+                            title: focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : focusTitle,
+                            body: focusBody.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : focusBody
+                        )
+                        hasSavedFocus = true
+                        focusTitleIsFocused = false
+                        focusBodyIsFocused = false
+                        withAnimation(.spring()) { showFocusSavedToast = true }
+                    } label: {
+                        Label("Save", systemImage: "square.and.arrow.down")
+                    }
+                    .buttonStyle(ModernPillButtonStyle(tint: .green))
+                    .controlSize(.regular)
+                    .accessibilityLabel("Save Focus")
+                    .accessibilityHint("Saves your daily focus and shows it on the Dynamic Island")
+                    .disabled(!hasTypedLetter)
+
+                    Button {
+                        focusTitle = ""
+                        focusBody = ""
+                        sharedDefaults?.set("", forKey: "focusTitle")
+                        sharedDefaults?.set("", forKey: "focusBody")
+                        PrayerTimerActivityController.shared.cancel()
+                        hasSavedFocus = false
+                        focusTitleIsFocused = false
+                        focusBodyIsFocused = false
+                        isFocusBodyExpanded = false
+                    } label: {
+                        Label("Clear", systemImage: "xmark.circle.fill")
+                    }
+                    .buttonStyle(ModernPillButtonStyle(tint: .red))
+                    .controlSize(.regular)
+                    .accessibilityLabel("Clear Focus")
+                    .accessibilityHint("Clears your daily focus and removes it from the Dynamic Island")
+                    .disabled(!hasTitle)
+                }
+                .padding(.top, 4)
+                .toolbar { ToolbarItem(placement: .keyboard) { Button("Done") { focusTitleIsFocused = false; focusBodyIsFocused = false } } }
+            }
+        }
+        .padding(.horizontal, 16)
+    }
+
     @ViewBuilder
     private var timerCard: some View {
         Group {
@@ -661,122 +793,6 @@ struct HomeView: View {
                 }
                 .padding(.horizontal, 16)
                 .frame(height: isPad ? iPadCardHeight : nil)
-            } else {
-                HeroCard(
-                    title: "Daily Focus",
-                    subtitle: "What's something you want to focus on today?",
-                    icon: "target",
-                    tint: .purple,
-                    trailingAccessory: {
-                        ModePicker(disabled: isTimerRunning || stopwatchRunning)
-                    }
-                ) {
-                    VStack(spacing: 12) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Today's Focus")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            TextField("What's your focus on today?", text: $focusTitle)
-                                .textFieldStyle(.roundedBorder)
-                                .submitLabel(.done)
-                                .focused($focusTitleIsFocused)
-                        }
-
-                        let hasTitle = !focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-
-                        if hasTitle && isFocusBodyExpanded {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Body")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                ZStack(alignment: .topLeading) {
-                                    if focusBody.isEmpty {
-                                        Text("Enter your focus notes…")
-                                            .foregroundStyle(.secondary)
-                                            .padding(.top, 8)
-                                            .padding(.leading, 5)
-                                    }
-                                    TextEditor(text: $focusBody)
-                                        .focused($focusBodyIsFocused)
-                                        .frame(minHeight: 120)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                                .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                                        )
-                                }
-                            }
-                        }
-
-                        let hasTypedLetter: Bool = {
-                            let letters = CharacterSet.letters
-                            let t = focusTitle.unicodeScalars.contains { letters.contains($0) }
-                            let b = focusBody.unicodeScalars.contains { letters.contains($0) }
-                            return t || b
-                        }()
-
-                        HStack(spacing: 12) {
-                            Button {
-                                sharedDefaults?.set(focusTitle, forKey: "focusTitle")
-                                sharedDefaults?.set(focusBody, forKey: "focusBody")
-                                StopwatchActivityController.shared.cancel()
-                                PrayerTimerActivityController.shared.ensureActivityForFocus(
-                                    title: focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : focusTitle,
-                                    body: focusBody.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : focusBody
-                                )
-                                hasSavedFocus = true
-                                focusTitleIsFocused = false
-                                focusBodyIsFocused = false
-                                withAnimation(.spring()) { showFocusSavedToast = true }
-                            } label: {
-                                Label("Save", systemImage: "square.and.arrow.down")
-                            }
-                            .buttonStyle(ModernPillButtonStyle(tint: .green))
-                            .controlSize(.regular)
-                            .accessibilityLabel("Save Focus")
-                            .accessibilityHint("Saves your daily focus and shows it on the Dynamic Island")
-                            .disabled(!hasTypedLetter)
-
-                            Button {
-                                focusTitle = ""
-                                focusBody = ""
-                                sharedDefaults?.set("", forKey: "focusTitle")
-                                sharedDefaults?.set("", forKey: "focusBody")
-                                PrayerTimerActivityController.shared.cancel()
-                                hasSavedFocus = false
-                                focusTitleIsFocused = false
-                                focusBodyIsFocused = false
-                                isFocusBodyExpanded = false
-                            } label: {
-                                Label("Clear", systemImage: "xmark.circle.fill")
-                            }
-                            .buttonStyle(ModernPillButtonStyle(tint: .red))
-                            .controlSize(.regular)
-                            .accessibilityLabel("Clear Focus")
-                            .accessibilityHint("Clears your daily focus and removes it from the Dynamic Island")
-                            .disabled(!hasTitle)
-
-                            Button {
-                                withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                                    isFocusBodyExpanded.toggle()
-                                }
-                                if !isFocusBodyExpanded {
-                                    focusBodyIsFocused = false
-                                }
-                            } label: {
-                                Image(systemName: isFocusBodyExpanded ? "chevron.up.circle" : "chevron.down.circle")
-                                    .font(.title3)
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel(isFocusBodyExpanded ? "Hide Body" : "Show Body")
-                            .accessibilityHint(isFocusBodyExpanded ? "Hides the focus notes field" : "Shows the focus notes field")
-                            .disabled(!hasTitle)
-                            .foregroundStyle(.secondary)
-                        }
-                        .padding(.top, 4)
-                        .toolbar { ToolbarItem(placement: .keyboard) { Button("Done") { focusTitleIsFocused = false; focusBodyIsFocused = false } } }
-                    }
-                }
-                .padding(.horizontal, 16)
             }
         }
     }
@@ -880,6 +896,7 @@ struct HomeView: View {
             VStack(spacing: 16) {
                 titleCard
                 verseOfDayCard
+                dailyFocusCard
                 timerCard
                 resumeCard
             }
@@ -893,6 +910,9 @@ struct HomeView: View {
             Task { _ = await BibleLibrary.shared.bookNames() }
 
             bibleStore.ensureLoaded()
+
+            // Back-compat: if stored mode was "focus", coerce to "timer" now that Focus is its own card
+            if prayerMode == .focus { prayerMode = .timer }
 
             isTimerRunning = storedRunning
             isPaused = storedPaused
