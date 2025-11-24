@@ -147,241 +147,398 @@ struct JournalTabView: View {
 
     var body: some View {
         if hSize == .regular {
-            NavigationSplitView(columnVisibility: $splitVisibility) {
-                sidebarList
-                    .id(refreshToken)
-                    .navigationTitle("Journal")
-                    .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
-                            if !selectedTags.isEmpty {
-                                Button {
-                                    selectedTags.removeAll()
-                                } label: {
-                                    Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle")
-                                }
-                            }
-                        }
-                        ToolbarItemGroup(placement: .topBarTrailing) {
-                            if selectionMode {
-                                Button(role: .destructive) {
-                                    deleteSelectedEntries()
-                                } label: {
-                                    Image(systemName: "trash")
-                                }
-                                Button {
-                                    selectionMode = false
-                                    selectedForDeletion.removeAll()
-                                } label: {
-                                    Image(systemName: "xmark")
-                                }
-                            } else {
-                                Button("New") {
-                                    journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
-                                }
-                                .tint(.blue)
+            ipadSplitView
+        } else {
+            compactNavigationStack
+        }
+    }
 
-                                Button("Select") {
-                                    selectionMode = true
-                                }
-                            }
-                        }
-                    }
-                    .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
-                    .frame(minWidth: 280)
-            } detail: {
-                if let e = selectedEntry {
-                    if isEditing {
-                        HStack(spacing: 0) {
-                            // Disable inline overlay since the 3rd column shows links
-                            editorPane(entry: e, showInlinePreview: false)
-                                .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                                .layoutPriority(1)
-                            Divider()
-                            ScrollView { previewPane(entry: e) }
-                                .frame(minWidth: 320, idealWidth: 360, maxWidth: 420, maxHeight: .infinity, alignment: .topLeading)
-                        }
-                        .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
-                        .toolbar {
-                            ToolbarItemGroup(placement: .topBarTrailing) {
-                                Button {
-                                    isEditing = false
-                                } label: {
-                                    Image(systemName: "xmark.circle")
-                                }
-                                .buttonStyle(.plain)
+    // MARK: - iPad layout
 
-                                Button {
-                                    let tags = editingTagsText
-                                        .split(separator: ",")
-                                        .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-                                        .filter { !$0.isEmpty }
-                                    e.tags = tags
-                                    e.updatedAt = Date()
-                                    try? ctx.save()
-                                    isEditing = false
-                                    recomputeFilteredEntries()
-                                } label: {
-                                    Image(systemName: "checkmark.circle")
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                        .sheet(isPresented: $showSmartLinkSheet) {
-                            SmartLinkSheet { refText in
-                                insertSmartLink(refText, into: e)
-                            }
-                            .presentationDetents([.medium, .large])
-                        }
-                    } else {
-                        Group {
-                            if showPreview, previewContent != nil {
-                                HStack(spacing: 0) {
-                                    readOnlyPane(entry: e)
-                                        .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                                        .layoutPriority(1)
-                                        // Tap anywhere in the read-only content to enter edit mode
-                                        .contentShape(Rectangle())
-                                        .onTapGesture { isEditing = true }
-                                    Divider()
-                                    ScrollView { previewPane(entry: e) }
-                                        .frame(minWidth: 320, idealWidth: 360, maxWidth: 420, maxHeight: .infinity, alignment: .topLeading)
-                                }
-                            } else {
-                                readOnlyPane(entry: e)
-                                    // Tap anywhere in the read-only content to enter edit mode
-                                    .contentShape(Rectangle())
-                                    .onTapGesture { isEditing = true }
-                            }
-                        }
-                        .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
-                        .toolbar {
-                            ToolbarItemGroup(placement: .topBarTrailing) {
-                                // Share button (iPad): share title + body, matching iPhone behavior
-                                let shareTitle = e.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled" : e.title
-                                let bodyText = e.body.trimmingCharacters(in: .whitespacesAndNewlines)
-                                let shareText: String = bodyText.isEmpty ? shareTitle : "\(shareTitle)\n\n\(bodyText)"
-                                ShareLink(item: shareText) {
-                                    Image(systemName: "square.and.arrow.up")
-                                }
-
-                                // Edit button still available
-                                Button("Edit") {
-                                    editingTagsText = e.tags.joined(separator: ", ")
-                                    isEditing = true
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    ContentUnavailableView("Select an entry", systemImage: "book.closed")
+    @ToolbarContentBuilder
+    private var ipadSidebarToolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            if !selectedTags.isEmpty {
+                Button {
+                    selectedTags.removeAll()
+                } label: {
+                    Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle")
                 }
             }
+        }
+        ToolbarItemGroup(placement: .topBarTrailing) {
+            if selectionMode {
+                Button(role: .destructive) {
+                    deleteSelectedEntries()
+                } label: {
+                    Image(systemName: "trash")
+                }
+                Button {
+                    selectionMode = false
+                    selectedForDeletion.removeAll()
+                } label: {
+                    Image(systemName: "xmark")
+                }
+            } else {
+                Button("New") {
+                    journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
+                }
+                .tint(.blue)
+
+                Button("Select") {
+                    selectionMode = true
+                }
+            }
+        }
+    }
+
+    // Extracted sidebar view to reduce type-checker complexity
+    private var ipadSidebar: some View {
+        sidebarList
+            .navigationTitle("Journal")
+            .toolbar { ipadSidebarToolbar }
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
+            .frame(minWidth: 280)
+    }
+
+    private func handleSplitOnAppear() {
+        splitVisibility = .all
+        loadPins()
+        recomputeFilteredEntries()
+    }
+
+    private func handleEntriesChange() {
+        recomputeFilteredEntries()
+    }
+
+    private func handleSearchChange() {
+        recomputeFilteredEntries()
+    }
+
+    private func handleTagsChange() {
+        recomputeFilteredEntries()
+    }
+
+    private func handleCreatedNotification(_ note: Notification) {
+        if let id = note.userInfo?["id"] as? String {
+            refreshToken = id
+            if let created = entries.first(where: { $0.id.uuidString == id }) {
+                selectedEntry = created
+            }
+        } else {
+            refreshToken = UUID().uuidString
+        }
+        recomputeFilteredEntries()
+    }
+
+    private var ipadSplitView: some View {
+        // Erase the sidebar and detail to AnyView to keep generic depth shallow
+        let sidebar = AnyView(ipadSidebar)
+        let detail = AnyView(ipadDetailContent)
+
+        // Build split view in two steps to avoid huge single expression
+        let baseSplit = NavigationSplitView(columnVisibility: $splitVisibility) {
+            sidebar
+        } detail: {
+            detail
+        }
+
+        // Apply modifiers in smaller chained steps
+        let configuredSplit = baseSplit
             .navigationSplitViewStyle(.balanced)
-            .onAppear {
-                splitVisibility = .all
-                loadPins()
-                recomputeFilteredEntries()
-            }
+
+        return configuredSplit
+            .onAppear { handleSplitOnAppear() }
             .onChange(of: hSize) { _, _ in splitVisibility = .all }
-            .onChange(of: entries) { _, _ in recomputeFilteredEntries() }
-            .onChange(of: searchText) { _, _ in recomputeFilteredEntries() }
-            .onChange(of: selectedTags) { _, _ in recomputeFilteredEntries() }
+            .onChange(of: entries) { _, _ in handleEntriesChange() }
+            .onChange(of: searchText) { _, _ in handleSearchChange() }
+            .onChange(of: selectedTags) { _, _ in handleTagsChange() }
             .onReceive(NotificationCenter.default.publisher(for: JournalNotifications.entryCreated)) { note in
-                if let id = note.userInfo?["id"] as? String {
-                    refreshToken = id
-                    if let created = entries.first(where: { $0.id.uuidString == id }) {
-                        selectedEntry = created
-                    }
-                } else {
-                    refreshToken = UUID().uuidString
-                }
-                recomputeFilteredEntries()
+                handleCreatedNotification(note)
             }
             .onDisappear {
                 filterDebounceTask?.cancel()
                 filterDebounceTask = nil
             }
-        } else {
-            // Compact width
-            NavigationStack {
-                List(selection: $selectedForDeletion) {
-                    Section {
-                        ForEach(cachedFilteredEntries) { entry in
-                            NavigationLink(destination: JournalDetailView(entry: entry)) { listRow(for: entry) }
-                                .tag(entry)
-                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                    Button(role: .destructive) {
-                                        deleteEntry(entry)
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-                                }
-                                .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                                    Button {
-                                        togglePin(entry)
-                                    } label: {
-                                        Label(isPinned(entry) ? "Unpin" : "Pin", systemImage: "pin.fill")
-                                    }
-                                    .tint(.yellow)
-                                }
-                                .listRowInsets(EdgeInsets(top: 2, leading: 12, bottom: 2, trailing: 12))
+    }
+
+    // Extracted detail content to lighten the NavigationSplitView expression
+    @ViewBuilder
+    private var ipadDetailContent: some View {
+        Group {
+            if let e = selectedEntry {
+                if isEditing {
+                    iPadEditingDetail(entry: e)
+                } else {
+                    iPadReadOnlyDetail(entry: e)
+                }
+            } else {
+                ContentUnavailableView("Select an entry", systemImage: "book.closed")
+            }
+        }
+    }
+
+    // MARK: - iPad subviews
+
+    private func iPadEditingDetail(entry e: JournalEntry) -> some View {
+        HStack(spacing: 0) {
+            // Full-column editor (no Form)
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Top bar with Save / Cancel
+                    HStack {
+                        Button("Save") {
+                            let tags = editingTagsText
+                                .split(separator: ",")
+                                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                                .filter { !$0.isEmpty }
+                            e.tags = tags
+                            e.updatedAt = Date()
+                            try? ctx.save()
+                            isEditing = false
+                            recomputeFilteredEntries()
                         }
-                    } header: {
-                        Text(headerCountText)
-                            .font(.caption)
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.regular)
+
+                        Spacer(minLength: 0)
+
+                        Button("Cancel") {
+                            isEditing = false
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.regular)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+
+                    Divider()
+
+                    VStack(alignment: .leading, spacing: 12) {
+                        // Title
+                        TextField("Title", text: Binding(
+                            get: { e.title },
+                            set: { new in
+                                e.title = new
+                                e.updatedAt = Date()
+                                scheduleAutosave()
+                            }
+                        ))
+                        .font(.title2.weight(.semibold))
+                        .textInputAutocapitalization(.sentences)
+                        .disableAutocorrection(false)
+                        .padding(.horizontal, 12)
+                        .padding(.top, 8)
+
+                        // Tags
+                        TextField("Add tags (comma-separated)", text: $editingTagsText)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled(true)
+                            .font(.subheadline)
                             .foregroundStyle(.secondary)
-                    }
-                }
-                .toolbar {
-                    if !selectedTags.isEmpty {
-                        ToolbarItem(placement: .topBarLeading) {
-                            Button {
-                                selectedTags.removeAll()
-                            } label: {
-                                Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle")
+                            .padding(.horizontal, 12)
+
+                        if !parsedEditingTags.isEmpty {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 6) {
+                                    TagChipRow(
+                                        tags: parsedEditingTags,
+                                        selectedTags: [],
+                                        showColorPicker: true,
+                                        onTap: nil,
+                                        onColorChange: { tag, color in TagColorStore.setColor(color, for: tag) }
+                                    )
+                                }
+                                .padding(.horizontal, 12)
                             }
                         }
+
+                        // Body editor
+                        ZStack(alignment: .topLeading) {
+                            if e.body.isEmpty {
+                                Text("Write your thoughts here…")
+                                    .foregroundStyle(.secondary)
+                                    .padding(.top, 10)
+                                    .padding(.leading, 14)
+                            }
+                            CursorTextView(
+                                text: Binding(
+                                    get: { e.body },
+                                    set: { new in
+                                        e.body = new
+                                        e.updatedAt = Date()
+                                        inlineLinkifySourceID = UUID()
+                                        scheduleInlineLinkify(for: new)
+                                        scheduleAutosave()
+                                    }
+                                ),
+                                selection: $editSelection,
+                                caretRect: $editCaretRect,
+                                bottomInset: $editBottomInset,
+                                onChange: { _ in
+                                    detectHashTriggerInEdit(entry: e)
+                                }
+                            )
+                            .frame(minHeight: 400)
+                        }
+                        .padding(.bottom, 12)
                     }
-                    ToolbarItemGroup(placement: .topBarTrailing) {
-                        if selectionMode {
-                            Button(role: .destructive) {
-                                deleteSelectedEntries()
-                            } label: {
-                                Image(systemName: "trash")
+                    .padding(.vertical, 8)
+                }
+            }
+            .frame(minWidth: 480, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .padding(.leading, 1)
+            .layoutPriority(1)
+            .onAppear {
+                editingTagsText = e.tags.joined(separator: ", ")
+                inlineLinkedBody = BibleReferenceLinker.linkify(e.body)
+            }
+            .onDisappear {
+                autosaveTask?.cancel()
+                autosaveTask = nil
+                inlineLinkifyTask?.cancel()
+                inlineLinkifyTask = nil
+                inlineLinkifySourceID = UUID()
+                try? ctx.save()
+            }
+
+            Divider()
+
+            ScrollView { previewPane(entry: e) }
+                .frame(minWidth: 320, idealWidth: 360, maxWidth: 420, maxHeight: .infinity, alignment: .topLeading)
+                .layoutPriority(0)
+        }
+        .zIndex(1)
+        .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
+        .toolbar { }
+        .sheet(isPresented: $showSmartLinkSheet) {
+            SmartLinkSheet { refText in
+                insertSmartLink(refText, into: e)
+            }
+            .presentationDetents([.medium, .large])
+        }
+        .eraseToAnyView()
+    }
+
+    private func iPadReadOnlyDetail(entry e: JournalEntry) -> some View {
+        Group {
+            if showPreview, previewContent != nil {
+                HStack(spacing: 0) {
+                    readOnlyPane(entry: e)
+                        .frame(minWidth: 480, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        .padding(.leading, 1)
+                        .layoutPriority(1)
+                        .contentShape(Rectangle())
+                        .onTapGesture { isEditing = true }
+                    Divider()
+                    ScrollView { previewPane(entry: e) }
+                        .frame(minWidth: 320, idealWidth: 360, maxWidth: 420, maxHeight: .infinity, alignment: .topLeading)
+                        .layoutPriority(0)
+                }
+                .zIndex(1)
+            } else {
+                readOnlyPane(entry: e)
+                    .frame(minWidth: 480, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .padding(.leading, 1)
+                    .contentShape(Rectangle())
+                    .onTapGesture { isEditing = true }
+                    .zIndex(1)
+            }
+        }
+        .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
+        .toolbar {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                let shareTitle: String = e.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled" : e.title
+                let bodyText: String = e.body.trimmingCharacters(in: .whitespacesAndNewlines)
+                let shareText: String = bodyText.isEmpty ? shareTitle : "\(shareTitle)\n\n\(bodyText)"
+                ShareLink(item: shareText) {
+                    Image(systemName: "square.and.arrow.up")
+                }
+            }
+        }
+        .eraseToAnyView()
+    }
+
+    // MARK: - iPhone layout
+    private var compactNavigationStack: some View {
+        NavigationStack {
+            List(selection: $selectedForDeletion) {
+                Section {
+                    ForEach(cachedFilteredEntries) { entry in
+                        NavigationLink(destination: JournalDetailView(entry: entry)) { listRow(for: entry) }
+                            .tag(entry)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    deleteEntry(entry)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
                             }
-                            Button {
-                                selectionMode = false
-                                selectedForDeletion.removeAll()
-                            } label: {
-                                Image(systemName: "xmark")
+                            .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                                Button {
+                                    togglePin(entry)
+                                } label: {
+                                    Label(isPinned(entry) ? "Unpin" : "Pin", systemImage: "pin.fill")
+                                }
+                                .tint(.yellow)
                             }
-                        } else {
-                            Button("New") {
-                                journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
-                            }
-                            Button("Select") {
-                                selectionMode = true
-                            }
+                            .listRowInsets(EdgeInsets(top: 2, leading: 12, bottom: 2, trailing: 12))
+                    }
+                } header: {
+                    Text(headerCountText)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .toolbar {
+                if !selectedTags.isEmpty {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            selectedTags.removeAll()
+                        } label: {
+                            Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle")
                         }
                     }
                 }
-                .navigationTitle("Journal")
-                .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
-                .environment(\.editMode, .constant(selectionMode ? .active : .inactive))
-                .navigationDestination(for: JournalEntry.self) { entry in
-                    JournalDetailView(entry: entry)
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    if selectionMode {
+                        Button(role: .destructive) {
+                            deleteSelectedEntries()
+                        } label: {
+                            Image(systemName: "trash")
+                        }
+                        Button {
+                            selectionMode = false
+                            selectedForDeletion.removeAll()
+                        } label: {
+                            Image(systemName: "xmark")
+                        }
+                    } else {
+                        Button("New") {
+                            journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
+                        }
+                        Button("Select") {
+                            selectionMode = true
+                        }
+                    }
                 }
-                .onAppear {
-                    loadPins()
-                    recomputeFilteredEntries()
-                }
-                .onChange(of: entries) { _, _ in recomputeFilteredEntries() }
-                .onChange(of: searchText) { _, _ in recomputeFilteredEntries() }
-                .onChange(of: selectedTags) { _, _ in recomputeFilteredEntries() }
-                .onDisappear {
-                    filterDebounceTask?.cancel()
-                    filterDebounceTask = nil
-                }
+            }
+            .navigationTitle("Journal")
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
+            .environment(\.editMode, .constant(selectionMode ? .active : .inactive))
+            .navigationDestination(for: JournalEntry.self) { entry in
+                JournalDetailView(entry: entry)
+            }
+            .onAppear {
+                loadPins()
+                recomputeFilteredEntries()
+            }
+            .onChange(of: entries) { _, _ in recomputeFilteredEntries() }
+            .onChange(of: searchText) { _, _ in recomputeFilteredEntries() }
+            .onChange(of: selectedTags) { _, _ in recomputeFilteredEntries() }
+            .onDisappear {
+                filterDebounceTask?.cancel()
+                filterDebounceTask = nil
             }
         }
     }
@@ -500,14 +657,17 @@ struct JournalTabView: View {
         .padding(.vertical, 1)
     }
 
-    // Read-only, unchanged
+    // Read-only, unchanged except title shown only on compact width
     @ViewBuilder
     private func readOnlyPane(entry: JournalEntry) -> some View {
         let linkedBody = BibleReferenceLinker.linkify(entry.body)
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text(entry.title.isEmpty ? "Untitled" : entry.title)
-                    .font(.title2).bold()
+                // Show in-content title only on compact; on iPad, the title is in the nav bar
+                if hSize != .regular {
+                    Text(entry.title.isEmpty ? "Untitled" : entry.title)
+                        .font(.title2).bold()
+                }
                 if !entry.tags.isEmpty {
                     TagChipRow(tags: entry.tags, selectedTags: [], showColorPicker: false, onTap: nil, onColorChange: nil)
                 }
@@ -792,6 +952,11 @@ struct JournalTabView: View {
         entry.updatedAt = Date()
         scheduleAutosave()
     }
+}
+
+private extension View {
+    // Small helper to cut generic nesting depth for the type-checker
+    func eraseToAnyView() -> AnyView { AnyView(self) }
 }
 
 #Preview {

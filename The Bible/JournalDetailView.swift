@@ -179,10 +179,11 @@ struct JournalDetailView: View {
                 ShareLink(item: shareText) {
                     Image(systemName: "square.and.arrow.up")
                 }
-
-                // Edit button
-                Button("Edit") {
-                    journalComposer.presentForEditing(entry: entry)
+                // Only show Edit on iPad/regular width; hide on iPhone/compact
+                if hSize == .regular {
+                    Button("Edit") {
+                        journalComposer.presentForEditing(entry: entry)
+                    }
                 }
             }
         }

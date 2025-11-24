@@ -186,6 +186,8 @@ struct JournalEditorView: View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 editorColumn
+                    .frame(minWidth: 360, idealWidth: 480, maxWidth: .infinity, alignment: .topLeading)
+                    .background(Color(.systemBackground))
                 Divider()
                 previewColumn
                     .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -195,7 +197,6 @@ struct JournalEditorView: View {
                         .frame(minWidth: 280, idealWidth: 300, maxWidth: 340, maxHeight: .infinity, alignment: .topLeading)
                 }
             }
-            .clipped(antialiased: false)
 
             bottomSaveBar
         }
