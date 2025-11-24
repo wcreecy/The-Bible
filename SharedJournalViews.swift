@@ -199,3 +199,171 @@ struct TagChipRow: View {
     }
 }
 
+struct CursorTextView: UIViewRepresentable {
+    @Binding var text: String
+    @Binding var selection: NSRange
+    @Binding var caretRect: CGRect?
+    @Binding var bottomInset: CGFloat
+    var onChange: ((String) -> Void)? = nil
+
+    func makeUIView(context: Context) -> UITextView {
+        let tv = UITextView()
+        tv.isScrollEnabled = true
+        tv.backgroundColor = .clear
+        tv.text = text
+        tv.delegate = context.coordinator
+
+        // Enable autocorrect/spell check and automatic capitalization
+        tv.autocorrectionType = .default
+        tv.autocapitalizationType = .sentences
+        tv.smartDashesType = .default
+        tv.smartQuotesType = .default
+        tv.smartInsertDeleteType = .default
+
+        tv.font = UIFont.preferredFont(forTextStyle: .body)
+        tv.textContainer.lineFragmentPadding = 5
+        tv.textContainerInset = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
+
+        // Initial insets
+        applyInsets(to: tv, bottom: bottomInset)
+        DispatchQueue.main.async {
+            context.coordinator.updateCaretRect(tv, deferBindingUpdate: true)
+        }
+        return tv
+    }
+
+    func updateUIView(_ uiView: UITextView, context: Context) {
+        context.coordinator.isInSwiftUIUpdate = true
+        defer { context.coordinator.isInSwiftUIUpdate = false }
+
+        // Update text
+        if uiView.text != text {
+            context.coordinator.isProgrammaticUpdate = true
+            uiView.text = text
+            context.coordinator.isProgrammaticUpdate = false
+        }
+        // Update selection
+        if uiView.selectedRange != selection {
+            let maxLoc = max(0, (uiView.text as NSString).length)
+            let newLoc = min(max(selection.location, 0), maxLoc)
+            let maxLen = max(0, maxLoc - newLoc)
+            let newLen = min(max(selection.length, 0), maxLen)
+
+            context.coordinator.isProgrammaticUpdate = true
+            uiView.selectedRange = NSRange(location: newLoc, length: newLen)
+            context.coordinator.isProgrammaticUpdate = false
+        }
+
+        // Apply keyboard-driven bottom inset
+        applyInsets(to: uiView, bottom: bottomInset)
+
+        // Keep caret visible after updates
+        context.coordinator.scrollCaretVisible(uiView)
+
+        context.coordinator.updateCaretRect(uiView, deferBindingUpdate: true)
+    }
+
+    private func applyInsets(to tv: UITextView, bottom: CGFloat) {
+        var inset = tv.contentInset
+        if abs(inset.bottom - bottom) > 0.5 {
+            inset.bottom = bottom
+            tv.contentInset = inset
+        }
+        var ind = tv.scrollIndicatorInsets
+        if abs(ind.bottom - bottom) > 0.5 {
+            ind.bottom = bottom
+            tv.scrollIndicatorInsets = ind
+        }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
+
+    final class Coordinator: NSObject, UITextViewDelegate, UIScrollViewDelegate {
+        var parent: CursorTextView
+        var isProgrammaticUpdate: Bool = false
+        var isInSwiftUIUpdate: Bool = false
+        private var lastCaretRect: CGRect = .null
+
+        init(parent: CursorTextView) { self.parent = parent }
+
+        func textViewDidChange(_ textView: UITextView) {
+            if isProgrammaticUpdate { return }
+            let newText = textView.text ?? ""
+            if parent.text != newText {
+                DispatchQueue.main.async {
+                    self.parent.text = newText
+                }
+            }
+            let newRange = textView.selectedRange
+            if parent.selection != newRange {
+                DispatchQueue.main.async {
+                    self.parent.selection = newRange
+                }
+            }
+            updateCaretRect(textView)
+            scrollCaretVisible(textView)
+            DispatchQueue.main.async {
+                self.parent.onChange?(textView.text)
+            }
+        }
+
+        func textViewDidChangeSelection(_ textView: UITextView) {
+            if isProgrammaticUpdate { return }
+            let newRange = textView.selectedRange
+            if parent.selection != newRange {
+                DispatchQueue.main.async {
+                    self.parent.selection = newRange
+                }
+            }
+            updateCaretRect(textView)
+            scrollCaretVisible(textView)
+            DispatchQueue.main.async {
+                self.parent.onChange?(textView.text)
+            }
+        }
+
+        func scrollViewDidScroll(_ scrollView: UIScrollView) {
+            guard let tv = scrollView as? UITextView else { return }
+            updateCaretRect(tv)
+        }
+
+        func updateCaretRect(_ textView: UITextView, deferBindingUpdate: Bool = false) {
+            let shouldDefer = deferBindingUpdate || isInSwiftUIUpdate
+
+            guard let range = textView.selectedTextRange else {
+                if shouldDefer {
+                    self.lastCaretRect = .null
+                    return
+                }
+                let applyNil: () -> Void = {
+                    self.parent.caretRect = nil
+                    self.lastCaretRect = .null
+                }
+                DispatchQueue.main.async { applyNil() }
+                return
+            }
+
+            let rect = textView.caretRect(for: range.start)
+            let needsUpdate = lastCaretRect.isNull
+                || abs(rect.minX - lastCaretRect.minX) > 0.5
+                || abs(rect.minY - lastCaretRect.minY) > 0.5
+
+            guard needsUpdate else { return }
+
+            self.lastCaretRect = rect
+            if shouldDefer { return }
+
+            let apply: () -> Void = {
+                self.parent.caretRect = rect
+            }
+            DispatchQueue.main.async { apply() }
+        }
+
+        func scrollCaretVisible(_ textView: UITextView) {
+            let range = textView.selectedRange
+            if range.location != NSNotFound {
+                textView.scrollRangeToVisible(range)
+            }
+        }
+    }
+}

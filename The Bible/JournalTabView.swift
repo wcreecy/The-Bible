@@ -46,6 +46,8 @@ struct JournalTabView: View {
     // Caret tracking for edit mode body
     @State private var editSelection: NSRange = NSRange(location: 0, length: 0)
     @State private var editCaretRect: CGRect? = nil
+    // Keyboard bottom inset for inline editor
+    @State private var editBottomInset: CGFloat = 0
 
     private func loadPins() {
         let parts = pinnedIDsRaw.split(separator: ",").map { String($0) }
@@ -237,12 +239,18 @@ struct JournalTabView: View {
                                     readOnlyPane(entry: e)
                                         .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                                         .layoutPriority(1)
+                                        // Tap anywhere in the read-only content to enter edit mode
+                                        .contentShape(Rectangle())
+                                        .onTapGesture { isEditing = true }
                                     Divider()
                                     ScrollView { previewPane(entry: e) }
                                         .frame(minWidth: 320, idealWidth: 360, maxWidth: 420, maxHeight: .infinity, alignment: .topLeading)
                                 }
                             } else {
                                 readOnlyPane(entry: e)
+                                    // Tap anywhere in the read-only content to enter edit mode
+                                    .contentShape(Rectangle())
+                                    .onTapGesture { isEditing = true }
                             }
                         }
                         .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
@@ -256,7 +264,7 @@ struct JournalTabView: View {
                                     Image(systemName: "square.and.arrow.up")
                                 }
 
-                                // Edit button
+                                // Edit button still available
                                 Button("Edit") {
                                     editingTagsText = e.tags.joined(separator: ", ")
                                     isEditing = true
@@ -620,7 +628,7 @@ struct JournalTabView: View {
                             }
                         ),
                         selection: $editSelection,
-                        caretRect: $editCaretRect,
+                        caretRect: $editCaretRect, bottomInset: $editBottomInset,
                         onChange: { _ in
                             detectHashTriggerInEdit(entry: entry)
                         }

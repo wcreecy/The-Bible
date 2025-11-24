@@ -164,6 +164,13 @@ struct JournalDetailView: View {
                 }
             }
             .padding(16)
+            // Tap anywhere in the note to edit on iPhone (compact width)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if hSize != .regular {
+                    journalComposer.presentForEditing(entry: entry)
+                }
+            }
         }
         .navigationTitle(entry.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled" : entry.title)
         .toolbar {

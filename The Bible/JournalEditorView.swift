@@ -29,7 +29,7 @@ struct JournalEditorView: View {
     @State private var textSelectionRange: NSRange = NSRange(location: 0, length: 0)
     @State private var caretRect: CGRect? = nil
 
-    // Collapsible sections on iPhone
+    // Collapsible sections on iPhone (not used in new design, but keep for iPad path)
     @State private var isTitleExpanded: Bool = true
     @State private var isTagsExpanded: Bool = true
 
@@ -40,6 +40,9 @@ struct JournalEditorView: View {
     // SmartLink sheet
     @State private var showSmartLinkSheet: Bool = false
     @State private var pendingTriggerRange: NSRange? = nil
+
+    // Keyboard inset for iPhone editor
+    @State private var bottomEditorInset: CGFloat = 0
 
     init(verseRef: VerseRef?, initialBody: String? = nil, showTagColors: Bool = false, editingEntry: JournalEntry? = nil, onClose: (() -> Void)? = nil) {
         self.verseRef = verseRef
@@ -55,9 +58,11 @@ struct JournalEditorView: View {
         NavigationStack {
             Group {
                 if hSize == .regular {
+                    // iPad/regular width: reuse compact full-screen editor styling in the middle column
                     regularLayoutWithBottomSave
                 } else {
-                    compactLayoutWithBottomSave
+                    // iPhone/compact width: brand-new full-screen editor like Notes
+                    compactFullScreenEditor
                 }
             }
             .navigationTitle(
@@ -90,9 +95,7 @@ struct JournalEditorView: View {
             } message: {
                 Text(saveErrorMessage)
             }
-            // Existing toasts
             .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
-            // New "Saved" toast
             .appToast(isPresented: $showSavedToast, symbol: "checkmark.seal.fill", text: "Saved", tint: .green)
             .onAppear {
                 scheduleLinkify(for: content)
@@ -109,7 +112,75 @@ struct JournalEditorView: View {
         }
     }
 
-    // MARK: - Layouts with bottom Save
+    // MARK: - Compact (iPhone) Full-screen Editor
+
+    private var compactFullScreenEditor: some View {
+        VStack(spacing: 0) {
+            // A single scrollable editor with a lightweight header like Notes
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    // Title
+                    TextField("Title", text: $title)
+                        .font(.title2.weight(.semibold))
+                        .textInputAutocapitalization(.sentences)
+                        .disableAutocorrection(false)
+                        .padding(.horizontal, 12)
+                        .padding(.top, 8)
+
+                    // Tags (optional)
+                    TextField("Insert tag: i.e. Sermon Notes, Family, etc...", text: $tagsText)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 12)
+
+                    if !parsedTags.isEmpty {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 6) {
+                                TagChipRow(
+                                    tags: parsedTags,
+                                    selectedTags: [],
+                                    showColorPicker: false,
+                                    onTap: nil,
+                                    onColorChange: nil
+                                )
+                            }
+                            .padding(.horizontal, 12)
+                        }
+                    }
+
+                    // Body editor
+                    ZStack(alignment: .topLeading) {
+                        if content.isEmpty {
+                            Text("Write your thoughts here…")
+                                .foregroundStyle(.secondary)
+                                .padding(.top, 10)
+                                .padding(.leading, 14)
+                        }
+                        CursorTextView(
+                            text: $content,
+                            selection: $textSelectionRange,
+                            caretRect: $caretRect,
+                            bottomInset: $bottomEditorInset,
+                            onChange: { newText in
+                                scheduleLinkify(for: newText)
+                                detectHashTrigger()
+                            }
+                        )
+                        .frame(minHeight: 400)
+                        // Removed overlay and horizontal padding to achieve full-screen feel
+                    }
+                    .padding(.bottom, 12)
+                }
+                .padding(.vertical, 8)
+            }
+        }
+        .ignoresSafeArea(edges: .bottom)
+        .background(KeyboardInsetReader(inset: $bottomEditorInset))
+    }
+
+    // MARK: - Layouts with bottom Save (iPad/regular width only)
 
     private var regularLayoutWithBottomSave: some View {
         VStack(spacing: 0) {
@@ -131,19 +202,8 @@ struct JournalEditorView: View {
         .ignoresSafeArea(edges: .bottom)
     }
 
-    private var compactLayoutWithBottomSave: some View {
-        VStack(spacing: 0) {
-            compactLayout
-                .clipped(antialiased: false)
-
-            bottomSaveBar
-        }
-        .ignoresSafeArea(edges: .bottom)
-    }
-
     private var bottomSaveBar: some View {
         ZStack {
-            // Translucent background with subtle top divider and shadow
             VisualEffectMaterial()
                 .overlay(
                     Rectangle()
@@ -185,72 +245,65 @@ struct JournalEditorView: View {
         }
     }
 
+    // Middle column on iPad now uses the same full-screen editor stack as iPhone
     private var editorColumn: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 12) {
+                // Title
                 TextField("Title", text: $title)
-                    .foregroundStyle(.primary)
-                    .textFieldStyle(.roundedBorder)
-                TextField("sermon notes, prayer, study…", text: $tagsText)
+                    .font(.title2.weight(.semibold))
+                    .textInputAutocapitalization(.sentences)
+                    .disableAutocorrection(false)
+                    .padding(.horizontal, 12)
+                    .padding(.top, 8)
+
+                // Tags (optional)
+                TextField("Insert tag: i.e. Sermon Notes, Family, etc...", text: $tagsText)
                     .textInputAutocapitalization(.never)
-                    .foregroundStyle(.primary)
-                    .textFieldStyle(.roundedBorder)
+                    .autocorrectionDisabled(true)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 12)
 
-                tagChipsView
-
-                textEditorWithSmartLinks
-                    .padding(.bottom, 24)
-            }
-            .padding(20)
-        }
-    }
-
-    private var compactLayout: some View {
-        Form {
-            Section {
-                DisclosureGroup(isExpanded: $isTitleExpanded) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        TextField("Title", text: $title)
-                            .foregroundStyle(.primary)
-                        if let ref = verseRef {
-                            LabeledContent("Linked Verse", value: ref.display)
+                if !parsedTags.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 6) {
+                            TagChipRow(
+                                tags: parsedTags,
+                                selectedTags: [],
+                                showColorPicker: false,
+                                onTap: nil,
+                                onColorChange: nil
+                            )
                         }
+                        .padding(.horizontal, 12)
                     }
-                } label: {
-                    Text("Title").font(.headline)
                 }
-            }
 
-            Section {
-                DisclosureGroup(isExpanded: $isTagsExpanded) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        TextField("sermon notes, prayer, study…", text: $tagsText)
-                            .textInputAutocapitalization(.never)
-                            .foregroundStyle(.primary)
-                        tagChipsView
+                // Body editor
+                ZStack(alignment: .topLeading) {
+                    if content.isEmpty {
+                        Text("Write your thoughts here…")
+                            .foregroundStyle(.secondary)
+                            .padding(.top, 10)
+                            .padding(.leading, 14)
                     }
-                } label: {
-                    Text("Tags").font(.headline)
+                    CursorTextView(
+                        text: $content,
+                        selection: $textSelectionRange,
+                        caretRect: $caretRect,
+                        bottomInset: .constant(0),
+                        onChange: { newText in
+                            scheduleLinkify(for: newText)
+                            detectHashTrigger()
+                        }
+                    )
+                    .frame(minHeight: 400)
+                    // No border/rounded overlay to match full-screen feel
                 }
+                .padding(.bottom, 12)
             }
-
-            Section("Body") {
-                textEditorWithSmartLinks
-                    .frame(minHeight: 280)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var tagChipsView: some View {
-        if !parsedTags.isEmpty {
-            TagChipRow(
-                tags: parsedTags,
-                selectedTags: [],
-                showColorPicker: true,
-                onTap: nil,
-                onColorChange: { tag, color in TagColorStore.setColor(color, for: tag) }
-            )
+            .padding(.vertical, 8)
         }
     }
 
@@ -266,6 +319,7 @@ struct JournalEditorView: View {
                 text: $content,
                 selection: $textSelectionRange,
                 caretRect: $caretRect,
+                bottomInset: .constant(0),
                 onChange: { newText in
                     scheduleLinkify(for: newText)
                     detectHashTrigger()
@@ -368,6 +422,19 @@ struct JournalEditorView: View {
     }
 
     // MARK: - Helpers
+
+    @ViewBuilder
+    private var tagChipsView: some View {
+        if !parsedTags.isEmpty {
+            TagChipRow(
+                tags: parsedTags,
+                selectedTags: [],
+                showColorPicker: true,
+                onTap: nil,
+                onColorChange: { tag, color in TagColorStore.setColor(color, for: tag) }
+            )
+        }
+    }
 
     private var parsedTags: [String] {
         tagsText
@@ -479,7 +546,6 @@ struct JournalEditorView: View {
                 NotificationCenter.default.post(name: JournalNotifications.entryUpdated, object: nil, userInfo: ["id": entry.id.uuidString])
                 if manual {
                     withAnimation(.spring()) { showSavedToast = true }
-                    // Briefly show confirmation before dismiss
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                         if let onClose { onClose() } else { dismiss() }
                     }
@@ -521,7 +587,7 @@ struct JournalEditorView: View {
     }
 }
 
-// Local pill style used for the bottom Save Entry button
+// Local pill style used for the bottom Save Entry button (iPad only)
 private struct LocalPillButtonStyle: ButtonStyle {
     var tint: Color = .accentColor
     @Environment(\.isEnabled) private var isEnabled
@@ -545,133 +611,59 @@ private struct LocalPillButtonStyle: ButtonStyle {
     }
 }
 
-struct CursorTextView: UIViewRepresentable {
-    @Binding var text: String
-    @Binding var selection: NSRange
-    @Binding var caretRect: CGRect?
-    var onChange: ((String) -> Void)? = nil
+// Keyboard inset helper: observes keyboard and writes a safe bottom inset
+private struct KeyboardInsetReader: UIViewRepresentable {
+    @Binding var inset: CGFloat
 
-    func makeUIView(context: Context) -> UITextView {
-        let tv = UITextView()
-        tv.isScrollEnabled = true
-        tv.backgroundColor = .clear
-        tv.text = text
-        tv.delegate = context.coordinator
-        tv.autocorrectionType = .no
-        tv.autocapitalizationType = .none
-        tv.smartDashesType = .no
-        tv.smartQuotesType = .no
-        tv.smartInsertDeleteType = .no
-        tv.font = UIFont.preferredFont(forTextStyle: .body)
-        tv.textContainer.lineFragmentPadding = 5
-        tv.textContainerInset = UIEdgeInsets(top: 8, left: 4, bottom: 8, right: 4)
-        DispatchQueue.main.async {
-            context.coordinator.updateCaretRect(tv, deferBindingUpdate: true)
-        }
-        return tv
+    func makeUIView(context: Context) -> UIView {
+        let v = UIView(frame: .zero)
+        v.backgroundColor = .clear
+        context.coordinator.start()
+        return v
     }
 
-    func updateUIView(_ uiView: UITextView, context: Context) {
-        context.coordinator.isInSwiftUIUpdate = true
-        defer { context.coordinator.isInSwiftUIUpdate = false }
+    func updateUIView(_ uiView: UIView, context: Context) {}
 
-        if uiView.text != text {
-            context.coordinator.isProgrammaticUpdate = true
-            uiView.text = text
-            context.coordinator.isProgrammaticUpdate = false
-        }
-        if uiView.selectedRange != selection {
-            let maxLoc = max(0, (uiView.text as NSString).length)
-            let newLoc = min(max(selection.location, 0), maxLoc)
-            let maxLen = max(0, maxLoc - newLoc)
-            let newLen = min(max(selection.length, 0), maxLen)
+    func makeCoordinator() -> Coordinator { Coordinator(inset: $inset) }
 
-            context.coordinator.isProgrammaticUpdate = true
-            uiView.selectedRange = NSRange(location: newLoc, length: newLen)
-            context.coordinator.isProgrammaticUpdate = false
-        }
-        context.coordinator.updateCaretRect(uiView, deferBindingUpdate: true)
-    }
+    final class Coordinator {
+        @Binding var inset: CGFloat
+        private var observers: [NSObjectProtocol] = []
 
-    func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
-
-    final class Coordinator: NSObject, UITextViewDelegate, UIScrollViewDelegate {
-        var parent: CursorTextView
-        var isProgrammaticUpdate: Bool = false
-        var isInSwiftUIUpdate: Bool = false
-        private var lastCaretRect: CGRect = .null
-
-        init(parent: CursorTextView) { self.parent = parent }
-
-        func textViewDidChange(_ textView: UITextView) {
-            if isProgrammaticUpdate { return }
-            let newText = textView.text ?? ""
-            if parent.text != newText {
-                DispatchQueue.main.async {
-                    self.parent.text = newText
-                }
-            }
-            let newRange = textView.selectedRange
-            if parent.selection != newRange {
-                DispatchQueue.main.async {
-                    self.parent.selection = newRange
-                }
-            }
-            updateCaretRect(textView)
-            DispatchQueue.main.async {
-                self.parent.onChange?(textView.text)
-            }
+        init(inset: Binding<CGFloat>) {
+            _inset = inset
         }
 
-        func textViewDidChangeSelection(_ textView: UITextView) {
-            if isProgrammaticUpdate { return }
-            let newRange = textView.selectedRange
-            if parent.selection != newRange {
-                DispatchQueue.main.async {
-                    self.parent.selection = newRange
-                }
+        func start() {
+            let nc = NotificationCenter.default
+            let willChange = nc.addObserver(forName: UIResponder.keyboardWillChangeFrameNotification, object: nil, queue: .main) { [weak self] note in
+                self?.handle(note: note)
             }
-            updateCaretRect(textView)
-            DispatchQueue.main.async {
-                self.parent.onChange?(textView.text)
+            let willHide = nc.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { [weak self] note in
+                self?.handle(note: note)
             }
+            observers = [willChange, willHide]
         }
 
-        func scrollViewDidScroll(_ scrollView: UIScrollView) {
-            guard let tv = scrollView as? UITextView else { return }
-            updateCaretRect(tv)
+        deinit {
+            observers.forEach { NotificationCenter.default.removeObserver($0) }
         }
 
-        func updateCaretRect(_ textView: UITextView, deferBindingUpdate: Bool = false) {
-            let shouldDefer = deferBindingUpdate || isInSwiftUIUpdate
+        private func handle(note: Notification) {
+            guard let window = UIApplication.shared.connectedScenes
+                .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
+                .first else { return }
 
-            guard let range = textView.selectedTextRange else {
-                if shouldDefer {
-                    self.lastCaretRect = .null
-                    return
-                }
-                let applyNil: () -> Void = {
-                    self.parent.caretRect = nil
-                    self.lastCaretRect = .null
-                }
-                DispatchQueue.main.async { applyNil() }
-                return
-            }
-
-            let rect = textView.caretRect(for: range.start)
-            let needsUpdate = lastCaretRect.isNull
-                || abs(rect.minX - lastCaretRect.minX) > 0.5
-                || abs(rect.minY - lastCaretRect.minY) > 0.5
-
-            guard needsUpdate else { return }
-
-            self.lastCaretRect = rect
-            if shouldDefer { return }
-
-            let apply: () -> Void = {
-                self.parent.caretRect = rect
-            }
-            DispatchQueue.main.async { apply() }
+            let endFrameScreen = (note.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue ?? .zero
+            let endFrame = window.convert(endFrameScreen, from: nil)
+            let overlap = max(0, window.bounds.maxY - endFrame.minY)
+            // Add a small extra padding so caret sits above the format bar comfortably
+            let extra: CGFloat = 6
+            inset = overlap > 0 ? (overlap + extra) : 0
         }
     }
+}
+
+#Preview {
+    NavigationStack { ReferenceMatchGameView() }
 }
