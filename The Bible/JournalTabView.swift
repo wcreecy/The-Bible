@@ -70,13 +70,34 @@ struct JournalTabView: View {
         recomputeFilteredEntries()
     }
 
-    private var headerCountText: String {
+    // MARK: - Filter state helpers
+
+    private var isFiltered: Bool {
         let queryActive = !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         let tagsActive = !selectedTags.isEmpty
-        let filtered = queryActive || tagsActive
-        let count = filtered ? cachedFilteredEntries.count : entries.count
+        return queryActive || tagsActive
+    }
+
+    private var filteredDescription: String {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let tags = Array(selectedTags).sorted()
+
+        switch (tags.isEmpty, query.isEmpty) {
+        case (false, false):
+            return "Tags: \(tags.joined(separator: ", ")) • Search: “\(query)”"
+        case (false, true):
+            return "Tags: \(tags.joined(separator: ", "))"
+        case (true, false):
+            return "Search: “\(query)”"
+        default:
+            return ""
+        }
+    }
+
+    private var headerCountText: String {
+        let count = isFiltered ? cachedFilteredEntries.count : entries.count
         let noun = (count == 1) ? "entry" : "entries"
-        return "\(count) \(noun)" + (filtered ? " (filtered)" : "")
+        return "\(count) \(noun)" + (isFiltered ? " (filtered)" : "")
     }
 
     private func toggleTagFilter(_ tag: String) {
@@ -158,9 +179,9 @@ struct JournalTabView: View {
     @ToolbarContentBuilder
     private var ipadSidebarToolbar: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
-            if !selectedTags.isEmpty {
+            if isFiltered {
                 Button {
-                    selectedTags.removeAll()
+                    clearAllFilters()
                 } label: {
                     Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle")
                 }
@@ -194,11 +215,27 @@ struct JournalTabView: View {
 
     // Extracted sidebar view to reduce type-checker complexity
     private var ipadSidebar: some View {
-        sidebarList
-            .navigationTitle("Journal")
-            .toolbar { ipadSidebarToolbar }
-            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
-            .frame(minWidth: 280)
+        VStack(spacing: 0) {
+            if isFiltered {
+                FilterBanner(text: filteredDescription, onClear: clearAllFilters)
+                    .padding(.horizontal, 12)
+                    .padding(.top, 6)
+            }
+            sidebarList
+        }
+        .navigationTitle(isFiltered ? "Journal\nFiltered" : "Journal")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar { ipadSidebarToolbar }
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
+        .frame(minWidth: 280)
+    }
+
+    private func clearAllFilters() {
+        withAnimation(.spring()) {
+            selectedTags.removeAll()
+            searchText = ""
+        }
+        recomputeFilteredEntries()
     }
 
     private func handleSplitOnAppear() {
@@ -463,6 +500,14 @@ struct JournalTabView: View {
     private var compactNavigationStack: some View {
         NavigationStack {
             List(selection: $selectedForDeletion) {
+                // Filter banner pinned at top when filtered/searching
+                if isFiltered {
+                    Section {
+                        FilterBanner(text: filteredDescription, onClear: clearAllFilters)
+                            .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+                    }
+                }
+
                 Section {
                     ForEach(cachedFilteredEntries) { entry in
                         NavigationLink(destination: JournalDetailView(entry: entry)) { listRow(for: entry) }
@@ -491,10 +536,10 @@ struct JournalTabView: View {
                 }
             }
             .toolbar {
-                if !selectedTags.isEmpty {
+                if isFiltered {
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
-                            selectedTags.removeAll()
+                            clearAllFilters()
                         } label: {
                             Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle")
                         }
@@ -523,7 +568,8 @@ struct JournalTabView: View {
                     }
                 }
             }
-            .navigationTitle("Journal")
+            .navigationTitle(isFiltered ? "Journal\nFiltered" : "Journal")
+            .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
             .environment(\.editMode, .constant(selectionMode ? .active : .inactive))
             .navigationDestination(for: JournalEntry.self) { entry in
@@ -957,6 +1003,43 @@ struct JournalTabView: View {
 private extension View {
     // Small helper to cut generic nesting depth for the type-checker
     func eraseToAnyView() -> AnyView { AnyView(self) }
+}
+
+// MARK: - Filter banner
+
+private struct FilterBanner: View {
+    let text: String
+    let onClear: () -> Void
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "line.3.horizontal.decrease.circle.fill")
+                .foregroundStyle(.blue)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Showing filtered results")
+                    .font(.subheadline).bold()
+                if !text.isEmpty {
+                    Text(text)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+            }
+            Spacer(minLength: 8)
+            Button("Clear") { onClear() }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+        }
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.blue.opacity(0.12))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.blue.opacity(0.35), lineWidth: 1)
+        )
+    }
 }
 
 #Preview {
