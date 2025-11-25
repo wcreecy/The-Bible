@@ -165,7 +165,39 @@ struct ContentView: View {
             // ... unchanged ...
         }
         .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { note in
-            // ... unchanged ...
+            guard
+                let bookName = note.userInfo?["book"] as? String,
+                let chapterNum = note.userInfo?["chapter"] as? Int,
+                let verseNum = note.userInfo?["verse"] as? Int
+            else { return }
+
+            // Switch to Bible tab first
+            selectedTab = 1
+
+            if isPad {
+                // BibleSplitView listens for this notification and navigates.
+                // Re-post on the main queue after the tab switch to ensure the view is active.
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
+                        "book": bookName,
+                        "chapter": chapterNum,
+                        "verse": verseNum
+                    ])
+                }
+            } else {
+                // iPhone: push a Route.reader on the Bible NavigationStack
+                guard
+                    let book = BibleData.books.first(where: { $0.name == bookName }),
+                    let chapter = book.chapters.first(where: { $0.number == chapterNum })
+                else { return }
+
+                // Ensure we’re on the Bible tab before pushing
+                DispatchQueue.main.async {
+                    // Reset any existing path if you want to start clean
+                    // bibleCoordinator.reset()
+                    bibleCoordinator.push(.reader(book: book, chapter: chapter, startVerse: verseNum))
+                }
+            }
         }
     }
 

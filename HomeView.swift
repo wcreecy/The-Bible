@@ -508,20 +508,8 @@ struct HomeView: View {
                         .presentationDetents([.medium, .large])
                     }
 
-                    Button {
-                        withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                            isFocusBodyExpanded.toggle()
-                        }
-                        if !isFocusBodyExpanded {
-                            focusBodyIsFocused = false
-                        }
-                    } label: {
-                        Image(systemName: isFocusBodyExpanded ? "chevron.up.circle" : "chevron.down.circle")
-                            .font(.title3)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(isFocusBodyExpanded ? "Hide Notes" : "Show Notes")
-                    .accessibilityHint(isFocusBodyExpanded ? "Hides the focus notes field" : "Shows the focus notes field")
+                    // Removed: the top-right chevron that toggled notes
+                    // (per request to remove the carat from the top right)
                 }
             }
         ) {
@@ -617,6 +605,25 @@ struct HomeView: View {
                     .accessibilityLabel("Clear Focus")
                     .accessibilityHint("Clears your daily focus and removes it from the Dynamic Island")
                     .disabled(!hasTitle)
+
+                    // New: chevron next to Clear that opens notes once there's a title
+                    if hasTitle {
+                        Button {
+                            withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+                                isFocusBodyExpanded = true
+                            }
+                            // Move focus to the notes field when opened
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                focusBodyIsFocused = true
+                            }
+                        } label: {
+                            Image(systemName: "chevron.down.circle")
+                                .font(.title3)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Show Notes")
+                        .accessibilityHint("Opens the focus notes field")
+                    }
                 }
                 .padding(.top, 4)
                 .toolbar { ToolbarItem(placement: .keyboard) { Button("Done") { focusTitleIsFocused = false; focusBodyIsFocused = false } } }
@@ -934,30 +941,32 @@ struct HomeView: View {
                     tint: .blue
                 ) {
                     HStack(alignment: .center, spacing: 12) {
-                        Image(systemName: "bookmark.fill")
-                            .font(.system(size: 28, weight: .semibold))
-                            .foregroundStyle(.blue)
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("Resume")
+                        // Title row with smaller bookmark icon aligned to headline
+                        HStack(spacing: 8) {
+                            Image(systemName: "bookmark.fill")
+                                .font(.title3) // smaller to align with headline text height
+                                .foregroundStyle(.blue)
+                            Text("Continue Reading")
                                 .font(.headline)
                                 .bold()
-                            Text("Continue where you left off")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                if isPad, let verseText, !verseText.isEmpty {
-                                    Text("“\(verseText)”")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                        .lineLimit(2)
-                                        .truncationMode(.tail)
-                                }
-                            }
                         }
                         Spacer()
+                    }
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        // Reference directly under title
+                        Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(.primary)
+
+                        // Verse preview on both iPhone and iPad
+                        if let verseText, !verseText.isEmpty {
+                            Text("“\(verseText)”")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(2)
+                                .truncationMode(.tail)
+                        }
                     }
                 }
             }
@@ -972,21 +981,20 @@ struct HomeView: View {
                 tint: .blue
             ) {
                 HStack(alignment: .center, spacing: 12) {
-                    Image(systemName: "bookmark.fill")
-                        .font(.system(size: 28, weight: .semibold))
-                        .foregroundStyle(.blue)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Resume")
+                    HStack(spacing: 8) {
+                        Image(systemName: "bookmark.fill")
+                            .font(.title3)
+                            .foregroundStyle(.blue)
+                        Text("Continue Reading")
                             .font(.headline)
                             .bold()
-                        Text("Continue where you left off")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Text("Start reading from the Bible tab")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
                     }
                     Spacer()
+                }
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Start reading from the Bible tab")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
             }
             .padding(.horizontal, 16)
