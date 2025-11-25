@@ -57,7 +57,7 @@ struct SettingsView: View {
 
     // Drag state for custom reorder
     @State private var draggingCard: HomeCardID? = nil
-    @State private var dragOffset: CGSize = .zero
+    @State private var isDraggingActive: Bool = false
 
     // Decode on appear; encode on change
     private func loadHomeLayout() {
@@ -163,54 +163,58 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            // MARK: Home Layout section
-            Section(header: Text("Home Layout"), footer: Text("Reorder or hide sections on the Home page. The title card always stays at the top.").font(.footnote).foregroundStyle(.secondary)) {
-
-                // Non-scrolling stack of rows with custom grabber + drag-to-reorder
+            // 1) Verse of the Day
+            Section(header: Text("Verse of the Day"), footer: Text("Choose which part of the Bible the Verse of the Day is selected from. You can also set two daily auto-refresh times; the verse will refresh at those times unless paused on the Home page.").font(.footnote).foregroundStyle(.secondary)) {
                 VStack(spacing: 8) {
-                    ForEach(layoutOrder) { card in
-                        ReorderRow(
-                            title: card.title,
-                            systemImage: card.systemImage,
-                            isShown: Binding(
-                                get: { !hiddenSet.contains(card) },
-                                set: { newValue in
-                                    if newValue { hiddenSet.remove(card) } else { hiddenSet.insert(card) }
-                                    saveHomeLayout()
-                                }
-                            ),
-                            isDragging: draggingCard == card
-                        )
-                        .onDragGesture(
-                            isActive: Binding(get: { draggingCard != nil }, set: { _ in }),
-                            onDragBegan: {
-                                draggingCard = card
-                            },
-                            onDragChanged: { location in
-                                guard let dragging = draggingCard else { return }
-                                // Compute target index based on finger Y within the stack
-                                reorderIfNeeded(activeCard: dragging, atY: location.y)
-                            },
-                            onDragEnded: {
-                                draggingCard = nil
-                                dragOffset = .zero
-                                saveHomeLayout()
-                            }
-                        )
+                    HStack(spacing: 0) {
+                        segmentButton(title: "OT", tag: "old")
+                        verticalSeparator()
+                        segmentButton(title: "NT", tag: "new")
+                        verticalSeparator()
+                        segmentButton(title: "OT/NT", tag: "whole")
+                        verticalSeparator()
+                        segmentButton(title: "Book", tag: "book")
                     }
-                }
-                .padding(.vertical, 4)
+                    .frame(maxWidth: .infinity)
+                    .padding(4)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(Color(.secondarySystemBackground))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
+                    )
+                    .accessibilityIdentifier("verseOfDayScopePicker")
 
-                Button("Restore Default Order") {
-                    layoutOrder = HomeCardID.allCases
-                    hiddenSet = []
-                    saveHomeLayout()
+                    if verseScopeRaw == "book" {
+                        BookSelectionLink(
+                            selectedBookName: Binding<String?>(
+                                get: { verseSpecificBook.isEmpty ? nil : verseSpecificBook },
+                                set: { verseSpecificBook = $0 ?? "" }
+                            )
+                        )
+                        .accessibilityIdentifier("verseOfDaySpecificBookPicker")
+                    }
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        Label("Auto-Refresh Times", systemImage: "clock.arrow.2.circlepath")
+                            .font(.headline)
+
+                        DatePicker("Refresh Time 1", selection: refresh1DateBinding, displayedComponents: .hourAndMinute)
+                            .datePickerStyle(.compact)
+                            .accessibilityIdentifier("votdRefreshTime1")
+
+                        DatePicker("Refresh Time 2", selection: refresh2DateBinding, displayedComponents: .hourAndMinute)
+                            .datePickerStyle(.compact)
+                            .accessibilityIdentifier("votdRefreshTime2")
+                    }
+                    .padding(.top, 8)
                 }
-                .buttonStyle(.bordered)
             }
             .headerProminence(.increased)
-            .onAppear(perform: loadHomeLayout)
 
+            // 2) Appearance
             Section(header: Text("Appearance")) {
                 VStack(alignment: .leading, spacing: 8) {
                     Label("App Appearance", systemImage: "paintbrush")
@@ -295,71 +299,7 @@ struct SettingsView: View {
             }
             .headerProminence(.increased)
 
-            // Live Activities master toggle
-            Section(header: Text("Live Activities"), footer: Text("Show your Prayer Timer, Stopwatch, or Daily Focus on the Lock Screen and Dynamic Island. You can turn this off anytime.").font(.footnote).foregroundStyle(.secondary)) {
-                Toggle(isOn: $liveActivitiesEnabled) {
-                    Label("Enable Live Activities", systemImage: "livephoto.play")
-                }
-                .accessibilityIdentifier("liveActivitiesToggle")
-            }
-            .onChange(of: liveActivitiesEnabled) { _, enabled in
-                if !enabled {
-                    PrayerTimerActivityController.shared.cancel()
-                    StopwatchActivityController.shared.cancel()
-                }
-            }
-            .headerProminence(.increased)
-
-            Section(header: Text("Verse of the Day"), footer: Text("Choose which part of the Bible the Verse of the Day is selected from. You can also set two daily auto-refresh times; the verse will refresh at those times unless paused on the Home page.").font(.footnote).foregroundStyle(.secondary)) {
-                VStack(spacing: 8) {
-                    HStack(spacing: 0) {
-                        segmentButton(title: "OT", tag: "old")
-                        verticalSeparator()
-                        segmentButton(title: "NT", tag: "new")
-                        verticalSeparator()
-                        segmentButton(title: "OT/NT", tag: "whole")
-                        verticalSeparator()
-                        segmentButton(title: "Book", tag: "book")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(4)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
-                    )
-                    .accessibilityIdentifier("verseOfDayScopePicker")
-
-                    if verseScopeRaw == "book" {
-                        BookSelectionLink(
-                            selectedBookName: Binding<String?>(
-                                get: { verseSpecificBook.isEmpty ? nil : verseSpecificBook },
-                                set: { verseSpecificBook = $0 ?? "" }
-                            )
-                        )
-                        .accessibilityIdentifier("verseOfDaySpecificBookPicker")
-                    }
-
-                    VStack(alignment: .leading, spacing: 10) {
-                        Label("Auto-Refresh Times", systemImage: "clock.arrow.2.circlepath")
-                            .font(.headline)
-
-                        DatePicker("Refresh Time 1", selection: refresh1DateBinding, displayedComponents: .hourAndMinute)
-                            .datePickerStyle(.compact)
-                            .accessibilityIdentifier("votdRefreshTime1")
-
-                        DatePicker("Refresh Time 2", selection: refresh2DateBinding, displayedComponents: .hourAndMinute)
-                            .datePickerStyle(.compact)
-                            .accessibilityIdentifier("votdRefreshTime2")
-                    }
-                    .padding(.top, 8)
-                }
-            }
-            .headerProminence(.increased)
-
+            // 3) Timer
             Section(header: Text("Timer"), footer: Text("Choose the sound that plays when the prayer/study timer finishes.").font(.footnote).foregroundStyle(.secondary)) {
                 LabeledContent {
                     HStack(spacing: 10) {
@@ -392,6 +332,72 @@ struct SettingsView: View {
             }
             .headerProminence(.increased)
 
+            // 4) Live Activities
+            Section(header: Text("Live Activities"), footer: Text("Show your Prayer Timer, Stopwatch, or Daily Focus on the Lock Screen and Dynamic Island. You can turn this off anytime.").font(.footnote).foregroundStyle(.secondary)) {
+                Toggle(isOn: $liveActivitiesEnabled) {
+                    Label("Enable Live Activities", systemImage: "livephoto.play")
+                }
+                .accessibilityIdentifier("liveActivitiesToggle")
+            }
+            .onChange(of: liveActivitiesEnabled) { _, enabled in
+                if !enabled {
+                    PrayerTimerActivityController.shared.cancel()
+                    StopwatchActivityController.shared.cancel()
+                }
+            }
+            .headerProminence(.increased)
+
+            // 5) Home Layout (custom vertical stack, grabbers, toggles, no inner scrolling)
+            Section(header: Text("Home Layout"), footer: Text("Reorder or hide sections on the Home page. The title card always stays at the top.").font(.footnote).foregroundStyle(.secondary)) {
+
+                VStack(spacing: 8) {
+                    ForEach(layoutOrder) { card in
+                        ReorderRow(
+                            title: card.title,
+                            systemImage: card.systemImage,
+                            isShown: Binding(
+                                get: { !hiddenSet.contains(card) },
+                                set: { newValue in
+                                    if newValue { hiddenSet.remove(card) } else { hiddenSet.insert(card) }
+                                    saveHomeLayout()
+                                }
+                            ),
+                            isDragging: draggingCard == card
+                        ) {
+                            // Restrict drag to the grabber; begin dragging this card
+                            draggingCard = card
+                            isDraggingActive = true
+                        }
+                        // Row-wide drag tracking to compute new index while dragging
+                        .contentShape(Rectangle())
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { value in
+                                    guard let dragging = draggingCard else { return }
+                                    // Map the gesture's local Y within the stack to a proposed index
+                                    reorderIfNeeded(activeCard: dragging, atY: value.location.y)
+                                }
+                                .onEnded { _ in
+                                    isDraggingActive = false
+                                    draggingCard = nil
+                                    saveHomeLayout()
+                                }
+                        )
+                    }
+                }
+                .padding(.vertical, 4)
+
+                Button("Restore Default Order") {
+                    layoutOrder = HomeCardID.allCases
+                    hiddenSet = []
+                    saveHomeLayout()
+                }
+                .buttonStyle(.bordered)
+            }
+            .headerProminence(.increased)
+            .onAppear(perform: loadHomeLayout)
+
+            // 6) Game Data
             Section(header: Text("Game Data"), footer: Text("Reset your all-time game statistics. This action cannot be undone.").font(.footnote).foregroundStyle(.secondary)) {
                 Button(role: .destructive) {
                     showingResetQuizAlert = true
@@ -436,17 +442,21 @@ struct SettingsView: View {
 
     // Reorder helper: compute target index from drag Y within the stack
     private func reorderIfNeeded(activeCard: HomeCardID, atY y: CGFloat) {
-        // Approximate row height for hit testing; keep compact to fit on small devices
-        let rowHeight: CGFloat = 44
+        // Compact row height so all options fit without scrolling
+        let rowHeight: CGFloat = 48
         let spacing: CGFloat = 8
         let totalPerRow = rowHeight + spacing
 
-        let currentIndex = layoutOrder.firstIndex(of: activeCard) ?? 0
-        let proposedIndex = max(0, min(layoutOrder.count - 1, Int((y / totalPerRow).rounded(.down))))
-        if proposedIndex != currentIndex {
+        guard let currentIndex = layoutOrder.firstIndex(of: activeCard) else { return }
+        let proposed = max(0, min(layoutOrder.count - 1, Int((y / totalPerRow).rounded(.down))))
+        if proposed != currentIndex {
             withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                layoutOrder.move(fromOffsets: IndexSet(integer: currentIndex), toOffset: proposedIndex > currentIndex ? proposedIndex + 1 : proposedIndex)
+                layoutOrder.move(fromOffsets: IndexSet(integer: currentIndex),
+                                 toOffset: proposed > currentIndex ? proposed + 1 : proposed)
             }
+            // Optional haptic when crossing rows
+            let gen = UISelectionFeedbackGenerator()
+            gen.selectionChanged()
         }
     }
 
@@ -542,67 +552,54 @@ struct SettingsView: View {
     }
 }
 
-// MARK: - Reorderable row + drag gesture wrapper
+// MARK: - Reorderable row with grabber
 
 private struct ReorderRow: View {
     let title: String
     let systemImage: String
     @Binding var isShown: Bool
     let isDragging: Bool
+    let onGrab: () -> Void
+
+    init(title: String, systemImage: String, isShown: Binding<Bool>, isDragging: Bool, onGrab: @escaping () -> Void) {
+        self.title = title
+        self.systemImage = systemImage
+        self._isShown = isShown
+        self.isDragging = isDragging
+        self.onGrab = onGrab
+    }
 
     var body: some View {
-        HStack(spacing: 12) {
-            // Grabber
-            Image(systemName: "line.3.horizontal")
-                .foregroundStyle(.secondary)
-                .padding(.vertical, 8)
-                .accessibilityHidden(true)
+        HStack(spacing: 10) {
+            // Grabber button to start drag
+            Button(action: { onGrab() }) {
+                Image(systemName: "line.3.horizontal")
+                    .foregroundStyle(.secondary)
+                    .frame(width: 24, height: 24)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Reorder \(title)")
 
             Label(title, systemImage: systemImage)
                 .labelStyle(.titleAndIcon)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            Toggle(isOn: $isShown) {
-                Text("Show")
-            }
-            .toggleStyle(.switch)
-            .labelsHidden()
-            .accessibilityLabel("Show \(title)")
+            Toggle(isOn: $isShown) { Text("Show") }
+                .toggleStyle(.switch)
+                .labelsHidden()
+                .accessibilityLabel("Show \(title)")
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 6)
+        .padding(.horizontal, 10)
+        .frame(height: 48)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .fill(Color(.secondarySystemBackground))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(isDragging ? Color.accentColor.opacity(0.45) : Color.gray.opacity(0.25), lineWidth: isDragging ? 2 : 1)
-        )
-    }
-}
-
-// Lightweight drag recognizer for each row
-private extension View {
-    func onDragGesture(
-        isActive: Binding<Bool>,
-        onDragBegan: @escaping () -> Void,
-        onDragChanged: @escaping (_ location: CGPoint) -> Void,
-        onDragEnded: @escaping () -> Void
-    ) -> some View {
-        self.gesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { value in
-                    if !isActive.wrappedValue {
-                        isActive.wrappedValue = true
-                        onDragBegan()
-                    }
-                    onDragChanged(value.location)
-                }
-                .onEnded { _ in
-                    isActive.wrappedValue = false
-                    onDragEnded()
-                }
+                .stroke(isDragging ? Color.accentColor.opacity(0.45) : Color.gray.opacity(0.25),
+                        lineWidth: isDragging ? 2 : 1)
         )
     }
 }
