@@ -17,13 +17,32 @@ struct WordSearchGameView: View {
         var endCol: Int { startCol + dc * (word.count - 1) }
     }
 
-    enum Difficulty: String, CaseIterable, Identifiable { case easy, medium, hard; var id: String { rawValue } }
+    enum Difficulty: String, CaseIterable, Identifiable {
+        case easy
+        case medium   // will be displayed as "Normal" in UI
+        case hard
+        case expert
+        var id: String { rawValue }
+    }
+
+    enum GameMode: String, CaseIterable, Identifiable {
+        case normal
+        case blind
+        var id: String { rawValue }
+        var displayName: String {
+            switch self {
+            case .normal: return "Normal"
+            case .blind: return "Blind"
+            }
+        }
+    }
 
     // Start screen state
     @State private var started: Bool = false
     @State private var howToExpanded: Bool = false
     @State private var difficultyExpanded: Bool = false
     @State private var difficulty: Difficulty = .easy
+    @State private var gameMode: GameMode = .normal
 
     // Timed mode
     @State private var isTimedMode: Bool = false
@@ -33,6 +52,7 @@ struct WordSearchGameView: View {
     @State private var timeUp: Bool = false
     @State private var didWin: Bool = false
     @State private var pulseOn: Bool = false
+    @State private var roundOver: Bool = false  // NEW: unified end-of-round flag
 
     // Grid and words
     @State private var grid: [[Character]] = Array(repeating: Array(repeating: " ", count: 10), count: 10)
@@ -53,6 +73,9 @@ struct WordSearchGameView: View {
     @State private var foundWords: Set<String> = []
     @State private var revealedWords: Set<String> = [] // words revealed but not found by the player
 
+    // Blind mode state (toggle)
+    @State private var showBlindWordList: Bool = false
+
     // Tap-to-select state
     @State private var tapStart: (row: Int, col: Int)? = nil
 
@@ -60,7 +83,9 @@ struct WordSearchGameView: View {
     private var size: Int {
         switch difficulty {
         case .easy: return 10
-        case .medium, .hard: return 12
+        case .medium: return 12 // shown as Normal
+        case .hard: return 14
+        case .expert: return 14
         }
     }
     private let alphabet = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -76,12 +101,15 @@ struct WordSearchGameView: View {
                             howToExpanded: $howToExpanded,
                             difficultyExpanded: $difficultyExpanded,
                             difficulty: $difficulty,
+                            gameMode: $gameMode,
                             isTimedMode: $isTimedMode,
                             timeLimitString: timeLimitString(),
                             onStart: {
                                 started = true
                                 timeUp = false
                                 didWin = false
+                                roundOver = false
+                                showBlindWordList = false
                                 generatePuzzle()
                                 startTimerIfNeeded()
                             }
@@ -115,7 +143,7 @@ struct WordSearchGameView: View {
                                 backgroundColorForCell: backgroundColorForCell(row:col:),
                                 onTapCell: { r, c in handleCellTap(row: r, col: c) },
                                 onDragChanged: { cell in
-                                    guard !timeUp && !didWin else { return }
+                                    guard !timeUp && !didWin && !roundOver else { return }
                                     if selectionStart == nil {
                                         selectionStart = cell
                                         selectionEnd = cell
@@ -129,7 +157,7 @@ struct WordSearchGameView: View {
                                     }
                                 },
                                 onDragEnded: {
-                                    guard !timeUp && !didWin else { return }
+                                    guard !timeUp && !didWin && !roundOver else { return }
                                     validateSelection()
                                     selectionStart = nil
                                     selectionEnd = nil
@@ -137,7 +165,9 @@ struct WordSearchGameView: View {
                                 },
                                 dynamicGridHeight: dynamicGridHeightForHeightDrivenLayout(),
                                 words: targetWords,
-                                foundWords: foundWords
+                                foundWords: foundWords,
+                                gameMode: gameMode,
+                                showBlindWordList: showBlindWordList
                             )
                         } else {
                             // Original stacked layout on iPhone
@@ -157,7 +187,7 @@ struct WordSearchGameView: View {
                                         handleCellTap(row: r, col: c)
                                     },
                                     onDragChanged: { cell in
-                                        guard !timeUp && !didWin else { return }
+                                        guard !timeUp && !didWin && !roundOver else { return }
                                         if selectionStart == nil {
                                             selectionStart = cell
                                             selectionEnd = cell
@@ -171,7 +201,7 @@ struct WordSearchGameView: View {
                                         }
                                     },
                                     onDragEnded: {
-                                        guard !timeUp && !didWin else { return }
+                                        guard !timeUp && !didWin && !roundOver else { return }
                                         validateSelection()
                                         selectionStart = nil
                                         selectionEnd = nil
@@ -185,12 +215,24 @@ struct WordSearchGameView: View {
 
                             GroupBox {
                                 VStack(alignment: .leading, spacing: 8) {
-                                    Text("Find these words:")
-                                        .font(.headline)
-                                    if targetWords.isEmpty {
-                                        Text("No words").foregroundStyle(.secondary)
+                                    if gameMode == .blind && !showBlindWordList {
+                                        let foundCount = targetWords.filter { foundWords.contains($0) }.count
+                                        HStack {
+                                            Text("Words to find: \(targetWords.count)")
+                                                .font(.headline)
+                                            Spacer(minLength: 8)
+                                            Text("Found: \(foundCount)")
+                                                .font(.headline)
+                                                .foregroundStyle(.secondary)
+                                        }
                                     } else {
-                                        WrapWordsView(words: targetWords, found: foundWords, revealed: revealedWords)
+                                        Text("Find these words:")
+                                            .font(.headline)
+                                        if targetWords.isEmpty {
+                                            Text("No words").foregroundStyle(.secondary)
+                                        } else {
+                                            WrapWordsView(words: targetWords, found: foundWords, revealed: revealedWords)
+                                        }
                                     }
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -202,13 +244,28 @@ struct WordSearchGameView: View {
                                 generatePuzzle()
                                 timeUp = false
                                 didWin = false
+                                roundOver = false
+                                showBlindWordList = false
                                 startTimerIfNeeded()
                             },
-                            onReveal: { revealOverlay() },
-                            onChangeDifficulty: {
+                            onReveal: {
+                                // Reveal ends the round
+                                revealOverlay()
+                                stopTimer()
+                                roundOver = true
+                            },
+                            onChangeDifficultyOrMode: {
                                 started = false
                                 stopTimer()
-                            }
+                                roundOver = false
+                                showBlindWordList = false
+                            },
+                            gameMode: gameMode,
+                            onToggleHealed: {
+                                showBlindWordList.toggle()
+                            },
+                            healedOn: showBlindWordList,
+                            roundOver: roundOver
                         )
                     }
                 }
@@ -232,10 +289,21 @@ struct WordSearchGameView: View {
 
     private func timeLimitSeconds() -> Int {
         guard isTimedMode else { return 0 }
-        switch difficulty {
-        case .easy: return 60
-        case .medium: return 90
-        case .hard: return 120
+        // Increased limits in Blind Mode
+        if gameMode == .blind {
+            switch difficulty {
+            case .easy: return 120      // 2:00
+            case .medium: return 150    // 2:30
+            case .hard: return 240      // 4:00
+            case .expert: return 270    // 4:30
+            }
+        } else {
+            switch difficulty {
+            case .easy: return 60
+            case .medium: return 90
+            case .hard: return 120
+            case .expert: return 150
+            }
         }
     }
 
@@ -268,7 +336,7 @@ struct WordSearchGameView: View {
     }
 
     private func tickTimer() {
-        guard isTimedMode, !timeUp, !didWin, remainingSeconds > 0 else { return }
+        guard isTimedMode, !timeUp, !didWin, !roundOver, remainingSeconds > 0 else { return }
         remainingSeconds -= 1
         if remainingSeconds == 0 {
             handleTimeUp()
@@ -301,6 +369,7 @@ struct WordSearchGameView: View {
         selectionStart = nil
         selectionEnd = nil
         tapStart = nil
+        roundOver = true
         #if canImport(UIKit)
         let gen = UINotificationFeedbackGenerator()
         gen.notificationOccurred(.warning)
@@ -316,7 +385,7 @@ struct WordSearchGameView: View {
     // MARK: - Tap-to-select
 
     private func handleCellTap(row: Int, col: Int) {
-        guard !timeUp && !didWin else { return }
+        guard !timeUp && !didWin && !roundOver else { return }
         if tapStart == nil {
             tapStart = (row, col)
             selectionStart = tapStart
@@ -346,6 +415,10 @@ struct WordSearchGameView: View {
         selectionStart = nil
         selectionEnd = nil
         tapStart = nil
+        showBlindWordList = false
+        timeUp = false
+        didWin = false
+        roundOver = false
 
         guard let book = BibleData.books.randomElement(),
               let chapter = book.chapters.randomElement(),
@@ -362,7 +435,7 @@ struct WordSearchGameView: View {
             switch difficulty {
             case .easy: return 3...6
             case .medium: return 4...7
-            case .hard: return 5...8
+            case .hard, .expert: return 5...8
             }
         }()
         // Extract, then filter to words that fit in the current grid size
@@ -400,8 +473,15 @@ struct WordSearchGameView: View {
     private var allowedDirections: [(dr: Int, dc: Int)] {
         switch difficulty {
         case .easy, .medium:
-            return [(0, 1), (1, 0)]
-        case .hard:
+            // Forward-only directions (no backwards): right, down, down-right, down-left
+            return [
+                (0, 1),  // right
+                (1, 0),  // down
+                (1, 1),  // down-right
+                (1, -1)  // down-left
+            ]
+        case .hard, .expert:
+            // All 8 directions
             return [
                 (0, 1), (1, 0), (0, -1), (-1, 0),
                 (1, 1), (1, -1), (-1, 1), (-1, -1)
@@ -421,7 +501,10 @@ struct WordSearchGameView: View {
     }
 
     private func placeWordScattered(_ word: String) -> Bool {
-        var candidates = enumerateCandidates(for: word)
+        // In expert mode, write the reversed form onto the board so all hidden words are reversed.
+        let toPlace = (difficulty == .expert) ? String(word.reversed()) : word
+
+        var candidates = enumerateCandidates(for: toPlace)
         guard !candidates.isEmpty else { return false }
 
         // Shuffle for randomness across runs
@@ -436,8 +519,8 @@ struct WordSearchGameView: View {
         }
 
         if let best = candidates.min(by: { score($0) < score($1) }) {
-            write(word, atRow: best.row, col: best.col, dr: best.dr, dc: best.dc)
-            placed.append(PlacedWord(word: word, startRow: best.row, startCol: best.col, dr: best.dr, dc: best.dc))
+            write(toPlace, atRow: best.row, col: best.col, dr: best.dr, dc: best.dc)
+            placed.append(PlacedWord(word: toPlace, startRow: best.row, startCol: best.col, dr: best.dr, dc: best.dc))
             return true
         }
         return false
@@ -491,7 +574,7 @@ struct WordSearchGameView: View {
                 return (false, 0)
             }
         }
-               return (true, overlap)
+        return (true, overlap)
     }
 
     // Count adjacent (8-neighborhood) cells around the path that already contain letters.
@@ -610,14 +693,17 @@ struct WordSearchGameView: View {
         var dr = sign(dRow)
         var dc = sign(dCol)
 
+        // New rules: diagonals allowed at all difficulties. Keep direction snapped to primary axis if zero-length on one axis.
         if dr != 0 && dc != 0 {
-            if difficulty != .hard {
-                if abs(dRow) >= abs(dCol) { dc = 0 } else { dr = 0 }
-            }
+            // diagonal allowed; keep as-is
+        } else {
+            // horizontal or vertical
         }
 
+        // Ensure the chosen vector is one of the allowed directions
         let allowed = allowedDirections
         if !allowed.contains(where: { $0.dr == dr && $0.dc == dc }) {
+            // Snap to nearest allowed (fallback)
             if abs(dRow) >= abs(dCol) {
                 dr = dr == 0 ? 0 : (dr > 0 ? 1 : -1)
                 dc = 0
@@ -641,14 +727,12 @@ struct WordSearchGameView: View {
         var dr = sign(dRow)
         var dc = sign(dCol)
 
-        if difficulty != .hard {
-            if abs(dRow) >= abs(dCol) { dc = 0 } else { dr = 0 }
-        }
+        // Diagonals allowed at all difficulties now; just use the signed vector.
 
         if !allowedDirections.contains(where: { $0.dr == dr && $0.dc == dc }) {
-            if difficulty == .easy || difficulty == .medium {
-                if abs(dRow) >= abs(dCol) { dr = 1; dc = 0 } else { dr = 0; dc = 1 }
-            }
+            // Fallback snap to axis-aligned if needed
+            if abs(dRow) >= abs(dCol) { dr = dr == 0 ? 0 : (dr > 0 ? 1 : -1); dc = 0 }
+            else { dr = 0; dc = dc == 0 ? 0 : (dc > 0 ? 1 : -1) }
         }
 
         var cells: [(Int, Int)] = []
@@ -674,28 +758,39 @@ struct WordSearchGameView: View {
 
         if let match = placed.first(where: { pw in
             let pwCells = cellsForPlacedWord(pw)
-            if difficulty == .hard {
-                let pwForward = String(pwCells.map { grid[$0.row][$0.col] })
-                let pwBackward = String(pwForward.reversed())
+            let pwForward = String(pwCells.map { grid[$0.row][$0.col] })
+            let pwBackward = String(pwForward.reversed())
+
+            switch difficulty {
+            case .easy:
+                // Forward-only matches (must match placed path orientation)
+                return (forward == pwForward && sequenceEquals(cells, pwCells))
+            case .medium, .hard:
+                // Normal and Hard: accept forward or backward in any direction
                 return (forward == pwForward && sequenceEquals(cells, pwCells))
                     || (backward == pwForward && sequenceEquals(cells.reversed(), pwCells))
                     || (forward == pwBackward && sequenceEquals(cells, pwCells.reversed()))
                     || (backward == pwBackward && sequenceEquals(cells.reversed(), pwCells.reversed()))
-            } else {
-                let pwForward = String(pwCells.map { grid[$0.row][$0.col] })
-                return (forward == pwForward && sequenceEquals(cells, pwCells))
+            case .expert:
+                // Reversed-only relative to placed path
+                return (forward == pwBackward && sequenceEquals(cells, pwCells.reversed()))
+                    || (backward == pwBackward && sequenceEquals(cells.reversed(), pwCells.reversed()))
             }
         }) {
+            // Normalize found word to the original (forward) text so UI highlighting and counts align with targetWords
+            let originalWordFound: String = (difficulty == .expert) ? String(match.word.reversed()) : String(match.word)
+
             for cell in cells {
                 foundCells.insert(keyFor(row: cell.row, col: cell.col))
             }
-            foundWords.insert(match.word)
-            revealedWords.remove(match.word)
+            foundWords.insert(originalWordFound)
+            revealedWords.remove(originalWordFound)
 
             // Win condition: all words found before time expires
-            if isTimedMode && foundWords.count == targetWords.count {
+            if foundWords.count == targetWords.count {
                 stopTimer()
                 didWin = true
+                roundOver = true
             }
         }
     }
@@ -772,6 +867,10 @@ private struct SideBySideGameArea: View {
     let words: [String]
     let foundWords: Set<String>
 
+    // New: mode awareness for blind mode
+    let gameMode: WordSearchGameView.GameMode
+    let showBlindWordList: Bool
+
     private var splitColumns: (left: [String], right: [String]) {
         // If many words, split evenly; else put all on the right
         if words.count > 8 {
@@ -785,8 +884,14 @@ private struct SideBySideGameArea: View {
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
             if !splitColumns.left.isEmpty {
-                SideWordsColumn(words: splitColumns.left, found: foundWords, revealed: revealedWords)
-                    .frame(width: 220)
+                if gameMode == .blind && !showBlindWordList {
+                    let foundCount = words.filter { foundWords.contains($0) }.count
+                    SideBlindCountColumn(count: splitColumns.left.count, foundCount: foundCount)
+                        .frame(width: 220)
+                } else {
+                    SideWordsColumn(words: splitColumns.left, found: foundWords, revealed: revealedWords)
+                        .frame(width: 220)
+                }
             }
 
             ZStack(alignment: .trailing) {
@@ -811,11 +916,38 @@ private struct SideBySideGameArea: View {
             .padding(.top, 4)
 
             if !splitColumns.right.isEmpty {
-                SideWordsColumn(words: splitColumns.right, found: foundWords, revealed: revealedWords)
-                    .frame(width: 220)
+                if gameMode == .blind && !showBlindWordList {
+                    let foundCount = words.filter { foundWords.contains($0) }.count
+                    SideBlindCountColumn(count: splitColumns.right.count, foundCount: foundCount)
+                        .frame(width: 220)
+                } else {
+                    SideWordsColumn(words: splitColumns.right, found: foundWords, revealed: revealedWords)
+                        .frame(width: 220)
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .center)
+    }
+}
+
+private struct SideBlindCountColumn: View {
+    let count: Int
+    let foundCount: Int
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Words to find: \(count)")
+                    .font(.headline)
+                Spacer(minLength: 8)
+                Text("Found: \(foundCount)")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+            }
+            Text("Tap Healed to show the list.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -873,6 +1005,7 @@ private struct StartScreen: View {
     @Binding var howToExpanded: Bool
     @Binding var difficultyExpanded: Bool
     @Binding var difficulty: WordSearchGameView.Difficulty
+    @Binding var gameMode: WordSearchGameView.GameMode
     @Binding var isTimedMode: Bool
     let timeLimitString: String
     let onStart: () -> Void
@@ -892,7 +1025,10 @@ private struct StartScreen: View {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("• Tap Start to generate a new puzzle.")
                             Text("• Drag across letters to select a word.")
-                            Text("• Words are hidden horizontally or vertically on Easy/Medium; on Hard they can also be diagonal or reversed.")
+                            Text("• Easy/Normal: words can be horizontal, vertical, or diagonal (forward only).")
+                            Text("• Hard: words can be in any direction, forward or backwards.")
+                            Text("• Expert: all words are reversed and can go in any direction.")
+                            Text("• Blind Mode: the word list is hidden. Tap Healed to reveal the list, then find them.")
                             Text("• Tip: You can also tap a start letter, then tap an end letter to select the line between them.")
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -904,9 +1040,10 @@ private struct StartScreen: View {
                 GroupBox {
                     DisclosureGroup(isExpanded: $difficultyExpanded) {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("• Easy: 10×10 grid; words go right or down.")
-                            Text("• Medium: 12×12 grid; words go right or down.")
-                            Text("• Hard: 12×12 grid; words can also be reversed and diagonal (all directions).")
+                            Text("• Easy: 10×10 grid; words go horizontal, vertical, or diagonal (forward only).")
+                            Text("• Normal: 12×12 grid; words go horizontal, vertical, or diagonal (forward only).")
+                            Text("• Hard: 14×14 grid; words can be in any direction, including backwards.")
+                            Text("• Expert: 14×14 grid; all words are reversed and can go in any direction.")
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     } label: {
@@ -918,7 +1055,15 @@ private struct StartScreen: View {
 
             Picker("Difficulty", selection: $difficulty) {
                 ForEach(WordSearchGameView.Difficulty.allCases) { d in
-                    Text(d.rawValue.capitalized).tag(d)
+                    Text(displayName(for: d)).tag(d)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+
+            Picker("Mode", selection: $gameMode) {
+                ForEach(WordSearchGameView.GameMode.allCases) { m in
+                    Text(m.displayName).tag(m)
                 }
             }
             .pickerStyle(.segmented)
@@ -966,6 +1111,15 @@ private struct StartScreen: View {
                 .frame(maxWidth: 240)
 
             Spacer(minLength: 24)
+        }
+    }
+
+    private func displayName(for d: WordSearchGameView.Difficulty) -> String {
+        switch d {
+        case .easy: return "Easy"
+        case .medium: return "Normal"
+        case .hard: return "Hard"
+        case .expert: return "Expert"
         }
     }
 }
@@ -1155,18 +1309,34 @@ private struct GridBoard: View {
 private struct ControlsBar: View {
     let onNewPuzzle: () -> Void
     let onReveal: () -> Void
-    let onChangeDifficulty: () -> Void
+    let onChangeDifficultyOrMode: () -> Void
+
+    // Blind mode controls
+    let gameMode: WordSearchGameView.GameMode
+    let onToggleHealed: () -> Void
+    let healedOn: Bool
+    let roundOver: Bool
 
     var body: some View {
         HStack(spacing: 12) {
-            Button("New Puzzle") { onNewPuzzle() }
-                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+            // During play: show Reveal and (if blind) Healed toggle
+            if !roundOver {
+                Button("Reveal") { onReveal() }
+                    .buttonStyle(ModernPillButtonStyle(tint: .blue))
 
-            Button("Reveal") { onReveal() }
-                .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                if gameMode == .blind {
+                    // Red "Be Healed" when list hidden; Green "I'm Healed" when list showing
+                    Button(healedOn ? "I'm Healed" : "Be Healed") { onToggleHealed() }
+                        .buttonStyle(ModernPillButtonStyle(tint: healedOn ? .green : .red))
+                }
+            } else {
+                // After round ends: show New Puzzle and Change Settings
+                Button("New Puzzle") { onNewPuzzle() }
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
 
-            Button("Change Difficulty") { onChangeDifficulty() }
-                .buttonStyle(ModernPillButtonStyle(tint: .orange))
+                Button("Change Settings") { onChangeDifficultyOrMode() }
+                    .buttonStyle(ModernPillButtonStyle(tint: .orange))
+            }
         }
     }
 }
@@ -1215,3 +1385,4 @@ private struct WrapWordsView: View {
         }
     }
 }
+
