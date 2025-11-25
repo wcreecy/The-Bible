@@ -172,37 +172,7 @@ struct SettingsView: View {
                 Text("Choose an easy-to-read typeface for the interface and reading.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-
-                // Live Preview (local-only, does not affect the whole app while on Settings)
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Preview")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Sample Heading")
-                                .font(.headline)
-                            Text("This is how your app text will look with the current settings.")
-                                .font(.body)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(2)
-                        }
-                        .padding(12)
-                    }
-                    // Apply only to this preview
-                    .preferredColorScheme((ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme)
-                    .dynamicTypeSize((FontSizePreference(rawValue: fontSizePreferenceRaw) ?? .system).dynamicTypeSize ?? .large)
-                    .font(
-                        (FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).customFontName != nil
-                        ? .custom((FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).customFontName!, size: 17)
-                        : .system(size: 17)
-                    )
-                    .fontDesign((FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).fontDesign ?? .default)
-                }
-                .padding(.top, 8)
+                // Removed the old local "Preview" block so changes apply live to this screen and the app.
             }
             .headerProminence(.increased)
 
@@ -338,6 +308,10 @@ struct SettingsView: View {
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         .formStyle(.grouped)
+        // Apply appearance, text size, and font family live to this Settings screen so users see changes instantly
+        .preferredColorScheme((ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme)
+        .dynamicTypeSize((FontSizePreference(rawValue: fontSizePreferenceRaw) ?? .system).dynamicTypeSize ?? .large)
+        .modifier(FontFamilyEnvironmentModifier(prefRaw: fontFamilyPreferenceRaw))
     }
 
     // MARK: - Existing UI helpers
@@ -429,6 +403,24 @@ struct SettingsView: View {
                 )
         }
         .buttonStyle(.plain)
+    }
+}
+
+// Helper modifier to apply chosen font family live to the whole Settings screen.
+private struct FontFamilyEnvironmentModifier: ViewModifier {
+    let prefRaw: String
+    func body(content: Content) -> some View {
+        let pref = FontFamilyPreference(rawValue: prefRaw) ?? .system
+        let fontDesign = pref.fontDesign ?? .default
+        if let name = pref.customFontName {
+            content
+                .font(.custom(name, size: 17))
+                .fontDesign(fontDesign)
+        } else {
+            content
+                .font(.system(size: 17))
+                .fontDesign(fontDesign)
+        }
     }
 }
 

@@ -75,8 +75,6 @@ struct HangmanGameView: View {
     @State private var currentStreak: Int = 0
     @State private var currentBestStreak: Int = 0
 
-    @State private var showConfetti: Bool = false
-
     private var allTimeCorrect: Int {
         let key = "hangmanAllTimeCorrect_\(difficultyKeySuffix())"
         return UserDefaults.standard.integer(forKey: key)
@@ -314,13 +312,6 @@ struct HangmanGameView: View {
                 }
             }
             .padding()
-            .overlay(alignment: .top) {
-                if showConfetti {
-                    ConfettiView()
-                        .transition(.opacity)
-                        .zIndex(1)
-                }
-            }
         }
         .fontDesign(appFontDesign)
         .navigationTitle("Hangman")
@@ -516,15 +507,6 @@ struct HangmanGameView: View {
         } else {
             currentStreak = 0
             updateAllTime(correct: 0, answered: 1, streak: currentBestStreak)
-        }
-
-        if win && wrongGuesses == 0 {
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
-                showConfetti = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                withAnimation(.easeOut) { showConfetti = false }
-            }
         }
     }
 
@@ -753,31 +735,6 @@ struct HangmanGameView: View {
         let rest = String(s.drop { $0.isNumber })
         if rest.first?.isLetter == true { return digits + " " + rest }
         return s
-    }
-}
-
-private struct ConfettiView: View {
-    @State private var anim: Bool = false
-    private let colors: [Color] = [.red, .blue, .green, .orange, .pink, .purple, .yellow]
-    var body: some View {
-        GeometryReader { geo in
-            ZStack {
-                ForEach(0..<24, id: \.self) { i in
-                    let x = CGFloat.random(in: 0...geo.size.width)
-                    let delay = Double.random(in: 0...0.6)
-                    let size = CGFloat.random(in: 6...12)
-                    let color = colors.randomElement()!
-                    Circle()
-                        .fill(color.opacity(0.85))
-                        .frame(width: size, height: size)
-                        .position(x: x, y: anim ? geo.size.height + 20 : -20)
-                        .animation(.interpolatingSpring(stiffness: 80, damping: 12).delay(delay), value: anim)
-                }
-            }
-            .onAppear { anim = true }
-        }
-        .ignoresSafeArea()
-        .frame(height: 220)
     }
 }
 
