@@ -59,6 +59,9 @@ struct HomeView: View {
     // NEW: move popover state here so it persists
     @State private var showFocusInfoPopover: Bool = false
 
+    // NEW: saved-at timestamp for Daily Focus confirmation
+    @State private var focusSavedAt: Date? = nil
+
     private struct ModernPillButtonStyle: ButtonStyle {
         var tint: Color = .accentColor
         @Environment(\.isEnabled) private var isEnabled
@@ -569,6 +572,11 @@ struct HomeView: View {
                     Button {
                         sharedDefaults?.set(focusTitle, forKey: "focusTitle")
                         sharedDefaults?.set(focusBody, forKey: "focusBody")
+                        // Save timestamp
+                        let now = Date()
+                        sharedDefaults?.set(now.timeIntervalSince1970, forKey: "focusSavedAt")
+                        focusSavedAt = now
+
                         StopwatchActivityController.shared.cancel()
                         PrayerTimerActivityController.shared.ensureActivityForFocus(
                             title: focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : focusTitle,
@@ -592,6 +600,10 @@ struct HomeView: View {
                         focusBody = ""
                         sharedDefaults?.set("", forKey: "focusTitle")
                         sharedDefaults?.set("", forKey: "focusBody")
+                        // Clear timestamp
+                        sharedDefaults?.removeObject(forKey: "focusSavedAt")
+                        focusSavedAt = nil
+
                         PrayerTimerActivityController.shared.cancel()
                         hasSavedFocus = false
                         focusTitleIsFocused = false
@@ -608,6 +620,23 @@ struct HomeView: View {
                 }
                 .padding(.top, 4)
                 .toolbar { ToolbarItem(placement: .keyboard) { Button("Done") { focusTitleIsFocused = false; focusBodyIsFocused = false } } }
+
+                // Footnote: show saved time when we have a saved focus and a timestamp
+                if hasSavedFocus, let savedAt = focusSavedAt {
+                    let cal = Calendar.current
+                    let isToday = cal.isDateInToday(savedAt)
+                    HStack(spacing: 6) {
+                        Image(systemName: "checkmark.seal")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                        Text(isToday ? "Today’s Focus saved at \(savedAt.formatted(date: .omitted, time: .shortened))"
+                                     : "Focus saved on \(savedAt.formatted(date: .abbreviated, time: .shortened))")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                    }
+                    .padding(.top, 2)
+                }
 
                 // Inline footer note if Live Activities are disabled
                 if !liveActivitiesEnabled {
@@ -673,8 +702,27 @@ struct HomeView: View {
                                 .font(.system(size: 36, weight: .semibold, design: .monospaced))
                                 .foregroundStyle(timerTintColor)
                                 .frame(maxWidth: .infinity, alignment: .center)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    let generator = UIImpactFeedbackGenerator(style: .light)
+                                    generator.impactOccurred()
+                                    togglePause()
+                                }
+                                .accessibilityAddTraits(.isButton)
+                                .accessibilityLabel(isPaused ? "Resume timer" : "Pause timer")
+                                .accessibilityHint("Tap the time to \(isPaused ? "resume" : "pause")")
 
                             HStack(spacing: 16) {
+                                Button(action: { addOneMinute() }) {
+                                    Text("+1")
+                                        .font(.subheadline.weight(.semibold))
+                                        .frame(width: 40, height: 40)
+                                        .foregroundStyle(.white)
+                                        .background(Circle().fill(Color.blue))
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Add 1 minute")
+
                                 Button(action: { addFiveMinutes() }) {
                                     Text("+5")
                                         .font(.subheadline.weight(.semibold))
@@ -684,16 +732,6 @@ struct HomeView: View {
                                 }
                                 .buttonStyle(.plain)
                                 .accessibilityLabel("Add 5 minutes")
-
-                                Button(action: { addTenMinutes() }) {
-                                    Text("+10")
-                                        .font(.subheadline.weight(.semibold))
-                                        .frame(width: 40, height: 40)
-                                        .foregroundStyle(.white)
-                                        .background(Circle().fill(Color.blue))
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("Add 10 minutes")
                             }
                             .frame(maxWidth: .infinity, alignment: .trailing)
                         }
@@ -800,7 +838,7 @@ struct HomeView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                        // Centered counter
+                        // Centered counter (tap to pause/resume with light haptic)
                         Text(formattedStopwatch(stopwatchElapsed))
                             .font(.system(size: 36, weight: .semibold, design: .monospaced))
                             .monospacedDigit()
@@ -808,6 +846,19 @@ struct HomeView: View {
                             .lineLimit(1)
                             .minimumScaleFactor(0.6)
                             .frame(maxWidth: .infinity, alignment: .center)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                let gen = UIImpactFeedbackGenerator(style: .light)
+                                gen.impactOccurred()
+                                if stopwatchRunning {
+                                    pauseStopwatch()
+                                } else {
+                                    startStopwatch()
+                                }
+                            }
+                            .accessibilityAddTraits(.isButton)
+                            .accessibilityLabel(stopwatchRunning ? "Pause stopwatch" : (stopwatchElapsed > 0 ? "Resume stopwatch" : "Start stopwatch"))
+                            .accessibilityHint("Tap the time to \(stopwatchRunning ? "pause" : (stopwatchElapsed > 0 ? "resume" : "start"))")
 
                         // Right control(s)
                         HStack(spacing: 16) {
@@ -1006,8 +1057,15 @@ struct HomeView: View {
                 let savedTitle = (shared.string(forKey: "focusTitle") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
                 let savedBody = (shared.string(forKey: "focusBody") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
                 hasSavedFocus = !(savedTitle.isEmpty && savedBody.isEmpty)
+                let ts = shared.double(forKey: "focusSavedAt")
+                if ts > 0 {
+                    focusSavedAt = Date(timeIntervalSince1970: ts)
+                } else {
+                    focusSavedAt = nil
+                }
             } else {
                 hasSavedFocus = false
+                focusSavedAt = nil
             }
 
             mirrorLastReadToAppGroup()
@@ -1173,6 +1231,37 @@ struct HomeView: View {
         )
     }
 
+    private func addOneMinute() {
+        guard isTimerRunning else { return }
+        let delta: Int = 60
+        if isPaused {
+            remainingSeconds += delta
+            storedRemainingWhenPaused += delta
+            storedTotalSeconds += delta
+            PrayerTimerActivityController.shared.update(
+                remainingSeconds: remainingSeconds,
+                totalSeconds: storedTotalSeconds,
+                isPaused: isPaused
+            )
+        } else {
+            storedEndDate += TimeInterval(delta)
+            storedTotalSeconds += delta
+            let newRemaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
+            remainingSeconds = newRemaining
+            scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
+            PrayerTimerActivityController.shared.update(
+                remainingSeconds: remainingSeconds,
+                totalSeconds: storedTotalSeconds,
+                isPaused: isPaused
+            )
+        }
+        // Suppress the next tick-driven Live Activity update briefly to avoid a stale overwrite
+        suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(0.75)
+
+        let gen = UIImpactFeedbackGenerator(style: .light)
+        gen.impactOccurred()
+    }
+
     private func addFiveMinutes() {
         guard isTimerRunning else { return }
         let delta: Int = 300
@@ -1205,6 +1294,7 @@ struct HomeView: View {
     }
 
     private func addTenMinutes() {
+        // Unused now, kept for potential future use
         guard isTimerRunning else { return }
         let delta: Int = 600
         if isPaused {
@@ -1228,9 +1318,7 @@ struct HomeView: View {
                 isPaused: isPaused
             )
         }
-        // Suppress the next tick-driven Live Activity update briefly to avoid a stale overwrite
         suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(0.75)
-
         let gen = UIImpactFeedbackGenerator(style: .light)
         gen.impactOccurred()
     }
