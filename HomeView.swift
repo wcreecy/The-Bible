@@ -85,6 +85,51 @@ struct HomeView: View {
         }
     }
 
+    // White pill style (for "Read" button): white background, black text, subtle stroke
+    private struct WhitePillButtonStyle: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.black)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .background(
+                    Capsule(style: .continuous)
+                        .fill(Color.white)
+                )
+                .overlay(
+                    Capsule(style: .continuous)
+                        .stroke(Color.black.opacity(configuration.isPressed ? 0.35 : 0.2), lineWidth: configuration.isPressed ? 2 : 1)
+                )
+                .shadow(color: .black.opacity(configuration.isPressed ? 0.04 : 0.08), radius: configuration.isPressed ? 1 : 3, x: 0, y: configuration.isPressed ? 0 : 2)
+                .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+                .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
+        }
+    }
+
+    // New: Subtle pill style used in the title card for calmer appearance
+    private struct SubtlePillButtonStyle: ButtonStyle {
+        var emphasized: Bool = false
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(emphasized ? Color.primary : Color.secondary)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .background(
+                    Capsule(style: .continuous)
+                        .fill(Color(.secondarySystemBackground))
+                )
+                .overlay(
+                    Capsule(style: .continuous)
+                        .stroke(Color.black.opacity(0.08), lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(configuration.isPressed ? 0.02 : 0.04), radius: configuration.isPressed ? 0.5 : 1.5, x: 0, y: configuration.isPressed ? 0 : 1)
+                .scaleEffect(configuration.isPressed ? 0.99 : 1.0)
+                .animation(.spring(response: 0.22, dampingFraction: 0.9), value: configuration.isPressed)
+        }
+    }
+
     // On-demand ticker: only active during timer/stopwatch sessions
     @State private var tickerCancellable: AnyCancellable?
     @State private var showFinishedAlert: Bool = false
@@ -282,16 +327,52 @@ struct HomeView: View {
     // MARK: - Split cards to reduce type-checking complexity
     @ViewBuilder
     private var titleCard: some View {
-        HeroCard(title: "Word of God", subtitle: "Welcome back", icon: "book.fill", tint: .blue, titleFont: Font.largeTitle, titleFontWeight: Font.Weight.black) {
-            HStack(alignment: .center, spacing: 8) {
-                Image(systemName: "person.wave.2.fill")
-                    .foregroundStyle(.blue)
-                Text("What is God saying to you today?")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.leading)
+        HeroCard(
+            title: "Word of God",
+            subtitle: nil,
+            icon: "book.fill",
+            tint: .blue,
+            titleFont: Font.largeTitle,
+            titleFontWeight: Font.Weight.black
+        ) {
+            // Tagline between title and buttons
+            Text("What does God have for YOU today?")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            // Bottom action buttons row
+            HStack(spacing: 12) {
+                Button {
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 5])
+                    }
+                } label: {
+                    Label("Search", systemImage: "magnifyingglass")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(SubtlePillButtonStyle(emphasized: false))
+
+                Button {
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 1])
+                    }
+                } label: {
+                    Label("Read", systemImage: "book")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(SubtlePillButtonStyle(emphasized: true))
+
+                Button {
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 4])
+                    }
+                } label: {
+                    Label("Favorites", systemImage: "heart")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(SubtlePillButtonStyle(emphasized: false))
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxWidth: 700)
         .padding(.horizontal, 16)

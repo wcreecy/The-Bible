@@ -10,6 +10,7 @@ import SwiftUI
 extension Notification.Name {
     static let openBibleReference = Notification.Name("OpenBibleReference")
     static let openSettingsTab = Notification.Name("OpenSettingsTab")
+    static let switchToTab = Notification.Name("SwitchToTab")
 }
 
 struct ContentView: View {
@@ -198,6 +199,14 @@ struct ContentView: View {
                     bibleCoordinator.push(.reader(book: book, chapter: chapter, startVerse: verseNum))
                 }
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .switchToTab)) { note in
+            if let tab = note.userInfo?["tab"] as? Int {
+                selectedTab = tab
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .openSettingsTab)) { _ in
+            selectedTab = 6
         }
     }
 
