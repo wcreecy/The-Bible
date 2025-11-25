@@ -15,13 +15,15 @@ enum Haptics {
         #endif
     }()
 
-    static func impact(_ style: UIImpactFeedbackGenerator.Style) {
+    @available(iOS 10.0, *)
+    static func impact(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
         guard supportsHaptics else { return }
         let gen = UIImpactFeedbackGenerator(style: style)
         gen.prepare()
         gen.impactOccurred()
     }
 
+    @available(iOS 10.0, *)
     static func notify(_ type: UINotificationFeedbackGenerator.FeedbackType) {
         guard supportsHaptics else { return }
         let gen = UINotificationFeedbackGenerator()
@@ -29,6 +31,7 @@ enum Haptics {
         gen.notificationOccurred(type)
     }
 
+    @available(iOS 10.0, *)
     static func selection() {
         guard supportsHaptics else { return }
         let gen = UISelectionFeedbackGenerator()

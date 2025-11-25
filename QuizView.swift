@@ -415,13 +415,21 @@ struct QuizView: View {
         let need = max(0, bufferSize - questionBuffer.count)
         guard need > 0 else { isRefilling = false; return }
 
-        Task.detached(priority: .userInitiated) {
-            var generated: [QuizQuestion] = []
-            generated.reserveCapacity(need)
-            for _ in 0..<need {
-                if let q = self.makeQuestion() {
-                    generated.append(q)
+        Task.detached(priority: .userInitiated) { [self] in
+            // Build an immutable array without mutating a captured var
+            let generated: [QuizQuestion] = await withTaskGroup(of: QuizQuestion?.self) { group in
+                for _ in 0..<need {
+                    group.addTask {
+                        await MainActor.run {
+                            self.makeQuestion()
+                        }
+                    }
                 }
+                var results: [QuizQuestion] = []
+                for await item in group {
+                    if let q = item { results.append(q) }
+                }
+                return results
             }
             await MainActor.run {
                 self.questionBuffer.append(contentsOf: generated)
@@ -679,12 +687,12 @@ struct QuizView: View {
         for i in 0..<(pulses * 2) {
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.25) {
                 withAnimation(.easeInOut(duration: 0.25)) {
-                    pulseOn.toggle()
+                    self.pulseOn.toggle()
                 }
             }
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + Double(pulses * 2) * 0.25 + 0.01) {
-            pulseOn = false
+            self.pulseOn = false
         }
     }
 
