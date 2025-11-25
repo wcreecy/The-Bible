@@ -47,7 +47,7 @@ struct BookSelectionLink: View {
             HStack {
                 Text("Book")
                 Spacer()
-                Text(selectedBookName ?? (bookNames.isEmpty ? "Loading…" : "Choose…"))
+                Text(selectedBookName ?? "Select Book")
                     .foregroundColor(.secondary)
             }
         }

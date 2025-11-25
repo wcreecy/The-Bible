@@ -112,10 +112,10 @@ struct HomeView: View {
         var emphasized: Bool = false
         func makeBody(configuration: Configuration) -> some View {
             configuration.label
-                .font(.footnote.weight(.semibold))
+                .font(.caption.weight(.semibold)) // smaller than footnote
                 .foregroundStyle(emphasized ? Color.primary : Color.secondary)
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
+                .padding(.vertical, 6)            // tighter vertical padding
+                .padding(.horizontal, 10)         // tighter horizontal padding
                 .background(
                     Capsule(style: .continuous)
                         .fill(Color(.secondarySystemBackground))
@@ -349,7 +349,9 @@ struct HomeView: View {
                     }
                 } label: {
                     Label("Search", systemImage: "magnifyingglass")
-                        .frame(maxWidth: .infinity)
+                        .lineLimit(1)
+                        .allowsTightening(true)
+                        .minimumScaleFactor(0.85)
                 }
                 .buttonStyle(SubtlePillButtonStyle(emphasized: false))
 
@@ -359,7 +361,9 @@ struct HomeView: View {
                     }
                 } label: {
                     Label("Read", systemImage: "book")
-                        .frame(maxWidth: .infinity)
+                        .lineLimit(1)
+                        .allowsTightening(true)
+                        .minimumScaleFactor(0.85)
                 }
                 .buttonStyle(SubtlePillButtonStyle(emphasized: true))
 
@@ -369,7 +373,9 @@ struct HomeView: View {
                     }
                 } label: {
                     Label("Favorites", systemImage: "heart")
-                        .frame(maxWidth: .infinity)
+                        .lineLimit(1)
+                        .allowsTightening(true)
+                        .minimumScaleFactor(0.85)
                 }
                 .buttonStyle(SubtlePillButtonStyle(emphasized: false))
             }

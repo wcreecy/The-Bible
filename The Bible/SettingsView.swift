@@ -20,6 +20,82 @@ struct SettingsView: View {
     // Live Activities master toggle
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
 
+    // MARK: - Home layout configuration
+    // Identifiers for reorderable/hideable cards on Home (NOT including the title card)
+    private enum HomeCardID: String, CaseIterable, Identifiable {
+        case verseOfDay
+        case dailyFocus
+        case timer
+        case resumeReading
+
+        var id: String { rawValue }
+        var title: String {
+            switch self {
+            case .verseOfDay: return "Verse of the Day"
+            case .dailyFocus: return "Daily Focus"
+            case .timer: return "Prayer Timer / Stopwatch"
+            case .resumeReading: return "Continue Reading"
+            }
+        }
+        var systemImage: String {
+            switch self {
+            case .verseOfDay: return "sun.max" // will be night/day on Home, but fine here
+            case .dailyFocus: return "target"
+            case .timer: return "timer"
+            case .resumeReading: return "bookmark.fill"
+            }
+        }
+    }
+
+    // Persist order and hidden set in AppStorage
+    @AppStorage("homeCardOrder") private var homeCardOrderRaw: String = "" // JSON array of strings
+    @AppStorage("homeCardHidden") private var homeCardHiddenRaw: String = "" // JSON array of strings
+
+    // Local state mirrors that decode/encode to AppStorage
+    @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
+    @State private var hiddenSet: Set<HomeCardID> = []
+
+    // Decode on appear; encode on change
+    private func loadHomeLayout() {
+        // Decode order
+        if let data = homeCardOrderRaw.data(using: .utf8),
+           let ids = try? JSONDecoder().decode([String].self, from: data) {
+            let mapped = ids.compactMap { HomeCardID(rawValue: $0) }
+            // Ensure we include any new cards that weren’t saved yet
+            let missing = HomeCardID.allCases.filter { !mapped.contains($0) }
+            layoutOrder = mapped + missing
+        } else {
+            layoutOrder = HomeCardID.allCases
+        }
+
+        // Decode hidden
+        if let data = homeCardHiddenRaw.data(using: .utf8),
+           let ids = try? JSONDecoder().decode([String].self, from: data) {
+            hiddenSet = Set(ids.compactMap { HomeCardID(rawValue: $0) })
+        } else {
+            hiddenSet = []
+        }
+    }
+
+    private func saveHomeLayout() {
+        // Encode order
+        let orderIDs = layoutOrder.map { $0.rawValue }
+        if let data = try? JSONEncoder().encode(orderIDs),
+           let raw = String(data: data, encoding: .utf8) {
+            homeCardOrderRaw = raw
+        }
+        // Encode hidden
+        let hiddenIDs = Array(hiddenSet).map { $0.rawValue }
+        if let data = try? JSONEncoder().encode(hiddenIDs),
+           let raw = String(data: data, encoding: .utf8) {
+            homeCardHiddenRaw = raw
+        }
+        // Nudge widgets if needed (optional)
+        // WidgetCenter.shared.reloadAllTimelines() // only if home layout affects widgets
+        // Also notify HomeView to refresh layout (optional via NotificationCenter)
+        NotificationCenter.default.post(name: .init("homeLayoutChanged"), object: nil)
+    }
+
     private var selectionBinding: Binding<ColorSchemePreference> {
         Binding<ColorSchemePreference>(
             get: { ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system },
@@ -91,6 +167,50 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
+            // MARK: Home Layout section
+            Section(header: Text("Home Layout"), footer: Text("Reorder or hide sections on the Home page. The title card always stays at the top.").font(.footnote).foregroundStyle(.secondary)) {
+                // Reorderable list with toggles
+                List {
+                    ForEach(layoutOrder) { card in
+                        HStack {
+                            Label(card.title, systemImage: card.systemImage)
+                            Spacer()
+                            Toggle(isOn: Binding<Bool>(
+                                get: { !hiddenSet.contains(card) },
+                                set: { newValue in
+                                    if newValue {
+                                        hiddenSet.remove(card)
+                                    } else {
+                                        hiddenSet.insert(card)
+                                    }
+                                    saveHomeLayout()
+                                }
+                            )) {
+                                EmptyView()
+                            }
+                            .labelsHidden()
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .onMove { indices, newOffset in
+                        layoutOrder.move(fromOffsets: indices, toOffset: newOffset)
+                        saveHomeLayout()
+                    }
+                }
+                .environment(\.editMode, .constant(.active)) // always show drag handles
+                .frame(minHeight: 44 * CGFloat(layoutOrder.count))
+                .listStyle(.insetGrouped)
+
+                Button("Restore Default Order") {
+                    layoutOrder = HomeCardID.allCases
+                    hiddenSet = []
+                    saveHomeLayout()
+                }
+                .buttonStyle(.bordered)
+            }
+            .headerProminence(.increased)
+            .onAppear(perform: loadHomeLayout)
+
             Section(header: Text("Appearance")) {
                 VStack(alignment: .leading, spacing: 8) {
                     Label("App Appearance", systemImage: "paintbrush")
@@ -312,6 +432,9 @@ struct SettingsView: View {
         .preferredColorScheme((ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme)
         .dynamicTypeSize((FontSizePreference(rawValue: fontSizePreferenceRaw) ?? .system).dynamicTypeSize ?? .large)
         .modifier(FontFamilyEnvironmentModifier(prefRaw: fontFamilyPreferenceRaw))
+        .onAppear {
+            loadHomeLayout()
+        }
     }
 
     // MARK: - Existing UI helpers
