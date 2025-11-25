@@ -83,6 +83,34 @@ struct QuizView: View {
         var selected: String?
     }
 
+    // MARK: - Static OT/NT sets (reuse across questions)
+    private static let oldTestamentSet: Set<String> = [
+        "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
+        "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings",
+        "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job",
+        "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah",
+        "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel",
+        "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk",
+        "Zephaniah", "Haggai", "Zechariah", "Malachi"
+    ]
+    private static let newTestamentSet: Set<String> = [
+        "Matthew", "Mark", "Luke", "John", "Acts", "Romans",
+        "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians",
+        "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians",
+        "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews",
+        "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John",
+        "Jude", "Revelation"
+    ]
+
+    // MARK: - Precomputed pools for current scope/difficulty
+    private struct Pools {
+        let books: [Book]              // filtered by scope
+        let allNames: [String]         // names from books
+        let oldNames: [String]         // intersection with OT
+        let newNames: [String]         // intersection with NT
+    }
+    @State private var pools: Pools = .init(books: [], allNames: [], oldNames: [], newNames: [])
+
     private var isViewingPrevious: Bool {
         currentIndex >= 0 && currentIndex < history.count - 1
     }
@@ -110,9 +138,21 @@ struct QuizView: View {
     
     @State private var howToExpanded: Bool = false
     @State private var difficultyExpanded: Bool = false
-    
+
+    // MARK: - Question buffer (prefetch)
+    @State private var questionBuffer: [QuizQuestion] = []
+    private let bufferSize: Int = 5
+    private let refillThreshold: Int = 3
+    @State private var isRefilling: Bool = false
+
     private var isPreviousEnabled: Bool {
-        started && currentIndex > 0 && !(selectedOption == nil && (quizDifficulty == "normal" || quizDifficulty == "hard") && remainingSeconds > 0)
+        // Allow going back if there is a previous question and we are not mid-countdown on the current unanswered question.
+        guard started, currentIndex > 0 else { return false }
+        // If we’re on the latest question and it’s unanswered with an active timer, disallow
+        if currentIndex == history.count - 1, selectedOption == nil, (quizDifficulty == "normal" || quizDifficulty == "hard"), remainingSeconds > 0 {
+            return false
+        }
+        return true
     }
 
     private var isNextEnabled: Bool {
@@ -164,7 +204,10 @@ struct QuizView: View {
                             Text("Verse Source")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            Picker("Verse Source", selection: Binding<String>(get: { quizScopeRaw }, set: { quizScopeRaw = $0 })) {
+                            Picker("Verse Source", selection: Binding<String>(get: { quizScopeRaw }, set: { new in
+                                quizScopeRaw = new
+                                rebuildPools()
+                            })) {
                                 Text("OT/NT").tag("whole")
                                 Text("OT").tag("old")
                                 Text("NT").tag("new")
@@ -175,7 +218,10 @@ struct QuizView: View {
                             Text("Difficulty")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            Picker("Difficulty", selection: Binding<String>(get: { quizDifficulty }, set: { quizDifficulty = $0 })) {
+                            Picker("Difficulty", selection: Binding<String>(get: { quizDifficulty }, set: { new in
+                                quizDifficulty = new
+                                rebuildPools()
+                            })) {
                                 Text("Easy").tag("easy")
                                 Text("Medium").tag("normal")
                                 Text("Hard").tag("hard")
@@ -329,72 +375,137 @@ struct QuizView: View {
                     .disabled(!isNextEnabled)
             }
         }
+        .onAppear {
+            // Build pools initially so Start is instant
+            rebuildPools()
+        }
         .onDisappear { resetSessionScores() }
     }
     
+    // MARK: - Pools
+    private func rebuildPools() {
+        // Filter books by scope once, then build names and testament subsets
+        let books: [Book]
+        switch quizScopeRaw {
+        case "old":
+            books = BibleData.books.filter { Self.oldTestamentSet.contains($0.name) }
+        case "new":
+            books = BibleData.books.filter { Self.newTestamentSet.contains($0.name) }
+        default:
+            books = BibleData.books
+        }
+        let names = books.map { $0.name }
+        let old = names.filter { Self.oldTestamentSet.contains($0) }
+        let new = names.filter { Self.newTestamentSet.contains($0) }
+        pools = Pools(books: books, allNames: names, oldNames: old, newNames: new)
+    }
+
+    // MARK: - Buffer management
+    private func ensureBuffer(refillIfBelow threshold: Int) {
+        guard started else { return }
+        if questionBuffer.count < threshold {
+            refillBuffer()
+        }
+    }
+
+    private func refillBuffer() {
+        guard !isRefilling else { return }
+        guard !pools.books.isEmpty else { return }
+        isRefilling = true
+        let need = max(0, bufferSize - questionBuffer.count)
+        guard need > 0 else { isRefilling = false; return }
+
+        Task.detached(priority: .userInitiated) {
+            var generated: [QuizQuestion] = []
+            generated.reserveCapacity(need)
+            for _ in 0..<need {
+                if let q = self.makeQuestion() {
+                    generated.append(q)
+                }
+            }
+            await MainActor.run {
+                self.questionBuffer.append(contentsOf: generated)
+                self.isRefilling = false
+            }
+        }
+    }
+
+    private func popBufferedQuestion() -> QuizQuestion? {
+        if !questionBuffer.isEmpty {
+            return questionBuffer.removeFirst()
+        }
+        // Fallback to on-demand generation if buffer is empty
+        return makeQuestion()
+    }
+
+    // Pure generator using current pools/difficulty; no UI state side-effects.
+    private func makeQuestion() -> QuizQuestion? {
+        guard let randomBook = pools.books.randomElement(),
+              let randomChapter = randomBook.chapters.randomElement(),
+              let randomVerse = randomChapter.verses.randomElement() else {
+            return nil
+        }
+
+        let verseText = randomVerse.text
+        let bookName = randomBook.name
+        let chapterNum = randomChapter.number
+        let verseNum = randomVerse.number
+
+        // Build wrong options pool based on difficulty
+        let correctName = bookName
+        let isOld = Self.oldTestamentSet.contains(correctName)
+
+        var wrongPool: [String]
+        switch quizDifficulty {
+        case "hard":
+            wrongPool = isOld ? pools.oldNames : pools.newNames
+        default:
+            wrongPool = pools.allNames
+        }
+        wrongPool.removeAll { $0 == correctName }
+
+        var wrongBooks = wrongPool.shuffled()
+        if wrongBooks.count > 3 { wrongBooks = Array(wrongBooks.prefix(3)) }
+        let opts = (wrongBooks + [correctName]).shuffled()
+
+        return QuizQuestion(
+            verseText: verseText,
+            correctBook: bookName,
+            chapter: chapterNum,
+            verse: verseNum,
+            options: opts,
+            selected: nil
+        )
+    }
+
+    // MARK: - Game flow
     private func startQuiz() {
         currentStreak = 0
-        // bestStreak is kept as is
         started = true
         score = 0
         questionNumber = 0
         sessionAnswered = 0
         history = []
         currentIndex = -1
-        generateQuestion()
+        selectedOption = nil
+        showAnswerReveal = false
+
+        // Prepare buffer and take first question
+        questionBuffer.removeAll()
+        refillBuffer()
+        if let q = popBufferedQuestion() {
+            appendAndLoad(q)
+        } else {
+            // Fallback if generation fails
+            generateQuestion()
+        }
+        ensureBuffer(refillIfBelow: refillThreshold)
     }
     
+    // Legacy single-shot generation (kept for fallback)
     private func generateQuestion() {
         selectedOption = nil
         showAnswerReveal = false
-        
-        // Define Old Testament books set
-        let oldTestamentSet: Set<String> = [
-            "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
-            "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings",
-            "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job",
-            "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah",
-            "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel",
-            "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk",
-            "Zephaniah", "Haggai", "Zechariah", "Malachi"
-        ]
-        
-        // Define New Testament books set
-        let newTestamentSet: Set<String> = [
-            "Matthew", "Mark", "Luke", "John", "Acts", "Romans",
-            "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians",
-            "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians",
-            "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews",
-            "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John",
-            "Jude", "Revelation"
-        ]
-        
-        var filteredBooks: [Book] = []
-        
-        switch quizScopeRaw {
-        case "old":
-            filteredBooks = BibleData.books.filter { oldTestamentSet.contains($0.name) }
-        case "new":
-            filteredBooks = BibleData.books.filter { newTestamentSet.contains($0.name) }
-        default:
-            filteredBooks = BibleData.books
-        }
-        
-        guard !filteredBooks.isEmpty else {
-            currentVerseText = "No verse found."
-            correctBook = ""
-            options = []
-            return
-        }
-        
-        guard let randomBook = filteredBooks.randomElement(),
-              let randomChapter = randomBook.chapters.randomElement(),
-              let randomVerse = randomChapter.verses.randomElement() else {
-            currentVerseText = "No verse found."
-            correctBook = ""
-            options = []
-            return
-        }
         
         // Set timer duration based on difficulty
         switch quizDifficulty {
@@ -409,39 +520,28 @@ struct QuizView: View {
         wasInRedZone = false
         pulseOn = false
         
-        let verseText = randomVerse.text
-        let bookName = randomBook.name
-        let chapterNum = randomChapter.number
-        let verseNum = randomVerse.number
-
-        // Build wrong options pool
-        let allBookNames = filteredBooks.map { $0.name }
-        let correctName = bookName
-
-        // Determine testament of the correct book
-        let isOldTestament = oldTestamentSet.contains(correctName)
-
-        var wrongPool = allBookNames.filter { $0 != correctName }
-        if quizDifficulty == "hard" {
-            wrongPool = wrongPool.filter { isOldTestament == oldTestamentSet.contains($0) }
+        guard let q = makeQuestion() else {
+            currentVerseText = "No verse found."
+            correctBook = ""
+            options = []
+            return
         }
-        var wrongBooks = wrongPool.shuffled()
-        if wrongBooks.count > 3 { wrongBooks = Array(wrongBooks.prefix(3)) }
-        let opts = (wrongBooks + [correctName]).shuffled()
+        appendAndLoad(q)
+    }
 
-        let q = QuizQuestion(
-            verseText: verseText,
-            correctBook: bookName,
-            chapter: chapterNum,
-            verse: verseNum,
-            options: opts,
-            selected: nil
-        )
-        var newHistory = history
-        newHistory.append(q)
-        history = newHistory
+    private func appendAndLoad(_ q: QuizQuestion) {
+        // Append to history and load UI
+        history.append(q)
         currentIndex = history.count - 1
         loadQuestion(from: q)
+        // Initialize timer after question becomes visible
+        switch quizDifficulty {
+        case "normal": remainingSeconds = 30
+        case "hard": remainingSeconds = 20
+        default: remainingSeconds = 0
+        }
+        wasInRedZone = false
+        pulseOn = false
     }
     
     private func selectOption(_ name: String) {
@@ -451,9 +551,8 @@ struct QuizView: View {
         pulseOn = false
         remainingSeconds = 0
         selectedOption = name
-        var newHistory = history
-        newHistory[currentIndex].selected = name
-        history = newHistory
+        // Update just the selected field in-place to avoid extra churn
+        history[currentIndex].selected = name
         sessionAnswered += 1
         incrementAllTimeAnswered()
         if name == correctBook {
@@ -462,15 +561,27 @@ struct QuizView: View {
             currentStreak += 1
             bestStreak = max(bestStreak, currentStreak)
             updateAllTimeBestStreak(currentStreak)
+            #if canImport(UIKit)
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            #endif
         } else {
             currentStreak = 0
+            #if canImport(UIKit)
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+            #endif
         }
         showAnswerReveal = true
     }
     
     private func nextQuestion() {
         questionNumber += 1
-        generateQuestion()
+        if let q = popBufferedQuestion() {
+            appendAndLoad(q)
+            ensureBuffer(refillIfBelow: refillThreshold)
+        } else {
+            generateQuestion()
+            ensureBuffer(refillIfBelow: refillThreshold)
+        }
     }
     
     private func showPrevious() {
@@ -508,6 +619,7 @@ struct QuizView: View {
         bestStreak = 0
     }
     
+    // MARK: - UI helpers
     private func buttonBackground(for option: String) -> Color {
         guard let selected = selectedOption else {
             return Color.clear
@@ -584,8 +696,12 @@ struct QuizView: View {
         incrementAllTimeAnswered()
         currentStreak = 0
         showAnswerReveal = true
+        #if canImport(UIKit)
+        UINotificationFeedbackGenerator().notificationOccurred(.error)
+        #endif
     }
     
+    // MARK: - Favorites
     private func isCurrentFavorited() -> Bool {
         favorites.contains { fav in
             fav.bookName == correctBook && fav.chapterNumber == currentChapterNumber && fav.verseNumber == currentVerseNumber
