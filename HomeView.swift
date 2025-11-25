@@ -10,6 +10,16 @@ import WidgetKit
 
 private enum VerseScope: String { case old, new, whole, book }
 
+// New: identifiers matching SettingsView’s reorderable/hideable cards
+private enum HomeCardID: String, CaseIterable, Identifiable {
+    case verseOfDay
+    case dailyFocus
+    case timer
+    case resumeReading
+
+    var id: String { rawValue }
+}
+
 struct HomeView: View {
     private enum PrayerMode: String { case timer, stopwatch, focus }
 
@@ -224,6 +234,33 @@ struct HomeView: View {
         }
     }
 
+    // MARK: - Home layout state (read from Settings)
+
+    @AppStorage("homeCardOrder") private var homeCardOrderRaw: String = ""
+    @AppStorage("homeCardHidden") private var homeCardHiddenRaw: String = ""
+
+    @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
+    @State private var hiddenSet: Set<HomeCardID> = []
+
+    private func decodeHomeLayout() {
+        // Order
+        if let data = homeCardOrderRaw.data(using: .utf8),
+           let ids = try? JSONDecoder().decode([String].self, from: data) {
+            let mapped = ids.compactMap { HomeCardID(rawValue: $0) }
+            let missing = HomeCardID.allCases.filter { !mapped.contains($0) }
+            layoutOrder = mapped + missing
+        } else {
+            layoutOrder = HomeCardID.allCases
+        }
+        // Hidden
+        if let data = homeCardHiddenRaw.data(using: .utf8),
+           let ids = try? JSONDecoder().decode([String].self, from: data) {
+            hiddenSet = Set(ids.compactMap { HomeCardID(rawValue: $0) })
+        } else {
+            hiddenSet = []
+        }
+    }
+
     // MARK: - Next Verse Auto-Refresh Helpers (one-shot scheduler)
 
     private func dateForToday(hour: Int, minute: Int, from now: Date = Date()) -> Date? {
@@ -335,13 +372,11 @@ struct HomeView: View {
             titleFont: Font.largeTitle,
             titleFontWeight: Font.Weight.black
         ) {
-            // Tagline between title and buttons
             Text("What does God have for YOU today?")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            // Bottom action buttons row
             HStack(spacing: 12) {
                 Button {
                     DispatchQueue.main.async {
@@ -472,7 +507,6 @@ struct HomeView: View {
                         .font(.title3)
                         .help("Share")
 
-                        // Journal entry (same icon/behavior as ReadingView)
                         Button(action: {
                             let refText = "\(v.bookName) \(v.chapterNumber):\(v.verseNumber)"
                             openJournalForReference(text: refText)
@@ -541,10 +575,8 @@ struct HomeView: View {
         .frame(height: isPad ? iPadCardHeight : nil)
     }
 
-    // New standalone Daily Focus card (subtitle removed as requested)
     @ViewBuilder
     private var dailyFocusCard: some View {
-        // Live Activities toggle from Settings
         @AppStorage("liveActivitiesEnabled") var liveActivitiesEnabled: Bool = true
 
         HeroCard(
@@ -569,7 +601,6 @@ struct HomeView: View {
                             .accessibilityHidden(false)
                             .accessibilityLabel("Saved Focus")
                     }
-                    // Info button with short guidance
                     Button {
                         showFocusInfoPopover.toggle()
                     } label: {
@@ -594,9 +625,6 @@ struct HomeView: View {
                         }
                         .presentationDetents([.medium, .large])
                     }
-
-                    // Removed: the top-right chevron that toggled notes
-                    // (per request to remove the carat from the top right)
                 }
             }
         ) {
@@ -647,7 +675,6 @@ struct HomeView: View {
                     Button {
                         sharedDefaults?.set(focusTitle, forKey: "focusTitle")
                         sharedDefaults?.set(focusBody, forKey: "focusBody")
-                        // Save timestamp
                         let now = Date()
                         sharedDefaults?.set(now.timeIntervalSince1970, forKey: "focusSavedAt")
                         focusSavedAt = now
@@ -675,7 +702,6 @@ struct HomeView: View {
                         focusBody = ""
                         sharedDefaults?.set("", forKey: "focusTitle")
                         sharedDefaults?.set("", forKey: "focusBody")
-                        // Clear timestamp
                         sharedDefaults?.removeObject(forKey: "focusSavedAt")
                         focusSavedAt = nil
 
@@ -693,13 +719,11 @@ struct HomeView: View {
                     .accessibilityHint("Clears your daily focus and removes it from the Dynamic Island")
                     .disabled(!hasTitle)
 
-                    // New: chevron next to Clear that opens notes once there's a title
                     if hasTitle {
                         Button {
                             withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
                                 isFocusBodyExpanded = true
                             }
-                            // Move focus to the notes field when opened
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 focusBodyIsFocused = true
                             }
@@ -715,7 +739,6 @@ struct HomeView: View {
                 .padding(.top, 4)
                 .toolbar { ToolbarItem(placement: .keyboard) { Button("Done") { focusTitleIsFocused = false; focusBodyIsFocused = false } } }
 
-                // Footnote: show saved time when we have a saved focus and a timestamp
                 if hasSavedFocus, let savedAt = focusSavedAt {
                     let cal = Calendar.current
                     let isToday = cal.isDateInToday(savedAt)
@@ -732,7 +755,6 @@ struct HomeView: View {
                     .padding(.top, 2)
                 }
 
-                // Inline footer note if Live Activities are disabled
                 if !liveActivitiesEnabled {
                     HStack(alignment: .center, spacing: 8) {
                         Image(systemName: "livephoto.slash")
@@ -905,9 +927,7 @@ struct HomeView: View {
                         ModePicker(disabled: isTimerRunning || stopwatchRunning)
                     }
                 ) {
-                    // Single row: optional left control, centered counter, right control(s)
                     HStack(alignment: .center, spacing: 16) {
-                        // Left control when running/paused: Pause or Resume; empty when ready
                         Group {
                             if stopwatchRunning {
                                 Button(action: { pauseStopwatch() }) {
@@ -926,17 +946,15 @@ struct HomeView: View {
                                 .buttonStyle(.plain)
                                 .accessibilityLabel("Resume")
                             } else {
-                                // keep space so center stays centered
                                 Color.clear.frame(width: 44, height: 44)
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                        // Centered counter (tap to pause/resume with light haptic)
                         Text(formattedStopwatch(stopwatchElapsed))
                             .font(.system(size: 36, weight: .semibold, design: .monospaced))
                             .monospacedDigit()
-                            .foregroundStyle(stopwatchRunning ? .primary : .secondary) // Black when running, gray when inactive
+                            .foregroundStyle(stopwatchRunning ? .primary : .secondary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.6)
                             .frame(maxWidth: .infinity, alignment: .center)
@@ -954,10 +972,8 @@ struct HomeView: View {
                             .accessibilityLabel(stopwatchRunning ? "Pause stopwatch" : (stopwatchElapsed > 0 ? "Resume stopwatch" : "Start stopwatch"))
                             .accessibilityHint("Tap the time to \(stopwatchRunning ? "pause" : (stopwatchElapsed > 0 ? "resume" : "start"))")
 
-                        // Right control(s)
                         HStack(spacing: 16) {
                             if stopwatchRunning {
-                                // Stop on the right when running
                                 Button(action: { stopStopwatch() }) {
                                     Image(systemName: "stop.circle.fill")
                                         .font(.system(size: 44))
@@ -966,7 +982,6 @@ struct HomeView: View {
                                 .foregroundStyle(.red)
                                 .accessibilityLabel("Stop")
                             } else if stopwatchElapsed > 0 {
-                                // Paused: Stop on the right
                                 Button(action: { stopStopwatch() }) {
                                     Image(systemName: "stop.circle.fill")
                                         .font(.system(size: 44))
@@ -975,7 +990,6 @@ struct HomeView: View {
                                 .foregroundStyle(.red)
                                 .accessibilityLabel("Stop")
                             } else {
-                                // Ready: Start on the right
                                 Button(action: { startStopwatch() }) {
                                     Image(systemName: "play.circle.fill")
                                         .font(.system(size: 44))
@@ -1028,10 +1042,9 @@ struct HomeView: View {
                     tint: .blue
                 ) {
                     HStack(alignment: .center, spacing: 12) {
-                        // Title row with smaller bookmark icon aligned to headline
                         HStack(spacing: 8) {
                             Image(systemName: "bookmark.fill")
-                                .font(.title3) // smaller to align with headline text height
+                                .font(.title3)
                                 .foregroundStyle(.blue)
                             Text("Continue Reading")
                                 .font(.headline)
@@ -1041,12 +1054,10 @@ struct HomeView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 6) {
-                        // Reference directly under title
                         Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
                             .font(.system(size: 17, weight: .semibold))
                             .foregroundStyle(.primary)
 
-                        // Verse preview on both iPhone and iPad
                         if let verseText, !verseText.isEmpty {
                             Text("“\(verseText)”")
                                 .font(.subheadline)
@@ -1089,14 +1100,28 @@ struct HomeView: View {
         }
     }
 
+    // MARK: - Dynamic body using saved layout
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
                 titleCard
-                verseOfDayCard
-                dailyFocusCard
-                timerCard
-                resumeCard
+
+                // Render reorderable/hideable cards based on saved layout
+                ForEach(layoutOrder, id: \.self) { card in
+                    if !hiddenSet.contains(card) {
+                        switch card {
+                        case .verseOfDay:
+                            verseOfDayCard
+                        case .dailyFocus:
+                            dailyFocusCard
+                        case .timer:
+                            timerCard
+                        case .resumeReading:
+                            resumeCard
+                        }
+                    }
+                }
             }
             .padding(.horizontal, 0)
         }
@@ -1109,7 +1134,6 @@ struct HomeView: View {
 
             bibleStore.ensureLoaded()
 
-            // Back-compat: if stored mode was "focus", coerce to "timer" now that Focus is its own card
             if prayerMode == .focus { prayerMode = .timer }
 
             isTimerRunning = storedRunning
@@ -1171,6 +1195,16 @@ struct HomeView: View {
 
             scheduleNextVerseRefreshTimer()
             updateTickerSubscription()
+
+            // Load saved layout on appear
+            decodeHomeLayout()
+        }
+        // Update when AppStorage strings change (e.g., after Settings saves or user toggles)
+        .onChange(of: homeCardOrderRaw) { _, _ in decodeHomeLayout() }
+        .onChange(of: homeCardHiddenRaw) { _, _ in decodeHomeLayout() }
+        // Also observe explicit notification sent by Settings (extra safety)
+        .onReceive(NotificationCenter.default.publisher(for: .init("homeLayoutChanged"))) { _ in
+            decodeHomeLayout()
         }
         .onChange(of: progressList) { _, _ in
             mirrorLastReadToAppGroup()
@@ -1231,13 +1265,11 @@ struct HomeView: View {
     @State private var suppressTimerActivityUpdatesUntil: Date = .distantPast
 
     private func tick() {
-        // Consume any pending Island actions first; if one was handled, skip this tick frame.
         if handlePrayerTimerPendingAction() {
             return
         }
         handleStopwatchPendingAction()
 
-        // Keep the previous behavior of not pushing updates while editing Focus.
         if isEditingFocus { return }
 
         let shouldUpdateLiveActivities = true
@@ -1247,7 +1279,6 @@ struct HomeView: View {
             remainingSeconds = remaining
             if remaining == 0 { handleTimerFinished() }
             if shouldUpdateLiveActivities {
-                // Skip pushing a Live Activity update during the brief suppression window after +5/+10
                 if Date() >= suppressTimerActivityUpdatesUntil {
                     PrayerTimerActivityController.shared.update(
                         remainingSeconds: remainingSeconds,
@@ -1350,7 +1381,6 @@ struct HomeView: View {
                 isPaused: isPaused
             )
         }
-        // Suppress the next tick-driven Live Activity update briefly to avoid a stale overwrite
         suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(0.75)
 
         let gen = UIImpactFeedbackGenerator(style: .light)
@@ -1381,7 +1411,6 @@ struct HomeView: View {
                 isPaused: isPaused
             )
         }
-        // Suppress the next tick-driven Live Activity update briefly to avoid a stale overwrite
         suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(0.75)
 
         let gen = UIImpactFeedbackGenerator(style: .light)
@@ -1389,7 +1418,6 @@ struct HomeView: View {
     }
 
     private func addTenMinutes() {
-        // Unused now, kept for potential future use
         guard isTimerRunning else { return }
         let delta: Int = 600
         if isPaused {
@@ -1625,7 +1653,6 @@ struct HomeView: View {
         default:
             break
         }
-        // Clear any lingering suppression from Island-triggered actions so local presses aren’t blocked.
         suppressTimerActivityUpdatesUntil = .distantPast
         return true
     }
