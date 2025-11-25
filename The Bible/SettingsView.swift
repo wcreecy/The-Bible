@@ -39,7 +39,7 @@ struct SettingsView: View {
         }
         var systemImage: String {
             switch self {
-            case .verseOfDay: return "sun.max" // will be night/day on Home, but fine here
+            case .verseOfDay: return "sun.max"
             case .dailyFocus: return "target"
             case .timer: return "timer"
             case .resumeReading: return "bookmark.fill"
@@ -55,20 +55,21 @@ struct SettingsView: View {
     @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
     @State private var hiddenSet: Set<HomeCardID> = []
 
+    // Drag state for custom reorder
+    @State private var draggingCard: HomeCardID? = nil
+    @State private var dragOffset: CGSize = .zero
+
     // Decode on appear; encode on change
     private func loadHomeLayout() {
-        // Decode order
         if let data = homeCardOrderRaw.data(using: .utf8),
            let ids = try? JSONDecoder().decode([String].self, from: data) {
             let mapped = ids.compactMap { HomeCardID(rawValue: $0) }
-            // Ensure we include any new cards that weren’t saved yet
             let missing = HomeCardID.allCases.filter { !mapped.contains($0) }
             layoutOrder = mapped + missing
         } else {
             layoutOrder = HomeCardID.allCases
         }
 
-        // Decode hidden
         if let data = homeCardHiddenRaw.data(using: .utf8),
            let ids = try? JSONDecoder().decode([String].self, from: data) {
             hiddenSet = Set(ids.compactMap { HomeCardID(rawValue: $0) })
@@ -78,21 +79,16 @@ struct SettingsView: View {
     }
 
     private func saveHomeLayout() {
-        // Encode order
         let orderIDs = layoutOrder.map { $0.rawValue }
         if let data = try? JSONEncoder().encode(orderIDs),
            let raw = String(data: data, encoding: .utf8) {
             homeCardOrderRaw = raw
         }
-        // Encode hidden
         let hiddenIDs = Array(hiddenSet).map { $0.rawValue }
         if let data = try? JSONEncoder().encode(hiddenIDs),
            let raw = String(data: data, encoding: .utf8) {
             homeCardHiddenRaw = raw
         }
-        // Nudge widgets if needed (optional)
-        // WidgetCenter.shared.reloadAllTimelines() // only if home layout affects widgets
-        // Also notify HomeView to refresh layout (optional via NotificationCenter)
         NotificationCenter.default.post(name: .init("homeLayoutChanged"), object: nil)
     }
 
@@ -169,37 +165,41 @@ struct SettingsView: View {
         Form {
             // MARK: Home Layout section
             Section(header: Text("Home Layout"), footer: Text("Reorder or hide sections on the Home page. The title card always stays at the top.").font(.footnote).foregroundStyle(.secondary)) {
-                // Reorderable list with toggles
-                List {
+
+                // Non-scrolling stack of rows with custom grabber + drag-to-reorder
+                VStack(spacing: 8) {
                     ForEach(layoutOrder) { card in
-                        HStack {
-                            Label(card.title, systemImage: card.systemImage)
-                            Spacer()
-                            Toggle(isOn: Binding<Bool>(
+                        ReorderRow(
+                            title: card.title,
+                            systemImage: card.systemImage,
+                            isShown: Binding(
                                 get: { !hiddenSet.contains(card) },
                                 set: { newValue in
-                                    if newValue {
-                                        hiddenSet.remove(card)
-                                    } else {
-                                        hiddenSet.insert(card)
-                                    }
+                                    if newValue { hiddenSet.remove(card) } else { hiddenSet.insert(card) }
                                     saveHomeLayout()
                                 }
-                            )) {
-                                EmptyView()
+                            ),
+                            isDragging: draggingCard == card
+                        )
+                        .onDragGesture(
+                            isActive: Binding(get: { draggingCard != nil }, set: { _ in }),
+                            onDragBegan: {
+                                draggingCard = card
+                            },
+                            onDragChanged: { location in
+                                guard let dragging = draggingCard else { return }
+                                // Compute target index based on finger Y within the stack
+                                reorderIfNeeded(activeCard: dragging, atY: location.y)
+                            },
+                            onDragEnded: {
+                                draggingCard = nil
+                                dragOffset = .zero
+                                saveHomeLayout()
                             }
-                            .labelsHidden()
-                        }
-                        .contentShape(Rectangle())
-                    }
-                    .onMove { indices, newOffset in
-                        layoutOrder.move(fromOffsets: indices, toOffset: newOffset)
-                        saveHomeLayout()
+                        )
                     }
                 }
-                .environment(\.editMode, .constant(.active)) // always show drag handles
-                .frame(minHeight: 44 * CGFloat(layoutOrder.count))
-                .listStyle(.insetGrouped)
+                .padding(.vertical, 4)
 
                 Button("Restore Default Order") {
                     layoutOrder = HomeCardID.allCases
@@ -292,7 +292,6 @@ struct SettingsView: View {
                 Text("Choose an easy-to-read typeface for the interface and reading.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-                // Removed the old local "Preview" block so changes apply live to this screen and the app.
             }
             .headerProminence(.increased)
 
@@ -305,7 +304,6 @@ struct SettingsView: View {
             }
             .onChange(of: liveActivitiesEnabled) { _, enabled in
                 if !enabled {
-                    // Cancel any currently running live activities immediately
                     PrayerTimerActivityController.shared.cancel()
                     StopwatchActivityController.shared.cancel()
                 }
@@ -428,12 +426,27 @@ struct SettingsView: View {
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         .formStyle(.grouped)
-        // Apply appearance, text size, and font family live to this Settings screen so users see changes instantly
         .preferredColorScheme((ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme)
         .dynamicTypeSize((FontSizePreference(rawValue: fontSizePreferenceRaw) ?? .system).dynamicTypeSize ?? .large)
         .modifier(FontFamilyEnvironmentModifier(prefRaw: fontFamilyPreferenceRaw))
         .onAppear {
             loadHomeLayout()
+        }
+    }
+
+    // Reorder helper: compute target index from drag Y within the stack
+    private func reorderIfNeeded(activeCard: HomeCardID, atY y: CGFloat) {
+        // Approximate row height for hit testing; keep compact to fit on small devices
+        let rowHeight: CGFloat = 44
+        let spacing: CGFloat = 8
+        let totalPerRow = rowHeight + spacing
+
+        let currentIndex = layoutOrder.firstIndex(of: activeCard) ?? 0
+        let proposedIndex = max(0, min(layoutOrder.count - 1, Int((y / totalPerRow).rounded(.down))))
+        if proposedIndex != currentIndex {
+            withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+                layoutOrder.move(fromOffsets: IndexSet(integer: currentIndex), toOffset: proposedIndex > currentIndex ? proposedIndex + 1 : proposedIndex)
+            }
         }
     }
 
@@ -526,6 +539,71 @@ struct SettingsView: View {
                 )
         }
         .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Reorderable row + drag gesture wrapper
+
+private struct ReorderRow: View {
+    let title: String
+    let systemImage: String
+    @Binding var isShown: Bool
+    let isDragging: Bool
+
+    var body: some View {
+        HStack(spacing: 12) {
+            // Grabber
+            Image(systemName: "line.3.horizontal")
+                .foregroundStyle(.secondary)
+                .padding(.vertical, 8)
+                .accessibilityHidden(true)
+
+            Label(title, systemImage: systemImage)
+                .labelStyle(.titleAndIcon)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Toggle(isOn: $isShown) {
+                Text("Show")
+            }
+            .toggleStyle(.switch)
+            .labelsHidden()
+            .accessibilityLabel("Show \(title)")
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(isDragging ? Color.accentColor.opacity(0.45) : Color.gray.opacity(0.25), lineWidth: isDragging ? 2 : 1)
+        )
+    }
+}
+
+// Lightweight drag recognizer for each row
+private extension View {
+    func onDragGesture(
+        isActive: Binding<Bool>,
+        onDragBegan: @escaping () -> Void,
+        onDragChanged: @escaping (_ location: CGPoint) -> Void,
+        onDragEnded: @escaping () -> Void
+    ) -> some View {
+        self.gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { value in
+                    if !isActive.wrappedValue {
+                        isActive.wrappedValue = true
+                        onDragBegan()
+                    }
+                    onDragChanged(value.location)
+                }
+                .onEnded { _ in
+                    isActive.wrappedValue = false
+                    onDragEnded()
+                }
+        )
     }
 }
 
