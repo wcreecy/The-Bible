@@ -430,7 +430,6 @@ struct HomeView: View {
             }
         }
         .frame(maxWidth: 700)
-        .padding(.horizontal, 16)
         .frame(maxWidth: .infinity, alignment: .center)
     }
 
@@ -585,8 +584,6 @@ struct HomeView: View {
                 }
             }
         }
-        .padding(.horizontal, 16)
-        .frame(height: isPad ? iPadCardHeight : nil)
     }
 
     @ViewBuilder
@@ -789,7 +786,6 @@ struct HomeView: View {
                 }
             }
         }
-        .padding(.horizontal, 16)
     }
 
     @ViewBuilder
@@ -867,8 +863,6 @@ struct HomeView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .center)
                     }
-                    .padding(.horizontal, 16)
-                    .frame(height: isPad ? iPadCardHeight : nil)
                 } else {
                     HeroCard(
                         title: "Prayer Timer",
@@ -928,8 +922,6 @@ struct HomeView: View {
                                 .padding(.top, 2)
                         }
                     }
-                    .padding(.horizontal, 16)
-                    .frame(height: isPad ? iPadCardHeight : nil)
                 }
             } else if prayerMode == .stopwatch {
                 HeroCard(
@@ -1016,8 +1008,6 @@ struct HomeView: View {
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                 }
-                .padding(.horizontal, 16)
-                .frame(height: isPad ? iPadCardHeight : nil)
             }
         }
     }
@@ -1083,8 +1073,6 @@ struct HomeView: View {
                 }
             }
             .buttonStyle(.plain)
-            .padding(.horizontal, 16)
-            .frame(height: isPad ? iPadCardHeight : nil)
         } else {
             HeroCard(
                 title: "",
@@ -1109,8 +1097,6 @@ struct HomeView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            .padding(.horizontal, 16)
-            .frame(height: isPad ? iPadCardHeight : nil)
         }
     }
 
@@ -1137,7 +1123,7 @@ struct HomeView: View {
                     }
                 }
             }
-            .padding(.horizontal, 0)
+            .padding(.horizontal, isPad ? 16 : 0)
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationTitle("")
@@ -1517,7 +1503,9 @@ struct HomeView: View {
 
     private func handleTimerFinished() {
         if !isTimerRunning { return }
-        if scenePhase != .active { stopMindfulLogging() }
+        if scenePhase != .active {
+            stopMindfulLogging()
+        }
         cancelNotification()
         resetTimerState()
         PrayerTimerActivityController.shared.finish()
