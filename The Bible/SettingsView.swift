@@ -1,5 +1,6 @@
 import SwiftUI
 import AudioToolbox
+import UniformTypeIdentifiers
 
 struct SettingsView: View {
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
@@ -22,7 +23,7 @@ struct SettingsView: View {
 
     // MARK: - Home layout configuration
     // Identifiers for reorderable/hideable cards on Home (NOT including the title card)
-    private enum HomeCardID: String, CaseIterable, Identifiable {
+    private enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
         case verseOfDay
         case dailyFocus
         case timer
@@ -54,10 +55,6 @@ struct SettingsView: View {
     // Local state mirrors that decode/encode to AppStorage
     @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
     @State private var hiddenSet: Set<HomeCardID> = []
-
-    // Drag state for custom reorder
-    @State private var draggingCard: HomeCardID? = nil
-    @State private var isDraggingActive: Bool = false
 
     // Decode on appear; encode on change
     private func loadHomeLayout() {
@@ -154,280 +151,23 @@ struct SettingsView: View {
             },
             set: { newDate in
                 let cal = Calendar.current
-                let c = cal.dateComponents([.hour, .minute], from: newDate)
-                votdRefresh2Hour = c.hour ?? 18
-                votdRefresh2Minute = c.minute ?? 0
+                let c: DateComponents = cal.dateComponents([.hour, .minute], from: newDate)
+                let newHour: Int = c.hour ?? 18
+                let newMinute: Int = c.minute ?? 0
+                votdRefresh2Hour = newHour
+                votdRefresh2Minute = newMinute
             }
         )
     }
 
     var body: some View {
         Form {
-            // 1) Verse of the Day
-            Section(header: Text("Verse of the Day"), footer: Text("Choose which part of the Bible the Verse of the Day is selected from. You can also set two daily auto-refresh times; the verse will refresh at those times unless paused on the Home page.").font(.footnote).foregroundStyle(.secondary)) {
-                VStack(spacing: 8) {
-                    HStack(spacing: 0) {
-                        segmentButton(title: "OT", tag: "old")
-                        verticalSeparator()
-                        segmentButton(title: "NT", tag: "new")
-                        verticalSeparator()
-                        segmentButton(title: "OT/NT", tag: "whole")
-                        verticalSeparator()
-                        segmentButton(title: "Book", tag: "book")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(4)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
-                    )
-                    .accessibilityIdentifier("verseOfDayScopePicker")
-
-                    if verseScopeRaw == "book" {
-                        BookSelectionLink(
-                            selectedBookName: Binding<String?>(
-                                get: { verseSpecificBook.isEmpty ? nil : verseSpecificBook },
-                                set: { verseSpecificBook = $0 ?? "" }
-                            )
-                        )
-                        .accessibilityIdentifier("verseOfDaySpecificBookPicker")
-                    }
-
-                    VStack(alignment: .leading, spacing: 10) {
-                        Label("Auto-Refresh Times", systemImage: "clock.arrow.2.circlepath")
-                            .font(.headline)
-
-                        DatePicker("Refresh Time 1", selection: refresh1DateBinding, displayedComponents: .hourAndMinute)
-                            .datePickerStyle(.compact)
-                            .accessibilityIdentifier("votdRefreshTime1")
-
-                        DatePicker("Refresh Time 2", selection: refresh2DateBinding, displayedComponents: .hourAndMinute)
-                            .datePickerStyle(.compact)
-                            .accessibilityIdentifier("votdRefreshTime2")
-                    }
-                    .padding(.top, 8)
-                }
-            }
-            .headerProminence(.increased)
-
-            // 2) Appearance
-            Section(header: Text("Appearance")) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("App Appearance", systemImage: "paintbrush")
-                    HStack(spacing: 0) {
-                        appearanceSegmentButton(.system)
-                        verticalSeparator()
-                        appearanceSegmentButton(.light)
-                        verticalSeparator()
-                        appearanceSegmentButton(.dark)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(4)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
-                    )
-                    .accessibilityIdentifier("appearancePicker")
-                }
-                Text("Choose Light, Dark, or follow the System setting for the app's appearance.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("App Text Size", systemImage: "textformat.size")
-                    HStack(spacing: 0) {
-                        fontSizeSegmentButton(.system)
-                        verticalSeparator()
-                        fontSizeSegmentButton(.small)
-                        verticalSeparator()
-                        fontSizeSegmentButton(.medium)
-                        verticalSeparator()
-                        fontSizeSegmentButton(.large)
-                        verticalSeparator()
-                        fontSizeSegmentButton(.extraLarge)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(4)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
-                    )
-                    .accessibilityIdentifier("textSizePicker")
-                }
-                Text("This affects all app UI. Bible text size is controlled in the Reader.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("Font", systemImage: "textformat")
-                    HStack(spacing: 0) {
-                        fontFamilySegmentButton(.system)
-                        verticalSeparator()
-                        fontFamilySegmentButton(.serif)
-                        verticalSeparator()
-                        fontFamilySegmentButton(.rounded)
-                        verticalSeparator()
-                        fontFamilySegmentButton(.monospaced)
-                        verticalSeparator()
-                        fontFamilySegmentButton(.georgia)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(4)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
-                    )
-                    .accessibilityIdentifier("fontFamilyPicker")
-                }
-                Text("Choose an easy-to-read typeface for the interface and reading.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-            .headerProminence(.increased)
-
-            // 3) Timer
-            Section(header: Text("Timer"), footer: Text("Choose the sound that plays when the prayer/study timer finishes.").font(.footnote).foregroundStyle(.secondary)) {
-                LabeledContent {
-                    HStack(spacing: 10) {
-                        Picker("", selection: Binding<String>(
-                            get: { timerSoundSelection },
-                            set: { timerSoundSelection = $0 }
-                        )) {
-                            ForEach(TimerSound.allCases) { sound in
-                                Text(sound.title).tag(sound.rawValue)
-                            }
-                        }
-                        .pickerStyle(.menu)
-                        .accessibilityIdentifier("timerSoundPicker")
-
-                        Button {
-                            let sound = TimerSound(rawValue: timerSoundSelection) ?? .default
-                            AudioServicesPlaySystemSound(sound.systemSoundID)
-                        } label: {
-                            Image(systemName: "play.circle.fill")
-                                .font(.title3)
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(.blue)
-                        .accessibilityLabel("Play Preview")
-                        .accessibilityHint("Plays the selected timer sound")
-                    }
-                } label: {
-                    Label("Timer Sound", systemImage: "speaker.wave.2")
-                }
-            }
-            .headerProminence(.increased)
-
-            // 4) Live Activities
-            Section(header: Text("Live Activities"), footer: Text("Show your Prayer Timer, Stopwatch, or Daily Focus on the Lock Screen and Dynamic Island. You can turn this off anytime.").font(.footnote).foregroundStyle(.secondary)) {
-                Toggle(isOn: $liveActivitiesEnabled) {
-                    Label("Enable Live Activities", systemImage: "livephoto.play")
-                }
-                .accessibilityIdentifier("liveActivitiesToggle")
-            }
-            .onChange(of: liveActivitiesEnabled) { _, enabled in
-                if !enabled {
-                    PrayerTimerActivityController.shared.cancel()
-                    StopwatchActivityController.shared.cancel()
-                }
-            }
-            .headerProminence(.increased)
-
-            // 5) Home Layout (custom vertical stack, grabbers, toggles, no inner scrolling)
-            Section(header: Text("Home Layout"), footer: Text("Reorder or hide sections on the Home page. The title card always stays at the top.").font(.footnote).foregroundStyle(.secondary)) {
-
-                VStack(spacing: 8) {
-                    ForEach(layoutOrder) { card in
-                        ReorderRow(
-                            title: card.title,
-                            systemImage: card.systemImage,
-                            isShown: Binding(
-                                get: { !hiddenSet.contains(card) },
-                                set: { newValue in
-                                    if newValue { hiddenSet.remove(card) } else { hiddenSet.insert(card) }
-                                    saveHomeLayout()
-                                }
-                            ),
-                            isDragging: draggingCard == card
-                        ) {
-                            // Restrict drag to the grabber; begin dragging this card
-                            draggingCard = card
-                            isDraggingActive = true
-                        }
-                        // Row-wide drag tracking to compute new index while dragging
-                        .contentShape(Rectangle())
-                        .gesture(
-                            DragGesture(minimumDistance: 0)
-                                .onChanged { value in
-                                    guard let dragging = draggingCard else { return }
-                                    // Map the gesture's local Y within the stack to a proposed index
-                                    reorderIfNeeded(activeCard: dragging, atY: value.location.y)
-                                }
-                                .onEnded { _ in
-                                    isDraggingActive = false
-                                    draggingCard = nil
-                                    saveHomeLayout()
-                                }
-                        )
-                    }
-                }
-                .padding(.vertical, 4)
-
-                Button("Restore Default Order") {
-                    layoutOrder = HomeCardID.allCases
-                    hiddenSet = []
-                    saveHomeLayout()
-                }
-                .buttonStyle(.bordered)
-            }
-            .headerProminence(.increased)
-            .onAppear(perform: loadHomeLayout)
-
-            // 6) Game Data
-            Section(header: Text("Game Data"), footer: Text("Reset your all-time game statistics. This action cannot be undone.").font(.footnote).foregroundStyle(.secondary)) {
-                Button(role: .destructive) {
-                    showingResetQuizAlert = true
-                } label: {
-                    Label("Reset All-time Game Stats", systemImage: "trash")
-                }
-                .alert("Reset All-time Stats?", isPresented: $showingResetQuizAlert) {
-                    Button("Cancel", role: .cancel) {}
-                    Button("Reset", role: .destructive) {
-                        UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect_easy")
-                        UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered_easy")
-                        UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak_easy")
-                        UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect_normal")
-                        UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered_normal")
-                        UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak_normal")
-                        UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect_hard")
-                        UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered_hard")
-                        UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak_hard")
-                        UserDefaults.standard.set(0, forKey: "hangmanAllTimeCorrect")
-                        UserDefaults.standard.set(0, forKey: "hangmanAllTimeAnswered")
-                        UserDefaults.standard.set(0, forKey: "hangmanAllTimeBestStreak")
-                        UserDefaults.standard.set(0, forKey: "refmatchAllTimeCorrect")
-                        UserDefaults.standard.set(0, forKey: "refmatchAllTimeAnswered")
-                        UserDefaults.standard.set(0, forKey: "refmatchAllTimeBestStreak")
-                    }
-                } message: {
-                    Text("Your all-time quiz scores will be reset. Would you like to continue?")
-                }
-            }
-            .headerProminence(.increased)
+            verseOfTheDaySection
+            appearanceSection
+            timerSection
+            liveActivitiesSection
+            homeLayoutSection
+            gameDataSection
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
@@ -440,24 +180,254 @@ struct SettingsView: View {
         }
     }
 
-    // Reorder helper: compute target index from drag Y within the stack
-    private func reorderIfNeeded(activeCard: HomeCardID, atY y: CGFloat) {
-        // Compact row height so all options fit without scrolling
-        let rowHeight: CGFloat = 48
-        let spacing: CGFloat = 8
-        let totalPerRow = rowHeight + spacing
+    // MARK: - Extracted Sections
 
-        guard let currentIndex = layoutOrder.firstIndex(of: activeCard) else { return }
-        let proposed = max(0, min(layoutOrder.count - 1, Int((y / totalPerRow).rounded(.down))))
-        if proposed != currentIndex {
-            withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                layoutOrder.move(fromOffsets: IndexSet(integer: currentIndex),
-                                 toOffset: proposed > currentIndex ? proposed + 1 : proposed)
+    private var verseOfTheDaySection: some View {
+        Section(
+            header: Text("Verse of the Day"),
+            footer: Text("Choose which part of the Bible the Verse of the Day is selected from. You can also set two daily auto-refresh times; the verse will refresh at those times unless paused on the Home page.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        ) {
+            VStack(spacing: 8) {
+                HStack(spacing: 0) {
+                    segmentButton(title: "OT", tag: "old")
+                    verticalSeparator()
+                    segmentButton(title: "NT", tag: "new")
+                    verticalSeparator()
+                    segmentButton(title: "OT/NT", tag: "whole")
+                    verticalSeparator()
+                    segmentButton(title: "Book", tag: "book")
+                }
+                .frame(maxWidth: .infinity)
+                .padding(4)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(Color(.secondarySystemBackground))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
+                )
+                .accessibilityIdentifier("verseOfDayScopePicker")
+
+                if verseScopeRaw == "book" {
+                    BookSelectionLink(
+                        selectedBookName: Binding<String?>(
+                            get: { verseSpecificBook.isEmpty ? nil : verseSpecificBook },
+                            set: { verseSpecificBook = $0 ?? "" }
+                        )
+                    )
+                    .accessibilityIdentifier("verseOfDaySpecificBookPicker")
+                }
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Label("Auto-Refresh Times", systemImage: "clock.arrow.2.circlepath")
+                        .font(.headline)
+
+                    DatePicker("Refresh Time 1", selection: refresh1DateBinding, displayedComponents: .hourAndMinute)
+                        .datePickerStyle(.compact)
+                        .accessibilityIdentifier("votdRefreshTime1")
+
+                    DatePicker("Refresh Time 2", selection: refresh2DateBinding, displayedComponents: .hourAndMinute)
+                        .datePickerStyle(.compact)
+                        .accessibilityIdentifier("votdRefreshTime2")
+                }
+                .padding(.top, 8)
             }
-            // Optional haptic when crossing rows
-            let gen = UISelectionFeedbackGenerator()
-            gen.selectionChanged()
         }
+        .headerProminence(.increased)
+    }
+
+    private var appearanceSection: some View {
+        Section(header: Text("Appearance")) {
+            VStack(alignment: .leading, spacing: 8) {
+                Label("App Appearance", systemImage: "paintbrush")
+                HStack(spacing: 0) {
+                    appearanceSegmentButton(.system)
+                    verticalSeparator()
+                    appearanceSegmentButton(.light)
+                    verticalSeparator()
+                    appearanceSegmentButton(.dark)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(4)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(Color(.secondarySystemBackground))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
+                )
+                .accessibilityIdentifier("appearancePicker")
+            }
+            Text("Choose Light, Dark, or follow the System setting for the app's appearance.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 8) {
+                Label("App Text Size", systemImage: "textformat.size")
+                HStack(spacing: 0) {
+                    fontSizeSegmentButton(.system)
+                    verticalSeparator()
+                    fontSizeSegmentButton(.small)
+                    verticalSeparator()
+                    fontSizeSegmentButton(.medium)
+                    verticalSeparator()
+                    fontSizeSegmentButton(.large)
+                    verticalSeparator()
+                    fontSizeSegmentButton(.extraLarge)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(4)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(Color(.secondarySystemBackground))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
+                )
+                .accessibilityIdentifier("textSizePicker")
+            }
+            Text("This affects all app UI. Bible text size is controlled in the Reader.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Font", systemImage: "textformat")
+                HStack(spacing: 0) {
+                    fontFamilySegmentButton(.system)
+                    verticalSeparator()
+                    fontFamilySegmentButton(.serif)
+                    verticalSeparator()
+                    fontFamilySegmentButton(.rounded)
+                    verticalSeparator()
+                    fontFamilySegmentButton(.monospaced)
+                    verticalSeparator()
+                    fontFamilySegmentButton(.georgia)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(4)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(Color(.secondarySystemBackground))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
+                )
+                .accessibilityIdentifier("fontFamilyPicker")
+            }
+            Text("Choose an easy-to-read typeface for the interface and reading.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .headerProminence(.increased)
+    }
+
+    private var timerSection: some View {
+        Section(header: Text("Timer"), footer: Text("Choose the sound that plays when the prayer/study timer finishes.").font(.footnote).foregroundStyle(.secondary)) {
+            LabeledContent {
+                HStack(spacing: 10) {
+                    Picker("", selection: Binding<String>(
+                        get: { timerSoundSelection },
+                        set: { timerSoundSelection = $0 }
+                    )) {
+                        ForEach(TimerSound.allCases) { sound in
+                            Text(sound.title).tag(sound.rawValue)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .accessibilityIdentifier("timerSoundPicker")
+
+                    Button {
+                        let sound = TimerSound(rawValue: timerSoundSelection) ?? .default
+                        AudioServicesPlaySystemSound(sound.systemSoundID)
+                    } label: {
+                        Image(systemName: "play.circle.fill")
+                            .font(.title3)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.blue)
+                    .accessibilityLabel("Play Preview")
+                    .accessibilityHint("Plays the selected timer sound")
+                }
+            } label: {
+                Label("Timer Sound", systemImage: "speaker.wave.2")
+            }
+        }
+        .headerProminence(.increased)
+    }
+
+    private var liveActivitiesSection: some View {
+        Section(header: Text("Live Activities"), footer: Text("Show your Prayer Timer, Stopwatch, or Daily Focus on the Lock Screen and Dynamic Island. You can turn this off anytime.").font(.footnote).foregroundStyle(.secondary)) {
+            Toggle(isOn: $liveActivitiesEnabled) {
+                Label("Enable Live Activities", systemImage: "livephoto.play")
+            }
+            .accessibilityIdentifier("liveActivitiesToggle")
+        }
+        .onChange(of: liveActivitiesEnabled) { _, enabled in
+            if !enabled {
+                PrayerTimerActivityController.shared.cancel()
+                StopwatchActivityController.shared.cancel()
+            }
+        }
+        .headerProminence(.increased)
+    }
+
+    private var homeLayoutSection: some View {
+        Section(header: Text("Home Layout"), footer: Text("Reorder or hide sections on the Home page. The title card always stays at the top.").font(.footnote).foregroundStyle(.secondary)) {
+
+            NavigationLink {
+                HomeLayoutEditorView(order: $layoutOrder, hidden: $hiddenSet) {
+                    saveHomeLayout()
+                }
+            } label: {
+                Label("Edit Order & Visibility", systemImage: "arrow.up.arrow.down")
+            }
+
+            Button("Restore Default Order") {
+                layoutOrder = HomeCardID.allCases
+                hiddenSet = []
+                saveHomeLayout()
+            }
+            .buttonStyle(.bordered)
+        }
+        .headerProminence(.increased)
+        .onAppear(perform: loadHomeLayout)
+    }
+
+    private var gameDataSection: some View {
+        Section(header: Text("Game Data"), footer: Text("Reset your all-time game statistics. This action cannot be undone.").font(.footnote).foregroundStyle(.secondary)) {
+            Button(role: .destructive) {
+                showingResetQuizAlert = true
+            } label: {
+                Label("Reset All-time Game Stats", systemImage: "trash")
+            }
+            .alert("Reset All-time Stats?", isPresented: $showingResetQuizAlert) {
+                Button("Cancel", role: .cancel) {}
+                Button("Reset", role: .destructive) {
+                    UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect_easy")
+                    UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered_easy")
+                    UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak_easy")
+                    UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect_normal")
+                    UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered_normal")
+                    UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak_normal")
+                    UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect_hard")
+                    UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered_hard")
+                    UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak_hard")
+                    UserDefaults.standard.set(0, forKey: "hangmanAllTimeCorrect")
+                    UserDefaults.standard.set(0, forKey: "hangmanAllTimeAnswered")
+                    UserDefaults.standard.set(0, forKey: "hangmanAllTimeBestStreak")
+                    UserDefaults.standard.set(0, forKey: "refmatchAllTimeCorrect")
+                    UserDefaults.standard.set(0, forKey: "refmatchAllTimeAnswered")
+                    UserDefaults.standard.set(0, forKey: "refmatchAllTimeBestStreak")
+                }
+            } message: {
+                Text("Your all-time quiz scores will be reset. Would you like to continue?")
+            }
+        }
+        .headerProminence(.increased)
     }
 
     // MARK: - Existing UI helpers
@@ -552,55 +522,59 @@ struct SettingsView: View {
     }
 }
 
-// MARK: - Reorderable row with grabber
+// MARK: - Nested editor that uses native List reordering and show/hide toggle
 
-private struct ReorderRow: View {
-    let title: String
-    let systemImage: String
-    @Binding var isShown: Bool
-    let isDragging: Bool
-    let onGrab: () -> Void
+extension SettingsView {
+    private struct HomeLayoutEditorView: View {
+        @Binding var order: [HomeCardID]
+        @Binding var hidden: Set<HomeCardID>
+        var save: () -> Void
 
-    init(title: String, systemImage: String, isShown: Binding<Bool>, isDragging: Bool, onGrab: @escaping () -> Void) {
-        self.title = title
-        self.systemImage = systemImage
-        self._isShown = isShown
-        self.isDragging = isDragging
-        self.onGrab = onGrab
-    }
+        var body: some View {
+            List {
+                ForEach(order, id: \.self) { card in
+                    HStack {
+                        Label(card.title, systemImage: card.systemImage)
+                            .opacity(hidden.contains(card) ? 0.45 : 1.0)
 
-    var body: some View {
-        HStack(spacing: 10) {
-            // Grabber button to start drag
-            Button(action: { onGrab() }) {
-                Image(systemName: "line.3.horizontal")
-                    .foregroundStyle(.secondary)
-                    .frame(width: 24, height: 24)
-                    .contentShape(Rectangle())
+                        Spacer()
+
+                        Button {
+                            if hidden.contains(card) {
+                                hidden.remove(card)
+                            } else {
+                                hidden.insert(card)
+                            }
+                            save()
+                        } label: {
+                            Image(systemName: hidden.contains(card) ? "eye.slash" : "eye")
+                                .foregroundStyle(hidden.contains(card) ? .secondary : .primary)
+                                .imageScale(.medium)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(hidden.contains(card) ? "Show \(card.title)" : "Hide \(card.title)")
+                    }
+                }
+                .onMove { indices, newOffset in
+                    order.move(fromOffsets: indices, toOffset: newOffset)
+                    save()
+                }
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Reorder \(title)")
-
-            Label(title, systemImage: systemImage)
-                .labelStyle(.titleAndIcon)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            Toggle(isOn: $isShown) { Text("Show") }
-                .toggleStyle(.switch)
-                .labelsHidden()
-                .accessibilityLabel("Show \(title)")
+            .environment(\.editMode, .constant(.active)) // always show reorder handles
+            .navigationTitle("Reorder Home")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Restore Default") {
+                        order = HomeCardID.allCases
+                        hidden = []
+                        save()
+                    }
+                }
+            }
+            .onDisappear {
+                save()
+            }
         }
-        .padding(.horizontal, 10)
-        .frame(height: 48)
-        .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(isDragging ? Color.accentColor.opacity(0.45) : Color.gray.opacity(0.25),
-                        lineWidth: isDragging ? 2 : 1)
-        )
     }
 }
 
