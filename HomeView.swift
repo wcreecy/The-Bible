@@ -120,12 +120,14 @@ struct HomeView: View {
     // New: Subtle pill style used in the title card for calmer appearance
     private struct SubtlePillButtonStyle: ButtonStyle {
         var emphasized: Bool = false
+        // Add optional size scaling for iPad
+        var sizeScale: CGFloat = 1.0
         func makeBody(configuration: Configuration) -> some View {
             configuration.label
-                .font(.caption.weight(.semibold)) // smaller than footnote
+                .font(.system(size: 13 * sizeScale, weight: .semibold))
                 .foregroundStyle(emphasized ? Color.primary : Color.secondary)
-                .padding(.vertical, 6)            // tighter vertical padding
-                .padding(.horizontal, 10)         // tighter horizontal padding
+                .padding(.vertical, 6 * sizeScale)
+                .padding(.horizontal, 10 * sizeScale)
                 .background(
                     Capsule(style: .continuous)
                         .fill(Color(.secondarySystemBackground))
@@ -364,55 +366,67 @@ struct HomeView: View {
     // MARK: - Split cards to reduce type-checking complexity
     @ViewBuilder
     private var titleCard: some View {
+        // Determine iPad-specific sizing
+        let isPad = self.isPad
+        let buttonScale: CGFloat = isPad ? 1.25 : 1.0
+        let titleFont: Font = isPad ? .system(.largeTitle, design: .default) : .largeTitle
+        let titleWeight: Font.Weight = .black
+        let subtitleFont: Font = isPad ? .title3.weight(.semibold) : .subheadline.weight(.semibold)
+
         HeroCard(
             title: "Word of God",
             subtitle: nil,
             icon: "book.fill",
             tint: .blue,
-            titleFont: Font.largeTitle,
-            titleFontWeight: Font.Weight.black
+            titleFont: titleFont,
+            titleFontWeight: titleWeight,
+            centerHeader: isPad // center header on iPad
         ) {
-            Text("What does God have for YOU today?")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            VStack(spacing: isPad ? 16 : 8) {
+                Text("What does God have for YOU today?")
+                    .font(subtitleFont)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: isPad ? .center : .leading)
+                    .multilineTextAlignment(isPad ? .center : .leading)
 
-            HStack(spacing: 12) {
-                Button {
-                    DispatchQueue.main.async {
-                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 5])
+                HStack(spacing: isPad ? 16 : 12) {
+                    Button {
+                        DispatchQueue.main.async {
+                            NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 5])
+                        }
+                    } label: {
+                        Label("Search", systemImage: "magnifyingglass")
+                            .lineLimit(1)
+                            .allowsTightening(true)
+                            .minimumScaleFactor(0.85)
                     }
-                } label: {
-                    Label("Search", systemImage: "magnifyingglass")
-                        .lineLimit(1)
-                        .allowsTightening(true)
-                        .minimumScaleFactor(0.85)
-                }
-                .buttonStyle(SubtlePillButtonStyle(emphasized: false))
+                    .buttonStyle(SubtlePillButtonStyle(emphasized: false, sizeScale: buttonScale))
 
-                Button {
-                    DispatchQueue.main.async {
-                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 1])
+                    Button {
+                        DispatchQueue.main.async {
+                            NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 1])
+                        }
+                    } label: {
+                        Label("Read", systemImage: "book")
+                            .lineLimit(1)
+                            .allowsTightening(true)
+                            .minimumScaleFactor(0.85)
                     }
-                } label: {
-                    Label("Read", systemImage: "book")
-                        .lineLimit(1)
-                        .allowsTightening(true)
-                        .minimumScaleFactor(0.85)
-                }
-                .buttonStyle(SubtlePillButtonStyle(emphasized: true))
+                    .buttonStyle(SubtlePillButtonStyle(emphasized: true, sizeScale: buttonScale))
 
-                Button {
-                    DispatchQueue.main.async {
-                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 4])
+                    Button {
+                        DispatchQueue.main.async {
+                            NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 4])
+                        }
+                    } label: {
+                        Label("Favorites", systemImage: "heart")
+                            .lineLimit(1)
+                            .allowsTightening(true)
+                            .minimumScaleFactor(0.85)
                     }
-                } label: {
-                    Label("Favorites", systemImage: "heart")
-                        .lineLimit(1)
-                        .allowsTightening(true)
-                        .minimumScaleFactor(0.85)
+                    .buttonStyle(SubtlePillButtonStyle(emphasized: false, sizeScale: buttonScale))
                 }
-                .buttonStyle(SubtlePillButtonStyle(emphasized: false))
+                .frame(maxWidth: .infinity, alignment: .center)
             }
         }
         .frame(maxWidth: 700)
