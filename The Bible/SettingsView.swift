@@ -28,6 +28,7 @@ struct SettingsView: View {
         case dailyFocus
         case timer
         case resumeReading
+        case games // NEW
 
         var id: String { rawValue }
         var title: String {
@@ -36,6 +37,7 @@ struct SettingsView: View {
             case .dailyFocus: return "Daily Focus"
             case .timer: return "Prayer Timer / Stopwatch"
             case .resumeReading: return "Continue Reading"
+            case .games: return "Games"
             }
         }
         var systemImage: String {
@@ -44,6 +46,7 @@ struct SettingsView: View {
             case .dailyFocus: return "target"
             case .timer: return "timer"
             case .resumeReading: return "bookmark.fill"
+            case .games: return "gamecontroller"
             }
         }
     }
@@ -71,7 +74,8 @@ struct SettingsView: View {
            let ids = try? JSONDecoder().decode([String].self, from: data) {
             hiddenSet = Set(ids.compactMap { HomeCardID(rawValue: $0) })
         } else {
-            hiddenSet = []
+            // Default hidden: keep the new Games card hidden until enabled by the user
+            hiddenSet = [.games]
         }
     }
 
@@ -388,7 +392,7 @@ struct SettingsView: View {
 
             Button("Restore Default Order") {
                 layoutOrder = HomeCardID.allCases
-                hiddenSet = []
+                hiddenSet = [.games] // keep Games hidden by default
                 saveHomeLayout()
             }
             .buttonStyle(.bordered)
@@ -416,15 +420,31 @@ struct SettingsView: View {
                     UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect_hard")
                     UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered_hard")
                     UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak_hard")
-                    UserDefaults.standard.set(0, forKey: "hangmanAllTimeCorrect")
-                    UserDefaults.standard.set(0, forKey: "hangmanAllTimeAnswered")
-                    UserDefaults.standard.set(0, forKey: "hangmanAllTimeBestStreak")
-                    UserDefaults.standard.set(0, forKey: "refmatchAllTimeCorrect")
-                    UserDefaults.standard.set(0, forKey: "refmatchAllTimeAnswered")
-                    UserDefaults.standard.set(0, forKey: "refmatchAllTimeBestStreak")
+                    // Hangman (both legacy and per-difficulty)
+                    ["", "_easy", "_medium", "_hard"].forEach { suf in
+                        UserDefaults.standard.set(0, forKey: "hangmanAllTimeCorrect\(suf)")
+                        UserDefaults.standard.set(0, forKey: "hangmanAllTimeAnswered\(suf)")
+                        UserDefaults.standard.set(0, forKey: "hangmanAllTimeBestStreak\(suf)")
+                    }
+                    // Reference Match (both legacy and per-difficulty)
+                    ["", "_easy", "_medium", "_hard"].forEach { suf in
+                        UserDefaults.standard.set(0, forKey: "refmatchAllTimeCorrect\(suf)")
+                        UserDefaults.standard.set(0, forKey: "refmatchAllTimeAnswered\(suf)")
+                        UserDefaults.standard.set(0, forKey: "refmatchAllTimeBestStreak\(suf)")
+                    }
+                    // Beat the Clock
+                    ["_easy", "_medium", "_hard"].forEach { suf in
+                        UserDefaults.standard.set(0, forKey: "beatclockAllTimeCorrect\(suf)")
+                        UserDefaults.standard.set(0, forKey: "beatclockAllTimeAnswered\(suf)")
+                        UserDefaults.standard.set(0, forKey: "beatclockAllTimeBestStreak\(suf)")
+                    }
+                    // Book Order
+                    UserDefaults.standard.set(0, forKey: "bookorderAllTimeCorrect")
+                    UserDefaults.standard.set(0, forKey: "bookorderAllTimeAnswered")
+                    UserDefaults.standard.set(0, forKey: "bookorderAllTimeBestStreak")
                 }
             } message: {
-                Text("Your all-time quiz scores will be reset. Would you like to continue?")
+                Text("Your all-time game scores will be reset. Would you like to continue?")
             }
         }
         .headerProminence(.increased)
@@ -566,7 +586,7 @@ extension SettingsView {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Restore Default") {
                         order = HomeCardID.allCases
-                        hidden = []
+                        hidden = [.games] // keep Games hidden by default
                         save()
                     }
                 }

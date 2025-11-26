@@ -1,3 +1,5 @@
+// the entire code of the file with your changes goes here.
+// Do not skip over anything.
 import SwiftUI
 import SwiftData
 import Combine
@@ -16,7 +18,7 @@ private enum HomeCardID: String, CaseIterable, Identifiable {
     case dailyFocus
     case timer
     case resumeReading
-
+    case games // NEW
     var id: String { rawValue }
 }
 
@@ -113,7 +115,7 @@ struct HomeView: View {
                 )
                 .shadow(color: .black.opacity(configuration.isPressed ? 0.04 : 0.08), radius: configuration.isPressed ? 1 : 3, x: 0, y: configuration.isPressed ? 0 : 2)
                 .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-                .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
+                .animation(.spring(response: 0.22, dampingFraction: 0.9), value: configuration.isPressed)
         }
     }
 
@@ -1100,16 +1102,251 @@ struct HomeView: View {
         }
     }
 
+    // MARK: - NEW: Games Card
+
+    private struct GameStat {
+        let name: String
+        let correct: Int
+        let answered: Int
+        let bestStreak: Int?
+    }
+
+    private func readInt(_ key: String) -> Int {
+        UserDefaults.standard.integer(forKey: key)
+    }
+
+    private var quizStat: GameStat {
+        let c = readInt("quizAllTimeCorrect_easy") + readInt("quizAllTimeCorrect_normal") + readInt("quizAllTimeCorrect_hard")
+        let a = readInt("quizAllTimeAnswered_easy") + readInt("quizAllTimeAnswered_normal") + readInt("quizAllTimeAnswered_hard")
+        let best = max(readInt("quizAllTimeBestStreak_easy"), readInt("quizAllTimeBestStreak_normal"), readInt("quizAllTimeBestStreak_hard"))
+        return .init(name: "Quiz", correct: c, answered: a, bestStreak: best)
+    }
+
+    private var hangmanStat: GameStat {
+        // Per-difficulty keys
+        let c = readInt("hangmanAllTimeCorrect_easy") + readInt("hangmanAllTimeCorrect_medium") + readInt("hangmanAllTimeCorrect_hard") + readInt("hangmanAllTimeCorrect")
+        let a = readInt("hangmanAllTimeAnswered_easy") + readInt("hangmanAllTimeAnswered_medium") + readInt("hangmanAllTimeAnswered_hard") + readInt("hangmanAllTimeAnswered")
+        let best = max(readInt("hangmanAllTimeBestStreak_easy"), readInt("hangmanAllTimeBestStreak_medium"), readInt("hangmanAllTimeBestStreak_hard"), readInt("hangmanAllTimeBestStreak"))
+        return .init(name: "Hangman", correct: c, answered: a, bestStreak: best == 0 ? nil : best)
+    }
+
+    private var refMatchStat: GameStat {
+        let c = readInt("refmatchAllTimeCorrect_easy") + readInt("refmatchAllTimeCorrect_medium") + readInt("refmatchAllTimeCorrect_hard") + readInt("refmatchAllTimeCorrect")
+        let a = readInt("refmatchAllTimeAnswered_easy") + readInt("refmatchAllTimeAnswered_medium") + readInt("refmatchAllTimeAnswered_hard") + readInt("refmatchAllTimeAnswered")
+        let best = max(readInt("refmatchAllTimeBestStreak_easy"), readInt("refmatchAllTimeBestStreak_medium"), readInt("refmatchAllTimeBestStreak_hard"), readInt("refmatchAllTimeBestStreak"))
+        return .init(name: "Verse Match", correct: c, answered: a, bestStreak: best == 0 ? nil : best)
+    }
+
+    private var beatClockStat: GameStat {
+        let c = readInt("beatclockAllTimeCorrect_easy") + readInt("beatclockAllTimeCorrect_medium") + readInt("beatclockAllTimeCorrect_hard")
+        let a = readInt("beatclockAllTimeAnswered_easy") + readInt("beatclockAllTimeAnswered_medium") + readInt("beatclockAllTimeAnswered_hard")
+        let best = max(readInt("beatclockAllTimeBestStreak_easy"), readInt("beatclockAllTimeBestStreak_medium"), readInt("beatclockAllTimeBestStreak_hard"))
+        return .init(name: "Beat the Clock", correct: c, answered: a, bestStreak: best)
+    }
+
+    private var bookOrderStat: GameStat {
+        let c = readInt("bookorderAllTimeCorrect")
+        let a = readInt("bookorderAllTimeAnswered")
+        let best = readInt("bookorderAllTimeBestStreak")
+        return .init(name: "Book Order", correct: c, answered: a, bestStreak: best == 0 ? nil : best)
+    }
+
+    private var allGameStats: [GameStat] {
+        [quizStat, hangmanStat, refMatchStat, beatClockStat, bookOrderStat]
+    }
+
+    private var totalAnsweredAllGames: Int {
+        allGameStats.reduce(0) { $0 + $1.answered }
+    }
+    private var totalCorrectAllGames: Int {
+        allGameStats.reduce(0) { $0 + $1.correct }
+    }
+
+    private func percent(_ correct: Int, _ answered: Int) -> Double {
+        guard answered > 0 else { return 0 }
+        return (Double(correct) / Double(answered)) * 100.0
+    }
+
+    private func colorForPercent(_ pct: Double) -> Color {
+        if pct < 60 { return .red }
+        else if pct < 75 { return .orange }
+        else if pct < 90 { return .purple }
+        else { return .green }
+    }
+
+    private func titleForPercent(_ pct: Double) -> String {
+        if pct < 60 { return "Reforming" }             // Red tier
+        else if pct < 75 { return "Covenant Learner" } // Orange tier
+        else if pct < 90 { return "Apostle" }          // Purple tier
+        else { return "Bible Scholar" }                // Green tier
+    }
+
+    // Collapsible Games Card state
+    @State private var gamesExpanded: Bool = false
+
+    @ViewBuilder
+    private var gamesCard: some View {
+        let totalAnswered = totalAnsweredAllGames
+        let totalCorrect = totalCorrectAllGames
+        let gamerPct = percent(totalCorrect, totalAnswered)
+        let gamerColor = colorForPercent(gamerPct)
+        let gamerTitle = titleForPercent(gamerPct)
+
+        let isEmpty = (totalAnswered == 0)
+
+        HeroCard(
+            title: "Games",
+            subtitle: nil,
+            icon: "gamecontroller",
+            tint: isEmpty ? .secondary : gamerColor,
+            backgroundColor: nil,
+            strokeColor: isEmpty ? Color.secondary.opacity(0.5) : gamerColor.opacity(0.6)
+        ) {
+            VStack(alignment: .leading, spacing: 12) {
+                DisclosureGroup(isExpanded: $gamesExpanded) {
+                    // Expanded content
+                    VStack(alignment: .leading, spacing: 12) {
+                        if isEmpty {
+                            Text("Play any game to build your Gamer Score.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            // Show Gamer Title when expanded
+                            HStack {
+                                Spacer()
+                                Text(gamerTitle)
+                                    .font(.title3.weight(.semibold))
+                                    .foregroundStyle(gamerColor)
+                                    .accessibilityLabel("Gamer Title \(gamerTitle)")
+                            }
+
+                            Divider()
+
+                            // Player Stat Sheet
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Player Stat Sheet")
+                                    .font(.subheadline).bold()
+                                    .foregroundStyle(.secondary)
+
+                                let stats = allGameStats
+                                ForEach(stats.indices, id: \.self) { i in
+                                    let s = stats[i]
+                                    let share: Double = totalAnswered > 0 ? (Double(s.answered) / Double(totalAnswered)) * 100.0 : 0
+                                    let avg = percent(s.correct, s.answered)
+                                    HStack(spacing: 10) {
+                                        Text(s.name)
+                                            .font(.subheadline.weight(.semibold))
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                                        // Share of play
+                                        HStack(spacing: 4) {
+                                            Image(systemName: "chart.pie.fill").foregroundStyle(.blue)
+                                                .accessibilityHidden(true)
+                                            Text("\(Int(round(share)))%")
+                                        }
+                                        .font(.footnote)
+
+                                        // Average score
+                                        HStack(spacing: 4) {
+                                            Image(systemName: "percent").foregroundStyle(colorForPercent(avg))
+                                                .accessibilityHidden(true)
+                                            Text("\(Int(round(avg)))%")
+                                        }
+                                        .font(.footnote)
+
+                                        // Best streak if present
+                                        if let best = s.bestStreak, best > 0 {
+                                            HStack(spacing: 4) {
+                                                Image(systemName: "flame.fill").foregroundStyle(.orange)
+                                                    .accessibilityHidden(true)
+                                                Text("\(best)")
+                                            }
+                                            .font(.footnote)
+                                        }
+                                    }
+                                    .foregroundStyle(s.answered == 0 ? .secondary : .primary)
+                                    .accessibilityElement(children: .ignore)
+                                    .accessibilityLabel(
+                                        {
+                                            var parts: [String] = [s.name]
+                                            parts.append("Share \(Int(round(share))) percent")
+                                            parts.append("Average \(Int(round(avg))) percent")
+                                            if let best = s.bestStreak, best > 0 {
+                                                parts.append("Best streak \(best)")
+                                            }
+                                            return parts.joined(separator: ". ") + "."
+                                        }()
+                                    )
+                                }
+                            }
+
+                            // CTA
+                            let mostPlayed = allGameStats.max(by: { $0.answered < $1.answered })
+                            if let most = mostPlayed, most.answered > 0 {
+                                Button {
+                                    NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 3])
+                                } label: {
+                                    Label("Play Most-Played: \(most.name)", systemImage: "play.circle.fill")
+                                }
+                                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                                .controlSize(.regular)
+                                .padding(.top, 6)
+                            } else {
+                                Button {
+                                    NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 3])
+                                } label: {
+                                    Label("Play Games", systemImage: "play.circle.fill")
+                                }
+                                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                                .controlSize(.regular)
+                                .padding(.top, 6)
+                            }
+                        }
+                    }
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                } label: {
+                    // Collapsed label: only Gamer Score row
+                    HStack(spacing: 10) {
+                        Text("Gamer Score")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        if isEmpty {
+                            Text("Let’s play!")
+                                .font(.system(size: 22, weight: .semibold, design: .rounded))
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text("\(Int(round(gamerPct)))%")
+                                .font(.system(size: 28, weight: .bold, design: .rounded))
+                                .foregroundStyle(gamerColor)
+                                .accessibilityHidden(true)
+                                .overlay(
+                                    Color.clear
+                                        .accessibilityElement(children: .ignore)
+                                        .accessibilityLabel("Gamer Score \(Int(round(gamerPct))) percent.")
+                                )
+                        }
+                    }
+                }
+                .animation(.spring(response: 0.25, dampingFraction: 0.9), value: gamesExpanded)
+            }
+        }
+    }
+
     // MARK: - Dynamic body using saved layout
 
     var body: some View {
+        // Temporary dev flag: force show Games card even if hidden in Settings.
+        let forceShowGamesCard = true
+
         ScrollView {
             VStack(spacing: 16) {
                 titleCard
 
                 // Render reorderable/hideable cards based on saved layout
                 ForEach(layoutOrder, id: \.self) { card in
-                    if !hiddenSet.contains(card) {
+                    // Temporary override: always show Games while building/testing
+                    if (card == .games && forceShowGamesCard) || !hiddenSet.contains(card) {
                         switch card {
                         case .verseOfDay:
                             verseOfDayCard
@@ -1119,6 +1356,8 @@ struct HomeView: View {
                             timerCard
                         case .resumeReading:
                             resumeCard
+                        case .games:
+                            gamesCard
                         }
                     }
                 }
@@ -1244,6 +1483,10 @@ struct HomeView: View {
             }
         } message: {
             Text("Your prayer/study timer has completed.")
+        }
+        // Reset Games card to collapsed whenever leaving Home
+        .onDisappear {
+            gamesExpanded = false
         }
     }
 
