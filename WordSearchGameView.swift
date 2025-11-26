@@ -435,19 +435,23 @@ struct WordSearchGameView: View {
     // MARK: - Generation
 
     private func generatePuzzle() {
-        grid = Array(repeating: Array(repeating: " ", count: size), count: size)
-        placed = []
-        targetWords = []
-        foundCells.removeAll()
-        foundWords.removeAll()
-        revealedWords.removeAll()
-        selectionStart = nil
-        selectionEnd = nil
-        tapStart = nil
-        showBlindWordList = false
-        timeUp = false
-        didWin = false
-        roundOver = false
+        func resetState() {
+            grid = Array(repeating: Array(repeating: " ", count: size), count: size)
+            placed = []
+            targetWords = []
+            foundCells.removeAll()
+            foundWords.removeAll()
+            revealedWords.removeAll()
+            selectionStart = nil
+            selectionEnd = nil
+            tapStart = nil
+            showBlindWordList = false
+            timeUp = false
+            didWin = false
+            roundOver = false
+        }
+
+        resetState()
 
         guard let book = BibleData.books.randomElement(),
               let chapter = book.chapters.randomElement(),
@@ -472,12 +476,53 @@ struct WordSearchGameView: View {
         let fitting = extracted.filter { $0.count <= size }
         targetWords = Array(fitting.prefix(countRange.upperBound))
 
-        // Place longer words first for better fit, using scattered placement
-        for w in targetWords.sorted(by: { $0.count > $1.count }) {
-            _ = placeWordScattered(w)
+        // Multi-attempt placement to improve variety and success rate
+        // Try up to N attempts, keep the best (max placed words, then direction variety)
+        let maxAttempts = 5
+        var bestPlaced: [PlacedWord] = []
+        var bestGrid: [[Character]] = grid
+        var bestScore: (count: Int, variety: Int) = (0, 0)
+
+        for _ in 0..<maxAttempts {
+            // Reset grid for this attempt
+            grid = Array(repeating: Array(repeating: " ", count: size), count: size)
+            placed = []
+
+            // Place longer words first for better fit, using improved scattered placement
+            let wordsToPlace = targetWords.sorted(by: { $0.count > $1.count })
+            for w in wordsToPlace {
+                _ = placeWordScattered(w)
+            }
+
+            // Score attempt
+            let count = placed.count
+            let variety = directionVarietyScore(placed)
+            if (count > bestScore.count) || (count == bestScore.count && variety > bestScore.variety) {
+                bestScore = (count, variety)
+                bestPlaced = placed
+                bestGrid = grid
+            }
+
+            // Early exit if we placed all words with good variety
+            if count == targetWords.count && variety >= 4 { break }
         }
 
+        // Use best attempt
+        placed = bestPlaced
+        grid = bestGrid
+
         fillRandom()
+    }
+
+    private func directionVarietyScore(_ words: [PlacedWord]) -> Int {
+        // Count unique direction unit vectors
+        var set = Set<String>()
+        for pw in words {
+            // Normalize direction to unit vector string
+            let norm = "\(pw.dr),\(pw.dc)"
+            set.insert(norm)
+        }
+        return set.count
     }
 
     private func extractKeywords(from text: String, minLen: Int, maxCountRange: ClosedRange<Int>) -> [String] {
@@ -499,7 +544,7 @@ struct WordSearchGameView: View {
         return Array(uniq.prefix(count))
     }
 
-    private var allowedDirections: [(dr: Int, dc: Int)] {
+    private var baseAllowedDirections: [(dr: Int, dc: Int)] {
         switch difficulty {
         case .easy, .medium:
             // Forward-only directions (no backwards): right, down, down-right, down-left
@@ -516,6 +561,16 @@ struct WordSearchGameView: View {
                 (1, 1), (1, -1), (-1, 1), (-1, -1)
             ]
         }
+    }
+
+    // For each word, build the direction set to try and shuffle it.
+    private func directionsForPlacement() -> [(dr: Int, dc: Int)] {
+        var dirs = baseAllowedDirections
+
+        // For hard/expert we already include both forward and backward via the 8 directions.
+        // For easy/medium we intentionally keep forward-only, but still shuffle to avoid bias.
+        dirs.shuffle()
+        return dirs
     }
 
     // MARK: - Scattered placement
@@ -560,27 +615,39 @@ struct WordSearchGameView: View {
         guard word.count <= size else { return [] }
 
         var list: [PlacementCandidate] = []
-        for dir in allowedDirections {
+
+        // Per-word shuffled direction order
+        let dirs = directionsForPlacement()
+
+        for dir in dirs {
             let dr = dir.dr, dc = dir.dc
 
             // Valid start ranges for bounds (protect against negative upper bounds)
             let maxRowStart: Int = (dr == 0) ? (size - 1) : (dr > 0 ? (size - word.count) : (size - 1))
             let minRowStart: Int = (dr == 0) ? 0 : (dr > 0 ? 0 : (word.count - 1))
             if minRowStart > maxRowStart { continue }
-            let rowRange = minRowStart...maxRowStart
+            let rowRange = Array(minRowStart...maxRowStart)
 
             let maxColStart: Int = (dc == 0) ? (size - 1) : (dc > 0 ? (size - word.count) : (size - 1))
             let minColStart: Int = (dc == 0) ? 0 : (dc > 0 ? 0 : (word.count - 1))
             if minColStart > maxColStart { continue }
-            let colRange = minColStart...maxColStart
+            let colRange = Array(minColStart...maxColStart)
 
+            // Build all valid start positions for this direction and shuffle to avoid top-left bias.
+            var starts: [(Int, Int)] = []
+            starts.reserveCapacity(rowRange.count * colRange.count)
             for r in rowRange {
                 for c in colRange {
-                    let probe = canPlaceAt(word: word, row: r, col: c, dr: dr, dc: dc)
-                    if probe.fits {
-                        let adj = adjacencyCountFor(word: word, row: r, col: c, dr: dr, dc: dc)
-                        list.append(PlacementCandidate(row: r, col: c, dr: dr, dc: dc, overlap: probe.overlap, adjacency: adj))
-                    }
+                    starts.append((r, c))
+                }
+            }
+            starts.shuffle()
+
+            for (r, c) in starts {
+                let probe = canPlaceAt(word: word, row: r, col: c, dr: dr, dc: dc)
+                if probe.fits {
+                    let adj = adjacencyCountFor(word: word, row: r, col: c, dr: dr, dc: dc)
+                    list.append(PlacementCandidate(row: r, col: c, dr: dr, dc: dc, overlap: probe.overlap, adjacency: adj))
                 }
             }
         }
@@ -630,7 +697,9 @@ struct WordSearchGameView: View {
         var newRevealed = revealedWords
         for pw in placed {
             if !foundWords.contains(pw.word) {
-                newRevealed.insert(pw.word)
+                // Normalize to original word in expert mode for UI list
+                let original = (difficulty == .expert) ? String(pw.word.reversed()) : pw.word
+                newRevealed.insert(original)
             }
         }
         revealedWords = newRevealed
@@ -677,7 +746,8 @@ struct WordSearchGameView: View {
         }
 
         if placed.contains(where: { pw in
-            revealedWords.contains(pw.word) && cellsForPlacedWord(pw).contains(where: { $0.row == row && $0.col == col })
+            let original = (difficulty == .expert) ? String(pw.word.reversed()) : pw.word
+            return revealedWords.contains(original) && cellsForPlacedWord(pw).contains(where: { $0.row == row && $0.col == col })
         }) {
             return Color.red.opacity(0.35)
         }
@@ -698,7 +768,8 @@ struct WordSearchGameView: View {
         }
 
         if placed.contains(where: { pw in
-            revealedWords.contains(pw.word) && cellsForPlacedWord(pw).contains(where: { $0.row == row && $0.col == col })
+            let original = (difficulty == .expert) ? String(pw.word.reversed()) : pw.word
+            return revealedWords.contains(original) && cellsForPlacedWord(pw).contains(where: { $0.row == row && $0.col == col })
         }) {
             return Color.red.opacity(0.9)
         }
@@ -752,8 +823,8 @@ struct WordSearchGameView: View {
             // horizontal or vertical
         }
 
-        // Ensure the chosen vector is one of the allowed directions
-        let allowed = allowedDirections
+        // Ensure the chosen vector is one of the baseAllowedDirections (forward-only on easy/medium)
+        let allowed = baseAllowedDirections
         if !allowed.contains(where: { $0.dr == dr && $0.dc == dc }) {
             // Snap to nearest allowed (fallback)
             if abs(dRow) >= abs(dCol) {
@@ -781,7 +852,7 @@ struct WordSearchGameView: View {
 
         // Diagonals allowed at all difficulties now; just use the signed vector.
 
-        if !allowedDirections.contains(where: { $0.dr == dr && $0.dc == dc }) {
+        if !baseAllowedDirections.contains(where: { $0.dr == dr && $0.dc == dc }) {
             // Fallback snap to axis-aligned if needed
             if abs(dRow) >= abs(dCol) { dr = dr == 0 ? 0 : (dr > 0 ? 1 : -1); dc = 0 }
             else { dr = 0; dc = dc == 0 ? 0 : (dc > 0 ? 1 : -1) }
@@ -1345,7 +1416,8 @@ private struct GridBoard: View {
         }
 
         if placed.contains(where: { pw in
-            revealedWords.contains(pw.word) && {
+            let original = (WordSearchGameView.Difficulty.expert == .expert) ? String(pw.word.reversed()) : pw.word
+            return revealedWords.contains(original) && {
                 var cells: [(Int, Int)] = []
                 for i in 0..<pw.word.count {
                     cells.append((pw.startRow + pw.dr * i, pw.startCol + pw.dc * i))
