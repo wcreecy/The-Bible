@@ -167,7 +167,36 @@ struct WordSearchGameView: View {
                                 words: targetWords,
                                 foundWords: foundWords,
                                 gameMode: gameMode,
-                                showBlindWordList: showBlindWordList
+                                showBlindWordList: showBlindWordList,
+                                // New: timer info for right-side column
+                                isTimedMode: isTimedMode,
+                                timeUp: timeUp,
+                                remainingSeconds: remainingSeconds,
+                                pulseOn: pulseOn,
+                                timerTint: timerTint(for:),
+                                // New: controls moved to left column on iPad
+                                onNewPuzzle: {
+                                    generatePuzzle()
+                                    timeUp = false
+                                    didWin = false
+                                    roundOver = false
+                                    showBlindWordList = false
+                                    startTimerIfNeeded()
+                                },
+                                onReveal: {
+                                    revealOverlay()
+                                    stopTimer()
+                                    roundOver = true
+                                },
+                                onChangeDifficultyOrMode: {
+                                    started = false
+                                    stopTimer()
+                                    roundOver = false
+                                    showBlindWordList = false
+                                },
+                                onToggleHealed: { showBlindWordList.toggle() },
+                                healedOn: showBlindWordList,
+                                roundOver: roundOver
                             )
                         } else {
                             // Original stacked layout on iPhone
@@ -237,36 +266,36 @@ struct WordSearchGameView: View {
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             }
-                        }
 
-                        ControlsBar(
-                            onNewPuzzle: {
-                                generatePuzzle()
-                                timeUp = false
-                                didWin = false
-                                roundOver = false
-                                showBlindWordList = false
-                                startTimerIfNeeded()
-                            },
-                            onReveal: {
-                                // Reveal ends the round
-                                revealOverlay()
-                                stopTimer()
-                                roundOver = true
-                            },
-                            onChangeDifficultyOrMode: {
-                                started = false
-                                stopTimer()
-                                roundOver = false
-                                showBlindWordList = false
-                            },
-                            gameMode: gameMode,
-                            onToggleHealed: {
-                                showBlindWordList.toggle()
-                            },
-                            healedOn: showBlindWordList,
-                            roundOver: roundOver
-                        )
+                            ControlsBar(
+                                onNewPuzzle: {
+                                    generatePuzzle()
+                                    timeUp = false
+                                    didWin = false
+                                    roundOver = false
+                                    showBlindWordList = false
+                                    startTimerIfNeeded()
+                                },
+                                onReveal: {
+                                    // Reveal ends the round
+                                    revealOverlay()
+                                    stopTimer()
+                                    roundOver = true
+                                },
+                                onChangeDifficultyOrMode: {
+                                    started = false
+                                    stopTimer()
+                                    roundOver = false
+                                    showBlindWordList = false
+                                },
+                                gameMode: gameMode,
+                                onToggleHealed: {
+                                    showBlindWordList.toggle()
+                                },
+                                healedOn: showBlindWordList,
+                                roundOver: roundOver
+                            )
+                        }
                     }
                 }
                 .padding()
@@ -639,24 +668,47 @@ struct WordSearchGameView: View {
 
     private func keyFor(row: Int, col: Int) -> String { "\(row),\(col)" }
 
+    // Stronger fills for found/revealed/selection
     private func backgroundColorForCell(row: Int, col: Int) -> Color {
         let cellKey = keyFor(row: row, col: col)
 
         if foundCells.contains(cellKey) {
-            return Color.green.opacity(0.30)
+            return Color.green.opacity(0.45)
         }
 
         if placed.contains(where: { pw in
             revealedWords.contains(pw.word) && cellsForPlacedWord(pw).contains(where: { $0.row == row && $0.col == col })
         }) {
-            return Color.red.opacity(0.25)
+            return Color.red.opacity(0.35)
         }
 
         if isCellInCurrentSelection(row: row, col: col) {
-            return Color.blue.opacity(0.25)
+            return Color.blue.opacity(0.35)
         }
 
         return Color(.secondarySystemBackground)
+    }
+
+    // New: state-based stroke color to improve edge clarity
+    private func strokeColorForCell(row: Int, col: Int) -> Color {
+        let cellKey = keyFor(row: row, col: col)
+
+        if foundCells.contains(cellKey) {
+            return Color.green.opacity(0.9)
+        }
+
+        if placed.contains(where: { pw in
+            revealedWords.contains(pw.word) && cellsForPlacedWord(pw).contains(where: { $0.row == row && $0.col == col })
+        }) {
+            return Color.red.opacity(0.9)
+        }
+
+        if isCellInCurrentSelection(row: row, col: col) {
+            return Color.blue.opacity(0.9)
+        }
+
+        // Default subtle stroke
+        return Color.black.opacity(0.1)
     }
 
     private func isCellInCurrentSelection(row: Int, col: Int) -> Bool {
@@ -871,6 +923,21 @@ private struct SideBySideGameArea: View {
     let gameMode: WordSearchGameView.GameMode
     let showBlindWordList: Bool
 
+    // New: timer info for right column
+    let isTimedMode: Bool
+    let timeUp: Bool
+    let remainingSeconds: Int
+    let pulseOn: Bool
+    let timerTint: (Int) -> Color
+
+    // New: controls moved here on iPad
+    let onNewPuzzle: () -> Void
+    let onReveal: () -> Void
+    let onChangeDifficultyOrMode: () -> Void
+    let onToggleHealed: () -> Void
+    let healedOn: Bool
+    let roundOver: Bool
+
     private var splitColumns: (left: [String], right: [String]) {
         // If many words, split evenly; else put all on the right
         if words.count > 8 {
@@ -881,18 +948,61 @@ private struct SideBySideGameArea: View {
         }
     }
 
+    private func formattedTime(_ secs: Int) -> String {
+        let m = secs / 60
+        let s = secs % 60
+        return String(format: "%d:%02d", m, s)
+    }
+
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
-            if !splitColumns.left.isEmpty {
-                if gameMode == .blind && !showBlindWordList {
-                    let foundCount = words.filter { foundWords.contains($0) }.count
-                    SideBlindCountColumn(count: splitColumns.left.count, foundCount: foundCount)
-                        .frame(width: 220)
-                } else {
-                    SideWordsColumn(words: splitColumns.left, found: foundWords, revealed: revealedWords)
-                        .frame(width: 220)
+            // Left utility column: timer + controls + optional left word list
+            VStack(alignment: .leading, spacing: 10) {
+                if isTimedMode && !timeUp {
+                    HStack(spacing: 8) {
+                        Image(systemName: "timer")
+                        Text(formattedTime(remainingSeconds))
+                            .monospacedDigit()
+                    }
+                    .font(.title2.weight(.semibold)) // bigger than header
+                    .foregroundStyle(timerTint(remainingSeconds))
+                    .scaleEffect(pulseOn ? 1.08 : 1.0)
+                    .animation(.easeInOut(duration: 0.25), value: pulseOn)
+                }
+
+                // Controls (moved from bottom bar to here on iPad)
+                HStack(spacing: 10) {
+                    if !roundOver {
+                        Button("Reveal") { onReveal() }
+                            .buttonStyle(ModernPillButtonStyle(tint: .blue))
+
+                        if gameMode == .blind {
+                            Button(healedOn ? "I'm Healed" : "Be Healed") { onToggleHealed() }
+                                .buttonStyle(ModernPillButtonStyle(tint: healedOn ? .green : .red))
+                        }
+                    } else {
+                        Button("New Puzzle") { onNewPuzzle() }
+                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+
+                        Button("Change Settings") { onChangeDifficultyOrMode() }
+                            .buttonStyle(ModernPillButtonStyle(tint: .orange))
+                    }
+                }
+                .padding(.bottom, 4)
+
+                // If we have a lot of words and split across columns, optionally show left words list here.
+                if !splitColumns.left.isEmpty {
+                    if gameMode == .blind && !showBlindWordList {
+                        let foundCount = words.filter { foundWords.contains($0) }.count
+                        SideBlindCountColumn(count: splitColumns.left.count, foundCount: foundCount)
+                            .frame(width: 220)
+                    } else {
+                        SideWordsColumn(words: splitColumns.left, found: foundWords, revealed: revealedWords)
+                            .frame(width: 220)
+                    }
                 }
             }
+            .frame(width: (!splitColumns.left.isEmpty ? 220 : 220))
 
             ZStack(alignment: .trailing) {
                 Color.clear
@@ -916,13 +1026,15 @@ private struct SideBySideGameArea: View {
             .padding(.top, 4)
 
             if !splitColumns.right.isEmpty {
-                if gameMode == .blind && !showBlindWordList {
-                    let foundCount = words.filter { foundWords.contains($0) }.count
-                    SideBlindCountColumn(count: splitColumns.right.count, foundCount: foundCount)
-                        .frame(width: 220)
-                } else {
-                    SideWordsColumn(words: splitColumns.right, found: foundWords, revealed: revealedWords)
-                        .frame(width: 220)
+                VStack(alignment: .leading, spacing: 8) {
+                    if gameMode == .blind && !showBlindWordList {
+                        let foundCount = words.filter { foundWords.contains($0) }.count
+                        SideBlindCountColumn(count: splitColumns.right.count, foundCount: foundCount)
+                            .frame(width: 220)
+                    } else {
+                        SideWordsColumn(words: splitColumns.right, found: foundWords, revealed: revealedWords)
+                            .frame(width: 220)
+                    }
                 }
             }
         }
@@ -1224,6 +1336,50 @@ private struct GridBoard: View {
     let onDragEnded: () -> Void
     let dynamicGridHeight: CGFloat
 
+    // Local state-based stroke color (mirrors parent’s logic using inputs available here)
+    private func strokeColorForCell(_ row: Int, _ col: Int) -> Color {
+        let key = "\(row),\(col)"
+
+        if foundCells.contains(key) {
+            return Color.green.opacity(0.9)
+        }
+
+        if placed.contains(where: { pw in
+            revealedWords.contains(pw.word) && {
+                var cells: [(Int, Int)] = []
+                for i in 0..<pw.word.count {
+                    cells.append((pw.startRow + pw.dr * i, pw.startCol + pw.dc * i))
+                }
+                return cells.contains(where: { $0.0 == row && $0.1 == col })
+            }()
+        }) {
+            return Color.red.opacity(0.9)
+        }
+
+        if let start = selectionStart, let end = selectionEnd {
+            func sign(_ x: Int) -> Int { x == 0 ? 0 : (x > 0 ? 1 : -1) }
+            let dRow = end.row - start.row
+            let dCol = end.col - start.col
+            var dr = sign(dRow)
+            var dc = sign(dCol)
+            if dRow == 0 && dCol == 0 {
+                if start.row == row && start.col == col { return Color.blue.opacity(0.9) }
+            } else {
+                var r = start.row
+                var c = start.col
+                while true {
+                    if r == row && c == col { return Color.blue.opacity(0.9) }
+                    if r == end.row && c == end.col { break }
+                    r += dr
+                    c += dc
+                    if r < 0 || r >= size || c < 0 || c >= size { break }
+                }
+            }
+        }
+
+        return Color.black.opacity(0.1)
+    }
+
     var body: some View {
         GeometryReader { geo in
             let isPad = UIDevice.current.userInterfaceIdiom == .pad
@@ -1258,7 +1414,7 @@ private struct GridBoard: View {
                                 )
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 6, style: .continuous)
-                                        .stroke(Color.black.opacity(0.1), lineWidth: 1)
+                                        .stroke(strokeColorForCell(r, c), lineWidth: 1.5)
                                 )
                                 .contentShape(Rectangle())
                                 .onTapGesture {
@@ -1385,4 +1541,3 @@ private struct WrapWordsView: View {
         }
     }
 }
-
