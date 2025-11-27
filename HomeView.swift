@@ -1346,10 +1346,37 @@ struct HomeView: View {
 
                                 // Rows
                                 let stats = allGameStats
+
+                                // Precompute column values for highlighting
+                                let shares: [Double] = stats.map { s in
+                                    totalAnswered > 0 ? (Double(s.answered) / Double(totalAnswered)) * 100.0 : 0
+                                }
+                                let avgs: [Double] = stats.map { s in
+                                    s.answered > 0 ? (Double(s.correct) / Double(s.answered)) * 100.0 : 0
+                                }
+                                let streaks: [Int] = stats.map { s in
+                                    s.bestStreak ?? 0
+                                }
+
+                                // Determine unique maxima (no highlight if tie or all zero)
+                                let bestShareIndex = uniqueMaxIndex(shares)
+                                let bestAvgIndex = uniqueMaxIndex(avgs)
+                                let bestStreakIndex = uniqueMaxIndex(streaks)
+
+                                // Determine unique minima (no highlight if tie)
+                                let worstShareIndex = uniqueMinIndex(shares)
+                                let worstAvgIndex = uniqueMinIndex(avgs)
+                                // For streaks, only consider > 0 values; map zeros to a sentinel so they don’t become the minimum highlight
+                                let streaksForMin: [Int] = streaks.map { $0 == 0 ? Int.max : $0 }
+                                let worstStreakIndex = uniqueMinIndex(streaksForMin)
+
                                 ForEach(Array(stats.enumerated()), id: \.offset) { pair in
+                                    let idx = pair.offset
                                     let s = pair.element
-                                    let share: Double = totalAnswered > 0 ? (Double(s.answered) / Double(totalAnswered)) * 100.0 : 0
-                                    let avg = percent(s.correct, s.answered)
+                                    let share = shares[idx]
+                                    let avg = avgs[idx]
+                                    let best = streaks[idx]
+
                                     HStack(spacing: 10) {
                                         Text(s.name)
                                             .font(.subheadline.weight(.semibold))
@@ -1357,20 +1384,37 @@ struct HomeView: View {
 
                                         Spacer(minLength: 0)
 
+                                        // Played share column
                                         Text("\(Int(round(share)))%")
                                             .font(.footnote)
                                             .monospacedDigit()
                                             .frame(width: colWidth, alignment: .center)
+                                            .foregroundStyle(
+                                                bestShareIndex == idx ? Color.green :
+                                                (worstShareIndex == idx ? Color.red : Color.primary)
+                                            )
 
+                                        // Average accuracy column
                                         Text("\(Int(round(avg)))%")
                                             .font(.footnote)
                                             .monospacedDigit()
                                             .frame(width: colWidth, alignment: .center)
+                                            .foregroundStyle(
+                                                bestAvgIndex == idx ? Color.green :
+                                                (worstAvgIndex == idx ? Color.red : Color.primary)
+                                            )
 
-                                        Text(s.bestStreak != nil && s.bestStreak! > 0 ? "\(s.bestStreak!)" : "—")
+                                        // Streak column (dash when nil/zero). Avoid red highlight for zero/absent streaks.
+                                        Text(s.bestStreak != nil && s.bestStreak! > 0 ? "\(best)" : "—")
                                             .font(.footnote)
                                             .monospacedDigit()
                                             .frame(width: colWidth, alignment: .center)
+                                            .foregroundStyle(
+                                                s.bestStreak != nil && s.bestStreak! > 0
+                                                ? (bestStreakIndex == idx ? Color.green :
+                                                   (worstStreakIndex == idx ? Color.red : Color.primary))
+                                                : Color.primary
+                                            )
                                     }
                                     .foregroundStyle(s.answered == 0 ? .secondary : .primary)
                                     .accessibilityElement(children: .ignore)
@@ -1379,8 +1423,8 @@ struct HomeView: View {
                                             var parts: [String] = [s.name]
                                             parts.append("Share \(Int(round(share))) percent")
                                             parts.append("Average \(Int(round(avg))) percent")
-                                            if let best = s.bestStreak, best > 0 {
-                                                parts.append("Best streak \(best)")
+                                            if let bs = s.bestStreak, bs > 0 {
+                                                parts.append("Best streak \(bs)")
                                             }
                                             return parts.joined(separator: ". ") + "."
                                         }()
@@ -2385,6 +2429,20 @@ struct HomeView: View {
 
     private func openJournalForReference(text: String) {
         journalComposer.present(initialBody: text, verseRef: nil, showTagColors: false)
+    }
+
+    // MARK: - Small helpers moved out of ViewBuilder to avoid result-builder declaration errors
+
+    private func uniqueMaxIndex<T: Comparable & Equatable>(_ values: [T]) -> Int? {
+        guard let maxVal = values.max() else { return nil }
+        let indices = values.enumerated().filter { $0.element == maxVal }.map { $0.offset }
+        return indices.count == 1 ? indices.first : nil
+    }
+
+    private func uniqueMinIndex<T: Comparable & Equatable>(_ values: [T]) -> Int? {
+        guard let minVal = values.min() else { return nil }
+        let indices = values.enumerated().filter { $0.element == minVal }.map { $0.offset }
+        return indices.count == 1 ? indices.first : nil
     }
 }
 
