@@ -31,9 +31,8 @@ struct SettingsView: View {
         case dailyFocus
         case timer
         case resumeReading
-        case dailyGoal // NEW: Daily Goal card
-        case games // NEW
-        case streaks // NEW: Daily Bible Streak
+        case games
+        case streaks
 
         var id: String { rawValue }
         var title: String {
@@ -42,7 +41,6 @@ struct SettingsView: View {
             case .dailyFocus: return "Daily Focus"
             case .timer: return "Prayer Timer / Stopwatch"
             case .resumeReading: return "Continue Reading"
-            case .dailyGoal: return "Daily Goal"
             case .games: return "Games"
             case .streaks: return "Daily Bible Streak"
             }
@@ -53,7 +51,6 @@ struct SettingsView: View {
             case .dailyFocus: return "target"
             case .timer: return "timer"
             case .resumeReading: return "bookmark.fill"
-            case .dailyGoal: return "target" // same glyph family; could be "clock.badge.checkmark"
             case .games: return "gamecontroller"
             case .streaks: return "flame.fill"
             }
@@ -76,7 +73,6 @@ struct SettingsView: View {
             let missing = HomeCardID.allCases.filter { !mapped.contains($0) }
             layoutOrder = mapped + missing
         } else {
-            // Default order puts Daily Goal above Streaks
             layoutOrder = HomeCardID.allCases
         }
 
@@ -84,8 +80,8 @@ struct SettingsView: View {
            let ids = try? JSONDecoder().decode([String].self, from: data) {
             hiddenSet = Set(ids.compactMap { HomeCardID(rawValue: $0) })
         } else {
-            // Default hidden: keep Games, Streaks, and Daily Goal hidden by default
-            hiddenSet = [.games, .streaks, .dailyGoal]
+            // Default hidden: keep Games and Streaks hidden by default
+            hiddenSet = [.games, .streaks]
         }
     }
 
@@ -375,7 +371,7 @@ struct SettingsView: View {
     }
 
     private var dailyGoalSection: some View {
-        Section(header: Text("Daily Goal"), footer: Text("Set the number of minutes you want to spend in the app each day. You can show or hide the Daily Goal card from Home Layout.").font(.footnote).foregroundStyle(.secondary)) {
+        Section(header: Text("Daily Goal"), footer: Text("Set the number of minutes you want to spend in the app each day. Your Daily Bible Streak is based on meeting this goal.").font(.footnote).foregroundStyle(.secondary)) {
             Stepper(value: $dailyGoalMinutes, in: 1...240, step: 1) {
                 HStack {
                     Label("Daily Goal", systemImage: "target")
@@ -418,7 +414,7 @@ struct SettingsView: View {
 
             Button("Restore Default Order") {
                 layoutOrder = HomeCardID.allCases
-                hiddenSet = [.games, .streaks, .dailyGoal] // keep Games, Streaks, Daily Goal hidden by default
+                hiddenSet = [.games, .streaks] // keep Games and Streaks hidden by default
                 saveHomeLayout()
             }
             .buttonStyle(.bordered)
@@ -476,7 +472,7 @@ struct SettingsView: View {
         .headerProminence(.increased)
     }
 
-    // MARK: - Existing UI helpers
+    // MARK: - Existing UI helpers (unchanged) ...
 
     private func segmentButton(title: String, tag: String) -> some View {
         Button(action: { verseScopeRaw = tag }) {
@@ -612,7 +608,7 @@ extension SettingsView {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Restore Default") {
                         order = HomeCardID.allCases
-                        hidden = [.games, .streaks, .dailyGoal] // keep Games, Streaks, Daily Goal hidden by default
+                        hidden = [.games, .streaks] // keep Games and Streaks hidden by default
                         save()
                     }
                 }
@@ -645,4 +641,3 @@ private struct FontFamilyEnvironmentModifier: ViewModifier {
 #Preview {
     NavigationStack { SettingsView() }
 }
-

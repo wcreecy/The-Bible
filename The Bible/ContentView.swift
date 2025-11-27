@@ -40,6 +40,18 @@ struct ContentView: View {
     @AppStorage("dailyUsageTodayKey") private var dailyUsageTodayKey: String = ""
     @State private var usageTimer: Timer? = nil
     @State private var nextMidnightTimer: Timer? = nil
+
+    // Daily goal minutes (used to determine goal-met)
+    @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
+
+    // Timer/Stopwatch state (to account for background time)
+    @AppStorage("prayerTimerRunning") private var prayerTimerRunning: Bool = false
+    @AppStorage("prayerTimerPaused") private var prayerTimerPaused: Bool = false
+    @AppStorage("prayerTimerEndDate") private var prayerTimerEndDate: Double = 0
+    @AppStorage("stopwatchRunning") private var stopwatchRunning: Bool = false
+
+    // Track when we went inactive/background to compute elapsed when returning
+    @AppStorage("lastBackgroundedAt") private var lastBackgroundedAt: Double = 0
     
     private var preferredScheme: ColorScheme? { (ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme }
     private var preferredDynamicType: DynamicTypeSize? { (FontSizePreference(rawValue: fontSizePreferenceRaw) ?? .system).dynamicTypeSize }
@@ -222,12 +234,25 @@ struct ContentView: View {
         .onChange(of: scenePhase) { _, newPhase in
             switch newPhase {
             case .active:
+                // Account for any background elapsed time while timer/stopwatch was running
+                applyBackgroundElapsedIfAny()
+                // Start foreground usage timer
                 startUsageTimerIfNeeded()
             case .inactive, .background:
+                // Remember when we left foreground to compute background elapsed later
+                lastBackgroundedAt = Date().timeIntervalSince1970
                 stopUsageTimer()
             @unknown default:
                 break
             }
+        }
+        // When foreground timer increments, check goal completion
+        .onChange(of: dailyUsageTodaySeconds) { _, _ in
+            checkAndMarkGoalIfMet()
+        }
+        // Also re-check when goal minutes changes
+        .onChange(of: dailyGoalMinutes) { _, _ in
+            checkAndMarkGoalIfMet()
         }
     }
 
@@ -287,6 +312,43 @@ struct ContentView: View {
         usageTimer = nil
     }
 
+    private func applyBackgroundElapsedIfAny() {
+        guard lastBackgroundedAt > 0 else { return }
+        let now = Date().timeIntervalSince1970
+        let backgroundDelta = max(0, now - lastBackgroundedAt)
+
+        var addSeconds = 0
+
+        // If Prayer Timer was running and not paused, count up to its end date
+        if prayerTimerRunning && !prayerTimerPaused && prayerTimerEndDate > 0 {
+            let cappedEnd = max(0, prayerTimerEndDate - lastBackgroundedAt)
+            let timerDelta = Int(min(backgroundDelta, cappedEnd))
+            addSeconds += max(0, timerDelta)
+        }
+
+        // If Stopwatch was running, count full delta
+        if stopwatchRunning {
+            addSeconds += Int(backgroundDelta)
+        }
+
+        if addSeconds > 0 {
+            // Ensure we're on today's bucket
+            initializeUsageDayIfNeeded()
+            dailyUsageTodaySeconds += addSeconds
+        }
+
+        lastBackgroundedAt = 0
+        // After applying, check if goal is met
+        checkAndMarkGoalIfMet()
+    }
+
+    private func checkAndMarkGoalIfMet() {
+        let goalSeconds = max(1, dailyGoalMinutes) * 60
+        guard dailyUsageTodaySeconds >= goalSeconds else { return }
+        // Mark day as goal met (streak update)
+        StreakTracker.markGoalMet(on: Date())
+    }
+
     // MARK: - Helpers
 
     @MainActor
@@ -307,4 +369,3 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-

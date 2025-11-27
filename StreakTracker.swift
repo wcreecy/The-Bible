@@ -1,7 +1,7 @@
 import Foundation
 
-/// Tracks a daily "Bible reading" streak.
-/// A day counts if the user visits Bible verses at least once that day.
+/// Tracks a daily streak based on meeting the daily time goal.
+/// A day counts if the user meets their daily goal minutes (default 30).
 /// Comparison uses the current Calendar and respects the user's locale/timezone.
 enum StreakTracker {
     // UserDefaults keys
@@ -9,10 +9,18 @@ enum StreakTracker {
     private static let currentStreakKey = "bibleStreak_current"
     private static let bestStreakKey = "bibleStreak_best"
 
+    // Per-day goal-met flag prefix: goalMet_YYYY-MM-DD -> Bool
+    private static func dayKey(for date: Date) -> String {
+        let cal = Calendar.current
+        let c = cal.dateComponents([.year, .month, .day], from: date)
+        let y = c.year ?? 0, m = c.month ?? 0, d = c.day ?? 0
+        return String(format: "goalMet_%04d-%02d-%02d", y, m, d)
+    }
+
     private static var defaults: UserDefaults { .standard }
     private static var calendar: Calendar { Calendar.current }
 
-    /// Returns the last day the user visited (if any).
+    /// Returns the last day we marked as goal-met (if any).
     static var lastVisitDate: Date? {
         let ts = defaults.double(forKey: lastVisitKey)
         guard ts > 0 else { return nil }
@@ -40,10 +48,34 @@ enum StreakTracker {
         return isSameDay(next, b)
     }
 
-    /// Call when the user has visited Bible verses today.
-    /// This will update current/best streak appropriately.
+    /// Query if the daily goal was met on a date (local day).
+    static func isGoalMet(on date: Date) -> Bool {
+        let key = dayKey(for: date)
+        return defaults.bool(forKey: key)
+    }
+
+    /// Mark the daily goal as met on a specific date (defaults to today).
+    /// Updates streak counters and lastVisitDate accordingly.
+    static func markGoalMet(on date: Date = Date()) {
+        // If already marked for that day, no-op
+        if isGoalMet(on: date) {
+            // Still ensure lastVisit/current/best reflect this day
+            updateStreakCountersIfNeeded(for: date)
+            return
+        }
+        // Persist the day flag
+        defaults.set(true, forKey: dayKey(for: date))
+        // Update streak counters
+        updateStreakCountersIfNeeded(for: date)
+    }
+
+    /// Compatibility alias for older callers (visiting verses) — now interpreted as meeting the goal today.
     static func markVisitedToday(now: Date = Date()) {
-        let today = now
+        markGoalMet(on: now)
+    }
+
+    private static func updateStreakCountersIfNeeded(for date: Date) {
+        let today = date
         let last = lastVisitDate
 
         if let last {
@@ -61,7 +93,7 @@ enum StreakTracker {
                 defaults.set(max(bestStreak, 1), forKey: bestStreakKey)
             }
         } else {
-            // First-ever visit: start at 1.
+            // First-ever met day: start at 1.
             defaults.set(1, forKey: currentStreakKey)
             defaults.set(max(bestStreak, 1), forKey: bestStreakKey)
         }
@@ -71,8 +103,12 @@ enum StreakTracker {
 
     /// Reset all streak data (for debug or settings reset).
     static func reset() {
+        // Remove counters and last visit
         defaults.removeObject(forKey: lastVisitKey)
         defaults.removeObject(forKey: currentStreakKey)
         defaults.removeObject(forKey: bestStreakKey)
+        // Remove all recorded day flags
+        // Note: We cannot enumerate arbitrary keys in UserDefaults reliably.
+        // If you add a "Clear Streak History" UI, store a list of dates to remove.
     }
 }

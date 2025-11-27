@@ -18,8 +18,7 @@ private enum HomeCardID: String, CaseIterable, Identifiable {
     case dailyFocus
     case timer
     case resumeReading
-    case dailyGoal // NEW: Daily Goal card
-    case streaks // Daily Bible Streak (now before Games to match desired default order)
+    case streaks // Daily Bible Streak (now includes Daily Goal progress)
     case games   // Games
     var id: String { rawValue }
 }
@@ -252,7 +251,9 @@ struct HomeView: View {
         // Order
         if let data = homeCardOrderRaw.data(using: .utf8),
            let ids = try? JSONDecoder().decode([String].self, from: data) {
-            let mapped = ids.compactMap { HomeCardID(rawValue: $0) }
+            // Filter out any legacy "dailyGoal" id
+            let filtered = ids.filter { $0 != "dailyGoal" }
+            let mapped = filtered.compactMap { HomeCardID(rawValue: $0) }
             let missing = HomeCardID.allCases.filter { !mapped.contains($0) }
             layoutOrder = mapped + missing
         } else {
@@ -261,10 +262,11 @@ struct HomeView: View {
         // Hidden
         if let data = homeCardHiddenRaw.data(using: .utf8),
            let ids = try? JSONDecoder().decode([String].self, from: data) {
-            hiddenSet = Set(ids.compactMap { HomeCardID(rawValue: $0) })
+            let filtered = ids.filter { $0 != "dailyGoal" } // migrate legacy
+            hiddenSet = Set(filtered.compactMap { HomeCardID(rawValue: $0) })
         } else {
-            // Match Settings defaults: Games, Streaks, and Daily Goal hidden by default
-            hiddenSet = [.games, .streaks, .dailyGoal]
+            // Match Settings defaults: Games and Streaks hidden by default
+            hiddenSet = [.games, .streaks]
         }
     }
 
@@ -793,8 +795,7 @@ struct HomeView: View {
         }
     }
 
-    // NEW: Daily Goal card
-
+    // Daily goal values (used inside Streaks card)
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
     @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds: Int = 0
     @AppStorage("dailyUsageTodayKey") private var dailyUsageTodayKey: String = ""
@@ -812,55 +813,6 @@ struct HomeView: View {
         let m = remainingSecondsToday / 60
         let s = remainingSecondsToday % 60
         return "\(m)m \(s)s left"
-    }
-
-    @ViewBuilder
-    private var dailyGoalCard: some View {
-        HeroCard(
-            title: "Daily Goal",
-            subtitle: "Time spent today",
-            icon: "target",
-            tint: dailyProgress >= 1.0 ? .green : .blue,
-            trailingAccessory: {
-                Button {
-                    NotificationCenter.default.post(name: .openSettingsTab, object: nil)
-                } label: {
-                    Label("Edit", systemImage: "slider.horizontal.3")
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.blue)
-                .accessibilityLabel("Edit Daily Goal")
-            }
-        ) {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text("\(formatHMS(dailyUsageTodaySeconds))")
-                        .font(.system(size: isPad ? 40 : 34, weight: .bold, design: .rounded))
-                        .foregroundStyle(.primary)
-                        .monospacedDigit()
-                    Spacer()
-                    Text("\(dailyGoalMinutes) min goal")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                ProgressView(value: dailyProgress)
-                    .tint(dailyProgress >= 1.0 ? .green : .blue)
-                HStack {
-                    if dailyProgress >= 1.0 {
-                        Label("Great job! You reached your goal.", systemImage: "checkmark.seal.fill")
-                            .foregroundStyle(.green)
-                            .font(.footnote.weight(.semibold))
-                    } else {
-                        Label(remainingFormatted, systemImage: "clock")
-                            .foregroundStyle(.secondary)
-                            .font(.footnote)
-                    }
-                    Spacer()
-                }
-            }
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("Daily Goal. \(formatHMS(dailyUsageTodaySeconds)) used today. Goal \(dailyGoalMinutes) minutes. \(dailyProgress >= 1.0 ? "Goal reached." : remainingFormatted).")
     }
 
     private func formatHMS(_ seconds: Int) -> String {
@@ -1314,8 +1266,9 @@ struct HomeView: View {
                                     .foregroundStyle(.secondary)
 
                                 let stats = allGameStats
-                                ForEach(stats.indices, id: \.self) { i in
-                                    let s = stats[i]
+                                ForEach(Array(stats.enumerated()), id: \.offset) { pair in
+                                    let i = pair.offset
+                                    let s = pair.element
                                     let share: Double = totalAnswered > 0 ? (Double(s.answered) / Double(totalAnswered)) * 100.0 : 0
                                     let avg = percent(s.correct, s.answered)
                                     HStack(spacing: 10) {
@@ -1418,13 +1371,127 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - NEW: Streaks Card
+    // MARK: - NEW: Streaks Card (now includes Daily Goal progress + expandable calendar)
+
+    // Local UI state for expanding the calendar
+    @State private var streaksExpanded: Bool = false
+    // Track the month being displayed (start with current month)
+    @State private var calendarMonthAnchor: Date = Date()
+
+    // Calendar helpers
+    private func startOfMonth(for date: Date) -> Date {
+        let cal = Calendar.current
+        let comps = cal.dateComponents([.year, .month], from: date)
+        return cal.date(from: comps) ?? date
+    }
+    private func daysGrid(for month: Date) -> [[Date?]] {
+        let cal = Calendar.current
+        let start = startOfMonth(for: month)
+        guard let range = cal.range(of: .day, in: .month, for: start) else { return [] }
+        let firstWeekday = cal.component(.weekday, from: start) // 1=Sunday ... 7=Saturday (default in US)
+        let daysCount = range.count
+
+        var grid: [[Date?]] = []
+        var row: [Date?] = []
+
+        // Leading blanks
+        let leading = (firstWeekday - cal.firstWeekday + 7) % 7
+        for _ in 0..<leading { row.append(nil) }
+
+        // Fill days
+        for day in 1...daysCount {
+            if let d = cal.date(byAdding: .day, value: day - 1, to: start) {
+                row.append(d)
+                if row.count == 7 {
+                    grid.append(row)
+                    row = []
+                }
+            }
+        }
+        // Trailing blanks
+        if !row.isEmpty {
+            while row.count < 7 { row.append(nil) }
+            grid.append(row)
+        }
+        return grid
+    }
+
+    private func isFuture(_ date: Date, relativeTo today: Date = Date()) -> Bool {
+        let cal = Calendar.current
+        if cal.isDate(date, inSameDayAs: today) { return false }
+        return date > today
+    }
+
+    // Extracted small cell view to reduce type-checking depth
+    private struct DayCell: View {
+        let dayNumber: Int
+        let met: Bool
+        let future: Bool
+
+        var body: some View {
+            VStack(spacing: 4) {
+                Text("\(dayNumber)")
+                    .font(.caption)
+                    .foregroundStyle(future ? .tertiary : .secondary)
+                Image(systemName: met ? "checkmark.circle.fill" : "xmark.circle.fill")
+                    .font(.caption)
+                    // Ensure both branches are ShapeStyle to satisfy the generic requirement
+                    .foregroundStyle(future ? AnyShapeStyle(.tertiary) : AnyShapeStyle(met ? Color.green : Color.red))
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(Color(.secondarySystemBackground))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(Color.black.opacity(0.06), lineWidth: 1)
+            )
+        }
+    }
+
+    // Extracted week row to further simplify nested ForEach
+    private struct WeekRow: View {
+        let dates: [Date?]
+
+        var body: some View {
+            HStack(spacing: 6) {
+                ForEach(0..<7, id: \.self) { c in
+                    if let day = dates[c] {
+                        let dayNum = Calendar.current.component(.day, from: day)
+                        let met = StreakTracker.isGoalMet(on: day)
+                        let future = {
+                            let cal = Calendar.current
+                            if cal.isDate(day, inSameDayAs: Date()) { return false }
+                            return day > Date()
+                        }()
+                        DayCell(dayNumber: dayNum, met: met, future: future)
+                    } else {
+                        Color.clear
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 6)
+                    }
+                }
+            }
+        }
+    }
 
     @ViewBuilder
     private var streaksCard: some View {
         let current = StreakTracker.currentStreak
         let best = StreakTracker.bestStreak
         let last = StreakTracker.lastVisitDate
+
+        let usedSecs = max(0, dailyUsageTodaySeconds)
+        let goalSecs = dailyGoalSeconds
+        let progress = min(1.0, Double(usedSecs) / Double(goalSecs))
+        let usedLabel: String = {
+            let m = usedSecs / 60
+            let s = usedSecs % 60
+            return String(format: "%d:%02d", m, s)
+        }()
+        let goalLabel = "\(dailyGoalMinutes) min"
 
         HeroCard(
             title: "Daily Bible Streak",
@@ -1433,6 +1500,7 @@ struct HomeView: View {
             tint: current > 0 ? .orange : .secondary
         ) {
             VStack(alignment: .leading, spacing: 10) {
+                // Header row: current streak and best
                 HStack(alignment: .firstTextBaseline, spacing: 12) {
                     Text("\(current)")
                         .font(.system(size: isPad ? 48 : 40, weight: .black, design: .rounded))
@@ -1455,6 +1523,7 @@ struct HomeView: View {
                     }
                 }
 
+                // Last read / encouragement
                 if let last {
                     Text("Last read: \(friendlyDate(last))")
                         .font(.footnote)
@@ -1465,9 +1534,37 @@ struct HomeView: View {
                         .foregroundStyle(.secondary)
                 }
 
+                // Today's progress toward goal
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("Today")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text("\(usedLabel) / \(goalLabel)")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    ProgressView(value: progress)
+                        .tint(progress >= 1.0 ? .green : .blue)
+                    HStack {
+                        if progress >= 1.0 {
+                            Label("Great job! You reached your goal.", systemImage: "checkmark.seal.fill")
+                                .foregroundStyle(.green)
+                                .font(.footnote.weight(.semibold))
+                        } else {
+                            Label(remainingFormatted, systemImage: "clock")
+                                .foregroundStyle(.secondary)
+                                .font(.footnote)
+                        }
+                        Spacer()
+                    }
+                }
+                .padding(.top, 4)
+
+                // Actions
                 HStack(spacing: 12) {
                     Button {
-                        // Jump to Bible tab
                         NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 1])
                     } label: {
                         Label("Read now", systemImage: "book.fill")
@@ -1475,7 +1572,6 @@ struct HomeView: View {
                     .buttonStyle(ModernPillButtonStyle(tint: .blue))
 
                     Button {
-                        // Share streak
                         let message: String = {
                             if current > 0 {
                                 return "I'm on a \(current)-day Bible reading streak!"
@@ -1494,9 +1590,88 @@ struct HomeView: View {
                     .buttonStyle(ModernPillButtonStyle(tint: .orange))
                 }
                 .padding(.top, 2)
+
+                // Expandable calendar
+                DisclosureGroup(isExpanded: $streaksExpanded) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        calendarMonthView(anchor: calendarMonthAnchor)
+                    }
+                    .padding(.top, 4)
+                } label: {
+                    HStack {
+                        Text("Calendar")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text(calendarMonthAnchor.formatted(.dateTime.month().year()))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .animation(.spring(response: 0.25, dampingFraction: 0.9), value: streaksExpanded)
             }
         }
         .accessibilityElement(children: .contain)
+        .onAppear {
+            // Ensure we’re reading current values (ContentView updates counters)
+            _ = dailyUsageTodayKey // touch to avoid warnings; values are @AppStorage-backed
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                // Refresh reads of @AppStorage-backed usage values on return to Home
+                _ = dailyUsageTodayKey
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func calendarMonthView(anchor: Date) -> some View {
+        let cal = Calendar.current
+        let grid = daysGrid(for: anchor)
+        let weekdays = cal.shortWeekdaySymbols // localized e.g., ["Sun","Mon",...]
+
+        VStack(alignment: .leading, spacing: 8) {
+            // Month header with prev/next
+            HStack {
+                Button {
+                    if let prev = cal.date(byAdding: .month, value: -1, to: anchor) {
+                        calendarMonthAnchor = prev
+                    }
+                } label: {
+                    Image(systemName: "chevron.left.circle.fill")
+                }
+                .buttonStyle(.plain)
+
+                Spacer()
+
+                Button {
+                    if let next = cal.date(byAdding: .month, value: 1, to: anchor) {
+                        calendarMonthAnchor = next
+                    }
+                } label: {
+                    Image(systemName: "chevron.right.circle.fill")
+                }
+                .buttonStyle(.plain)
+            }
+            .foregroundStyle(.blue)
+
+            // Weekday header
+            HStack {
+                ForEach(weekdays, id: \.self) { w in
+                    Text(w.uppercased())
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+
+            // Weeks grid (extracted WeekRow to lower complexity)
+            VStack(spacing: 6) {
+                ForEach(0..<grid.count, id: \.self) { r in
+                    WeekRow(dates: grid[r])
+                }
+            }
+        }
     }
 
     private func friendlyDate(_ date: Date) -> String {
@@ -1529,8 +1704,6 @@ struct HomeView: View {
                             gamesCard
                         case .streaks:
                             streaksCard
-                        case .dailyGoal:
-                            dailyGoalCard
                         }
                     }
                 }
@@ -1608,7 +1781,7 @@ struct HomeView: View {
             scheduleNextVerseRefreshTimer()
             updateTickerSubscription()
 
-            // Load saved layout on appear
+            // Load saved layout on appear; migrate legacy dailyGoal id away
             decodeHomeLayout()
         }
         // Update when AppStorage strings change (e.g., after Settings saves or user toggles)
@@ -1660,6 +1833,7 @@ struct HomeView: View {
         // Reset Games card to collapsed whenever leaving Home
         .onDisappear {
             gamesExpanded = false
+            streaksExpanded = false
         }
     }
 
@@ -2437,4 +2611,3 @@ private final class DebouncedWidgetReloader {
         queue.asyncAfter(deadline: .now() + 0.6, execute: item)
     }
 }
-
