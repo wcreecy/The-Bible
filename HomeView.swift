@@ -280,12 +280,12 @@ struct HomeView: View {
 
     private func nextAutoRefreshDate(from now: Date = Date()) -> Date {
         let cal = Calendar.current
-        guard let t1 = dateForToday(hour: votdRefresh1Hour, minute: votdRefresh1Minute, from: now),
-              let t2 = dateForToday(hour: votdRefresh2Hour, minute: votdRefresh2Minute, from: now) else {
+        guard let startOfTodayRefresh1 = dateForToday(hour: votdRefresh1Hour, minute: votdRefresh1Minute, from: now),
+              let startOfTodayRefresh2 = dateForToday(hour: votdRefresh2Hour, minute: votdRefresh2Minute, from: now) else {
             return now
         }
-        if now < t1 { return t1 }
-        if now < t2 { return t2 }
+        if now < startOfTodayRefresh1 { return startOfTodayRefresh1 }
+        if now < startOfTodayRefresh2 { return startOfTodayRefresh2 }
         let tomorrow = cal.date(byAdding: .day, value: 1, to: now) ?? now
         return dateForToday(hour: votdRefresh1Hour, minute: votdRefresh1Minute, from: tomorrow) ?? now
     }
@@ -371,6 +371,46 @@ struct HomeView: View {
     }
 
     // MARK: - Split cards to reduce type-checking complexity
+
+    // Daily goal values for flame progress
+    @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
+    @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds: Int = 0
+
+    // Small filling flame icon
+    private struct FlameFillIcon: View {
+        var progress: Double // 0...1
+        var size: CGFloat = 20
+        var tint: Color = .orange
+
+        var clamped: Double { max(0, min(1, progress)) }
+
+        var body: some View {
+            ZStack {
+                // Filled layer masked by vertical progress
+                Image(systemName: "flame.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(tint)
+                    .mask(
+                        GeometryReader { geo in
+                            let h = geo.size.height
+                            let fillHeight = h * clamped
+                            Rectangle()
+                                .frame(width: geo.size.width, height: fillHeight)
+                                .position(x: geo.size.width / 2, y: h - fillHeight / 2)
+                        }
+                    )
+                // Outline on top to keep “unfilled” look
+                Image(systemName: "flame")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(.secondary)
+            }
+            .frame(width: size, height: size)
+            .accessibilityHidden(true)
+        }
+    }
+
     @ViewBuilder
     private var titleCard: some View {
         // Determine iPad-specific sizing
@@ -380,6 +420,12 @@ struct HomeView: View {
         let titleWeight: Font.Weight = .black
         let subtitleFont: Font = isPad ? .title3.weight(.semibold) : .subheadline.weight(.semibold)
 
+        // Compute today's daily goal progress for the flame
+        let goalSeconds = max(1, dailyGoalMinutes) * 60
+        let progress = min(1.0, Double(max(0, dailyUsageTodaySeconds)) / Double(goalSeconds))
+        let percent = Int(round(progress * 100))
+        let streak = StreakTracker.currentStreak
+
         HeroCard(
             title: "Word of God",
             subtitle: nil,
@@ -387,7 +433,14 @@ struct HomeView: View {
             tint: .blue,
             titleFont: titleFont,
             titleFontWeight: titleWeight,
-            centerHeader: true // Center on iPhone and iPad
+            centerHeader: true, // Center on iPhone and iPad
+            titleAccessory: {
+                // Place small flame next to the title
+                HStack(spacing: 6) {
+                    FlameFillIcon(progress: progress, size: isPad ? 22 : 18, tint: .orange)
+                        .accessibilityHidden(true)
+                }
+            }
         ) {
             VStack(spacing: isPad ? 16 : 8) {
                 Text("What does God have for YOU today?")
@@ -395,6 +448,7 @@ struct HomeView: View {
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .multilineTextAlignment(.center)
+                    .accessibilityLabel("What does God have for you today? Daily goal progress \(percent) percent. Current streak \(streak) days.")
 
                 HStack(spacing: isPad ? 16 : 12) {
                     Button {
@@ -796,17 +850,17 @@ struct HomeView: View {
     }
 
     // Daily goal values (used inside Streaks card)
-    @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
-    @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds: Int = 0
+    @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes_streaks: Int = 30
+    @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds_streaks: Int = 0
     @AppStorage("dailyUsageTodayKey") private var dailyUsageTodayKey: String = ""
 
-    private var dailyGoalSeconds: Int { max(1, dailyGoalMinutes) * 60 }
+    private var dailyGoalSeconds: Int { max(1, dailyGoalMinutes_streaks) * 60 }
     private var dailyProgress: Double {
-        let used = max(0, dailyUsageTodaySeconds)
+        let used = max(0, dailyUsageTodaySeconds_streaks)
         return min(1.0, Double(used) / Double(dailyGoalSeconds))
     }
     private var remainingSecondsToday: Int {
-        max(0, dailyGoalSeconds - max(0, dailyUsageTodaySeconds))
+        max(0, dailyGoalSeconds - max(0, dailyUsageTodaySeconds_streaks))
     }
     private var remainingFormatted: String {
         if remainingSecondsToday == 0 { return "Goal reached" }
@@ -1212,8 +1266,8 @@ struct HomeView: View {
     }
 
     private func titleForPercent(_ pct: Double) -> String {
-        if pct < 60 { return "Reforming" }             // Red tier
-        else if pct < 75 { return "Covenant Learner" } // Orange tier
+        if pct < 60 { return "Usher" }             // Red tier
+        else if pct < 75 { return "Altar Worker" }            // Orange tier
         else if pct < 90 { return "Apostle" }          // Purple tier
         else { return "Bible Scholar" }                // Green tier
     }
@@ -1483,7 +1537,7 @@ struct HomeView: View {
         let best = StreakTracker.bestStreak
         let last = StreakTracker.lastVisitDate
 
-        let usedSecs = max(0, dailyUsageTodaySeconds)
+        let usedSecs = max(0, dailyUsageTodaySeconds_streaks)
         let goalSecs = dailyGoalSeconds
         let progress = min(1.0, Double(usedSecs) / Double(goalSecs))
         let usedLabel: String = {
@@ -1491,7 +1545,7 @@ struct HomeView: View {
             let s = usedSecs % 60
             return String(format: "%d:%02d", m, s)
         }()
-        let goalLabel = "\(dailyGoalMinutes) min"
+        let goalLabel = "\(dailyGoalMinutes_streaks) min"
 
         HeroCard(
             title: "Daily Bible Streak",
@@ -2357,7 +2411,7 @@ private let oldTestamentBooks: Set<String> = [
 ]
 
 // Generic HeroCard with a trailing accessory closure (no AnyView)
-private struct HeroCard<Content: View, TrailingAccessory: View>: View {
+private struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: View {
     let title: String
     let subtitle: String?
     let icon: String?
@@ -2365,6 +2419,7 @@ private struct HeroCard<Content: View, TrailingAccessory: View>: View {
     let backgroundColor: Color?
     let strokeColor: Color?
     let trailingAccessory: (() -> TrailingAccessory)?
+    let titleAccessory: (() -> TitleAccessory)?
     let titleFont: Font
     let titleFontWeight: Font.Weight
     let centerHeader: Bool
@@ -2383,7 +2438,7 @@ private struct HeroCard<Content: View, TrailingAccessory: View>: View {
         titleFontWeight: Font.Weight = .bold,
         centerHeader: Bool = false,
         @ViewBuilder content: () -> Content
-    ) where TrailingAccessory == EmptyView {
+    ) where TrailingAccessory == EmptyView, TitleAccessory == EmptyView {
         self.title = title
         self.subtitle = subtitle
         self.icon = icon
@@ -2391,6 +2446,7 @@ private struct HeroCard<Content: View, TrailingAccessory: View>: View {
         self.backgroundColor = backgroundColor
         self.strokeColor = strokeColor
         self.trailingAccessory = nil
+        self.titleAccessory = nil
         self.titleFont = titleFont
         self.titleFontWeight = titleFontWeight
         self.centerHeader = centerHeader
@@ -2409,14 +2465,70 @@ private struct HeroCard<Content: View, TrailingAccessory: View>: View {
         titleFontWeight: Font.Weight = .bold,
         centerHeader: Bool = false,
         @ViewBuilder content: () -> Content
+    ) where TitleAccessory == EmptyView {
+        self.title = title
+        self.subtitle = subtitle
+        self.icon = icon
+        self.tint = tint
+        self.backgroundColor = backgroundColor
+        self.strokeColor = strokeColor
+        self.trailingAccessory = trailingAccessory
+        self.titleAccessory = nil
+        self.titleFont = titleFont
+        self.titleFontWeight = titleFontWeight
+        self.centerHeader = centerHeader
+        self.content = content()
+    }
+
+    init(
+        title: String,
+        subtitle: String? = nil,
+        icon: String? = nil,
+        tint: Color = .accentColor,
+        backgroundColor: Color? = nil,
+        strokeColor: Color? = nil,
+        titleFont: Font = .headline,
+        titleFontWeight: Font.Weight = .bold,
+        centerHeader: Bool = false,
+        titleAccessory: @escaping () -> TitleAccessory,
+        @ViewBuilder content: () -> Content
+    ) where TrailingAccessory == EmptyView {
+        self.title = title
+        self.subtitle = subtitle
+        self.icon = icon
+        self.tint = tint
+        self.backgroundColor = backgroundColor
+        self.strokeColor = strokeColor
+        self.trailingAccessory = nil
+        self.titleAccessory = titleAccessory
+        self.titleFont = titleFont
+        self.titleFontWeight = titleFontWeight
+        self.centerHeader = centerHeader
+        self.content = content()
+    }
+
+    init(
+        title: String,
+        subtitle: String? = nil,
+        icon: String? = nil,
+        tint: Color = .accentColor,
+        backgroundColor: Color? = nil,
+        strokeColor: Color? = nil,
+        trailingAccessory: @escaping () -> TrailingAccessory,
+        titleFont: Font = .headline,
+        titleFontWeight: Font.Weight = .bold,
+        centerHeader: Bool = false,
+        titleAccessory: @escaping () -> TitleAccessory,
+        @ViewBuilder content: () -> Content
     ) {
         self.title = title
         self.subtitle = subtitle
         self.icon = icon
-               self.tint = tint
+        self.tint = tint
         self.backgroundColor = backgroundColor
         self.strokeColor = strokeColor
         self.trailingAccessory = trailingAccessory
+        self.titleAccessory = titleAccessory
         self.titleFont = titleFont
         self.titleFontWeight = titleFontWeight
         self.centerHeader = centerHeader
@@ -2434,10 +2546,16 @@ private struct HeroCard<Content: View, TrailingAccessory: View>: View {
                                     .foregroundStyle(tint)
                                     .font(titleFont)
                             }
-                            Text(title)
-                                .font(titleFont)
-                                .fontWeight(titleFontWeight)
-                                .multilineTextAlignment(.center)
+                            // Title + optional accessory (e.g., flame)
+                            HStack(spacing: 6) {
+                                Text(title)
+                                    .font(titleFont)
+                                    .fontWeight(titleFontWeight)
+                                    .multilineTextAlignment(.center)
+                                if let titleAccessory {
+                                    titleAccessory()
+                                }
+                            }
                         }
                         .frame(maxWidth: .infinity, alignment: .center)
 
