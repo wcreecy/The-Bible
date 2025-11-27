@@ -20,6 +20,7 @@ struct SettingsView: View {
 
     // Daily Goal (minutes)
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
+    @State private var showDailyGoalPicker: Bool = false
 
     // Live Activities master toggle
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
@@ -372,17 +373,47 @@ struct SettingsView: View {
 
     private var dailyGoalSection: some View {
         Section(header: Text("Daily Goal"), footer: Text("Set the number of minutes you want to spend in the app each day. Your Daily Bible Streak is based on meeting this goal.").font(.footnote).foregroundStyle(.secondary)) {
-            Stepper(value: $dailyGoalMinutes, in: 1...240, step: 1) {
+            Button {
+                showDailyGoalPicker = true
+            } label: {
                 HStack {
                     Label("Daily Goal", systemImage: "target")
+                        .foregroundStyle(.blue) // make target icon blue
                     Spacer()
                     Text("\(dailyGoalMinutes) min")
                         .foregroundStyle(.secondary)
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(.tertiary)
                 }
             }
-            .accessibilityIdentifier("dailyGoalMinutesStepper")
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("dailyGoalMinutesPickerLink")
         }
         .headerProminence(.increased)
+        .sheet(isPresented: $showDailyGoalPicker) {
+            NavigationStack {
+                VStack {
+                    Picker("", selection: $dailyGoalMinutes) {
+                        ForEach(1...240, id: \.self) { m in
+                            Text("\(m) minute\(m == 1 ? "" : "s")").tag(m)
+                        }
+                    }
+                    .pickerStyle(.wheel)
+                    .accessibilityIdentifier("dailyGoalMinutesWheel")
+                }
+                .navigationTitle("Daily Goal")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") { showDailyGoalPicker = false }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") { showDailyGoalPicker = false }
+                    }
+                }
+                .presentationDetents([.medium, .large])
+            }
+        }
     }
 
     private var liveActivitiesSection: some View {
@@ -412,12 +443,7 @@ struct SettingsView: View {
                 Label("Edit Order & Visibility", systemImage: "arrow.up.arrow.down")
             }
 
-            Button("Restore Default Order") {
-                layoutOrder = HomeCardID.allCases
-                hiddenSet = [.games, .streaks] // keep Games and Streaks hidden by default
-                saveHomeLayout()
-            }
-            .buttonStyle(.bordered)
+            // Removed "Restore Default Order" button from main Settings page as requested.
         }
         .headerProminence(.increased)
         .onAppear(perform: loadHomeLayout)
@@ -573,46 +599,66 @@ extension SettingsView {
         var save: () -> Void
 
         var body: some View {
-            List {
-                ForEach(order, id: \.self) { card in
-                    HStack {
-                        Label(card.title, systemImage: card.systemImage)
-                            .opacity(hidden.contains(card) ? 0.45 : 1.0)
+            VStack(spacing: 12) {
+                List {
+                    ForEach(order, id: \.self) { card in
+                        HStack {
+                            Label(card.title, systemImage: card.systemImage)
+                                .opacity(hidden.contains(card) ? 0.45 : 1.0)
 
-                        Spacer()
+                            Spacer()
 
-                        Button {
-                            if hidden.contains(card) {
-                                hidden.remove(card)
-                            } else {
-                                hidden.insert(card)
+                            Button {
+                                if hidden.contains(card) {
+                                    hidden.remove(card)
+                                } else {
+                                    hidden.insert(card)
+                                }
+                                save()
+                            } label: {
+                                Image(systemName: hidden.contains(card) ? "eye.slash" : "eye")
+                                    .foregroundStyle(hidden.contains(card) ? .secondary : .primary)
+                                    .imageScale(.medium)
                             }
-                            save()
-                        } label: {
-                            Image(systemName: hidden.contains(card) ? "eye.slash" : "eye")
-                                .foregroundStyle(hidden.contains(card) ? .secondary : .primary)
-                                .imageScale(.medium)
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(hidden.contains(card) ? "Show \(card.title)" : "Hide \(card.title)")
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(hidden.contains(card) ? "Show \(card.title)" : "Hide \(card.title)")
                     }
-                }
-                .onMove { indices, newOffset in
-                    order.move(fromOffsets: indices, toOffset: newOffset)
-                    save()
-                }
-            }
-            .environment(\.editMode, .constant(.active)) // always show reorder handles
-            .navigationTitle("Reorder Home")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Restore Default") {
-                        order = HomeCardID.allCases
-                        hidden = [.games, .streaks] // keep Games and Streaks hidden by default
+                    .onMove { indices, newOffset in
+                        order.move(fromOffsets: indices, toOffset: newOffset)
                         save()
                     }
                 }
+                .environment(\.editMode, .constant(.active)) // always show reorder handles
+
+                // New row with "Show All" and "Restore Default" under the draggable list
+                HStack(spacing: 12) {
+                    Button {
+                        // Show All: unhide all cards
+                        hidden.removeAll()
+                        save()
+                    } label: {
+                        Label("Show All", systemImage: "eye")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+
+                    Button {
+                        // Restore Default: reset order and default hidden set
+                        order = HomeCardID.allCases
+                        hidden = [.games, .streaks]
+                        save()
+                    } label: {
+                        Label("Restore Default", systemImage: "arrow.counterclockwise")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 8)
             }
+            .navigationTitle("Reorder Home")
+            // Removed toolbar Restore Default button (moved below list).
             .onDisappear {
                 save()
             }

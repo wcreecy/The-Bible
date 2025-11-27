@@ -1266,10 +1266,10 @@ struct HomeView: View {
     }
 
     private func titleForPercent(_ pct: Double) -> String {
-        if pct < 60 { return "Usher" }             // Red tier
-        else if pct < 75 { return "Altar Worker" }            // Orange tier
-        else if pct < 90 { return "Apostle" }          // Purple tier
-        else { return "Bible Scholar" }                // Green tier
+        if pct < 60 { return "Usher" }
+        else if pct < 75 { return "Altar Worker" }
+        else if pct < 90 { return "Apostle" }
+        else { return "Bible Scholar" }
     }
 
     // Collapsible Games Card state
@@ -1291,7 +1291,7 @@ struct HomeView: View {
             icon: "gamecontroller",
             tint: isEmpty ? .secondary : gamerColor,
             backgroundColor: nil,
-            strokeColor: isEmpty ? Color.secondary.opacity(0.5) : gamerColor.opacity(0.6)
+            strokeColor: nil // removed colored outline around the Games card
         ) {
             VStack(alignment: .leading, spacing: 12) {
                 DisclosureGroup(isExpanded: $gamesExpanded) {
@@ -1313,48 +1313,64 @@ struct HomeView: View {
 
                             Divider()
 
-                            // Player Stat Sheet
+                            // Player Stat Sheet with header and aligned columns (center numeric columns)
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Player Stat Sheet")
                                     .font(.subheadline).bold()
                                     .foregroundStyle(.secondary)
 
+                                // Column metrics
+                                let nameWidth: CGFloat = 140
+                                let colWidth: CGFloat = 72
+
+                                // Header
+                                HStack(spacing: 10) {
+                                    Text("Game")
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.secondary)
+                                        .frame(width: nameWidth, alignment: .leading)
+                                    Spacer(minLength: 0)
+                                    Text("Played")
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.secondary)
+                                        .frame(width: colWidth, alignment: .center)
+                                    Text("Avg")
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.secondary)
+                                        .frame(width: colWidth, alignment: .center)
+                                    Text("Streak")
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.secondary)
+                                        .frame(width: colWidth, alignment: .center)
+                                }
+
+                                // Rows
                                 let stats = allGameStats
                                 ForEach(Array(stats.enumerated()), id: \.offset) { pair in
-                                    let i = pair.offset
                                     let s = pair.element
                                     let share: Double = totalAnswered > 0 ? (Double(s.answered) / Double(totalAnswered)) * 100.0 : 0
                                     let avg = percent(s.correct, s.answered)
                                     HStack(spacing: 10) {
                                         Text(s.name)
                                             .font(.subheadline.weight(.semibold))
-                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                            .frame(width: nameWidth, alignment: .leading)
 
-                                        // Share of play
-                                        HStack(spacing: 4) {
-                                            Image(systemName: "chart.pie.fill").foregroundStyle(.blue)
-                                                .accessibilityHidden(true)
-                                            Text("\(Int(round(share)))%")
-                                        }
-                                        .font(.footnote)
+                                        Spacer(minLength: 0)
 
-                                        // Average score
-                                        HStack(spacing: 4) {
-                                            Image(systemName: "percent").foregroundStyle(colorForPercent(avg))
-                                                .accessibilityHidden(true)
-                                            Text("\(Int(round(avg)))%")
-                                        }
-                                        .font(.footnote)
-
-                                        // Best streak if present
-                                        if let best = s.bestStreak, best > 0 {
-                                            HStack(spacing: 4) {
-                                                Image(systemName: "flame.fill").foregroundStyle(.orange)
-                                                    .accessibilityHidden(true)
-                                                Text("\(best)")
-                                            }
+                                        Text("\(Int(round(share)))%")
                                             .font(.footnote)
-                                        }
+                                            .monospacedDigit()
+                                            .frame(width: colWidth, alignment: .center)
+
+                                        Text("\(Int(round(avg)))%")
+                                            .font(.footnote)
+                                            .monospacedDigit()
+                                            .frame(width: colWidth, alignment: .center)
+
+                                        Text(s.bestStreak != nil && s.bestStreak! > 0 ? "\(s.bestStreak!)" : "—")
+                                            .font(.footnote)
+                                            .monospacedDigit()
+                                            .frame(width: colWidth, alignment: .center)
                                     }
                                     .foregroundStyle(s.answered == 0 ? .secondary : .primary)
                                     .accessibilityElement(children: .ignore)
@@ -1370,28 +1386,6 @@ struct HomeView: View {
                                         }()
                                     )
                                 }
-                            }
-
-                            // CTA
-                            let mostPlayed = allGameStats.max(by: { $0.answered < $1.answered })
-                            if let most = mostPlayed, most.answered > 0 {
-                                Button {
-                                    NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 3])
-                                } label: {
-                                    Label("Play Most-Played: \(most.name)", systemImage: "play.circle.fill")
-                                }
-                                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                                .controlSize(.regular)
-                                .padding(.top, 6)
-                            } else {
-                                Button {
-                                    NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 3])
-                                } label: {
-                                    Label("Play Games", systemImage: "play.circle.fill")
-                                }
-                                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                                .controlSize(.regular)
-                                .padding(.top, 6)
                             }
                         }
                     }
@@ -1595,9 +1589,7 @@ struct HomeView: View {
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.secondary)
                         Spacer()
-                        Text("\(usedLabel) / \(goalLabel)")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                        // Removed live counter label "usedLabel / goalLabel"
                     }
                     ProgressView(value: progress)
                         .tint(progress >= 1.0 ? .green : .blue)
@@ -2729,3 +2721,4 @@ private final class DebouncedWidgetReloader {
         queue.asyncAfter(deadline: .now() + 0.6, execute: item)
     }
 }
+
