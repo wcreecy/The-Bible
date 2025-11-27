@@ -18,7 +18,8 @@ private enum HomeCardID: String, CaseIterable, Identifiable {
     case dailyFocus
     case timer
     case resumeReading
-    case games // NEW
+    case streaks // Daily Bible Streak (now before Games to match desired default order)
+    case games   // Games
     var id: String { rawValue }
 }
 
@@ -261,7 +262,8 @@ struct HomeView: View {
            let ids = try? JSONDecoder().decode([String].self, from: data) {
             hiddenSet = Set(ids.compactMap { HomeCardID(rawValue: $0) })
         } else {
-            hiddenSet = []
+            // Match Settings defaults: Games and Streaks hidden by default
+            hiddenSet = [.games, .streaks]
         }
     }
 
@@ -382,14 +384,14 @@ struct HomeView: View {
             tint: .blue,
             titleFont: titleFont,
             titleFontWeight: titleWeight,
-            centerHeader: isPad // center header on iPad
+            centerHeader: true // Center on iPhone and iPad
         ) {
             VStack(spacing: isPad ? 16 : 8) {
                 Text("What does God have for YOU today?")
                     .font(subtitleFont)
                     .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: isPad ? .center : .leading)
-                    .multilineTextAlignment(isPad ? .center : .leading)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .multilineTextAlignment(.center)
 
                 HStack(spacing: isPad ? 16 : 12) {
                     Button {
@@ -1333,20 +1335,104 @@ struct HomeView: View {
         }
     }
 
+    // MARK: - NEW: Streaks Card
+
+    @ViewBuilder
+    private var streaksCard: some View {
+        let current = StreakTracker.currentStreak
+        let best = StreakTracker.bestStreak
+        let last = StreakTracker.lastVisitDate
+
+        HeroCard(
+            title: "Daily Bible Streak",
+            subtitle: nil,
+            icon: "flame.fill",
+            tint: current > 0 ? .orange : .secondary
+        ) {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .firstTextBaseline, spacing: 12) {
+                    Text("\(current)")
+                        .font(.system(size: isPad ? 48 : 40, weight: .black, design: .rounded))
+                        .foregroundStyle(current > 0 ? .orange : .secondary)
+                        .accessibilityLabel("Current streak \(current) days")
+                    Text(current == 1 ? "day" : "days")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    if best > 0 {
+                        HStack(spacing: 6) {
+                            Image(systemName: "trophy.fill")
+                                .foregroundStyle(.yellow)
+                            Text("Best \(best)")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        }
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("Best streak \(best) days")
+                    }
+                }
+
+                if let last {
+                    Text("Last read: \(friendlyDate(last))")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("Start your first day today.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+
+                HStack(spacing: 12) {
+                    Button {
+                        // Jump to Bible tab
+                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 1])
+                    } label: {
+                        Label("Read now", systemImage: "book.fill")
+                    }
+                    .buttonStyle(ModernPillButtonStyle(tint: .blue))
+
+                    Button {
+                        // Share streak
+                        let message: String = {
+                            if current > 0 {
+                                return "I'm on a \(current)-day Bible reading streak!"
+                            } else {
+                                return "I'm starting my Bible reading streak today!"
+                            }
+                        }()
+                        let av = UIActivityViewController(activityItems: [message], applicationActivities: nil)
+                        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                           let root = scene.keyWindow?.rootViewController {
+                            root.present(av, animated: true)
+                        }
+                    } label: {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                    .buttonStyle(ModernPillButtonStyle(tint: .orange))
+                }
+                .padding(.top, 2)
+            }
+        }
+        .accessibilityElement(children: .contain)
+    }
+
+    private func friendlyDate(_ date: Date) -> String {
+        let cal = Calendar.current
+        if cal.isDateInToday(date) { return "Today" }
+        if cal.isDateInYesterday(date) { return "Yesterday" }
+        return date.formatted(date: .abbreviated, time: .omitted)
+    }
+
     // MARK: - Dynamic body using saved layout
 
     var body: some View {
-        // Temporary dev flag: force show Games card even if hidden in Settings.
-        let forceShowGamesCard = true
-
         ScrollView {
             VStack(spacing: 16) {
                 titleCard
 
                 // Render reorderable/hideable cards based on saved layout
                 ForEach(layoutOrder, id: \.self) { card in
-                    // Temporary override: always show Games while building/testing
-                    if (card == .games && forceShowGamesCard) || !hiddenSet.contains(card) {
+                    if !hiddenSet.contains(card) {
                         switch card {
                         case .verseOfDay:
                             verseOfDayCard
@@ -1358,6 +1444,8 @@ struct HomeView: View {
                             resumeCard
                         case .games:
                             gamesCard
+                        case .streaks:
+                            streaksCard
                         }
                     }
                 }

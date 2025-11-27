@@ -68,6 +68,9 @@ struct ReadingView: View {
             .navigationBarTitleDisplayMode(.inline)
             .onAppear(perform: onAppear)
             .onAppear {
+                // Mark daily streak: viewing reader counts as a daily visit
+                StreakTracker.markVisitedToday()
+
                 // Load canonical book order once
                 Task { @MainActor in
                     await loadOrderedBookNames()
@@ -212,6 +215,8 @@ struct ReadingView: View {
                     highlightedVerse = nil
                     selectedVerse = nil
                     topVisibleVerseID = rowID(for: 1)
+                    // Mark daily streak on chapter change as well (still within same day; harmless)
+                    StreakTracker.markVisitedToday()
                 }
                 .onAppear {
                     DispatchQueue.main.async {

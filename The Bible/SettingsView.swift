@@ -29,6 +29,7 @@ struct SettingsView: View {
         case timer
         case resumeReading
         case games // NEW
+        case streaks // NEW: Daily Bible Streak
 
         var id: String { rawValue }
         var title: String {
@@ -38,6 +39,7 @@ struct SettingsView: View {
             case .timer: return "Prayer Timer / Stopwatch"
             case .resumeReading: return "Continue Reading"
             case .games: return "Games"
+            case .streaks: return "Daily Bible Streak"
             }
         }
         var systemImage: String {
@@ -47,6 +49,7 @@ struct SettingsView: View {
             case .timer: return "timer"
             case .resumeReading: return "bookmark.fill"
             case .games: return "gamecontroller"
+            case .streaks: return "flame.fill"
             }
         }
     }
@@ -74,8 +77,8 @@ struct SettingsView: View {
            let ids = try? JSONDecoder().decode([String].self, from: data) {
             hiddenSet = Set(ids.compactMap { HomeCardID(rawValue: $0) })
         } else {
-            // Default hidden: keep the new Games card hidden until enabled by the user
-            hiddenSet = [.games]
+            // Default hidden: keep the new Games and Streaks cards hidden until enabled by the user
+            hiddenSet = [.games, .streaks]
         }
     }
 
@@ -392,7 +395,7 @@ struct SettingsView: View {
 
             Button("Restore Default Order") {
                 layoutOrder = HomeCardID.allCases
-                hiddenSet = [.games] // keep Games hidden by default
+                hiddenSet = [.games, .streaks] // keep Games and Streaks hidden by default
                 saveHomeLayout()
             }
             .buttonStyle(.bordered)
@@ -586,7 +589,7 @@ extension SettingsView {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Restore Default") {
                         order = HomeCardID.allCases
-                        hidden = [.games] // keep Games hidden by default
+                        hidden = [.games, .streaks] // keep Games and Streaks hidden by default
                         save()
                     }
                 }
@@ -619,3 +622,4 @@ private struct FontFamilyEnvironmentModifier: ViewModifier {
 #Preview {
     NavigationStack { SettingsView() }
 }
+
