@@ -18,6 +18,9 @@ struct SettingsView: View {
     @AppStorage("votdRefresh2Hour") private var votdRefresh2Hour: Int = 18
     @AppStorage("votdRefresh2Minute") private var votdRefresh2Minute: Int = 0
 
+    // Daily Goal (minutes)
+    @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
+
     // Live Activities master toggle
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
 
@@ -28,6 +31,7 @@ struct SettingsView: View {
         case dailyFocus
         case timer
         case resumeReading
+        case dailyGoal // NEW: Daily Goal card
         case games // NEW
         case streaks // NEW: Daily Bible Streak
 
@@ -38,6 +42,7 @@ struct SettingsView: View {
             case .dailyFocus: return "Daily Focus"
             case .timer: return "Prayer Timer / Stopwatch"
             case .resumeReading: return "Continue Reading"
+            case .dailyGoal: return "Daily Goal"
             case .games: return "Games"
             case .streaks: return "Daily Bible Streak"
             }
@@ -48,6 +53,7 @@ struct SettingsView: View {
             case .dailyFocus: return "target"
             case .timer: return "timer"
             case .resumeReading: return "bookmark.fill"
+            case .dailyGoal: return "target" // same glyph family; could be "clock.badge.checkmark"
             case .games: return "gamecontroller"
             case .streaks: return "flame.fill"
             }
@@ -70,6 +76,7 @@ struct SettingsView: View {
             let missing = HomeCardID.allCases.filter { !mapped.contains($0) }
             layoutOrder = mapped + missing
         } else {
+            // Default order puts Daily Goal above Streaks
             layoutOrder = HomeCardID.allCases
         }
 
@@ -77,8 +84,8 @@ struct SettingsView: View {
            let ids = try? JSONDecoder().decode([String].self, from: data) {
             hiddenSet = Set(ids.compactMap { HomeCardID(rawValue: $0) })
         } else {
-            // Default hidden: keep the new Games and Streaks cards hidden until enabled by the user
-            hiddenSet = [.games, .streaks]
+            // Default hidden: keep Games, Streaks, and Daily Goal hidden by default
+            hiddenSet = [.games, .streaks, .dailyGoal]
         }
     }
 
@@ -172,6 +179,7 @@ struct SettingsView: View {
             verseOfTheDaySection
             appearanceSection
             timerSection
+            dailyGoalSection
             liveActivitiesSection
             homeLayoutSection
             gameDataSection
@@ -366,6 +374,21 @@ struct SettingsView: View {
         .headerProminence(.increased)
     }
 
+    private var dailyGoalSection: some View {
+        Section(header: Text("Daily Goal"), footer: Text("Set the number of minutes you want to spend in the app each day. You can show or hide the Daily Goal card from Home Layout.").font(.footnote).foregroundStyle(.secondary)) {
+            Stepper(value: $dailyGoalMinutes, in: 1...240, step: 1) {
+                HStack {
+                    Label("Daily Goal", systemImage: "target")
+                    Spacer()
+                    Text("\(dailyGoalMinutes) min")
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .accessibilityIdentifier("dailyGoalMinutesStepper")
+        }
+        .headerProminence(.increased)
+    }
+
     private var liveActivitiesSection: some View {
         Section(header: Text("Live Activities"), footer: Text("Show your Prayer Timer, Stopwatch, or Daily Focus on the Lock Screen and Dynamic Island. You can turn this off anytime.").font(.footnote).foregroundStyle(.secondary)) {
             Toggle(isOn: $liveActivitiesEnabled) {
@@ -395,7 +418,7 @@ struct SettingsView: View {
 
             Button("Restore Default Order") {
                 layoutOrder = HomeCardID.allCases
-                hiddenSet = [.games, .streaks] // keep Games and Streaks hidden by default
+                hiddenSet = [.games, .streaks, .dailyGoal] // keep Games, Streaks, Daily Goal hidden by default
                 saveHomeLayout()
             }
             .buttonStyle(.bordered)
@@ -589,7 +612,7 @@ extension SettingsView {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Restore Default") {
                         order = HomeCardID.allCases
-                        hidden = [.games, .streaks] // keep Games and Streaks hidden by default
+                        hidden = [.games, .streaks, .dailyGoal] // keep Games, Streaks, Daily Goal hidden by default
                         save()
                     }
                 }

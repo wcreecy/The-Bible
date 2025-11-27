@@ -33,6 +33,13 @@ struct ContentView: View {
     @AppStorage("didCleanupAppTimeKeys") private var didCleanupAppTimeKeys: Bool = false
     // One-time cleanup for deprecated keepScreenOn setting
     @AppStorage("didCleanupKeepScreenOnKey") private var didCleanupKeepScreenOnKey: Bool = false
+
+    // Daily usage tracking (per local day)
+    @Environment(\.scenePhase) private var scenePhase
+    @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds: Int = 0
+    @AppStorage("dailyUsageTodayKey") private var dailyUsageTodayKey: String = ""
+    @State private var usageTimer: Timer? = nil
+    @State private var nextMidnightTimer: Timer? = nil
     
     private var preferredScheme: ColorScheme? { (ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme }
     private var preferredDynamicType: DynamicTypeSize? { (FontSizePreference(rawValue: fontSizePreferenceRaw) ?? .system).dynamicTypeSize }
@@ -140,6 +147,10 @@ struct ContentView: View {
                     ensureSavedFocusLiveActivityIfNeeded()
                 }
             }
+
+            // Initialize daily usage tracking day key and rollover timer
+            initializeUsageDayIfNeeded()
+            scheduleMidnightRollover()
         }
         .onChange(of: selectedTab) { _, newValue in
             if newValue == 0 {
@@ -208,6 +219,72 @@ struct ContentView: View {
         .onReceive(NotificationCenter.default.publisher(for: .openSettingsTab)) { _ in
             selectedTab = 6
         }
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .active:
+                startUsageTimerIfNeeded()
+            case .inactive, .background:
+                stopUsageTimer()
+            @unknown default:
+                break
+            }
+        }
+    }
+
+    // MARK: - Daily usage tracking
+
+    private func todayKey(for date: Date = Date()) -> String {
+        let cal = Calendar.current
+        let comps = cal.dateComponents([.year, .month, .day], from: date)
+        let y = comps.year ?? 0, m = comps.month ?? 0, d = comps.day ?? 0
+        return String(format: "%04d-%02d-%02d", y, m, d)
+    }
+
+    private func initializeUsageDayIfNeeded() {
+        let key = todayKey()
+        if dailyUsageTodayKey != key {
+            dailyUsageTodayKey = key
+            dailyUsageTodaySeconds = 0
+        }
+    }
+
+    private func scheduleMidnightRollover() {
+        nextMidnightTimer?.invalidate()
+        let cal = Calendar.current
+        let now = Date()
+        guard let startOfTomorrow = cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: now)) else { return }
+        let interval = startOfTomorrow.timeIntervalSince(now)
+        nextMidnightTimer = Timer.scheduledTimer(withTimeInterval: max(1, interval), repeats: false) { _ in
+            // Rollover day
+            dailyUsageTodayKey = todayKey()
+            dailyUsageTodaySeconds = 0
+            // Reschedule for next midnight
+            scheduleMidnightRollover()
+        }
+        if let t = nextMidnightTimer {
+            RunLoop.main.add(t, forMode: .common)
+        }
+    }
+
+    private func startUsageTimerIfNeeded() {
+        initializeUsageDayIfNeeded()
+        guard usageTimer == nil else { return }
+        usageTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            let key = todayKey()
+            if key != dailyUsageTodayKey {
+                dailyUsageTodayKey = key
+                dailyUsageTodaySeconds = 0
+            }
+            dailyUsageTodaySeconds += 1
+        }
+        if let t = usageTimer {
+            RunLoop.main.add(t, forMode: .common)
+        }
+    }
+
+    private func stopUsageTimer() {
+        usageTimer?.invalidate()
+        usageTimer = nil
     }
 
     // MARK: - Helpers
@@ -230,3 +307,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+

@@ -18,6 +18,7 @@ private enum HomeCardID: String, CaseIterable, Identifiable {
     case dailyFocus
     case timer
     case resumeReading
+    case dailyGoal // NEW: Daily Goal card
     case streaks // Daily Bible Streak (now before Games to match desired default order)
     case games   // Games
     var id: String { rawValue }
@@ -262,8 +263,8 @@ struct HomeView: View {
            let ids = try? JSONDecoder().decode([String].self, from: data) {
             hiddenSet = Set(ids.compactMap { HomeCardID(rawValue: $0) })
         } else {
-            // Match Settings defaults: Games and Streaks hidden by default
-            hiddenSet = [.games, .streaks]
+            // Match Settings defaults: Games, Streaks, and Daily Goal hidden by default
+            hiddenSet = [.games, .streaks, .dailyGoal]
         }
     }
 
@@ -789,6 +790,88 @@ struct HomeView: View {
                     .padding(.top, 6)
                 }
             }
+        }
+    }
+
+    // NEW: Daily Goal card
+
+    @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
+    @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds: Int = 0
+    @AppStorage("dailyUsageTodayKey") private var dailyUsageTodayKey: String = ""
+
+    private var dailyGoalSeconds: Int { max(1, dailyGoalMinutes) * 60 }
+    private var dailyProgress: Double {
+        let used = max(0, dailyUsageTodaySeconds)
+        return min(1.0, Double(used) / Double(dailyGoalSeconds))
+    }
+    private var remainingSecondsToday: Int {
+        max(0, dailyGoalSeconds - max(0, dailyUsageTodaySeconds))
+    }
+    private var remainingFormatted: String {
+        if remainingSecondsToday == 0 { return "Goal reached" }
+        let m = remainingSecondsToday / 60
+        let s = remainingSecondsToday % 60
+        return "\(m)m \(s)s left"
+    }
+
+    @ViewBuilder
+    private var dailyGoalCard: some View {
+        HeroCard(
+            title: "Daily Goal",
+            subtitle: "Time spent today",
+            icon: "target",
+            tint: dailyProgress >= 1.0 ? .green : .blue,
+            trailingAccessory: {
+                Button {
+                    NotificationCenter.default.post(name: .openSettingsTab, object: nil)
+                } label: {
+                    Label("Edit", systemImage: "slider.horizontal.3")
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.blue)
+                .accessibilityLabel("Edit Daily Goal")
+            }
+        ) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text("\(formatHMS(dailyUsageTodaySeconds))")
+                        .font(.system(size: isPad ? 40 : 34, weight: .bold, design: .rounded))
+                        .foregroundStyle(.primary)
+                        .monospacedDigit()
+                    Spacer()
+                    Text("\(dailyGoalMinutes) min goal")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                ProgressView(value: dailyProgress)
+                    .tint(dailyProgress >= 1.0 ? .green : .blue)
+                HStack {
+                    if dailyProgress >= 1.0 {
+                        Label("Great job! You reached your goal.", systemImage: "checkmark.seal.fill")
+                            .foregroundStyle(.green)
+                            .font(.footnote.weight(.semibold))
+                    } else {
+                        Label(remainingFormatted, systemImage: "clock")
+                            .foregroundStyle(.secondary)
+                            .font(.footnote)
+                    }
+                    Spacer()
+                }
+            }
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Daily Goal. \(formatHMS(dailyUsageTodaySeconds)) used today. Goal \(dailyGoalMinutes) minutes. \(dailyProgress >= 1.0 ? "Goal reached." : remainingFormatted).")
+    }
+
+    private func formatHMS(_ seconds: Int) -> String {
+        let s = max(0, seconds)
+        let h = s / 3600
+        let m = (s % 3600) / 60
+        let sec = s % 60
+        if h > 0 {
+            return String(format: "%d:%02d:%02d", h, m, sec)
+        } else {
+            return String(format: "%d:%02d", m, sec)
         }
     }
 
@@ -1446,6 +1529,8 @@ struct HomeView: View {
                             gamesCard
                         case .streaks:
                             streaksCard
+                        case .dailyGoal:
+                            dailyGoalCard
                         }
                     }
                 }
@@ -2352,3 +2437,4 @@ private final class DebouncedWidgetReloader {
         queue.asyncAfter(deadline: .now() + 0.6, execute: item)
     }
 }
+
