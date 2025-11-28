@@ -44,6 +44,7 @@
 		2C4F30982ED9150E006C8DFD /* ReadingTimeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4F30972ED9150E006C8DFD /* ReadingTimeTracker.swift */; };
 		2C4F309A2ED91514006C8DFD /* BibleStatsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4F30992ED91514006C8DFD /* BibleStatsStore.swift */; };
 		2C4F309C2ED9BF4D006C8DFD /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4F309B2ED9BF4D006C8DFD /* StatsView.swift */; };
+		2C4F309E2EDA1DFE006C8DFD /* HomeBibleStatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4F309D2EDA1DFE006C8DFD /* HomeBibleStatsViewModel.swift */; };
 		2CB309D32EC2CE2D0032CB7D /* BibleReferenceLinker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB309D22EC2CE2D0032CB7D /* BibleReferenceLinker.swift */; };
 		2CBDF1DA2ED09F7E00CEE884 /* WordSearchGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBDF1D92ED09F7E00CEE884 /* WordSearchGameView.swift */; };
 		2CC5D6E92ED608E8009E4C0E /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC5D6E82ED608E8009E4C0E /* Haptics.swift */; };
@@ -139,6 +140,7 @@
 		2C4F30972ED9150E006C8DFD /* ReadingTimeTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingTimeTracker.swift; sourceTree = "<group>"; };
 		2C4F30992ED91514006C8DFD /* BibleStatsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleStatsStore.swift; sourceTree = "<group>"; };
 		2C4F309B2ED9BF4D006C8DFD /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		2C4F309D2EDA1DFE006C8DFD /* HomeBibleStatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeBibleStatsViewModel.swift; sourceTree = "<group>"; };
 		2C736D082EB9899600CD2E6F /* BibleSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleSplitView.swift; sourceTree = "<group>"; };
 		2C7841382EB407C0008DDBBF /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		2C82F4852EBACCE600DB40FC /* BookSelectionLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookSelectionLink.swift; sourceTree = "<group>"; };
@@ -373,6 +375,7 @@
 				2C4F30972ED9150E006C8DFD /* ReadingTimeTracker.swift */,
 				2C4F30992ED91514006C8DFD /* BibleStatsStore.swift */,
 				2C4F309B2ED9BF4D006C8DFD /* StatsView.swift */,
+				2C4F309D2EDA1DFE006C8DFD /* HomeBibleStatsViewModel.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -785,6 +788,7 @@
 				2CD7D8232EC9FF9A00849235 /* LastReadProvider.swift in Sources */,
 				2C4F309C2ED9BF4D006C8DFD /* StatsView.swift in Sources */,
 				2C49CF532EBE10310006FF79 /* NavigationCoordinator.swift in Sources */,
+				2C4F309E2EDA1DFE006C8DFD /* HomeBibleStatsViewModel.swift in Sources */,
 				2C4F30982ED9150E006C8DFD /* ReadingTimeTracker.swift in Sources */,
 				2CC5D6E92ED608E8009E4C0E /* Haptics.swift in Sources */,
 				2C49CF542EBE10310006FF79 /* Route.swift in Sources */,

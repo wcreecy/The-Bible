@@ -1477,81 +1477,162 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - NEW: Bible Stats Card (Top 5 books by reading time)
+    // MARK: - NEW: Bible Stats Card (refactored: at-a-glance + OT/NT + Top 3/5 + completion)
 
-    @State private var bibleStatsExpanded: Bool = false
-    @State private var bibleTop5: [(book: String, seconds: Int)] = []
-    @State private var bibleMaxSeconds: Int = 0
-    @State private var statsCancellable: AnyCancellable?
-
-    private func refreshBibleStats() {
-        let top = BibleStatsStore.shared.sortedTop(n: 5)
-        bibleTop5 = top
-        bibleMaxSeconds = max(1, top.map { $0.seconds }.max() ?? 1)
-    }
+    @StateObject private var bibleVM = HomeBibleStatsViewModel()
 
     @ViewBuilder
     private var bibleStatsCard: some View {
         HeroCard(
             title: "Bible Stats",
-            subtitle: "Top 5 Books by Time",
+            subtitle: "At a glance",
             icon: "chart.bar.fill",
             tint: .teal
         ) {
             VStack(alignment: .leading, spacing: 10) {
-                if bibleTop5.isEmpty {
-                    Text("Start reading to build your stats.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                } else {
-                    DisclosureGroup(isExpanded: $bibleStatsExpanded) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            ForEach(Array(bibleTop5.enumerated()), id: \.offset) { _, entry in
-                                HStack(spacing: 10) {
-                                    Text(entry.book)
-                                        .font(.subheadline.weight(.semibold))
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    Text(BibleStatsStore.shared.format(entry.seconds))
-                                        .font(.footnote.monospacedDigit())
-                                        .foregroundStyle(.secondary)
-                                }
-                                ProgressView(value: Double(entry.seconds), total: Double(bibleMaxSeconds))
-                                    .tint(.teal)
-                            }
-                        }
-                        .transition(.opacity.combined(with: .move(edge: .top)))
-                    } label: {
-                        HStack {
-                            Text("Your Top Books")
-                                .font(.headline)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            if let first = bibleTop5.first {
-                                Text("\(first.book) • \(BibleStatsStore.shared.format(first.seconds))")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.primary)
-                                    .lineLimit(1)
-                            }
+                // Row 1: Today / This Week (+/-) / Last Read (relative)
+                HStack(spacing: 12) {
+                    statMiniPill(title: "Today", value: bibleVM.formatted(bibleVM.todaySeconds), tint: .blue)
+                    statMiniPill(title: "This Week", value: bibleVM.formatted(bibleVM.thisWeekSeconds), subtitle: bibleVM.weekDeltaOnlyValue, tint: .green)
+                    lastReadMiniPill(title: "Last Read", ref: bibleVM.lastReadBookChapter, relative: bibleVM.lastReadRelativeTime)
+                }
+
+                // Row 2: OT vs NT mini bar + totals
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 8) {
+                        Text("OT")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                        otNtMiniBar(ot: bibleVM.otSeconds, nt: bibleVM.ntSeconds)
+                        Text("NT")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                    HStack {
+                        Text("OT \(BibleStatsStore.shared.format(bibleVM.otSeconds))")
+                            .font(.caption).foregroundStyle(.secondary)
+                        Spacer()
+                        Text("NT \(BibleStatsStore.shared.format(bibleVM.ntSeconds))")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
+                }
+
+                // Row 3: Top books (always Top 3)
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Top Books")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        if let first = bibleVM.topBooks.first {
+                            Text("\(first.book) • \(BibleStatsStore.shared.format(first.seconds))")
+                                .font(.subheadline)
+                                .foregroundStyle(.primary)
+                                .lineLimit(1)
                         }
                     }
-                    .animation(.spring(response: 0.25, dampingFraction: 0.9), value: bibleStatsExpanded)
+
+                    let rows = Array(bibleVM.topBooks.prefix(3))
+                    ForEach(Array(rows.enumerated()), id: \.offset) { _, entry in
+                        HStack(spacing: 10) {
+                            Text(entry.book)
+                                .font(.subheadline.weight(.semibold))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text(BibleStatsStore.shared.format(entry.seconds))
+                                .font(.footnote.monospacedDigit())
+                                .foregroundStyle(.secondary)
+                        }
+                        ProgressView(value: Double(entry.seconds), total: Double(bibleVM.maxTopSeconds))
+                            .tint(.teal)
+                    }
                 }
+
+                // Row 4: Completion summary
+                HStack(spacing: 8) {
+                    Text("Chapters Visited \(bibleVM.visitedCount)/\(bibleVM.totalChapters) • \(bibleVM.completionPercent)%")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                }
+                .padding(.top, 2)
             }
             .onAppear {
-                refreshBibleStats()
-                // Subscribe to tracker updates to refresh live
-                if statsCancellable == nil {
-                    statsCancellable = ReadingTimeTracker.shared.$lastTotalsVersion
-                        .receive(on: RunLoop.main)
-                        .sink { _ in refreshBibleStats() }
-                }
+                bibleVM.refresh()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active {
-                    refreshBibleStats()
+                    bibleVM.refresh()
                 }
             }
         }
+    }
+
+    private func statMiniPill(title: String, value: String, subtitle: String? = nil, tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption).foregroundStyle(.secondary)
+            Text(value)
+                .font(.subheadline.weight(.semibold))
+                .monospacedDigit()
+            if let subtitle, !subtitle.isEmpty, title == "This Week" {
+                Text("vs last: \(subtitle)")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(tint.opacity(0.08))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(tint.opacity(0.25), lineWidth: 1)
+        )
+    }
+
+    private func lastReadMiniPill(title: String, ref: String, relative: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption).foregroundStyle(.secondary)
+            Text(ref)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(1)
+            Text(relative)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.orange.opacity(0.08))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.orange.opacity(0.25), lineWidth: 1)
+        )
+    }
+
+    private func otNtMiniBar(ot: Int, nt: Int) -> some View {
+        let total = max(1, ot + nt)
+        let otFrac = CGFloat(ot) / CGFloat(total)
+        let ntFrac = CGFloat(nt) / CGFloat(total)
+        return GeometryReader { geo in
+            HStack(spacing: 0) {
+                Rectangle()
+                    .fill(Color.blue.opacity(0.6))
+                    .frame(width: geo.size.width * otFrac)
+                Rectangle()
+                    .fill(Color.green.opacity(0.6))
+                    .frame(width: geo.size.width * ntFrac)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+        }
+        .frame(height: 10)
     }
 
     // MARK: - NEW: Streaks Card (now includes Daily Goal progress + expandable calendar)
@@ -1962,7 +2043,7 @@ struct HomeView: View {
             decodeHomeLayout()
 
             // Initial load of Bible Stats (even if card is hidden, keep state fresh)
-            refreshBibleStats()
+            bibleVM.refresh()
         }
         // Update when AppStorage strings change (e.g., after Settings saves or user toggles)
         .onChange(of: homeCardOrderRaw) { _, _ in decodeHomeLayout() }
@@ -1981,7 +2062,7 @@ struct HomeView: View {
                 _ = handlePrayerTimerPendingAction()
                 handleStopwatchPendingAction()
                 handleOpenPendingVerse()
-                refreshBibleStats()
+                bibleVM.refresh()
             case .inactive, .background:
                 if !isTimerRunning && !stopwatchRunning {
                     stopMindfulLogging()
@@ -2011,11 +2092,10 @@ struct HomeView: View {
         } message: {
             Text("Your prayer/study timer has completed.")
         }
-        // Reset Games card to collapsed whenever leaving Home
+        // Reset Games and Bible Stats card state whenever leaving Home
         .onDisappear {
             gamesExpanded = false
             streaksExpanded = false
-            bibleStatsExpanded = false
         }
     }
 
