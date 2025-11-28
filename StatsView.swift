@@ -46,6 +46,9 @@ struct StatsView: View {
     // Updates from tracker
     @State private var cancellable: AnyCancellable?
 
+    // New: selected book for chapter detail sheet
+    @State private var selectedBookForChapters: String? = nil
+
     private var orderedAllBooks: [String] {
         if !BibleData.books.isEmpty {
             return BibleData.books.map { $0.name }
@@ -85,6 +88,25 @@ struct StatsView: View {
                 cancellable = ReadingTimeTracker.shared.$lastTotalsVersion
                     .receive(on: RunLoop.main)
                     .sink { _ in refreshTotals() }
+            }
+        }
+        .sheet(item: Binding(
+            get: {
+                selectedBookForChapters.map { ChapterDetailKey(bookName: $0) }
+            },
+            set: { newValue in
+                selectedBookForChapters = newValue?.bookName
+            }
+        )) { key in
+            NavigationStack {
+                BookChaptersDetailView(bookName: key.bookName)
+                    .navigationTitle(key.bookName)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Close") { selectedBookForChapters = nil }
+                        }
+                    }
             }
         }
         .sheet(item: $selectedGenre) { genre in
@@ -316,26 +338,32 @@ struct StatsView: View {
                     VStack(spacing: 8) {
                         ForEach(orderedAllBooks, id: \.self) { name in
                             let prog = bookProgress[name] ?? (0, 1, 0.0)
-                            HStack(spacing: 8) {
-                                Text(name)
-                                    .font(.subheadline)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                GeometryReader { geo in
-                                    ZStack(alignment: .leading) {
-                                        RoundedRectangle(cornerRadius: 3, style: .continuous)
-                                            .fill(Color.primary.opacity(0.10))
-                                        RoundedRectangle(cornerRadius: 3, style: .continuous)
-                                            .fill(Color.accentColor.opacity(0.65))
-                                            .frame(width: geo.size.width * CGFloat(prog.fraction))
+                            Button {
+                                selectedBookForChapters = name
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Text(name)
+                                        .font(.subheadline)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    GeometryReader { geo in
+                                        ZStack(alignment: .leading) {
+                                            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                                                .fill(Color.primary.opacity(0.10))
+                                            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                                                .fill(Color.accentColor.opacity(0.65))
+                                                .frame(width: geo.size.width * CGFloat(prog.fraction))
+                                        }
                                     }
+                                    .frame(width: 120, height: 6)
+                                    Text("\(prog.read)/\(prog.total)")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                        .monospacedDigit()
+                                        .frame(width: 44, alignment: .trailing)
                                 }
-                                .frame(width: 120, height: 6)
-                                Text("\(prog.read)/\(prog.total)")
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                    .monospacedDigit()
-                                    .frame(width: 44, alignment: .trailing)
                             }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("\(name) \(prog.read) of \(prog.total) chapters")
                         }
                     }
                     .transition(.opacity.combined(with: .move(edge: .top)))
@@ -704,5 +732,77 @@ private struct ProgressRing<Label: View>: View {
         .frame(width: size, height: size)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(Text("Completion \(Int(round(progress * 100))) percent"))
+    }
+}
+
+// MARK: - Chapter detail support
+
+// Key to use Identifiable sheet(item:)
+private struct ChapterDetailKey: Identifiable, Hashable {
+    let bookName: String
+    var id: String { bookName }
+}
+
+// Modal view listing all chapters with read/unread indication
+private struct BookChaptersDetailView: View {
+    let bookName: String
+
+    @State private var visited: Set<String> = []
+    private var book: Book? {
+        BibleData.books.first(where: { $0.name == bookName })
+    }
+    private var chapterNumbers: [Int] {
+        guard let b = book else { return [] }
+        return b.chapters.map { $0.number }.sorted()
+    }
+
+    var body: some View {
+        Group {
+            if let b = book, !chapterNumbers.isEmpty {
+                List {
+                    Section {
+                        ForEach(chapterNumbers, id: \.self) { chap in
+                            let key = "\(b.name):\(chap)"
+                            let isRead = visited.contains(key)
+                            Button {
+                                NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
+                                    "book": b.name,
+                                    "chapter": chap,
+                                    "verse": 1
+                                ])
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: isRead ? "checkmark.circle.fill" : "circle")
+                                        .foregroundStyle(isRead ? .green : .secondary)
+                                    Text("Chapter \(chap)")
+                                        .strikethrough(isRead, color: .secondary)
+                                        .foregroundStyle(isRead ? .secondary : .primary)
+                                    Spacer()
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Chapter \(chap) \(isRead ? "read" : "unread")")
+                        }
+                    } header: {
+                        Text(b.name)
+                    } footer: {
+                        let readCount = chapterNumbers.reduce(0) { acc, chap in
+                            acc + (visited.contains("\(b.name):\(chap)") ? 1 : 0)
+                        }
+                        Text("\(readCount)/\(chapterNumbers.count) chapters read")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            } else if book != nil {
+                // Book with zero chapters (shouldn’t happen), still avoid invalid range
+                ContentUnavailableView("No chapters found", systemImage: "exclamationmark.triangle")
+            } else {
+                ContentUnavailableView("Book not found", systemImage: "exclamationmark.triangle")
+            }
+        }
+        .onAppear {
+            visited = BibleStatsStore.shared.loadVisitedChapters()
+        }
     }
 }

@@ -883,6 +883,16 @@ struct HomeView: View {
         }
     }
 
+    // Friendly formatter for goal minutes (e.g., "30 min", "1 hr", "1 hr 15 min")
+    private func goalMinutesString(_ minutes: Int) -> String {
+        let mins = max(0, minutes)
+        let hrs = mins / 60
+        let rem = mins % 60
+        if hrs == 0 { return "\(rem) min" }
+        if rem == 0 { return "\(hrs) hr" }
+        return "\(hrs) hr \(rem) min"
+    }
+
     @ViewBuilder
     private var timerCard: some View {
         Group {
@@ -1477,9 +1487,10 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - NEW: Bible Stats Card (refactored: at-a-glance + OT/NT + Top 3/5 + completion)
+    // MARK: - NEW: Bible Stats Card (collapsible; compact label shows only 3 mini-pills; expanded shows more)
 
     @StateObject private var bibleVM = HomeBibleStatsViewModel()
+    @AppStorage("bibleStatsExpanded") private var bibleStatsExpanded: Bool = false
 
     @ViewBuilder
     private var bibleStatsCard: some View {
@@ -1489,73 +1500,97 @@ struct HomeView: View {
             icon: "chart.bar.fill",
             tint: .teal
         ) {
-            VStack(alignment: .leading, spacing: 10) {
-                // Row 1: Today / This Week (+/-) / Last Read (relative)
+            DisclosureGroup(isExpanded: $bibleStatsExpanded) {
+                // Expanded content: OT/NT split, Top Books (Top 3, ranked without progress bars), Completion
+                VStack(alignment: .leading, spacing: 12) {
+                    // Row: OT vs NT mini bar + totals
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 8) {
+                            Text("OT")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                            otNtMiniBar(ot: bibleVM.otSeconds, nt: bibleVM.ntSeconds)
+                            Text("NT")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        }
+                        HStack {
+                            Text("OT \(BibleStatsStore.shared.format(bibleVM.otSeconds))")
+                                .font(.caption).foregroundStyle(.secondary)
+                            Spacer()
+                            Text("NT \(BibleStatsStore.shared.format(bibleVM.ntSeconds))")
+                                .font(.caption).foregroundStyle(.secondary)
+                        }
+                    }
+
+                    // Row: Top books (Top 3, ranked list without progress bars)
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("Top Books")
+                                .font(.headline)
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            if let first = bibleVM.topBooks.first {
+                                Text("\(first.book) • \(BibleStatsStore.shared.format(first.seconds))")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.primary)
+                                    .lineLimit(1)
+                            }
+                        }
+
+                        let rows = Array(bibleVM.topBooks.prefix(3))
+                        ForEach(Array(rows.enumerated()), id: \.offset) { index, entry in
+                            HStack(spacing: 10) {
+                                // Rank badge
+                                Text("\(index + 1)")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(.white)
+                                    .frame(width: 20, height: 20)
+                                    .background(Circle().fill(index == 0 ? Color.teal : (index == 1 ? Color.blue : Color.gray)))
+                                    .accessibilityHidden(true)
+
+                                // Book name
+                                Text(entry.book)
+                                    .font(.subheadline.weight(.semibold))
+                                    .lineLimit(1)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                                // Time
+                                Text(BibleStatsStore.shared.format(entry.seconds))
+                                    .font(.footnote.monospacedDigit())
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(.vertical, 4)
+                            .padding(.horizontal, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .fill(Color.teal.opacity(0.06))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .stroke(Color.teal.opacity(0.12), lineWidth: 1)
+                            )
+                        }
+                    }
+
+                    // Row: Completion summary
+                    HStack(spacing: 8) {
+                        Text("Visited \(bibleVM.visitedCount)/\(bibleVM.totalChapters) • \(bibleVM.completionPercent)%")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                    }
+                }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            } label: {
+                // Collapsed/label content: only the three mini-pills
                 HStack(spacing: 12) {
                     statMiniPill(title: "Today", value: bibleVM.formatted(bibleVM.todaySeconds), tint: .blue)
                     statMiniPill(title: "This Week", value: bibleVM.formatted(bibleVM.thisWeekSeconds), subtitle: bibleVM.weekDeltaOnlyValue, tint: .green)
                     lastReadMiniPill(title: "Last Read", ref: bibleVM.lastReadBookChapter, relative: bibleVM.lastReadRelativeTime)
                 }
-
-                // Row 2: OT vs NT mini bar + totals
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack(spacing: 8) {
-                        Text("OT")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                        otNtMiniBar(ot: bibleVM.otSeconds, nt: bibleVM.ntSeconds)
-                        Text("NT")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                    }
-                    HStack {
-                        Text("OT \(BibleStatsStore.shared.format(bibleVM.otSeconds))")
-                            .font(.caption).foregroundStyle(.secondary)
-                        Spacer()
-                        Text("NT \(BibleStatsStore.shared.format(bibleVM.ntSeconds))")
-                            .font(.caption).foregroundStyle(.secondary)
-                    }
-                }
-
-                // Row 3: Top books (always Top 3)
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Top Books")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                        if let first = bibleVM.topBooks.first {
-                            Text("\(first.book) • \(BibleStatsStore.shared.format(first.seconds))")
-                                .font(.subheadline)
-                                .foregroundStyle(.primary)
-                                .lineLimit(1)
-                        }
-                    }
-
-                    let rows = Array(bibleVM.topBooks.prefix(3))
-                    ForEach(Array(rows.enumerated()), id: \.offset) { _, entry in
-                        HStack(spacing: 10) {
-                            Text(entry.book)
-                                .font(.subheadline.weight(.semibold))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            Text(BibleStatsStore.shared.format(entry.seconds))
-                                .font(.footnote.monospacedDigit())
-                                .foregroundStyle(.secondary)
-                        }
-                        ProgressView(value: Double(entry.seconds), total: Double(bibleVM.maxTopSeconds))
-                            .tint(.teal)
-                    }
-                }
-
-                // Row 4: Completion summary
-                HStack(spacing: 8) {
-                    Text("Chapters Visited \(bibleVM.visitedCount)/\(bibleVM.totalChapters) • \(bibleVM.completionPercent)%")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                }
-                .padding(.top, 2)
             }
+            .animation(.spring(response: 0.25, dampingFraction: 0.9), value: bibleStatsExpanded)
             .onAppear {
                 bibleVM.refresh()
             }
@@ -1564,6 +1599,11 @@ struct HomeView: View {
                     bibleVM.refresh()
                 }
             }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            // Navigate to Stats tab (tag 6) when tapping the Bible Stats card
+            NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 6])
         }
     }
 
@@ -1799,7 +1839,10 @@ struct HomeView: View {
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.secondary)
                         Spacer()
-                        // Removed live counter label "usedLabel / goalLabel"
+                        // NEW: Show goal minutes from Settings by the progress bar header
+                        Text("Goal: \(goalMinutesString(dailyGoalMinutes_streaks))")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.secondary)
                     }
                     ProgressView(value: progress)
                         .tint(progress >= 1.0 ? .green : .blue)
@@ -2092,7 +2135,7 @@ struct HomeView: View {
         } message: {
             Text("Your prayer/study timer has completed.")
         }
-        // Reset Games and Bible Stats card state whenever leaving Home
+        // Reset Games card state whenever leaving Home
         .onDisappear {
             gamesExpanded = false
             streaksExpanded = false

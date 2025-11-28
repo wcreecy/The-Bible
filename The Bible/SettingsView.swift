@@ -20,22 +20,20 @@ struct SettingsView: View {
 
     // Daily Goal (minutes)
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
-    @State private var showDailyGoalPicker: Bool = false
+
+    // Use an Identifiable token for sheet presentation to avoid boolean re-entrancy races
+    private struct SheetToken: Identifiable { let id = UUID() }
+    @State private var dailyGoalSheetToken: SheetToken? = nil
+
+    // Local, decoupled value used while the sheet is open
+    @State private var localDailyGoalMinutes: Int = 30
 
     // Live Activities master toggle
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
 
     // MARK: - Home layout configuration
-    // Identifiers for reorderable/hideable cards on Home (NOT including the title card)
     private enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
-        case verseOfDay
-        case dailyFocus
-        case timer
-        case resumeReading
-        case games
-        case streaks
-        case bibleStats
-
+        case verseOfDay, dailyFocus, timer, resumeReading, games, streaks, bibleStats
         var id: String { rawValue }
         var title: String {
             switch self {
@@ -61,15 +59,12 @@ struct SettingsView: View {
         }
     }
 
-    // Persist order and hidden set in AppStorage
-    @AppStorage("homeCardOrder") private var homeCardOrderRaw: String = "" // JSON array of strings
-    @AppStorage("homeCardHidden") private var homeCardHiddenRaw: String = "" // JSON array of strings
+    @AppStorage("homeCardOrder") private var homeCardOrderRaw: String = ""
+    @AppStorage("homeCardHidden") private var homeCardHiddenRaw: String = ""
 
-    // Local state mirrors that decode/encode to AppStorage
     @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
     @State private var hiddenSet: Set<HomeCardID> = []
 
-    // Decode on appear; encode on change
     private func loadHomeLayout() {
         if let data = homeCardOrderRaw.data(using: .utf8),
            let ids = try? JSONDecoder().decode([String].self, from: data) {
@@ -84,7 +79,6 @@ struct SettingsView: View {
            let ids = try? JSONDecoder().decode([String].self, from: data) {
             hiddenSet = Set(ids.compactMap { HomeCardID(rawValue: $0) })
         } else {
-            // Default hidden: keep Games, Streaks, and Bible Stats hidden by default
             hiddenSet = [.games, .streaks, .bibleStats]
         }
     }
@@ -101,27 +95,6 @@ struct SettingsView: View {
             homeCardHiddenRaw = raw
         }
         NotificationCenter.default.post(name: .init("homeLayoutChanged"), object: nil)
-    }
-
-    private var selectionBinding: Binding<ColorSchemePreference> {
-        Binding<ColorSchemePreference>(
-            get: { ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system },
-            set: { colorSchemePreferenceRaw = $0.rawValue }
-        )
-    }
-
-    private var fontSizeBinding: Binding<FontSizePreference> {
-        Binding<FontSizePreference>(
-            get: { FontSizePreference(rawValue: fontSizePreferenceRaw) ?? .system },
-            set: { fontSizePreferenceRaw = $0.rawValue }
-        )
-    }
-
-    private var fontFamilyBinding: Binding<FontFamilyPreference> {
-        Binding<FontFamilyPreference>(
-            get: { FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system },
-            set: { fontFamilyPreferenceRaw = $0.rawValue }
-        )
     }
 
     private var refresh1DateBinding: Binding<Date> {
@@ -166,10 +139,8 @@ struct SettingsView: View {
             set: { newDate in
                 let cal = Calendar.current
                 let c: DateComponents = cal.dateComponents([.hour, .minute], from: newDate)
-                let newHour: Int = c.hour ?? 18
-                let newMinute: Int = c.minute ?? 0
-                votdRefresh2Hour = newHour
-                votdRefresh2Minute = newMinute
+                votdRefresh2Hour = c.hour ?? 18
+                votdRefresh2Minute = c.minute ?? 0
             }
         )
     }
@@ -190,12 +161,43 @@ struct SettingsView: View {
         .preferredColorScheme((ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme)
         .dynamicTypeSize((FontSizePreference(rawValue: fontSizePreferenceRaw) ?? .system).dynamicTypeSize ?? .large)
         .modifier(FontFamilyEnvironmentModifier(prefRaw: fontFamilyPreferenceRaw))
-        .onAppear {
-            loadHomeLayout()
+        .onAppear { loadHomeLayout() }
+        // Present Daily Goal sheet using an Identifiable token
+        .sheet(item: $dailyGoalSheetToken, onDismiss: {
+            // No-op; commit happens on Done
+        }) { _ in
+            NavigationStack {
+                VStack {
+                    Picker("", selection: $localDailyGoalMinutes) {
+                        ForEach(1...240, id: \.self) { m in
+                            Text("\(m) minute\(m == 1 ? "" : "s")").tag(m)
+                        }
+                    }
+                    .pickerStyle(.wheel)
+                    .accessibilityIdentifier("dailyGoalMinutesWheel")
+                }
+                .navigationTitle("Daily Goal")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") {
+                            dailyGoalSheetToken = nil
+                        }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") {
+                            // Commit once, then dismiss
+                            dailyGoalMinutes = localDailyGoalMinutes
+                            dailyGoalSheetToken = nil
+                        }
+                    }
+                }
+                .presentationDetents([.medium, .large])
+            }
         }
     }
 
-    // MARK: - Extracted Sections
+    // MARK: - Sections
 
     private var verseOfTheDaySection: some View {
         Section(
@@ -377,11 +379,15 @@ struct SettingsView: View {
     private var dailyGoalSection: some View {
         Section(header: Text("Daily Goal"), footer: Text("Set the number of minutes you want to spend in the app each day. Your Daily Bible Streak is based on meeting this goal.").font(.footnote).foregroundStyle(.secondary)) {
             Button {
-                showDailyGoalPicker = true
+                // Initialize local copy and present the tokenized sheet
+                localDailyGoalMinutes = dailyGoalMinutes
+                if dailyGoalSheetToken == nil {
+                    dailyGoalSheetToken = SheetToken()
+                }
             } label: {
                 HStack {
                     Label("Daily Goal", systemImage: "target")
-                        .foregroundStyle(.blue) // make target icon blue
+                        .foregroundStyle(.blue)
                     Spacer()
                     Text("\(dailyGoalMinutes) min")
                         .foregroundStyle(.secondary)
@@ -393,30 +399,6 @@ struct SettingsView: View {
             .accessibilityIdentifier("dailyGoalMinutesPickerLink")
         }
         .headerProminence(.increased)
-        .sheet(isPresented: $showDailyGoalPicker) {
-            NavigationStack {
-                VStack {
-                    Picker("", selection: $dailyGoalMinutes) {
-                        ForEach(1...240, id: \.self) { m in
-                            Text("\(m) minute\(m == 1 ? "" : "s")").tag(m)
-                        }
-                    }
-                    .pickerStyle(.wheel)
-                    .accessibilityIdentifier("dailyGoalMinutesWheel")
-                }
-                .navigationTitle("Daily Goal")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") { showDailyGoalPicker = false }
-                    }
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Done") { showDailyGoalPicker = false }
-                    }
-                }
-                .presentationDetents([.medium, .large])
-            }
-        }
     }
 
     private var liveActivitiesSection: some View {
@@ -445,8 +427,6 @@ struct SettingsView: View {
             } label: {
                 Label("Edit Order & Visibility", systemImage: "arrow.up.arrow.down")
             }
-
-            // Removed "Restore Default Order" button from main Settings page as requested.
         }
         .headerProminence(.increased)
         .onAppear(perform: loadHomeLayout)
@@ -471,25 +451,21 @@ struct SettingsView: View {
                     UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect_hard")
                     UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered_hard")
                     UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak_hard")
-                    // Hangman (both legacy and per-difficulty)
                     ["", "_easy", "_medium", "_hard"].forEach { suf in
                         UserDefaults.standard.set(0, forKey: "hangmanAllTimeCorrect\(suf)")
                         UserDefaults.standard.set(0, forKey: "hangmanAllTimeAnswered\(suf)")
                         UserDefaults.standard.set(0, forKey: "hangmanAllTimeBestStreak\(suf)")
                     }
-                    // Reference Match (both legacy and per-difficulty)
                     ["", "_easy", "_medium", "_hard"].forEach { suf in
                         UserDefaults.standard.set(0, forKey: "refmatchAllTimeCorrect\(suf)")
                         UserDefaults.standard.set(0, forKey: "refmatchAllTimeAnswered\(suf)")
                         UserDefaults.standard.set(0, forKey: "refmatchAllTimeBestStreak\(suf)")
                     }
-                    // Beat the Clock
                     ["_easy", "_medium", "_hard"].forEach { suf in
                         UserDefaults.standard.set(0, forKey: "beatclockAllTimeCorrect\(suf)")
                         UserDefaults.standard.set(0, forKey: "beatclockAllTimeAnswered\(suf)")
                         UserDefaults.standard.set(0, forKey: "beatclockAllTimeBestStreak\(suf)")
                     }
-                    // Book Order
                     UserDefaults.standard.set(0, forKey: "bookorderAllTimeCorrect")
                     UserDefaults.standard.set(0, forKey: "bookorderAllTimeAnswered")
                     UserDefaults.standard.set(0, forKey: "bookorderAllTimeBestStreak")
@@ -501,7 +477,7 @@ struct SettingsView: View {
         .headerProminence(.increased)
     }
 
-    // MARK: - Existing UI helpers (unchanged) ...
+    // MARK: - UI helpers
 
     private func segmentButton(title: String, tag: String) -> some View {
         Button(action: { verseScopeRaw = tag }) {
@@ -593,8 +569,6 @@ struct SettingsView: View {
     }
 }
 
-// MARK: - Nested editor that uses native List reordering and show/hide toggle
-
 extension SettingsView {
     private struct HomeLayoutEditorView: View {
         @Binding var order: [HomeCardID]
@@ -632,12 +606,10 @@ extension SettingsView {
                         save()
                     }
                 }
-                .environment(\.editMode, .constant(.active)) // always show reorder handles
+                .environment(\.editMode, .constant(.active))
 
-                // New row with "Show All" and "Restore Default" under the draggable list
                 HStack(spacing: 12) {
                     Button {
-                        // Show All: unhide all cards
                         hidden.removeAll()
                         save()
                     } label: {
@@ -647,7 +619,6 @@ extension SettingsView {
                     .buttonStyle(.borderedProminent)
 
                     Button {
-                        // Restore Default: reset order and default hidden set
                         order = HomeCardID.allCases
                         hidden = [.games, .streaks, .bibleStats]
                         save()
@@ -661,15 +632,11 @@ extension SettingsView {
                 .padding(.bottom, 8)
             }
             .navigationTitle("Reorder Home")
-            // Removed toolbar Restore Default button (moved below list).
-            .onDisappear {
-                save()
-            }
+            .onDisappear { save() }
         }
     }
 }
 
-// Helper modifier to apply chosen font family live to the whole Settings screen.
 private struct FontFamilyEnvironmentModifier: ViewModifier {
     let prefRaw: String
     func body(content: Content) -> some View {
