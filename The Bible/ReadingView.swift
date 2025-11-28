@@ -68,8 +68,11 @@ struct ReadingView: View {
             .navigationBarTitleDisplayMode(.inline)
             .onAppear(perform: onAppear)
             .onAppear {
-                // Start reading-time tracking for this book
-                ReadingTimeTracker.shared.start(bookName: currentBook.name)
+                // Start reading-time tracking for this book (with chapter info)
+                ReadingTimeTracker.shared.start(bookName: currentBook.name, chapter: currentChapter.number)
+
+                // Also keep current location up to date
+                ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
 
                 // Mark daily streak: viewing reader counts as a daily visit
                 StreakTracker.markVisitedToday()
@@ -134,6 +137,8 @@ struct ReadingView: View {
                             currentVerse = verse.number
                             // Persist "last read" ONLY on explicit tap
                             saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number)
+                            // Keep tracker location up to date
+                            ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
                             if menuVerse != nil { menuVerse = nil }
                             let haptic = UIImpactFeedbackGenerator(style: .light); haptic.impactOccurred()
                             withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
@@ -223,6 +228,8 @@ struct ReadingView: View {
                     highlightedVerse = nil
                     selectedVerse = nil
                     topVisibleVerseID = rowID(for: 1)
+                    // Keep tracker location up to date on chapter change
+                    ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
                     // Mark daily streak on chapter change as well (still within same day; harmless)
                     StreakTracker.markVisitedToday()
                 }
@@ -274,85 +281,188 @@ struct ReadingView: View {
         }
     }
 
-    // Load canonical book names and set the current index
+    // Load the canonical ordered list of book names (from BibleData, which preserves order from kjv.json)
     @MainActor
     private func loadOrderedBookNames() async {
-        let names = await bibleStore.bookNames()
-        // Order according to BibleData order (fallback to names order for any unknowns)
-        let canonical = BibleData.books.map { $0.name }
-        let pos = Dictionary(uniqueKeysWithValues: canonical.enumerated().map { ($1, $0) })
-        let ordered = names.sorted { (a, b) in
-            (pos[a] ?? Int.max) < (pos[b] ?? Int.max)
+        // If you ever want to use BibleStore/BibleLibrary, you could do:
+        // let names = await bibleStore.bookNames()
+        // But that may be alphabetical depending on source; BibleData preserves canonical order.
+        let names = BibleData.books.map { $0.name }
+        orderedBookNames = names
+        // Optionally update currentBookNameIndex if needed
+        if let idx = names.firstIndex(of: currentBook.name) {
+            currentBookNameIndex = idx
+        } else {
+            currentBookNameIndex = nil
         }
-        orderedBookNames = ordered.isEmpty ? canonical : ordered
-        currentBookNameIndex = orderedBookNames.firstIndex(of: currentBook.name) ?? currentBookNameIndex
     }
 
-    @MainActor
-    private func saveProgress(bookName: String, chapter: Int, verse: Int) {
-        let progress = progressList.first ?? ReadingProgress(bookName: bookName, chapterNumber: chapter, verseNumber: verse)
-        if progressList.isEmpty { modelContext.insert(progress) }
-        progress.bookName = bookName
-        progress.chapterNumber = chapter
-        progress.verseNumber = verse
-        try? modelContext.save()
-    }
-
-    // Navigation helpers
-
-    @MainActor
-    private func previousChapter() async {
-        highlightOnAppear = false
-        if currentChapterIndex > 0 {
-            currentChapterIndex -= 1
-            currentVerse = 1
-            // Do NOT save progress automatically on chapter change.
+    // Load current pinned verse state from shared App Group defaults (used by the widget)
+    private func loadPinnedFromShared() {
+        guard let shared = UserDefaults(suiteName: "group.bible.app") else {
+            pinnedBookName = ""
+            pinnedChapterNumber = 0
+            pinnedVerseNumber = 0
             return
         }
-        // Move to previous book's last chapter
-        guard let idx = currentBookNameIndex, idx > 0 else { return }
-        let prevIdx = idx - 1
-        let prevName = orderedBookNames[prevIdx]
-        if let newBook = await bibleStore.book(named: prevName) {
-            // Notify tracker that the book changed
-            ReadingTimeTracker.shared.changeBook(to: newBook.name)
+        let bookName = (shared.string(forKey: "pinnedVerseBook") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let chapterNum = shared.integer(forKey: "pinnedVerseChapter")
+        let verseNum = shared.integer(forKey: "pinnedVerseNumber")
+        // Optional text; if absent, we keep only the reference here
+        var text = (shared.string(forKey: "pinnedVerseText") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
 
-            currentBook = newBook
-            currentBookNameIndex = prevIdx
-            currentChapterIndex = max(0, newBook.chapters.count - 1)
-            currentVerse = 1
-            // Do NOT save progress automatically on chapter change.
+        // If reference is incomplete, clear local mirror
+        guard !bookName.isEmpty, chapterNum > 0, verseNum > 0 else {
+            pinnedBookName = ""
+            pinnedChapterNumber = 0
+            pinnedVerseNumber = 0
+            return
         }
+
+        // Fill text from BibleData if missing (mirror provider behavior)
+        if text.isEmpty {
+            if let b = BibleData.books.first(where: { $0.name == bookName }),
+               let c = b.chapters.first(where: { $0.number == chapterNum }),
+               let v = c.verses.first(where: { $0.number == verseNum }) {
+                text = v.text
+            }
+        }
+
+        // Update local state mirror
+        pinnedBookName = bookName
+        pinnedChapterNumber = max(1, chapterNum)
+        pinnedVerseNumber = max(1, verseNum)
+    }
+
+    // MARK: - Pinned verse helpers (widget)
+    private func setPinnedVerse(bookName: String, chapter: Int, verse: Int, text: String) {
+        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
+        shared.set(bookName, forKey: "pinnedVerseBook")
+        shared.set(chapter, forKey: "pinnedVerseChapter")
+        shared.set(verse, forKey: "pinnedVerseNumber")
+        shared.set(text, forKey: "pinnedVerseText")
+        pinnedBookName = bookName
+        pinnedChapterNumber = chapter
+        pinnedVerseNumber = verse
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    private func clearPinnedVerse() {
+        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
+        shared.removeObject(forKey: "pinnedVerseBook")
+        shared.removeObject(forKey: "pinnedVerseChapter")
+        shared.removeObject(forKey: "pinnedVerseNumber")
+        shared.removeObject(forKey: "pinnedVerseText")
+        pinnedBookName = ""
+        pinnedChapterNumber = 0
+        pinnedVerseNumber = 0
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    private func isPinned(_ verseNumber: Int) -> Bool {
+        pinnedBookName == currentBook.name &&
+        pinnedChapterNumber == currentChapter.number &&
+        pinnedVerseNumber == verseNumber
+    }
+
+    // MARK: - Progress (SwiftData)
+    private func saveProgress(bookName: String, chapter: Int, verse: Int) {
+        // Keep a single ReadingProgress record (replace or update)
+        if let existing = progressList.first {
+            existing.bookName = bookName
+            existing.chapterNumber = chapter
+            existing.verseNumber = verse
+            try? modelContext.save()
+        } else {
+            let p = ReadingProgress(bookName: bookName, chapterNumber: chapter, verseNumber: verse)
+            modelContext.insert(p)
+            try? modelContext.save()
+        }
+    }
+
+    // MARK: - Navigation across chapters/books (canonical order)
+    private func indexOfCurrentBookInCanonical() -> Int? {
+        if let idx = currentBookNameIndex {
+            return idx
+        }
+        return orderedBookNames.firstIndex(of: currentBook.name)
     }
 
     @MainActor
     private func nextChapter() async {
-        if currentChapterIndex < max(0, currentBook.chapters.count - 1) {
+        guard let bookIdx = indexOfCurrentBookInCanonical() else { return }
+        let chapters = currentBook.chapters
+        if currentChapterIndex + 1 < chapters.count {
             currentChapterIndex += 1
             currentVerse = 1
-            // Do NOT save progress automatically on chapter change.
+            topVisibleVerseID = rowID(for: 1)
             return
         }
-        // Move to next book's first chapter
-        guard let idx = currentBookNameIndex, idx < max(0, orderedBookNames.count - 1) else { return }
-        let nextIdx = idx + 1
-        let nextName = orderedBookNames[nextIdx]
-        if let newBook = await bibleStore.book(named: nextName) {
-            // Notify tracker that the book changed
-            ReadingTimeTracker.shared.changeBook(to: newBook.name)
+        // Move to first chapter of next book if available
+        let nextBookIdx = bookIdx + 1
+        guard orderedBookNames.indices.contains(nextBookIdx) else { return }
+        let nextBookName = orderedBookNames[nextBookIdx]
+        guard let nextBook = BibleData.books.first(where: { $0.name == nextBookName }) else { return }
+        currentBook = nextBook
+        currentBookNameIndex = nextBookIdx
+        currentChapterIndex = 0
+        currentVerse = 1
+        topVisibleVerseID = rowID(for: 1)
+        ReadingTimeTracker.shared.changeBook(to: currentBook.name, chapter: currentChapter.number)
+    }
 
-            currentBook = newBook
-            currentBookNameIndex = nextIdx
-            currentChapterIndex = 0
+    @MainActor
+    private func previousChapter() async {
+        guard let bookIdx = indexOfCurrentBookInCanonical() else { return }
+        if currentChapterIndex - 1 >= 0 {
+            currentChapterIndex -= 1
             currentVerse = 1
-            // Do NOT save progress automatically on chapter change.
+            topVisibleVerseID = rowID(for: 1)
+            return
         }
+        // Move to last chapter of previous book if available
+        let prevBookIdx = bookIdx - 1
+        guard orderedBookNames.indices.contains(prevBookIdx) else { return }
+        let prevBookName = orderedBookNames[prevBookIdx]
+        guard let prevBook = BibleData.books.first(where: { $0.name == prevBookName }) else { return }
+        currentBook = prevBook
+        currentBookNameIndex = prevBookIdx
+        currentChapterIndex = max(0, prevBook.chapters.count - 1)
+        currentVerse = 1
+        topVisibleVerseID = rowID(for: 1)
+        ReadingTimeTracker.shared.changeBook(to: currentBook.name, chapter: currentChapter.number)
     }
 
-    private func rowID(for verse: Int) -> String {
-        "\(currentBookNameIndex ?? 0)-\(currentChapterIndex)-\(verse)"
+    // MARK: - IDs
+    private func rowID(for verseNumber: Int) -> String {
+        "\(currentBook.name)-\(currentChapter.number)-\(verseNumber)"
     }
 
+    // MARK: - Journal
+    private func openJournalForReference(text: String) {
+        // Expect "BookName Chapter:Verse"
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let colon = trimmed.lastIndex(of: ":") else {
+            journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
+            return
+        }
+        let before = String(trimmed[..<colon])
+        let after = String(trimmed[trimmed.index(after: colon)...])
+        let parts = before.split(separator: " ")
+        guard let last = parts.last, let chapterNum = Int(last) else {
+            journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
+            return
+        }
+        let bookName = parts.dropLast().joined(separator: " ")
+        guard let verseNum = Int(after) else {
+            journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
+            return
+        }
+        let ref = VerseRef(book: bookName, chapter: chapterNum, verse: verseNum, translation: "KJV")
+        journalComposer.present(initialBody: nil, verseRef: ref, showTagColors: false)
+    }
+
+    // MARK: - Favorites (SwiftData)
     private func isFavorited(_ verse: Verse) -> Bool {
         favorites.contains { fav in
             fav.bookName == currentBook.name &&
@@ -362,15 +472,16 @@ struct ReadingView: View {
     }
 
     private func toggleFavorite(for verse: Verse) {
-        if let existing = favorites.first(where: { $0.bookName == currentBook.name && $0.chapterNumber == currentChapter.number && $0.verseNumber == verse.number }) {
+        if let existing = favorites.first(where: {
+            $0.bookName == currentBook.name &&
+            $0.chapterNumber == currentChapter.number &&
+            $0.verseNumber == verse.number
+        }) {
             modelContext.delete(existing)
             try? modelContext.save()
-            let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(.success)
-            favoriteToastSymbol = "xmark.circle.fill"
-            favoriteToastTint = .red
-            favoriteToastText = "Removed Favorite \(currentBook.name) \(currentChapter.number):\(verse.number)"
-            withAnimation(.spring()) { showFavoriteToast = true }
+            favoriteToastSymbol = "heart.slash"
+            favoriteToastTint = .gray
+            favoriteToastText = "Removed Favorite"
         } else {
             let fav = Favorite(
                 bookName: currentBook.name,
@@ -380,72 +491,15 @@ struct ReadingView: View {
             )
             modelContext.insert(fav)
             try? modelContext.save()
-            let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(.success)
             favoriteToastSymbol = "heart.fill"
             favoriteToastTint = .pink
-            favoriteToastText = "Favorited \(currentBook.name) \(currentChapter.number):\(verse.number)"
-            withAnimation(.spring()) { showFavoriteToast = true }
+            favoriteToastText = "Added to Favorites"
         }
-    }
-    
-    private func openJournalForReference(text: String) {
-        journalComposer.present(initialBody: text, verseRef: nil, showTagColors: false)
+        withAnimation(.spring()) { showFavoriteToast = true }
     }
 
-    // MARK: - Pin to widget
-
-    private func isPinned(_ verseNumber: Int) -> Bool {
-        pinnedBookName == currentBook.name &&
-        pinnedChapterNumber == currentChapter.number &&
-        pinnedVerseNumber == verseNumber
-    }
-
-    private func loadPinnedFromShared() {
-        guard let shared = UserDefaults(suiteName: "group.bible.app") else {
-            pinnedBookName = ""; pinnedChapterNumber = 0; pinnedVerseNumber = 0
-            return
-        }
-        pinnedBookName = shared.string(forKey: "pinnedVerseBook") ?? ""
-        pinnedChapterNumber = shared.integer(forKey: "pinnedVerseChapter")
-        pinnedVerseNumber = shared.integer(forKey: "pinnedVerseNumber")
-        // If no valid values, reset to empty
-        if pinnedBookName.isEmpty || pinnedChapterNumber <= 0 || pinnedVerseNumber <= 0 {
-            pinnedBookName = ""; pinnedChapterNumber = 0; pinnedVerseNumber = 0
-        }
-    }
-
-    private func setPinnedVerse(bookName: String, chapter: Int, verse: Int, text: String) {
-        if let shared = UserDefaults(suiteName: "group.bible.app") {
-            shared.set(bookName, forKey: "pinnedVerseBook")
-            shared.set(chapter, forKey: "pinnedVerseChapter")
-            shared.set(verse, forKey: "pinnedVerseNumber")
-            shared.set(text, forKey: "pinnedVerseText")
-        }
-        // Update local state for immediate UI reflection
-        pinnedBookName = bookName
-        pinnedChapterNumber = chapter
-        pinnedVerseNumber = verse
-        WidgetCenter.shared.reloadTimelines(ofKind: "PinnedVerseWidget")
-    }
-
-    private func clearPinnedVerse() {
-        if let shared = UserDefaults(suiteName: "group.bible.app") {
-            shared.removeObject(forKey: "pinnedVerseBook")
-            shared.removeObject(forKey: "pinnedVerseChapter")
-            shared.removeObject(forKey: "pinnedVerseNumber")
-            shared.removeObject(forKey: "pinnedVerseText")
-        }
-        pinnedBookName = ""
-        pinnedChapterNumber = 0
-        pinnedVerseNumber = 0
-        WidgetCenter.shared.reloadTimelines(ofKind: "PinnedVerseWidget")
-    }
-}
-
-#Preview {
-    NavigationStack {
-        ReadingView(book: BibleData.books.first!, chapter: BibleData.books.first!.chapters.first!, startVerse: 5)
-            .modelContainer(for: [ReaderSettings.self, ReadingProgress.self], inMemory: true)
+    // MARK: - Share text helper
+    private func shareText(bookName: String, chapter: Int, verse: Int, text: String) -> String {
+        "“\(text)” — \(bookName) \(chapter):\(verse)"
     }
 }

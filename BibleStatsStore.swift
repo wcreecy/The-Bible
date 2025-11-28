@@ -8,14 +8,27 @@ final class BibleStatsStore {
     private init() {}
 
     struct Defaults {
-        static let key = "bookReadingTimes"
+        static let keyTotals = "bookReadingTimes"
+        static let keyDailyTotals = "dailyReadingTimes"          // [String: Int] keyed by ISO date yyyy-MM-dd
+        static let keyVisitedChapters = "visitedChapters"        // [String]
+        static let keyLastRead = "lastReadEntry"                 // JSON of LastRead
         // Swap this to your app group if desired:
         static var provider: UserDefaults { UserDefaults.standard }
     }
 
+    // MARK: - Models
+
+    struct LastRead: Codable, Equatable {
+        let bookName: String
+        let chapterNumber: Int
+        let date: Date
+    }
+
+    // MARK: - Per-book totals
+
     func loadTotals() -> [String: Int] {
         let defaults = Defaults.provider
-        guard let data = defaults.data(forKey: Defaults.key) else { return [:] }
+        guard let data = defaults.data(forKey: Defaults.keyTotals) else { return [:] }
         do {
             let decoded = try JSONDecoder().decode([String: Int].self, from: data)
             return decoded
@@ -28,7 +41,7 @@ final class BibleStatsStore {
         let defaults = Defaults.provider
         do {
             let data = try JSONEncoder().encode(totals)
-            defaults.set(data, forKey: Defaults.key)
+            defaults.set(data, forKey: Defaults.keyTotals)
         } catch {
             // Ignore encoding error (shouldn't happen with [String:Int])
         }
@@ -49,6 +62,120 @@ final class BibleStatsStore {
 
     func totalMax() -> Int {
         loadTotals().values.max() ?? 0
+    }
+
+    // MARK: - Daily totals
+
+    func loadDailyTotals() -> [String: Int] {
+        let defaults = Defaults.provider
+        guard let data = defaults.data(forKey: Defaults.keyDailyTotals) else { return [:] }
+        do {
+            return try JSONDecoder().decode([String: Int].self, from: data)
+        } catch {
+            return [:]
+        }
+    }
+
+    func saveDailyTotals(_ dict: [String: Int]) {
+        let defaults = Defaults.provider
+        if let data = try? JSONEncoder().encode(dict) {
+            defaults.set(data, forKey: Defaults.keyDailyTotals)
+        }
+    }
+
+    func addToToday(seconds: Int, calendar: Calendar = .current) {
+        guard seconds > 0 else { return }
+        var dict = loadDailyTotals()
+        let today = Self.isoDateString(Date(), calendar: calendar)
+        dict[today, default: 0] += seconds
+        saveDailyTotals(dict)
+    }
+
+    func totalForLast(days: Int, including today: Date = Date(), calendar: Calendar = .current) -> Int {
+        guard days > 0 else { return 0 }
+        let dict = loadDailyTotals()
+        var sum = 0
+        for i in 0..<days {
+            if let date = calendar.date(byAdding: .day, value: -i, to: today) {
+                let key = Self.isoDateString(date, calendar: calendar)
+                sum += dict[key, default: 0]
+            }
+        }
+        return sum
+    }
+
+    static func isoDateString(_ date: Date, calendar: Calendar = .current) -> String {
+        var cal = calendar
+        cal.timeZone = TimeZone(secondsFromGMT: 0) ?? .gmt
+        let comps = cal.dateComponents([.year, .month, .day], from: date)
+        let y = comps.year ?? 1970
+        let m = comps.month ?? 1
+        let d = comps.day ?? 1
+        return String(format: "%04d-%02d-%02d", y, m, d)
+    }
+
+    // MARK: - Visited chapters
+
+    func loadVisitedChapters() -> Set<String> {
+        let defaults = Defaults.provider
+        guard let data = defaults.data(forKey: Defaults.keyVisitedChapters) else { return [] }
+        if let arr = try? JSONDecoder().decode([String].self, from: data) {
+            return Set(arr)
+        }
+        return []
+    }
+
+    func saveVisitedChapters(_ set: Set<String>) {
+        let defaults = Defaults.provider
+        if let data = try? JSONEncoder().encode(Array(set)) {
+            defaults.set(data, forKey: Defaults.keyVisitedChapters)
+        }
+    }
+
+    func markVisited(bookName: String, chapterNumber: Int) {
+        guard !bookName.isEmpty, chapterNumber > 0 else { return }
+        var set = loadVisitedChapters()
+        set.insert("\(bookName):\(chapterNumber)")
+        saveVisitedChapters(set)
+    }
+
+    // MARK: - Last read
+
+    func loadLastRead() -> LastRead? {
+        let defaults = Defaults.provider
+        guard let data = defaults.data(forKey: Defaults.keyLastRead) else { return nil }
+        return try? JSONDecoder().decode(LastRead.self, from: data)
+    }
+
+    func saveLastRead(bookName: String, chapterNumber: Int, date: Date = Date()) {
+        let entry = LastRead(bookName: bookName, chapterNumber: chapterNumber, date: date)
+        let defaults = Defaults.provider
+        if let data = try? JSONEncoder().encode(entry) {
+            defaults.set(data, forKey: Defaults.keyLastRead)
+        }
+    }
+
+    // MARK: - OT/NT classification
+
+    func isOT(bookName: String) -> Bool {
+        // In fallbackCanon, first 39 are OT
+        if let idx = BibleCanon.fallbackCanon.firstIndex(of: bookName) {
+            return idx < 39
+        }
+        // If not found, attempt based on BibleData order if it matches fallback membership by name
+        if let idx = BibleData.books.firstIndex(where: { $0.name == bookName }) {
+            // Rough heuristic: if name exists in fallback, use that; else, assume OT for safety
+            return idx < 39
+        }
+        return true
+    }
+
+    func splitOTNT(totals: [String: Int]) -> (ot: Int, nt: Int) {
+        var ot = 0, nt = 0
+        for (book, sec) in totals {
+            if isOT(bookName: book) { ot += sec } else { nt += sec }
+        }
+        return (ot, nt)
     }
 
     // Format seconds as h:mm:ss if >= 1h, otherwise m:ss

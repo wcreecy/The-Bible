@@ -115,6 +115,13 @@ struct ContentView: View {
             }
             .tabItem { Label("Search", systemImage: "magnifyingglass") }
             .tag(5)
+
+            // NEW: Stats tab (placeholder)
+            NavigationStack {
+                StatsView()
+            }
+            .tabItem { Label("Stats", systemImage: "chart.bar") }
+            .tag(6)
             
             // Settings tab
             NavigationStack {
@@ -124,17 +131,17 @@ struct ContentView: View {
             }
             .transaction { tx in tx.disablesAnimations = true }
             .tabItem { Label("Settings", systemImage: "gear") }
-            .tag(6)
+            .tag(7)
         }
         .environmentObject(journalComposer)
-        .preferredColorScheme(selectedTab == 6 ? nil : preferredScheme)
-        .dynamicTypeSize(selectedTab == 6 ? .large : (preferredDynamicType ?? .large))
+        .preferredColorScheme(selectedTab == 7 ? nil : preferredScheme)
+        .dynamicTypeSize(selectedTab == 7 ? .large : (preferredDynamicType ?? .large))
         .font(
-            selectedTab == 6
+            selectedTab == 7
             ? .system(size: baseFontSize)
             : (preferredCustomFontName != nil ? .custom(preferredCustomFontName!, size: baseFontSize) : .system(size: baseFontSize))
         )
-        .fontDesign(selectedTab == 6 ? .default : (preferredFontDesign ?? .default))
+        .fontDesign(selectedTab == 7 ? .default : (preferredFontDesign ?? .default))
         .onAppear {
             // One-time cleanup of deprecated keys
             if !didCleanupAppTimeKeys {
@@ -247,7 +254,7 @@ struct ContentView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .openSettingsTab)) { _ in
-            selectedTab = 6
+            selectedTab = 7
         }
         .onChange(of: scenePhase) { _, newPhase in
             switch newPhase {
@@ -257,7 +264,7 @@ struct ContentView: View {
                 // Start foreground usage timer
                 startUsageTimerIfNeeded()
             case .inactive, .background:
-                // Remember when we left foreground to compute background elapsed later
+                // Remember when we went foreground to compute elapsed when returning
                 lastBackgroundedAt = Date().timeIntervalSince1970
                 stopUsageTimer()
             @unknown default:
@@ -274,7 +281,7 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Daily usage tracking
+    // MARK: - Daily usage tracking (unchanged)...
 
     private func todayKey(for date: Date = Date()) -> String {
         let cal = Calendar.current
@@ -387,4 +394,3 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-

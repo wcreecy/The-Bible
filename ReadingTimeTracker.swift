@@ -12,6 +12,7 @@ final class ReadingTimeTracker: ObservableObject {
     @Published private(set) var lastTotalsVersion: Int = 0
 
     private var currentBook: String?
+    private var currentChapterNumber: Int? // new
     private var sessionStart: Date?
     private var accumulatedInSession: Int = 0 // seconds since start (plus any resumed accumulation)
     private var ticker: AnyCancellable?
@@ -22,9 +23,12 @@ final class ReadingTimeTracker: ObservableObject {
 
     // MARK: - Public API
 
-    func start(bookName: String) {
-        // If already tracking same book, do nothing
-        if currentBook == bookName, ticker != nil { return }
+    func start(bookName: String, chapter: Int? = nil) {
+        // If already tracking same book and chapter (if provided), do nothing
+        if currentBook == bookName, ticker != nil {
+            if let chapter { currentChapterNumber = chapter }
+            return
+        }
 
         // If switching from another book, flush first
         if let currentBook {
@@ -32,21 +36,36 @@ final class ReadingTimeTracker: ObservableObject {
         }
 
         currentBook = bookName
+        currentChapterNumber = chapter
         sessionStart = Date()
         accumulatedInSession = 0
         startTickerIfNeeded()
     }
 
-    func changeBook(to bookName: String) {
+    func changeBook(to bookName: String, chapter: Int? = nil) {
         guard !bookName.isEmpty else { return }
-        if currentBook == bookName { return }
+        if currentBook == bookName {
+            if let chapter { currentChapterNumber = chapter }
+            return
+        }
         if let currentBook {
             flush(bookName: currentBook)
         }
         currentBook = bookName
+        currentChapterNumber = chapter
         sessionStart = Date()
         accumulatedInSession = 0
         startTickerIfNeeded()
+    }
+
+    // Allows the reader to update chapter without changing book
+    func setCurrentLocation(bookName: String, chapter: Int) {
+        if currentBook != bookName {
+            changeBook(to: bookName, chapter: chapter)
+            return
+        }
+        currentChapterNumber = chapter
+        // No flush here; just update metadata for the next flush
     }
 
     func stopAndFlush() {
@@ -54,6 +73,7 @@ final class ReadingTimeTracker: ObservableObject {
         flush(bookName: currentBook)
         stopTicker()
         self.currentBook = nil
+        self.currentChapterNumber = nil
         self.sessionStart = nil
         self.accumulatedInSession = 0
     }
@@ -91,18 +111,25 @@ final class ReadingTimeTracker: ObservableObject {
 
     private func flush(bookName: String, soft: Bool = false) {
         guard accumulatedInSession > 0 else { return }
+
+        // Per-book totals
         var totals = BibleStatsStore.shared.loadTotals()
         totals[bookName, default: 0] += accumulatedInSession
         BibleStatsStore.shared.saveTotals(totals)
+
+        // Daily totals
+        BibleStatsStore.shared.addToToday(seconds: accumulatedInSession)
+
+        // Visited chapters and last read (if chapter is known)
+        if let chap = currentChapterNumber {
+            BibleStatsStore.shared.markVisited(bookName: bookName, chapterNumber: chap)
+            BibleStatsStore.shared.saveLastRead(bookName: bookName, chapterNumber: chap, date: Date())
+        }
+
         accumulatedInSession = 0
 
-        // Bump a version so any listeners (like the Home card) can refresh
-        if !soft {
-            lastTotalsVersion &+= 1
-        } else {
-            // Even for soft flush, update so UI can reflect recent time
-            lastTotalsVersion &+= 1
-        }
+        // Bump a version so any listeners (like the Home card or Stats) can refresh
+        lastTotalsVersion &+= 1
     }
 }
 
