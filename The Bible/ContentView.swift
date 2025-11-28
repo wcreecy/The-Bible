@@ -186,7 +186,25 @@ struct ContentView: View {
             JournalEditorView(verseRef: journalComposer.verseRef, initialBody: journalComposer.initialBody, showTagColors: journalComposer.showTagColors, editingEntry: journalComposer.editingEntry)
         }
         .onOpenURL { url in
-            // ... unchanged ...
+            // Handle taps from widgets and other custom links:
+            // Supported: thebible://open?book=Name&chapter=Int&verse=Int
+            guard url.scheme?.lowercased() == "thebible" else { return }
+            guard url.host?.lowercased() == "open" else { return }
+            guard let comps = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
+            var params: [String: String] = [:]
+            comps.queryItems?.forEach { params[$0.name.lowercased()] = $0.value ?? "" }
+            guard
+                let book = params["book"], !book.isEmpty,
+                let chapStr = params["chapter"], let chapter = Int(chapStr),
+                let verseStr = params["verse"], let verse = Int(verseStr)
+            else { return }
+
+            // Forward to existing in-app router via notification
+            NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
+                "book": book,
+                "chapter": chapter,
+                "verse": verse
+            ])
         }
         .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { note in
             guard
@@ -369,3 +387,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+

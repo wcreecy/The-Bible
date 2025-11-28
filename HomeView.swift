@@ -20,6 +20,7 @@ private enum HomeCardID: String, CaseIterable, Identifiable {
     case resumeReading
     case streaks // Daily Bible Streak (now includes Daily Goal progress)
     case games   // Games
+    case bibleStats // NEW: Bible Stats (Top 5 by reading time)
     var id: String { rawValue }
 }
 
@@ -266,7 +267,8 @@ struct HomeView: View {
             hiddenSet = Set(filtered.compactMap { HomeCardID(rawValue: $0) })
         } else {
             // Match Settings defaults: Games and Streaks hidden by default
-            hiddenSet = [.games, .streaks]
+            // NEW: Bible Stats hidden by default as requested
+            hiddenSet = [.games, .streaks, .bibleStats]
         }
     }
 
@@ -1467,6 +1469,83 @@ struct HomeView: View {
         }
     }
 
+    // MARK: - NEW: Bible Stats Card (Top 5 books by reading time)
+
+    @State private var bibleStatsExpanded: Bool = false
+    @State private var bibleTop5: [(book: String, seconds: Int)] = []
+    @State private var bibleMaxSeconds: Int = 0
+    @State private var statsCancellable: AnyCancellable?
+
+    private func refreshBibleStats() {
+        let top = BibleStatsStore.shared.sortedTop(n: 5)
+        bibleTop5 = top
+        bibleMaxSeconds = max(1, top.map { $0.seconds }.max() ?? 1)
+    }
+
+    @ViewBuilder
+    private var bibleStatsCard: some View {
+        HeroCard(
+            title: "Bible Stats",
+            subtitle: "Top 5 Books by Time",
+            icon: "chart.bar.fill",
+            tint: .teal
+        ) {
+            VStack(alignment: .leading, spacing: 10) {
+                if bibleTop5.isEmpty {
+                    Text("Start reading to build your stats.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                } else {
+                    DisclosureGroup(isExpanded: $bibleStatsExpanded) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(Array(bibleTop5.enumerated()), id: \.offset) { _, entry in
+                                HStack(spacing: 10) {
+                                    Text(entry.book)
+                                        .font(.subheadline.weight(.semibold))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    Text(BibleStatsStore.shared.format(entry.seconds))
+                                        .font(.footnote.monospacedDigit())
+                                        .foregroundStyle(.secondary)
+                                }
+                                ProgressView(value: Double(entry.seconds), total: Double(bibleMaxSeconds))
+                                    .tint(.teal)
+                            }
+                        }
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                    } label: {
+                        HStack {
+                            Text("Your Top Books")
+                                .font(.headline)
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            if let first = bibleTop5.first {
+                                Text("\(first.book) • \(BibleStatsStore.shared.format(first.seconds))")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.primary)
+                                    .lineLimit(1)
+                            }
+                        }
+                    }
+                    .animation(.spring(response: 0.25, dampingFraction: 0.9), value: bibleStatsExpanded)
+                }
+            }
+            .onAppear {
+                refreshBibleStats()
+                // Subscribe to tracker updates to refresh live
+                if statsCancellable == nil {
+                    statsCancellable = ReadingTimeTracker.shared.$lastTotalsVersion
+                        .receive(on: RunLoop.main)
+                        .sink { _ in refreshBibleStats() }
+                }
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                if newPhase == .active {
+                    refreshBibleStats()
+                }
+            }
+        }
+    }
+
     // MARK: - NEW: Streaks Card (now includes Daily Goal progress + expandable calendar)
 
     // Local UI state for expanding the calendar
@@ -1798,6 +1877,8 @@ struct HomeView: View {
                             gamesCard
                         case .streaks:
                             streaksCard
+                        case .bibleStats:
+                            bibleStatsCard
                         }
                     }
                 }
@@ -1877,6 +1958,9 @@ struct HomeView: View {
 
             // Load saved layout on appear; migrate legacy dailyGoal id away
             decodeHomeLayout()
+
+            // Initial load of Bible Stats (even if card is hidden, keep state fresh)
+            refreshBibleStats()
         }
         // Update when AppStorage strings change (e.g., after Settings saves or user toggles)
         .onChange(of: homeCardOrderRaw) { _, _ in decodeHomeLayout() }
@@ -1895,6 +1979,7 @@ struct HomeView: View {
                 _ = handlePrayerTimerPendingAction()
                 handleStopwatchPendingAction()
                 handleOpenPendingVerse()
+                refreshBibleStats()
             case .inactive, .background:
                 if !isTimerRunning && !stopwatchRunning {
                     stopMindfulLogging()
@@ -1928,6 +2013,7 @@ struct HomeView: View {
         .onDisappear {
             gamesExpanded = false
             streaksExpanded = false
+            bibleStatsExpanded = false
         }
     }
 

@@ -34,6 +34,7 @@ struct SettingsView: View {
         case resumeReading
         case games
         case streaks
+        case bibleStats
 
         var id: String { rawValue }
         var title: String {
@@ -44,6 +45,7 @@ struct SettingsView: View {
             case .resumeReading: return "Continue Reading"
             case .games: return "Games"
             case .streaks: return "Daily Bible Streak"
+            case .bibleStats: return "Bible Stats"
             }
         }
         var systemImage: String {
@@ -54,6 +56,7 @@ struct SettingsView: View {
             case .resumeReading: return "bookmark.fill"
             case .games: return "gamecontroller"
             case .streaks: return "flame.fill"
+            case .bibleStats: return "chart.bar.fill"
             }
         }
     }
@@ -81,8 +84,8 @@ struct SettingsView: View {
            let ids = try? JSONDecoder().decode([String].self, from: data) {
             hiddenSet = Set(ids.compactMap { HomeCardID(rawValue: $0) })
         } else {
-            // Default hidden: keep Games and Streaks hidden by default
-            hiddenSet = [.games, .streaks]
+            // Default hidden: keep Games, Streaks, and Bible Stats hidden by default
+            hiddenSet = [.games, .streaks, .bibleStats]
         }
     }
 
@@ -646,7 +649,7 @@ extension SettingsView {
                     Button {
                         // Restore Default: reset order and default hidden set
                         order = HomeCardID.allCases
-                        hidden = [.games, .streaks]
+                        hidden = [.games, .streaks, .bibleStats]
                         save()
                     } label: {
                         Label("Restore Default", systemImage: "arrow.counterclockwise")

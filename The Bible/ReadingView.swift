@@ -68,6 +68,9 @@ struct ReadingView: View {
             .navigationBarTitleDisplayMode(.inline)
             .onAppear(perform: onAppear)
             .onAppear {
+                // Start reading-time tracking for this book
+                ReadingTimeTracker.shared.start(bookName: currentBook.name)
+
                 // Mark daily streak: viewing reader counts as a daily visit
                 StreakTracker.markVisitedToday()
 
@@ -77,6 +80,10 @@ struct ReadingView: View {
                 }
                 // Load current pinned verse state from shared defaults
                 loadPinnedFromShared()
+            }
+            .onDisappear {
+                // Stop and flush reading-time tracking
+                ReadingTimeTracker.shared.stopAndFlush()
             }
             .appToast(isPresented: $showFavoriteToast, symbol: favoriteToastSymbol, text: favoriteToastText, tint: favoriteToastTint)
     }
@@ -125,6 +132,7 @@ struct ReadingView: View {
                             generator.selectionChanged()
                             selectedVerse = verse.number
                             currentVerse = verse.number
+                            // Persist "last read" ONLY on explicit tap
                             saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number)
                             if menuVerse != nil { menuVerse = nil }
                             let haptic = UIImpactFeedbackGenerator(style: .light); haptic.impactOccurred()
@@ -257,7 +265,8 @@ struct ReadingView: View {
 
     @MainActor
     private func onAppear() {
-        saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: startVerse)
+        // Do NOT save progress automatically on appear anymore.
+        // Keep scroll positioning behavior only.
         DispatchQueue.main.async {
             withAnimation(.easeInOut(duration: 0.35)) {
                 topVisibleVerseID = rowID(for: currentVerse)
@@ -297,7 +306,7 @@ struct ReadingView: View {
         if currentChapterIndex > 0 {
             currentChapterIndex -= 1
             currentVerse = 1
-            saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: currentVerse)
+            // Do NOT save progress automatically on chapter change.
             return
         }
         // Move to previous book's last chapter
@@ -305,11 +314,14 @@ struct ReadingView: View {
         let prevIdx = idx - 1
         let prevName = orderedBookNames[prevIdx]
         if let newBook = await bibleStore.book(named: prevName) {
+            // Notify tracker that the book changed
+            ReadingTimeTracker.shared.changeBook(to: newBook.name)
+
             currentBook = newBook
             currentBookNameIndex = prevIdx
             currentChapterIndex = max(0, newBook.chapters.count - 1)
             currentVerse = 1
-            saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: currentVerse)
+            // Do NOT save progress automatically on chapter change.
         }
     }
 
@@ -318,7 +330,7 @@ struct ReadingView: View {
         if currentChapterIndex < max(0, currentBook.chapters.count - 1) {
             currentChapterIndex += 1
             currentVerse = 1
-            saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: currentVerse)
+            // Do NOT save progress automatically on chapter change.
             return
         }
         // Move to next book's first chapter
@@ -326,11 +338,14 @@ struct ReadingView: View {
         let nextIdx = idx + 1
         let nextName = orderedBookNames[nextIdx]
         if let newBook = await bibleStore.book(named: nextName) {
+            // Notify tracker that the book changed
+            ReadingTimeTracker.shared.changeBook(to: newBook.name)
+
             currentBook = newBook
             currentBookNameIndex = nextIdx
             currentChapterIndex = 0
             currentVerse = 1
-            saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: currentVerse)
+            // Do NOT save progress automatically on chapter change.
         }
     }
 
