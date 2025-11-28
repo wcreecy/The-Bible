@@ -1305,14 +1305,7 @@ struct HomeView: View {
                                     .font(.subheadline)
                                     .foregroundStyle(.secondary)
                             } else {
-                                // Show Gamer Title when expanded
-                                HStack {
-                                    Spacer()
-                                    Text(gamerTitle)
-                                        .font(.title3.weight(.semibold))
-                                        .foregroundStyle(gamerColor)
-                                        .accessibilityLabel("Gamer Title \(gamerTitle)")
-                                }
+                                // Removed Gamer Title from expanded; it's now shown in collapsed label
 
                                 Divider()
 
@@ -1441,26 +1434,41 @@ struct HomeView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .transition(.opacity.combined(with: .move(edge: .top)))
                 } label: {
-                    // Collapsed label: only Gamer Score row
-                    HStack(spacing: 10) {
-                        Text("Gamer Score")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                        if isEmpty {
-                            Text("Let’s play!")
-                                .font(.system(size: 22, weight: .semibold, design: .rounded))
+                    // Collapsed label: Gamer Score row, then Gamer Title row with actual title on the right
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 10) {
+                            Text("Gamer Score:")
+                                .font(.headline)
                                 .foregroundStyle(.secondary)
-                        } else {
-                            Text("\(Int(round(gamerPct)))%")
-                                .font(.system(size: 28, weight: .bold, design: .rounded))
-                                .foregroundStyle(gamerColor)
-                                .accessibilityHidden(true)
-                                .overlay(
-                                    Color.clear
-                                        .accessibilityElement(children: .ignore)
-                                        .accessibilityLabel("Gamer Score \(Int(round(gamerPct))) percent.")
-                                )
+                            Spacer()
+                            if isEmpty {
+                                Text("Let’s play!")
+                                    .font(.system(size: 22, weight: .semibold, design: .rounded))
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                Text("\(Int(round(gamerPct)))%")
+                                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                                    .foregroundStyle(gamerColor)
+                                    .accessibilityHidden(true)
+                                    .overlay(
+                                        Color.clear
+                                            .accessibilityElement(children: .ignore)
+                                            .accessibilityLabel("Gamer Score \(Int(round(gamerPct))) percent.")
+                                    )
+                            }
+                        }
+                        if !isEmpty {
+                            HStack {
+                                // Static label, same font as "Gamer Score", light blue
+                                Text("Gamer Title:")
+                                    .font(.headline)
+                                    .foregroundStyle(Color.blue.opacity(0.7))
+                                Spacer()
+                                Text(gamerTitle)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(gamerColor)
+                                    .accessibilityLabel("Gamer Title \(gamerTitle)")
+                            }
                         }
                     }
                 }
@@ -1661,12 +1669,6 @@ struct HomeView: View {
         let usedSecs = max(0, dailyUsageTodaySeconds_streaks)
         let goalSecs = dailyGoalSeconds
         let progress = min(1.0, Double(usedSecs) / Double(goalSecs))
-        let usedLabel: String = {
-            let m = usedSecs / 60
-            let s = usedSecs % 60
-            return String(format: "%d:%02d", m, s)
-        }()
-        let goalLabel = "\(dailyGoalMinutes_streaks) min"
 
         HeroCard(
             title: "Daily Bible Streak",

@@ -269,10 +269,22 @@ struct CursorTextView: UIViewRepresentable {
             inset.bottom = bottom
             tv.contentInset = inset
         }
-        var ind = tv.scrollIndicatorInsets
-        if abs(ind.bottom - bottom) > 0.5 {
-            ind.bottom = bottom
-            tv.scrollIndicatorInsets = ind
+
+        if #available(iOS 13.0, *) {
+            // Adjust only vertical scroll indicator insets
+            var vertical = tv.verticalScrollIndicatorInsets
+            if abs(vertical.bottom - bottom) > 0.5 {
+                vertical.bottom = bottom
+                tv.verticalScrollIndicatorInsets = vertical
+            }
+            // Leave horizontalScrollIndicatorInsets unchanged
+        } else {
+            // Fallback for older iOS where scrollIndicatorInsets is not deprecated
+            var ind = tv.scrollIndicatorInsets
+            if abs(ind.bottom - bottom) > 0.5 {
+                ind.bottom = bottom
+                tv.scrollIndicatorInsets = ind
+            }
         }
     }
 

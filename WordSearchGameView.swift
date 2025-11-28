@@ -1432,8 +1432,8 @@ private struct GridBoard: View {
             func sign(_ x: Int) -> Int { x == 0 ? 0 : (x > 0 ? 1 : -1) }
             let dRow = end.row - start.row
             let dCol = end.col - start.col
-            var dr = sign(dRow)
-            var dc = sign(dCol)
+            let dr = sign(dRow)
+            let dc = sign(dCol)
             if dRow == 0 && dCol == 0 {
                 if start.row == row && start.col == col { return Color.blue.opacity(0.9) }
             } else {

@@ -23,6 +23,18 @@ struct StatsView: View {
     @State private var ntSeconds: Int = 0
     @State private var visitedCount: Int = 0
 
+    // Completion metrics
+    @State private var booksCompleted: Int = 0
+    @State private var totalBooks: Int = 0
+    @State private var bibleCompletionPercent: Int = 0
+    @State private var totalChapters: Int = 0
+
+    // Per-book progress (chapters read / total)
+    @State private var bookProgress: [String: (read: Int, total: Int, fraction: Double)] = [:]
+
+    // Collapsible state for Book Reading Progress
+    @State private var progressExpanded: Bool = false
+
     // Last read details split for better alignment
     @State private var lastReadBookChapter: String = "—"
     @State private var lastReadTimeText: String = "—"
@@ -59,7 +71,14 @@ struct StatsView: View {
         ntSeconds = split.nt
 
         // Visited chapters
-        visitedCount = store.loadVisitedChapters().count
+        let visited = store.loadVisitedChapters()
+        visitedCount = visited.count
+
+        // Completion metrics (chapter-based)
+        computeCompletionMetrics(visitedChapters: visited)
+
+        // Per-book progress
+        computePerBookProgress(visitedChapters: visited)
 
         // Last read (split into book+chapter and time)
         if let last = store.loadLastRead() {
@@ -76,6 +95,51 @@ struct StatsView: View {
         if let g = selectedGenre {
             genreDetailRows = rowsForGenre(g, totals: totals)
         }
+    }
+
+    // Compute:
+    // - totalBooks
+    // - totalChapters (across all books)
+    // - booksCompleted = count of books where all chapters are in visitedChapters
+    // - bibleCompletionPercent = round(visitedChapters / totalChapters * 100)
+    private func computeCompletionMetrics(visitedChapters: Set<String>) {
+        let books = BibleData.books
+        totalBooks = books.count
+        totalChapters = books.reduce(0) { $0 + $1.chapters.count }
+
+        var completed = 0
+        for book in books {
+            let allChaptersVisited = book.chapters.allSatisfy { chap in
+                visitedChapters.contains("\(book.name):\(chap.number)")
+            }
+            if allChaptersVisited { completed += 1 }
+        }
+        booksCompleted = completed
+
+        let denom = max(1, totalChapters)
+        let pct = Int(round((Double(visitedCount) / Double(denom)) * 100.0))
+        bibleCompletionPercent = pct
+    }
+
+    private func computePerBookProgress(visitedChapters: Set<String>) {
+        var progress: [String: (read: Int, total: Int, fraction: Double)] = [:]
+        let books = BibleData.books
+        for book in books {
+            let total = max(1, book.chapters.count)
+            let read = book.chapters.reduce(0) { acc, chap in
+                acc + (visitedChapters.contains("\(book.name):\(chap.number)") ? 1 : 0
+                )
+            }
+            let fraction = Double(read) / Double(total)
+            progress[book.name] = (read, total, fraction)
+        }
+        // Ensure every ordered book has an entry, even if BibleData was empty
+        for name in orderedAllBooks {
+            if progress[name] == nil {
+                progress[name] = (0, 1, 0.0)
+            }
+        }
+        bookProgress = progress
     }
 
     private func timeOnlyString(_ date: Date) -> String {
@@ -165,9 +229,49 @@ struct StatsView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(.vertical, 4)
+
+                // New: Completion summary row
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Books Completed")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text("\(booksCompleted) / \(totalBooks)")
+                            .font(.title3)
+                            .monospacedDigit()
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Bible Completion as a progress ring with percent inside
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Bible Completion")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+
+                        ProgressRing(
+                            progress: Double(bibleCompletionPercent) / 100.0,
+                            lineWidth: 8,
+                            size: 56,
+                            tint: .accentColor,
+                            track: Color.primary.opacity(0.12),
+                            label: {
+                                Text("\(bibleCompletionPercent)%")
+                                    .font(.subheadline.weight(.semibold))
+                                    .monospacedDigit()
+                                    .foregroundStyle(.primary)
+                            }
+                        )
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Keep layout balanced with an empty spacer column
+                    Spacer()
+                        .frame(maxWidth: .infinity)
+                }
+                .padding(.vertical, 4)
             }
 
-            // OT vs NT and Coverage
+            // OT vs NT (Coverage removed)
             Section {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("OT vs NT")
@@ -198,14 +302,6 @@ struct StatsView: View {
                     }
                 }
                 .padding(.vertical, 4)
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Coverage")
-                        .font(.subheadline).foregroundStyle(.secondary)
-                    Text("\(visitedCount) chapters visited")
-                        .font(.footnote).foregroundStyle(.primary)
-                }
-                .padding(.top, 6)
             }
 
             // Genre Distribution with header title; rows are tappable
@@ -252,7 +348,7 @@ struct StatsView: View {
                 Text("Genre Distribution")
             }
 
-            // Bible Stats (total + per-book table)
+            // Bible Stats (total + per-book table) – time only
             Section {
                 DisclosureGroup(isExpanded: $expanded) {
                     // Sort picker visible when expanded
@@ -268,10 +364,11 @@ struct StatsView: View {
                     ForEach(rows, id: \.book) { entry in
                         HStack {
                             Text(entry.book)
-                            Spacer()
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             Text(BibleStatsStore.shared.format(entry.seconds))
                                 .foregroundStyle(.secondary)
                                 .monospacedDigit()
+                                .frame(width: 80, alignment: .trailing)
                         }
                         .accessibilityElement(children: .combine)
                         .accessibilityLabel("\(entry.book) \(BibleStatsStore.shared.format(entry.seconds))")
@@ -295,6 +392,62 @@ struct StatsView: View {
                 }
             } header: {
                 Text("Bible Stats")
+            }
+
+            // Book Reading Progress – collapsible
+            Section {
+                DisclosureGroup(isExpanded: $progressExpanded) {
+                    // Expanded: show each book progress
+                    ForEach(orderedAllBooks, id: \.self) { name in
+                        let prog = bookProgress[name] ?? (0, 1, 0.0)
+                        HStack(spacing: 8) {
+                            Text(name)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            HStack(spacing: 4) {
+                                GeometryReader { geo in
+                                    ZStack(alignment: .leading) {
+                                        RoundedRectangle(cornerRadius: 3, style: .continuous)
+                                            .fill(Color.primary.opacity(0.10))
+                                        RoundedRectangle(cornerRadius: 3, style: .continuous)
+                                            .fill(Color.accentColor.opacity(0.65))
+                                            .frame(width: geo.size.width * CGFloat(prog.fraction))
+                                    }
+                                }
+                                .frame(width: 100, height: 6)
+                                Text("\(prog.read)/\(prog.total)")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                    .monospacedDigit()
+                                    .frame(width: 40, alignment: .trailing)
+                            }
+                            .accessibilityElement(children: .combine)
+                            .accessibilityLabel("\(name) progress \(prog.read) of \(prog.total) chapters")
+                        }
+                    }
+                } label: {
+                    // Collapsed label: title/summary on the left, ring on the right
+                    HStack(spacing: 12) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Book Reading Progress")
+                                .font(.headline)
+                            Text("\(visitedCount)/\(totalChapters) chapters • \(bibleCompletionPercent)%")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .monospacedDigit()
+                        }
+                        Spacer()
+                        ProgressRing(
+                            progress: Double(bibleCompletionPercent) / 100.0,
+                            lineWidth: 8,
+                            size: 28,
+                            tint: .accentColor,
+                            track: Color.primary.opacity(0.12),
+                            label: {
+                                EmptyView()
+                            }
+                        )
+                    }
+                }
             }
         }
         .navigationTitle("Stats")
@@ -475,5 +628,40 @@ struct StatsView: View {
 #Preview {
     NavigationStack {
         StatsView()
+    }
+}
+
+// MARK: - Small Progress Ring
+
+private struct ProgressRing<Label: View>: View {
+    let progress: Double        // 0.0 ... 1.0
+    let lineWidth: CGFloat
+    let size: CGFloat
+    let tint: Color
+    let track: Color
+    let label: Label
+
+    init(progress: Double, lineWidth: CGFloat = 8, size: CGFloat = 56, tint: Color = .accentColor, track: Color = Color.primary.opacity(0.12), @ViewBuilder label: () -> Label) {
+        self.progress = max(0, min(1, progress))
+        self.lineWidth = lineWidth
+        self.size = size
+        self.tint = tint
+        self.track = track
+        self.label = label()
+    }
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(track, lineWidth: lineWidth)
+            Circle()
+                .trim(from: 0, to: CGFloat(progress))
+                .stroke(tint, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+            label
+        }
+        .frame(width: size, height: size)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text("Completion \(Int(round(progress * 100))) percent"))
     }
 }
