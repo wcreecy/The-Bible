@@ -1277,13 +1277,6 @@ struct HomeView: View {
         else { return .green }
     }
 
-    private func titleForPercent(_ pct: Double) -> String {
-        if pct < 60 { return "Usher" }
-        else if pct < 75 { return "Altar Worker" }
-        else if pct < 90 { return "Apostle" }
-        else { return "Bible Scholar" }
-    }
-
     // Collapsible Games Card state
     @State private var gamesExpanded: Bool = false
 
@@ -1293,7 +1286,6 @@ struct HomeView: View {
         let totalCorrect = totalCorrectAllGames
         let gamerPct = percent(totalCorrect, totalAnswered)
         let gamerColor = colorForPercent(gamerPct)
-        let gamerTitle = titleForPercent(gamerPct)
 
         let isEmpty = (totalAnswered == 0)
 
@@ -1315,8 +1307,7 @@ struct HomeView: View {
                                     .font(.subheadline)
                                     .foregroundStyle(.secondary)
                             } else {
-                                // Removed Gamer Title from expanded; it's now shown in collapsed label
-
+                                // Expanded content: Player Stat Sheet
                                 Divider()
 
                                 // Player Stat Sheet with header and aligned columns (center numeric columns)
@@ -1444,7 +1435,7 @@ struct HomeView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .transition(.opacity.combined(with: .move(edge: .top)))
                 } label: {
-                    // Collapsed label: Gamer Score row, then Gamer Title row with actual title on the right
+                    // Collapsed label: Gamer Score row only
                     VStack(alignment: .leading, spacing: 6) {
                         HStack(spacing: 10) {
                             Text("Gamer Score:")
@@ -1465,19 +1456,6 @@ struct HomeView: View {
                                             .accessibilityElement(children: .ignore)
                                             .accessibilityLabel("Gamer Score \(Int(round(gamerPct))) percent.")
                                     )
-                            }
-                        }
-                        if !isEmpty {
-                            HStack {
-                                // Static label, same font as "Gamer Score", light blue
-                                Text("Gamer Title:")
-                                    .font(.headline)
-                                    .foregroundStyle(Color.blue.opacity(0.7))
-                                Spacer()
-                                Text(gamerTitle)
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(gamerColor)
-                                    .accessibilityLabel("Gamer Title \(gamerTitle)")
                             }
                         }
                     }
@@ -2995,4 +2973,3 @@ private final class DebouncedWidgetReloader {
         queue.asyncAfter(deadline: .now() + 0.6, execute: item)
     }
 }
-
