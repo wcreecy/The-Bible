@@ -37,7 +37,7 @@ struct VersesChecklistView: View {
                                 Spacer(minLength: 0)
                             }
                             .contentShape(Rectangle())
-                            // Removed tap: do nothing on tap
+                            // Intentionally no tap: verses are only marked as read from the Bible tab’s reader when on-screen.
                         }
                     } header: {
                         Text(titleText)
@@ -78,6 +78,12 @@ struct VersesChecklistView: View {
 
     private func refreshSeen() {
         seen = BibleStatsStore.shared.loadSeenVerses(bookName: bookName, chapter: chapterNumber)
+
+        // If all verses are read, ensure the chapter is marked visited so upstream
+        // “Chapters” and “Book Reading Progress” reflect completion.
+        if totalVerses > 0, seen.count >= totalVerses {
+            BibleStatsStore.shared.markVisited(bookName: bookName, chapterNumber: chapterNumber)
+        }
     }
 
     private func snippet(_ text: String) -> String {

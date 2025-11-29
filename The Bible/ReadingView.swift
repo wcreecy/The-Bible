@@ -77,9 +77,6 @@ struct ReadingView: View {
                 // Also keep current location up to date
                 ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
 
-                // Mark daily streak: viewing reader counts as a daily visit
-                StreakTracker.markVisitedToday()
-
                 // Load canonical book order once
                 Task { @MainActor in
                     await loadOrderedBookNames()
@@ -266,8 +263,6 @@ struct ReadingView: View {
                     topVisibleVerseID = rowID(for: 1)
                     // Keep tracker location up to date on chapter change
                     ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
-                    // Mark daily streak on chapter change as well (still within same day; harmless)
-                    StreakTracker.markVisitedToday()
                     // Reset initial-appear guard when changing chapters
                     hasCompletedInitialAppear = false
                     Task { @MainActor in
@@ -546,4 +541,3 @@ struct ReadingView: View {
         "“\(text)” — \(bookName) \(chapter):\(verse)"
     }
 }
-

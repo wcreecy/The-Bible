@@ -1,7 +1,7 @@
 import Foundation
 
 /// Tracks a daily streak based on meeting the daily time goal.
-/// A day counts if the user meets their daily goal minutes (default 30).
+/// A day counts only when the user meets their Daily Goal minutes (Settings).
 /// Comparison uses the current Calendar and respects the user's locale/timezone.
 enum StreakTracker {
     // UserDefaults keys
@@ -69,9 +69,12 @@ enum StreakTracker {
         updateStreakCountersIfNeeded(for: date)
     }
 
-    /// Compatibility alias for older callers (visiting verses) — now interpreted as meeting the goal today.
+    /// Deprecated: Viewing/visiting content no longer awards streak credit.
+    /// Streak should be awarded only when the daily goal is met via `markGoalMet`.
+    @available(*, deprecated, message: "No-op. Use markGoalMet(on:) when the daily goal is reached.")
     static func markVisitedToday(now: Date = Date()) {
-        markGoalMet(on: now)
+        // Intentionally no-op to prevent accidental early streak awards.
+        // Streak credit is granted exclusively by markGoalMet(on:).
     }
 
     private static func updateStreakCountersIfNeeded(for date: Date) {

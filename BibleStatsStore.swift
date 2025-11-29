@@ -136,8 +136,14 @@ final class BibleStatsStore {
     func markVisited(bookName: String, chapterNumber: Int) {
         guard !bookName.isEmpty, chapterNumber > 0 else { return }
         var set = loadVisitedChapters()
-        set.insert("\(bookName):\(chapterNumber)")
-        saveVisitedChapters(set)
+        let key = "\(bookName):\(chapterNumber)"
+        // Only insert and notify if this is the first time we mark this chapter as visited
+        if !set.contains(key) {
+            set.insert(key)
+            saveVisitedChapters(set)
+            // Notify listeners (StatsView, chapter lists) that progress changed
+            NotificationCenter.default.post(name: .init("chapterProgressChanged"), object: nil)
+        }
     }
 
     // MARK: - Last read
@@ -234,7 +240,7 @@ final class BibleStatsStore {
         seen.insert(verse)
         saveSeenVerses(seen, bookName: bookName, chapter: chapter)
 
-        // If we know total verses, and now all are seen, mark chapter visited
+        // If we know total verses, and now all are seen, mark chapter visited (emits notification once).
         if let total = totalVerses, total > 0, seen.count >= total {
             markVisited(bookName: bookName, chapterNumber: chapter)
         }
@@ -254,4 +260,3 @@ final class BibleStatsStore {
         return seen.count >= totalVerses
     }
 }
-

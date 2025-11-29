@@ -144,7 +144,7 @@ struct StatsView: View {
         .onReceive(NotificationCenter.default.publisher(for: .switchToTab)) { _ in
             selectedBookForChapters = nil
         }
-        // Refresh stats when chapter progress changes (e.g., Unread pressed)
+        // Refresh stats when chapter progress changes (e.g., Unread pressed, or chapter completed by reading)
         .onReceive(NotificationCenter.default.publisher(for: .init("chapterProgressChanged"))) { _ in
             refreshTotals()
         }
@@ -841,6 +841,11 @@ private struct BookChaptersDetailView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { _ in
             // When returning from reading, seen state may have updated; refresh visited for counts if needed
+            visited = BibleStatsStore.shared.loadVisitedChapters()
+        }
+        // Refresh rows when a chapter becomes completed by reading (or cleared)
+        .onReceive(NotificationCenter.default.publisher(for: .init("chapterProgressChanged"))) { _ in
+            refreshID = UUID()
             visited = BibleStatsStore.shared.loadVisitedChapters()
         }
     }
