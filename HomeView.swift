@@ -1563,7 +1563,8 @@ struct HomeView: View {
             } label: {
                 // Collapsed/label content: only the three mini-pills
                 HStack(spacing: 12) {
-                    statMiniPill(title: "Today", value: bibleVM.formatted(bibleVM.todaySeconds), tint: .blue)
+                    // Today with delta vs yesterday (new)
+                    statMiniPill(title: "Today", value: bibleVM.formatted(bibleVM.todaySeconds), subtitle: bibleVM.todayDeltaOnlyValue, tint: .blue)
                     statMiniPill(title: "This Week", value: bibleVM.formatted(bibleVM.thisWeekSeconds), subtitle: bibleVM.weekDeltaOnlyValue, tint: .green)
                     lastReadMiniPill(title: "Last Read", ref: bibleVM.lastReadBookChapter, relative: bibleVM.lastReadRelativeTime)
                 }
@@ -1592,8 +1593,9 @@ struct HomeView: View {
             Text(value)
                 .font(.subheadline.weight(.semibold))
                 .monospacedDigit()
-            if let subtitle, !subtitle.isEmpty, title == "This Week" {
-                Text("vs last: \(subtitle)")
+            // Show subtitle for both Today and This Week when provided
+            if let subtitle, !subtitle.isEmpty {
+                Text("vs \(title == "This Week" ? "last" : "yday"): \(subtitle)")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
@@ -2973,3 +2975,4 @@ private final class DebouncedWidgetReloader {
         queue.asyncAfter(deadline: .now() + 0.6, execute: item)
     }
 }
+

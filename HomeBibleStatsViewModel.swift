@@ -89,9 +89,22 @@ final class HomeBibleStatsViewModel: ObservableObject {
         return "\(sign)\(formatted(abs(delta)))"
     }
 
+    // New: Today vs Yesterday delta (e.g., "+3:15" or "−05:20", or "—" when equal)
+    var todayDeltaOnlyValue: String {
+        // Yesterday = total of last 2 days minus today
+        let store = BibleStatsStore.shared
+        let last2 = store.totalForLast(days: 2)
+        let yesterday = max(0, last2 - todaySeconds)
+        let delta = todaySeconds - yesterday
+        if delta == 0 { return "—" }
+        let sign = delta > 0 ? "+" : "−"
+        return "\(sign)\(formatted(abs(delta)))"
+    }
+
     private func relativeTimeString(from date: Date, to now: Date = Date()) -> String {
         let f = RelativeDateTimeFormatter()
         f.unitsStyle = .short
         return f.localizedString(for: date, relativeTo: now)
     }
 }
+
