@@ -2009,7 +2009,8 @@ struct HomeView: View {
                     }
                 }
             }
-            .padding(.horizontal, isPad ? 16 : 0)
+            // Adjusted: give iPhone horizontal padding too so cards don’t touch edges
+            .padding(.horizontal, isPad ? 24 : 16)
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationTitle("")
