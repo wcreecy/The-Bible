@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 extension Notification.Name {
     static let openBibleReference = Notification.Name("OpenBibleReference")
@@ -52,6 +53,9 @@ struct ContentView: View {
 
     // Track when we went inactive/background to compute elapsed when returning
     @AppStorage("lastBackgroundedAt") private var lastBackgroundedAt: Double = 0
+
+    // Observe reading totals so we can re-check streak when Bible reading time changes
+    @State private var readingTotalsCancellable: AnyCancellable? = nil
     
     private var preferredScheme: ColorScheme? { (ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme }
     private var preferredDynamicType: DynamicTypeSize? { (FontSizePreference(rawValue: fontSizePreferenceRaw) ?? .system).dynamicTypeSize }
@@ -170,6 +174,13 @@ struct ContentView: View {
             // Initialize daily usage tracking day key and rollover timer
             initializeUsageDayIfNeeded()
             scheduleMidnightRollover()
+
+            // Re-check streak when Bible reading totals change
+            readingTotalsCancellable = ReadingTimeTracker.shared.$lastTotalsVersion
+                .receive(on: RunLoop.main)
+                .sink { _ in
+                    checkAndMarkGoalIfMet()
+                }
         }
         .onChange(of: selectedTab) { _, newValue in
             if newValue == 0 {
@@ -263,6 +274,8 @@ struct ContentView: View {
                 applyBackgroundElapsedIfAny()
                 // Start foreground usage timer
                 startUsageTimerIfNeeded()
+                // Also re-check streak status on resume
+                checkAndMarkGoalIfMet()
             case .inactive, .background:
                 // Remember when we went foreground to compute elapsed when returning
                 lastBackgroundedAt = Date().timeIntervalSince1970
@@ -271,7 +284,7 @@ struct ContentView: View {
                 break
             }
         }
-        // When foreground timer increments, check goal completion
+        // When foreground timer increments, we still call check — now it uses Bible reading totals.
         .onChange(of: dailyUsageTodaySeconds) { _, _ in
             checkAndMarkGoalIfMet()
         }
@@ -369,7 +382,9 @@ struct ContentView: View {
 
     private func checkAndMarkGoalIfMet() {
         let goalSeconds = max(1, dailyGoalMinutes) * 60
-        guard dailyUsageTodaySeconds >= goalSeconds else { return }
+        // Use Bible reading time (from Bible tab) only
+        let todayReadingSeconds = BibleStatsStore.shared.totalForLast(days: 1)
+        guard todayReadingSeconds >= goalSeconds else { return }
         // Mark day as goal met (streak update)
         StreakTracker.markGoalMet(on: Date())
     }

@@ -90,6 +90,16 @@ final class BibleStatsStore {
         let today = Self.isoDateString(Date(), calendar: calendar)
         dict[today, default: 0] += seconds
         saveDailyTotals(dict)
+
+        // Award streak credit when Bible reading time meets the daily goal
+        let totalToday = dict[today, default: 0]
+        // Read the user's goal minutes from defaults (same key used elsewhere)
+        let goalMinutes = max(1, UserDefaults.standard.integer(forKey: "dailyGoalMinutes"))
+        let goalSeconds = goalMinutes * 60
+        if totalToday >= goalSeconds {
+            // Mark the local day as goal met (idempotent)
+            StreakTracker.markGoalMet(on: Date())
+        }
     }
 
     func totalForLast(days: Int, including today: Date = Date(), calendar: Calendar = .current) -> Int {
@@ -260,3 +270,4 @@ final class BibleStatsStore {
         return seen.count >= totalVerses
     }
 }
+

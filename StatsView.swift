@@ -154,7 +154,7 @@ struct StatsView: View {
 
     private var glanceRow: some View {
         HStack(spacing: 12) {
-            statMiniCard(title: "Today", value: BibleStatsStore.shared.format(todaySeconds), tint: .blue)
+            statMiniCard(title: "Today", value: BibleStatsStore.shared.format(todaySeconds), subtitle: todayDeltaOnlyValue, tint: .blue)
             statMiniCard(title: "This Week", value: BibleStatsStore.shared.format(thisWeekSeconds), subtitle: weekDeltaOnlyValue, tint: .green)
             lastReadMiniCard
         }
@@ -167,11 +167,15 @@ struct StatsView: View {
             Text(value)
                 .font(.title3.weight(.semibold))
                 .monospacedDigit()
-            if let subtitle, !subtitle.isEmpty, title == "This Week" {
-                Text("vs last: \(subtitle)")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
+            if let subtitle, !subtitle.isEmpty, subtitle != "—" {
+                // Show context label matching Home card style:
+                let prefix = (title == "This Week") ? "vs last: " : (title == "Today" ? "vs yesterday: " : "")
+                if !prefix.isEmpty {
+                    Text("\(prefix)\(subtitle)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -627,6 +631,19 @@ struct StatsView: View {
         return "\(sign)\(BibleStatsStore.shared.format(absVal))"
     }
 
+    // New: Today vs Yesterday delta string
+    private var todayDeltaOnlyValue: String {
+        // Yesterday = total of last 2 days minus today
+        let store = BibleStatsStore.shared
+        let last2 = store.totalForLast(days: 2)
+        let yesterday = max(0, last2 - todaySeconds)
+        let delta = todaySeconds - yesterday
+        if delta == 0 { return "—" }
+        let sign = delta > 0 ? "+" : "−"
+        let absVal = abs(delta)
+        return "\(sign)\(BibleStatsStore.shared.format(absVal))"
+    }
+
     enum Genre: String, CaseIterable, Identifiable {
         case Law = "Law"
         case History = "History"
@@ -863,3 +880,4 @@ private struct BookChaptersDetailView: View {
         NotificationCenter.default.post(name: .init("chapterProgressChanged"), object: nil)
     }
 }
+

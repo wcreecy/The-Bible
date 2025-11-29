@@ -424,7 +424,9 @@ struct HomeView: View {
 
         // Compute today's daily goal progress for the flame
         let goalSeconds = max(1, dailyGoalMinutes) * 60
-        let progress = min(1.0, Double(max(0, dailyUsageTodaySeconds)) / Double(goalSeconds))
+        // Use Bible reading time (today) from BibleStatsStore instead of app usage time
+        let todayReadingSeconds = BibleStatsStore.shared.totalForLast(days: 1)
+        let progress = min(1.0, Double(max(0, todayReadingSeconds)) / Double(goalSeconds))
         let percent = Int(round(progress * 100))
         let streak = StreakTracker.currentStreak
 
@@ -857,12 +859,14 @@ struct HomeView: View {
     @AppStorage("dailyUsageTodayKey") private var dailyUsageTodayKey: String = ""
 
     private var dailyGoalSeconds: Int { max(1, dailyGoalMinutes_streaks) * 60 }
+    // Use Bible reading time (today) rather than app usage
     private var dailyProgress: Double {
-        let used = max(0, dailyUsageTodaySeconds_streaks)
+        let used = max(0, BibleStatsStore.shared.totalForLast(days: 1))
         return min(1.0, Double(used) / Double(dailyGoalSeconds))
     }
     private var remainingSecondsToday: Int {
-        max(0, dailyGoalSeconds - max(0, dailyUsageTodaySeconds_streaks))
+        let used = max(0, BibleStatsStore.shared.totalForLast(days: 1))
+        return max(0, dailyGoalSeconds - used)
     }
     private var remainingFormatted: String {
         if remainingSecondsToday == 0 { return "Goal reached" }
@@ -1767,7 +1771,7 @@ struct HomeView: View {
         let best = StreakTracker.bestStreak
         let last = StreakTracker.lastVisitDate
 
-        let usedSecs = max(0, dailyUsageTodaySeconds_streaks)
+        let usedSecs = max(0, BibleStatsStore.shared.totalForLast(days: 1))
         let goalSecs = dailyGoalSeconds
         let progress = min(1.0, Double(usedSecs) / Double(goalSecs))
 
@@ -1828,7 +1832,7 @@ struct HomeView: View {
                         .tint(progress >= 1.0 ? .green : .blue)
                     HStack {
                         if progress >= 1.0 {
-                            Label("Great job! You reached your goal.", systemImage: "checkmark.seal.fill")
+                            Label("Great job! You reached your goal today.", systemImage: "checkmark.seal.fill")
                                 .foregroundStyle(.green)
                                 .font(.footnote.weight(.semibold))
                         } else {
@@ -2975,4 +2979,3 @@ private final class DebouncedWidgetReloader {
         queue.asyncAfter(deadline: .now() + 0.6, execute: item)
     }
 }
-
