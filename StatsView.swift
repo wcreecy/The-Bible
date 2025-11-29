@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import Charts
 
 struct StatsView: View {
     private enum SortMode: String, CaseIterable, Identifiable {
@@ -38,16 +39,32 @@ struct StatsView: View {
     @State private var selectedGenre: Genre? = nil
     @State private var genreDetailRows: [(book: String, seconds: Int)] = []
 
-    // Expand/collapse
-    @State private var showBookProgressDetails: Bool = false
-    @State private var showGenreSection: Bool = false
-    @State private var showTotalsSection: Bool = false
-
     // Updates from tracker
     @State private var cancellable: AnyCancellable?
 
     // New: selected book for chapter detail sheet
     @State private var selectedBookForChapters: String? = nil
+
+    // New: Charts datasets
+    @State private var last7Daily: [(date: Date, seconds: Int)] = []
+    // Replaced habits breakdown with session-based chart
+    @State private var sessionsLast7: [(index: Int, minutes: Int)] = []
+    @State private var avgSessionSecondsLast7: Int = 0
+
+    // Keep these for other cards that still use them
+    @State private var weekdayTotals: [(weekday: Int, seconds: Int)] = []
+    @State private var hourBuckets: [(hour: Int, seconds: Int)] = []
+    @State private var avgSessionSeconds: Int = 0
+
+    // New: This Month metrics
+    @State private var monthTotalSeconds: Int = 0
+    @State private var monthChaptersCompleted: Int = 0
+    @State private var monthTop3Books: [(book: String, seconds: Int)] = []
+
+    // Expand/collapse for existing sections
+    @State private var showBookProgressDetails: Bool = false
+    @State private var showGenreSection: Bool = false
+    @State private var showTotalsSection: Bool = false
 
     private var orderedAllBooks: [String] {
         if !BibleData.books.isEmpty {
@@ -59,22 +76,27 @@ struct StatsView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                // 1) At a Glance
                 glanceRow
 
-                // 2) Bible Completion
+                // This Month section
+                thisMonthCard
+
+                // Average Session Length (last 7 days)
+                averageSessionCard
+
+                // Existing: Bible Completion
                 completionCard
 
-                // 3) OT vs NT
+                // Existing: OT vs NT
                 otNtCard
 
-                // 4) Book Reading Progress
+                // Existing: Book Reading Progress
                 bookReadingProgressCard
 
-                // 5) Genre Distribution (collapsible)
+                // Existing: Genre Distribution (collapsible)
                 genreSection
 
-                // 6) Total Bible Time + Per-book table (collapsible)
+                // Existing: Total Bible Time + Per-book table (collapsible)
                 totalsSection
             }
             .padding(.horizontal, 16)
@@ -83,11 +105,11 @@ struct StatsView: View {
         .navigationTitle("Stats")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            refreshTotals()
+            refreshAll()
             if cancellable == nil {
                 cancellable = ReadingTimeTracker.shared.$lastTotalsVersion
                     .receive(on: RunLoop.main)
-                    .sink { _ in refreshTotals() }
+                    .sink { _ in refreshAll() }
             }
         }
         .sheet(item: Binding(
@@ -140,17 +162,168 @@ struct StatsView: View {
                 }
             }
         }
-        // Close the chapters sheet when switching to the Bible tab (so the user sees the reader)
+        // Close the chapters sheet when switching to the Bible tab
         .onReceive(NotificationCenter.default.publisher(for: .switchToTab)) { _ in
             selectedBookForChapters = nil
         }
-        // Refresh stats when chapter progress changes (e.g., Unread pressed, or chapter completed by reading)
+        // Refresh stats when chapter progress changes
         .onReceive(NotificationCenter.default.publisher(for: .init("chapterProgressChanged"))) { _ in
-            refreshTotals()
+            refreshAll()
         }
     }
 
     // MARK: - Cards
+
+    private var thisMonthCard: some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("Reading Time This Month")
+                        .font(.headline)
+                    Spacer()
+                    Text(BibleStatsStore.shared.format(monthTotalSeconds))
+                        .font(.headline)
+                        .monospacedDigit()
+                        .foregroundStyle(.primary)
+                        .accessibilityHidden(true)
+                        .overlay(
+                            Color.clear
+                                .accessibilityElement(children: .ignore)
+                                .accessibilityLabel("This month total \(BibleStatsStore.shared.format(monthTotalSeconds))")
+                        )
+                }
+
+                HStack(spacing: 12) {
+                    pill("Chapters completed", value: "\(monthChaptersCompleted)")
+                    let topSummary: String = monthTop3Books.isEmpty ? "—" : monthTop3Books.prefix(3).map { "\($0.book)" }.joined(separator: ", ")
+                    pill("Top books", value: topSummary)
+                }
+
+                if !last7Daily.isEmpty {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Reading Time (last 7 days)")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Chart {
+                            ForEach(last7Daily, id: \.date) { item in
+                                let minutes = Int(round(Double(item.seconds) / 60.0))
+                                BarMark(
+                                    x: .value("Date", item.date, unit: .day),
+                                    y: .value("Minutes", minutes)
+                                )
+                                .foregroundStyle(Color.accentColor)
+                            }
+                        }
+                        .chartYAxisLabel("Minutes")
+                        .chartXAxis {
+                            AxisMarks(values: .stride(by: .day, count: 1)) { _ in
+                                AxisGridLine()
+                                AxisTick()
+                                AxisValueLabel(format: .dateTime.day().month(.abbreviated))
+                            }
+                        }
+                        .frame(height: 160)
+                    }
+                }
+            }
+        }
+    }
+
+    private var averageSessionCard: some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("Average Session Length")
+                        .font(.headline)
+                    Spacer()
+                    Text("Avg (7d): \(BibleStatsStore.shared.format(avgSessionSecondsLast7))")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                }
+
+                if !sessionsLast7.isEmpty {
+                    Chart {
+                        ForEach(sessionsLast7, id: \.index) { point in
+                            LineMark(
+                                x: .value("Session", point.index),
+                                y: .value("Minutes", point.minutes)
+                            )
+                            .foregroundStyle(.teal)
+                            PointMark(
+                                x: .value("Session", point.index),
+                                y: .value("Minutes", point.minutes)
+                            )
+                            .foregroundStyle(.teal)
+                        }
+                    }
+                    .chartYAxisLabel("Minutes")
+                    .frame(height: 180)
+                } else {
+                    ContentUnavailableView("No sessions in the last 7 days", systemImage: "chart.line.uptrend.xyaxis")
+                }
+            }
+        }
+    }
+
+    private func pill(_ title: String, value: String) -> some View {
+        HStack(spacing: 6) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Spacer()
+            Text(value)
+                .font(.footnote.weight(.semibold))
+                .lineLimit(1)
+        }
+        .padding(.vertical, 6)
+        .padding(.horizontal, 10)
+        .background(
+            Capsule(style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
+        .overlay(
+            Capsule(style: .continuous)
+                .stroke(Color.black.opacity(0.08), lineWidth: 1)
+        )
+    }
+
+    // New helper to fix missing symbol
+    private func milestonePill(text: String) -> some View {
+        HStack(spacing: 6) {
+            Text(text)
+                .font(.footnote.weight(.semibold))
+                .lineLimit(1)
+        }
+        .padding(.vertical, 6)
+        .padding(.horizontal, 10)
+        .background(
+            Capsule(style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
+        .overlay(
+            Capsule(style: .continuous)
+                .stroke(Color.black.opacity(0.08), lineWidth: 1)
+        )
+    }
+
+    private func weekdayLabel(_ weekday: Int) -> String {
+        // 1=Sunday ... 7=Saturday
+        let symbols = Calendar.current.shortWeekdaySymbols
+        let idx = max(1, min(7, weekday)) - 1
+        return symbols[idx]
+    }
+
+    private func hourLabel(_ hour: Int) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "ha"
+        var comps = DateComponents()
+        comps.hour = hour
+        let date = Calendar.current.date(from: comps) ?? Date()
+        return formatter.string(from: date)
+    }
+
+    // MARK: - Cards (existing ones kept)
 
     private var glanceRow: some View {
         HStack(spacing: 12) {
@@ -168,7 +341,6 @@ struct StatsView: View {
                 .font(.title3.weight(.semibold))
                 .monospacedDigit()
             if let subtitle, !subtitle.isEmpty, subtitle != "—" {
-                // Show context label matching Home card style:
                 let prefix = (title == "This Week") ? "vs last: " : (title == "Today" ? "vs yesterday: " : "")
                 if !prefix.isEmpty {
                     Text("\(prefix)\(subtitle)")
@@ -247,21 +419,6 @@ struct StatsView: View {
         }
     }
 
-    private func milestonePill(text: String) -> some View {
-        Text(text)
-            .font(.caption.weight(.semibold))
-            .padding(.vertical, 6)
-            .padding(.horizontal, 10)
-            .background(
-                Capsule(style: .continuous)
-                    .fill(Color(.secondarySystemBackground))
-            )
-            .overlay(
-                Capsule(style: .continuous)
-                    .stroke(Color.black.opacity(0.08), lineWidth: 1)
-            )
-    }
-
     private var otNtCard: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 8) {
@@ -308,7 +465,6 @@ struct StatsView: View {
     private var bookReadingProgressCard: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 10) {
-                // Collapsed header
                 HStack(spacing: 12) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Book Reading Progress")
@@ -332,10 +488,9 @@ struct StatsView: View {
                         }
                     )
                 }
-                // Toggle
                 Button {
                     withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                        showBookProgressDetails.toggle()
+                        toggleBookProgress()
                     }
                 } label: {
                     HStack {
@@ -350,7 +505,6 @@ struct StatsView: View {
                 .buttonStyle(.plain)
 
                 if showBookProgressDetails {
-                    // Per-book rows
                     VStack(spacing: 8) {
                         ForEach(orderedAllBooks, id: \.self) { name in
                             let prog = bookProgress[name] ?? (0, 1, 0.0)
@@ -397,7 +551,7 @@ struct StatsView: View {
                     Spacer()
                     Button {
                         withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                            showGenreSection.toggle()
+                            toggleGenre()
                         }
                     } label: {
                         HStack(spacing: 6) {
@@ -469,10 +623,9 @@ struct StatsView: View {
                         )
                 }
 
-                // Toggle
                 Button {
                     withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                        showTotalsSection.toggle()
+                        toggleTotals()
                     }
                 } label: {
                     HStack {
@@ -512,7 +665,44 @@ struct StatsView: View {
         }
     }
 
+    // MARK: - One-open-only toggles
+
+    private func toggleBookProgress() {
+        if showBookProgressDetails {
+            showBookProgressDetails = false
+        } else {
+            showGenreSection = false
+            showTotalsSection = false
+            showBookProgressDetails = true
+        }
+    }
+
+    private func toggleGenre() {
+        if showGenreSection {
+            showGenreSection = false
+        } else {
+            showBookProgressDetails = false
+            showTotalsSection = false
+            showGenreSection = true
+        }
+    }
+
+    private func toggleTotals() {
+        if showTotalsSection {
+            showTotalsSection = false
+        } else {
+            showBookProgressDetails = false
+            showGenreSection = false
+            showTotalsSection = true
+        }
+    }
+
     // MARK: - Data refresh
+
+    private func refreshAll() {
+        refreshTotals()
+        refreshChartsAndMonth()
+    }
 
     private func refreshTotals() {
         let store = BibleStatsStore.shared
@@ -528,7 +718,6 @@ struct StatsView: View {
         otSeconds = split.ot
         ntSeconds = split.nt
 
-        // Verse-complete based completion metrics and per-book progress
         computeCompletionMetricsVerseComplete()
         computePerBookProgressVerseComplete()
 
@@ -544,6 +733,72 @@ struct StatsView: View {
         if let g = selectedGenre {
             genreDetailRows = rowsForGenre(g, totals: totals)
         }
+    }
+
+    private func refreshChartsAndMonth() {
+        let cal = Calendar.current
+        // Last 7 days daily bars
+        let dailyDict = BibleStatsStore.shared.loadDailyTotals()
+        last7Daily = (0..<7).compactMap { i -> (Date, Int)? in
+            guard let d = cal.date(byAdding: .day, value: -i, to: Date()) else { return nil }
+            let key = BibleStatsStore.isoDateString(d)
+            return (d, dailyDict[key, default: 0])
+        }.sorted { $0.0 < $1.0 }
+
+        // Sessions for last 7 days (for the Average Session Length chart)
+        let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7).sorted { $0.end < $1.end }
+        avgSessionSecondsLast7 = averageSessionLength(sessions: sessions7)
+        sessionsLast7 = sessions7.enumerated().map { (idx, s) in
+            let durSec = Int(max(0, s.end.timeIntervalSince(s.start)))
+            let minutes = Int(round(Double(durSec) / 60.0))
+            return (index: idx + 1, minutes: minutes)
+        }
+
+        // Keep the broader habits aggregates for other parts if needed
+        let last56 = (0..<56).compactMap { i -> (Date, Int)? in
+            guard let d = cal.date(byAdding: .day, value: -i, to: Date()) else { return nil }
+            let key = BibleStatsStore.isoDateString(d)
+            return (d, dailyDict[key, default: 0])
+        }
+        var weekdayAgg: [Int: Int] = [:] // 1...7
+        for (d, s) in last56 {
+            let wd = cal.component(.weekday, from: d)
+            weekdayAgg[wd, default: 0] += s
+        }
+        weekdayTotals = (1...7).map { (weekday: $0, seconds: weekdayAgg[$0, default: 0]) }
+
+        let sessions30 = ReadingSessionsStore.shared.sessions(inLastDays: 30)
+        avgSessionSeconds = averageSessionLength(sessions: sessions30)
+        hourBuckets = bucketsByHour(sessions: sessions30)
+
+        // This Month section
+        let now = Date()
+        monthTotalSeconds = BibleStatsStore.shared.totalForMonth(containing: now)
+        let comps = BibleStatsStore.shared.chapterCompletions(inMonth: now)
+        monthChaptersCompleted = comps.count
+        let monthByBook = BibleStatsStore.shared.totalsByBookForMonth(containing: now)
+        let sortedTop = monthByBook.sorted { lhs, rhs in
+            if lhs.value == rhs.value { return lhs.key < rhs.key }
+            return lhs.value > rhs.value
+        }
+        // Map (key,value) -> (book,seconds)
+        monthTop3Books = Array(sortedTop.prefix(3)).map { (book: $0.key, seconds: $0.value) }
+    }
+
+    private func averageSessionLength(sessions: [ReadingSessionsStore.Session]) -> Int {
+        guard !sessions.isEmpty else { return 0 }
+        let total = sessions.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
+        return total / sessions.count
+    }
+
+    private func bucketsByHour(sessions: [ReadingSessionsStore.Session]) -> [(hour: Int, seconds: Int)] {
+        var buckets: [Int: Int] = [:] // 0...23
+        for s in sessions {
+            let h = Calendar.current.component(.hour, from: s.start)
+            let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
+            buckets[h, default: 0] += dur
+        }
+        return (0...23).map { (hour: $0, seconds: buckets[$0, default: 0]) }
     }
 
     private func computeCompletionMetricsVerseComplete() {
@@ -631,9 +886,7 @@ struct StatsView: View {
         return "\(sign)\(BibleStatsStore.shared.format(absVal))"
     }
 
-    // New: Today vs Yesterday delta string
     private var todayDeltaOnlyValue: String {
-        // Yesterday = total of last 2 days minus today
         let store = BibleStatsStore.shared
         let last2 = store.totalForLast(days: 2)
         let yesterday = max(0, last2 - todaySeconds)
@@ -731,7 +984,6 @@ struct StatsView: View {
         }
     }
 
-    // Formats a Date as a time-only string using the user's locale (e.g., "3:42 PM" or "15:42")
     private func timeOnlyString(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.timeStyle = .short
@@ -777,19 +1029,16 @@ private struct ProgressRing<Label: View>: View {
 
 // MARK: - Chapter detail support
 
-// Key to use Identifiable sheet(item:)
 private struct ChapterDetailKey: Identifiable, Hashable {
     let bookName: String
     var id: String { bookName }
 }
 
-// Modal view listing all chapters with read/unread indication
 private struct BookChaptersDetailView: View {
     let bookName: String
 
     @State private var visited: Set<String> = []
     @State private var selectedChapter: Int? = nil
-    // Force refresh of rows after Unread
     @State private var refreshID: UUID = UUID()
 
     private var book: Book? {
@@ -806,7 +1055,6 @@ private struct BookChaptersDetailView: View {
                 List {
                     Section {
                         ForEach(chapterNumbers, id: \.self) { chap in
-                            // Compute completion from seen verses, not from visited set alone
                             let totalVerses = b.chapters.first(where: { $0.number == chap })?.verses.count ?? 0
                             let isRead = totalVerses > 0 && BibleStatsStore.shared.isChapterComplete(bookName: b.name, chapter: chap, totalVerses: totalVerses)
 
@@ -833,7 +1081,6 @@ private struct BookChaptersDetailView: View {
                     } header: {
                         Text(b.name)
                     } footer: {
-                        // Footer shows count of read chapters based on verse-complete logic
                         let readCount = chapterNumbers.reduce(0) { acc, chap in
                             let total = b.chapters.first(where: { $0.number == chap })?.verses.count ?? 0
                             let complete = total > 0 && BibleStatsStore.shared.isChapterComplete(bookName: b.name, chapter: chap, totalVerses: total)
@@ -846,21 +1093,17 @@ private struct BookChaptersDetailView: View {
                 }
                 .id(refreshID)
             } else if book != nil {
-                // Book with zero chapters (shouldn’t happen), still avoid invalid range
                 ContentUnavailableView("No chapters found", systemImage: "exclamationmark.triangle")
             } else {
                 ContentUnavailableView("Book not found", systemImage: "exclamationmark.triangle")
             }
         }
         .onAppear {
-            // Keep visited set for other stats; read state is derived from seen verses.
             visited = BibleStatsStore.shared.loadVisitedChapters()
         }
         .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { _ in
-            // When returning from reading, seen state may have updated; refresh visited for counts if needed
             visited = BibleStatsStore.shared.loadVisitedChapters()
         }
-        // Refresh rows when a chapter becomes completed by reading (or cleared)
         .onReceive(NotificationCenter.default.publisher(for: .init("chapterProgressChanged"))) { _ in
             refreshID = UUID()
             visited = BibleStatsStore.shared.loadVisitedChapters()
@@ -868,15 +1111,11 @@ private struct BookChaptersDetailView: View {
     }
 
     private func clearChapter(bookName: String, chapterNumber: Int) {
-        // Clear all seen verses for the chapter
         BibleStatsStore.shared.saveSeenVerses([], bookName: bookName, chapter: chapterNumber)
-        // Optionally unmark visited for consistency
         var v = BibleStatsStore.shared.loadVisitedChapters()
         v.remove("\(bookName):\(chapterNumber)")
         BibleStatsStore.shared.saveVisitedChapters(v)
-        // Force this list to recompute isRead
         refreshID = UUID()
-        // Notify StatsView to refresh its metrics
         NotificationCenter.default.post(name: .init("chapterProgressChanged"), object: nil)
     }
 }

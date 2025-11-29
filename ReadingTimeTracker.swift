@@ -30,9 +30,16 @@ final class ReadingTimeTracker: ObservableObject {
             return
         }
 
-        // If switching from another book, flush first
-        if let currentBook {
-            flush(bookName: currentBook)
+        // If switching from another book, flush first and close previous session
+        if let prevBook = currentBook {
+            closeCurrentSessionAndFlush(finalize: false) // close session segment
+            // Start fresh after closing previous
+            currentBook = bookName
+            currentChapterNumber = chapter
+            sessionStart = Date()
+            accumulatedInSession = 0
+            startTickerIfNeeded()
+            return
         }
 
         currentBook = bookName
@@ -48,9 +55,8 @@ final class ReadingTimeTracker: ObservableObject {
             if let chapter { currentChapterNumber = chapter }
             return
         }
-        if let currentBook {
-            flush(bookName: currentBook)
-        }
+        // Close the current session segment and flush before switching
+        closeCurrentSessionAndFlush(finalize: false)
         currentBook = bookName
         currentChapterNumber = chapter
         sessionStart = Date()
@@ -69,8 +75,8 @@ final class ReadingTimeTracker: ObservableObject {
     }
 
     func stopAndFlush() {
-        guard let currentBook else { stopTicker(); return }
-        flush(bookName: currentBook)
+        // Close the current session with a final append and flush totals
+        closeCurrentSessionAndFlush(finalize: true)
         stopTicker()
         self.currentBook = nil
         self.currentChapterNumber = nil
@@ -112,13 +118,16 @@ final class ReadingTimeTracker: ObservableObject {
     private func flush(bookName: String, soft: Bool = false) {
         guard accumulatedInSession > 0 else { return }
 
-        // Per-book totals
+        // Per-book totals (all-time)
         var totals = BibleStatsStore.shared.loadTotals()
         totals[bookName, default: 0] += accumulatedInSession
         BibleStatsStore.shared.saveTotals(totals)
 
-        // Daily totals
+        // Daily totals (overall)
         BibleStatsStore.shared.addToToday(seconds: accumulatedInSession)
+
+        // Daily totals by book (for time-windowed top books)
+        BibleStatsStore.shared.addToToday(bookName: bookName, seconds: accumulatedInSession)
 
         // Last read (do not mark chapter visited here; completion is verse-driven)
         if let chap = currentChapterNumber {
@@ -129,6 +138,21 @@ final class ReadingTimeTracker: ObservableObject {
 
         // Bump a version so any listeners (like the Home card or Stats) can refresh
         lastTotalsVersion &+= 1
+    }
+
+    private func closeCurrentSessionAndFlush(finalize: Bool) {
+        guard let book = currentBook, let start = sessionStart else { return }
+        let end = Date()
+        let duration = Int(max(0, end.timeIntervalSince(start)))
+        if duration > 0 {
+            // Append session record
+            ReadingSessionsStore.shared.appendSession(.init(start: start, end: end, book: book, chapter: currentChapterNumber))
+            // Also ensure totals reflect elapsed time (in case we didn’t persist yet)
+            accumulatedInSession += duration
+            flush(bookName: book, soft: !finalize)
+        }
+        // Reset the sessionStart for subsequent segments
+        sessionStart = finalize ? nil : Date()
     }
 }
 

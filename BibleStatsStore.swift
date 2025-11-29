@@ -1,18 +1,21 @@
 import Foundation
 import SwiftUI
 
-// Tiny store that reads/writes a [bookName: seconds] dictionary to UserDefaults as JSON.
-// It also provides helpers for formatting and ranking.
+// Tiny store that reads/writes Bible reading stats to UserDefaults as JSON.
+// It provides helpers for formatting, ranking, daily totals, per-book totals,
+// per-day per-book totals, chapter completion dates, and last-read info.
 final class BibleStatsStore {
     static let shared = BibleStatsStore()
     private init() {}
 
     struct Defaults {
-        static let keyTotals = "bookReadingTimes"
-        static let keyDailyTotals = "dailyReadingTimes"          // [String: Int] keyed by ISO date yyyy-MM-dd
-        static let keyVisitedChapters = "visitedChapters"        // [String]
-        static let keyLastRead = "lastReadEntry"                 // JSON of LastRead
-        static let keySeenVersesByChapter = "seenVersesByChapter" // [String: [Int]] keyed by "Book:Chapter"
+        static let keyTotals = "bookReadingTimes"                   // [String: Int] all-time per-book
+        static let keyDailyTotals = "dailyReadingTimes"             // [String: Int] by ISO date yyyy-MM-dd
+        static let keyDailyTotalsByBook = "dailyReadingTimesByBook" // [String: [String: Int]] date -> (book -> seconds)
+        static let keyVisitedChapters = "visitedChapters"           // [String]
+        static let keyLastRead = "lastReadEntry"                    // JSON of LastRead
+        static let keySeenVersesByChapter = "seenVersesByChapter"   // [String: [Int]] keyed by "Book:Chapter"
+        static let keyChapterCompletionDates = "chapterCompletionDates" // [String: Date] keyed by "Book:Chapter"
         // Swap this to your app group if desired:
         static var provider: UserDefaults { UserDefaults.standard }
     }
@@ -25,7 +28,7 @@ final class BibleStatsStore {
         let date: Date
     }
 
-    // MARK: - Per-book totals
+    // MARK: - Per-book totals (all-time)
 
     func loadTotals() -> [String: Int] {
         let defaults = Defaults.provider
@@ -65,7 +68,7 @@ final class BibleStatsStore {
         loadTotals().values.max() ?? 0
     }
 
-    // MARK: - Daily totals
+    // MARK: - Daily totals (overall)
 
     func loadDailyTotals() -> [String: Int] {
         let defaults = Defaults.provider
@@ -90,16 +93,6 @@ final class BibleStatsStore {
         let today = Self.isoDateString(Date(), calendar: calendar)
         dict[today, default: 0] += seconds
         saveDailyTotals(dict)
-
-        // Award streak credit when Bible reading time meets the daily goal
-        let totalToday = dict[today, default: 0]
-        // Read the user's goal minutes from defaults (same key used elsewhere)
-        let goalMinutes = max(1, UserDefaults.standard.integer(forKey: "dailyGoalMinutes"))
-        let goalSeconds = goalMinutes * 60
-        if totalToday >= goalSeconds {
-            // Mark the local day as goal met (idempotent)
-            StreakTracker.markGoalMet(on: Date())
-        }
     }
 
     func totalForLast(days: Int, including today: Date = Date(), calendar: Calendar = .current) -> Int {
@@ -115,6 +108,56 @@ final class BibleStatsStore {
         return sum
     }
 
+    func totalForMonth(containing date: Date, calendar: Calendar = .current) -> Int {
+        let dict = loadDailyTotals()
+        let range = Self.isoKeysForMonth(containing: date, calendar: calendar)
+        return range.reduce(0) { $0 + dict[$1, default: 0] }
+    }
+
+    // MARK: - Per-day per-book totals (for time-windowed top books)
+
+    private func loadDailyTotalsByBook() -> [String: [String: Int]] {
+        let defaults = Defaults.provider
+        guard let data = defaults.data(forKey: Defaults.keyDailyTotalsByBook) else { return [:] }
+        if let dict = try? JSONDecoder().decode([String: [String: Int]].self, from: data) {
+            return dict
+        }
+        return [:]
+    }
+
+    private func saveDailyTotalsByBook(_ dict: [String: [String: Int]]) {
+        let defaults = Defaults.provider
+        if let data = try? JSONEncoder().encode(dict) {
+            defaults.set(data, forKey: Defaults.keyDailyTotalsByBook)
+        }
+    }
+
+    func addToToday(bookName: String, seconds: Int, calendar: Calendar = .current) {
+        guard seconds > 0, !bookName.isEmpty else { return }
+        var dict = loadDailyTotalsByBook()
+        let today = Self.isoDateString(Date(), calendar: calendar)
+        var perBook = dict[today] ?? [:]
+        perBook[bookName, default: 0] += seconds
+        dict[today] = perBook
+        saveDailyTotalsByBook(dict)
+    }
+
+    func totalsByBookForMonth(containing date: Date, calendar: Calendar = .current) -> [String: Int] {
+        let dict = loadDailyTotalsByBook()
+        let keys = Self.isoKeysForMonth(containing: date, calendar: calendar)
+        var result: [String: Int] = [:]
+        for k in keys {
+            if let per = dict[k] {
+                for (book, sec) in per {
+                    result[book, default: 0] += max(0, sec)
+                }
+            }
+        }
+        return result
+    }
+
+    // MARK: - ISO helpers
+
     static func isoDateString(_ date: Date, calendar: Calendar = .current) -> String {
         var cal = calendar
         cal.timeZone = TimeZone(secondsFromGMT: 0) ?? .gmt
@@ -123,6 +166,18 @@ final class BibleStatsStore {
         let m = comps.month ?? 1
         let d = comps.day ?? 1
         return String(format: "%04d-%02d-%02d", y, m, d)
+    }
+
+    static func isoKeysForMonth(containing date: Date, calendar: Calendar = .current) -> [String] {
+        var cal = calendar
+        cal.timeZone = TimeZone(secondsFromGMT: 0) ?? .gmt
+        let start = cal.date(from: cal.dateComponents([.year, .month], from: date)) ?? date
+        let range = cal.range(of: .day, in: .month, for: start) ?? 1..<31
+        return range.compactMap { day -> String? in
+            cal.date(from: DateComponents(year: cal.component(.year, from: start),
+                                          month: cal.component(.month, from: start),
+                                          day: day)).map { isoDateString($0, calendar: cal) }
+        }
     }
 
     // MARK: - Visited chapters
@@ -156,6 +211,45 @@ final class BibleStatsStore {
         }
     }
 
+    // MARK: - Chapter completion dates (first time a chapter becomes complete)
+
+    private func loadChapterCompletionDates() -> [String: Date] {
+        let defaults = Defaults.provider
+        guard let data = defaults.data(forKey: Defaults.keyChapterCompletionDates) else { return [:] }
+        if let dict = try? JSONDecoder().decode([String: Date].self, from: data) {
+            return dict
+        }
+        return [:]
+    }
+
+    private func saveChapterCompletionDates(_ dict: [String: Date]) {
+        let defaults = Defaults.provider
+        if let data = try? JSONEncoder().encode(dict) {
+            defaults.set(data, forKey: Defaults.keyChapterCompletionDates)
+        }
+    }
+
+    func recordChapterCompletionDate(bookName: String, chapterNumber: Int, date: Date = Date()) {
+        let key = "\(bookName):\(chapterNumber)"
+        var map = loadChapterCompletionDates()
+        if map[key] == nil {
+            map[key] = date
+            saveChapterCompletionDates(map)
+        }
+    }
+
+    func chapterCompletions(inMonth date: Date, calendar: Calendar = .current) -> [(book: String, chapter: Int, date: Date)] {
+        let map = loadChapterCompletionDates()
+        let cal = calendar
+        return map.compactMap { (key, d) in
+            guard cal.isDate(d, equalTo: date, toGranularity: .month),
+                  cal.isDate(d, equalTo: date, toGranularity: .year) else { return nil }
+            let parts = key.split(separator: ":")
+            guard parts.count == 2, let chap = Int(parts[1]) else { return nil }
+            return (book: String(parts[0]), chapter: chap, date: d)
+        }
+    }
+
     // MARK: - Last read
 
     func loadLastRead() -> LastRead? {
@@ -181,7 +275,6 @@ final class BibleStatsStore {
         }
         // If not found, attempt based on BibleData order if it matches fallback membership by name
         if let idx = BibleData.books.firstIndex(where: { $0.name == bookName }) {
-            // Rough heuristic: if name exists in fallback, use that; else, assume OT for safety
             return idx < 39
         }
         return true
@@ -250,9 +343,10 @@ final class BibleStatsStore {
         seen.insert(verse)
         saveSeenVerses(seen, bookName: bookName, chapter: chapter)
 
-        // If we know total verses, and now all are seen, mark chapter visited (emits notification once).
+        // If we know total verses, and now all are seen, mark chapter visited (emits notification once) and record completion date.
         if let total = totalVerses, total > 0, seen.count >= total {
             markVisited(bookName: bookName, chapterNumber: chapter)
+            recordChapterCompletionDate(bookName: bookName, chapterNumber: chapter, date: Date())
         }
     }
 
@@ -270,4 +364,3 @@ final class BibleStatsStore {
         return seen.count >= totalVerses
     }
 }
-
