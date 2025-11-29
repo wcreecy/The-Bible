@@ -140,6 +140,14 @@ struct StatsView: View {
                 }
             }
         }
+        // Close the chapters sheet when switching to the Bible tab (so the user sees the reader)
+        .onReceive(NotificationCenter.default.publisher(for: .switchToTab)) { _ in
+            selectedBookForChapters = nil
+        }
+        // Refresh stats when chapter progress changes (e.g., Unread pressed)
+        .onReceive(NotificationCenter.default.publisher(for: .init("chapterProgressChanged"))) { _ in
+            refreshTotals()
+        }
     }
 
     // MARK: - Cards
@@ -208,7 +216,7 @@ struct StatsView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Bible Completion")
                         .font(.headline)
-                    Text("\(visitedCount)/\(totalChapters) chapters visited")
+                    Text("\(visitedCount)/\(totalChapters) chapters completed")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .monospacedDigit()
@@ -313,7 +321,11 @@ struct StatsView: View {
                         size: 30,
                         tint: .accentColor,
                         track: Color.primary.opacity(0.12),
-                        label: { EmptyView() }
+                        label: {
+                            Text("\(bibleCompletionPercent)%")
+                                .font(.caption2.weight(.semibold))
+                                .monospacedDigit()
+                        }
                     )
                 }
                 // Toggle
@@ -512,11 +524,9 @@ struct StatsView: View {
         otSeconds = split.ot
         ntSeconds = split.nt
 
-        let visited = store.loadVisitedChapters()
-        visitedCount = visited.count
-
-        computeCompletionMetrics(visitedChapters: visited)
-        computePerBookProgress(visitedChapters: visited)
+        // Verse-complete based completion metrics and per-book progress
+        computeCompletionMetricsVerseComplete()
+        computePerBookProgressVerseComplete()
 
         if let last = store.loadLastRead() {
             lastReadBookChapter = "\(last.bookName) \(last.chapterNumber)"
@@ -532,32 +542,45 @@ struct StatsView: View {
         }
     }
 
-    private func computeCompletionMetrics(visitedChapters: Set<String>) {
+    private func computeCompletionMetricsVerseComplete() {
         let books = BibleData.books
         totalBooks = books.count
         totalChapters = books.reduce(0) { $0 + $1.chapters.count }
 
-        var completed = 0
+        var completedBooks = 0
+        var completedChapters = 0
+
         for book in books {
-            let allChaptersVisited = book.chapters.allSatisfy { chap in
-                visitedChapters.contains("\(book.name):\(chap.number)")
+            var allChaptersComplete = true
+            for chap in book.chapters {
+                let totalVerses = chap.verses.count
+                let isComplete = totalVerses > 0 && BibleStatsStore.shared.isChapterComplete(bookName: book.name, chapter: chap.number, totalVerses: totalVerses)
+                if isComplete {
+                    completedChapters += 1
+                } else {
+                    allChaptersComplete = false
+                }
             }
-            if allChaptersVisited { completed += 1 }
+            if allChaptersComplete { completedBooks += 1 }
         }
-        booksCompleted = completed
+
+        visitedCount = completedChapters
+        booksCompleted = completedBooks
 
         let denom = max(1, totalChapters)
-        let pct = Int(round((Double(visitedCount) / Double(denom)) * 100.0))
+        let pct = Int(round((Double(completedChapters) / Double(denom)) * 100.0))
         bibleCompletionPercent = pct
     }
 
-    private func computePerBookProgress(visitedChapters: Set<String>) {
+    private func computePerBookProgressVerseComplete() {
         var progress: [String: (read: Int, total: Int, fraction: Double)] = [:]
         let books = BibleData.books
         for book in books {
             let total = max(1, book.chapters.count)
             let read = book.chapters.reduce(0) { acc, chap in
-                acc + (visitedChapters.contains("\(book.name):\(chap.number)") ? 1 : 0)
+                let totalVerses = chap.verses.count
+                let complete = totalVerses > 0 && BibleStatsStore.shared.isChapterComplete(bookName: book.name, chapter: chap.number, totalVerses: totalVerses)
+                return acc + (complete ? 1 : 0)
             }
             let fraction = Double(read) / Double(total)
             progress[book.name] = (read, total, fraction)
@@ -748,6 +771,10 @@ private struct BookChaptersDetailView: View {
     let bookName: String
 
     @State private var visited: Set<String> = []
+    @State private var selectedChapter: Int? = nil
+    // Force refresh of rows after Unread
+    @State private var refreshID: UUID = UUID()
+
     private var book: Book? {
         BibleData.books.first(where: { $0.name == bookName })
     }
@@ -762,15 +789,11 @@ private struct BookChaptersDetailView: View {
                 List {
                     Section {
                         ForEach(chapterNumbers, id: \.self) { chap in
-                            let key = "\(b.name):\(chap)"
-                            let isRead = visited.contains(key)
-                            Button {
-                                NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
-                                    "book": b.name,
-                                    "chapter": chap,
-                                    "verse": 1
-                                ])
-                            } label: {
+                            // Compute completion from seen verses, not from visited set alone
+                            let totalVerses = b.chapters.first(where: { $0.number == chap })?.verses.count ?? 0
+                            let isRead = totalVerses > 0 && BibleStatsStore.shared.isChapterComplete(bookName: b.name, chapter: chap, totalVerses: totalVerses)
+
+                            NavigationLink(destination: VersesChecklistView(bookName: b.name, chapterNumber: chap)) {
                                 HStack(spacing: 8) {
                                     Image(systemName: isRead ? "checkmark.circle.fill" : "circle")
                                         .foregroundStyle(isRead ? .green : .secondary)
@@ -778,22 +801,33 @@ private struct BookChaptersDetailView: View {
                                         .strikethrough(isRead, color: .secondary)
                                         .foregroundStyle(isRead ? .secondary : .primary)
                                     Spacer()
+                                    Button("Unread") {
+                                        clearChapter(bookName: b.name, chapterNumber: chap)
+                                    }
+                                    .buttonStyle(.bordered)
+                                    .controlSize(.mini)
+                                    .tint(.red)
+                                    .disabled(!isRead)
+                                    .accessibilityLabel("Mark Chapter \(chap) Unread")
                                 }
                             }
-                            .buttonStyle(.plain)
                             .accessibilityLabel("Chapter \(chap) \(isRead ? "read" : "unread")")
                         }
                     } header: {
                         Text(b.name)
                     } footer: {
+                        // Footer shows count of read chapters based on verse-complete logic
                         let readCount = chapterNumbers.reduce(0) { acc, chap in
-                            acc + (visited.contains("\(b.name):\(chap)") ? 1 : 0)
+                            let total = b.chapters.first(where: { $0.number == chap })?.verses.count ?? 0
+                            let complete = total > 0 && BibleStatsStore.shared.isChapterComplete(bookName: b.name, chapter: chap, totalVerses: total)
+                            return acc + (complete ? 1 : 0)
                         }
                         Text("\(readCount)/\(chapterNumbers.count) chapters read")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
                 }
+                .id(refreshID)
             } else if book != nil {
                 // Book with zero chapters (shouldn’t happen), still avoid invalid range
                 ContentUnavailableView("No chapters found", systemImage: "exclamationmark.triangle")
@@ -802,7 +836,25 @@ private struct BookChaptersDetailView: View {
             }
         }
         .onAppear {
+            // Keep visited set for other stats; read state is derived from seen verses.
             visited = BibleStatsStore.shared.loadVisitedChapters()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { _ in
+            // When returning from reading, seen state may have updated; refresh visited for counts if needed
+            visited = BibleStatsStore.shared.loadVisitedChapters()
+        }
+    }
+
+    private func clearChapter(bookName: String, chapterNumber: Int) {
+        // Clear all seen verses for the chapter
+        BibleStatsStore.shared.saveSeenVerses([], bookName: bookName, chapter: chapterNumber)
+        // Optionally unmark visited for consistency
+        var v = BibleStatsStore.shared.loadVisitedChapters()
+        v.remove("\(bookName):\(chapterNumber)")
+        BibleStatsStore.shared.saveVisitedChapters(v)
+        // Force this list to recompute isRead
+        refreshID = UUID()
+        // Notify StatsView to refresh its metrics
+        NotificationCenter.default.post(name: .init("chapterProgressChanged"), object: nil)
     }
 }

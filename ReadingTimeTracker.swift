@@ -120,9 +120,8 @@ final class ReadingTimeTracker: ObservableObject {
         // Daily totals
         BibleStatsStore.shared.addToToday(seconds: accumulatedInSession)
 
-        // Visited chapters and last read (if chapter is known)
+        // Last read (do not mark chapter visited here; completion is verse-driven)
         if let chap = currentChapterNumber {
-            BibleStatsStore.shared.markVisited(bookName: bookName, chapterNumber: chap)
             BibleStatsStore.shared.saveLastRead(bookName: bookName, chapterNumber: chap, date: Date())
         }
 

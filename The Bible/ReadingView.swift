@@ -44,6 +44,9 @@ struct ReadingView: View {
     // Reader-specific font size (independent from global app UI font)
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
 
+    // Option A guard: avoid mass-marking on initial render
+    @State private var hasCompletedInitialAppear: Bool = false
+
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
         self.chapter = chapter
@@ -83,6 +86,18 @@ struct ReadingView: View {
                 }
                 // Load current pinned verse state from shared defaults
                 loadPinnedFromShared()
+
+                // Reset initial-appear guard when entering a chapter
+                hasCompletedInitialAppear = false
+
+                // Flip the guard after first layout turn so subsequent onAppear calls (from scrolling) are allowed to mark
+                Task { @MainActor in
+                    // Yield to allow initial verse cells to render
+                    await Task.yield()
+                    // Small delay to ensure initial batch of cells has finished appearing
+                    try? await Task.sleep(nanoseconds: 150_000_000)
+                    hasCompletedInitialAppear = true
+                }
             }
             .onDisappear {
                 // Stop and flush reading-time tracking
@@ -122,6 +137,27 @@ struct ReadingView: View {
                                     .padding(.trailing, 12)
                                     .transition(.opacity)
                                     .opacity(0.9)
+                            }
+                        }
+                        // Option A: Only mark the single targeted verse on initial load.
+                        // After initial load completes, allow onAppear to mark verses as user scrolls.
+                        .onAppear {
+                            let total = currentChapter.verses.count
+                            if hasCompletedInitialAppear {
+                                BibleStatsStore.shared.markVerseSeen(
+                                    bookName: currentBook.name,
+                                    chapter: currentChapter.number,
+                                    verse: verse.number,
+                                    totalVerses: total
+                                )
+                            } else if verse.number == currentVerse {
+                                // Initial batch: mark only the targeted verse
+                                BibleStatsStore.shared.markVerseSeen(
+                                    bookName: currentBook.name,
+                                    chapter: currentChapter.number,
+                                    verse: verse.number,
+                                    totalVerses: total
+                                )
                             }
                         }
                         .onLongPressGesture(minimumDuration: 0.5) {
@@ -232,6 +268,13 @@ struct ReadingView: View {
                     ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
                     // Mark daily streak on chapter change as well (still within same day; harmless)
                     StreakTracker.markVisitedToday()
+                    // Reset initial-appear guard when changing chapters
+                    hasCompletedInitialAppear = false
+                    Task { @MainActor in
+                        await Task.yield()
+                        try? await Task.sleep(nanoseconds: 150_000_000)
+                        hasCompletedInitialAppear = true
+                    }
                 }
                 .onAppear {
                     DispatchQueue.main.async {
@@ -503,3 +546,4 @@ struct ReadingView: View {
         "“\(text)” — \(bookName) \(chapter):\(verse)"
     }
 }
+

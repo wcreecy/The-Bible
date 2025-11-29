@@ -12,6 +12,7 @@ final class BibleStatsStore {
         static let keyDailyTotals = "dailyReadingTimes"          // [String: Int] keyed by ISO date yyyy-MM-dd
         static let keyVisitedChapters = "visitedChapters"        // [String]
         static let keyLastRead = "lastReadEntry"                 // JSON of LastRead
+        static let keySeenVersesByChapter = "seenVersesByChapter" // [String: [Int]] keyed by "Book:Chapter"
         // Swap this to your app group if desired:
         static var provider: UserDefaults { UserDefaults.standard }
     }
@@ -189,6 +190,68 @@ final class BibleStatsStore {
         } else {
             return String(format: "%d:%02d", m, sec)
         }
+    }
+
+    // MARK: - Seen verses per chapter
+
+    private func seenKey(bookName: String, chapter: Int) -> String {
+        "\(bookName):\(chapter)"
+    }
+
+    private func loadSeenMap() -> [String: [Int]] {
+        let defaults = Defaults.provider
+        guard let data = defaults.data(forKey: Defaults.keySeenVersesByChapter) else { return [:] }
+        if let dict = try? JSONDecoder().decode([String: [Int]].self, from: data) {
+            return dict
+        }
+        return [:]
+    }
+
+    private func saveSeenMap(_ map: [String: [Int]]) {
+        let defaults = Defaults.provider
+        if let data = try? JSONEncoder().encode(map) {
+            defaults.set(data, forKey: Defaults.keySeenVersesByChapter)
+        }
+    }
+
+    func loadSeenVerses(bookName: String, chapter: Int) -> Set<Int> {
+        let map = loadSeenMap()
+        let key = seenKey(bookName: bookName, chapter: chapter)
+        return Set(map[key] ?? [])
+    }
+
+    func saveSeenVerses(_ set: Set<Int>, bookName: String, chapter: Int) {
+        var map = loadSeenMap()
+        let key = seenKey(bookName: bookName, chapter: chapter)
+        map[key] = Array(set).sorted()
+        saveSeenMap(map)
+    }
+
+    func markVerseSeen(bookName: String, chapter: Int, verse: Int, totalVerses: Int? = nil) {
+        guard !bookName.isEmpty, chapter > 0, verse > 0 else { return }
+        var seen = loadSeenVerses(bookName: bookName, chapter: chapter)
+        if seen.contains(verse) { return }
+        seen.insert(verse)
+        saveSeenVerses(seen, bookName: bookName, chapter: chapter)
+
+        // If we know total verses, and now all are seen, mark chapter visited
+        if let total = totalVerses, total > 0, seen.count >= total {
+            markVisited(bookName: bookName, chapterNumber: chapter)
+        }
+    }
+
+    func unmarkVerseSeen(bookName: String, chapter: Int, verse: Int) {
+        guard !bookName.isEmpty, chapter > 0, verse > 0 else { return }
+        var seen = loadSeenVerses(bookName: bookName, chapter: chapter)
+        if !seen.contains(verse) { return }
+        seen.remove(verse)
+        saveSeenVerses(seen, bookName: bookName, chapter: chapter)
+    }
+
+    func isChapterComplete(bookName: String, chapter: Int, totalVerses: Int) -> Bool {
+        guard totalVerses > 0 else { return false }
+        let seen = loadSeenVerses(bookName: bookName, chapter: chapter)
+        return seen.count >= totalVerses
     }
 }
 
