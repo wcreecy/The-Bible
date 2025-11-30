@@ -44,8 +44,9 @@ struct ReadingView: View {
     // Reader-specific font size (independent from global app UI font)
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
 
-    // Option A guard: avoid mass-marking on initial render
+    // Guard: avoid mass-marking only for deep links (when starting mid-chapter)
     @State private var hasCompletedInitialAppear: Bool = false
+    @State private var suppressInitialMarking: Bool = false
 
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
@@ -54,6 +55,7 @@ struct ReadingView: View {
         _currentBook = State(initialValue: book)
         _currentChapterIndex = State(initialValue: max(0, chapter.number - 1))
         _currentVerse = State(initialValue: startVerse)
+        _suppressInitialMarking = State(initialValue: startVerse > 1)
     }
 
     private var currentChapter: Chapter {
@@ -84,15 +86,28 @@ struct ReadingView: View {
                 // Load current pinned verse state from shared defaults
                 loadPinnedFromShared()
 
-                // Reset initial-appear guard when entering a chapter
-                hasCompletedInitialAppear = false
-
-                // Flip the guard after first layout turn so subsequent onAppear calls (from scrolling) are allowed to mark
-                Task { @MainActor in
-                    // Yield to allow initial verse cells to render
-                    await Task.yield()
-                    // Small delay to ensure initial batch of cells has finished appearing
-                    try? await Task.sleep(nanoseconds: 150_000_000)
+                // Configure initial marking behavior for this entry
+                // Suppress only if we jump into the middle of a chapter
+                suppressInitialMarking = (currentVerse > 1)
+                if suppressInitialMarking {
+                    hasCompletedInitialAppear = false
+                    Task { @MainActor in
+                        // Yield to allow initial verse cells to render
+                        await Task.yield()
+                        // Small delay to ensure initial batch of cells has finished appearing
+                        try? await Task.sleep(nanoseconds: 150_000_000)
+                        hasCompletedInitialAppear = true
+                        // Count the initially focused verse as seen (but not the whole chapter)
+                        let total = currentChapter.verses.count
+                        BibleStatsStore.shared.markVerseSeen(
+                            bookName: currentBook.name,
+                            chapter: currentChapter.number,
+                            verse: currentVerse,
+                            totalVerses: total
+                        )
+                    }
+                } else {
+                    // Starting at verse 1: allow initial visible verses to be marked immediately
                     hasCompletedInitialAppear = true
                 }
             }
@@ -136,26 +151,16 @@ struct ReadingView: View {
                                     .opacity(0.9)
                             }
                         }
-                        // Option A: Only mark the single targeted verse on initial load.
-                        // After initial load completes, allow onAppear to mark verses as user scrolls.
+                        // Mark verses that appear on screen, but skip the initial programmatic layout if we deep-linked.
                         .onAppear {
+                            if suppressInitialMarking && !hasCompletedInitialAppear { return }
                             let total = currentChapter.verses.count
-                            if hasCompletedInitialAppear {
-                                BibleStatsStore.shared.markVerseSeen(
-                                    bookName: currentBook.name,
-                                    chapter: currentChapter.number,
-                                    verse: verse.number,
-                                    totalVerses: total
-                                )
-                            } else if verse.number == currentVerse {
-                                // Initial batch: mark only the targeted verse
-                                BibleStatsStore.shared.markVerseSeen(
-                                    bookName: currentBook.name,
-                                    chapter: currentChapter.number,
-                                    verse: verse.number,
-                                    totalVerses: total
-                                )
-                            }
+                            BibleStatsStore.shared.markVerseSeen(
+                                bookName: currentBook.name,
+                                chapter: currentChapter.number,
+                                verse: verse.number,
+                                totalVerses: total
+                            )
                         }
                         .onLongPressGesture(minimumDuration: 0.5) {
                             let generator = UIImpactFeedbackGenerator(style: .heavy)
@@ -263,11 +268,23 @@ struct ReadingView: View {
                     topVisibleVerseID = rowID(for: 1)
                     // Keep tracker location up to date on chapter change
                     ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
-                    // Reset initial-appear guard when changing chapters
-                    hasCompletedInitialAppear = false
-                    Task { @MainActor in
-                        await Task.yield()
-                        try? await Task.sleep(nanoseconds: 150_000_000)
+                    // For chapter changes we reset to verse 1; allow marking immediately
+                    suppressInitialMarking = (currentVerse > 1)
+                    if suppressInitialMarking {
+                        hasCompletedInitialAppear = false
+                        Task { @MainActor in
+                            await Task.yield()
+                            try? await Task.sleep(nanoseconds: 150_000_000)
+                            hasCompletedInitialAppear = true
+                            let total = currentChapter.verses.count
+                            BibleStatsStore.shared.markVerseSeen(
+                                bookName: currentBook.name,
+                                chapter: currentChapter.number,
+                                verse: currentVerse,
+                                totalVerses: total
+                            )
+                        }
+                    } else {
                         hasCompletedInitialAppear = true
                     }
                 }
