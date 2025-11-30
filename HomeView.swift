@@ -1819,36 +1819,7 @@ struct HomeView: View {
                     }
                 }
                 .padding(.top, 4)
-
-                // Actions
-                HStack(spacing: 12) {
-                    Button {
-                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 1])
-                    } label: {
-                        Label("Read now", systemImage: "book.fill")
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .blue))
-
-                    Button {
-                        let message: String = {
-                            if current > 0 {
-                                return "I'm on a \(current)-day Bible reading streak!"
-                            } else {
-                                return "I'm starting my Bible reading streak today!"
-                            }
-                        }()
-                        let av = UIActivityViewController(activityItems: [message], applicationActivities: nil)
-                        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                           let root = scene.keyWindow?.rootViewController {
-                            root.present(av, animated: true)
-                        }
-                    } label: {
-                        Label("Share", systemImage: "square.and.arrow.up")
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .orange))
-                }
-                .padding(.top, 2)
-
+                
                 // Expandable calendar
                 DisclosureGroup(isExpanded: $streaksExpanded) {
                     VStack(alignment: .leading, spacing: 8) {
