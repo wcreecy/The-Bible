@@ -1531,13 +1531,7 @@ struct HomeView: View {
                         }
                     }
 
-                    // Row: Completion summary
-                    HStack(spacing: 8) {
-                        Text("Visited \(bibleVM.visitedCount)/\(bibleVM.totalChapters) • \(bibleVM.completionPercent)%")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                    }
+
                 }
                 .transition(.opacity.combined(with: .move(edge: .top)))
             } label: {
