@@ -31,6 +31,10 @@ struct StatsView: View {
     @State private var bibleCompletionPercent: Int = 0
     @State private var totalChapters: Int = 0
 
+    // New: verse-level overall progress
+    @State private var totalVerses: Int = 0
+    @State private var completedVerses: Int = 0
+
     // Per-book progress (chapters read / total)
     @State private var bookProgress: [String: (read: Int, total: Int, fraction: Double)] = [:]
 
@@ -84,17 +88,16 @@ struct StatsView: View {
                 // Average Session Length (last 7 days)
                 averageSessionCard
 
-                // Existing: Bible Completion
-                completionCard
+                // Removed: Bible Completion card
 
                 // Existing: OT vs NT
                 otNtCard
 
+                // Move Genre Distribution directly under OT vs NT
+                genreSection
+
                 // Existing: Book Reading Progress
                 bookReadingProgressCard
-
-                // Existing: Genre Distribution (collapsible)
-                genreSection
 
                 // Existing: Total Bible Time + Per-book table (collapsible)
                 totalsSection
@@ -195,8 +198,9 @@ struct StatsView: View {
 
                 HStack(spacing: 12) {
                     pill("Chapters completed", value: "\(monthChaptersCompleted)")
-                    let topSummary: String = monthTop3Books.isEmpty ? "—" : monthTop3Books.prefix(3).map { "\($0.book)" }.joined(separator: ", ")
-                    pill("Top books", value: topSummary)
+                    // Show only the single top book by time this month
+                    let topSummary: String = monthTop3Books.first.map { $0.book } ?? "—"
+                    pill("Top book", value: topSummary)
                 }
 
                 if !last7Daily.isEmpty {
@@ -341,7 +345,7 @@ struct StatsView: View {
                 .font(.title3.weight(.semibold))
                 .monospacedDigit()
             if let subtitle, !subtitle.isEmpty, subtitle != "—" {
-                let prefix = (title == "This Week") ? "vs last: " : (title == "Today" ? "vs yesterday: " : "")
+                let prefix = (title == "This Week") ? "vs last week: " : (title == "Today" ? "vs yesterday: " : "")
                 if !prefix.isEmpty {
                     Text("\(prefix)\(subtitle)")
                         .font(.caption2)
@@ -463,204 +467,271 @@ struct StatsView: View {
     }
 
     private var bookReadingProgressCard: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(spacing: 12) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Book Reading Progress")
-                            .font(.headline)
-                        Text("\(visitedCount)/\(totalChapters) chapters • \(bibleCompletionPercent)%")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .monospacedDigit()
-                    }
-                    Spacer()
-                    ProgressRing(
-                        progress: Double(bibleCompletionPercent) / 100.0,
-                        lineWidth: 8,
-                        size: 30,
-                        tint: .accentColor,
-                        track: Color.primary.opacity(0.12),
-                        label: {
-                            Text("\(bibleCompletionPercent)%")
-                                .font(.caption2.weight(.semibold))
-                                .monospacedDigit()
-                        }
-                    )
-                }
-                Button {
-                    withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                        toggleBookProgress()
-                    }
-                } label: {
-                    HStack {
-                        Text(showBookProgressDetails ? "Hide details" : "Show details")
-                            .font(.footnote.weight(.semibold))
-                        Spacer()
-                        Image(systemName: showBookProgressDetails ? "chevron.up" : "chevron.down")
-                            .font(.footnote.weight(.semibold))
-                    }
-                    .padding(.vertical, 6)
-                }
-                .buttonStyle(.plain)
+        // Compute books completion percent for collapsed view and ring
+        let booksPercent: Int = {
+            let denom = max(1, totalBooks)
+            let pct = Int(round((Double(booksCompleted) / Double(denom)) * 100.0))
+            return max(0, min(100, pct))
+        }()
+        // Compute verses completion percent
+        let versesPercent: Int = {
+            let denom = max(1, totalVerses)
+            let pct = Int(round((Double(completedVerses) / Double(denom)) * 100.0))
+            return max(0, min(100, pct))
+        }()
 
-                if showBookProgressDetails {
-                    VStack(spacing: 8) {
-                        ForEach(orderedAllBooks, id: \.self) { name in
-                            let prog = bookProgress[name] ?? (0, 1, 0.0)
-                            Button {
-                                selectedBookForChapters = name
-                            } label: {
-                                HStack(spacing: 8) {
-                                    Text(name)
-                                        .font(.subheadline)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    GeometryReader { geo in
-                                        ZStack(alignment: .leading) {
-                                            RoundedRectangle(cornerRadius: 3, style: .continuous)
-                                                .fill(Color.primary.opacity(0.10))
-                                            RoundedRectangle(cornerRadius: 3, style: .continuous)
-                                                .fill(Color.accentColor.opacity(0.65))
-                                                .frame(width: geo.size.width * CGFloat(prog.fraction))
-                                        }
-                                    }
-                                    .frame(width: 120, height: 6)
-                                    Text("\(prog.read)/\(prog.total)")
-                                        .font(.caption2)
-                                        .foregroundStyle(.secondary)
-                                        .monospacedDigit()
-                                        .frame(width: 44, alignment: .trailing)
-                                }
+        return ZStack {
+            GroupBox {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 12) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Bible Reading Progress")
+                                .font(.headline)
+                            // Collapsed subtitle lines: Books, Chapters, Verses
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("\(booksCompleted)/\(totalBooks) books • \(booksPercent)%")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .monospacedDigit()
+                                Text("\(visitedCount)/\(totalChapters) chapters • \(bibleCompletionPercent)%")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .monospacedDigit()
+                                Text("\(completedVerses)/\(totalVerses) verses • \(versesPercent)%")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .monospacedDigit()
                             }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel("\(name) \(prog.read) of \(prog.total) chapters")
+                        }
+                        Spacer()
+                        // Progress ring shows books read / total books
+                        ProgressRing(
+                            progress: Double(booksPercent) / 100.0,
+                            lineWidth: 8,
+                            size: 30,
+                            tint: .accentColor,
+                            track: Color.primary.opacity(0.12),
+                            label: {
+                                Text("\(booksPercent)%")
+                                    .font(.caption2.weight(.semibold))
+                                    .monospacedDigit()
+                            }
+                        )
+                    }
+                    Button {
+                        withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+                            toggleBookProgress()
+                        }
+                    } label: {
+                        HStack {
+                            Text(showBookProgressDetails ? "Hide details" : "Show details")
+                                .font(.footnote.weight(.semibold))
+                            Spacer()
+                            Image(systemName: showBookProgressDetails ? "chevron.up" : "chevron.down")
+                                .font(.footnote.weight(.semibold))
+                        }
+                        .padding(.vertical, 6)
+                    }
+                    .buttonStyle(.plain)
+
+                    if showBookProgressDetails {
+                        VStack(spacing: 8) {
+                            ForEach(orderedAllBooks, id: \.self) { name in
+                                let prog = bookProgress[name] ?? (0, 1, 0.0)
+                                Button {
+                                    selectedBookForChapters = name
+                                } label: {
+                                    HStack(spacing: 8) {
+                                        Text(name)
+                                            .font(.subheadline)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        GeometryReader { geo in
+                                            ZStack(alignment: .leading) {
+                                                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                                                    .fill(Color.primary.opacity(0.10))
+                                                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                                                    .fill(Color.accentColor.opacity(0.65))
+                                                    .frame(width: geo.size.width * CGFloat(prog.fraction))
+                                            }
+                                        }
+                                        .frame(width: 120, height: 6)
+                                        Text("\(prog.read)/\(prog.total)")
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                            .monospacedDigit()
+                                            .frame(width: 44, alignment: .trailing)
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("\(name) \(prog.read) of \(prog.total) chapters")
+                            }
+                        }
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
+                }
+            }
+
+            // Tap anywhere on the card to expand when collapsed
+            if !showBookProgressDetails {
+                Color.clear
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+                            toggleBookProgress()
                         }
                     }
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-                }
+                    .accessibilityHidden(true)
             }
         }
     }
 
     private var genreSection: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text("Genre Distribution")
-                        .font(.headline)
-                    Spacer()
-                    Button {
+        ZStack {
+            GroupBox {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Text("Genre Distribution")
+                            .font(.headline)
+                        Spacer()
+                        Button {
+                            withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+                                toggleGenre()
+                            }
+                        } label: {
+                            HStack(spacing: 6) {
+                                Text(showGenreSection ? "Hide" : "Show")
+                                    .font(.footnote.weight(.semibold))
+                                Image(systemName: showGenreSection ? "chevron.up" : "chevron.down")
+                                    .font(.footnote.weight(.semibold))
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    if showGenreSection {
+                        let maxVal = max(1, perGenreTotals.map { $0.seconds }.max() ?? 1)
+                        VStack(spacing: 8) {
+                            ForEach(perGenreTotals, id: \.genre) { item in
+                                Button {
+                                    if let g = Genre(rawValue: item.genre) {
+                                        selectedGenre = g
+                                        genreDetailRows = rowsForGenre(g, totals: perBookTotals)
+                                    }
+                                } label: {
+                                    HStack(spacing: 8) {
+                                        Text(item.genre)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                            .frame(width: 110, alignment: .leading)
+                                        GeometryReader { geo in
+                                            let frac = CGFloat(item.seconds) / CGFloat(maxVal)
+                                            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                                .fill(genreColor(item.genre).opacity(0.7))
+                                                .frame(width: geo.size.width * frac, height: 10, alignment: .leading)
+                                        }
+                                        .frame(height: 10)
+                                        Text(BibleStatsStore.shared.format(item.seconds))
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                            .monospacedDigit()
+                                            .frame(width: 60, alignment: .trailing)
+                                    }
+                                    .frame(height: 16)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("\(item.genre) \(BibleStatsStore.shared.format(item.seconds))")
+                            }
+                        }
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
+                }
+            }
+
+            // Tap anywhere on the card to expand when collapsed
+            if !showGenreSection {
+                Color.clear
+                    .contentShape(Rectangle())
+                    .onTapGesture {
                         withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
                             toggleGenre()
                         }
-                    } label: {
-                        HStack(spacing: 6) {
-                            Text(showGenreSection ? "Hide" : "Show")
-                                .font(.footnote.weight(.semibold))
-                            Image(systemName: showGenreSection ? "chevron.up" : "chevron.down")
-                                .font(.footnote.weight(.semibold))
-                        }
                     }
-                    .buttonStyle(.plain)
-                }
-
-                if showGenreSection {
-                    let maxVal = max(1, perGenreTotals.map { $0.seconds }.max() ?? 1)
-                    VStack(spacing: 8) {
-                        ForEach(perGenreTotals, id: \.genre) { item in
-                            Button {
-                                if let g = Genre(rawValue: item.genre) {
-                                    selectedGenre = g
-                                    genreDetailRows = rowsForGenre(g, totals: perBookTotals)
-                                }
-                            } label: {
-                                HStack(spacing: 8) {
-                                    Text(item.genre)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                        .frame(width: 110, alignment: .leading)
-                                    GeometryReader { geo in
-                                        let frac = CGFloat(item.seconds) / CGFloat(maxVal)
-                                        RoundedRectangle(cornerRadius: 6, style: .continuous)
-                                            .fill(genreColor(item.genre).opacity(0.7))
-                                            .frame(width: geo.size.width * frac, height: 10, alignment: .leading)
-                                    }
-                                    .frame(height: 10)
-                                    Text(BibleStatsStore.shared.format(item.seconds))
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                        .monospacedDigit()
-                                        .frame(width: 60, alignment: .trailing)
-                                }
-                                .frame(height: 16)
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel("\(item.genre) \(BibleStatsStore.shared.format(item.seconds))")
-                        }
-                    }
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-                }
+                    .accessibilityHidden(true)
             }
         }
     }
 
     private var totalsSection: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text("Total Bible Time")
-                        .font(.headline)
-                    Spacer()
-                    Text(BibleStatsStore.shared.format(totalSeconds))
-                        .font(.headline)
-                        .monospacedDigit()
-                        .foregroundStyle(.primary)
-                        .accessibilityHidden(true)
-                        .overlay(
-                            Color.clear
-                                .accessibilityElement(children: .ignore)
-                                .accessibilityLabel("Total \(BibleStatsStore.shared.format(totalSeconds))")
-                        )
-                }
-
-                Button {
-                    withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                        toggleTotals()
-                    }
-                } label: {
+        ZStack {
+            GroupBox {
+                VStack(alignment: .leading, spacing: 10) {
                     HStack {
-                        Text(showTotalsSection ? "Hide details" : "Show details")
-                            .font(.footnote.weight(.semibold))
+                        Text("Total Bible Time")
+                            .font(.headline)
                         Spacer()
-                        Image(systemName: showTotalsSection ? "chevron.up" : "chevron.down")
-                            .font(.footnote.weight(.semibold))
+                        Text(BibleStatsStore.shared.format(totalSeconds))
+                            .font(.headline)
+                            .monospacedDigit()
+                            .foregroundStyle(.primary)
+                            .accessibilityHidden(true)
+                            .overlay(
+                                Color.clear
+                                    .accessibilityElement(children: .ignore)
+                                    .accessibilityLabel("Total \(BibleStatsStore.shared.format(totalSeconds))")
+                            )
                     }
-                    .padding(.vertical, 6)
-                }
-                .buttonStyle(.plain)
 
-                if showTotalsSection {
-                    Picker("Sort", selection: $sortMode) {
-                        ForEach(SortMode.allCases) { mode in
-                            Text(mode.rawValue).tag(mode)
+                    Button {
+                        withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+                            toggleTotals()
                         }
-                    }
-                    .pickerStyle(.segmented)
-
-                    ForEach(rows, id: \.book) { entry in
+                    } label: {
                         HStack {
-                            Text(entry.book)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            Text(BibleStatsStore.shared.format(entry.seconds))
-                                .foregroundStyle(.secondary)
-                                .monospacedDigit()
-                                .frame(width: 80, alignment: .trailing)
+                            Text(showTotalsSection ? "Hide details" : "Show details")
+                                .font(.footnote.weight(.semibold))
+                            Spacer()
+                            Image(systemName: showTotalsSection ? "chevron.up" : "chevron.down")
+                                .font(.footnote.weight(.semibold))
                         }
-                        .accessibilityElement(children: .combine)
-                        .accessibilityLabel("\(entry.book) \(BibleStatsStore.shared.format(entry.seconds))")
+                        .padding(.vertical, 6)
                     }
-                    .transition(.opacity.combined(with: .move(edge: .top)))
+                    .buttonStyle(.plain)
+
+                    if showTotalsSection {
+                        Picker("Sort", selection: $sortMode) {
+                            ForEach(SortMode.allCases) { mode in
+                                Text(mode.rawValue).tag(mode)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+
+                        ForEach(rows, id: \.book) { entry in
+                            HStack {
+                                Text(entry.book)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Text(BibleStatsStore.shared.format(entry.seconds))
+                                    .foregroundStyle(.secondary)
+                                    .monospacedDigit()
+                                    .frame(width: 80, alignment: .trailing)
+                            }
+                            .accessibilityElement(children: .combine)
+                            .accessibilityLabel("\(entry.book) \(BibleStatsStore.shared.format(entry.seconds))")
+                        }
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
                 }
+            }
+
+            // Tap anywhere on the card to expand when collapsed
+            if !showTotalsSection {
+                Color.clear
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+                            toggleTotals()
+                        }
+                    }
+                    .accessibilityHidden(true)
             }
         }
     }
@@ -720,6 +791,7 @@ struct StatsView: View {
 
         computeCompletionMetricsVerseComplete()
         computePerBookProgressVerseComplete()
+        computeVerseTotalsAndCompleted() // NEW
 
         if let last = store.loadLastRead() {
             lastReadBookChapter = "\(last.bookName) \(last.chapterNumber)"
@@ -850,6 +922,25 @@ struct StatsView: View {
             }
         }
         bookProgress = progress
+    }
+
+    // NEW: Compute total verses and completed verses
+    private func computeVerseTotalsAndCompleted() {
+        let books = BibleData.books
+        var total = 0
+        var completed = 0
+        for book in books {
+            for chap in book.chapters {
+                let versesCount = chap.verses.count
+                total += versesCount
+                if versesCount > 0 {
+                    let seen = BibleStatsStore.shared.loadSeenVerses(bookName: book.name, chapter: chap.number)
+                    completed += min(versesCount, seen.count)
+                }
+            }
+        }
+        totalVerses = total
+        completedVerses = completed
     }
 
     // MARK: - Rows
@@ -1119,4 +1210,3 @@ private struct BookChaptersDetailView: View {
         NotificationCenter.default.post(name: .init("chapterProgressChanged"), object: nil)
     }
 }
-

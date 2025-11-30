@@ -1483,42 +1483,18 @@ struct HomeView: View {
             tint: .teal
         ) {
             DisclosureGroup(isExpanded: $bibleStatsExpanded) {
-                // Expanded content: OT/NT split, Top Books (Top 3, ranked without progress bars), Completion
+                // Expanded content: Top Books (Top 3) and Completion (OT/NT graph removed)
                 VStack(alignment: .leading, spacing: 12) {
-                    // Row: OT vs NT mini bar + totals
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack(spacing: 8) {
-                            Text("OT")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                            otNtMiniBar(ot: bibleVM.otSeconds, nt: bibleVM.ntSeconds)
-                            Text("NT")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                        }
-                        HStack {
-                            Text("OT \(BibleStatsStore.shared.format(bibleVM.otSeconds))")
-                                .font(.caption).foregroundStyle(.secondary)
-                            Spacer()
-                            Text("NT \(BibleStatsStore.shared.format(bibleVM.ntSeconds))")
-                                .font(.caption).foregroundStyle(.secondary)
-                        }
-                    }
+                    // Add a horizontal separator to create space from the mini-pills row above
+                    Divider()
+                        .padding(.vertical, 4)
 
                     // Row: Top books (Top 3, ranked list without progress bars)
                     VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text("Top Books")
-                                .font(.headline)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            if let first = bibleVM.topBooks.first {
-                                Text("\(first.book) • \(BibleStatsStore.shared.format(first.seconds))")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.primary)
-                                    .lineLimit(1)
-                            }
-                        }
+                        // Title only (removed trailing first top book text)
+                        Text("Top Books")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
 
                         let rows = Array(bibleVM.topBooks.prefix(3))
                         ForEach(Array(rows.enumerated()), id: \.offset) { index, entry in
@@ -1599,10 +1575,15 @@ struct HomeView: View {
                 .monospacedDigit()
             // Show subtitle for both Today and This Week when provided
             if let subtitle, !subtitle.isEmpty {
-                Text("vs \(title == "This Week" ? "last" : "yday"): \(subtitle)")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
+                let prefix = (title == "This Week") ? "vs lst wk: " : (title == "Today" ? "vs yday: " : "")
+                if !prefix.isEmpty {
+                    Text("\(prefix)\(subtitle)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
