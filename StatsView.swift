@@ -70,6 +70,12 @@ struct StatsView: View {
     @State private var showGenreSection: Bool = false
     @State private var showTotalsSection: Bool = false
 
+    // Daily goal minutes (for goal progress glance pill)
+    @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
+
+    // Ensure all glance boxes visually match height
+    private let glanceCardMinHeight: CGFloat = 86
+
     private var orderedAllBooks: [String] {
         if !BibleData.books.isEmpty {
             return BibleData.books.map { $0.name }
@@ -201,6 +207,7 @@ struct StatsView: View {
 
                 HStack(spacing: 12) {
                     pill("Chapters completed", value: "\(monthChaptersCompleted)")
+                    // Show only the single top book by time this month
                     let topSummary: String = monthTop3Books.first.map { $0.book } ?? "—"
                     pill("Top book", value: topSummary)
                 }
@@ -314,6 +321,7 @@ struct StatsView: View {
     }
 
     private func weekdayLabel(_ weekday: Int) -> String {
+        // 1=Sunday ... 7=Saturday
         let symbols = Calendar.current.shortWeekdaySymbols
         let idx = max(1, min(7, weekday)) - 1
         return symbols[idx]
@@ -335,6 +343,8 @@ struct StatsView: View {
             statMiniCard(title: "Today", value: BibleStatsStore.shared.format(todaySeconds), subtitle: todayDeltaOnlyValue, tint: .blue)
             statMiniCard(title: "This Week", value: BibleStatsStore.shared.format(thisWeekSeconds), subtitle: weekDeltaOnlyValue, tint: .green)
             lastReadMiniCard
+            // New: Goal progress glance pill (today)
+            statMiniCard(title: "Daily Reading Goal", value: "\(goalPercentToday)%", subtitle: goalSubtitleToday, tint: .orange)
         }
     }
 
@@ -352,10 +362,16 @@ struct StatsView: View {
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                         .monospacedDigit()
+                } else {
+                    Text(subtitle)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(minHeight: glanceCardMinHeight) // ensure consistent height
         .padding(12)
         .background(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
@@ -380,6 +396,7 @@ struct StatsView: View {
                 .lineLimit(1)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(minHeight: glanceCardMinHeight) // ensure consistent height
         .padding(12)
         .background(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
@@ -468,11 +485,13 @@ struct StatsView: View {
     }
 
     private var bookReadingProgressCard: some View {
+        // Compute books completion percent for collapsed view and ring
         let booksPercent: Int = {
             let denom = max(1, totalBooks)
             let pct = Int(round((Double(booksCompleted) / Double(denom)) * 100.0))
             return max(0, min(100, pct))
         }()
+        // Compute verses completion percent
         let versesPercent: Int = {
             let denom = max(1, totalVerses)
             let pct = Int(round((Double(completedVerses) / Double(denom)) * 100.0))
@@ -486,6 +505,7 @@ struct StatsView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Bible Reading Progress")
                                 .font(.headline)
+                            // Collapsed subtitle lines: Books, Chapters, Verses
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("\(booksCompleted)/\(totalBooks) books • \(booksPercent)%")
                                     .font(.caption)
@@ -502,6 +522,7 @@ struct StatsView: View {
                             }
                         }
                         Spacer()
+                        // Progress ring shows books read / total books
                         ProgressRing(
                             progress: Double(booksPercent) / 100.0,
                             lineWidth: 8,
@@ -568,6 +589,7 @@ struct StatsView: View {
                 }
             }
 
+            // Tap anywhere on the card to expand when collapsed
             if !showBookProgressDetails {
                 Color.clear
                     .contentShape(Rectangle())
@@ -643,6 +665,7 @@ struct StatsView: View {
                 }
             }
 
+            // Tap anywhere on the card to expand when collapsed
             if !showGenreSection {
                 Color.clear
                     .contentShape(Rectangle())
@@ -717,6 +740,7 @@ struct StatsView: View {
                 }
             }
 
+            // Tap anywhere on the card to expand when collapsed
             if !showTotalsSection {
                 Color.clear
                     .contentShape(Rectangle())
@@ -785,7 +809,7 @@ struct StatsView: View {
 
         computeCompletionMetricsVerseComplete()
         computePerBookProgressVerseComplete()
-        computeVerseTotalsAndCompleted()
+        computeVerseTotalsAndCompleted() // NEW
 
         if let last = store.loadLastRead() {
             lastReadBookChapter = "\(last.bookName) \(last.chapterNumber)"
@@ -803,6 +827,7 @@ struct StatsView: View {
 
     private func refreshChartsAndMonth() {
         let cal = Calendar.current
+        // Last 7 days daily bars
         let dailyDict = BibleStatsStore.shared.loadDailyTotals()
         last7Daily = (0..<7).compactMap { i -> (Date, Int)? in
             guard let d = cal.date(byAdding: .day, value: -i, to: Date()) else { return nil }
@@ -810,6 +835,7 @@ struct StatsView: View {
             return (d, dailyDict[key, default: 0])
         }.sorted { $0.0 < $1.0 }
 
+        // Sessions for last 7 days (for the Average Session Length chart)
         let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7).sorted { $0.end < $1.end }
         avgSessionSecondsLast7 = averageSessionLength(sessions: sessions7)
         sessionsLast7 = sessions7.enumerated().map { (idx, s) in
@@ -818,12 +844,13 @@ struct StatsView: View {
             return (index: idx + 1, minutes: minutes)
         }
 
+        // Keep the broader habits aggregates for other parts if needed
         let last56 = (0..<56).compactMap { i -> (Date, Int)? in
             guard let d = cal.date(byAdding: .day, value: -i, to: Date()) else { return nil }
             let key = BibleStatsStore.isoDateString(d)
             return (d, dailyDict[key, default: 0])
         }
-        var weekdayAgg: [Int: Int] = [:]
+        var weekdayAgg: [Int: Int] = [:] // 1...7
         for (d, s) in last56 {
             let wd = cal.component(.weekday, from: d)
             weekdayAgg[wd, default: 0] += s
@@ -834,6 +861,7 @@ struct StatsView: View {
         avgSessionSeconds = averageSessionLength(sessions: sessions30)
         hourBuckets = bucketsByHour(sessions: sessions30)
 
+        // This Month section
         let now = Date()
         monthTotalSeconds = BibleStatsStore.shared.totalForMonth(containing: now)
         let comps = BibleStatsStore.shared.chapterCompletions(inMonth: now)
@@ -843,6 +871,7 @@ struct StatsView: View {
             if lhs.value == rhs.value { return lhs.key < rhs.key }
             return lhs.value > rhs.value
         }
+        // Map (key,value) -> (book,seconds)
         monthTop3Books = Array(sortedTop.prefix(3)).map { (book: $0.key, seconds: $0.value) }
     }
 
@@ -853,7 +882,7 @@ struct StatsView: View {
     }
 
     private func bucketsByHour(sessions: [ReadingSessionsStore.Session]) -> [(hour: Int, seconds: Int)] {
-        var buckets: [Int: Int] = [:]
+        var buckets: [Int: Int] = [:] // 0...23
         for s in sessions {
             let h = Calendar.current.component(.hour, from: s.start)
             let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
@@ -913,6 +942,7 @@ struct StatsView: View {
         bookProgress = progress
     }
 
+    // NEW: Compute total verses and completed verses
     private func computeVerseTotalsAndCompleted() {
         let books = BibleData.books
         var total = 0
@@ -974,6 +1004,30 @@ struct StatsView: View {
         let sign = delta > 0 ? "+" : "−"
         let absVal = abs(delta)
         return "\(sign)\(BibleStatsStore.shared.format(absVal))"
+    }
+
+    // NEW: Goal progress (today) for glance pill
+    private var goalPercentToday: Int {
+        let goalSeconds = max(1, dailyGoalMinutes) * 60
+        if goalSeconds <= 0 { return 0 }
+        let pct = Int(round((Double(min(todaySeconds, goalSeconds)) / Double(goalSeconds)) * 100.0))
+        return max(0, min(100, pct))
+    }
+
+    private var goalSubtitleToday: String {
+        let goalSeconds = max(1, dailyGoalMinutes) * 60
+        if todaySeconds >= goalSeconds {
+            return "Reached"
+        } else {
+            let remaining = max(0, goalSeconds - todaySeconds)
+            let m = remaining / 60
+            let s = remaining % 60
+            if m > 0 {
+                return s > 0 ? "\(m)m \(s)s left" : "\(m)m left"
+            } else {
+                return "\(s)s left"
+            }
+        }
     }
 
     enum Genre: String, CaseIterable, Identifiable {
