@@ -1,3 +1,5 @@
+// the entire code of the file with your changes goes here.
+// Do not skip over anything.
 import SwiftUI
 import Combine
 import Charts
@@ -59,7 +61,7 @@ struct StatsView: View {
 
     // New: Charts datasets
     @State private var last7Daily: [(date: Date, seconds: Int)] = []
-    // Replaced habits breakdown with session-based chart
+    // Now shows last 20 sessions overall
     @State private var sessionsLast7: [(index: Int, minutes: Int)] = []
     @State private var avgSessionSecondsLast7: Int = 0
 
@@ -101,7 +103,7 @@ struct StatsView: View {
                 // This Month section
                 thisMonthCard
 
-                // Average Session Length (last 7 days)
+                // Average Session Length (last 20 sessions)
                 averageSessionCard
 
                 // Removed: Bible Completion card
@@ -259,7 +261,7 @@ struct StatsView: View {
                     Text("Average Session Length")
                         .font(.headline)
                     Spacer()
-                    Text("Avg (7d): \(BibleStatsStore.shared.format(avgSessionSecondsLast7))")
+                    Text("Avg (last 7 days): \(BibleStatsStore.shared.format(avgSessionSecondsLast7))")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .monospacedDigit()
@@ -281,9 +283,10 @@ struct StatsView: View {
                         }
                     }
                     .chartYAxisLabel("Minutes")
+                    .chartXAxisLabel("Sessions")
                     .frame(height: 180)
                 } else {
-                    ContentUnavailableView("No sessions in the last 7 days", systemImage: "chart.line.uptrend.xyaxis")
+                    ContentUnavailableView("No recent sessions", systemImage: "chart.line.uptrend.xyaxis")
                 }
             }
         }
@@ -419,7 +422,14 @@ struct StatsView: View {
     }
 
     private var completionCard: some View {
-        GroupBox {
+        // Compute verses completion percent for the ring
+        let versesPercent: Int = {
+            let denom = max(1, totalVerses)
+            let pct = Int(round((Double(completedVerses) / Double(denom)) * 100.0))
+            return max(0, min(100, pct))
+        }()
+
+        return GroupBox {
             HStack(spacing: 16) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Bible Completion")
@@ -435,14 +445,14 @@ struct StatsView: View {
                 }
                 Spacer()
                 ProgressRing(
-                    progress: Double(bibleCompletionPercent) / 100.0,
-                    lineWidth: 10,
-                    size: 72,
+                    progress: Double(versesPercent) / 100.0,
+                    lineWidth: 8,
+                    size: 30,
                     tint: .accentColor,
                     track: Color.primary.opacity(0.12),
                     label: {
-                        Text("\(bibleCompletionPercent)%")
-                            .font(.subheadline.weight(.semibold))
+                        Text("\(versesPercent)%")
+                            .font(.caption2.weight(.semibold))
                             .monospacedDigit()
                     }
                 )
@@ -532,15 +542,15 @@ struct StatsView: View {
                             }
                         }
                         Spacer()
-                        // Progress ring shows books read / total books
+                        // Progress ring now shows verses completion percent
                         ProgressRing(
-                            progress: Double(booksPercent) / 100.0,
+                            progress: Double(versesPercent) / 100.0,
                             lineWidth: 8,
                             size: 30,
                             tint: .accentColor,
                             track: Color.primary.opacity(0.12),
                             label: {
-                                Text("\(booksPercent)%")
+                                Text("\(versesPercent)%")
                                     .font(.caption2.weight(.semibold))
                                     .monospacedDigit()
                             }
@@ -842,10 +852,14 @@ struct StatsView: View {
             return (d, dailyDict[key, default: 0])
         }.sorted { $0.0 < $1.0 }
 
-        // Sessions for last 7 days (for the Average Session Length chart)
-        let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7).sorted { $0.end < $1.end }
-        avgSessionSecondsLast7 = averageSessionLength(sessions: sessions7)
-        sessionsLast7 = sessions7.enumerated().map { (idx, s) in
+        // Sessions: last 20 overall (within retention window)
+        let sessionsAll = ReadingSessionsStore.shared.sessions(inLastDays: 180).sorted { $0.end < $1.end }
+        let lastTwenty = Array(sessionsAll.suffix(20))
+        // Average over sessions that occurred in the last 7 days
+        let sessionsIn7Days = ReadingSessionsStore.shared.sessions(inLastDays: 7)
+        avgSessionSecondsLast7 = averageSessionLength(sessions: sessionsIn7Days)
+        // Keep the chart as last 20 sessions overall
+        sessionsLast7 = lastTwenty.enumerated().map { (idx, s) in
             let durSec = Int(max(0, s.end.timeIntervalSince(s.start)))
             let minutes = Int(round(Double(durSec) / 60.0))
             return (index: idx + 1, minutes: minutes)
