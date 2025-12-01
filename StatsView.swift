@@ -106,8 +106,6 @@ struct StatsView: View {
                 // Average Session Length (last 20 sessions)
                 averageSessionCard
 
-                // Removed: Bible Completion card
-
                 // Existing: OT vs NT
                 otNtCard
 
@@ -191,7 +189,7 @@ struct StatsView: View {
             selectedBookForChapters = nil
         }
         // Refresh stats when chapter progress changes
-        .onReceive(NotificationCenter.default.publisher(for: .init("chapterProgressChanged"))) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: .chapterProgressChanged)) { _ in
             refreshAll()
         }
     }
@@ -419,46 +417,6 @@ struct StatsView: View {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .stroke(Color.orange.opacity(0.25), lineWidth: 1)
         )
-    }
-
-    private var completionCard: some View {
-        // Compute verses completion percent for the ring
-        let versesPercent: Int = {
-            let denom = max(1, totalVerses)
-            let pct = Int(round((Double(completedVerses) / Double(denom)) * 100.0))
-            return max(0, min(100, pct))
-        }()
-
-        return GroupBox {
-            HStack(spacing: 16) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Bible Completion")
-                        .font(.headline)
-                    Text("\(visitedCount)/\(totalChapters) chapters completed")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
-                    HStack(spacing: 8) {
-                        milestonePill(text: "Books Completed: \(booksCompleted)/\(totalBooks)")
-                        milestonePill(text: "Overall: \(bibleCompletionPercent)%")
-                    }
-                }
-                Spacer()
-                ProgressRing(
-                    progress: Double(versesPercent) / 100.0,
-                    lineWidth: 8,
-                    size: 30,
-                    tint: .accentColor,
-                    track: Color.primary.opacity(0.12),
-                    label: {
-                        Text("\(versesPercent)%")
-                            .font(.caption2.weight(.semibold))
-                            .monospacedDigit()
-                    }
-                )
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
     }
 
     private var otNtCard: some View {
@@ -1284,7 +1242,7 @@ private struct BookChaptersDetailView: View {
         .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { _ in
             visited = BibleStatsStore.shared.loadVisitedChapters()
         }
-        .onReceive(NotificationCenter.default.publisher(for: .init("chapterProgressChanged"))) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: .chapterProgressChanged)) { _ in
             refreshID = UUID()
             visited = BibleStatsStore.shared.loadVisitedChapters()
         }
@@ -1296,6 +1254,6 @@ private struct BookChaptersDetailView: View {
         v.remove("\(bookName):\(chapterNumber)")
         BibleStatsStore.shared.saveVisitedChapters(v)
         refreshID = UUID()
-        NotificationCenter.default.post(name: .init("chapterProgressChanged"), object: nil)
+        NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 }

@@ -1,6 +1,8 @@
 import Foundation
 
-// Stores lightweight reading sessions to support time-of-day charts and average session length.
+// Stores lightweight reading sessions and caches them in memory.
+// All access is main-actor to keep it simple for SwiftUI callers.
+@MainActor
 final class ReadingSessionsStore {
     static let shared = ReadingSessionsStore()
     private init() {}
@@ -19,6 +21,11 @@ final class ReadingSessionsStore {
 
     // Keep a rolling window to prevent unbounded growth (e.g., 180 days)
     private let maxRetentionDays: Int = 180
+
+    // In-memory cache, lazily loaded
+    private var cacheAllSessions: [Session]?
+
+    // MARK: - Public API
 
     func appendSession(_ session: Session) {
         var all = loadAll()
@@ -46,18 +53,25 @@ final class ReadingSessionsStore {
         return loadAll().filter { $0.end >= start && $0.end < monthEnd }
     }
 
-    // MARK: - Persistence
+    // MARK: - Persistence + cache
 
     private func loadAll() -> [Session] {
+        if let cached = cacheAllSessions { return cached }
         let defaults = Defaults.provider
-        guard let data = defaults.data(forKey: Defaults.key) else { return [] }
+        guard let data = defaults.data(forKey: Defaults.key) else {
+            cacheAllSessions = []
+            return []
+        }
         if let arr = try? JSONDecoder().decode([Session].self, from: data) {
+            cacheAllSessions = arr
             return arr
         }
+        cacheAllSessions = []
         return []
     }
 
     private func saveAll(_ arr: [Session]) {
+        cacheAllSessions = arr
         let defaults = Defaults.provider
         if let data = try? JSONEncoder().encode(arr) {
             defaults.set(data, forKey: Defaults.key)

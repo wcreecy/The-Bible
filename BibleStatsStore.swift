@@ -1,12 +1,14 @@
 import Foundation
 import SwiftUI
 
-// Tiny store that reads/writes Bible reading stats to UserDefaults as JSON.
-// It provides helpers for formatting, ranking, daily totals, per-book totals,
-// per-day per-book totals, chapter completion dates, and last-read info.
+// Cached store that reads/writes Bible reading stats to UserDefaults as JSON,
+// but keeps in-memory caches to avoid repeated decoding on hot paths.
+@MainActor
 final class BibleStatsStore {
     static let shared = BibleStatsStore()
-    private init() {}
+    private init() {
+        // Lazy load on first access via getters, not here, to keep init cheap.
+    }
 
     struct Defaults {
         static let keyTotals = "bookReadingTimes"                   // [String: Int] all-time per-book
@@ -28,63 +30,60 @@ final class BibleStatsStore {
         let date: Date
     }
 
+    // MARK: - In-memory caches
+
+    // All caches are loaded lazily on first read and kept in memory.
+    private var cacheTotals: [String: Int]?
+    private var cacheDailyTotals: [String: Int]?
+    private var cacheDailyTotalsByBook: [String: [String: Int]]?
+    private var cacheVisitedChapters: Set<String>?
+    private var cacheLastRead: LastRead?
+    // Internally store seenVerses as Set<Int> for fast lookups
+    private typealias SeenMap = [String: Set<Int>]
+    private var cacheSeenVersesByChapter: SeenMap?
+    private var cacheChapterCompletionDates: [String: Date]?
+
+    // MARK: - JSON helpers
+
+    private func loadJSON<T: Decodable>(key: String, default defaultValue: T) -> T {
+        let defaults = Defaults.provider
+        guard let data = defaults.data(forKey: key) else { return defaultValue }
+        return (try? JSONDecoder().decode(T.self, from: data)) ?? defaultValue
+    }
+
+    private func saveJSON<T: Encodable>(_ value: T, key: String) {
+        let defaults = Defaults.provider
+        if let data = try? JSONEncoder().encode(value) {
+            defaults.set(data, forKey: key)
+        }
+    }
+
     // MARK: - Per-book totals (all-time)
 
     func loadTotals() -> [String: Int] {
-        let defaults = Defaults.provider
-        guard let data = defaults.data(forKey: Defaults.keyTotals) else { return [:] }
-        do {
-            let decoded = try JSONDecoder().decode([String: Int].self, from: data)
-            return decoded
-        } catch {
-            return [:]
-        }
+        if let cached = cacheTotals { return cached }
+        let decoded: [String: Int] = loadJSON(key: Defaults.keyTotals, default: [:])
+        cacheTotals = decoded
+        return decoded
     }
 
     func saveTotals(_ totals: [String: Int]) {
-        let defaults = Defaults.provider
-        do {
-            let data = try JSONEncoder().encode(totals)
-            defaults.set(data, forKey: Defaults.keyTotals)
-        } catch {
-            // Ignore encoding error (shouldn't happen with [String:Int])
-        }
-    }
-
-    func sortedTop(n: Int) -> [(book: String, seconds: Int)] {
-        let totals = loadTotals()
-        return totals
-            .sorted { lhs, rhs in
-                if lhs.value == rhs.value {
-                    return lhs.key < rhs.key
-                }
-                return lhs.value > rhs.value
-            }
-            .prefix(n)
-            .map { ($0.key, $0.value) }
-    }
-
-    func totalMax() -> Int {
-        loadTotals().values.max() ?? 0
+        cacheTotals = totals
+        saveJSON(totals, key: Defaults.keyTotals)
     }
 
     // MARK: - Daily totals (overall)
 
     func loadDailyTotals() -> [String: Int] {
-        let defaults = Defaults.provider
-        guard let data = defaults.data(forKey: Defaults.keyDailyTotals) else { return [:] }
-        do {
-            return try JSONDecoder().decode([String: Int].self, from: data)
-        } catch {
-            return [:]
-        }
+        if let cached = cacheDailyTotals { return cached }
+        let decoded: [String: Int] = loadJSON(key: Defaults.keyDailyTotals, default: [:])
+        cacheDailyTotals = decoded
+        return decoded
     }
 
     func saveDailyTotals(_ dict: [String: Int]) {
-        let defaults = Defaults.provider
-        if let data = try? JSONEncoder().encode(dict) {
-            defaults.set(data, forKey: Defaults.keyDailyTotals)
-        }
+        cacheDailyTotals = dict
+        saveJSON(dict, key: Defaults.keyDailyTotals)
     }
 
     func addToToday(seconds: Int, calendar: Calendar = .current) {
@@ -117,19 +116,15 @@ final class BibleStatsStore {
     // MARK: - Per-day per-book totals (for time-windowed top books)
 
     private func loadDailyTotalsByBook() -> [String: [String: Int]] {
-        let defaults = Defaults.provider
-        guard let data = defaults.data(forKey: Defaults.keyDailyTotalsByBook) else { return [:] }
-        if let dict = try? JSONDecoder().decode([String: [String: Int]].self, from: data) {
-            return dict
-        }
-        return [:]
+        if let cached = cacheDailyTotalsByBook { return cached }
+        let dict: [String: [String: Int]] = loadJSON(key: Defaults.keyDailyTotalsByBook, default: [:])
+        cacheDailyTotalsByBook = dict
+        return dict
     }
 
     private func saveDailyTotalsByBook(_ dict: [String: [String: Int]]) {
-        let defaults = Defaults.provider
-        if let data = try? JSONEncoder().encode(dict) {
-            defaults.set(data, forKey: Defaults.keyDailyTotalsByBook)
-        }
+        cacheDailyTotalsByBook = dict
+        saveJSON(dict, key: Defaults.keyDailyTotalsByBook)
     }
 
     func addToToday(bookName: String, seconds: Int, calendar: Calendar = .current) {
@@ -156,7 +151,7 @@ final class BibleStatsStore {
         return result
     }
 
-    // New: per-book totals for a rolling window of the last N days (including today)
+    // Per-book totals for a rolling window of the last N days (including today)
     func totalsByBookForLast(days: Int, including today: Date = Date(), calendar: Calendar = .current) -> [String: Int] {
         guard days > 0 else { return [:] }
         let dict = loadDailyTotalsByBook()
@@ -178,7 +173,7 @@ final class BibleStatsStore {
 
     static func isoDateString(_ date: Date, calendar: Calendar = .current) -> String {
         var cal = calendar
-        cal.timeZone = TimeZone(secondsFromGMT: 0) ?? .gmt
+        cal.timeZone = .gmt
         let comps = cal.dateComponents([.year, .month, .day], from: date)
         let y = comps.year ?? 1970
         let m = comps.month ?? 1
@@ -188,63 +183,56 @@ final class BibleStatsStore {
 
     static func isoKeysForMonth(containing date: Date, calendar: Calendar = .current) -> [String] {
         var cal = calendar
-        cal.timeZone = TimeZone(secondsFromGMT: 0) ?? .gmt
-        let start = cal.date(from: cal.dateComponents([.year, .month], from: date)) ?? date
-        let range = cal.range(of: .day, in: .month, for: start) ?? 1..<31
+        cal.timeZone = .gmt
+        let year = cal.component(.year, from: date)
+        let month = cal.component(.month, from: date)
+        guard let start = cal.date(from: DateComponents(year: year, month: month)),
+              let range = cal.range(of: .day, in: .month, for: start) else {
+            return []
+        }
         return range.compactMap { day -> String? in
-            cal.date(from: DateComponents(year: cal.component(.year, from: start),
-                                          month: cal.component(.month, from: start),
-                                          day: day)).map { isoDateString($0, calendar: cal) }
+            cal.date(from: DateComponents(year: year, month: month, day: day)).map { isoDateString($0, calendar: cal) }
         }
     }
 
     // MARK: - Visited chapters
 
     func loadVisitedChapters() -> Set<String> {
-        let defaults = Defaults.provider
-        guard let data = defaults.data(forKey: Defaults.keyVisitedChapters) else { return [] }
-        if let arr = try? JSONDecoder().decode([String].self, from: data) {
-            return Set(arr)
-        }
-        return []
+        if let cached = cacheVisitedChapters { return cached }
+        let arr: [String] = loadJSON(key: Defaults.keyVisitedChapters, default: [])
+        let set = Set(arr)
+        cacheVisitedChapters = set
+        return set
     }
 
     func saveVisitedChapters(_ set: Set<String>) {
-        let defaults = Defaults.provider
-        if let data = try? JSONEncoder().encode(Array(set)) {
-            defaults.set(data, forKey: Defaults.keyVisitedChapters)
-        }
+        cacheVisitedChapters = set
+        saveJSON(Array(set), key: Defaults.keyVisitedChapters)
+        NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 
     func markVisited(bookName: String, chapterNumber: Int) {
         guard !bookName.isEmpty, chapterNumber > 0 else { return }
         var set = loadVisitedChapters()
         let key = "\(bookName):\(chapterNumber)"
-        // Only insert and notify if this is the first time we mark this chapter as visited
         if !set.contains(key) {
             set.insert(key)
             saveVisitedChapters(set)
-            // Notify listeners (StatsView, chapter lists) that progress changed
-            NotificationCenter.default.post(name: .init("chapterProgressChanged"), object: nil)
         }
     }
 
-    // MARK: - Chapter completion dates (first time a chapter becomes complete)
+    // MARK: - Chapter completion dates
 
     private func loadChapterCompletionDates() -> [String: Date] {
-        let defaults = Defaults.provider
-        guard let data = defaults.data(forKey: Defaults.keyChapterCompletionDates) else { return [:] }
-        if let dict = try? JSONDecoder().decode([String: Date].self, from: data) {
-            return dict
-        }
-        return [:]
+        if let cached = cacheChapterCompletionDates { return cached }
+        let dict: [String: Date] = loadJSON(key: Defaults.keyChapterCompletionDates, default: [:])
+        cacheChapterCompletionDates = dict
+        return dict
     }
 
     private func saveChapterCompletionDates(_ dict: [String: Date]) {
-        let defaults = Defaults.provider
-        if let data = try? JSONEncoder().encode(dict) {
-            defaults.set(data, forKey: Defaults.keyChapterCompletionDates)
-        }
+        cacheChapterCompletionDates = dict
+        saveJSON(dict, key: Defaults.keyChapterCompletionDates)
     }
 
     func recordChapterCompletionDate(bookName: String, chapterNumber: Int, date: Date = Date()) {
@@ -271,27 +259,28 @@ final class BibleStatsStore {
     // MARK: - Last read
 
     func loadLastRead() -> LastRead? {
-        let defaults = Defaults.provider
-        guard let data = defaults.data(forKey: Defaults.keyLastRead) else { return nil }
-        return try? JSONDecoder().decode(LastRead.self, from: data)
+        if let cached = cacheLastRead { return cached }
+        let decoded: LastRead? = {
+            let defaults = Defaults.provider
+            guard let data = defaults.data(forKey: Defaults.keyLastRead) else { return nil }
+            return try? JSONDecoder().decode(LastRead.self, from: data)
+        }()
+        cacheLastRead = decoded
+        return decoded
     }
 
     func saveLastRead(bookName: String, chapterNumber: Int, date: Date = Date()) {
         let entry = LastRead(bookName: bookName, chapterNumber: chapterNumber, date: date)
-        let defaults = Defaults.provider
-        if let data = try? JSONEncoder().encode(entry) {
-            defaults.set(data, forKey: Defaults.keyLastRead)
-        }
+        cacheLastRead = entry
+        saveJSON(entry, key: Defaults.keyLastRead)
     }
 
     // MARK: - OT/NT classification
 
     func isOT(bookName: String) -> Bool {
-        // In fallbackCanon, first 39 are OT
         if let idx = BibleCanon.fallbackCanon.firstIndex(of: bookName) {
             return idx < 39
         }
-        // If not found, attempt based on BibleData order if it matches fallback membership by name
         if let idx = BibleData.books.firstIndex(where: { $0.name == bookName }) {
             return idx < 39
         }
@@ -319,49 +308,51 @@ final class BibleStatsStore {
         }
     }
 
-    // MARK: - Seen verses per chapter
+    // MARK: - Seen verses per chapter (cached)
 
     private func seenKey(bookName: String, chapter: Int) -> String {
         "\(bookName):\(chapter)"
     }
 
-    private func loadSeenMap() -> [String: [Int]] {
-        let defaults = Defaults.provider
-        guard let data = defaults.data(forKey: Defaults.keySeenVersesByChapter) else { return [:] }
-        if let dict = try? JSONDecoder().decode([String: [Int]].self, from: data) {
-            return dict
-        }
-        return [:]
+    // Returns cached map; lazily loads and converts arrays to sets once.
+    private func loadSeenMap() -> SeenMap {
+        if let cached = cacheSeenVersesByChapter { return cached }
+        let dictArrays: [String: [Int]] = loadJSON(key: Defaults.keySeenVersesByChapter, default: [:])
+        let converted: SeenMap = dictArrays.mapValues { Set($0) }
+        cacheSeenVersesByChapter = converted
+        return converted
     }
 
-    private func saveSeenMap(_ map: [String: [Int]]) {
-        let defaults = Defaults.provider
-        if let data = try? JSONEncoder().encode(map) {
-            defaults.set(data, forKey: Defaults.keySeenVersesByChapter)
-        }
+    private func saveSeenMap(_ map: SeenMap) {
+        cacheSeenVersesByChapter = map
+        // Convert sets to sorted arrays for storage
+        let toStore: [String: [Int]] = map.mapValues { Array($0).sorted() }
+        saveJSON(toStore, key: Defaults.keySeenVersesByChapter)
     }
 
     func loadSeenVerses(bookName: String, chapter: Int) -> Set<Int> {
         let map = loadSeenMap()
         let key = seenKey(bookName: bookName, chapter: chapter)
-        return Set(map[key] ?? [])
+        return map[key] ?? []
     }
 
     func saveSeenVerses(_ set: Set<Int>, bookName: String, chapter: Int) {
         var map = loadSeenMap()
         let key = seenKey(bookName: bookName, chapter: chapter)
-        map[key] = Array(set).sorted()
+        map[key] = set
         saveSeenMap(map)
     }
 
     func markVerseSeen(bookName: String, chapter: Int, verse: Int, totalVerses: Int? = nil) {
         guard !bookName.isEmpty, chapter > 0, verse > 0 else { return }
-        var seen = loadSeenVerses(bookName: bookName, chapter: chapter)
+        var map = loadSeenMap()
+        let key = seenKey(bookName: bookName, chapter: chapter)
+        var seen = map[key] ?? Set<Int>()
         if seen.contains(verse) { return }
         seen.insert(verse)
-        saveSeenVerses(seen, bookName: bookName, chapter: chapter)
+        map[key] = seen
+        saveSeenMap(map)
 
-        // If we know total verses, and now all are seen, mark chapter visited (emits notification once) and record completion date.
         if let total = totalVerses, total > 0, seen.count >= total {
             markVisited(bookName: bookName, chapterNumber: chapter)
             recordChapterCompletionDate(bookName: bookName, chapterNumber: chapter, date: Date())
@@ -370,16 +361,25 @@ final class BibleStatsStore {
 
     func unmarkVerseSeen(bookName: String, chapter: Int, verse: Int) {
         guard !bookName.isEmpty, chapter > 0, verse > 0 else { return }
-        var seen = loadSeenVerses(bookName: bookName, chapter: chapter)
+        var map = loadSeenMap()
+        let key = seenKey(bookName: bookName, chapter: chapter)
+        var seen = map[key] ?? Set<Int>()
         if !seen.contains(verse) { return }
         seen.remove(verse)
-        saveSeenVerses(seen, bookName: bookName, chapter: chapter)
+        map[key] = seen
+        saveSeenMap(map)
     }
 
     func isChapterComplete(bookName: String, chapter: Int, totalVerses: Int) -> Bool {
         guard totalVerses > 0 else { return false }
-        let seen = loadSeenVerses(bookName: bookName, chapter: chapter)
+        let key = seenKey(bookName: bookName, chapter: chapter)
+        let seen = loadSeenMap()[key] ?? []
         return seen.count >= totalVerses
     }
 }
 
+// MARK: - Notifications
+
+extension Notification.Name {
+    static let chapterProgressChanged = Notification.Name("chapterProgressChanged")
+}
