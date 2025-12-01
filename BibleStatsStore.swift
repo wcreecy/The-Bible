@@ -156,6 +156,24 @@ final class BibleStatsStore {
         return result
     }
 
+    // New: per-book totals for a rolling window of the last N days (including today)
+    func totalsByBookForLast(days: Int, including today: Date = Date(), calendar: Calendar = .current) -> [String: Int] {
+        guard days > 0 else { return [:] }
+        let dict = loadDailyTotalsByBook()
+        var result: [String: Int] = [:]
+        for i in 0..<days {
+            if let date = calendar.date(byAdding: .day, value: -i, to: today) {
+                let key = Self.isoDateString(date, calendar: calendar)
+                if let per = dict[key] {
+                    for (book, sec) in per {
+                        result[book, default: 0] += max(0, sec)
+                    }
+                }
+            }
+        }
+        return result
+    }
+
     // MARK: - ISO helpers
 
     static func isoDateString(_ date: Date, calendar: Calendar = .current) -> String {
@@ -364,3 +382,4 @@ final class BibleStatsStore {
         return seen.count >= totalVerses
     }
 }
+

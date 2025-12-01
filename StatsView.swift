@@ -9,7 +9,15 @@ struct StatsView: View {
         var id: String { rawValue }
     }
 
+    private enum TimeScope: String, CaseIterable, Identifiable {
+        case allTime = "All Time"
+        case thisMonth = "This Month"
+        case last7 = "Last 7 Days"
+        var id: String { rawValue }
+    }
+
     @State private var sortMode: SortMode = .canonical
+    @State private var timeScope: TimeScope = .allTime
 
     // Core stats
     @State private var perBookTotals: [String: Int] = [:]
@@ -64,6 +72,8 @@ struct StatsView: View {
     @State private var monthTotalSeconds: Int = 0
     @State private var monthChaptersCompleted: Int = 0
     @State private var monthTop3Books: [(book: String, seconds: Int)] = []
+    @State private var perBookMonthTotals: [String: Int] = [:]
+    @State private var perBookLast7Totals: [String: Int] = [:]
 
     // Expand/collapse for existing sections
     @State private var showBookProgressDetails: Bool = false
@@ -105,7 +115,7 @@ struct StatsView: View {
                 // Existing: Book Reading Progress
                 bookReadingProgressCard
 
-                // Existing: Total Bible Time + Per-book table (collapsible)
+                // Existing: Total Bible Reading Time + Per-book table (collapsible)
                 totalsSection
 
                 // NEW: Games card at the bottom (shared with Home)
@@ -684,10 +694,10 @@ struct StatsView: View {
             GroupBox {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
-                        Text("Total Bible Time")
+                        Text("Total Bible Reading Time")
                             .font(.headline)
                         Spacer()
-                        Text(BibleStatsStore.shared.format(totalSeconds))
+                        Text(BibleStatsStore.shared.format(scopedTotalSeconds))
                             .font(.headline)
                             .monospacedDigit()
                             .foregroundStyle(.primary)
@@ -695,10 +705,19 @@ struct StatsView: View {
                             .overlay(
                                 Color.clear
                                     .accessibilityElement(children: .ignore)
-                                    .accessibilityLabel("Total \(BibleStatsStore.shared.format(totalSeconds))")
+                                    .accessibilityLabel("Total \(BibleStatsStore.shared.format(scopedTotalSeconds))")
                             )
                     }
 
+                    // Scope picker (always visible; does not expand/collapse the card)
+                    Picker("Scope", selection: $timeScope) {
+                        ForEach(TimeScope.allCases) { scope in
+                            Text(scope.rawValue).tag(scope)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    // Make only this row the tap target to expand/collapse
                     Button {
                         withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
                             toggleTotals()
@@ -723,7 +742,7 @@ struct StatsView: View {
                         }
                         .pickerStyle(.segmented)
 
-                        ForEach(rows, id: \.book) { entry in
+                        ForEach(scopedRows, id: \.book) { entry in
                             HStack {
                                 Text(entry.book)
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -738,18 +757,6 @@ struct StatsView: View {
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }
                 }
-            }
-
-            // Tap anywhere on the card to expand when collapsed
-            if !showTotalsSection {
-                Color.clear
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                            toggleTotals()
-                        }
-                    }
-                    .accessibilityHidden(true)
             }
         }
     }
@@ -873,6 +880,10 @@ struct StatsView: View {
         }
         // Map (key,value) -> (book,seconds)
         monthTop3Books = Array(sortedTop.prefix(3)).map { (book: $0.key, seconds: $0.value) }
+
+        // Scoped per-book datasets
+        perBookMonthTotals = monthByBook
+        perBookLast7Totals = BibleStatsStore.shared.totalsByBookForLast(days: 7)
     }
 
     private func averageSessionLength(sessions: [ReadingSessionsStore.Session]) -> Int {
@@ -963,18 +974,40 @@ struct StatsView: View {
 
     // MARK: - Rows
 
-    private var rows: [(book: String, seconds: Int)] {
+    private var scopedPerBookTotals: [String: Int] {
+        switch timeScope {
+        case .allTime:
+            return perBookTotals
+        case .thisMonth:
+            return perBookMonthTotals
+        case .last7:
+            return perBookLast7Totals
+        }
+    }
+
+    private var scopedTotalSeconds: Int {
+        switch timeScope {
+        case .allTime:
+            return totalSeconds
+        case .thisMonth:
+            return monthTotalSeconds
+        case .last7:
+            return thisWeekSeconds
+        }
+    }
+
+    private var scopedRows: [(book: String, seconds: Int)] {
         let canonical = orderedAllBooks
         let canonicalPos = Dictionary(uniqueKeysWithValues: canonical.enumerated().map { ($1, $0) })
 
         switch sortMode {
         case .canonical:
             return canonical.map { name in
-                (book: name, seconds: perBookTotals[name, default: 0])
+                (book: name, seconds: scopedPerBookTotals[name, default: 0])
             }
         case .mostRead:
             let all: [(book: String, seconds: Int)] = canonical.map { name in
-                (book: name, seconds: perBookTotals[name, default: 0])
+                (book: name, seconds: scopedPerBookTotals[name, default: 0])
             }
             return all.sorted { lhs, rhs in
                 if lhs.seconds == rhs.seconds {
