@@ -60,6 +60,9 @@ final class iCloudSyncCoordinator {
     private var stats_keySeenVersesByChapter: String { BibleStatsStore.Defaults.keySeenVersesByChapter }
     private var stats_keyChapterCompletionDates: String { BibleStatsStore.Defaults.keyChapterCompletionDates }
 
+    // Reading sessions key
+    private var sessions_key: String { "readingSessions" }
+
     // Game keys: Hangman
     private let hangmanKeys: [String] = {
         let diffs = ["easy", "medium", "hard"]
@@ -125,8 +128,12 @@ final class iCloudSyncCoordinator {
         ]
     }
 
+    private var sessionKeys: [String] {
+        [sessions_key]
+    }
+
     private var allKnownKeys: Set<String> {
-        Set(bibleStatsKeys + hangmanKeys + beatClockKeys + refMatchKeys + quizKeys + bookOrderKeys)
+        Set(bibleStatsKeys + sessionKeys + hangmanKeys + beatClockKeys + refMatchKeys + quizKeys + bookOrderKeys)
     }
 
     // MARK: - Bootstrap
@@ -144,20 +151,6 @@ final class iCloudSyncCoordinator {
     private func handleKVSExternalChange(_ note: Notification) {
         guard let userInfo = note.userInfo else { return }
 
-        // Reason is available but not currently used:
-        if let reasonRaw = userInfo[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int {
-            // Compare against documented integer constants; keep for potential future logic.
-            switch reasonRaw {
-            case NSUbiquitousKeyValueStoreServerChange,
-                 NSUbiquitousKeyValueStoreInitialSyncChange,
-                 NSUbiquitousKeyValueStoreQuotaViolationChange,
-                 NSUbiquitousKeyValueStoreAccountChange:
-                break
-            default:
-                break
-            }
-        }
-
         let changedKeys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String] ?? []
         let keysToProcess = changedKeys.filter { allKnownKeys.contains($0) }
 
@@ -166,6 +159,9 @@ final class iCloudSyncCoordinator {
         for key in keysToProcess {
             mergeIncomingKVSValue(forKey: key)
         }
+
+        // Invalidate caches so subsequent reads reflect merged values
+        BibleStatsStore.shared.resetCaches()
 
         // Notify UI that stats may have changed (StatsView can refresh)
         NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
@@ -181,12 +177,10 @@ final class iCloudSyncCoordinator {
             return
         }
 
-        if bibleStatsKeys.contains(key) {
-            // Read raw Data stored by BibleStatsStore (JSON-encoded)
+        if bibleStatsKeys.contains(key) || sessionKeys.contains(key) {
             if let data = defaults.data(forKey: key) {
                 kvs.set(data, forKey: key)
             } else {
-                // Clear if absent
                 kvs.removeObject(forKey: key)
             }
             return
@@ -213,63 +207,59 @@ final class iCloudSyncCoordinator {
         }
 
         if bibleStatsKeys.contains(key) {
-            guard let remoteData = kvs.object(forKey: key) as? Data else {
-                return
-            }
+            guard let remoteData = kvs.object(forKey: key) as? Data else { return }
             let localData = defaults.data(forKey: key)
 
             switch key {
             case stats_keyTotals:
                 typealias Map = [String: Int]
                 let merged = mergeIntMapSum(localData: localData, remoteData: remoteData, type: Map.self)
-                if let data = try? JSONEncoder().encode(merged) {
-                    defaults.set(data, forKey: key)
-                }
+                if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
 
             case stats_keyDailyTotals:
                 typealias Map = [String: Int]
                 let merged = mergeIntMapSum(localData: localData, remoteData: remoteData, type: Map.self)
-                if let data = try? JSONEncoder().encode(merged) {
-                    defaults.set(data, forKey: key)
-                }
+                if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
 
             case stats_keyDailyTotalsByBook:
                 typealias Map = [String: [String: Int]]
                 let merged = mergeNestedIntMapSum(localData: localData, remoteData: remoteData, type: Map.self)
-                if let data = try? JSONEncoder().encode(merged) {
-                    defaults.set(data, forKey: key)
-                }
+                if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
 
             case stats_keyVisitedChapters:
                 typealias Arr = [String]
                 let mergedSet = mergeStringSet(localData: localData, remoteData: remoteData, type: Arr.self)
-                if let data = try? JSONEncoder().encode(Array(mergedSet)) {
-                    defaults.set(data, forKey: key)
-                }
+                if let data = try? JSONEncoder().encode(Array(mergedSet)) { defaults.set(data, forKey: key) }
 
             case stats_keySeenVersesByChapter:
                 typealias Map = [String: [Int]]
                 let merged = mergeSeenVerses(localData: localData, remoteData: remoteData, type: Map.self)
-                if let data = try? JSONEncoder().encode(merged) {
-                    defaults.set(data, forKey: key)
-                }
+                if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
 
             case stats_keyChapterCompletionDates:
                 typealias Map = [String: Date]
                 let merged = mergeDateMap(localData: localData, remoteData: remoteData, type: Map.self, strategy: .earliest)
-                if let data = try? JSONEncoder().encode(merged) {
-                    defaults.set(data, forKey: key)
-                }
+                if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
 
             case stats_keyLastRead:
                 typealias Entry = BibleStatsStore.LastRead
                 let merged = mergeLastRead(localData: localData, remoteData: remoteData, type: Entry.self)
-                if let data = try? JSONEncoder().encode(merged) {
-                    defaults.set(data, forKey: key)
-                }
+                if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
 
             default:
                 break
+            }
+            return
+        }
+
+        if sessionKeys.contains(key) {
+            // Merge reading sessions by union/dedupe using a stable identity (start, end, book, chapter)
+            guard let remoteData = kvs.object(forKey: key) as? Data else { return }
+            let localData = defaults.data(forKey: key)
+            typealias Arr = [ReadingSessionsStore.Session]
+            let merged = mergeSessions(localData: localData, remoteData: remoteData, type: Arr.self)
+            if let data = try? JSONEncoder().encode(merged) {
+                defaults.set(data, forKey: key)
             }
             return
         }
@@ -286,7 +276,6 @@ final class iCloudSyncCoordinator {
     }
 
     private func safeSum(_ a: Int, _ b: Int) -> Int {
-        // Avoid overflow (unlikely here) — clamp to Int.max if needed
         let (sum, overflow) = a.addingReportingOverflow(b)
         return overflow ? Int.max : sum
     }
@@ -369,6 +358,37 @@ final class iCloudSyncCoordinator {
             return (a.date >= b.date) ? a : b
         }
     }
+
+    private func mergeSessions(localData: Data?, remoteData: Data, type: [ReadingSessionsStore.Session].Type) -> [ReadingSessionsStore.Session] {
+        let local = decode(localData, as: type) ?? []
+        let remote = decode(remoteData, as: type) ?? []
+        // Union with dedupe by stable identity: (start, end, book, chapter)
+        var set: Set<String> = Set(local.map { sessionIdentity($0) })
+        var merged = local
+        for s in remote {
+            let id = sessionIdentity(s)
+            if !set.contains(id) {
+                set.insert(id)
+                merged.append(s)
+            }
+        }
+        // Keep only last N days (respect the store’s retention policy of 180 days)
+        let cutoff = Calendar.current.date(byAdding: .day, value: -180, to: Date()) ?? .distantPast
+        merged = merged.filter { $0.end >= cutoff }
+        // Sort ascending by end date to keep consistent order; StatsView does its own ordering later
+        merged.sort { $0.end < $1.end }
+        return merged
+    }
+
+    private func sessionIdentity(_ s: ReadingSessionsStore.Session) -> String {
+        // Use ISO8601 + fields to avoid collisions
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let startStr = formatter.string(from: s.start)
+        let endStr = formatter.string(from: s.end)
+        let chapStr = s.chapter.map { String($0) } ?? "_"
+        return "\(startStr)|\(endStr)|\(s.book)|\(chapStr)"
+    }
 }
 
 // MARK: - Notifications
@@ -376,4 +396,13 @@ final class iCloudSyncCoordinator {
 extension Notification.Name {
     // Posted when KVS merges BibleStats-related keys; UI can refresh.
     static let bibleStatsExternallyUpdated = Notification.Name("bibleStatsExternallyUpdated")
+
+    // Posted when chapter read/verse progress changes anywhere in the app.
+    static let chapterProgressChanged = Notification.Name("chapterProgressChanged")
+
+    // Posted to request switching to a particular tab (used to close sheets, etc.).
+    static let switchToTab = Notification.Name("switchToTab")
+
+    // If you deep link to a passage elsewhere, you already have:
+    // static let openBibleReference = Notification.Name("openBibleReference")
 }

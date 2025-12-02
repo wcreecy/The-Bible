@@ -23,12 +23,21 @@ final class HomeBibleStatsViewModel: ObservableObject {
     @Published var maxTopSeconds: Int = 1
 
     private var cancellable: AnyCancellable?
+    private var externalUpdateCancellable: AnyCancellable?
 
     init() {
         refresh()
         cancellable = ReadingTimeTracker.shared.$lastTotalsVersion
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
+                self?.refresh()
+            }
+
+        // NEW: refresh on incoming iCloud merges
+        externalUpdateCancellable = NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                // Stats caches are reset by the coordinator; re-read and refresh UI
                 self?.refresh()
             }
     }
@@ -107,4 +116,3 @@ final class HomeBibleStatsViewModel: ObservableObject {
         return f.localizedString(for: date, relativeTo: now)
     }
 }
-

@@ -5,7 +5,12 @@ import Foundation
 @MainActor
 final class ReadingSessionsStore {
     static let shared = ReadingSessionsStore()
-    private init() {}
+    private init() {
+        // Invalidate cache when external merges happen (iCloud KVS or other writers)
+        NotificationCenter.default.addObserver(forName: .bibleStatsExternallyUpdated, object: nil, queue: .main) { [weak self] _ in
+            self?.cacheAllSessions = nil
+        }
+    }
 
     struct Session: Codable, Equatable {
         let start: Date
@@ -36,14 +41,20 @@ final class ReadingSessionsStore {
         saveAll(all)
     }
 
+    // Normalize to GMT midnight boundaries to match BibleStatsStore’s ISO date keys.
     func sessions(inLastDays days: Int, now: Date = Date(), calendar: Calendar = .current) -> [Session] {
         guard days > 0 else { return [] }
-        let cutoff = calendar.date(byAdding: .day, value: -days, to: now) ?? Date.distantPast
+        var gmtCal = calendar
+        gmtCal.timeZone = .gmt
+        // Compute cutoff at start of day (GMT) days ago
+        let startOfTodayGMT = gmtCal.startOfDay(for: now)
+        let cutoff = gmtCal.date(byAdding: .day, value: -days, to: startOfTodayGMT) ?? .distantPast
         return loadAll().filter { $0.end >= cutoff }
     }
 
     func sessions(inMonthContaining date: Date, calendar: Calendar = .current) -> [Session] {
-        let cal = calendar
+        var cal = calendar
+        cal.timeZone = .gmt
         let comps = cal.dateComponents([.year, .month], from: date)
         guard let start = cal.date(from: comps),
               let range = cal.range(of: .day, in: .month, for: start),
@@ -76,6 +87,8 @@ final class ReadingSessionsStore {
         if let data = try? JSONEncoder().encode(arr) {
             defaults.set(data, forKey: Defaults.key)
         }
+        // Push sessions to iCloud KVS for cross-device sync and refresh listeners
+        iCloudSyncCoordinator.shared.pushKey(Defaults.key)
+        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 }
-

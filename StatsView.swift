@@ -192,7 +192,7 @@ struct StatsView: View {
             }
         }
         // Close the chapters sheet when switching to the Bible tab
-        .onReceive(NotificationCenter.default.publisher(for: .switchToTab)) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("switchToTab"))) { _ in
             selectedBookForChapters = nil
         }
         // Refresh stats when chapter progress changes
@@ -1264,4 +1264,3 @@ private struct BookChaptersDetailView: View {
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 }
-

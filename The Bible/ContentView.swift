@@ -11,7 +11,7 @@ import Combine
 extension Notification.Name {
     static let openBibleReference = Notification.Name("OpenBibleReference")
     static let openSettingsTab = Notification.Name("OpenSettingsTab")
-    static let switchToTab = Notification.Name("SwitchToTab")
+    // Use the centralized definition of `switchToTab` in iCloudSyncCoordinator.swift
 }
 
 struct ContentView: View {
