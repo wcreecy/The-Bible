@@ -199,14 +199,47 @@ struct JournalDetailView: View {
     }
 }
 
+@MainActor
+private let previewJournalContainer: ModelContainer = {
+    let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: JournalEntry.self, configurations: configuration)
+    let context = container.mainContext
+
+    // Create a sample entry
+    let sample = JournalEntry()
+    sample.title = "Preview Entry"
+    sample.body = """
+    This is a sample journal entry body. John 3:16; Ps 23:1 (ESV).
+    Tap references to preview and copy.
+    """
+    sample.verseRef = VerseRef(book: "John", chapter: 3, verse: 16, translation: "ESV")
+    sample.tags = ["Prayer", "Faith"]
+    sample.isFavorite = true
+    sample.isPinned = true
+    context.insert(sample)
+    try? context.save()
+    return container
+}()
+
 #Preview {
-    let entry = JournalEntry(
-        title: "Morning Devotional",
-        body: "Today I reflected on faith and patience. The scripture reminded me to be steadfast.",
-        verseRef: VerseRef(book: "James", chapter: 1, verse: 3, translation: "ESV"),
-        tags: ["devotional", "prayer"],
-        isPinned: true,
-        isFavorite: true
-    )
-    NavigationStack { JournalDetailView(entry: entry) }
+    // Fetch the inserted sample from the in-memory container or make a fresh one
+    let entry = {
+        let ctx = previewJournalContainer.mainContext
+        let fetch = FetchDescriptor<JournalEntry>()
+        if let first = try? ctx.fetch(fetch).first {
+            return first
+        } else {
+            let e = JournalEntry()
+            e.title = "Preview Entry"
+            e.body = "Sample body"
+            ctx.insert(e)
+            return e
+        }
+    }()
+
+    return NavigationStack {
+        JournalDetailView(entry: entry)
+            .environmentObject(JournalComposer())
+    }
+    .modelContainer(previewJournalContainer)
 }

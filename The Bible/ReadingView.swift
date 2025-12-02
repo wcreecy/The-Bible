@@ -429,7 +429,7 @@ struct ReadingView: View {
             existing.verseNumber = verse
             try? modelContext.save()
         } else {
-            let p = ReadingProgress(bookName: bookName, chapterNumber: chapter, verseNumber: verse)
+            let p = ReadingProgress()
             modelContext.insert(p)
             try? modelContext.save()
         }

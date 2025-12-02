@@ -1,8 +1,14 @@
 import SwiftUI
 import AudioToolbox
 import UniformTypeIdentifiers
+internal import CloudKit
+import SwiftData
 
 struct SettingsView: View {
+    @EnvironmentObject private var cloudKitManager: CloudKitManager
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \Favorite.createdAt, order: .reverse) private var favorites: [Favorite]
+
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
     @AppStorage("fontSizePreference") private var fontSizePreferenceRaw: String = FontSizePreference.system.rawValue
     @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = FontFamilyPreference.system.rawValue
@@ -145,8 +151,55 @@ struct SettingsView: View {
         )
     }
 
+    private var iCloudStatusText: String {
+        switch cloudKitManager.accountState {
+        case .available: return "Available"
+        case .noAccount: return "No Account"
+        case .restricted: return "Restricted"
+        case .couldNotDetermine: return "Unavailable"
+        case .unknown: return "Unknown"
+        }
+    }
+
+    private var iCloudStatusColor: Color {
+        switch cloudKitManager.accountState {
+        case .available: return .green
+        case .noAccount, .restricted, .couldNotDetermine: return .orange
+        case .unknown: return .secondary
+        }
+    }
+
     var body: some View {
         Form {
+            // iCloud status indicator section
+            Section(header: Text("iCloud")) {
+                HStack {
+                    Label("CloudKit", systemImage: "icloud")
+                    Spacer()
+                    Text(iCloudStatusText)
+                        .foregroundStyle(iCloudStatusColor)
+                        .accessibilityIdentifier("icloudStatusText")
+                }
+                if let id = cloudKitManager.userRecordID {
+                    HStack {
+                        Text("User Record")
+                        Spacer()
+                        Text(id.recordName)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                    }
+                    .accessibilityIdentifier("icloudUserRecord")
+                }
+                Button {
+                    Task { await cloudKitManager.refresh() }
+                } label: {
+                    Label("Refresh Status", systemImage: "arrow.clockwise")
+                }
+                .accessibilityIdentifier("icloudRefreshButton")
+            }
+            .headerProminence(.increased)
+
             verseOfTheDaySection
             appearanceSection
             timerSection
@@ -154,6 +207,42 @@ struct SettingsView: View {
             liveActivitiesSection
             homeLayoutSection
             gameDataSection
+
+            // MARK: - Debug
+            Section(header: Text("Debug")) {
+                Button {
+                    let randVerse = Int.random(in: 1...36)
+                    let fav = Favorite(
+                        bookName: "John",
+                        chapterNumber: 3,
+                        verseNumber: randVerse,
+                        verseText: "Test Sync … \(UUID().uuidString)"
+                    )
+                    modelContext.insert(fav)
+                    do {
+                        try modelContext.save()
+                        print("Inserted Favorite -> book: \(fav.bookName), chapter: \(fav.chapterNumber), verse: \(fav.verseNumber), text: \(fav.verseText), createdAt: \(fav.createdAt)")
+                        print("Favorites count after insert: \(favorites.count + 0)") // +0 to force evaluation
+                    } catch {
+                        print("Error saving test favorite: \(error)")
+                    }
+                } label: {
+                    Label("Insert Test Favorite (CloudKit Sync)", systemImage: "plus.circle")
+                }
+
+                Button {
+                    let count = favorites.count
+                    if let latest = favorites.first {
+                        print("Favorites count: \(count)")
+                        print("Latest -> book: \(latest.bookName), chapter: \(latest.chapterNumber), verse: \(latest.verseNumber), text: \(latest.verseText), createdAt: \(latest.createdAt)")
+                    } else {
+                        print("Favorites count: \(count) (no items)")
+                    }
+                } label: {
+                    Label("List Favorite Count", systemImage: "list.number")
+                }
+            }
+            .headerProminence(.increased)
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)

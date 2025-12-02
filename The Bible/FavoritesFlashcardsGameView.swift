@@ -281,7 +281,12 @@ private let previewFavoritesContainer: ModelContainer = {
     ]
 
     for (book, chapter, verse, text) in samples {
-        let fav = Favorite(bookName: book, chapterNumber: chapter, verseNumber: verse, verseText: text)
+        let fav = Favorite()
+        fav.bookName = book
+        fav.chapterNumber = chapter
+        fav.verseNumber = verse
+        fav.verseText = text
+        fav.createdAt = Date()
         context.insert(fav)
     }
 

@@ -3,25 +3,18 @@ import SwiftData
 
 @Model
 final class ReaderSettings {
-    var fontSize: Double
+    var fontSize: Double = 17.0
     // theme values: "system", "light", "dark", "sepia"
-    var theme: String
+    var theme: String = "system"
 
-    init(fontSize: Double = 17.0, theme: String = "system") {
-        self.fontSize = fontSize
-        self.theme = theme
-    }
+    init() {}
 }
 
 @Model
 final class ReadingProgress {
-    var bookName: String
-    var chapterNumber: Int
-    var verseNumber: Int
+    var bookName: String = ""
+    var chapterNumber: Int = 0
+    var verseNumber: Int = 0
 
-    init(bookName: String, chapterNumber: Int, verseNumber: Int) {
-        self.bookName = bookName
-        self.chapterNumber = chapterNumber
-        self.verseNumber = verseNumber
-    }
+    init() {}
 }

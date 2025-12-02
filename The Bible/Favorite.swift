@@ -3,12 +3,15 @@ import SwiftData
 
 @Model
 final class Favorite {
-    var bookName: String
-    var chapterNumber: Int
-    var verseNumber: Int
-    var verseText: String
-    var createdAt: Date
+    var bookName: String = ""
+    var chapterNumber: Int = 0
+    var verseNumber: Int = 0
+    var verseText: String = ""
+    var createdAt: Date = Date()
 
+    init() {}
+
+    // Convenience/designated initializer to ensure we always create valid records
     init(bookName: String, chapterNumber: Int, verseNumber: Int, verseText: String, createdAt: Date = Date()) {
         self.bookName = bookName
         self.chapterNumber = chapterNumber

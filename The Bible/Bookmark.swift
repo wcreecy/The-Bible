@@ -1,15 +1,13 @@
-import SwiftData
 import Foundation
+import SwiftData
 
 @Model
-final class VerseNote {
+final class Bookmark {
     var bookName: String = ""
     var chapterNumber: Int = 0
     var verseNumber: Int = 0
     var verseText: String = ""
-    var content: String = ""
     var createdAt: Date = Date()
-    var updatedAt: Date = Date()
 
     init() {}
 }

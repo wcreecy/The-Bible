@@ -560,14 +560,7 @@ struct JournalEditorView: View {
             return
         }
 
-        let entry = JournalEntry(
-            title: title.trimmingCharacters(in: .whitespacesAndNewlines),
-            body: content.trimmingCharacters(in: .whitespacesAndNewlines),
-            verseRef: verseRef,
-            tags: tags,
-            isPinned: false,
-            isFavorite: false
-        )
+        let entry = JournalEntry()
         entry.updatedAt = Date()
         ctx.insert(entry)
         do {
