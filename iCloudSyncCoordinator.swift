@@ -250,18 +250,21 @@ final class iCloudSyncCoordinator {
 
             switch key {
             case stats_keyTotals:
+                // CHANGE: per-book totals use max per entry
                 typealias Map = [String: Int]
-                let merged = mergeIntMapSum(localData: localData, remoteData: remoteData, type: Map.self)
+                let merged = mergeIntMapMax(localData: localData, remoteData: remoteData, type: Map.self)
                 if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
 
             case stats_keyDailyTotals:
+                // CHANGE: per-day totals use max per entry
                 typealias Map = [String: Int]
-                let merged = mergeIntMapSum(localData: localData, remoteData: remoteData, type: Map.self)
+                let merged = mergeIntMapMax(localData: localData, remoteData: remoteData, type: Map.self)
                 if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
 
             case stats_keyDailyTotalsByBook:
+                // CHANGE: nested per-day per-book totals use max per entry
                 typealias Map = [String: [String: Int]]
-                let merged = mergeNestedIntMapSum(localData: localData, remoteData: remoteData, type: Map.self)
+                let merged = mergeNestedIntMapMax(localData: localData, remoteData: remoteData, type: Map.self)
                 if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
 
             case stats_keyVisitedChapters:
@@ -323,6 +326,7 @@ final class iCloudSyncCoordinator {
         return try? JSONDecoder().decode(T.self, from: d)
     }
 
+    // Sum-merge (kept for reference; not used for stats after max-merge change)
     private func mergeIntMapSum(localData: Data?, remoteData: Data, type: [String: Int].Type) -> [String: Int] {
         let local = decode(localData, as: type) ?? [:]
         let remote = decode(remoteData, as: type) ?? [:]
@@ -341,6 +345,41 @@ final class iCloudSyncCoordinator {
             var perBook = merged[date] ?? [:]
             for (book, sec) in perBookRemote {
                 perBook[book, default: 0] = safeSum(perBook[book, default: 0], max(0, sec))
+            }
+            merged[date] = perBook
+        }
+        return merged
+    }
+
+    // NEW: Max-merge helpers for stats
+    private func mergeIntMapMax(localData: Data?, remoteData: Data, type: [String: Int].Type) -> [String: Int] {
+        let local = decode(localData, as: type) ?? [:]
+        let remote = decode(remoteData, as: type) ?? [:]
+        var merged = local
+        for (k, v) in remote {
+            let sanitized = max(0, v)
+            if let existing = merged[k] {
+                merged[k] = max(existing, sanitized)
+            } else {
+                merged[k] = sanitized
+            }
+        }
+        return merged
+    }
+
+    private func mergeNestedIntMapMax(localData: Data?, remoteData: Data, type: [String: [String: Int]].Type) -> [String: [String: Int]] {
+        let local = decode(localData, as: type) ?? [:]
+        let remote = decode(remoteData, as: type) ?? [:]
+        var merged = local
+        for (date, perBookRemote) in remote {
+            var perBook = merged[date] ?? [:]
+            for (book, sec) in perBookRemote {
+                let sanitized = max(0, sec)
+                if let existing = perBook[book] {
+                    perBook[book] = max(existing, sanitized)
+                } else {
+                    perBook[book] = sanitized
+                }
             }
             merged[date] = perBook
         }

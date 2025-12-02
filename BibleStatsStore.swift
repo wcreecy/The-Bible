@@ -126,10 +126,25 @@ final class BibleStatsStore {
         return sum
     }
 
+    // Prefer session-based computation for the month to avoid double-counting from KVS merges.
     func totalForMonth(containing date: Date, calendar: Calendar = .current) -> Int {
+        let fromSessions = totalForMonthFromSessions(containing: date, calendar: calendar)
+        if fromSessions > 0 {
+            return fromSessions
+        }
+        // Fallback to daily totals if no sessions are available (e.g., legacy data)
         let dict = loadDailyTotals()
         let range = Self.isoKeysForMonth(containing: date, calendar: calendar)
         return range.reduce(0) { $0 + dict[$1, default: 0] }
+    }
+
+    private func totalForMonthFromSessions(containing date: Date, calendar: Calendar = .current) -> Int {
+        let sessions = ReadingSessionsStore.shared.sessions(inMonthContaining: date, calendar: calendar)
+        var total = 0
+        for s in sessions {
+            total += Int(max(0, s.end.timeIntervalSince(s.start)))
+        }
+        return total
     }
 
     // MARK: - Per-day per-book totals (for time-windowed top books)

@@ -809,13 +809,26 @@ struct StatsView: View {
 
     private func refreshChartsAndMonth() {
         let cal = Calendar.current
-        // Last 7 days daily bars
-        let dailyDict = BibleStatsStore.shared.loadDailyTotals()
-        last7Daily = (0..<7).compactMap { i -> (Date, Int)? in
-            guard let d = cal.date(byAdding: .day, value: -i, to: Date()) else { return nil }
-            let key = BibleStatsStore.isoDateString(d)
-            return (d, dailyDict[key, default: 0])
-        }.sorted { $0.0 < $1.0 }
+
+        // Last 7 days daily bars — now aggregated from sessions per GMT day
+        do {
+            var gmtCal = cal
+            gmtCal.timeZone = .gmt
+            let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: gmtCal)
+            var buckets: [String: Int] = [:] // ISO yyyy-MM-dd -> seconds
+            for s in sessions {
+                let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
+                let key = BibleStatsStore.isoDateString(s.end, calendar: gmtCal)
+                buckets[key, default: 0] += dur
+            }
+            // Build a contiguous last-7-days sequence (oldest -> newest)
+            let days: [(Date, Int)] = (0..<7).compactMap { i -> (Date, Int)? in
+                guard let d = gmtCal.date(byAdding: .day, value: -i, to: Date()) else { return nil }
+                let key = BibleStatsStore.isoDateString(d, calendar: gmtCal)
+                return (d, buckets[key, default: 0])
+            }.sorted { $0.0 < $1.0 }
+            last7Daily = days
+        }
 
         // Sessions: last 20 overall (within retention window)
         let sessionsAll = ReadingSessionsStore.shared.sessions(inLastDays: 180).sorted { $0.end < $1.end }
@@ -830,7 +843,8 @@ struct StatsView: View {
             return (index: idx + 1, minutes: minutes)
         }
 
-        // Keep the broader habits aggregates for other parts if needed
+        // Keep the broader habits aggregates for other parts if needed (still based on daily totals legacy)
+        let dailyDict = BibleStatsStore.shared.loadDailyTotals()
         let last56 = (0..<56).compactMap { i -> (Date, Int)? in
             guard let d = cal.date(byAdding: .day, value: -i, to: Date()) else { return nil }
             let key = BibleStatsStore.isoDateString(d)
@@ -1264,3 +1278,4 @@ private struct BookChaptersDetailView: View {
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 }
+
