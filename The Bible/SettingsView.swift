@@ -37,6 +37,9 @@ struct SettingsView: View {
     // Live Activities master toggle
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
 
+    // Spinning refresh state for iCloud refresh button
+    @State private var isRefreshingCloudStatus: Bool = false
+
     // MARK: - Home layout configuration
     private enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
         case verseOfDay, dailyFocus, timer, resumeReading, games, streaks, bibleStats
@@ -171,8 +174,16 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            // iCloud status indicator section
-            Section(header: Text("iCloud")) {
+            // Reordered sections: move iCloud below, above Game Data
+            verseOfTheDaySection
+            appearanceSection
+            timerSection
+            dailyGoalSection
+            liveActivitiesSection
+            homeLayoutSection
+
+            // iCloud status indicator section (moved near bottom)
+            Section {
                 HStack {
                     Label("CloudKit", systemImage: "icloud")
                     Spacer()
@@ -192,23 +203,53 @@ struct SettingsView: View {
                     .accessibilityIdentifier("icloudUserRecord")
                 }
                 Button {
-                    Task { await cloudKitManager.refresh() }
+                    // Haptic confirmation
+                    let h = UIImpactFeedbackGenerator(style: .light)
+                    h.impactOccurred()
+
+                    isRefreshingCloudStatus = true
+                    Task {
+                        await cloudKitManager.refresh()
+                        // small delay so the spin is perceivable
+                        try? await Task.sleep(nanoseconds: 300_000_000)
+                        await MainActor.run { isRefreshingCloudStatus = false }
+                    }
                 } label: {
-                    Label("Refresh Status", systemImage: "arrow.clockwise")
+                    Label {
+                        Text(isRefreshingCloudStatus ? "Refreshing…" : "Refresh Status")
+                    } icon: {
+                        Image(systemName: "arrow.clockwise")
+                            .rotationEffect(isRefreshingCloudStatus ? .degrees(360) : .degrees(0))
+                            .animation(
+                                isRefreshingCloudStatus
+                                ? .linear(duration: 0.8).repeatForever(autoreverses: false)
+                                : .default,
+                                value: isRefreshingCloudStatus
+                            )
+                    }
                 }
+                .disabled(isRefreshingCloudStatus)
                 .accessibilityIdentifier("icloudRefreshButton")
+            } header: {
+                Text("iCloud")
+            } footer: {
+                Text("""
+                iCloud keeps your data up to date across your devices using CloudKit.
+                Status meanings:
+                • Available: Signed in to iCloud and CloudKit is ready.
+                • No Account: Not signed in to iCloud on this device.
+                • Restricted: iCloud is restricted by system settings or parental controls.
+                • Unavailable: The status couldn’t be determined right now.
+                """)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
             }
             .headerProminence(.increased)
 
-            verseOfTheDaySection
-            appearanceSection
-            timerSection
-            dailyGoalSection
-            liveActivitiesSection
-            homeLayoutSection
             gameDataSection
 
-            // MARK: - Debug
+            // MARK: - Debug (hidden in non-DEBUG builds)
+            #if DEBUG
             Section(header: Text("Debug")) {
                 Button {
                     let randVerse = Int.random(in: 1...36)
@@ -222,7 +263,7 @@ struct SettingsView: View {
                     do {
                         try modelContext.save()
                         print("Inserted Favorite -> book: \(fav.bookName), chapter: \(fav.chapterNumber), verse: \(fav.verseNumber), text: \(fav.verseText), createdAt: \(fav.createdAt)")
-                        print("Favorites count after insert: \(favorites.count + 0)") // +0 to force evaluation
+                        print("Favorites count after insert: \(favorites.count + 0)")
                     } catch {
                         print("Error saving test favorite: \(error)")
                     }
@@ -243,6 +284,7 @@ struct SettingsView: View {
                 }
             }
             .headerProminence(.increased)
+            #endif
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
@@ -251,7 +293,6 @@ struct SettingsView: View {
         .dynamicTypeSize((FontSizePreference(rawValue: fontSizePreferenceRaw) ?? .system).dynamicTypeSize ?? .large)
         .modifier(FontFamilyEnvironmentModifier(prefRaw: fontFamilyPreferenceRaw))
         .onAppear { loadHomeLayout() }
-        // Present Daily Goal sheet using an Identifiable token
         .sheet(item: $dailyGoalSheetToken, onDismiss: {
             // No-op; commit happens on Done
         }) { _ in
@@ -275,7 +316,6 @@ struct SettingsView: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Done") {
-                            // Commit once, then dismiss
                             dailyGoalMinutes = localDailyGoalMinutes
                             dailyGoalSheetToken = nil
                         }
@@ -468,7 +508,6 @@ struct SettingsView: View {
     private var dailyGoalSection: some View {
         Section(header: Text("Daily Goal"), footer: Text("Set the number of minutes you want to spend in the app each day. Your Daily Bible Streak is based on meeting this goal.").font(.footnote).foregroundStyle(.secondary)) {
             Button {
-                // Initialize local copy and present the tokenized sheet
                 localDailyGoalMinutes = dailyGoalMinutes
                 if dailyGoalSheetToken == nil {
                     dailyGoalSheetToken = SheetToken()
