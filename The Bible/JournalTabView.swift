@@ -57,10 +57,11 @@ struct JournalTabView: View {
         pinnedIDsRaw = pinnedIDs.joined(separator: ",")
     }
     private func isPinned(_ entry: JournalEntry) -> Bool {
-        pinnedIDs.contains(entry.id.uuidString)
+        guard let key = entry.id?.uuidString else { return false }
+        return pinnedIDs.contains(key)
     }
     private func togglePin(_ entry: JournalEntry) {
-        let key = entry.id.uuidString
+        guard let key = entry.id?.uuidString else { return }
         if pinnedIDs.contains(key) {
             pinnedIDs.remove(key)
         } else {
@@ -153,13 +154,14 @@ struct JournalTabView: View {
                     return titleMatch || tagsMatch || bodyMatch
                 }
             }
-            let indexMap: [UUID: Int] = Dictionary(uniqueKeysWithValues: currentEntries.enumerated().map { ($1.id, $0) })
+            // Preserve the current order using object identity (id is optional)
+            let indexMap: [ObjectIdentifier: Int] = Dictionary(uniqueKeysWithValues: currentEntries.enumerated().map { (ObjectIdentifier($1), $0) })
             list.sort { lhs, rhs in
-                let lp = currentPins.contains(lhs.id.uuidString)
-                let rp = currentPins.contains(rhs.id.uuidString)
+                let lp = currentPins.contains(lhs.id?.uuidString ?? "")
+                let rp = currentPins.contains(rhs.id?.uuidString ?? "")
                 if lp != rp { return lp && !rp }
-                let li = indexMap[lhs.id] ?? 0
-                let ri = indexMap[rhs.id] ?? 0
+                let li = indexMap[ObjectIdentifier(lhs)] ?? 0
+                let ri = indexMap[ObjectIdentifier(rhs)] ?? 0
                 return li < ri
             }
             cachedFilteredEntries = list
@@ -259,7 +261,7 @@ struct JournalTabView: View {
     private func handleCreatedNotification(_ note: Notification) {
         if let id = note.userInfo?["id"] as? String {
             refreshToken = id
-            if let created = entries.first(where: { $0.id.uuidString == id }) {
+            if let created = entries.first(where: { $0.id?.uuidString == id }) {
                 selectedEntry = created
             }
         } else {
@@ -746,10 +748,10 @@ struct JournalTabView: View {
                 }
                 Divider()
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Created: \(entry.createdAt.formatted(date: .abbreviated, time: .shortened))")
+                    Text("Created: \(entry.createdAt?.formatted(date: .abbreviated, time: .shortened) ?? "—")")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
-                    Text("Updated: \(entry.updatedAt.formatted(date: .abbreviated, time: .shortened))")
+                    Text("Updated: \(entry.updatedAt?.formatted(date: .abbreviated, time: .shortened) ?? "—")")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }

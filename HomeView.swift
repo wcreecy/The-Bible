@@ -27,7 +27,8 @@ private enum HomeCardID: String, CaseIterable, Identifiable {
 struct HomeView: View {
     private enum PrayerMode: String { case timer, stopwatch, focus }
 
-    @Query private var progressList: [ReadingProgress]
+    // Always keep newest progress first so `progressList.first` is canonical
+    @Query(sort: \ReadingProgress.updatedAt, order: .reverse) private var progressList: [ReadingProgress]
     @State private var showPrayerStudySheet: Bool = false
 
     @State private var isTimerRunning: Bool = false
@@ -2004,6 +2005,9 @@ struct HomeView: View {
                 focusSavedAt = nil
             }
 
+            // One-time safety net: if multiple ReadingProgress rows exist, keep newest and delete older
+            dedupeReadingProgress()
+
             mirrorLastReadToAppGroup()
             handleOpenPendingVerse()
 
@@ -2027,6 +2031,7 @@ struct HomeView: View {
             decodeHomeLayout()
         }
         .onChange(of: progressList) { _, _ in
+            // SwiftData/CloudKit changes will flow here; mirror to widget
             mirrorLastReadToAppGroup()
         }
         .onChange(of: scenePhase) { _, newPhase in
@@ -2590,6 +2595,17 @@ struct HomeView: View {
         let indices = values.enumerated().filter { $0.element == minVal }.map { $0.offset }
         return indices.count == 1 ? indices.first : nil
     }
+
+    // MARK: - ReadingProgress safety dedupe on Home (one-time)
+    private func dedupeReadingProgress() {
+        guard progressList.count > 1 else { return }
+        // progressList is already sorted newest-first by the @Query
+        let toDelete = progressList.dropFirst()
+        for p in toDelete {
+            modelContext.delete(p)
+        }
+        try? modelContext.save()
+    }
 }
 
 private let oldTestamentBooks: Set<String> = [
@@ -2925,3 +2941,4 @@ private final class DebouncedWidgetReloader {
         queue.asyncAfter(deadline: .now() + 0.6, execute: item)
     }
 }
+

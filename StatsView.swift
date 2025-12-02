@@ -127,12 +127,19 @@ struct StatsView: View {
         .navigationTitle("Stats")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
+            // Start KVS coordinator (safe to call multiple times)
+            iCloudSyncCoordinator.shared.start()
+
             refreshAll()
             if cancellable == nil {
                 cancellable = ReadingTimeTracker.shared.$lastTotalsVersion
                     .receive(on: RunLoop.main)
                     .sink { _ in refreshAll() }
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
+            // Refresh when stats changed on another device
+            refreshAll()
         }
         .sheet(item: Binding(
             get: {
@@ -1257,3 +1264,4 @@ private struct BookChaptersDetailView: View {
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 }
+

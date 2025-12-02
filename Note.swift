@@ -8,8 +8,12 @@ final class VerseNote {
     var verseNumber: Int = 0
     var verseText: String = ""
     var content: String = ""
-    var createdAt: Date = Date()
-    var updatedAt: Date = Date()
+    // Optionals for CloudKit schema
+    var createdAt: Date?
+    var updatedAt: Date?
 
-    init() {}
+    init() {
+        self.createdAt = Date()
+        self.updatedAt = Date()
+    }
 }

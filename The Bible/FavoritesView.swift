@@ -3,7 +3,7 @@ import SwiftData
 
 struct FavoritesView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Favorite.createdAt, order: .reverse) private var favorites: [Favorite]
+    @Query(sort: [SortDescriptor(\Favorite.createdAt, order: .reverse)]) private var favorites: [Favorite]
 
     var body: some View {
         Group {
@@ -16,16 +16,16 @@ struct FavoritesView: View {
             } else {
                 List {
                     ForEach(favorites) { fav in
-                        NavigationLink(
-                            destination: ReadingView(
-                                book: BibleData.books.first(where: { $0.name == fav.bookName }) ?? BibleData.books.first!,
-                                chapter: {
-                                    let book = BibleData.books.first(where: { $0.name == fav.bookName }) ?? BibleData.books.first!
-                                    return book.chapters.first(where: { $0.number == fav.chapterNumber }) ?? book.chapters.first!
-                                }(),
+                        let book = BibleData.books.first(where: { $0.name == fav.bookName }) ?? BibleData.books.first!
+                        let chapter = book.chapters.first(where: { $0.number == fav.chapterNumber }) ?? book.chapters.first!
+
+                        NavigationLink {
+                            ReadingView(
+                                book: book,
+                                chapter: chapter,
                                 startVerse: fav.verseNumber
                             )
-                        ) {
+                        } label: {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(fav.verseText)
                                     .font(.body)

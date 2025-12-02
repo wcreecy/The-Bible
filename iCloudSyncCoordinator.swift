@@ -1,0 +1,379 @@
+import Foundation
+
+// iCloud Key-Value sync coordinator for small aggregates and reading stats.
+// Mirrors selected UserDefaults keys to NSUbiquitousKeyValueStore and merges incoming changes.
+// Add iCloud capability with "Key-Value storage" enabled for this target.
+@MainActor
+final class iCloudSyncCoordinator {
+    static let shared = iCloudSyncCoordinator()
+
+    private let kvs = NSUbiquitousKeyValueStore.default
+    private let defaults = UserDefaults.standard
+
+    // One-time bootstrap flag so we push existing local values to KVS on first run after adding sync.
+    private let bootstrapFlagKey = "kvsBootstrapComplete_v1"
+
+    private init() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleKVSExternalChange(_:)),
+            name: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
+            object: kvs
+        )
+        kvs.synchronize()
+
+        // Perform one-time bootstrap
+        if !defaults.bool(forKey: bootstrapFlagKey) {
+            pushAllLocalToKVS()
+            defaults.set(true, forKey: bootstrapFlagKey)
+            kvs.synchronize()
+        }
+
+        // Optionally, periodically re-push critical aggregates at launch
+        // to reduce drift if a device missed notifications.
+        pushAllLocalToKVS()
+    }
+
+    // MARK: - Public API
+
+    func start() {
+        // Intentionally empty; initializer wires everything.
+        // Call iCloudSyncCoordinator.shared.start() once at app launch.
+    }
+
+    // Call after local writes if you want to eagerly push a specific key.
+    func pushKey(_ key: String) {
+        // Only push keys we know how to merge.
+        guard allKnownKeys.contains(key) else { return }
+        mirrorLocalKeyToKVS(key)
+        kvs.synchronize()
+    }
+
+    // MARK: - Key sets
+
+    // BibleStatsStore keys
+    private var stats_keyTotals: String { BibleStatsStore.Defaults.keyTotals }
+    private var stats_keyDailyTotals: String { BibleStatsStore.Defaults.keyDailyTotals }
+    private var stats_keyDailyTotalsByBook: String { BibleStatsStore.Defaults.keyDailyTotalsByBook }
+    private var stats_keyVisitedChapters: String { BibleStatsStore.Defaults.keyVisitedChapters }
+    private var stats_keyLastRead: String { BibleStatsStore.Defaults.keyLastRead }
+    private var stats_keySeenVersesByChapter: String { BibleStatsStore.Defaults.keySeenVersesByChapter }
+    private var stats_keyChapterCompletionDates: String { BibleStatsStore.Defaults.keyChapterCompletionDates }
+
+    // Game keys: Hangman
+    private let hangmanKeys: [String] = {
+        let diffs = ["easy", "medium", "hard"]
+        var keys: [String] = []
+        for d in diffs {
+            keys.append("hangmanAllTimeCorrect_\(d)")
+            keys.append("hangmanAllTimeAnswered_\(d)")
+            keys.append("hangmanAllTimeBestStreak_\(d)")
+        }
+        return keys
+    }()
+
+    // Game keys: Beat the Clock
+    private let beatClockKeys: [String] = {
+        let diffs = ["easy", "medium", "hard"]
+        var keys: [String] = []
+        for d in diffs {
+            keys.append("beatclockAllTimeCorrect_\(d)")
+            keys.append("beatclockAllTimeAnswered_\(d)")
+            keys.append("beatclockAllTimeBestStreak_\(d)")
+        }
+        return keys
+    }()
+
+    // Game keys: Reference Match
+    private let refMatchKeys: [String] = {
+        let diffs = ["easy", "medium", "hard"]
+        var keys: [String] = []
+        for d in diffs {
+            keys.append("refmatchAllTimeCorrect_\(d)")
+            keys.append("refmatchAllTimeAnswered_\(d)")
+            keys.append("refmatchAllTimeBestStreak_\(d)")
+        }
+        return keys
+    }()
+
+    // Game keys: Quiz (@AppStorage uses easy/normal/hard)
+    private let quizKeys: [String] = {
+        let diffs = ["easy", "normal", "hard"]
+        var keys: [String] = []
+        for d in diffs {
+            keys.append("quizAllTimeCorrect_\(d)")
+            keys.append("quizAllTimeAnswered_\(d)")
+            keys.append("quizAllTimeBestStreak_\(d)")
+        }
+        return keys
+    }()
+
+    // TODO: BookOrder keys — add once confirmed.
+    private let bookOrderKeys: [String] = [
+        // e.g. "bookorderAllTimeCorrect_easy", "bookorderAllTimeAnswered_easy", "bookorderAllTimeBestStreak_easy"
+    ]
+
+    private var bibleStatsKeys: [String] {
+        [
+            stats_keyTotals,
+            stats_keyDailyTotals,
+            stats_keyDailyTotalsByBook,
+            stats_keyVisitedChapters,
+            stats_keyLastRead,
+            stats_keySeenVersesByChapter,
+            stats_keyChapterCompletionDates
+        ]
+    }
+
+    private var allKnownKeys: Set<String> {
+        Set(bibleStatsKeys + hangmanKeys + beatClockKeys + refMatchKeys + quizKeys + bookOrderKeys)
+    }
+
+    // MARK: - Bootstrap
+
+    private func pushAllLocalToKVS() {
+        for key in allKnownKeys {
+            mirrorLocalKeyToKVS(key)
+        }
+        kvs.synchronize()
+    }
+
+    // MARK: - KVS change handling
+
+    @objc
+    private func handleKVSExternalChange(_ note: Notification) {
+        guard let userInfo = note.userInfo else { return }
+
+        // Reason is available but not currently used:
+        if let reasonRaw = userInfo[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int {
+            // Compare against documented integer constants; keep for potential future logic.
+            switch reasonRaw {
+            case NSUbiquitousKeyValueStoreServerChange,
+                 NSUbiquitousKeyValueStoreInitialSyncChange,
+                 NSUbiquitousKeyValueStoreQuotaViolationChange,
+                 NSUbiquitousKeyValueStoreAccountChange:
+                break
+            default:
+                break
+            }
+        }
+
+        let changedKeys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String] ?? []
+        let keysToProcess = changedKeys.filter { allKnownKeys.contains($0) }
+
+        guard !keysToProcess.isEmpty else { return }
+
+        for key in keysToProcess {
+            mergeIncomingKVSValue(forKey: key)
+        }
+
+        // Notify UI that stats may have changed (StatsView can refresh)
+        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+    }
+
+    // MARK: - Mirroring local -> KVS
+
+    private func mirrorLocalKeyToKVS(_ key: String) {
+        // We store JSON blobs for complex values, and Ints directly for counters.
+        if isGameCounterKey(key) {
+            let v = defaults.integer(forKey: key)
+            kvs.set(v, forKey: key)
+            return
+        }
+
+        if bibleStatsKeys.contains(key) {
+            // Read raw Data stored by BibleStatsStore (JSON-encoded)
+            if let data = defaults.data(forKey: key) {
+                kvs.set(data, forKey: key)
+            } else {
+                // Clear if absent
+                kvs.removeObject(forKey: key)
+            }
+            return
+        }
+
+        // Unknown keys are ignored
+    }
+
+    // MARK: - Merging KVS -> local
+
+    private func mergeIncomingKVSValue(forKey key: String) {
+        if isGameCounterKey(key) {
+            let remote = kvs.longLong(forKey: key)
+            let local = defaults.integer(forKey: key)
+            let merged: Int
+            if key.contains("BestStreak") {
+                merged = max(local, Int(remote))
+            } else {
+                // Correct/Answered: sum contributions from devices
+                merged = safeSum(local, Int(remote))
+            }
+            defaults.set(merged, forKey: key)
+            return
+        }
+
+        if bibleStatsKeys.contains(key) {
+            guard let remoteData = kvs.object(forKey: key) as? Data else {
+                return
+            }
+            let localData = defaults.data(forKey: key)
+
+            switch key {
+            case stats_keyTotals:
+                typealias Map = [String: Int]
+                let merged = mergeIntMapSum(localData: localData, remoteData: remoteData, type: Map.self)
+                if let data = try? JSONEncoder().encode(merged) {
+                    defaults.set(data, forKey: key)
+                }
+
+            case stats_keyDailyTotals:
+                typealias Map = [String: Int]
+                let merged = mergeIntMapSum(localData: localData, remoteData: remoteData, type: Map.self)
+                if let data = try? JSONEncoder().encode(merged) {
+                    defaults.set(data, forKey: key)
+                }
+
+            case stats_keyDailyTotalsByBook:
+                typealias Map = [String: [String: Int]]
+                let merged = mergeNestedIntMapSum(localData: localData, remoteData: remoteData, type: Map.self)
+                if let data = try? JSONEncoder().encode(merged) {
+                    defaults.set(data, forKey: key)
+                }
+
+            case stats_keyVisitedChapters:
+                typealias Arr = [String]
+                let mergedSet = mergeStringSet(localData: localData, remoteData: remoteData, type: Arr.self)
+                if let data = try? JSONEncoder().encode(Array(mergedSet)) {
+                    defaults.set(data, forKey: key)
+                }
+
+            case stats_keySeenVersesByChapter:
+                typealias Map = [String: [Int]]
+                let merged = mergeSeenVerses(localData: localData, remoteData: remoteData, type: Map.self)
+                if let data = try? JSONEncoder().encode(merged) {
+                    defaults.set(data, forKey: key)
+                }
+
+            case stats_keyChapterCompletionDates:
+                typealias Map = [String: Date]
+                let merged = mergeDateMap(localData: localData, remoteData: remoteData, type: Map.self, strategy: .earliest)
+                if let data = try? JSONEncoder().encode(merged) {
+                    defaults.set(data, forKey: key)
+                }
+
+            case stats_keyLastRead:
+                typealias Entry = BibleStatsStore.LastRead
+                let merged = mergeLastRead(localData: localData, remoteData: remoteData, type: Entry.self)
+                if let data = try? JSONEncoder().encode(merged) {
+                    defaults.set(data, forKey: key)
+                }
+
+            default:
+                break
+            }
+            return
+        }
+    }
+
+    // MARK: - Merge helpers
+
+    private func isGameCounterKey(_ key: String) -> Bool {
+        hangmanKeys.contains(key) ||
+        beatClockKeys.contains(key) ||
+        refMatchKeys.contains(key) ||
+        quizKeys.contains(key) ||
+        bookOrderKeys.contains(key)
+    }
+
+    private func safeSum(_ a: Int, _ b: Int) -> Int {
+        // Avoid overflow (unlikely here) — clamp to Int.max if needed
+        let (sum, overflow) = a.addingReportingOverflow(b)
+        return overflow ? Int.max : sum
+    }
+
+    private func decode<T: Decodable>(_ data: Data?, as type: T.Type) -> T? {
+        guard let d = data else { return nil }
+        return try? JSONDecoder().decode(T.self, from: d)
+    }
+
+    private func mergeIntMapSum(localData: Data?, remoteData: Data, type: [String: Int].Type) -> [String: Int] {
+        let local = decode(localData, as: type) ?? [:]
+        let remote = decode(remoteData, as: type) ?? [:]
+        var merged = local
+        for (k, v) in remote {
+            merged[k, default: 0] = safeSum(merged[k, default: 0], max(0, v))
+        }
+        return merged
+    }
+
+    private func mergeNestedIntMapSum(localData: Data?, remoteData: Data, type: [String: [String: Int]].Type) -> [String: [String: Int]] {
+        let local = decode(localData, as: type) ?? [:]
+        let remote = decode(remoteData, as: type) ?? [:]
+        var merged = local
+        for (date, perBookRemote) in remote {
+            var perBook = merged[date] ?? [:]
+            for (book, sec) in perBookRemote {
+                perBook[book, default: 0] = safeSum(perBook[book, default: 0], max(0, sec))
+            }
+            merged[date] = perBook
+        }
+        return merged
+    }
+
+    private func mergeStringSet(localData: Data?, remoteData: Data, type: [String].Type) -> Set<String> {
+        let localArr = decode(localData, as: type) ?? []
+        let remoteArr = decode(remoteData, as: type) ?? []
+        return Set(localArr).union(remoteArr)
+    }
+
+    private func mergeSeenVerses(localData: Data?, remoteData: Data, type: [String: [Int]].Type) -> [String: [Int]] {
+        let local = decode(localData, as: type) ?? [:]
+        let remote = decode(remoteData, as: type) ?? [:]
+        var merged: [String: [Int]] = local
+        for (chapterKey, remoteVerses) in remote {
+            let localSet = Set(local[chapterKey] ?? [])
+            let remoteSet = Set(remoteVerses)
+            let union = localSet.union(remoteSet)
+            merged[chapterKey] = Array(union).sorted()
+        }
+        return merged
+    }
+
+    private enum DateMergeStrategy { case earliest, latest }
+
+    private func mergeDateMap(localData: Data?, remoteData: Data, type: [String: Date].Type, strategy: DateMergeStrategy) -> [String: Date] {
+        let local = decode(localData, as: type) ?? [:]
+        let remote = decode(remoteData, as: type) ?? [:]
+        var merged = local
+        for (k, rDate) in remote {
+            if let lDate = merged[k] {
+                switch strategy {
+                case .earliest: merged[k] = min(lDate, rDate)
+                case .latest: merged[k] = max(lDate, rDate)
+                }
+            } else {
+                merged[k] = rDate
+            }
+        }
+        return merged
+    }
+
+    private func mergeLastRead(localData: Data?, remoteData: Data, type: BibleStatsStore.LastRead.Type) -> BibleStatsStore.LastRead? {
+        let local = decode(localData, as: type)
+        let remote = decode(remoteData, as: type)
+        switch (local, remote) {
+        case (nil, nil): return nil
+        case (let a?, nil): return a
+        case (nil, let b?): return b
+        case (let a?, let b?):
+            return (a.date >= b.date) ? a : b
+        }
+    }
+}
+
+// MARK: - Notifications
+
+extension Notification.Name {
+    // Posted when KVS merges BibleStats-related keys; UI can refresh.
+    static let bibleStatsExternallyUpdated = Notification.Name("bibleStatsExternallyUpdated")
+}

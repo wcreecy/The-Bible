@@ -147,6 +147,9 @@ struct ContentView: View {
         )
         .fontDesign(selectedTab == 7 ? .default : (preferredFontDesign ?? .default))
         .onAppear {
+            // Start iCloud Key-Value sync coordinator globally (ensures cross-device merges are observed)
+            iCloudSyncCoordinator.shared.start()
+
             // One-time cleanup of deprecated keys
             if !didCleanupAppTimeKeys {
                 UserDefaults.standard.removeObject(forKey: "appTotalActiveSeconds")

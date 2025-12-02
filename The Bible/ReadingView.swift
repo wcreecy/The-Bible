@@ -5,7 +5,8 @@ import WidgetKit
 
 struct ReadingView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var progressList: [ReadingProgress]
+    // Always keep newest progress first so `progressList.first` is canonical
+    @Query(sort: \ReadingProgress.updatedAt, order: .reverse) private var progressList: [ReadingProgress]
     @Query private var favorites: [Favorite]
     @EnvironmentObject private var journalComposer: JournalComposer
 
@@ -110,6 +111,9 @@ struct ReadingView: View {
                     // Starting at verse 1: allow initial visible verses to be marked immediately
                     hasCompletedInitialAppear = true
                 }
+
+                // One-time cleanup: if multiple ReadingProgress rows exist, keep the newest and delete the rest
+                dedupeReadingProgress()
             }
             .onDisappear {
                 // Stop and flush reading-time tracking
@@ -287,6 +291,9 @@ struct ReadingView: View {
                     } else {
                         hasCompletedInitialAppear = true
                     }
+
+                    // Persist progress on chapter change (verse 1 of the new chapter)
+                    saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: 1)
                 }
                 .onAppear {
                     DispatchQueue.main.async {
@@ -422,17 +429,34 @@ struct ReadingView: View {
 
     // MARK: - Progress (SwiftData)
     private func saveProgress(bookName: String, chapter: Int, verse: Int) {
-        // Keep a single ReadingProgress record (replace or update)
+        // Keep a single ReadingProgress record and bump updatedAt so the latest wins across devices.
         if let existing = progressList.first {
             existing.bookName = bookName
             existing.chapterNumber = chapter
             existing.verseNumber = verse
+            existing.updatedAt = Date()
             try? modelContext.save()
         } else {
             let p = ReadingProgress()
+            p.singletonKey = "global" // ensure uniqueness across devices (advisory)
+            p.bookName = bookName
+            p.chapterNumber = chapter
+            p.verseNumber = verse
+            p.updatedAt = Date()
             modelContext.insert(p)
             try? modelContext.save()
         }
+    }
+
+    // Remove any older duplicate ReadingProgress rows; keep only the newest
+    private func dedupeReadingProgress() {
+        guard progressList.count > 1 else { return }
+        // progressList is already sorted newest first by the @Query
+        let toDelete = progressList.dropFirst()
+        for p in toDelete {
+            modelContext.delete(p)
+        }
+        try? modelContext.save()
     }
 
     // MARK: - Navigation across chapters/books (canonical order)
@@ -451,6 +475,8 @@ struct ReadingView: View {
             currentChapterIndex += 1
             currentVerse = 1
             topVisibleVerseID = rowID(for: 1)
+            // Persist progress for the new chapter start
+            saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: 1)
             return
         }
         // Move to first chapter of next book if available
@@ -464,6 +490,7 @@ struct ReadingView: View {
         currentVerse = 1
         topVisibleVerseID = rowID(for: 1)
         ReadingTimeTracker.shared.changeBook(to: currentBook.name, chapter: currentChapter.number)
+        saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: 1)
     }
 
     @MainActor
@@ -473,6 +500,7 @@ struct ReadingView: View {
             currentChapterIndex -= 1
             currentVerse = 1
             topVisibleVerseID = rowID(for: 1)
+            saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: 1)
             return
         }
         // Move to last chapter of previous book if available
@@ -486,6 +514,7 @@ struct ReadingView: View {
         currentVerse = 1
         topVisibleVerseID = rowID(for: 1)
         ReadingTimeTracker.shared.changeBook(to: currentBook.name, chapter: currentChapter.number)
+        saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: 1)
     }
 
     // MARK: - IDs

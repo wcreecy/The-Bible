@@ -63,6 +63,10 @@ struct VersesChecklistView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             refreshSeen()
         }
+        // Refresh when stats merge from iCloud on another device
+        .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
+            refreshSeen()
+        }
     }
 
     private func loadChapter() {

@@ -24,10 +24,10 @@ public struct VerseRef: Codable, Hashable, Sendable {
 
 @Model
 final class JournalEntry {
-    // Core
-    var id: UUID = UUID()
-    var createdAt: Date = Date()
-    var updatedAt: Date = Date()
+    // Core (optionals for CloudKit schema)
+    var id: UUID?
+    var createdAt: Date?
+    var updatedAt: Date?
     var title: String = ""
     var body: String = ""
     
@@ -57,5 +57,9 @@ final class JournalEntry {
         }
     }
 
-    init() {}
+    init() {
+        self.id = UUID()
+        self.createdAt = Date()
+        self.updatedAt = Date()
+    }
 }

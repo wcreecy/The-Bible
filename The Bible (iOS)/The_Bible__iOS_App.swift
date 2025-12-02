@@ -111,6 +111,10 @@ struct The_Bible__iOS_App: App {
                 .task {
                     // Prepare CloudKit on launch (check account status, fetch user record, etc.)
                     await cloudKitManager.prepare()
+
+                    // Start iCloud KVS coordinator after CloudKit prep.
+                    // This mirrors UserDefaults keys to iCloud and merges incoming changes.
+                    iCloudSyncCoordinator.shared.start()
                 }
                 .onChange(of: scenePhase) { _, newPhase in
                     switch newPhase {
