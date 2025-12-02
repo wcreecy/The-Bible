@@ -8,6 +8,8 @@ struct SettingsView: View {
     @EnvironmentObject private var cloudKitManager: CloudKitManager
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Favorite.createdAt, order: .reverse) private var favorites: [Favorite]
+    // Count Journal entries for status
+    @Query private var journalEntries: [JournalEntry]
 
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
     @AppStorage("fontSizePreference") private var fontSizePreferenceRaw: String = FontSizePreference.system.rawValue
@@ -73,6 +75,9 @@ struct SettingsView: View {
 
     @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
     @State private var hiddenSet: Set<HomeCardID> = []
+
+    // Track if SwiftData store is CloudKit-backed (set at app startup)
+    @AppStorage("swiftdataCloudKitEnabled") private var swiftdataCloudKitEnabled: Bool = false
 
     private func loadHomeLayout() {
         if let data = homeCardOrderRaw.data(using: .utf8),
@@ -172,6 +177,21 @@ struct SettingsView: View {
         }
     }
 
+    // KVS helpers
+    private var kvsAvailable: Bool {
+        iCloudSyncCoordinator.shared.kvsAvailable
+    }
+    private var kvsStatusText: String {
+        kvsAvailable ? "On" : "Unavailable"
+    }
+    private func formatDateTime(_ date: Date?) -> String {
+        guard let date else { return "—" }
+        let df = DateFormatter()
+        df.dateStyle = .short
+        df.timeStyle = .short
+        return df.string(from: date)
+    }
+
     var body: some View {
         Form {
             // Reordered sections: move iCloud below, above Game Data
@@ -230,6 +250,143 @@ struct SettingsView: View {
                 }
                 .disabled(isRefreshingCloudStatus)
                 .accessibilityIdentifier("icloudRefreshButton")
+
+                // MARK: Sync Status (per area)
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("Sync Status", systemImage: "arrow.2.circlepath")
+                        .font(.headline)
+                        .padding(.top, 6)
+
+                    // SwiftData + CloudKit areas
+                    LabeledContent {
+                        VStack(alignment: .trailing) {
+                            Text(swiftdataCloudKitEnabled ? "CloudKit (SwiftData): On" : "CloudKit (SwiftData): Off (Local only)")
+                                .foregroundStyle(swiftdataCloudKitEnabled ? .green : .orange)
+                            Text("Local: \(favorites.count)")
+                                .foregroundStyle(.secondary)
+                                .font(.footnote)
+                        }
+                    } label: {
+                        Text("Favorites")
+                    }
+                    .accessibilityIdentifier("syncStatusFavorites")
+
+                    LabeledContent {
+                        VStack(alignment: .trailing) {
+                            Text(swiftdataCloudKitEnabled ? "CloudKit (SwiftData): On" : "CloudKit (SwiftData): Off (Local only)")
+                                .foregroundStyle(swiftdataCloudKitEnabled ? .green : .orange)
+                            Text("Local: \(journalEntries.count)")
+                                .foregroundStyle(.secondary)
+                                .font(.footnote)
+                        }
+                    } label: {
+                        Text("Journal")
+                    }
+                    .accessibilityIdentifier("syncStatusJournal")
+
+                    LabeledContent {
+                        Text(swiftdataCloudKitEnabled ? "CloudKit (SwiftData): On" : "CloudKit (SwiftData): Off (Local only)")
+                            .foregroundStyle(swiftdataCloudKitEnabled ? .green : .orange)
+                    } label: {
+                        Text("Reading Progress")
+                    }
+                    .accessibilityIdentifier("syncStatusReadingProgress")
+
+                    // Continue Reading card = Reading Progress
+                    LabeledContent {
+                        Text(swiftdataCloudKitEnabled ? "CloudKit (SwiftData): On" : "CloudKit (SwiftData): Off (Local only)")
+                            .foregroundStyle(swiftdataCloudKitEnabled ? .green : .orange)
+                    } label: {
+                        Text("Continue Reading")
+                    }
+                    .accessibilityIdentifier("syncStatusContinueReading")
+
+                    // iCloud KVS areas
+                    LabeledContent {
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text("iCloud KVS: \(kvsStatusText)")
+                                .foregroundStyle(kvsAvailable ? .green : .orange)
+                            HStack {
+                                Text("Last push:")
+                                Text(formatDateTime(iCloudSyncCoordinator.shared.lastPushDate))
+                            }
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            HStack {
+                                Text("Last merge:")
+                                Text(formatDateTime(iCloudSyncCoordinator.shared.lastMergeDate))
+                            }
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                        }
+                    } label: {
+                        Text("Average Session Length")
+                    }
+                    .accessibilityIdentifier("syncStatusAvgSessionLength")
+
+                    LabeledContent {
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text("iCloud KVS: \(kvsStatusText)")
+                                .foregroundStyle(kvsAvailable ? .green : .orange)
+                            HStack {
+                                Text("Last push:")
+                                Text(formatDateTime(iCloudSyncCoordinator.shared.lastPushDate))
+                            }
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            HStack {
+                                Text("Last merge:")
+                                Text(formatDateTime(iCloudSyncCoordinator.shared.lastMergeDate))
+                            }
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                        }
+                    } label: {
+                        Text("Total Bible Time")
+                    }
+                    .accessibilityIdentifier("syncStatusTotalBibleTime")
+
+                    LabeledContent {
+                        Text("iCloud KVS: \(kvsStatusText)")
+                            .foregroundStyle(kvsAvailable ? .green : .orange)
+                    } label: {
+                        Text("Bible Quiz")
+                    }
+                    .accessibilityIdentifier("syncStatusGameQuiz")
+
+                    LabeledContent {
+                        Text("iCloud KVS: \(kvsStatusText)")
+                            .foregroundStyle(kvsAvailable ? .green : .orange)
+                    } label: {
+                        Text("Hangman")
+                    }
+                    .accessibilityIdentifier("syncStatusGameHangman")
+
+                    LabeledContent {
+                        Text("iCloud KVS: \(kvsStatusText)")
+                            .foregroundStyle(kvsAvailable ? .green : .orange)
+                    } label: {
+                        Text("Beat the Clock")
+                    }
+                    .accessibilityIdentifier("syncStatusGameBeatClock")
+
+                    LabeledContent {
+                        Text("iCloud KVS: \(kvsStatusText)")
+                            .foregroundStyle(kvsAvailable ? .green : .orange)
+                    } label: {
+                        Text("Reference Match")
+                    }
+                    .accessibilityIdentifier("syncStatusGameReferenceMatch")
+
+                    LabeledContent {
+                        Text("iCloud KVS: \(kvsStatusText)")
+                            .foregroundStyle(kvsAvailable ? .green : .orange)
+                    } label: {
+                        Text("Book Order")
+                    }
+                    .accessibilityIdentifier("syncStatusGameBookOrder")
+                }
+                .padding(.top, 4)
             } header: {
                 Text("iCloud")
             } footer: {
@@ -240,6 +397,8 @@ struct SettingsView: View {
                 • No Account: Not signed in to iCloud on this device.
                 • Restricted: iCloud is restricted by system settings or parental controls.
                 • Unavailable: The status couldn’t be determined right now.
+
+                Note: Some app data syncs via CloudKit (SwiftData) and some via iCloud Key‑Value Store (KVS). KVS shows last push/merge times when activity occurs.
                 """)
                 .font(.footnote)
                 .foregroundStyle(.secondary)

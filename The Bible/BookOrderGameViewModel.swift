@@ -239,6 +239,12 @@ final class BookOrderGameViewModel: ObservableObject {
         if streak > allTimeBestStreak {
             allTimeBestStreak = streak
         }
+
+        // NEW: push to iCloud KVS immediately
+        let kvs = iCloudSyncCoordinator.shared
+        kvs.pushKey(keyAllTimeCorrect)
+        kvs.pushKey(keyAllTimeAnswered)
+        kvs.pushKey(keyAllTimeBestStreak)
     }
     
     func move(from source: IndexSet, to destination: Int) {

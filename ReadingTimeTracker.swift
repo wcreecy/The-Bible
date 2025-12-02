@@ -21,31 +21,28 @@ final class ReadingTimeTracker: ObservableObject {
     // Debounce writes to at most once every 15 seconds
     private let persistInterval: TimeInterval = 15
 
+    // Pause state
+    private(set) var isPaused: Bool = false
+
     // MARK: - Public API
 
     func start(bookName: String, chapter: Int? = nil) {
         // If already tracking same book and chapter (if provided), do nothing
-        if currentBook == bookName, ticker != nil {
+        if currentBook == bookName, ticker != nil || isPaused {
             if let chapter { currentChapterNumber = chapter }
             return
         }
 
         // If switching from another book, flush first and close previous session
-        if let prevBook = currentBook {
+        if let _ = currentBook {
             closeCurrentSessionAndFlush(finalize: false) // close session segment
-            // Start fresh after closing previous
-            currentBook = bookName
-            currentChapterNumber = chapter
-            sessionStart = Date()
-            accumulatedInSession = 0
-            startTickerIfNeeded()
-            return
         }
 
         currentBook = bookName
         currentChapterNumber = chapter
         sessionStart = Date()
         accumulatedInSession = 0
+        isPaused = false
         startTickerIfNeeded()
     }
 
@@ -61,6 +58,7 @@ final class ReadingTimeTracker: ObservableObject {
         currentChapterNumber = chapter
         sessionStart = Date()
         accumulatedInSession = 0
+        isPaused = false
         startTickerIfNeeded()
     }
 
@@ -82,12 +80,32 @@ final class ReadingTimeTracker: ObservableObject {
         self.currentChapterNumber = nil
         self.sessionStart = nil
         self.accumulatedInSession = 0
+        self.isPaused = false
+    }
+
+    // MARK: - Pause / Resume
+
+    func pause() {
+        guard !isPaused else { return }
+        // Close the ongoing segment and flush softly so elapsed so far is recorded
+        closeCurrentSessionAndFlush(finalize: false)
+        stopTicker()
+        isPaused = true
+    }
+
+    func resume() {
+        guard isPaused, currentBook != nil else { return }
+        // Start a new segment from now
+        sessionStart = Date()
+        accumulatedInSession = 0
+        isPaused = false
+        startTickerIfNeeded()
     }
 
     // MARK: - Ticker
 
     private func startTickerIfNeeded() {
-        guard ticker == nil else { return }
+        guard ticker == nil, !isPaused else { return }
         ticker = Timer.publish(every: 1, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
@@ -101,7 +119,7 @@ final class ReadingTimeTracker: ObservableObject {
     }
 
     private func tick() {
-        guard sessionStart != nil, currentBook != nil else { return }
+        guard sessionStart != nil, currentBook != nil, !isPaused else { return }
         accumulatedInSession += 1
 
         // Persist at most every persistInterval seconds

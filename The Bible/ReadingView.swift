@@ -10,6 +10,9 @@ struct ReadingView: View {
     @Query private var favorites: [Favorite]
     @EnvironmentObject private var journalComposer: JournalComposer
 
+    // Scene phase for pausing when app is not active
+    @Environment(\.scenePhase) private var scenePhase
+
     let book: Book
     let chapter: Chapter
     let startVerse: Int
@@ -49,6 +52,14 @@ struct ReadingView: View {
     @State private var hasCompletedInitialAppear: Bool = false
     @State private var suppressInitialMarking: Bool = false
 
+    // Inactivity tracking (300s)
+    private let inactivitySeconds: TimeInterval = 300
+    @State private var lastActivityAt: Date = Date()
+    @State private var inactivityTask: Task<Void, Never>?
+
+    // Track current tab (listen to ContentView .switchToTab notifications)
+    @State private var currentTabIndex: Int = 1 // assume Bible by default
+
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
         self.chapter = chapter
@@ -79,6 +90,9 @@ struct ReadingView: View {
 
                 // Also keep current location up to date
                 ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
+
+                // Start inactivity monitoring as active
+                markActivityAndScheduleInactivity()
 
                 // Load canonical book order once
                 Task { @MainActor in
@@ -116,8 +130,35 @@ struct ReadingView: View {
                 dedupeReadingProgress()
             }
             .onDisappear {
+                // Stop inactivity monitoring
+                cancelInactivityTask()
                 // Stop and flush reading-time tracking
                 ReadingTimeTracker.shared.stopAndFlush()
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                // Pause when app not active; resume when active
+                if newPhase == .active {
+                    ReadingTimeTracker.shared.resume()
+                    markActivityAndScheduleInactivity()
+                } else {
+                    ReadingTimeTracker.shared.pause()
+                    cancelInactivityTask()
+                }
+            }
+            // Listen for tab switches broadcast by ContentView
+            .onReceive(NotificationCenter.default.publisher(for: .init("switchToTab"))) { note in
+                if let tab = note.userInfo?["tab"] as? Int {
+                    currentTabIndex = tab
+                    if tab == 1 {
+                        // Bible tab visible -> resume and rearm inactivity
+                        ReadingTimeTracker.shared.resume()
+                        markActivityAndScheduleInactivity()
+                    } else {
+                        // Other tab -> pause
+                        ReadingTimeTracker.shared.pause()
+                        cancelInactivityTask()
+                    }
+                }
             }
             .appToast(isPresented: $showFavoriteToast, symbol: favoriteToastSymbol, text: favoriteToastText, tint: favoriteToastTint)
     }
@@ -170,6 +211,7 @@ struct ReadingView: View {
                             let generator = UIImpactFeedbackGenerator(style: .heavy)
                             generator.impactOccurred()
                             menuVerse = verse.number
+                            markActivityAndScheduleInactivity()
                         }
                         .contentShape(Rectangle())
                         .onTapGesture {
@@ -191,6 +233,7 @@ struct ReadingView: View {
                                     if pinVerse == verse.number { pinVerse = nil }
                                 }
                             }
+                            markActivityAndScheduleInactivity()
                         }
 
                         if menuVerse == verse.number {
@@ -203,6 +246,7 @@ struct ReadingView: View {
                                     favoriteToastText = "Copied to Clipboard"
                                     withAnimation(.spring()) { showFavoriteToast = true }
                                     withAnimation(.easeInOut) { menuVerse = nil }
+                                    markActivityAndScheduleInactivity()
                                 }) { Image(systemName: "doc.on.doc") }
                                     .foregroundStyle(.blue)
 
@@ -218,6 +262,7 @@ struct ReadingView: View {
                                     let refText = "\(bookName) \(chapterNum):\(verseNum)"
                                     openJournalForReference(text: refText)
                                     withAnimation(.easeInOut) { menuVerse = nil }
+                                    markActivityAndScheduleInactivity()
                                 }) {
                                     Image(systemName: "book.closed")
                                 }
@@ -240,6 +285,7 @@ struct ReadingView: View {
                                     }
                                     withAnimation(.spring()) { showFavoriteToast = true }
                                     withAnimation(.easeInOut) { menuVerse = nil }
+                                    markActivityAndScheduleInactivity()
                                 }) {
                                     Image(systemName: isPinned(verse.number) ? "pin.fill" : "pin")
                                 }
@@ -248,6 +294,7 @@ struct ReadingView: View {
                                 Button(action: {
                                     toggleFavorite(for: verse)
                                     withAnimation(.easeInOut) { menuVerse = nil }
+                                    markActivityAndScheduleInactivity()
                                 }) { Image(systemName: isFavorited(verse) ? "heart.fill" : "heart") }
                                     .foregroundStyle(.red)
                             }
@@ -294,6 +341,7 @@ struct ReadingView: View {
 
                     // Persist progress on chapter change (verse 1 of the new chapter)
                     saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: 1)
+                    markActivityAndScheduleInactivity()
                 }
                 .onAppear {
                     DispatchQueue.main.async {
@@ -308,16 +356,23 @@ struct ReadingView: View {
                         }
                         highlightOnAppear = false
                     }
+                    markActivityAndScheduleInactivity()
                 }
                 .onTapGesture {
                     if menuVerse != nil { menuVerse = nil }
+                    markActivityAndScheduleInactivity()
                 }
             }
             .scrollPosition(id: $topVisibleVerseID, anchor: .top)
         }
         .contentShape(Rectangle())
         .simultaneousGesture(
-            DragGesture(minimumDistance: 20, coordinateSpace: .local)
+            DragGesture(minimumDistance: 5, coordinateSpace: .local)
+                .onChanged { _ in
+                    // Any drag counts as activity; resume if paused
+                    ReadingTimeTracker.shared.resume()
+                    markActivityAndScheduleInactivity()
+                }
                 .onEnded { value in
                     let horizontal = value.translation.width
                     let vertical = value.translation.height
@@ -328,6 +383,8 @@ struct ReadingView: View {
                             Task { await previousChapter() }
                         }
                     }
+                    // Drag ended is also activity
+                    markActivityAndScheduleInactivity()
                 }
         )
     }
@@ -341,6 +398,37 @@ struct ReadingView: View {
                 topVisibleVerseID = rowID(for: currentVerse)
             }
         }
+    }
+
+    // MARK: - Inactivity handling
+
+    private func markActivityAndScheduleInactivity() {
+        lastActivityAt = Date()
+        // If user interacts and tracker is paused (due to inactivity or tab/scene), resume
+        ReadingTimeTracker.shared.resume()
+        scheduleInactivityTimer()
+    }
+
+    private func scheduleInactivityTimer() {
+        cancelInactivityTask()
+        let deadline = lastActivityAt.addingTimeInterval(inactivitySeconds)
+        inactivityTask = Task { [deadline] in
+            let now = Date()
+            let delay = deadline.timeIntervalSince(now)
+            if delay > 0 {
+                try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            }
+            if Task.isCancelled { return }
+            // If no newer activity, pause
+            if Date() >= deadline {
+                ReadingTimeTracker.shared.pause()
+            }
+        }
+    }
+
+    private func cancelInactivityTask() {
+        inactivityTask?.cancel()
+        inactivityTask = nil
     }
 
     // Load the canonical ordered list of book names (from BibleData, which preserves order from kjv.json)
@@ -580,6 +668,7 @@ struct ReadingView: View {
             favoriteToastText = "Added to Favorites"
         }
         withAnimation(.spring()) { showFavoriteToast = true }
+        markActivityAndScheduleInactivity()
     }
 
     // MARK: - Share text helper
@@ -587,3 +676,4 @@ struct ReadingView: View {
         "“\(text)” — \(bookName) \(chapter):\(verse)"
     }
 }
+

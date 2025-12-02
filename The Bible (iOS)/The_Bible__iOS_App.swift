@@ -58,10 +58,13 @@ struct The_Bible__iOS_App: App {
                 configurations: cloudKitConfig
             )
             print("✅ CloudKit-backed ModelContainer initialized successfully.")
+            // Flag for Settings "Sync Status" UI
+            UserDefaults.standard.set(true, forKey: "swiftdataCloudKitEnabled")
             return container
         } catch {
             logError("Failed to create CloudKit-backed ModelContainer", error: error)
             print("⚠️ Falling back to local on-disk SwiftData store.")
+            UserDefaults.standard.set(false, forKey: "swiftdataCloudKitEnabled")
         }
 
         // Fallback: default local store (on-disk)
@@ -75,10 +78,12 @@ struct The_Bible__iOS_App: App {
                     JournalEntry.self
             )
             print("ℹ️ Using local on-disk SwiftData store (no CloudKit). Data will NOT sync between devices.")
+            UserDefaults.standard.set(false, forKey: "swiftdataCloudKitEnabled")
             return localContainer
         } catch {
             logError("Failed to create local on-disk ModelContainer", error: error)
             print("⚠️ Attempting in-memory fallback.")
+            UserDefaults.standard.set(false, forKey: "swiftdataCloudKitEnabled")
         }
 
         // Final fallback: in-memory so the app can still run
@@ -94,6 +99,7 @@ struct The_Bible__iOS_App: App {
                 configurations: memoryConfig
             )
             print("ℹ️ Using in-memory SwiftData store. Data will NOT persist or sync.")
+            UserDefaults.standard.set(false, forKey: "swiftdataCloudKitEnabled")
             return container
         } catch {
             fatalError("Could not create any ModelContainer (including in-memory): \(error)")
@@ -101,7 +107,6 @@ struct The_Bible__iOS_App: App {
     }()
 
     // MARK: - CloudKit
-    // Replace with your real iCloud container identifier (e.g., "iCloud.com.yourcompany.thebible")
     @StateObject private var cloudKitManager = CloudKitManager(containerIdentifier: "iCloud.creecy.bible")
 
     var body: some Scene {
@@ -109,31 +114,26 @@ struct The_Bible__iOS_App: App {
             ContentView()
                 .environmentObject(cloudKitManager)
                 .task {
-                    // Prepare CloudKit on launch (check account status, fetch user record, etc.)
                     await cloudKitManager.prepare()
-
-                    // Start iCloud KVS coordinator after CloudKit prep.
-                    // This mirrors UserDefaults keys to iCloud and merges incoming changes.
                     iCloudSyncCoordinator.shared.start()
                 }
                 .onChange(of: scenePhase) { _, newPhase in
                     switch newPhase {
                     case .active:
-                        // Clear badges and delivered notifications on foreground
                         UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
                         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
-
-                        // Optionally refresh CloudKit-backed data
                         Task { await cloudKitManager.refresh() }
                     case .background:
-                        // Optionally flush any pending CloudKit operations
-                        Task { await cloudKitManager.flushPending() }
+                        Task {
+                            await cloudKitManager.flushPending()
+                            // NEW: opportunistically push all known KVS keys on background
+                            iCloudSyncCoordinator.shared.pushAllNow()
+                        }
                     default:
                         break
                     }
                 }
                 .onAppear {
-                    // Extra entitlement diagnostics at runtime
                     CloudKitManager.logEntitlementHints(containerIdentifier: "iCloud.creecy.bible")
                 }
         }
@@ -176,7 +176,6 @@ final class CloudKitManager: ObservableObject {
         self.sharedDB = container.sharedCloudDatabase
         self.publicDB = container.publicCloudDatabase
 
-        // Log container/environment hints
         let bundleID = Bundle.main.bundleIdentifier ?? "<unknown bundle id>"
         let isTestFlight = Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
         let envHint = isTestFlight ? "Production (TestFlight/App Store)" : "Development (Debug/AdHoc)"
@@ -189,17 +188,13 @@ final class CloudKitManager: ObservableObject {
     func prepare() async {
         await refreshAccountStatus()
         await fetchUserRecordIDIfAvailable()
-        // If you need user discoverability, request it here:
-        // do { let _ = try await container.requestApplicationPermission(.userDiscoverability) } catch { }
     }
 
     func refresh() async {
-        // Place to pull fresh data from CloudKit as needed (queries, fetch-changes, etc.)
         print("ℹ️ CloudKitManager.refresh() called")
     }
 
     func flushPending() async {
-        // If you maintain a local queue of modifications, push them here when going to background.
         print("ℹ️ CloudKitManager.flushPending() called")
     }
 
@@ -241,15 +236,13 @@ final class CloudKitManager: ObservableObject {
         }
     }
 
-    // Expose DBs for targeted usage elsewhere if needed
     func privateDatabase() -> CKDatabase { privateDB }
     func sharedDatabase() -> CKDatabase { sharedDB }
     func publicDatabase() -> CKDatabase { publicDB }
 
-    // MARK: - Extra entitlement/receipt hints
     static func logEntitlementHints(containerIdentifier: String) {
         let hasSandboxReceipt = Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
-        let bundleID = Bundle.main.bundleIdentifier ?? "<unknown bundle id>"
+        let bundleID = Bundle.main.bundleIdentifier ?? "<unknown>"
         let appIDPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String ?? "<unknown>"
         let cfg = ProcessInfo.processInfo.environment["CONFIGURATION"] ?? "<unknown>"
         print("🔎 Entitlement hints:")

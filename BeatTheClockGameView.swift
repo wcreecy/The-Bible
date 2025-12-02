@@ -39,9 +39,9 @@ struct BeatTheClockGameView: View {
     // Search
     @State private var searchText: String = ""
     @State private var selectionLocked: Bool = false // prevent multiple submissions
+    @FocusState private var searchFieldFocused: Bool
     @State private var acceptableBooks: Set<String> = []
     @State private var showAnswers: Bool = false
-    @FocusState private var searchFieldFocused: Bool
     @State private var pulse: Bool = false
 
     private var allBookNames: [String] { BibleData.books.map { $0.name } }
@@ -468,6 +468,12 @@ struct BeatTheClockGameView: View {
         defaults.set(newCorrect, forKey: correctKey)
         defaults.set(newAnswered, forKey: answeredKey)
         defaults.set(newBest, forKey: bestKey)
+
+        // NEW: push to iCloud KVS immediately
+        let kvs = iCloudSyncCoordinator.shared
+        kvs.pushKey(correctKey)
+        kvs.pushKey(answeredKey)
+        kvs.pushKey(bestKey)
     }
 }
 

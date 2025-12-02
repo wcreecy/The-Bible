@@ -13,6 +13,23 @@ final class iCloudSyncCoordinator {
     // One-time bootstrap flag so we push existing local values to KVS on first run after adding sync.
     private let bootstrapFlagKey = "kvsBootstrapComplete_v1"
 
+    // Track last push/merge timestamps (persisted so Settings can show across launches)
+    private let lastPushKey = "kvsLastPushDate"
+    private let lastMergeKey = "kvsLastMergeDate"
+    private(set) var lastPushDate: Date? {
+        get { defaults.object(forKey: lastPushKey) as? Date }
+        set { defaults.set(newValue, forKey: lastPushKey) }
+    }
+    private(set) var lastMergeDate: Date? {
+        get { defaults.object(forKey: lastMergeKey) as? Date }
+        set { defaults.set(newValue, forKey: lastMergeKey) }
+    }
+
+    // Simple availability hint for KVS (user signed into iCloud)
+    var kvsAvailable: Bool {
+        FileManager.default.ubiquityIdentityToken != nil
+    }
+
     private init() {
         NotificationCenter.default.addObserver(
             self,
@@ -27,11 +44,12 @@ final class iCloudSyncCoordinator {
             pushAllLocalToKVS()
             defaults.set(true, forKey: bootstrapFlagKey)
             kvs.synchronize()
+            lastPushDate = Date()
         }
 
-        // Optionally, periodically re-push critical aggregates at launch
-        // to reduce drift if a device missed notifications.
+        // Opportunistic push at launch to reduce drift
         pushAllLocalToKVS()
+        lastPushDate = Date()
     }
 
     // MARK: - Public API
@@ -47,6 +65,13 @@ final class iCloudSyncCoordinator {
         guard allKnownKeys.contains(key) else { return }
         mirrorLocalKeyToKVS(key)
         kvs.synchronize()
+        lastPushDate = Date()
+    }
+
+    // Optional: push all known keys now (useful on app background)
+    func pushAllNow() {
+        pushAllLocalToKVS()
+        lastPushDate = Date()
     }
 
     // MARK: - Key sets
@@ -111,9 +136,11 @@ final class iCloudSyncCoordinator {
         return keys
     }()
 
-    // TODO: BookOrder keys — add once confirmed.
+    // Game keys: Book Order — enabled for KVS sync
     private let bookOrderKeys: [String] = [
-        // e.g. "bookorderAllTimeCorrect_easy", "bookorderAllTimeAnswered_easy", "bookorderAllTimeBestStreak_easy"
+        "bookorderAllTimeCorrect",
+        "bookorderAllTimeAnswered",
+        "bookorderAllTimeBestStreak"
     ]
 
     private var bibleStatsKeys: [String] {
@@ -156,7 +183,10 @@ final class iCloudSyncCoordinator {
 
         guard !keysToProcess.isEmpty else { return }
 
+        var mergedGameKey = false
+
         for key in keysToProcess {
+            if isGameCounterKey(key) { mergedGameKey = true }
             mergeIncomingKVSValue(forKey: key)
         }
 
@@ -165,6 +195,14 @@ final class iCloudSyncCoordinator {
 
         // Notify UI that stats may have changed (StatsView can refresh)
         NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+
+        // If any game keys merged, notify interested views (scoreboard) as well
+        if mergedGameKey {
+            NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        }
+
+        // Record last merge time
+        lastMergeDate = Date()
     }
 
     // MARK: - Mirroring local -> KVS
@@ -396,6 +434,9 @@ final class iCloudSyncCoordinator {
 extension Notification.Name {
     // Posted when KVS merges BibleStats-related keys; UI can refresh.
     static let bibleStatsExternallyUpdated = Notification.Name("bibleStatsExternallyUpdated")
+
+    // Posted when game counters merge via KVS; UI scoreboards can refresh.
+    static let gameStatsExternallyUpdated = Notification.Name("gameStatsExternallyUpdated")
 
     // Posted when chapter read/verse progress changes anywhere in the app.
     static let chapterProgressChanged = Notification.Name("chapterProgressChanged")
