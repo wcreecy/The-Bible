@@ -21,9 +21,14 @@ struct StatsView: View {
     @State private var sortMode: SortMode = .canonical
     @State private var timeScope: TimeScope = .allTime
 
-    // Core stats
-    @State private var perBookTotals: [String: Int] = [:]
-    @State private var totalSeconds: Int = 0
+    // Core stats (all-time fallback aggregates from KVS)
+    @State private var perBookTotals: [String: Int] = [:]   // legacy/fallback all-time (KVS)
+    @State private var totalSeconds: Int = 0                // sum of perBookTotals
+
+    // Session-derived scoped datasets
+    @State private var perBookAllTimeSessionTotals: [String: Int] = [:] // sessions within retention
+    @State private var perBookMonthTotals: [String: Int] = [:]           // sessions in current month
+    @State private var perBookLast7Totals: [String: Int] = [:]           // sessions in last 7 days
 
     // Derived
     @State private var todaySeconds: Int = 0
@@ -74,8 +79,6 @@ struct StatsView: View {
     @State private var monthTotalSeconds: Int = 0
     @State private var monthChaptersCompleted: Int = 0
     @State private var monthTop3Books: [(book: String, seconds: Int)] = []
-    @State private var perBookMonthTotals: [String: Int] = [:]
-    @State private var perBookLast7Totals: [String: Int] = [:]
 
     // Expand/collapse for existing sections
     @State private var showBookProgressDetails: Bool = false
@@ -198,6 +201,10 @@ struct StatsView: View {
         // Refresh stats when chapter progress changes
         .onReceive(NotificationCenter.default.publisher(for: .chapterProgressChanged)) { _ in
             refreshAll()
+        }
+        // Keep OT/NT in sync with the selected scope
+        .onChange(of: timeScope) { _ in
+            recomputeOTNTFromScope()
         }
     }
 
@@ -669,7 +676,8 @@ struct StatsView: View {
             GroupBox {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
-                        Text("Total Bible Reading Time")
+                        // Make the scope explicit in the title for clarity
+                        Text("Total Bible Reading Time — \(timeScope.rawValue)")
                             .font(.headline)
                         Spacer()
                         Text(BibleStatsStore.shared.format(scopedTotalSeconds))
@@ -773,6 +781,9 @@ struct StatsView: View {
     private func refreshAll() {
         refreshTotals()
         refreshChartsAndMonth()
+        refreshSessionScopedPerBook() // build session-derived per-book maps
+        // Ensure OT/NT matches the current scope after all scoped datasets are refreshed
+        recomputeOTNTFromScope()
     }
 
     private func refreshTotals() {
@@ -781,13 +792,57 @@ struct StatsView: View {
         perBookTotals = totals
         totalSeconds = totals.values.reduce(0, +)
 
-        todaySeconds = store.totalForLast(days: 1)
-        thisWeekSeconds = store.totalForLast(days: 7)
-        lastWeekSeconds = store.totalForLast(days: 14) - thisWeekSeconds
+        // Use sessions (GMT) for Today and This Week, to match charts
+        var gmtCal = Calendar.current
+        gmtCal.timeZone = .gmt
 
-        let split = store.splitOTNT(totals: totals)
-        otSeconds = split.ot
-        ntSeconds = split.nt
+        // Today: sum durations for sessions that ended today (GMT)
+        do {
+            let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: gmtCal)
+            let todayKey = BibleStatsStore.isoDateString(Date(), calendar: gmtCal)
+            todaySeconds = sessions7.reduce(0) { acc, s in
+                let key = BibleStatsStore.isoDateString(s.end, calendar: gmtCal)
+                let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
+                return acc + (key == todayKey ? dur : 0)
+            }
+        }
+
+        // This week: last 7 days total from sessions (GMT)
+        do {
+            let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: gmtCal)
+            thisWeekSeconds = sessions7.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
+        }
+
+        // Last week: the 7-day window ending 7 days ago (days -8...-14 from today), via sessions (GMT)
+        do {
+            // Compute cutoff windows with GMT start-of-day boundaries
+            let startOfToday = gmtCal.startOfDay(for: Date())
+            guard
+                let thisWeekStart = gmtCal.date(byAdding: .day, value: -6, to: startOfToday),
+                let lastWeekEnd = gmtCal.date(byAdding: .day, value: -7, to: startOfToday),
+                let lastWeekStart = gmtCal.date(byAdding: .day, value: -13, to: startOfToday)
+            else {
+                lastWeekSeconds = 0
+                return
+            }
+
+            // Fetch enough sessions to cover last 14 days
+            let sessions14 = ReadingSessionsStore.shared.sessions(inLastDays: 14, now: Date(), calendar: gmtCal)
+            // Sum sessions whose end falls within last week's window [lastWeekStart, lastWeekEnd)
+            lastWeekSeconds = sessions14.reduce(0) { acc, s in
+                if s.end >= lastWeekStart && s.end < lastWeekEnd {
+                    return acc + Int(max(0, s.end.timeIntervalSince(s.start)))
+                } else {
+                    return acc
+                }
+            }
+
+            // Note: thisWeekStart is not used directly above, but kept for clarity on window boundaries
+            _ = thisWeekStart
+        }
+
+        // Removed: setting otSeconds/ntSeconds here using all-time totals
+        // We'll compute OT/NT from the currently scoped per-book totals instead.
 
         computeCompletionMetricsVerseComplete()
         computePerBookProgressVerseComplete()
@@ -801,6 +856,7 @@ struct StatsView: View {
             lastReadTimeText = "—"
         }
 
+        // Keep genre totals using all-time per-book fallback (display-only)
         perGenreTotals = computeGenreTotals(from: totals)
         if let g = selectedGenre {
             genreDetailRows = rowsForGenre(g, totals: totals)
@@ -861,22 +917,37 @@ struct StatsView: View {
         avgSessionSeconds = averageSessionLength(sessions: sessions30)
         hourBuckets = bucketsByHour(sessions: sessions30)
 
-        // This Month section
+        // This Month section (session-derived total already)
         let now = Date()
         monthTotalSeconds = BibleStatsStore.shared.totalForMonth(containing: now)
         let comps = BibleStatsStore.shared.chapterCompletions(inMonth: now)
         monthChaptersCompleted = comps.count
-        let monthByBook = BibleStatsStore.shared.totalsByBookForMonth(containing: now)
-        let sortedTop = monthByBook.sorted { lhs, rhs in
+
+        // Top 3 books for month will be recomputed from session-derived perBookMonthTotals in refreshSessionScopedPerBook()
+        // monthTop3Books is set there.
+    }
+
+    // Build session-derived per-book maps for last7, thisMonth, and all-time (within retention).
+    private func refreshSessionScopedPerBook() {
+        // Last 7 days
+        let last7Sessions = ReadingSessionsStore.shared.sessions(inLastDays: 7)
+        perBookLast7Totals = groupSessionsByBook(last7Sessions)
+
+        // This month
+        let now = Date()
+        let monthSessions = ReadingSessionsStore.shared.sessions(inMonthContaining: now)
+        perBookMonthTotals = groupSessionsByBook(monthSessions)
+
+        // All time (within retention window of ReadingSessionsStore)
+        let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 180)
+        perBookAllTimeSessionTotals = groupSessionsByBook(allSessions)
+
+        // Update Top 3 books for month from the session-derived map
+        let sortedTop = perBookMonthTotals.sorted { lhs, rhs in
             if lhs.value == rhs.value { return lhs.key < rhs.key }
             return lhs.value > rhs.value
         }
-        // Map (key,value) -> (book,seconds)
         monthTop3Books = Array(sortedTop.prefix(3)).map { (book: $0.key, seconds: $0.value) }
-
-        // Scoped per-book datasets
-        perBookMonthTotals = monthByBook
-        perBookLast7Totals = BibleStatsStore.shared.totalsByBookForLast(days: 7)
     }
 
     private func averageSessionLength(sessions: [ReadingSessionsStore.Session]) -> Int {
@@ -893,6 +964,17 @@ struct StatsView: View {
             buckets[h, default: 0] += dur
         }
         return (0...23).map { (hour: $0, seconds: buckets[$0, default: 0]) }
+    }
+
+    // Group sessions by book name and sum durations
+    private func groupSessionsByBook(_ sessions: [ReadingSessionsStore.Session]) -> [String: Int] {
+        var map: [String: Int] = [:]
+        for s in sessions {
+            let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
+            guard dur > 0 else { continue }
+            map[s.book, default: 0] += dur
+        }
+        return map
     }
 
     private func computeCompletionMetricsVerseComplete() {
@@ -970,7 +1052,8 @@ struct StatsView: View {
     private var scopedPerBookTotals: [String: Int] {
         switch timeScope {
         case .allTime:
-            return perBookTotals
+            // Prefer session-derived if any; else fallback to legacy all-time totals
+            return perBookAllTimeSessionTotals.isEmpty ? perBookTotals : perBookAllTimeSessionTotals
         case .thisMonth:
             return perBookMonthTotals
         case .last7:
@@ -979,14 +1062,8 @@ struct StatsView: View {
     }
 
     private var scopedTotalSeconds: Int {
-        switch timeScope {
-        case .allTime:
-            return totalSeconds
-        case .thisMonth:
-            return monthTotalSeconds
-        case .last7:
-            return thisWeekSeconds
-        }
+        // Sum from the same per-book map used elsewhere so all cards align
+        scopedPerBookTotals.values.reduce(0, +)
     }
 
     private var scopedRows: [(book: String, seconds: Int)] {
@@ -1149,6 +1226,14 @@ struct StatsView: View {
         formatter.dateStyle = .none
         return formatter.string(from: date)
     }
+
+    // MARK: - OT/NT recompute
+
+    private func recomputeOTNTFromScope() {
+        let split = BibleStatsStore.shared.splitOTNT(totals: scopedPerBookTotals)
+        otSeconds = split.ot
+        ntSeconds = split.nt
+    }
 }
 
 // MARK: - Small Progress Ring
@@ -1278,4 +1363,3 @@ private struct BookChaptersDetailView: View {
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 }
-
