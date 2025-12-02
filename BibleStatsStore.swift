@@ -70,6 +70,10 @@ final class BibleStatsStore {
     func saveTotals(_ totals: [String: Int]) {
         cacheTotals = totals
         saveJSON(totals, key: Defaults.keyTotals)
+        // Optional: push totals to iCloud KVS for faster propagation
+        iCloudSyncCoordinator.shared.pushKey(Defaults.keyTotals)
+        // Notify listeners that aggregates changed
+        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 
     // MARK: - Daily totals (overall)
@@ -84,6 +88,9 @@ final class BibleStatsStore {
     func saveDailyTotals(_ dict: [String: Int]) {
         cacheDailyTotals = dict
         saveJSON(dict, key: Defaults.keyDailyTotals)
+        // Push and notify
+        iCloudSyncCoordinator.shared.pushKey(Defaults.keyDailyTotals)
+        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 
     func addToToday(seconds: Int, calendar: Calendar = .current) {
@@ -125,6 +132,9 @@ final class BibleStatsStore {
     private func saveDailyTotalsByBook(_ dict: [String: [String: Int]]) {
         cacheDailyTotalsByBook = dict
         saveJSON(dict, key: Defaults.keyDailyTotalsByBook)
+        // Push and notify
+        iCloudSyncCoordinator.shared.pushKey(Defaults.keyDailyTotalsByBook)
+        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 
     func addToToday(bookName: String, seconds: Int, calendar: Calendar = .current) {
@@ -208,7 +218,10 @@ final class BibleStatsStore {
     func saveVisitedChapters(_ set: Set<String>) {
         cacheVisitedChapters = set
         saveJSON(Array(set), key: Defaults.keyVisitedChapters)
+        // Push and notify
+        iCloudSyncCoordinator.shared.pushKey(Defaults.keyVisitedChapters)
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
+        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 
     func markVisited(bookName: String, chapterNumber: Int) {
@@ -233,6 +246,9 @@ final class BibleStatsStore {
     private func saveChapterCompletionDates(_ dict: [String: Date]) {
         cacheChapterCompletionDates = dict
         saveJSON(dict, key: Defaults.keyChapterCompletionDates)
+        // Push and notify
+        iCloudSyncCoordinator.shared.pushKey(Defaults.keyChapterCompletionDates)
+        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 
     func recordChapterCompletionDate(bookName: String, chapterNumber: Int, date: Date = Date()) {
@@ -273,6 +289,9 @@ final class BibleStatsStore {
         let entry = LastRead(bookName: bookName, chapterNumber: chapterNumber, date: date)
         cacheLastRead = entry
         saveJSON(entry, key: Defaults.keyLastRead)
+        // Push and notify
+        iCloudSyncCoordinator.shared.pushKey(Defaults.keyLastRead)
+        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 
     // MARK: - OT/NT classification
@@ -328,6 +347,12 @@ final class BibleStatsStore {
         // Convert sets to sorted arrays for storage
         let toStore: [String: [Int]] = map.mapValues { Array($0).sorted() }
         saveJSON(toStore, key: Defaults.keySeenVersesByChapter)
+        // Push seen verses to iCloud KVS immediately for faster cross-device updates
+        iCloudSyncCoordinator.shared.pushKey(Defaults.keySeenVersesByChapter)
+        // Notify any open views locally to refresh immediately
+        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        // Also let chapter-level listeners update (e.g., StatsView book/chapter cards)
+        NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 
     func loadSeenVerses(bookName: String, chapter: Int) -> Set<Int> {
