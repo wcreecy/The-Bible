@@ -203,7 +203,7 @@ struct StatsView: View {
             refreshAll()
         }
         // Keep OT/NT in sync with the selected scope
-        .onChange(of: timeScope) { _ in
+        .onChange(of: timeScope) {
             recomputeOTNTFromScope()
         }
     }

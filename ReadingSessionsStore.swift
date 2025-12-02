@@ -7,9 +7,18 @@ final class ReadingSessionsStore {
     static let shared = ReadingSessionsStore()
     private init() {
         // Invalidate cache when external merges happen (iCloud KVS or other writers)
-        NotificationCenter.default.addObserver(forName: .bibleStatsExternallyUpdated, object: nil, queue: .main) { [weak self] _ in
-            self?.cacheAllSessions = nil
-        }
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleExternalUpdate),
+            name: .bibleStatsExternallyUpdated,
+            object: nil
+        )
+    }
+
+    @objc
+    private func handleExternalUpdate() {
+        // We are already on the main actor due to @MainActor type
+        cacheAllSessions = nil
     }
 
     struct Session: Codable, Equatable {

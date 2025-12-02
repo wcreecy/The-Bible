@@ -20,6 +20,7 @@ struct SettingsView: View {
     @AppStorage("quizDifficulty") private var quizDifficulty: String = "easy"
     @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
     @State private var showingResetQuizAlert: Bool = false
+    @State private var showingResetReadingAlert: Bool = false
 
     @AppStorage("votdRefresh1Hour") private var votdRefresh1Hour: Int = 6
     @AppStorage("votdRefresh1Minute") private var votdRefresh1Minute: Int = 0
@@ -194,7 +195,7 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            // Reordered sections: move iCloud below, above Game Data
+            // Reordered sections: move iCloud below, above Reset Data
             verseOfTheDaySection
             appearanceSection
             timerSection
@@ -202,7 +203,7 @@ struct SettingsView: View {
             liveActivitiesSection
             homeLayoutSection
 
-            // iCloud status indicator section (moved near bottom)
+            // iCloud status indicator section (kept; Sync Status removed)
             Section {
                 HStack {
                     Label("CloudKit", systemImage: "icloud")
@@ -250,143 +251,6 @@ struct SettingsView: View {
                 }
                 .disabled(isRefreshingCloudStatus)
                 .accessibilityIdentifier("icloudRefreshButton")
-
-                // MARK: Sync Status (per area)
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("Sync Status", systemImage: "arrow.2.circlepath")
-                        .font(.headline)
-                        .padding(.top, 6)
-
-                    // SwiftData + CloudKit areas
-                    LabeledContent {
-                        VStack(alignment: .trailing) {
-                            Text(swiftdataCloudKitEnabled ? "CloudKit (SwiftData): On" : "CloudKit (SwiftData): Off (Local only)")
-                                .foregroundStyle(swiftdataCloudKitEnabled ? .green : .orange)
-                            Text("Local: \(favorites.count)")
-                                .foregroundStyle(.secondary)
-                                .font(.footnote)
-                        }
-                    } label: {
-                        Text("Favorites")
-                    }
-                    .accessibilityIdentifier("syncStatusFavorites")
-
-                    LabeledContent {
-                        VStack(alignment: .trailing) {
-                            Text(swiftdataCloudKitEnabled ? "CloudKit (SwiftData): On" : "CloudKit (SwiftData): Off (Local only)")
-                                .foregroundStyle(swiftdataCloudKitEnabled ? .green : .orange)
-                            Text("Local: \(journalEntries.count)")
-                                .foregroundStyle(.secondary)
-                                .font(.footnote)
-                        }
-                    } label: {
-                        Text("Journal")
-                    }
-                    .accessibilityIdentifier("syncStatusJournal")
-
-                    LabeledContent {
-                        Text(swiftdataCloudKitEnabled ? "CloudKit (SwiftData): On" : "CloudKit (SwiftData): Off (Local only)")
-                            .foregroundStyle(swiftdataCloudKitEnabled ? .green : .orange)
-                    } label: {
-                        Text("Reading Progress")
-                    }
-                    .accessibilityIdentifier("syncStatusReadingProgress")
-
-                    // Continue Reading card = Reading Progress
-                    LabeledContent {
-                        Text(swiftdataCloudKitEnabled ? "CloudKit (SwiftData): On" : "CloudKit (SwiftData): Off (Local only)")
-                            .foregroundStyle(swiftdataCloudKitEnabled ? .green : .orange)
-                    } label: {
-                        Text("Continue Reading")
-                    }
-                    .accessibilityIdentifier("syncStatusContinueReading")
-
-                    // iCloud KVS areas
-                    LabeledContent {
-                        VStack(alignment: .trailing, spacing: 2) {
-                            Text("iCloud KVS: \(kvsStatusText)")
-                                .foregroundStyle(kvsAvailable ? .green : .orange)
-                            HStack {
-                                Text("Last push:")
-                                Text(formatDateTime(iCloudSyncCoordinator.shared.lastPushDate))
-                            }
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            HStack {
-                                Text("Last merge:")
-                                Text(formatDateTime(iCloudSyncCoordinator.shared.lastMergeDate))
-                            }
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                        }
-                    } label: {
-                        Text("Average Session Length")
-                    }
-                    .accessibilityIdentifier("syncStatusAvgSessionLength")
-
-                    LabeledContent {
-                        VStack(alignment: .trailing, spacing: 2) {
-                            Text("iCloud KVS: \(kvsStatusText)")
-                                .foregroundStyle(kvsAvailable ? .green : .orange)
-                            HStack {
-                                Text("Last push:")
-                                Text(formatDateTime(iCloudSyncCoordinator.shared.lastPushDate))
-                            }
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            HStack {
-                                Text("Last merge:")
-                                Text(formatDateTime(iCloudSyncCoordinator.shared.lastMergeDate))
-                            }
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                        }
-                    } label: {
-                        Text("Total Bible Time")
-                    }
-                    .accessibilityIdentifier("syncStatusTotalBibleTime")
-
-                    LabeledContent {
-                        Text("iCloud KVS: \(kvsStatusText)")
-                            .foregroundStyle(kvsAvailable ? .green : .orange)
-                    } label: {
-                        Text("Bible Quiz")
-                    }
-                    .accessibilityIdentifier("syncStatusGameQuiz")
-
-                    LabeledContent {
-                        Text("iCloud KVS: \(kvsStatusText)")
-                            .foregroundStyle(kvsAvailable ? .green : .orange)
-                    } label: {
-                        Text("Hangman")
-                    }
-                    .accessibilityIdentifier("syncStatusGameHangman")
-
-                    LabeledContent {
-                        Text("iCloud KVS: \(kvsStatusText)")
-                            .foregroundStyle(kvsAvailable ? .green : .orange)
-                    } label: {
-                        Text("Beat the Clock")
-                    }
-                    .accessibilityIdentifier("syncStatusGameBeatClock")
-
-                    LabeledContent {
-                        Text("iCloud KVS: \(kvsStatusText)")
-                            .foregroundStyle(kvsAvailable ? .green : .orange)
-                    } label: {
-                        Text("Reference Match")
-                    }
-                    .accessibilityIdentifier("syncStatusGameReferenceMatch")
-
-                    LabeledContent {
-                        Text("iCloud KVS: \(kvsStatusText)")
-                            .foregroundStyle(kvsAvailable ? .green : .orange)
-                    } label: {
-                        Text("Book Order")
-                    }
-                    .accessibilityIdentifier("syncStatusGameBookOrder")
-                }
-                .padding(.top, 4)
             } header: {
                 Text("iCloud")
             } footer: {
@@ -397,8 +261,6 @@ struct SettingsView: View {
                 • No Account: Not signed in to iCloud on this device.
                 • Restricted: iCloud is restricted by system settings or parental controls.
                 • Unavailable: The status couldn’t be determined right now.
-
-                Note: Some app data syncs via CloudKit (SwiftData) and some via iCloud Key‑Value Store (KVS). KVS shows last push/merge times when activity occurs.
                 """)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
@@ -720,7 +582,7 @@ struct SettingsView: View {
     }
 
     private var gameDataSection: some View {
-        Section(header: Text("Game Data"), footer: Text("Reset your all-time game statistics. This action cannot be undone.").font(.footnote).foregroundStyle(.secondary)) {
+        Section(header: Text("Reset Data"), footer: Text("Reset your all-time game statistics or reading stats. These actions cannot be undone.").font(.footnote).foregroundStyle(.secondary)) {
             Button(role: .destructive) {
                 showingResetQuizAlert = true
             } label: {
@@ -756,9 +618,43 @@ struct SettingsView: View {
                     UserDefaults.standard.set(0, forKey: "bookorderAllTimeCorrect")
                     UserDefaults.standard.set(0, forKey: "bookorderAllTimeAnswered")
                     UserDefaults.standard.set(0, forKey: "bookorderAllTimeBestStreak")
+                    // Push game keys to iCloud KVS
+                    iCloudSyncCoordinator.shared.pushAllNow()
                 }
             } message: {
                 Text("Your all-time game scores will be reset. Would you like to continue?")
+            }
+
+            // New: Reset all reading stats button
+            Button(role: .destructive) {
+                showingResetReadingAlert = true
+            } label: {
+                Label("Reset All Reading Stats", systemImage: "trash")
+            }
+            .alert("Reset All Reading Stats?", isPresented: $showingResetReadingAlert) {
+                Button("Cancel", role: .cancel) {}
+                Button("Reset", role: .destructive) {
+                    let defaults = BibleStatsStore.Defaults.provider
+                    // Clear JSON-backed reading stats
+                    defaults.removeObject(forKey: BibleStatsStore.Defaults.keyTotals)
+                    defaults.removeObject(forKey: BibleStatsStore.Defaults.keyDailyTotals)
+                    defaults.removeObject(forKey: BibleStatsStore.Defaults.keyDailyTotalsByBook)
+                    defaults.removeObject(forKey: BibleStatsStore.Defaults.keyVisitedChapters)
+                    defaults.removeObject(forKey: BibleStatsStore.Defaults.keyLastRead)
+                    defaults.removeObject(forKey: BibleStatsStore.Defaults.keySeenVersesByChapter)
+                    defaults.removeObject(forKey: BibleStatsStore.Defaults.keyChapterCompletionDates)
+                    // Clear reading sessions
+                    defaults.removeObject(forKey: "readingSessions")
+
+                    // Reset in-memory caches
+                    BibleStatsStore.shared.resetCaches()
+                    // Notify listeners (StatsView, etc.)
+                    NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+                    // Push cleared keys to iCloud KVS
+                    iCloudSyncCoordinator.shared.pushAllNow()
+                }
+            } message: {
+                Text("All reading statistics, progress, and sessions will be removed. This cannot be undone. Do you want to continue?")
             }
         }
         .headerProminence(.increased)

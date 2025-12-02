@@ -11,6 +11,7 @@ import UIKit
 import UserNotifications
 internal import CloudKit
 import Combine
+import StoreKit
 
 @main
 struct The_Bible__iOS_App: App {
@@ -22,8 +23,8 @@ struct The_Bible__iOS_App: App {
         let bundleID = Bundle.main.bundleIdentifier ?? "<unknown bundle id>"
         let teamID = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String ?? "<unknown team id>"
         let buildCfg = ProcessInfo.processInfo.environment["CONFIGURATION"] ?? "<unknown config>"
-        let isTestFlight = Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
-        let envHint = isTestFlight ? "Production (TestFlight/App Store)" : "Development (Debug/AdHoc)"
+        // Deprecated on iOS 18; moved to async StoreKit-based logger below.
+        let envHint = The_Bible__iOS_App.buildEnvHintFallback()
         print("🔎 SwiftData+CloudKit diagnostics:")
         print("   • Bundle ID: \(bundleID)")
         print("   • Team/AppIdentifierPrefix: \(teamID)")
@@ -116,6 +117,12 @@ struct The_Bible__iOS_App: App {
                 .task {
                     await cloudKitManager.prepare()
                     iCloudSyncCoordinator.shared.start()
+
+                    // Async, non-deprecated environment hint using StoreKit
+                    let hint = await The_Bible__iOS_App.computeStoreEnvironmentHint()
+                    if let hint {
+                        print("🔎 StoreKit environment hint: \(hint)")
+                    }
                 }
                 .onChange(of: scenePhase) { _, newPhase in
                     switch newPhase {
@@ -138,6 +145,38 @@ struct The_Bible__iOS_App: App {
                 }
         }
         .modelContainer(sharedModelContainer)
+    }
+}
+
+// MARK: - Store environment helpers (non-deprecated)
+extension The_Bible__iOS_App {
+    // Synchronous coarse fallback for early logging
+    static func buildEnvHintFallback() -> String {
+        #if DEBUG
+        return "Development (Debug/AdHoc)"
+        #else
+        return "Production (TestFlight/App Store)"
+        #endif
+    }
+
+    // Async, preferred detection using StoreKit on iOS 15+
+    static func computeStoreEnvironmentHint() async -> String? {
+        do {
+            // On iOS 15+, AppTransaction.shared returns VerificationResult<AppTransaction>
+            let result = try await AppTransaction.shared
+
+            switch result {
+            case .verified(_):
+                // Verified App Store transaction => Production/TestFlight
+                return "Production (TestFlight/App Store)"
+            case .unverified(_, _):
+                // Present but failed verification; treat as development or unknown
+                return "Development (Debug/AdHoc)"
+            }
+        } catch {
+            // If StoreKit fails, return a conservative hint
+            return buildEnvHintFallback()
+        }
     }
 }
 
@@ -177,8 +216,9 @@ final class CloudKitManager: ObservableObject {
         self.publicDB = container.publicCloudDatabase
 
         let bundleID = Bundle.main.bundleIdentifier ?? "<unknown bundle id>"
-        let isTestFlight = Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
-        let envHint = isTestFlight ? "Production (TestFlight/App Store)" : "Development (Debug/AdHoc)"
+        // Deprecated receipt URL removed; we log a coarse hint here and the precise one asynchronously.
+        let isDebug = (ProcessInfo.processInfo.environment["CONFIGURATION"] ?? "").lowercased().contains("debug")
+        let envHint = isDebug ? "Development (Debug/AdHoc)" : "Production (TestFlight/App Store)"
         print("🔎 CloudKit diagnostics:")
         print("   • Container: \(containerIdentifier)")
         print("   • Bundle ID: \(bundleID)")
@@ -210,6 +250,8 @@ final class CloudKitManager: ObservableObject {
                 accountState = .restricted
             case .couldNotDetermine:
                 fallthrough
+            case .temporarilyUnavailable:
+                accountState = .couldNotDetermine
             @unknown default:
                 accountState = .couldNotDetermine
             }
@@ -241,7 +283,7 @@ final class CloudKitManager: ObservableObject {
     func publicDatabase() -> CKDatabase { publicDB }
 
     static func logEntitlementHints(containerIdentifier: String) {
-        let hasSandboxReceipt = Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
+        // We no longer use appStoreReceiptURL here. Provide general build hints.
         let bundleID = Bundle.main.bundleIdentifier ?? "<unknown>"
         let appIDPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String ?? "<unknown>"
         let cfg = ProcessInfo.processInfo.environment["CONFIGURATION"] ?? "<unknown>"
@@ -249,7 +291,6 @@ final class CloudKitManager: ObservableObject {
         print("   • Bundle ID: \(bundleID)")
         print("   • AppIdentifierPrefix (TeamID.): \(appIDPrefix)")
         print("   • Build configuration: \(cfg)")
-        print("   • Receipt is sandbox? \(hasSandboxReceipt ? "YES (TestFlight/App Store Production env)" : "NO (likely Development env)")")
         print("   • Expect CloudKit container entitlement for: \(containerIdentifier)")
         print("   • Ensure iCloud capability with CloudKit is ON and container is checked for this target/configuration.")
     }

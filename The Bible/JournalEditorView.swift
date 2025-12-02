@@ -544,7 +544,7 @@ struct JournalEditorView: View {
             entry.updatedAt = Date()
             do {
                 try ctx.save()
-                NotificationCenter.default.post(name: JournalNotifications.entryUpdated, object: nil, userInfo: ["id": entry.id?.uuidString])
+                NotificationCenter.default.post(name: JournalNotifications.entryUpdated, object: nil, userInfo: ["id": entry.id?.uuidString ?? ""])
                 if manual {
                     withAnimation(.spring()) { showSavedToast = true }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
@@ -565,7 +565,7 @@ struct JournalEditorView: View {
         ctx.insert(entry)
         do {
             try ctx.save()
-            NotificationCenter.default.post(name: JournalNotifications.entryCreated, object: nil, userInfo: ["id": entry.id?.uuidString])
+            NotificationCenter.default.post(name: JournalNotifications.entryCreated, object: nil, userInfo: ["id": entry.id?.uuidString ?? ""])
             if manual {
                 withAnimation(.spring()) { showSavedToast = true }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {

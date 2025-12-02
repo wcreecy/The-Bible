@@ -388,8 +388,8 @@ struct ContentView: View {
         // Use Bible reading time (from Bible tab) only
         let todayReadingSeconds = BibleStatsStore.shared.totalForLast(days: 1)
         guard todayReadingSeconds >= goalSeconds else { return }
-        // Mark day as goal met (streak update)
-        StreakTracker.markGoalMet(on: Date())
+        // Deprecated marking removed; streaks are computed from totals.
+        // Left intentionally blank.
     }
 
     // MARK: - Helpers
