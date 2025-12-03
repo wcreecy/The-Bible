@@ -20,6 +20,7 @@ struct ContentView: View {
     @StateObject private var bibleCoordinator = NavigationCoordinator()
     // Favorites, Search, Settings don’t currently push via coordinator; no path binding needed.
 
+    // FIX: Instantiate the ObservableObject
     @StateObject private var journalComposer = JournalComposer()
     @State private var selectedTab: Int = 0
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
@@ -204,7 +205,12 @@ struct ContentView: View {
             get: { journalComposer.isPresented },
             set: { newVal in if !newVal { journalComposer.dismiss() } }
         )) {
-            JournalEditorView(verseRef: journalComposer.verseRef, initialBody: journalComposer.initialBody, showTagColors: journalComposer.showTagColors, editingEntry: journalComposer.editingEntry)
+            JournalEditorView(
+                verseRef: journalComposer.verseRef,
+                initialBody: journalComposer.initialBody,
+                showTagColors: journalComposer.showTagColors,
+                editingEntry: journalComposer.editingEntry
+            )
         }
         .onOpenURL { url in
             // Handle taps from widgets and other custom links:
@@ -228,6 +234,11 @@ struct ContentView: View {
             ])
         }
         .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { note in
+            // Avoid handling the relayed copy we post for iPad; let BibleSplitView consume that
+            if let relayed = note.userInfo?["relayed"] as? Bool, relayed {
+                return
+            }
+
             guard
                 let bookName = note.userInfo?["book"] as? String,
                 let chapterNum = note.userInfo?["chapter"] as? Int,
@@ -238,14 +249,11 @@ struct ContentView: View {
             selectedTab = 1
 
             if isPad {
-                // BibleSplitView listens for this notification and navigates.
-                // Re-post on the main queue after the tab switch to ensure the view is active.
+                // Re-post once with a "relayed" flag so ContentView ignores it, but BibleSplitView can handle it.
                 DispatchQueue.main.async {
-                    NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
-                        "book": bookName,
-                        "chapter": chapterNum,
-                        "verse": verseNum
-                    ])
+                    var user = note.userInfo ?? [:]
+                    user["relayed"] = true
+                    NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: user)
                 }
             } else {
                 // iPhone: push a Route.reader on the Bible NavigationStack

@@ -15,35 +15,101 @@ struct GamesCardView: View {
         UserDefaults.standard.integer(forKey: key)
     }
 
+    // MARK: - Safe aggregators with legacy fallback
+
+    private func sumWithFallback(prefix: String, parts: [String], legacyKey: String?) -> Int {
+        let values = parts.map { readInt("\(prefix)\($0)") }
+        let sum = values.reduce(0, +)
+        if sum > 0 { return sum }
+        // Fallback to legacy only if no per-difficulty data exists
+        if let legacy = legacyKey { return readInt(legacy) }
+        return 0
+    }
+
+    private func maxWithFallback(prefix: String, parts: [String], legacyKey: String?) -> Int {
+        let values = parts.map { readInt("\(prefix)\($0)") }
+        let maxVal = values.max() ?? 0
+        if maxVal > 0 { return maxVal }
+        if let legacy = legacyKey { return readInt(legacy) }
+        return 0
+    }
+
+    // MARK: - Per-game stats
+
     private var quizStat: GameStat {
-        let c = readInt("quizAllTimeCorrect_easy") + readInt("quizAllTimeCorrect_normal") + readInt("quizAllTimeCorrect_hard")
-        let a = readInt("quizAllTimeAnswered_easy") + readInt("quizAllTimeAnswered_normal") + readInt("quizAllTimeAnswered_hard")
-        let best = max(readInt("quizAllTimeBestStreak_easy"), readInt("quizAllTimeBestStreak_normal"), readInt("quizAllTimeBestStreak_hard"))
-        return .init(name: "Quiz", correct: c, answered: a, bestStreak: best)
+        // Quiz uses easy/normal/hard (keep existing keys)
+        let correct = readInt("quizAllTimeCorrect_easy")
+                 + readInt("quizAllTimeCorrect_normal")
+                 + readInt("quizAllTimeCorrect_hard")
+        let answered = readInt("quizAllTimeAnswered_easy")
+                  + readInt("quizAllTimeAnswered_normal")
+                  + readInt("quizAllTimeAnswered_hard")
+        let best = max(
+            readInt("quizAllTimeBestStreak_easy"),
+            readInt("quizAllTimeBestStreak_normal"),
+            readInt("quizAllTimeBestStreak_hard")
+        )
+        return .init(name: "Quiz", correct: correct, answered: answered, bestStreak: best)
     }
 
     private var hangmanStat: GameStat {
-        let c = readInt("hangmanAllTimeCorrect_easy") + readInt("hangmanAllTimeCorrect_medium") + readInt("hangmanAllTimeCorrect_hard") + readInt("hangmanAllTimeCorrect")
-        let a = readInt("hangmanAllTimeAnswered_easy") + readInt("hangmanAllTimeAnswered_medium") + readInt("hangmanAllTimeAnswered_hard") + readInt("hangmanAllTimeAnswered")
-        let best = max(readInt("hangmanAllTimeBestStreak_easy"), readInt("hangmanAllTimeBestStreak_medium"), readInt("hangmanAllTimeBestStreak_hard"), readInt("hangmanAllTimeBestStreak"))
-        return .init(name: "Hangman", correct: c, answered: a, bestStreak: best == 0 ? nil : best)
+        // Prefer per-difficulty (_easy/_medium/_hard); fallback to legacy unsuffixed only if all zero
+        let correct = sumWithFallback(
+            prefix: "hangmanAllTimeCorrect",
+            parts: ["_easy", "_medium", "_hard"],
+            legacyKey: "hangmanAllTimeCorrect"
+        )
+        let answered = sumWithFallback(
+            prefix: "hangmanAllTimeAnswered",
+            parts: ["_easy", "_medium", "_hard"],
+            legacyKey: "hangmanAllTimeAnswered"
+        )
+        let best = maxWithFallback(
+            prefix: "hangmanAllTimeBestStreak",
+            parts: ["_easy", "_medium", "_hard"],
+            legacyKey: "hangmanAllTimeBestStreak"
+        )
+        return .init(name: "Hangman", correct: correct, answered: answered, bestStreak: best == 0 ? nil : best)
     }
 
     private var refMatchStat: GameStat {
-        let c = readInt("refmatchAllTimeCorrect_easy") + readInt("refmatchAllTimeCorrect_medium") + readInt("refmatchAllTimeCorrect_hard") + readInt("refmatchAllTimeCorrect")
-        let a = readInt("refmatchAllTimeAnswered_easy") + readInt("refmatchAllTimeAnswered_medium") + readInt("refmatchAllTimeAnswered_hard") + readInt("refmatchAllTimeAnswered")
-        let best = max(readInt("refmatchAllTimeBestStreak_easy"), readInt("refmatchAllTimeBestStreak_medium"), readInt("refmatchAllTimeBestStreak_hard"), readInt("refmatchAllTimeBestStreak"))
-        return .init(name: "Verse Match", correct: c, answered: a, bestStreak: best == 0 ? nil : best)
+        // Prefer per-difficulty; fallback to legacy unsuffixed only if all zero
+        let correct = sumWithFallback(
+            prefix: "refmatchAllTimeCorrect",
+            parts: ["_easy", "_medium", "_hard"],
+            legacyKey: "refmatchAllTimeCorrect"
+        )
+        let answered = sumWithFallback(
+            prefix: "refmatchAllTimeAnswered",
+            parts: ["_easy", "_medium", "_hard"],
+            legacyKey: "refmatchAllTimeAnswered"
+        )
+        let best = maxWithFallback(
+            prefix: "refmatchAllTimeBestStreak",
+            parts: ["_easy", "_medium", "_hard"],
+            legacyKey: "refmatchAllTimeBestStreak"
+        )
+        return .init(name: "Verse Match", correct: correct, answered: answered, bestStreak: best == 0 ? nil : best)
     }
 
     private var beatClockStat: GameStat {
-        let c = readInt("beatclockAllTimeCorrect_easy") + readInt("beatclockAllTimeCorrect_medium") + readInt("beatclockAllTimeCorrect_hard")
-        let a = readInt("beatclockAllTimeAnswered_easy") + readInt("beatclockAllTimeAnswered_medium") + readInt("beatclockAllTimeAnswered_hard")
-        let best = max(readInt("beatclockAllTimeBestStreak_easy"), readInt("beatclockAllTimeBestStreak_medium"), readInt("beatclockAllTimeBestStreak_hard"))
-        return .init(name: "Beat the Clock", correct: c, answered: a, bestStreak: best)
+        // Beat the Clock uses per-difficulty only
+        let correct = readInt("beatclockAllTimeCorrect_easy")
+                 + readInt("beatclockAllTimeCorrect_medium")
+                 + readInt("beatclockAllTimeCorrect_hard")
+        let answered = readInt("beatclockAllTimeAnswered_easy")
+                  + readInt("beatclockAllTimeAnswered_medium")
+                  + readInt("beatclockAllTimeAnswered_hard")
+        let best = max(
+            readInt("beatclockAllTimeBestStreak_easy"),
+            readInt("beatclockAllTimeBestStreak_medium"),
+            readInt("beatclockAllTimeBestStreak_hard")
+        )
+        return .init(name: "Beat the Clock", correct: correct, answered: answered, bestStreak: best)
     }
 
     private var bookOrderStat: GameStat {
+        // Book Order uses unsuffixed keys
         let c = readInt("bookorderAllTimeCorrect")
         let a = readInt("bookorderAllTimeAnswered")
         let best = readInt("bookorderAllTimeBestStreak")

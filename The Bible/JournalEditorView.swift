@@ -532,14 +532,13 @@ struct JournalEditorView: View {
     // MARK: - Save
 
     private func save(manual: Bool) {
-        let tags = tagsText
-            .split(separator: ",")
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedBody = content.trimmingCharacters(in: .whitespacesAndNewlines)
+        let tags = parsedTags
 
         if let entry = editingEntry {
-            entry.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
-            entry.body = content.trimmingCharacters(in: .whitespacesAndNewlines)
+            entry.title = trimmedTitle
+            entry.body = trimmedBody
             entry.tags = tags
             entry.updatedAt = Date()
             do {
@@ -560,7 +559,12 @@ struct JournalEditorView: View {
             return
         }
 
+        // New entry: populate all fields from editor state
         let entry = JournalEntry()
+        entry.title = trimmedTitle
+        entry.body = trimmedBody
+        entry.tags = tags
+        entry.verseRef = verseRef
         entry.updatedAt = Date()
         ctx.insert(entry)
         do {

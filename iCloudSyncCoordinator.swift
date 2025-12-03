@@ -231,15 +231,14 @@ final class iCloudSyncCoordinator {
 
     private func mergeIncomingKVSValue(forKey key: String) {
         if isGameCounterKey(key) {
+            // IMPORTANT: Game counters are absolute totals on each device.
+            // Using sum here causes double-count inflation as devices bounce the same totals.
+            // Merge strategy: max for all game counters (Correct, Answered, BestStreak).
             let remote = kvs.longLong(forKey: key)
             let local = defaults.integer(forKey: key)
-            let merged: Int
-            if key.contains("BestStreak") {
-                merged = max(local, Int(remote))
-            } else {
-                // Correct/Answered: sum contributions from devices
-                merged = safeSum(local, Int(remote))
-            }
+            let sanitizedRemote = max(0, Int(remote))
+            let sanitizedLocal = max(0, local)
+            let merged = max(sanitizedLocal, sanitizedRemote)
             defaults.set(merged, forKey: key)
             return
         }

@@ -47,10 +47,47 @@ final class HomeBibleStatsViewModel: ObservableObject {
         let totals = store.loadTotals()
         totalSeconds = totals.values.reduce(0, +)
 
-        todaySeconds = store.totalForLast(days: 1)
-        thisWeekSeconds = store.totalForLast(days: 7)
-        let last14 = store.totalForLast(days: 14)
-        lastWeekSeconds = last14 - thisWeekSeconds
+        // Match Stats tab: use ReadingSessionsStore (GMT day boundaries) for Today/This Week/Last Week
+        var gmtCal = Calendar.current
+        gmtCal.timeZone = .gmt
+
+        // Today: sessions whose end falls on today's GMT date
+        do {
+            let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: now, calendar: gmtCal)
+            let todayKey = BibleStatsStore.isoDateString(now, calendar: gmtCal)
+            todaySeconds = sessions7.reduce(0) { acc, s in
+                let key = BibleStatsStore.isoDateString(s.end, calendar: gmtCal)
+                let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
+                return acc + (key == todayKey ? dur : 0)
+            }
+        }
+
+        // This Week: last 7 days total (GMT)
+        do {
+            let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: now, calendar: gmtCal)
+            thisWeekSeconds = sessions7.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
+        }
+
+        // Last Week: the 7-day window ending 7 days ago, based on session end times (GMT)
+        do {
+            let startOfToday = gmtCal.startOfDay(for: now)
+            guard
+                let lastWeekEnd = gmtCal.date(byAdding: .day, value: -7, to: startOfToday),
+                let lastWeekStart = gmtCal.date(byAdding: .day, value: -13, to: startOfToday)
+            else {
+                lastWeekSeconds = 0
+                return
+            }
+            // Fetch enough sessions to cover last 14 days
+            let sessions14 = ReadingSessionsStore.shared.sessions(inLastDays: 14, now: now, calendar: gmtCal)
+            lastWeekSeconds = sessions14.reduce(0) { acc, s in
+                if s.end >= lastWeekStart && s.end < lastWeekEnd {
+                    return acc + Int(max(0, s.end.timeIntervalSince(s.start)))
+                } else {
+                    return acc
+                }
+            }
+        }
 
         let split = store.splitOTNT(totals: totals)
         otSeconds = split.ot
@@ -100,7 +137,7 @@ final class HomeBibleStatsViewModel: ObservableObject {
 
     // New: Today vs Yesterday delta (e.g., "+3:15" or "−05:20", or "—" when equal)
     var todayDeltaOnlyValue: String {
-        // Yesterday = total of last 2 days minus today
+        // Yesterday = total of last 2 days minus today; keep legacy method for delta only
         let store = BibleStatsStore.shared
         let last2 = store.totalForLast(days: 2)
         let yesterday = max(0, last2 - todaySeconds)

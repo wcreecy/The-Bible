@@ -10,6 +10,11 @@ final class StopwatchActivityController {
 
     func start(sessionName: String = "Stopwatch", initialElapsed: Int = 0) {
         guard #available(iOS 16.1, *), ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+
+        // Enforce single-activity policy: end all PrayerTimer and Stopwatch activities first
+        Self.endAllPrayerActivities()
+        Self.endAllStopwatchActivities()
+
         let attributes = StopwatchAttributes(sessionName: sessionName)
         let state = StopwatchAttributes.ContentState(status: "Running", elapsed: initialElapsed)
         do {
@@ -39,28 +44,75 @@ final class StopwatchActivityController {
     }
 
     func finish(finalStatus: String = "Stopped") {
-        guard #available(iOS 16.1, *), let activity else { return }
-        let final = StopwatchAttributes.ContentState(status: finalStatus, elapsed: 0)
-        Task {
-            if #available(iOS 16.2, *) {
-                let content = ActivityContent(state: final, staleDate: nil)
-                await activity.end(content, dismissalPolicy: .immediate)
-            } else {
-                await activity.end(using: final, dismissalPolicy: .immediate)
-            }
-        }
+        guard #available(iOS 16.1, *) else { return }
+        // End all Stopwatch activities to avoid any lingering instances
+        Self.endAllStopwatchActivities(finalStatus: finalStatus)
         self.activity = nil
     }
 
     func cancel() {
-        guard #available(iOS 16.1, *), let activity else { return }
-        Task {
-            if #available(iOS 16.2, *) {
-                await activity.end(activity.content, dismissalPolicy: .immediate)
-            } else {
-                await activity.end(dismissalPolicy: .immediate)
-            }
-        }
+        guard #available(iOS 16.1, *) else { return }
+        // End all Stopwatch activities immediately
+        Self.endAllStopwatchActivities()
         self.activity = nil
     }
+
+    // MARK: - End-all helpers
+
+    static func endAllStopwatchActivities(finalStatus: String? = nil) {
+        guard #available(iOS 16.1, *) else { return }
+        let activities = Activity<StopwatchAttributes>.activities
+        guard !activities.isEmpty else { return }
+
+        Task {
+            for act in activities {
+                if #available(iOS 17.0, *) {
+                    let current = act.content.state
+                    let final = StopwatchAttributes.ContentState(
+                        status: finalStatus ?? current.status,
+                        elapsed: finalStatus == nil ? current.elapsed : 0
+                    )
+                    let content = ActivityContent(state: final, staleDate: nil)
+                    await act.end(content, dismissalPolicy: .immediate)
+                } else if #available(iOS 16.2, *) {
+                    let current = act.contentState
+                    let final = StopwatchAttributes.ContentState(
+                        status: finalStatus ?? current.status,
+                        elapsed: finalStatus == nil ? current.elapsed : 0
+                    )
+                    await act.end(using: final, dismissalPolicy: .immediate)
+                } else {
+                    // iOS 16.1
+                    let current = act.contentState
+                    let final = StopwatchAttributes.ContentState(
+                        status: finalStatus ?? current.status,
+                        elapsed: finalStatus == nil ? current.elapsed : 0
+                    )
+                    await act.end(using: final)
+                }
+            }
+        }
+    }
+
+    static func endAllPrayerActivities() {
+        guard #available(iOS 16.1, *) else { return }
+        let activities = Activity<PrayerTimerAttributes>.activities
+        guard !activities.isEmpty else { return }
+
+        Task {
+            for act in activities {
+                if #available(iOS 17.0, *) {
+                    let content = ActivityContent(state: act.content.state, staleDate: nil)
+                    await act.end(content, dismissalPolicy: .immediate)
+                } else if #available(iOS 16.2, *) {
+                    let state = act.contentState
+                    await act.end(using: state, dismissalPolicy: .immediate)
+                } else {
+                    // iOS 16.1
+                    await act.end(using: act.contentState)
+                }
+            }
+        }
+    }
 }
+
