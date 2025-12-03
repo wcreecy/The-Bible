@@ -109,17 +109,18 @@ struct StatsView: View {
                 // Average Session Length (last 20 sessions)
                 averageSessionCard
 
-                // Existing: OT vs NT
-                otNtCard
-
-                // Move Genre Distribution directly under OT vs NT
-                genreSection
-
                 // Existing: Book Reading Progress
                 bookReadingProgressCard
 
                 // Existing: Total Bible Reading Time + Per-book table (collapsible)
                 totalsSection
+
+                // Moved: OT vs NT chart now appears directly under the Total Bible Reading Time card
+                // so it shares the same scope controls.
+                otNtCard
+
+                // Genre Distribution stays below OT vs NT
+                genreSection
 
                 // NEW: Games card at the bottom (shared with Home)
                 GamesCardView()
@@ -1340,4 +1341,3 @@ private struct BookChaptersDetailView: View {
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 }
-

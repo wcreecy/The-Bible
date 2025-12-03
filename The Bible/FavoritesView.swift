@@ -5,6 +5,34 @@ struct FavoritesView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: [SortDescriptor(\Favorite.createdAt, order: .reverse)]) private var favorites: [Favorite]
 
+    @State private var searchText: String = ""
+
+    // Tokenize the search text into lowercase words
+    private var tokens: [String] {
+        searchText
+            .lowercased()
+            .split { $0.isWhitespace || $0.isPunctuation }
+            .map(String.init)
+            .filter { !$0.isEmpty }
+    }
+
+    // Filter favorites by all tokens (match in verse text, book name, or reference)
+    private var filteredFavorites: [Favorite] {
+        guard !tokens.isEmpty else { return favorites }
+        return favorites.filter { fav in
+            let verse = fav.verseText.lowercased()
+            let book = fav.bookName.lowercased()
+            let reference = "\(fav.bookName) \(fav.chapterNumber):\(fav.verseNumber)".lowercased()
+            // Require all tokens to be found somewhere
+            for t in tokens {
+                if !verse.contains(t) && !book.contains(t) && !reference.contains(t) {
+                    return false
+                }
+            }
+            return true
+        }
+    }
+
     var body: some View {
         Group {
             if favorites.isEmpty {
@@ -13,18 +41,18 @@ struct FavoritesView: View {
                     systemImage: "heart",
                     description: Text("Long-press a verse and choose Favorite to save it here.")
                 )
+            } else if filteredFavorites.isEmpty && !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                ContentUnavailableView(
+                    "No Matches",
+                    systemImage: "magnifyingglass",
+                    description: Text("Try different keywords or check spelling.")
+                )
             } else {
                 List {
-                    ForEach(favorites) { fav in
-                        let book = BibleData.books.first(where: { $0.name == fav.bookName }) ?? BibleData.books.first!
-                        let chapter = book.chapters.first(where: { $0.number == fav.chapterNumber }) ?? book.chapters.first!
-
-                        NavigationLink {
-                            ReadingView(
-                                book: book,
-                                chapter: chapter,
-                                startVerse: fav.verseNumber
-                            )
+                    ForEach(filteredFavorites) { fav in
+                        // Tap to open this favorite in the Bible tab via the central router
+                        Button {
+                            openInBibleTab(fav)
                         } label: {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(fav.verseText)
@@ -38,17 +66,32 @@ struct FavoritesView: View {
                                     .foregroundStyle(.tertiary)
                             }
                         }
+                        .buttonStyle(.plain)
                     }
-                    .onDelete(perform: delete)
+                    .onDelete(perform: deleteFiltered)
                 }
             }
         }
         .navigationTitle("Favorites")
         .toolbar { EditButton() }
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search favorites")
     }
 
-    private func delete(at offsets: IndexSet) {
-        for index in offsets { modelContext.delete(favorites[index]) }
+    // Post a notification consumed by ContentView to switch to the Bible tab and navigate
+    private func openInBibleTab(_ fav: Favorite) {
+        NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
+            "book": fav.bookName,
+            "chapter": fav.chapterNumber,
+            "verse": fav.verseNumber
+        ])
+    }
+
+    // Delete using indices from the filtered list to ensure correct items are removed
+    private func deleteFiltered(at offsets: IndexSet) {
+        let itemsToDelete = offsets.map { filteredFavorites[$0] }
+        for item in itemsToDelete {
+            modelContext.delete(item)
+        }
         try? modelContext.save()
     }
 }
