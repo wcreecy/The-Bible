@@ -270,7 +270,12 @@ final class BibleStatsStore {
 
     func markVisited(bookName: String, chapterNumber: Int) {
         var set = loadVisitedChapters()
-        set.insert("\(bookName):\(chapterNumber)")
+        let key = "\(bookName):\(chapterNumber)"
+        // Only write and notify if this is a new insertion to avoid notification loops
+        if set.contains(key) {
+            return
+        }
+        set.insert(key)
         saveVisitedChapters(set)
     }
 
