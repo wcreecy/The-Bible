@@ -368,8 +368,6 @@ struct StatsView: View {
             statMiniCard(title: "Today", value: BibleStatsStore.shared.format(todaySeconds), subtitle: todayDeltaOnlyValue, tint: .blue)
             statMiniCard(title: "This Week", value: BibleStatsStore.shared.format(thisWeekSeconds), subtitle: weekDeltaOnlyValue, tint: .green)
             lastReadMiniCard
-            // New: Goal progress glance pill (today)
-            statMiniCard(title: "Daily Reading Goal", value: "\(goalPercentToday)%", subtitle: goalSubtitleToday, tint: .orange)
         }
     }
 
@@ -378,7 +376,9 @@ struct StatsView: View {
             Text(title)
                 .font(.caption).foregroundStyle(.secondary)
             Text(value)
-                .font(.title3.weight(.semibold))
+                .font(.headline.weight(.semibold)) // smaller than title3 to help stay on one line
+                .lineLimit(1)
+                .truncationMode(.tail)
                 .monospacedDigit()
             if let subtitle, !subtitle.isEmpty, subtitle != "—" {
                 let prefix = (title == "This Week") ? "vs last week: " : (title == "Today" ? "vs yesterday: " : "")
@@ -413,8 +413,9 @@ struct StatsView: View {
             Text("Last Read")
                 .font(.caption).foregroundStyle(.secondary)
             Text(lastReadBookChapter)
-                .font(.subheadline.weight(.semibold))
+                .font(.footnote.weight(.semibold)) // slightly smaller to avoid wrapping
                 .lineLimit(1)
+                .truncationMode(.tail)
             Text(lastReadTimeText)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
@@ -1109,30 +1110,6 @@ struct StatsView: View {
         return "\(sign)\(BibleStatsStore.shared.format(absVal))"
     }
 
-    // NEW: Goal progress (today) for glance pill
-    private var goalPercentToday: Int {
-        let goalSeconds = max(1, dailyGoalMinutes) * 60
-        if goalSeconds <= 0 { return 0 }
-        let pct = Int(round((Double(min(todaySeconds, goalSeconds)) / Double(goalSeconds)) * 100.0))
-        return max(0, min(100, pct))
-    }
-
-    private var goalSubtitleToday: String {
-        let goalSeconds = max(1, dailyGoalMinutes) * 60
-        if todaySeconds >= goalSeconds {
-            return "Reached"
-        } else {
-            let remaining = max(0, goalSeconds - todaySeconds)
-            let m = remaining / 60
-            let s = remaining % 60
-            if m > 0 {
-                return s > 0 ? "\(m)m \(s)s left" : "\(m)m left"
-            } else {
-                return "\(s)s left"
-            }
-        }
-    }
-
     enum Genre: String, CaseIterable, Identifiable {
         case Law = "Law"
         case History = "History"
@@ -1363,3 +1340,4 @@ private struct BookChaptersDetailView: View {
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 }
+

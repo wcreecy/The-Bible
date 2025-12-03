@@ -866,7 +866,8 @@ struct HomeView: View {
         return min(1.0, Double(used) / Double(dailyGoalSeconds))
     }
     private var remainingSecondsToday: Int {
-        let used = max(0, BibleStatsStore.shared.totalForLast(days: 1))
+        // CHANGED: align with Stats tab by using bibleVM.todaySeconds (session-derived)
+        let used = max(0, bibleVM.todaySeconds)
         return max(0, dailyGoalSeconds - used)
     }
     private var remainingFormatted: String {
@@ -1747,7 +1748,8 @@ struct HomeView: View {
         let best = StreakTracker.bestStreak
         let last = StreakTracker.lastVisitDate
 
-        let usedSecs = max(0, BibleStatsStore.shared.totalForLast(days: 1))
+        // CHANGED: align used seconds with Stats tab via HomeBibleStatsViewModel (session-derived today)
+        let usedSecs = max(0, bibleVM.todaySeconds)
         let goalSecs = dailyGoalSeconds
         let progress = min(1.0, Double(usedSecs) / Double(goalSecs))
 
@@ -2941,4 +2943,3 @@ private final class DebouncedWidgetReloader {
         queue.asyncAfter(deadline: .now() + 0.6, execute: item)
     }
 }
-
