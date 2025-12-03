@@ -51,7 +51,9 @@ struct VerseWidgetEntryView: View {
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .containerBackground(Color.black, for: .widget)
+        .widgetURL(URL(string: "thebible://home")) // Always open Home when tapping this widget
         .accessibilityElement(children: .combine)
         .accessibilityLabel(isEvening ? "Word of the Night widget" : "Verse of the Day widget")
     }
 }
+

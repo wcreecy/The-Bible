@@ -143,6 +143,17 @@ struct The_Bible__iOS_App: App {
                 .onAppear {
                     CloudKitManager.logEntitlementHints(containerIdentifier: "iCloud.creecy.bible")
                 }
+                // NEW: Handle widget deep links here too, and broadcast a tab switch.
+                .onOpenURL { url in
+                    guard url.scheme?.lowercased() == "thebible" else { return }
+                    let host = url.host?.lowercased() ?? ""
+                    if host == "home" {
+                        // Tell ContentView to switch to Home (tag 0)
+                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 0])
+                        return
+                    }
+                    // Let ContentView handle other deep links (like thebible://open?...).
+                }
         }
         .modelContainer(sharedModelContainer)
     }
@@ -295,3 +306,4 @@ final class CloudKitManager: ObservableObject {
         print("   • Ensure iCloud capability with CloudKit is ON and container is checked for this target/configuration.")
     }
 }
+

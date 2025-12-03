@@ -213,10 +213,18 @@ struct ContentView: View {
             )
         }
         .onOpenURL { url in
-            // Handle taps from widgets and other custom links:
-            // Supported: thebible://open?book=Name&chapter=Int&verse=Int
+            // Handle taps from widgets and other custom links.
             guard url.scheme?.lowercased() == "thebible" else { return }
-            guard url.host?.lowercased() == "open" else { return }
+            let host = url.host?.lowercased() ?? ""
+
+            // NEW: thebible://home -> switch to Home tab
+            if host == "home" {
+                selectedTab = 0
+                return
+            }
+
+            // Supported deep link: thebible://open?book=Name&chapter=Int&verse=Int
+            guard host == "open" else { return }
             guard let comps = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
             var params: [String: String] = [:]
             comps.queryItems?.forEach { params[$0.name.lowercased()] = $0.value ?? "" }
@@ -420,3 +428,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
