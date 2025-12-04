@@ -2109,6 +2109,9 @@ struct HomeView: View {
     @State private var suppressTimerActivityUpdatesUntil: Date = .distantPast
     @State private var suppressTimerRecomputeUntil: Date = .distantPast
 
+    // Authoritative in-memory end date used briefly after adjustments to avoid @AppStorage staleness
+    @State private var liveEndDate: TimeInterval = 0
+
     // One-shot token for pending actions so stale actions are ignored
     @AppStorage("prayerTimerLastActionToken") private var lastActionToken: String = ""
 
@@ -2122,9 +2125,11 @@ struct HomeView: View {
 
         if isEditingFocus { return }
 
-        if isTimerRunning && !isPaused && storedEndDate > 0 {
+        if isTimerRunning && !isPaused {
+            let now = Date().timeIntervalSince1970
+
             if Date() < suppressTimerRecomputeUntil {
-                // During suppression window, don't trust storedEndDate; decrement locally
+                // During suppression window, prefer local decrement
                 let before = remainingSeconds
                 let after = max(0, remainingSeconds - 1)
                 if before != after {
@@ -2132,10 +2137,22 @@ struct HomeView: View {
                 }
                 remainingSeconds = after
             } else {
+                // After suppression, if we still have a liveEndDate that differs noticeably from storedEndDate,
+                // compute remaining from liveEndDate to bridge @AppStorage propagation delay.
+                let endToUse: TimeInterval
+                let endDelta = abs(liveEndDate - storedEndDate)
+                if liveEndDate > 0 && endDelta > 0.5 {
+                    endToUse = liveEndDate
+                } else {
+                    endToUse = storedEndDate
+                    // If AppStorage caught up (or no liveEnd), clear liveEnd for next ticks
+                    liveEndDate = 0
+                }
+
                 let before = remainingSeconds
-                let remaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
-                if remainingSeconds != remaining {
-                    dbgWrite("remainingSeconds", old: before, new: remaining, note: "tick recompute (storedEndDate=\(storedEndDate), now=\(Date().timeIntervalSince1970))")
+                let remaining = Int(max(0, endToUse - now))
+                if before != remaining {
+                    dbgWrite("remainingSeconds", old: before, new: remaining, note: "tick recompute (end=\(endToUse), now=\(now))")
                 }
                 remainingSeconds = remaining
                 if remaining == 0 { handleTimerFinished() }
@@ -2196,6 +2213,11 @@ struct HomeView: View {
         storedEndDate = end.timeIntervalSince1970
         dbgWrite("storedEndDate", old: oldEnd, new: storedEndDate, note: "startTimer set end")
 
+        // Set authoritative live end date and suppression windows
+        liveEndDate = storedEndDate
+        suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(1.0)
+        suppressTimerRecomputeUntil = Date().addingTimeInterval(1.75)
+
         let oldPausedRemain = storedRemainingWhenPaused
         storedRemainingWhenPaused = 0
         dbgWrite("storedRemainingWhenPaused", old: oldPausedRemain, new: 0, note: "startTimer reset")
@@ -2244,6 +2266,11 @@ struct HomeView: View {
             let oldEnd = storedEndDate
             storedEndDate = newEnd.timeIntervalSince1970
             dbgWrite("storedEndDate", old: oldEnd, new: storedEndDate, note: "togglePause -> RESUMED set new end")
+
+            // Set authoritative live end date and suppression windows
+            liveEndDate = storedEndDate
+            suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(1.0)
+            suppressTimerRecomputeUntil = Date().addingTimeInterval(1.75)
 
             let oldPausedRemain = storedRemainingWhenPaused
             storedRemainingWhenPaused = 0
@@ -2298,6 +2325,11 @@ struct HomeView: View {
             remainingSeconds = newRemaining
             dbgWrite("remainingSeconds", old: before, new: newRemaining, note: "+1 while RUNNING recompute from end")
 
+            // Set authoritative live end date and suppression windows
+            liveEndDate = storedEndDate
+            suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(1.0)
+            suppressTimerRecomputeUntil = Date().addingTimeInterval(1.75)
+
             print("[TimerDBG] +1 while RUNNING remaining \(before) -> \(remainingSeconds) new storedEndDate=\(storedEndDate) now=\(Date().timeIntervalSince1970)")
             scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
             PrayerTimerActivityController.shared.update(
@@ -2306,8 +2338,6 @@ struct HomeView: View {
                 isPaused: isPaused
             )
         }
-        suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(0.75)
-        suppressTimerRecomputeUntil = Date().addingTimeInterval(0.75)
 
         let gen = UIImpactFeedbackGenerator(style: .light)
         gen.impactOccurred()
@@ -2352,6 +2382,11 @@ struct HomeView: View {
             remainingSeconds = newRemaining
             dbgWrite("remainingSeconds", old: before, new: newRemaining, note: "+5 while RUNNING recompute from end")
 
+            // Set authoritative live end date and suppression windows
+            liveEndDate = storedEndDate
+            suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(1.0)
+            suppressTimerRecomputeUntil = Date().addingTimeInterval(1.75)
+
             print("[TimerDBG] +5 while RUNNING remaining \(before) -> \(remainingSeconds) new storedEndDate=\(storedEndDate) now=\(Date().timeIntervalSince1970)")
             scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
             PrayerTimerActivityController.shared.update(
@@ -2360,8 +2395,6 @@ struct HomeView: View {
                 isPaused: isPaused
             )
         }
-        suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(0.75)
-        suppressTimerRecomputeUntil = Date().addingTimeInterval(0.75)
 
         let gen = UIImpactFeedbackGenerator(style: .light)
         gen.impactOccurred()
@@ -2406,6 +2439,11 @@ struct HomeView: View {
             remainingSeconds = newRemaining
             dbgWrite("remainingSeconds", old: before, new: newRemaining, note: "+10 while RUNNING recompute from end")
 
+            // Set authoritative live end date and suppression windows
+            liveEndDate = storedEndDate
+            suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(1.0)
+            suppressTimerRecomputeUntil = Date().addingTimeInterval(1.75)
+
             print("[TimerDBG] +10 while RUNNING remaining \(before) -> \(remainingSeconds) new storedEndDate=\(storedEndDate) now=\(Date().timeIntervalSince1970)")
             scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
             PrayerTimerActivityController.shared.update(
@@ -2414,8 +2452,6 @@ struct HomeView: View {
                 isPaused: isPaused
             )
         }
-        suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(0.75)
-        suppressTimerRecomputeUntil = Date().addingTimeInterval(0.75)
         let gen = UIImpactFeedbackGenerator(style: .light)
         gen.impactOccurred()
     }
@@ -2456,6 +2492,9 @@ struct HomeView: View {
         let oldRemaining = remainingSeconds
         remainingSeconds = 0
         dbgWrite("remainingSeconds", old: oldRemaining, new: 0, note: "resetTimerState")
+
+        // Clear live end date
+        liveEndDate = 0
 
         print("[TimerDBG] resetTimerState")
     }
