@@ -50,21 +50,14 @@ struct JournalEditorView: View {
         self._editingEntry = State(initialValue: editingEntry)
         self.onClose = onClose
 
-        // For editing existing entries, seed from the entry.
         if let editingEntry {
             _title = State(initialValue: editingEntry.title)
             _content = State(initialValue: editingEntry.body)
             _tagsText = State(initialValue: editingEntry.tags.joined(separator: ", "))
         } else {
-            // New entry:
-            // Title should be blank.
             _title = State(initialValue: "")
-
-            // If launched from verses view, place scripture reference as a smart link in the body.
-            // Otherwise, use provided initialBody or blank.
             if let verseRef {
                 let smart = smartLinkString(from: verseRef)
-                // If an initialBody was provided, prepend the smart link with a newline.
                 if let initialBody, !initialBody.isEmpty {
                     _content = State(initialValue: smart + "\n" + initialBody)
                 } else {
@@ -73,7 +66,6 @@ struct JournalEditorView: View {
             } else {
                 _content = State(initialValue: initialBody ?? "")
             }
-
             _tagsText = State(initialValue: "")
         }
     }
@@ -82,10 +74,8 @@ struct JournalEditorView: View {
         NavigationStack {
             Group {
                 if hSize == .regular {
-                    // iPad/regular width: reuse compact full-screen editor styling in the middle column
                     regularLayoutWithBottomSave
                 } else {
-                    // iPhone/compact width: brand-new full-screen editor like Notes
                     compactFullScreenEditor
                 }
             }
@@ -113,6 +103,15 @@ struct JournalEditorView: View {
                     .bold()
                     .keyboardShortcut("s", modifiers: [.command])
                 }
+                #if DEBUG
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(BibleReferenceLinker.debugEnabled ? "Linkify Debug: On" : "Linkify Debug: Off") {
+                        BibleReferenceLinker.debugEnabled.toggle()
+                        print("[SmartLinkDebug] Toggled to \(BibleReferenceLinker.debugEnabled ? "ON" : "OFF")")
+                        scheduleLinkify(for: content)
+                    }
+                }
+                #endif
             }
             .alert("Couldn’t Save Entry", isPresented: $showSaveError) {
                 Button("OK", role: .cancel) {}
@@ -120,7 +119,7 @@ struct JournalEditorView: View {
                 Text(saveErrorMessage)
             }
             .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
-            .appToast(isPresented: $showSavedToast, symbol: "checkmark.seal.fill", text: "Saved", tint: .green)
+            .appToast(isPresented: $showSavedToast, symbol: "Saved", text: "Entry Saved", tint: .green)
             .onAppear {
                 scheduleLinkify(for: content)
             }
@@ -140,10 +139,8 @@ struct JournalEditorView: View {
 
     private var compactFullScreenEditor: some View {
         VStack(spacing: 0) {
-            // A single scrollable editor with a lightweight header like Notes
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
-                    // Title
                     TextField("Title", text: $title)
                         .font(.title2.weight(.semibold))
                         .textInputAutocapitalization(.sentences)
@@ -151,7 +148,6 @@ struct JournalEditorView: View {
                         .padding(.horizontal, 12)
                         .padding(.top, 8)
 
-                    // Tags (optional)
                     TextField("Insert tag: i.e. Sermon Notes, Family, etc...", text: $tagsText)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled(true)
@@ -174,7 +170,6 @@ struct JournalEditorView: View {
                         }
                     }
 
-                    // Body editor
                     ZStack(alignment: .topLeading) {
                         if content.isEmpty {
                             Text("Write your thoughts here…")
@@ -193,9 +188,16 @@ struct JournalEditorView: View {
                             }
                         )
                         .frame(minHeight: 400)
-                        // Removed overlay and horizontal padding to achieve full-screen feel
                     }
                     .padding(.bottom, 12)
+
+                    // DEBUG: show linkified attributed string beneath the editor
+                    if BibleReferenceLinker.debugEnabled {
+                        Text(linkedContent)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 12)
+                    }
                 }
                 .padding(.vertical, 8)
             }
@@ -270,11 +272,9 @@ struct JournalEditorView: View {
         }
     }
 
-    // Middle column on iPad now uses the same full-screen editor stack as iPhone
     private var editorColumn: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                // Title
                 TextField("Title", text: $title)
                     .font(.title2.weight(.semibold))
                     .textInputAutocapitalization(.sentences)
@@ -282,7 +282,6 @@ struct JournalEditorView: View {
                     .padding(.horizontal, 12)
                     .padding(.top, 8)
 
-                // Tags (optional)
                 TextField("Insert tag: i.e. Sermon Notes, Family, etc...", text: $tagsText)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled(true)
@@ -305,7 +304,6 @@ struct JournalEditorView: View {
                     }
                 }
 
-                // Body editor
                 ZStack(alignment: .topLeading) {
                     if content.isEmpty {
                         Text("Write your thoughts here…")
@@ -324,9 +322,16 @@ struct JournalEditorView: View {
                         }
                     )
                     .frame(minHeight: 400)
-                    // No border/rounded overlay to match full-screen feel
                 }
                 .padding(.bottom, 12)
+
+                // DEBUG: show linkified attributed string beneath the editor
+                if BibleReferenceLinker.debugEnabled {
+                    Text(linkedContent)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 12)
+                }
             }
             .padding(.vertical, 8)
         }
@@ -516,6 +521,13 @@ struct JournalEditorView: View {
         let range = NSRange(location: startUTF16, length: endUTF16 - startUTF16)
         pendingTriggerRange = range
 
+        if let r = Range(range, in: t) {
+            let snippet = String(t[r])
+            print("[SmartLinkTrigger] pendingRange=\(range) snippet=“\(snippet)”")
+        } else {
+            print("[SmartLinkTrigger] pendingRange=\(range) snippet=<range conversion failed>")
+        }
+
         if !showSmartLinkSheet {
             showSmartLinkSheet = true
         }
@@ -527,11 +539,13 @@ struct JournalEditorView: View {
 
         if let range = pendingTriggerRange {
             if let strRange = Range(range, in: t) {
+                print("[SmartLinkInsert] Replacing “\(String(t[strRange]))” with “\(insertion)” at \(range)")
                 t.replaceSubrange(strRange, with: insertion)
                 content = t
                 let newLoc = range.location + insertion.utf16.count
                 textSelectionRange = NSRange(location: newLoc, length: 0)
             } else {
+                print("[SmartLinkInsert] Could not map pending range; inserting at caret.")
                 let loc = min(max(textSelectionRange.location, 0), (t as NSString).length)
                 if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
                     t.insert(contentsOf: insertion, at: idx)
@@ -540,6 +554,7 @@ struct JournalEditorView: View {
                 }
             }
         } else {
+            print("[SmartLinkInsert] No pending range; inserting at caret.")
             let loc = min(max(textSelectionRange.location, 0), (t as NSString).length)
             if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
                 t.insert(contentsOf: insertion, at: idx)
@@ -583,7 +598,6 @@ struct JournalEditorView: View {
             return
         }
 
-        // New entry: populate all fields from editor state
         let entry = JournalEntry()
         entry.title = trimmedTitle
         entry.body = trimmedBody
@@ -610,7 +624,6 @@ struct JournalEditorView: View {
 
     // Build a smart link string from a VerseRef that BibleReferenceLinker will detect.
     private func smartLinkString(from ref: VerseRef) -> String {
-        // VerseRef represents a single verse; format: "#Book Chapter:Verse"
         return "#\(ref.book) \(ref.chapter):\(ref.verse)"
     }
 }
@@ -685,7 +698,6 @@ private struct KeyboardInsetReader: UIViewRepresentable {
             let endFrameScreen = (note.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue ?? .zero
             let endFrame = window.convert(endFrameScreen, from: nil)
             let overlap = max(0, window.bounds.maxY - endFrame.minY)
-            // Add a small extra padding so caret sits above the format bar comfortably
             let extra: CGFloat = 6
             inset = overlap > 0 ? (overlap + extra) : 0
         }

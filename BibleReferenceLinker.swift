@@ -8,32 +8,27 @@ struct ScriptureRef: Equatable {
 }
 
 enum BibleReferenceLinker {
-    // Custom URL scheme for in-app scripture links
+    static var debugEnabled: Bool {
+        get { UserDefaults.standard.bool(forKey: "linkifyDebugEnabled") }
+        set { UserDefaults.standard.set(newValue, forKey: "linkifyDebugEnabled") }
+    }
+    private static func debugLog(_ msg: @autoclosure () -> String) {
+        if debugEnabled { print("[Linkify] \(msg())") }
+    }
+
     private static let scheme = "thebible-ref"
 
-    // Cache the compiled regex once
     private static let cachedRegex: NSRegularExpression? = {
-        // Match a boundary (start of string or any non-alphanumeric), then a book name that may start with an optional ordinal (1-3) and optional space.
-        // The book name is 1-3 tokens of letters (and periods for abbreviations). Then whitespace, then chapter:verse with optional range.
-        // Capture groups:
-        // 1: boundary (may be zero-width when at start of string)
-        // 2: book token(s)
-        // 3: chapter digits
-        // 4: start verse digits
-        // 5: optional end verse digits
         let pattern = "(^|[^A-Za-z0-9])((?:[1-3]\\s*)?[A-Za-z][A-Za-z.]*?(?:\\s+[A-Za-z.]+){0,2})\\s+(\\d+):(\\d+)(?:[\\-\\u2013\\u2014](\\d+))?"
         return try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
     }()
 
-    // Common book abbreviations mapped to canonical names (lowercased keys)
     private static let abbreviations: [String: String] = [
-        // Pentateuch
         "gen": "Genesis", "ge": "Genesis", "gn": "Genesis",
         "ex": "Exodus", "exo": "Exodus",
         "lev": "Leviticus", "lv": "Leviticus",
         "num": "Numbers", "nm": "Numbers", "nu": "Numbers",
         "deut": "Deuteronomy", "deu": "Deuteronomy", "dt": "Deuteronomy",
-        // History
         "jos": "Joshua", "josh": "Joshua",
         "judg": "Judges", "jdg": "Judges",
         "rut": "Ruth", "ru": "Ruth",
@@ -43,19 +38,16 @@ enum BibleReferenceLinker {
         "ezr": "Ezra",
         "neh": "Nehemiah", "ne": "Nehemiah",
         "est": "Esther",
-        // Poetry/Wisdom
         "job": "Job",
         "ps": "Psalms", "psa": "Psalms", "psalm": "Psalms",
         "prov": "Proverbs", "pr": "Proverbs",
         "eccl": "Ecclesiastes", "ecc": "Ecclesiastes",
         "song": "Song of Solomon", "so": "Song of Solomon", "sos": "Song of Solomon",
-        // Major Prophets
         "isa": "Isaiah",
         "jer": "Jeremiah",
         "lam": "Lamentations",
         "eze": "Ezekiel", "ezek": "Ezekiel",
         "dan": "Daniel",
-        // Minor Prophets
         "hos": "Hosea",
         "joe": "Joel",
         "amo": "Amos",
@@ -68,13 +60,11 @@ enum BibleReferenceLinker {
         "hag": "Haggai",
         "zec": "Zechariah",
         "mal": "Malachi",
-        // Gospels/Acts
         "mat": "Matthew", "mt": "Matthew",
         "mk": "Mark", "mrk": "Mark",
         "lk": "Luke",
         "jn": "John", "jhn": "John",
         "act": "Acts", "acts": "Acts",
-        // Paul
         "rom": "Romans",
         "cor": "Corinthians",
         "gal": "Galatians",
@@ -86,7 +76,6 @@ enum BibleReferenceLinker {
         "tit": "Titus",
         "phm": "Philemon",
         "heb": "Hebrews",
-        // General
         "jas": "James",
         "pet": "Peter", "petr": "Peter",
         "joh": "John",
@@ -94,7 +83,6 @@ enum BibleReferenceLinker {
         "rev": "Revelation"
     ]
 
-    // Insert a space between leading digits and letters (e.g., "1sam" -> "1 sam")
     private static func insertSpaceBetweenLeadingDigitsAndLetters(in s: String) -> String {
         guard let first = s.first, first.isNumber else { return s }
         let digits = String(s.prefix { $0.isNumber })
@@ -103,33 +91,27 @@ enum BibleReferenceLinker {
         return s
     }
 
-    // Normalize a raw book token to a canonical BibleData book name, if possible
     private static func resolveBook(named raw: String) -> String? {
         let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }
-        // Try direct match first
         if let direct = BibleData.books.first(where: { $0.name.compare(trimmed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
             return direct.name
         }
-        // Insert a space between leading digits and letters (e.g., "1kgs")
         let spaced = insertSpaceBetweenLeadingDigitsAndLetters(in: trimmed)
-        // Tokenize, expand abbreviations, and title-case tokens
         let cleaned = spaced.replacingOccurrences(of: ".", with: " ")
             .replacingOccurrences(of: "_", with: " ")
             .replacingOccurrences(of: "-", with: " ")
         let tokens = cleaned.split { $0.isWhitespace }.map { String($0) }
-        // Map abbreviations
-        let mapped = tokens.enumerated().map { (idx, t) -> String in
+        let mapped = tokens.map { t -> String in
             let lower = t.lowercased()
             if let exp = abbreviations[lower] { return exp }
-            if Int(lower) != nil { return t } // keep numeric ordinals
+            if Int(lower) != nil { return t }
             return t.prefix(1).uppercased() + t.dropFirst().lowercased()
         }
         let candidate = mapped.joined(separator: " ")
         if let match = BibleData.books.first(where: { $0.name.compare(candidate, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
             return match.name
         }
-        // Relaxed: remove spaces and compare
         let collapsed = candidate.replacingOccurrences(of: " ", with: "")
         if let match = BibleData.books.first(where: { $0.name.replacingOccurrences(of: " ", with: "").compare(collapsed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
             return match.name
@@ -137,66 +119,137 @@ enum BibleReferenceLinker {
         return nil
     }
 
-    /// Returns an AttributedString with link attributes for detected references.
+    // Return (resolvedName, leadingCharactersToSkipInsideRaw)
+    private static func resolveBookBySuffixPeeling(raw: String) -> (String, Int)? {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        if let direct = resolveBook(named: trimmed) {
+            // No skip needed; we used the full raw
+            // Compute skip as difference between raw's leading whitespace and trimmed's
+            let skip = raw.distance(from: raw.startIndex, to: trimmed.startIndex)
+            return (direct, skip)
+        }
+        // Work with original raw to compute byte/utf16 offsets reliably
+        // Tokenize by whitespace on the original raw
+        let rawChars = Array(raw)
+        // Build tokens with their start indices in raw
+        var tokens: [(text: String, start: Int, end: Int)] = []
+        var i = 0
+        let n = rawChars.count
+        while i < n {
+            // skip spaces
+            while i < n, rawChars[i].isWhitespace { i += 1 }
+            if i >= n { break }
+            let start = i
+            while i < n, !rawChars[i].isWhitespace { i += 1 }
+            let end = i
+            if start < end {
+                let t = String(rawChars[start..<end])
+                tokens.append((t, start, end))
+            }
+        }
+        guard tokens.count > 1 else { return nil }
+        // Try suffixes tokens[k...]
+        for k in 0..<tokens.count {
+            let candidate = tokens[k...].map { $0.text }.joined(separator: " ")
+            if let resolved = resolveBook(named: candidate) {
+                // leading skip in raw is tokens[k].start
+                let skip = tokens[k].start
+                return (resolved, skip)
+            }
+        }
+        return nil
+    }
+
     static func linkify(_ text: String) -> AttributedString {
+        debugLog("Input: “\(text)”")
         var attributed = AttributedString(text)
-        guard let regex = cachedRegex else { return attributed }
+        guard let regex = cachedRegex else {
+            debugLog("No regex compiled.")
+            return attributed
+        }
         let ns = text as NSString
         let matches = regex.matches(in: text, options: [], range: NSRange(location: 0, length: ns.length))
-        // Walk from end to start to avoid range shifting while editing attributes
+        debugLog("Found \(matches.count) candidate matches")
+
         for m in matches.reversed() {
-            guard m.numberOfRanges >= 6 else { continue }
+            guard m.numberOfRanges >= 6 else {
+                debugLog("Match missing expected ranges")
+                continue
+            }
             let bookRange = m.range(at: 2)
             let chapterRange = m.range(at: 3)
             let startRange = m.range(at: 4)
             let endRange = m.range(at: 5)
 
             let rawBook = ns.substring(with: bookRange)
-            // Resolve raw token (may be shorthand) to a canonical book name
-            guard let resolvedBook = resolveBook(named: rawBook) else { continue }
+
+            var resolvedBook: String? = resolveBook(named: rawBook)
+            var innerSkip: Int = 0
+            if resolvedBook == nil {
+                if let (peeled, skip) = resolveBookBySuffixPeeling(raw: rawBook) {
+                    resolvedBook = peeled
+                    innerSkip = skip
+                    debugLog("Resolved with suffix peeling: “\(rawBook)” -> “\(peeled)” (skip \(skip))")
+                } else {
+                    debugLog("Could not resolve book token: “\(rawBook)”")
+                    continue
+                }
+            }
 
             let chapStr = ns.substring(with: chapterRange)
             let startStr = ns.substring(with: startRange)
             let endStr: String? = endRange.location != NSNotFound ? ns.substring(with: endRange) : nil
-            guard let chapter = Int(chapStr), let start = Int(startStr) else { continue }
+            guard let chapter = Int(chapStr) else {
+                debugLog("Invalid chapter int: “\(chapStr)” for book \(resolvedBook!)")
+                continue
+            }
+            guard let start = Int(startStr) else {
+                debugLog("Invalid start verse int: “\(startStr)” for \(resolvedBook!) \(chapter)")
+                continue
+            }
             let end = endStr.flatMap { Int($0) }
 
-            // Build URL
             var comps = URLComponents()
             comps.scheme = scheme
             comps.host = "ref"
             comps.queryItems = [
-                URLQueryItem(name: "book", value: resolvedBook),
+                URLQueryItem(name: "book", value: resolvedBook!),
                 URLQueryItem(name: "chapter", value: String(chapter)),
                 URLQueryItem(name: "start", value: String(start))
             ]
             if let end = end { comps.queryItems?.append(URLQueryItem(name: "end", value: String(end))) }
-            guard let url = comps.url else { continue }
+            guard let url = comps.url else {
+                debugLog("Failed to build URL for \(resolvedBook!) \(chapter):\(start)\(end != nil ? "-\(end!)" : "")")
+                continue
+            }
 
-            // Build the hyperlink range strictly from the beginning of the book token
-            // through the end of the captured verse/range, independent of the boundary.
-            // Determine the last captured numeric range to include:
+            // Adjust link start inside the captured book range by innerSkip
+            let adjustedBookStart = bookRange.location + innerSkip
+            // Determine last numeric range
             let lastNumericRange: NSRange = (endRange.location != NSNotFound) ? endRange : startRange
-            // Compute an NSRange that spans from book start to end of last numeric group
-            let linkStart = bookRange.location
+            let linkStart = adjustedBookStart
             let linkEndExclusive = lastNumericRange.location + lastNumericRange.length
             let linkLength = max(0, linkEndExclusive - linkStart)
-            guard linkLength > 0 else { continue }
+            guard linkLength > 0 else {
+                debugLog("Computed zero-length link range for \(resolvedBook!) \(chapter)")
+                continue
+            }
             let fullLinkRange = NSRange(location: linkStart, length: linkLength)
 
-            if let strRange = Range(fullLinkRange, in: text) {
-                if let lower = AttributedString.Index(strRange.lowerBound, within: attributed),
-                   let upper = AttributedString.Index(strRange.upperBound, within: attributed) {
-                    let attrRange: Range<AttributedString.Index> = lower..<upper
-                    // Only set the link attribute; styling can be applied in SwiftUI if desired.
-                    attributed[attrRange].link = url
-                }
+            if let strRange = Range(fullLinkRange, in: text),
+               let lower = AttributedString.Index(strRange.lowerBound, within: attributed),
+               let upper = AttributedString.Index(strRange.upperBound, within: attributed) {
+                let attrRange: Range<AttributedString.Index> = lower..<upper
+                attributed[attrRange].link = url
+                debugLog("Linked “\(ns.substring(with: fullLinkRange))” -> \(url.absoluteString)")
+            } else {
+                debugLog("Failed to convert NSRange to String Range for link")
             }
         }
         return attributed
     }
 
-    /// Parse a custom in-app URL back into a ScriptureRef
     static func parse(url: URL) -> ScriptureRef? {
         guard url.scheme == scheme else { return nil }
         guard let comps = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
@@ -209,7 +262,6 @@ enum BibleReferenceLinker {
         return ScriptureRef(bookName: book, chapter: chapter, startVerse: start, endVerse: end)
     }
 
-    /// Load verses for a given ScriptureRef from BibleData
     static func loadVerses(for ref: ScriptureRef) -> (title: String, verses: [Verse])? {
         guard let book = BibleData.books.first(where: { $0.name.compare(ref.bookName, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }),
               let chapter = book.chapters.first(where: { $0.number == ref.chapter }) else { return nil }
