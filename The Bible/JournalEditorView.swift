@@ -103,15 +103,6 @@ struct JournalEditorView: View {
                     .bold()
                     .keyboardShortcut("s", modifiers: [.command])
                 }
-                #if DEBUG
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(BibleReferenceLinker.debugEnabled ? "Linkify Debug: On" : "Linkify Debug: Off") {
-                        BibleReferenceLinker.debugEnabled.toggle()
-                        print("[SmartLinkDebug] Toggled to \(BibleReferenceLinker.debugEnabled ? "ON" : "OFF")")
-                        scheduleLinkify(for: content)
-                    }
-                }
-                #endif
             }
             .alert("Couldn’t Save Entry", isPresented: $showSaveError) {
                 Button("OK", role: .cancel) {}
@@ -189,14 +180,57 @@ struct JournalEditorView: View {
                         )
                         .frame(minHeight: 400)
                     }
-                    .padding(.bottom, 12)
+                    .padding(.bottom, 6)
 
-                    // DEBUG: show linkified attributed string beneath the editor
-                    if BibleReferenceLinker.debugEnabled {
-                        Text(linkedContent)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+                    // iPhone-only smart link list (only links, stacked vertically)
+                    if hSize != .regular {
+                        let refs = ScriptureRefExtractor.refs(in: linkedContent)
+                        if !refs.isEmpty {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Smart Links")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+
+                                ScriptureLinksList(
+                                    refs: refs,
+                                    onTap: { ref in
+                                        if let content = BibleReferenceLinker.loadVerses(for: ref) {
+                                            previewRef = ref
+                                            previewContent = content
+                                            withAnimation(.spring()) { showPreview = true }
+                                        }
+                                    },
+                                    onCopy: { ref in
+                                        let s: String = {
+                                            if let end = ref.endVerse, end != ref.startVerse {
+                                                return "\(ref.bookName) \(ref.chapter):\(ref.startVerse)-\(end)"
+                                            }
+                                            return "\(ref.bookName) \(ref.chapter):\(ref.startVerse)"
+                                        }()
+                                        UIPasteboard.general.string = s
+                                        withAnimation(.spring()) { showCopyToast = true }
+                                    }
+                                )
+
+                                if showPreview, let content = previewContent {
+                                    ScripturePreviewCard(
+                                        content: content,
+                                        refContext: previewRef,
+                                        onCopy: {
+                                            let verseLines = content.verses.map { "\($0.number). \($0.text)" }.joined(separator: "\n")
+                                            UIPasteboard.general.string = content.title + "\n" + verseLines
+                                            withAnimation(.spring()) { showCopyToast = true }
+                                        },
+                                        onClose: {
+                                            withAnimation(.easeOut) { showPreview = false }
+                                        }
+                                    )
+                                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                                }
+                            }
                             .padding(.horizontal, 12)
+                            .padding(.bottom, 8)
+                        }
                     }
                 }
                 .padding(.vertical, 8)
@@ -204,6 +238,10 @@ struct JournalEditorView: View {
         }
         .ignoresSafeArea(edges: .bottom)
         .background(KeyboardInsetReader(inset: $bottomEditorInset))
+    }
+
+    private var linkedHasRefs: Bool {
+        !ScriptureRefExtractor.refs(in: linkedContent).isEmpty
     }
 
     // MARK: - Layouts with bottom Save (iPad/regular width only)
@@ -324,14 +362,6 @@ struct JournalEditorView: View {
                     .frame(minHeight: 400)
                 }
                 .padding(.bottom, 12)
-
-                // DEBUG: show linkified attributed string beneath the editor
-                if BibleReferenceLinker.debugEnabled {
-                    Text(linkedContent)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 12)
-                }
             }
             .padding(.vertical, 8)
         }
@@ -521,13 +551,6 @@ struct JournalEditorView: View {
         let range = NSRange(location: startUTF16, length: endUTF16 - startUTF16)
         pendingTriggerRange = range
 
-        if let r = Range(range, in: t) {
-            let snippet = String(t[r])
-            print("[SmartLinkTrigger] pendingRange=\(range) snippet=“\(snippet)”")
-        } else {
-            print("[SmartLinkTrigger] pendingRange=\(range) snippet=<range conversion failed>")
-        }
-
         if !showSmartLinkSheet {
             showSmartLinkSheet = true
         }
@@ -539,13 +562,11 @@ struct JournalEditorView: View {
 
         if let range = pendingTriggerRange {
             if let strRange = Range(range, in: t) {
-                print("[SmartLinkInsert] Replacing “\(String(t[strRange]))” with “\(insertion)” at \(range)")
                 t.replaceSubrange(strRange, with: insertion)
                 content = t
                 let newLoc = range.location + insertion.utf16.count
                 textSelectionRange = NSRange(location: newLoc, length: 0)
             } else {
-                print("[SmartLinkInsert] Could not map pending range; inserting at caret.")
                 let loc = min(max(textSelectionRange.location, 0), (t as NSString).length)
                 if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
                     t.insert(contentsOf: insertion, at: idx)
@@ -554,7 +575,6 @@ struct JournalEditorView: View {
                 }
             }
         } else {
-            print("[SmartLinkInsert] No pending range; inserting at caret.")
             let loc = min(max(textSelectionRange.location, 0), (t as NSString).length)
             if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
                 t.insert(contentsOf: insertion, at: idx)
