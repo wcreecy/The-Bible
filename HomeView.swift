@@ -77,6 +77,14 @@ struct HomeView: View {
     // NEW: saved-at timestamp for Daily Focus confirmation
     @State private var focusSavedAt: Date? = nil
 
+    // MARK: - DEBUG helpers
+    private func dbgWrite<T>(_ name: String, old: T, new: T, note: String) {
+        print("[TimerDBG][WRITE] \(name): \(old) -> \(new) :: \(note)")
+    }
+    private func dbgSnapshot(_ where_: String) {
+        print("[TimerDBG][SNAPSHOT] \(where_) isTimerRunning=\(isTimerRunning) isPaused=\(isPaused) remaining=\(remainingSeconds) storedStartDate=\(storedStartDate) storedEndDate=\(storedEndDate) storedTotal=\(storedTotalSeconds) storedPaused=\(storedPaused) storedRunning=\(storedRunning) storedRemainingWhenPaused=\(storedRemainingWhenPaused)")
+    }
+
     private struct ModernPillButtonStyle: ButtonStyle {
         var tint: Color = .accentColor
         @Environment(\.isEnabled) private var isEnabled
@@ -1969,6 +1977,7 @@ struct HomeView: View {
                     if remaining == 0 { handleTimerFinished() }
                 }
             }
+            dbgSnapshot("onAppear after hydration")
 
             if verseOfDayPaused {
                 if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
@@ -2087,38 +2096,57 @@ struct HomeView: View {
                 tickerCancellable = Timer.publish(every: 1, on: .main, in: .common)
                     .autoconnect()
                     .sink { _ in tick() }
+                print("[TimerDBG] ticker subscribed (isTimerRunning=\(isTimerRunning), stopwatchRunning=\(stopwatchRunning))")
             }
         } else {
             tickerCancellable?.cancel()
             tickerCancellable = nil
+            print("[TimerDBG] ticker cancelled")
         }
     }
 
-    // Suppression window to prevent a stale Live Activity update immediately after +5/+10
+    // Suppression windows to prevent immediate Live Activity/timer recompute churn after +1/+5/+10
     @State private var suppressTimerActivityUpdatesUntil: Date = .distantPast
+    @State private var suppressTimerRecomputeUntil: Date = .distantPast
+
+    // One-shot token for pending actions so stale actions are ignored
+    @AppStorage("prayerTimerLastActionToken") private var lastActionToken: String = ""
 
     private func tick() {
+        dbgSnapshot("tick start")
         if handlePrayerTimerPendingAction() {
+            print("[TimerDBG] tick consumed pending action")
             return
         }
         handleStopwatchPendingAction()
 
         if isEditingFocus { return }
 
-        let shouldUpdateLiveActivities = true
-
         if isTimerRunning && !isPaused && storedEndDate > 0 {
-            let remaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
-            remainingSeconds = remaining
-            if remaining == 0 { handleTimerFinished() }
-            if shouldUpdateLiveActivities {
-                if Date() >= suppressTimerActivityUpdatesUntil {
-                    PrayerTimerActivityController.shared.update(
-                        remainingSeconds: remainingSeconds,
-                        totalSeconds: storedTotalSeconds,
-                        isPaused: isPaused
-                    )
+            if Date() < suppressTimerRecomputeUntil {
+                // During suppression window, don't trust storedEndDate; decrement locally
+                let before = remainingSeconds
+                let after = max(0, remainingSeconds - 1)
+                if before != after {
+                    dbgWrite("remainingSeconds", old: before, new: after, note: "tick local decrement (suppressed recompute)")
                 }
+                remainingSeconds = after
+            } else {
+                let before = remainingSeconds
+                let remaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
+                if remainingSeconds != remaining {
+                    dbgWrite("remainingSeconds", old: before, new: remaining, note: "tick recompute (storedEndDate=\(storedEndDate), now=\(Date().timeIntervalSince1970))")
+                }
+                remainingSeconds = remaining
+                if remaining == 0 { handleTimerFinished() }
+            }
+
+            if Date() >= suppressTimerActivityUpdatesUntil {
+                PrayerTimerActivityController.shared.update(
+                    remainingSeconds: remainingSeconds,
+                    totalSeconds: storedTotalSeconds,
+                    isPaused: isPaused
+                )
             }
         }
 
@@ -2126,9 +2154,7 @@ struct HomeView: View {
             let now = Date().timeIntervalSince1970
             let base = stopwatchAccumulated + Int(max(0, now - stopwatchStartDate))
             stopwatchElapsed = base
-            if shouldUpdateLiveActivities {
-                StopwatchActivityController.shared.update(elapsed: stopwatchElapsed, isRunning: true)
-            }
+            StopwatchActivityController.shared.update(elapsed: stopwatchElapsed, isRunning: true)
         }
 
         timeMarker = (timeMarker + 1) % 60
@@ -2141,18 +2167,40 @@ struct HomeView: View {
         }
 
         let secs = max(1, minutes) * 60
+        let oldRemaining = remainingSeconds
         remainingSeconds = secs
+        dbgWrite("remainingSeconds", old: oldRemaining, new: secs, note: "startTimer set initial remaining")
+
+        let oldTotal = storedTotalSeconds
         storedTotalSeconds = secs
+        dbgWrite("storedTotalSeconds", old: oldTotal, new: secs, note: "startTimer set total")
+
         let start = Date()
         let end = start.addingTimeInterval(TimeInterval(secs))
         isPaused = false
         isTimerRunning = true
 
+        let oldRunning = storedRunning
         storedRunning = true
+        dbgWrite("storedRunning", old: oldRunning, new: true, note: "startTimer")
+
+        let oldPaused = storedPaused
         storedPaused = false
+        dbgWrite("storedPaused", old: oldPaused, new: false, note: "startTimer")
+
+        let oldStart = storedStartDate
         storedStartDate = start.timeIntervalSince1970
+        dbgWrite("storedStartDate", old: oldStart, new: storedStartDate, note: "startTimer")
+
+        let oldEnd = storedEndDate
         storedEndDate = end.timeIntervalSince1970
+        dbgWrite("storedEndDate", old: oldEnd, new: storedEndDate, note: "startTimer set end")
+
+        let oldPausedRemain = storedRemainingWhenPaused
         storedRemainingWhenPaused = 0
+        dbgWrite("storedRemainingWhenPaused", old: oldPausedRemain, new: 0, note: "startTimer reset")
+
+        print("[TimerDBG] startTimer minutes=\(minutes) -> remaining=\(remainingSeconds), storedEndDate=\(storedEndDate) (start=\(storedStartDate))")
 
         startMindfulLoggingIfNeeded()
         scheduleNotification(at: end)
@@ -2170,17 +2218,38 @@ struct HomeView: View {
 
     private func togglePause() {
         guard isTimerRunning else { return }
+        let oldPaused = isPaused
         isPaused.toggle()
+        dbgWrite("isPaused", old: oldPaused, new: isPaused, note: "togglePause local")
+
+        let oldStoredPaused = storedPaused
         storedPaused = isPaused
+        dbgWrite("storedPaused", old: oldStoredPaused, new: storedPaused, note: "togglePause mirror")
+
         if isPaused {
             let now = Date().timeIntervalSince1970
-            storedRemainingWhenPaused = Int(max(0, storedEndDate - now))
-            remainingSeconds = storedRemainingWhenPaused
+            let newRemain = Int(max(0, storedEndDate - now))
+            let oldRemaining = remainingSeconds
+            remainingSeconds = newRemain
+            dbgWrite("remainingSeconds", old: oldRemaining, new: newRemain, note: "togglePause -> PAUSED recompute")
+
+            let oldPausedRemain = storedRemainingWhenPaused
+            storedRemainingWhenPaused = newRemain
+            dbgWrite("storedRemainingWhenPaused", old: oldPausedRemain, new: newRemain, note: "togglePause -> PAUSED")
+
+            print("[TimerDBG] togglePause -> PAUSED remaining=\(remainingSeconds) storedRemainingWhenPaused=\(storedRemainingWhenPaused) storedEndDate=\(storedEndDate)")
             cancelNotification()
         } else {
             let newEnd = Date().addingTimeInterval(TimeInterval(remainingSeconds))
+            let oldEnd = storedEndDate
             storedEndDate = newEnd.timeIntervalSince1970
+            dbgWrite("storedEndDate", old: oldEnd, new: storedEndDate, note: "togglePause -> RESUMED set new end")
+
+            let oldPausedRemain = storedRemainingWhenPaused
             storedRemainingWhenPaused = 0
+            dbgWrite("storedRemainingWhenPaused", old: oldPausedRemain, new: 0, note: "togglePause -> RESUMED clear")
+
+            print("[TimerDBG] togglePause -> RESUMED remaining=\(remainingSeconds) new storedEndDate=\(storedEndDate)")
             scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
         }
         PrayerTimerActivityController.shared.update(
@@ -2194,19 +2263,42 @@ struct HomeView: View {
         guard isTimerRunning else { return }
         let delta: Int = 60
         if isPaused {
-            remainingSeconds += delta
-            storedRemainingWhenPaused += delta
-            storedTotalSeconds += delta
+            let before = remainingSeconds
+            let newRem = remainingSeconds + delta
+            dbgWrite("remainingSeconds", old: before, new: newRem, note: "+1 while PAUSED")
+            remainingSeconds = newRem
+
+            let oldPausedRemain = storedRemainingWhenPaused
+            let newPausedRemain = storedRemainingWhenPaused + delta
+            dbgWrite("storedRemainingWhenPaused", old: oldPausedRemain, new: newPausedRemain, note: "+1 while PAUSED")
+            storedRemainingWhenPaused = newPausedRemain
+
+            let oldTotal = storedTotalSeconds
+            let newTotal = storedTotalSeconds + delta
+            dbgWrite("storedTotalSeconds", old: oldTotal, new: newTotal, note: "+1 while PAUSED")
+            storedTotalSeconds = newTotal
+
+            print("[TimerDBG] +1 while PAUSED \(before) -> \(remainingSeconds) storedRemainingWhenPaused=\(storedRemainingWhenPaused) total=\(storedTotalSeconds)")
             PrayerTimerActivityController.shared.update(
                 remainingSeconds: remainingSeconds,
                 totalSeconds: storedTotalSeconds,
                 isPaused: isPaused
             )
         } else {
+            let oldEnd = storedEndDate
             storedEndDate += TimeInterval(delta)
+            dbgWrite("storedEndDate", old: oldEnd, new: storedEndDate, note: "+1 while RUNNING shift end")
+
+            let oldTotal = storedTotalSeconds
             storedTotalSeconds += delta
+            dbgWrite("storedTotalSeconds", old: oldTotal, new: storedTotalSeconds, note: "+1 while RUNNING increase total")
+
             let newRemaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
+            let before = remainingSeconds
             remainingSeconds = newRemaining
+            dbgWrite("remainingSeconds", old: before, new: newRemaining, note: "+1 while RUNNING recompute from end")
+
+            print("[TimerDBG] +1 while RUNNING remaining \(before) -> \(remainingSeconds) new storedEndDate=\(storedEndDate) now=\(Date().timeIntervalSince1970)")
             scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
             PrayerTimerActivityController.shared.update(
                 remainingSeconds: remainingSeconds,
@@ -2215,6 +2307,7 @@ struct HomeView: View {
             )
         }
         suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(0.75)
+        suppressTimerRecomputeUntil = Date().addingTimeInterval(0.75)
 
         let gen = UIImpactFeedbackGenerator(style: .light)
         gen.impactOccurred()
@@ -2224,19 +2317,42 @@ struct HomeView: View {
         guard isTimerRunning else { return }
         let delta: Int = 300
         if isPaused {
-            remainingSeconds += delta
-            storedRemainingWhenPaused += delta
-            storedTotalSeconds += delta
+            let before = remainingSeconds
+            let newRem = remainingSeconds + delta
+            dbgWrite("remainingSeconds", old: before, new: newRem, note: "+5 while PAUSED")
+            remainingSeconds = newRem
+
+            let oldPausedRemain = storedRemainingWhenPaused
+            let newPausedRemain = storedRemainingWhenPaused + delta
+            dbgWrite("storedRemainingWhenPaused", old: oldPausedRemain, new: newPausedRemain, note: "+5 while PAUSED")
+            storedRemainingWhenPaused = newPausedRemain
+
+            let oldTotal = storedTotalSeconds
+            let newTotal = storedTotalSeconds + delta
+            dbgWrite("storedTotalSeconds", old: oldTotal, new: newTotal, note: "+5 while PAUSED")
+            storedTotalSeconds = newTotal
+
+            print("[TimerDBG] +5 while PAUSED \(before) -> \(remainingSeconds) storedRemainingWhenPaused=\(storedRemainingWhenPaused) total=\(storedTotalSeconds)")
             PrayerTimerActivityController.shared.update(
                 remainingSeconds: remainingSeconds,
                 totalSeconds: storedTotalSeconds,
                 isPaused: isPaused
             )
         } else {
+            let oldEnd = storedEndDate
             storedEndDate += TimeInterval(delta)
+            dbgWrite("storedEndDate", old: oldEnd, new: storedEndDate, note: "+5 while RUNNING shift end")
+
+            let oldTotal = storedTotalSeconds
             storedTotalSeconds += delta
+            dbgWrite("storedTotalSeconds", old: oldTotal, new: storedTotalSeconds, note: "+5 while RUNNING increase total")
+
             let newRemaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
+            let before = remainingSeconds
             remainingSeconds = newRemaining
+            dbgWrite("remainingSeconds", old: before, new: newRemaining, note: "+5 while RUNNING recompute from end")
+
+            print("[TimerDBG] +5 while RUNNING remaining \(before) -> \(remainingSeconds) new storedEndDate=\(storedEndDate) now=\(Date().timeIntervalSince1970)")
             scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
             PrayerTimerActivityController.shared.update(
                 remainingSeconds: remainingSeconds,
@@ -2245,6 +2361,7 @@ struct HomeView: View {
             )
         }
         suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(0.75)
+        suppressTimerRecomputeUntil = Date().addingTimeInterval(0.75)
 
         let gen = UIImpactFeedbackGenerator(style: .light)
         gen.impactOccurred()
@@ -2254,19 +2371,42 @@ struct HomeView: View {
         guard isTimerRunning else { return }
         let delta: Int = 600
         if isPaused {
-            remainingSeconds += delta
-            storedRemainingWhenPaused += delta
-            storedTotalSeconds += delta
+            let before = remainingSeconds
+            let newRem = remainingSeconds + delta
+            dbgWrite("remainingSeconds", old: before, new: newRem, note: "+10 while PAUSED")
+            remainingSeconds = newRem
+
+            let oldPausedRemain = storedRemainingWhenPaused
+            let newPausedRemain = storedRemainingWhenPaused + delta
+            dbgWrite("storedRemainingWhenPaused", old: oldPausedRemain, new: newPausedRemain, note: "+10 while PAUSED")
+            storedRemainingWhenPaused = newPausedRemain
+
+            let oldTotal = storedTotalSeconds
+            let newTotal = storedTotalSeconds + delta
+            dbgWrite("storedTotalSeconds", old: oldTotal, new: newTotal, note: "+10 while PAUSED")
+            storedTotalSeconds = newTotal
+
+            print("[TimerDBG] +10 while PAUSED \(before) -> \(remainingSeconds) storedRemainingWhenPaused=\(storedRemainingWhenPaused) total=\(storedTotalSeconds)")
             PrayerTimerActivityController.shared.update(
                 remainingSeconds: remainingSeconds,
                 totalSeconds: storedTotalSeconds,
                 isPaused: isPaused
             )
         } else {
+            let oldEnd = storedEndDate
             storedEndDate += TimeInterval(delta)
+            dbgWrite("storedEndDate", old: oldEnd, new: storedEndDate, note: "+10 while RUNNING shift end")
+
+            let oldTotal = storedTotalSeconds
             storedTotalSeconds += delta
+            dbgWrite("storedTotalSeconds", old: oldTotal, new: storedTotalSeconds, note: "+10 while RUNNING increase total")
+
             let newRemaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
+            let before = remainingSeconds
             remainingSeconds = newRemaining
+            dbgWrite("remainingSeconds", old: before, new: newRemaining, note: "+10 while RUNNING recompute from end")
+
+            print("[TimerDBG] +10 while RUNNING remaining \(before) -> \(remainingSeconds) new storedEndDate=\(storedEndDate) now=\(Date().timeIntervalSince1970)")
             scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
             PrayerTimerActivityController.shared.update(
                 remainingSeconds: remainingSeconds,
@@ -2275,21 +2415,49 @@ struct HomeView: View {
             )
         }
         suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(0.75)
+        suppressTimerRecomputeUntil = Date().addingTimeInterval(0.75)
         let gen = UIImpactFeedbackGenerator(style: .light)
         gen.impactOccurred()
     }
 
     private func resetTimerState() {
-        isTimerRunning = false
-        isPaused = false
-        remainingSeconds = 0
-
+        let oldRunning = storedRunning
         storedRunning = false
+        dbgWrite("storedRunning", old: oldRunning, new: false, note: "resetTimerState")
+
+        let oldPaused = storedPaused
         storedPaused = false
+        dbgWrite("storedPaused", old: oldPaused, new: false, note: "resetTimerState")
+
+        let oldEnd = storedEndDate
         storedEndDate = 0
+        dbgWrite("storedEndDate", old: oldEnd, new: 0, note: "resetTimerState")
+
+        let oldPausedRemain = storedRemainingWhenPaused
         storedRemainingWhenPaused = 0
+        dbgWrite("storedRemainingWhenPaused", old: oldPausedRemain, new: 0, note: "resetTimerState")
+
+        let oldTotal = storedTotalSeconds
         storedTotalSeconds = 0
+        dbgWrite("storedTotalSeconds", old: oldTotal, new: 0, note: "resetTimerState")
+
+        let oldStart = storedStartDate
         storedStartDate = 0
+        dbgWrite("storedStartDate", old: oldStart, new: 0, note: "resetTimerState")
+
+        let oldLocalRunning = isTimerRunning
+        isTimerRunning = false
+        dbgWrite("isTimerRunning", old: oldLocalRunning, new: false, note: "resetTimerState")
+
+        let oldLocalPaused = isPaused
+        isPaused = false
+        dbgWrite("isPaused", old: oldLocalPaused, new: false, note: "resetTimerState")
+
+        let oldRemaining = remainingSeconds
+        remainingSeconds = 0
+        dbgWrite("remainingSeconds", old: oldRemaining, new: 0, note: "resetTimerState")
+
+        print("[TimerDBG] resetTimerState")
     }
 
     private func stopTimer() {
@@ -2316,6 +2484,7 @@ struct HomeView: View {
     }
 
     private func scheduleNotification(at date: Date) {
+        print("[TimerDBG] scheduleNotification at \(date) (in \(date.timeIntervalSinceNow)s)")
         let center = UNUserNotificationCenter.current()
         center.removePendingNotificationRequests(withIdentifiers: [Self.notificationID])
 
@@ -2330,6 +2499,7 @@ struct HomeView: View {
     }
 
     private func cancelNotification() {
+        print("[TimerDBG] cancelNotification")
         let center = UNUserNotificationCenter.current()
         center.removePendingNotificationRequests(withIdentifiers: [Self.notificationID])
     }
@@ -2345,6 +2515,7 @@ struct HomeView: View {
         showFinishedAlert = true
         startFinishAlerts()
         updateTickerSubscription()
+        print("[TimerDBG] handleTimerFinished")
     }
 
     private func startFinishAlerts() {
@@ -2477,7 +2648,23 @@ struct HomeView: View {
     private func handlePrayerTimerPendingAction() -> Bool {
         guard let shared = sharedDefaults else { return false }
         guard let action = shared.string(forKey: "prayerTimerPendingAction") else { return false }
+
+        // Read token (new)
+        let token = shared.string(forKey: "prayerTimerActionToken") ?? ""
+        // If token already consumed, ignore stale action
+        if !token.isEmpty && token == lastActionToken {
+            // Clean up stale key to avoid repeated checks
+            shared.removeObject(forKey: "prayerTimerPendingAction")
+            shared.removeObject(forKey: "prayerTimerActionToken")
+            print("[TimerDBG] handlePrayerTimerPendingAction ignored stale action token=\(token)")
+            return false
+        }
+
+        // Consume keys up-front
         shared.removeObject(forKey: "prayerTimerPendingAction")
+        shared.removeObject(forKey: "prayerTimerActionToken")
+        print("[TimerDBG] handlePrayerTimerPendingAction action=\(action) token=\(token)")
+
         switch action {
         case "togglePause":
             if isTimerRunning { togglePause() }
@@ -2488,7 +2675,12 @@ struct HomeView: View {
         default:
             break
         }
+        // Record last consumed token
+        if !token.isEmpty {
+            lastActionToken = token
+        }
         suppressTimerActivityUpdatesUntil = .distantPast
+        dbgSnapshot("after handlePrayerTimerPendingAction")
         return true
     }
 
@@ -2943,3 +3135,4 @@ private final class DebouncedWidgetReloader {
         queue.asyncAfter(deadline: .now() + 0.6, execute: item)
     }
 }
+

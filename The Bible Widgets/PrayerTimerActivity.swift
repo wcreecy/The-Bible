@@ -19,6 +19,7 @@ struct PrayerTimerTogglePauseIntent: AppIntent {
     func perform() async throws -> some IntentResult {
         if let shared = UserDefaults(suiteName: "group.bible.app") {
             shared.set("togglePause", forKey: "prayerTimerPendingAction")
+            shared.set(UUID().uuidString, forKey: "prayerTimerActionToken")
         }
         return .result()
     }
@@ -31,6 +32,7 @@ struct PrayerTimerAddFiveMinutesIntent: AppIntent {
     func perform() async throws -> some IntentResult {
         if let shared = UserDefaults(suiteName: "group.bible.app") {
             shared.set("add5", forKey: "prayerTimerPendingAction")
+            shared.set(UUID().uuidString, forKey: "prayerTimerActionToken")
         }
         return .result()
     }
@@ -43,6 +45,7 @@ struct PrayerTimerStopIntent: AppIntent {
     func perform() async throws -> some IntentResult {
         if let shared = UserDefaults(suiteName: "group.bible.app") {
             shared.set("stop", forKey: "prayerTimerPendingAction")
+            shared.set(UUID().uuidString, forKey: "prayerTimerActionToken")
         }
         return .result()
     }
@@ -272,3 +275,4 @@ struct PrayerTimerLiveActivity: Widget {
         }
     }
 }
+
