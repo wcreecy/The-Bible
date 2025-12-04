@@ -194,6 +194,7 @@ struct PrayerTimerLiveActivity: Widget {
                 }
             } compactTrailing: {
                 if context.state.status == "Focus" {
+                    // Keep Focus mode unconstrained so title can extend
                     if let title = context.state.focusTitle, !title.isEmpty {
                         Text(title)
                             .lineLimit(1)
@@ -206,8 +207,13 @@ struct PrayerTimerLiveActivity: Widget {
                         Text("")
                     }
                 } else {
+                    // Constrain the timer to 48pt width
                     Text(endDate(context.state.remaining), style: .timer)
+                        .font(.caption2)
                         .monospacedDigit()
+                        .lineLimit(1)
+                        .frame(width: 48, alignment: .trailing)
+                        .clipped()
                 }
             } minimal: {
                 if context.state.status == "Focus" {
@@ -275,4 +281,3 @@ struct PrayerTimerLiveActivity: Widget {
         }
     }
 }
-

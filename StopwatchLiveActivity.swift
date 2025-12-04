@@ -103,9 +103,19 @@ struct StopwatchLiveActivity: Widget {
             } compactTrailing: {
                 let startDate = Date(timeIntervalSinceNow: -Double(context.state.elapsed))
                 if context.state.status == "Running" {
-                    Text(startDate, style: .timer).monospacedDigit()
+                    Text(startDate, style: .timer)
+                        .font(.caption2)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .frame(width: 48, alignment: .trailing)
+                        .clipped()
                 } else {
-                    Text(shortString(context.state.elapsed)).monospacedDigit()
+                    Text(shortString(context.state.elapsed))
+                        .font(.caption2)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .frame(width: 48, alignment: .trailing)
+                        .clipped()
                 }
             } minimal: {
                 Image(systemName: "stopwatch")
