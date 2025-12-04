@@ -47,11 +47,35 @@ struct JournalEditorView: View {
     init(verseRef: VerseRef?, initialBody: String? = nil, showTagColors: Bool = false, editingEntry: JournalEntry? = nil, onClose: (() -> Void)? = nil) {
         self.verseRef = verseRef
         self.showTagColors = showTagColors
-        _title = State(initialValue: editingEntry?.title ?? verseRef?.display ?? "")
-        _content = State(initialValue: editingEntry?.body ?? initialBody ?? "")
-        _tagsText = State(initialValue: editingEntry?.tags.joined(separator: ", ") ?? "")
         self._editingEntry = State(initialValue: editingEntry)
         self.onClose = onClose
+
+        // For editing existing entries, seed from the entry.
+        if let editingEntry {
+            _title = State(initialValue: editingEntry.title)
+            _content = State(initialValue: editingEntry.body)
+            _tagsText = State(initialValue: editingEntry.tags.joined(separator: ", "))
+        } else {
+            // New entry:
+            // Title should be blank.
+            _title = State(initialValue: "")
+
+            // If launched from verses view, place scripture reference as a smart link in the body.
+            // Otherwise, use provided initialBody or blank.
+            if let verseRef {
+                let smart = smartLinkString(from: verseRef)
+                // If an initialBody was provided, prepend the smart link with a newline.
+                if let initialBody, !initialBody.isEmpty {
+                    _content = State(initialValue: smart + "\n" + initialBody)
+                } else {
+                    _content = State(initialValue: smart)
+                }
+            } else {
+                _content = State(initialValue: initialBody ?? "")
+            }
+
+            _tagsText = State(initialValue: "")
+        }
     }
 
     var body: some View {
@@ -582,6 +606,12 @@ struct JournalEditorView: View {
             saveErrorMessage = error.localizedDescription
             showSaveError = true
         }
+    }
+
+    // Build a smart link string from a VerseRef that BibleReferenceLinker will detect.
+    private func smartLinkString(from ref: VerseRef) -> String {
+        // VerseRef represents a single verse; format: "#Book Chapter:Verse"
+        return "#\(ref.book) \(ref.chapter):\(ref.verse)"
     }
 }
 
