@@ -49,6 +49,11 @@ struct JournalTabView: View {
     // Keyboard bottom inset for inline editor
     @State private var editBottomInset: CGFloat = 0
 
+    // Delete confirmations
+    @State private var pendingDeleteEntry: JournalEntry? = nil
+    @State private var showDeleteAlert: Bool = false
+    @State private var showBulkDeleteAlert: Bool = false
+
     private func loadPins() {
         let parts = pinnedIDsRaw.split(separator: ",").map { String($0) }
         pinnedIDs = Set(parts)
@@ -64,10 +69,13 @@ struct JournalTabView: View {
         guard let key = entry.id?.uuidString else { return }
         if pinnedIDs.contains(key) {
             pinnedIDs.remove(key)
+            entry.isPinned = false
         } else {
             pinnedIDs.insert(key)
+            entry.isPinned = true
         }
         persistPins()
+        try? ctx.save()
         recomputeFilteredEntries()
     }
 
@@ -192,7 +200,7 @@ struct JournalTabView: View {
         ToolbarItemGroup(placement: .topBarTrailing) {
             if selectionMode {
                 Button(role: .destructive) {
-                    deleteSelectedEntries()
+                    showBulkDeleteAlert = true
                 } label: {
                     Image(systemName: "trash")
                 }
@@ -499,77 +507,97 @@ struct JournalTabView: View {
     }
 
     // MARK: - iPhone layout
-    private var compactNavigationStack: some View {
-        NavigationStack {
-            List(selection: $selectedForDeletion) {
-                // Filter banner pinned at top when filtered/searching
-                if isFiltered {
-                    Section {
-                        FilterBanner(text: filteredDescription, onClear: clearAllFilters)
-                            .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
-                    }
-                }
 
+    // Extracted toolbar for compact to reduce type-checker work
+    @ToolbarContentBuilder
+    private var compactToolbar: some ToolbarContent {
+        if isFiltered {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    clearAllFilters()
+                } label: {
+                    Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle")
+                }
+            }
+        }
+        ToolbarItemGroup(placement: .topBarTrailing) {
+            if selectionMode {
+                Button(role: .destructive) {
+                    showBulkDeleteAlert = true
+                } label: {
+                    Image(systemName: "trash")
+                }
+                Button {
+                    selectionMode = false
+                    selectedForDeletion.removeAll()
+                } label: {
+                    Image(systemName: "xmark")
+                }
+            } else {
+                Button("New") {
+                    journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
+                }
+                Button("Select") {
+                    selectionMode = true
+                }
+            }
+        }
+    }
+
+    // Extracted list content for compact layout
+    @ViewBuilder
+    private var compactList: some View {
+        List(selection: $selectedForDeletion) {
+            // Filter banner pinned at top when filtered/searching
+            if isFiltered {
                 Section {
-                    ForEach(cachedFilteredEntries) { entry in
-                        NavigationLink(destination: JournalDetailView(entry: entry)) { listRow(for: entry) }
-                            .tag(entry)
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                Button(role: .destructive) {
-                                    deleteEntry(entry)
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                            }
-                            .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                                Button {
-                                    togglePin(entry)
-                                } label: {
-                                    Label(isPinned(entry) ? "Unpin" : "Pin", systemImage: "pin.fill")
-                                }
-                                .tint(.yellow)
-                            }
-                            .listRowInsets(EdgeInsets(top: 2, leading: 12, bottom: 2, trailing: 12))
-                    }
-                } header: {
-                    Text(headerCountText)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    FilterBanner(text: filteredDescription, onClear: clearAllFilters)
+                        .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
                 }
             }
-            .toolbar {
-                if isFiltered {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button {
-                            clearAllFilters()
-                        } label: {
-                            Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle")
-                        }
+
+            Section {
+                ForEach(cachedFilteredEntries) { entry in
+                    NavigationLink(destination: JournalDetailView(entry: entry)) {
+                        listRow(for: entry)
                     }
-                }
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    if selectionMode {
+                    .tag(entry)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
-                            deleteSelectedEntries()
+                            pendingDeleteEntry = entry
+                            showDeleteAlert = true
                         } label: {
-                            Image(systemName: "trash")
-                        }
-                        Button {
-                            selectionMode = false
-                            selectedForDeletion.removeAll()
-                        } label: {
-                            Image(systemName: "xmark")
-                        }
-                    } else {
-                        Button("New") {
-                            journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
-                        }
-                        Button("Select") {
-                            selectionMode = true
+                            Label("Delete", systemImage: "trash")
                         }
                     }
+                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                        Button {
+                            togglePin(entry)
+                        } label: {
+                            Label(isPinned(entry) ? "Unpin" : "Pin", systemImage: "pin.fill")
+                        }
+                        .tint(.yellow)
+                    }
+                    .listRowInsets(EdgeInsets(top: 2, leading: 12, bottom: 2, trailing: 12))
                 }
+            } header: {
+                Text(headerCountText)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
+        }
+    }
+
+    // Smaller NavigationStack built in steps for the compact layout
+    private var compactNavigationStack: some View {
+        let list = AnyView(compactList)
+
+        let base = NavigationStack {
+            list
+        }
+
+        let configured = base
+            .toolbar { compactToolbar }
             .navigationTitle(isFiltered ? "Journal\nFiltered" : "Journal")
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
@@ -577,6 +605,8 @@ struct JournalTabView: View {
             .navigationDestination(for: JournalEntry.self) { entry in
                 JournalDetailView(entry: entry)
             }
+
+        return configured
             .onAppear {
                 loadPins()
                 recomputeFilteredEntries()
@@ -588,7 +618,23 @@ struct JournalTabView: View {
                 filterDebounceTask?.cancel()
                 filterDebounceTask = nil
             }
-        }
+            .alert("Delete this entry?", isPresented: $showDeleteAlert, presenting: pendingDeleteEntry) { entry in
+                Button("Cancel", role: .cancel) {}
+                Button("Delete", role: .destructive) {
+                    deleteEntry(entry)
+                    pendingDeleteEntry = nil
+                }
+            } message: { _ in
+                Text("This action cannot be undone.")
+            }
+            .alert("Delete selected entries?", isPresented: $showBulkDeleteAlert) {
+                Button("Cancel", role: .cancel) {}
+                Button("Delete", role: .destructive) {
+                    deleteSelectedEntries()
+                }
+            } message: {
+                Text("This action cannot be undone.")
+            }
     }
 
     @ViewBuilder
@@ -629,7 +675,8 @@ struct JournalTabView: View {
                     .tag(entry)
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
-                            deleteEntry(entry)
+                            pendingDeleteEntry = entry
+                            showDeleteAlert = true
                         } label: {
                             Label("Delete", systemImage: "trash")
                         }

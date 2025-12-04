@@ -11,6 +11,11 @@ struct JournalEditorView: View {
     let showTagColors: Bool
     let onClose: (() -> Void)?
 
+    // Initial snapshots to detect "dirty" state
+    private let initialTitle: String
+    private let initialContent: String
+    private let initialTagsText: String
+
     @State private var title: String = ""
     @State private var content: String = ""
     @State private var tagsText: String = ""
@@ -24,6 +29,9 @@ struct JournalEditorView: View {
     @State private var showCopyToast: Bool = false
     @State private var showSavedToast: Bool = false
     @State private var editingEntry: JournalEntry? = nil
+
+    // Discard protection
+    @State private var showDiscardAlert: Bool = false
 
     // Caret/selection tracking
     @State private var textSelectionRange: NSRange = NSRange(location: 0, length: 0)
@@ -51,23 +59,38 @@ struct JournalEditorView: View {
         self.onClose = onClose
 
         if let editingEntry {
-            _title = State(initialValue: editingEntry.title)
-            _content = State(initialValue: editingEntry.body)
-            _tagsText = State(initialValue: editingEntry.tags.joined(separator: ", "))
+            let t = editingEntry.title
+            let b = editingEntry.body
+            let tg = editingEntry.tags.joined(separator: ", ")
+            self._title = State(initialValue: t)
+            self._content = State(initialValue: b)
+            self._tagsText = State(initialValue: tg)
+            self.initialTitle = t
+            self.initialContent = b
+            self.initialTagsText = tg
         } else {
-            _title = State(initialValue: "")
+            var startContent = initialBody ?? ""
             if let verseRef {
-                let smart = smartLinkString(from: verseRef)
+                let smart = Self.smartLinkString(from: verseRef)
                 if let initialBody, !initialBody.isEmpty {
-                    _content = State(initialValue: smart + "\n" + initialBody)
+                    startContent = smart + "\n" + initialBody
                 } else {
-                    _content = State(initialValue: smart)
+                    startContent = smart
                 }
-            } else {
-                _content = State(initialValue: initialBody ?? "")
             }
-            _tagsText = State(initialValue: "")
+            self._title = State(initialValue: "")
+            self._content = State(initialValue: startContent)
+            self._tagsText = State(initialValue: "")
+            self.initialTitle = ""
+            self.initialContent = startContent
+            self.initialTagsText = ""
         }
+    }
+
+    private var isDirty: Bool {
+        let currentTags = tagsText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let initialTags = initialTagsText.trimmingCharacters(in: .whitespacesAndNewlines)
+        return title != initialTitle || content != initialContent || currentTags != initialTags
     }
 
     var body: some View {
@@ -92,7 +115,11 @@ struct JournalEditorView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") {
-                        if let onClose { onClose() } else { dismiss() }
+                        if isDirty {
+                            showDiscardAlert = true
+                        } else {
+                            if let onClose { onClose() } else { dismiss() }
+                        }
                     }
                     .keyboardShortcut("w", modifiers: [.command])
                 }
@@ -109,6 +136,14 @@ struct JournalEditorView: View {
             } message: {
                 Text(saveErrorMessage)
             }
+            .alert("Discard changes?", isPresented: $showDiscardAlert) {
+                Button("Keep Editing", role: .cancel) {}
+                Button("Discard", role: .destructive) {
+                    if let onClose { onClose() } else { dismiss() }
+                }
+            } message: {
+                Text("You have unsaved changes. If you discard now, your edits will be lost.")
+            }
             .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
             .appToast(isPresented: $showSavedToast, symbol: "Saved", text: "Entry Saved", tint: .green)
             .onAppear {
@@ -124,6 +159,8 @@ struct JournalEditorView: View {
                 .presentationDetents([.medium, .large])
             }
         }
+        // Prevent swipe-to-dismiss if there are unsaved changes
+        .interactiveDismissDisabled(isDirty)
     }
 
     // MARK: - Compact (iPhone) Full-screen Editor
@@ -139,7 +176,7 @@ struct JournalEditorView: View {
                         .padding(.horizontal, 12)
                         .padding(.top, 8)
 
-                    TextField("Insert tag: i.e. Sermon Notes, Family, etc...", text: $tagsText)
+                    TextField("Add tags (comma-separated)", text: $tagsText)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled(true)
                         .font(.subheadline)
@@ -176,61 +213,40 @@ struct JournalEditorView: View {
                             onChange: { newText in
                                 scheduleLinkify(for: newText)
                                 detectHashTrigger()
+                            },
+                            linkify: { text in
+                                BibleReferenceLinker.linkify(text)
+                            },
+                            onLinkTap: { ref in
+                                if let content = BibleReferenceLinker.loadVerses(for: ref) {
+                                    previewRef = ref
+                                    previewContent = content
+                                    withAnimation(.spring()) { showPreview = true }
+                                }
                             }
                         )
                         .frame(minHeight: 400)
                     }
                     .padding(.bottom, 6)
 
-                    // iPhone-only smart link list (only links, stacked vertically)
-                    if hSize != .regular {
-                        let refs = ScriptureRefExtractor.refs(in: linkedContent)
-                        if !refs.isEmpty {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Smart Links")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-
-                                ScriptureLinksList(
-                                    refs: refs,
-                                    onTap: { ref in
-                                        if let content = BibleReferenceLinker.loadVerses(for: ref) {
-                                            previewRef = ref
-                                            previewContent = content
-                                            withAnimation(.spring()) { showPreview = true }
-                                        }
-                                    },
-                                    onCopy: { ref in
-                                        let s: String = {
-                                            if let end = ref.endVerse, end != ref.startVerse {
-                                                return "\(ref.bookName) \(ref.chapter):\(ref.startVerse)-\(end)"
-                                            }
-                                            return "\(ref.bookName) \(ref.chapter):\(ref.startVerse)"
-                                        }()
-                                        UIPasteboard.general.string = s
-                                        withAnimation(.spring()) { showCopyToast = true }
-                                    }
-                                )
-
-                                if showPreview, let content = previewContent {
-                                    ScripturePreviewCard(
-                                        content: content,
-                                        refContext: previewRef,
-                                        onCopy: {
-                                            let verseLines = content.verses.map { "\($0.number). \($0.text)" }.joined(separator: "\n")
-                                            UIPasteboard.general.string = content.title + "\n" + verseLines
-                                            withAnimation(.spring()) { showCopyToast = true }
-                                        },
-                                        onClose: {
-                                            withAnimation(.easeOut) { showPreview = false }
-                                        }
-                                    )
-                                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    // Inline preview appears when a link is tapped while editing
+                    if hSize != .regular, showPreview, let content = previewContent {
+                        VStack(alignment: .leading, spacing: 8) {
+                            ScripturePreviewCard(
+                                content: content,
+                                refContext: previewRef,
+                                onCopy: {
+                                    let verseLines = content.verses.map { "\($0.number). \($0.text)" }.joined(separator: "\n")
+                                    UIPasteboard.general.string = content.title + "\n" + verseLines
+                                    withAnimation(.spring()) { showCopyToast = true }
+                                },
+                                onClose: {
+                                    withAnimation(.easeOut) { showPreview = false }
                                 }
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.bottom, 8)
+                            )
                         }
+                        .padding(.horizontal, 12)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
                 }
                 .padding(.vertical, 8)
@@ -320,7 +336,7 @@ struct JournalEditorView: View {
                     .padding(.horizontal, 12)
                     .padding(.top, 8)
 
-                TextField("Insert tag: i.e. Sermon Notes, Family, etc...", text: $tagsText)
+                TextField("Add tags (comma-separated)", text: $tagsText)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled(true)
                     .font(.subheadline)
@@ -357,6 +373,22 @@ struct JournalEditorView: View {
                         onChange: { newText in
                             scheduleLinkify(for: newText)
                             detectHashTrigger()
+                        },
+                        linkify: { text in
+                            BibleReferenceLinker.linkify(text)
+                        },
+                        onLinkTap: { ref in
+                            // On iPad, route to split preview via notification
+                            NotificationCenter.default.post(
+                                name: JournalNotifications.openScripturePreview,
+                                object: nil,
+                                userInfo: [
+                                    "book": ref.bookName,
+                                    "chapter": ref.chapter,
+                                    "start": ref.startVerse,
+                                    "end": ref.endVerse as Any
+                                ]
+                            )
                         }
                     )
                     .frame(minHeight: 400)
@@ -383,6 +415,16 @@ struct JournalEditorView: View {
                 onChange: { newText in
                     scheduleLinkify(for: newText)
                     detectHashTrigger()
+                },
+                linkify: { text in
+                    BibleReferenceLinker.linkify(text)
+                },
+                onLinkTap: { ref in
+                    if let content = BibleReferenceLinker.loadVerses(for: ref) {
+                        previewRef = ref
+                        previewContent = content
+                        withAnimation(.spring()) { showPreview = true }
+                    }
                 }
             )
             .frame(minHeight: 400)
@@ -503,6 +545,20 @@ struct JournalEditorView: View {
             .filter { !$0.isEmpty }
     }
 
+    private func normalizedTags(from tags: [String]) -> [String] {
+        var seenLower: Set<String> = []
+        var result: [String] = []
+        for t in tags {
+            let key = t.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            guard !key.isEmpty else { continue }
+            if !seenLower.contains(key) {
+                seenLower.insert(key)
+                result.append(key)
+            }
+        }
+        return result
+    }
+
     private func scheduleLinkify(for text: String) {
         linkifyTask?.cancel()
         linkifyTask = Task(priority: .userInitiated) {
@@ -593,7 +649,7 @@ struct JournalEditorView: View {
     private func save(manual: Bool) {
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedBody = content.trimmingCharacters(in: .whitespacesAndNewlines)
-        let tags = parsedTags
+        let tags = normalizedTags(from: parsedTags)
 
         if let entry = editingEntry {
             entry.title = trimmedTitle
@@ -643,7 +699,7 @@ struct JournalEditorView: View {
     }
 
     // Build a smart link string from a VerseRef that BibleReferenceLinker will detect.
-    private func smartLinkString(from ref: VerseRef) -> String {
+    private static func smartLinkString(from ref: VerseRef) -> String {
         return "#\(ref.book) \(ref.chapter):\(ref.verse)"
     }
 }

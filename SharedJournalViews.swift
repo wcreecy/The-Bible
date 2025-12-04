@@ -206,12 +206,26 @@ struct CursorTextView: UIViewRepresentable {
     @Binding var bottomInset: CGFloat
     var onChange: ((String) -> Void)? = nil
 
+    // New: optional inline linkifier and link tap callback
+    var linkify: ((String) -> AttributedString)? = nil
+    var onLinkTap: ((ScriptureRef) -> Void)? = nil
+
     func makeUIView(context: Context) -> UITextView {
         let tv = UITextView()
         tv.isScrollEnabled = true
         tv.backgroundColor = .clear
-        tv.text = text
         tv.delegate = context.coordinator
+
+        // Enable editing and selection
+        tv.isEditable = true
+        tv.isSelectable = true
+        tv.dataDetectorTypes = [] // we apply custom links
+
+        // Link appearance
+        tv.linkTextAttributes = [
+            .foregroundColor: UIColor.systemBlue,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
 
         // Enable autocorrect/spell check and automatic capitalization
         tv.autocorrectionType = .default
@@ -223,6 +237,14 @@ struct CursorTextView: UIViewRepresentable {
         tv.font = UIFont.preferredFont(forTextStyle: .body)
         tv.textContainer.lineFragmentPadding = 5
         tv.textContainerInset = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
+
+        // Seed text (attributed if linkify provided)
+        if let linkify {
+            let linked = NSAttributedString(linkify(text))
+            tv.attributedText = linked
+        } else {
+            tv.text = text
+        }
 
         // Initial insets
         applyInsets(to: tv, bottom: bottomInset)
@@ -236,12 +258,31 @@ struct CursorTextView: UIViewRepresentable {
         context.coordinator.isInSwiftUIUpdate = true
         defer { context.coordinator.isInSwiftUIUpdate = false }
 
-        // Update text
-        if uiView.text != text {
+        // Update text (preserving selection)
+        let currentString = uiView.text ?? ""
+        if currentString != text {
             context.coordinator.isProgrammaticUpdate = true
-            uiView.text = text
+            let oldRange = uiView.selectedRange
+            if let linkify {
+                uiView.attributedText = NSAttributedString(linkify(text))
+                context.coordinator.lastLinkifiedText = text
+            } else {
+                uiView.text = text
+            }
+            uiView.selectedRange = oldRange
             context.coordinator.isProgrammaticUpdate = false
+        } else if let linkify {
+            // Re-apply attributes if needed without changing the underlying text
+            if context.coordinator.lastLinkifiedText != text {
+                context.coordinator.isProgrammaticUpdate = true
+                let oldRange = uiView.selectedRange
+                uiView.attributedText = NSAttributedString(linkify(text))
+                uiView.selectedRange = oldRange
+                context.coordinator.lastLinkifiedText = text
+                context.coordinator.isProgrammaticUpdate = false
+            }
         }
+
         // Update selection
         if uiView.selectedRange != selection {
             let maxLoc = max(0, (uiView.text as NSString).length)
@@ -271,15 +312,12 @@ struct CursorTextView: UIViewRepresentable {
         }
 
         if #available(iOS 13.0, *) {
-            // Adjust only vertical scroll indicator insets
             var vertical = tv.verticalScrollIndicatorInsets
             if abs(vertical.bottom - bottom) > 0.5 {
                 vertical.bottom = bottom
                 tv.verticalScrollIndicatorInsets = vertical
             }
-            // Leave horizontalScrollIndicatorInsets unchanged
         } else {
-            // Fallback for older iOS where scrollIndicatorInsets is not deprecated
             var ind = tv.scrollIndicatorInsets
             if abs(ind.bottom - bottom) > 0.5 {
                 ind.bottom = bottom
@@ -295,6 +333,9 @@ struct CursorTextView: UIViewRepresentable {
         var isProgrammaticUpdate: Bool = false
         var isInSwiftUIUpdate: Bool = false
         private var lastCaretRect: CGRect = .null
+
+        // Cache last linkified source to avoid redundant attribute work
+        var lastLinkifiedText: String?
 
         init(parent: CursorTextView) { self.parent = parent }
 
@@ -314,6 +355,13 @@ struct CursorTextView: UIViewRepresentable {
             }
             updateCaretRect(textView)
             scrollCaretVisible(textView)
+            // Re-apply linkification on change if provided
+            if let linkify = parent.linkify {
+                lastLinkifiedText = newText
+                let oldRange = textView.selectedRange
+                textView.attributedText = NSAttributedString(linkify(newText))
+                textView.selectedRange = oldRange
+            }
             DispatchQueue.main.async {
                 self.parent.onChange?(textView.text)
             }
@@ -376,6 +424,21 @@ struct CursorTextView: UIViewRepresentable {
             if range.location != NSNotFound {
                 textView.scrollRangeToVisible(range)
             }
+        }
+
+        // Intercept link taps inside editable text
+        func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+            if let ref = BibleReferenceLinker.parse(url: URL) {
+                if let content = BibleReferenceLinker.loadVerses(for: ref) {
+                    DispatchQueue.main.async {
+                        self.parent.onLinkTap?(ref)
+                    }
+                    // We handled it; don't perform default action
+                    return false
+                }
+            }
+            // Not our custom scheme; allow system
+            return true
         }
     }
 }

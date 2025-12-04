@@ -68,11 +68,9 @@ struct JournalDetailView: View {
                 ShareLink(item: shareText) {
                     Image(systemName: "square.and.arrow.up")
                 }
-                // Only show Edit on iPad/regular width; hide on iPhone/compact
-                if hSize == .regular {
-                    Button("Edit") {
-                        journalComposer.presentForEditing(entry: entry)
-                    }
+                // Show Edit on both iPhone and iPad for discoverability
+                Button("Edit") {
+                    journalComposer.presentForEditing(entry: entry)
                 }
             }
         }
@@ -237,7 +235,7 @@ private let previewJournalContainer: ModelContainer = {
     Tap references to preview and copy.
     """
     sample.verseRef = VerseRef(book: "John", chapter: 3, verse: 16, translation: "ESV")
-    sample.tags = ["Prayer", "Faith"]
+    sample.tags = ["prayer", "faith"]
     sample.isFavorite = true
     sample.isPinned = true
     context.insert(sample)
