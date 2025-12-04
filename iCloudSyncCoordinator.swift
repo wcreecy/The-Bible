@@ -97,6 +97,8 @@ final class iCloudSyncCoordinator {
             keys.append("hangmanAllTimeAnswered_\(d)")
             keys.append("hangmanAllTimeBestStreak_\(d)")
         }
+        // Include legacy unsuffixed keys for backward compatibility
+        keys.append(contentsOf: ["hangmanAllTimeCorrect", "hangmanAllTimeAnswered", "hangmanAllTimeBestStreak"])
         return keys
     }()
 
@@ -121,6 +123,8 @@ final class iCloudSyncCoordinator {
             keys.append("refmatchAllTimeAnswered_\(d)")
             keys.append("refmatchAllTimeBestStreak_\(d)")
         }
+        // Include legacy unsuffixed keys for backward compatibility
+        keys.append(contentsOf: ["refmatchAllTimeCorrect", "refmatchAllTimeAnswered", "refmatchAllTimeBestStreak"])
         return keys
     }()
 
@@ -172,6 +176,26 @@ final class iCloudSyncCoordinator {
         kvs.synchronize()
     }
 
+    // MARK: - Timestamp helpers (for LWW game keys)
+
+    private func tsKey(for key: String) -> String { "__ts__\(key)" }
+
+    private func readLocalTimestamp(for key: String) -> Double {
+        defaults.double(forKey: tsKey(for: key)) // returns 0 if missing
+    }
+
+    private func writeLocalTimestampNow(for key: String) {
+        defaults.set(Date().timeIntervalSince1970, forKey: tsKey(for: key))
+    }
+
+    private func readRemoteTimestamp(for key: String) -> Double {
+        kvs.double(forKey: tsKey(for: key)) // returns 0 if missing
+    }
+
+    private func writeRemoteTimestampNow(for key: String) {
+        kvs.set(Date().timeIntervalSince1970, forKey: tsKey(for: key))
+    }
+
     // MARK: - KVS change handling
 
     @objc
@@ -179,6 +203,7 @@ final class iCloudSyncCoordinator {
         guard let userInfo = note.userInfo else { return }
 
         let changedKeys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String] ?? []
+        // Filter to known data keys; ignore our timestamp companion keys
         let keysToProcess = changedKeys.filter { allKnownKeys.contains($0) }
 
         guard !keysToProcess.isEmpty else { return }
@@ -212,6 +237,9 @@ final class iCloudSyncCoordinator {
         if isGameCounterKey(key) {
             let v = defaults.integer(forKey: key)
             kvs.set(v, forKey: key)
+            // Update and mirror timestamp for LWW
+            writeLocalTimestampNow(for: key)
+            writeRemoteTimestampNow(for: key)
             return
         }
 
@@ -231,15 +259,33 @@ final class iCloudSyncCoordinator {
 
     private func mergeIncomingKVSValue(forKey key: String) {
         if isGameCounterKey(key) {
-            // IMPORTANT: Game counters are absolute totals on each device.
-            // Using sum here causes double-count inflation as devices bounce the same totals.
-            // Merge strategy: max for all game counters (Correct, Answered, BestStreak).
-            let remote = kvs.longLong(forKey: key)
-            let local = defaults.integer(forKey: key)
-            let sanitizedRemote = max(0, Int(remote))
-            let sanitizedLocal = max(0, local)
-            let merged = max(sanitizedLocal, sanitizedRemote)
-            defaults.set(merged, forKey: key)
+            // Last-write-wins using per-key timestamps
+            let remoteTS = readRemoteTimestamp(for: key)
+            let localTS = readLocalTimestamp(for: key)
+
+            // Read values
+            let remoteVal = Int(kvs.longLong(forKey: key))
+            let localVal = defaults.integer(forKey: key)
+
+            // Missing timestamps are treated as very old (0)
+            // If remote newer, adopt remote; if local newer or equal, keep local.
+            if remoteTS > localTS {
+                defaults.set(max(0, remoteVal), forKey: key)
+                // Update local timestamp to remote's timestamp so both sides agree
+                defaults.set(remoteTS, forKey: tsKey(for: key))
+            } else if remoteTS == 0 && localTS == 0 {
+                // Legacy case: fall back to max once, then stamp local as now
+                let merged = max(max(0, localVal), max(0, remoteVal))
+                defaults.set(merged, forKey: key)
+                writeLocalTimestampNow(for: key)
+                kvs.set(merged, forKey: key)
+                writeRemoteTimestampNow(for: key)
+            } else {
+                // Local is newer or equal; ensure KVS reflects local (helps propagate clears)
+                kvs.set(max(0, localVal), forKey: key)
+                // Also mirror the local timestamp to KVS
+                if localTS > 0 { kvs.set(localTS, forKey: tsKey(for: key)) }
+            }
             return
         }
 
@@ -485,3 +531,4 @@ extension Notification.Name {
     // If you deep link to a passage elsewhere, you already have:
     // static let openBibleReference = Notification.Name("openBibleReference")
 }
+
