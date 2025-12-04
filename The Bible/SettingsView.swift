@@ -198,6 +198,7 @@ struct SettingsView: View {
     @State private var debugAlertTitle: String = ""
     @State private var debugAlertMessage: String = ""
     @State private var showDebugAlert: Bool = false
+    @State private var debugUtilitiesExpanded: Bool = false
     #endif
 
     var body: some View {
@@ -313,206 +314,223 @@ struct SettingsView: View {
             }
             .headerProminence(.increased)
 
-            // MARK: Debug Utilities
-            Section(header: Text("Debug Utilities")) {
-
-                // iCloud KVS tools
-                Group {
-                    Button {
-                        iCloudSyncCoordinator.shared.pushAllNow()
-                        debugShow("iCloud KVS", "Pushed all known keys.\nLast push: \(formatDateTime(iCloudSyncCoordinator.shared.lastPushDate))")
-                    } label: {
-                        Label("Force KVS Push", systemImage: "icloud.and.arrow.up")
-                    }
-
-                    Button {
-                        let lastPush = formatDateTime(iCloudSyncCoordinator.shared.lastPushDate)
-                        let lastMerge = formatDateTime(iCloudSyncCoordinator.shared.lastMergeDate)
-                        debugShow("KVS Timestamps", "Last Push: \(lastPush)\nLast Merge: \(lastMerge)")
-                    } label: {
-                        Label("Show KVS Last Push/Merge", systemImage: "clock")
-                    }
-
-                    Button {
-                        let kvs = NSUbiquitousKeyValueStore.default
-                        let tempKey = "debug.temp.\(UUID().uuidString)"
-                        kvs.set(Date().timeIntervalSince1970, forKey: tempKey)
-                        kvs.synchronize()
-                        NotificationCenter.default.post(
-                            name: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
-                            object: kvs,
-                            userInfo: [
-                                NSUbiquitousKeyValueStoreChangedKeysKey: [tempKey],
-                                NSUbiquitousKeyValueStoreChangeReasonKey: NSUbiquitousKeyValueStoreServerChange
-                            ]
-                        )
-                        debugShow("KVS Simulation", "Posted didChangeExternallyNotification for key:\n\(tempKey)")
-                    } label: {
-                        Label("Simulate External KVS Change", systemImage: "wave.3.right")
-                    }
-                }
-
-                // Reading sessions + totals
-                Group {
-                    Button {
-                        seedSampleSessionsLast7Days()
-                    } label: {
-                        Label("Seed Reading Sessions (Last 7 Days)", systemImage: "clock.badge.plus")
-                    }
-
-                    Button(role: .destructive) {
-                        clearReadingSessionsOnly()
-                    } label: {
-                        Label("Clear Reading Sessions Only", systemImage: "trash")
-                    }
-
-                    Button {
-                        let last7 = BibleStatsStore.shared.totalForLast(days: 7)
-                        let last30 = BibleStatsStore.shared.totalForLast(days: 30)
-                        let thisMonth = BibleStatsStore.shared.totalForMonth(containing: Date())
-                        print("DEBUG Totals -> last7: \(last7)s, last30: \(last30)s, thisMonth: \(thisMonth)s")
-                        debugShow("Reading Totals",
-                                  "Last 7 Days: \(BibleStatsStore.shared.format(last7))\n" +
-                                  "Last 30 Days: \(BibleStatsStore.shared.format(last30))\n" +
-                                  "This Month: \(BibleStatsStore.shared.format(thisMonth))")
-                    } label: {
-                        Label("Dump Reading Totals", systemImage: "text.justify.left")
-                    }
-                }
-
-                // Chapter/verse progress
-                Group {
-                    Button {
-                        markFirstThreeChaptersComplete()
-                    } label: {
-                        Label("Mark First 3 Chapters as Read (Book)", systemImage: "checkmark.circle")
-                    }
-
-                    Button(role: .destructive) {
-                        clearChapterOneForDefaultBook()
-                    } label: {
-                        Label("Clear Chapter 1 Seen Verses (Book)", systemImage: "xmark.circle")
-                    }
-
-                    Button {
-                        logVerseCoverageForDefaultBook()
-                    } label: {
-                        Label("Log Verse Coverage (Book)", systemImage: "chart.bar.doc.horizontal")
-                    }
-                }
-
-                // SwiftData / CloudKit helpers
-                Group {
-                    Button(role: .destructive) {
-                        deleteAllFavorites()
-                    } label: {
-                        Label("Delete All Favorites", systemImage: "trash")
-                    }
-
-                    Button {
-                        print("Favorites: \(favorites.count)")
-                        print("Journal entries: \(journalEntries.count)")
-                        for e in journalEntries.prefix(5) {
-                            print("• \(e.title)")
+            // MARK: Debug Utilities (collapsible)
+            Section {
+                if debugUtilitiesExpanded {
+                    // iCloud KVS tools
+                    Group {
+                        Button {
+                            iCloudSyncCoordinator.shared.pushAllNow()
+                            debugShow("iCloud KVS", "Pushed all known keys.\nLast push: \(formatDateTime(iCloudSyncCoordinator.shared.lastPushDate))")
+                        } label: {
+                            Label("Force KVS Push", systemImage: "icloud.and.arrow.up")
                         }
-                        debugShow("Counts",
-                                  "Favorites: \(favorites.count)\nJournal entries: \(journalEntries.count)")
-                    } label: {
-                        Label("Count Favorites & Journal", systemImage: "number")
-                    }
 
-                    Button {
-                        Task {
-                            await cloudKitManager.refresh()
-                            debugShow("CloudKit", "Refreshed CloudKit status.")
+                        Button {
+                            let lastPush = formatDateTime(iCloudSyncCoordinator.shared.lastPushDate)
+                            let lastMerge = formatDateTime(iCloudSyncCoordinator.shared.lastMergeDate)
+                            debugShow("KVS Timestamps", "Last Push: \(lastPush)\nLast Merge: \(lastMerge)")
+                        } label: {
+                            Label("Show KVS Last Push/Merge", systemImage: "clock")
                         }
-                    } label: {
-                        Label("Refresh CloudKit Status", systemImage: "arrow.clockwise")
-                    }
-                }
 
-                // Home layout
-                Group {
-                    Button {
-                        layoutOrder = HomeCardID.allCases
-                        hiddenSet = [.games, .streaks, .bibleStats]
-                        saveHomeLayout()
-                        debugShow("Home Layout", "Restored default order and hidden set.")
-                    } label: {
-                        Label("Reset Home Layout to Defaults", systemImage: "arrow.counterclockwise")
-                    }
-
-                    Button {
-                        // Toggle to baseline hidden set
-                        let baseline: Set<HomeCardID> = [.games, .streaks, .bibleStats]
-                        hiddenSet = baseline
-                        saveHomeLayout()
-                        debugShow("Home Layout", "Set hidden to baseline: Games, Streaks, Bible Stats.")
-                    } label: {
-                        Label("Apply Hidden Baseline", systemImage: "eye.slash")
-                    }
-                }
-
-                // Journal
-                Group {
-                    Button {
-                        insertSampleJournalEntry()
-                    } label: {
-                        Label("Insert Sample Journal Entry", systemImage: "square.and.pencil")
-                    }
-
-                    Button {
-                        let count = journalEntries.count
-                        print("Journal entries count: \(count)")
-                        for e in journalEntries.prefix(10) {
-                            print("• \(e.title)")
+                        Button {
+                            let kvs = NSUbiquitousKeyValueStore.default
+                            let tempKey = "debug.temp.\(UUID().uuidString)"
+                            kvs.set(Date().timeIntervalSince1970, forKey: tempKey)
+                            kvs.synchronize()
+                            NotificationCenter.default.post(
+                                name: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
+                                object: kvs,
+                                userInfo: [
+                                    NSUbiquitousKeyValueStoreChangedKeysKey: [tempKey],
+                                    NSUbiquitousKeyValueStoreChangeReasonKey: NSUbiquitousKeyValueStoreServerChange
+                                ]
+                            )
+                            debugShow("KVS Simulation", "Posted didChangeExternallyNotification for key:\n\(tempKey)")
+                        } label: {
+                            Label("Simulate External KVS Change", systemImage: "wave.3.right")
                         }
-                        debugShow("Journal", "Entries count: \(count)")
-                    } label: {
-                        Label("Count Journal Entries", systemImage: "list.bullet.rectangle")
                     }
-                }
 
-                // Verse of the Day / Widgets (no VerseProvider call)
-                Group {
-                    Button {
-                        writeTestVOTDToDefaultsAndAppGroup()
-                    } label: {
-                        Label("Write Test Verse of the Day to App Group", systemImage: "square.and.arrow.down.on.square")
-                    }
-                }
-
-                // Build/env diagnostics
-                Group {
-                    Button {
-                        Task {
-                            let cfg = ProcessInfo.processInfo.environment["CONFIGURATION"] ?? "<unknown>"
-                            let bundleID = Bundle.main.bundleIdentifier ?? "<unknown>"
-                            let appIDPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String ?? "<unknown>"
-                            let container = "iCloud.creecy.bible"
-                            let cloudKitFlag = swiftdataCloudKitEnabled ? "enabled" : "disabled"
-                            let storeHint = await The_Bible__iOS_App.computeStoreEnvironmentHint() ?? The_Bible__iOS_App.buildEnvHintFallback()
-                            let msg = """
-                            Build configuration: \(cfg)
-                            Bundle ID: \(bundleID)
-                            AppIdentifierPrefix: \(appIDPrefix)
-                            CloudKit container: \(container)
-                            SwiftData CloudKit: \(cloudKitFlag)
-                            StoreKit environment: \(storeHint)
-                            """
-                            print("DEBUG Build/Env:\n\(msg)")
-                            debugShow("Build/Environment", msg)
+                    // Reading sessions + totals
+                    Group {
+                        Button {
+                            seedSampleSessionsLast7Days()
+                        } label: {
+                            Label("Seed Reading Sessions (Last 7 Days)", systemImage: "clock.badge.plus")
                         }
-                    } label: {
-                        Label("Show Build/Environment Diagnostics", systemImage: "info.circle")
+
+                        Button(role: .destructive) {
+                            clearReadingSessionsOnly()
+                        } label: {
+                            Label("Clear Reading Sessions Only", systemImage: "trash")
+                        }
+
+                        Button {
+                            let last7 = BibleStatsStore.shared.totalForLast(days: 7)
+                            let last30 = BibleStatsStore.shared.totalForLast(days: 30)
+                            let thisMonth = BibleStatsStore.shared.totalForMonth(containing: Date())
+                            print("DEBUG Totals -> last7: \(last7)s, last30: \(last30)s, thisMonth: \(thisMonth)s")
+                            debugShow("Reading Totals",
+                                      "Last 7 Days: \(BibleStatsStore.shared.format(last7))\n" +
+                                      "Last 30 Days: \(BibleStatsStore.shared.format(last30))\n" +
+                                      "This Month: \(BibleStatsStore.shared.format(thisMonth))")
+                        } label: {
+                            Label("Dump Reading Totals", systemImage: "text.justify.left")
+                        }
+                    }
+
+                    // Chapter/verse progress
+                    Group {
+                        Button {
+                            markFirstThreeChaptersComplete()
+                        } label: {
+                            Label("Mark First 3 Chapters as Read (Book)", systemImage: "checkmark.circle")
+                        }
+
+                        Button(role: .destructive) {
+                            clearChapterOneForDefaultBook()
+                        } label: {
+                            Label("Clear Chapter 1 Seen Verses (Book)", systemImage: "xmark.circle")
+                        }
+
+                        Button {
+                            logVerseCoverageForDefaultBook()
+                        } label: {
+                            Label("Log Verse Coverage (Book)", systemImage: "chart.bar.doc.horizontal")
+                        }
+                    }
+
+                    // SwiftData / CloudKit helpers
+                    Group {
+                        Button(role: .destructive) {
+                            deleteAllFavorites()
+                        } label: {
+                            Label("Delete All Favorites", systemImage: "trash")
+                        }
+
+                        Button {
+                            print("Favorites: \(favorites.count)")
+                            print("Journal entries: \(journalEntries.count)")
+                            for e in journalEntries.prefix(5) {
+                                print("• \(e.title)")
+                            }
+                            debugShow("Counts",
+                                      "Favorites: \(favorites.count)\nJournal entries: \(journalEntries.count)")
+                        } label: {
+                            Label("Count Favorites & Journal", systemImage: "number")
+                        }
+
+                        Button {
+                            Task {
+                                await cloudKitManager.refresh()
+                                debugShow("CloudKit", "Refreshed CloudKit status.")
+                            }
+                        } label: {
+                            Label("Refresh CloudKit Status", systemImage: "arrow.clockwise")
+                        }
+                    }
+
+                    // Home layout
+                    Group {
+                        Button {
+                            layoutOrder = HomeCardID.allCases
+                            hiddenSet = [.games, .streaks, .bibleStats]
+                            saveHomeLayout()
+                            debugShow("Home Layout", "Restored default order and hidden set.")
+                        } label: {
+                            Label("Reset Home Layout to Defaults", systemImage: "arrow.counterclockwise")
+                        }
+
+                        Button {
+                            // Toggle to baseline hidden set
+                            let baseline: Set<HomeCardID> = [.games, .streaks, .bibleStats]
+                            hiddenSet = baseline
+                            saveHomeLayout()
+                            debugShow("Home Layout", "Set hidden to baseline: Games, Streaks, Bible Stats.")
+                        } label: {
+                            Label("Apply Hidden Baseline", systemImage: "eye.slash")
+                        }
+                    }
+
+                    // Journal
+                    Group {
+                        Button {
+                            insertSampleJournalEntry()
+                        } label: {
+                            Label("Insert Sample Journal Entry", systemImage: "square.and.pencil")
+                        }
+
+                        Button {
+                            let count = journalEntries.count
+                            print("Journal entries count: \(count)")
+                            for e in journalEntries.prefix(10) {
+                                print("• \(e.title)")
+                            }
+                            debugShow("Journal", "Entries count: \(count)")
+                        } label: {
+                            Label("Count Journal Entries", systemImage: "list.bullet.rectangle")
+                        }
+                    }
+
+                    // Verse of the Day / Widgets (no VerseProvider call)
+                    Group {
+                        Button {
+                            writeTestVOTDToDefaultsAndAppGroup()
+                        } label: {
+                            Label("Write Test Verse of the Day to App Group", systemImage: "square.and.arrow.down.on.square")
+                        }
+                    }
+
+                    // Build/env diagnostics
+                    Group {
+                        Button {
+                            Task {
+                                let cfg = ProcessInfo.processInfo.environment["CONFIGURATION"] ?? "<unknown>"
+                                let bundleID = Bundle.main.bundleIdentifier ?? "<unknown>"
+                                let appIDPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String ?? "<unknown>"
+                                let container = "iCloud.creecy.bible"
+                                let cloudKitFlag = swiftdataCloudKitEnabled ? "enabled" : "disabled"
+                                let storeHint = await The_Bible__iOS_App.computeStoreEnvironmentHint() ?? The_Bible__iOS_App.buildEnvHintFallback()
+                                let msg = """
+                                Build configuration: \(cfg)
+                                Bundle ID: \(bundleID)
+                                AppIdentifierPrefix: \(appIDPrefix)
+                                CloudKit container: \(container)
+                                SwiftData CloudKit: \(cloudKitFlag)
+                                StoreKit environment: \(storeHint)
+                                """
+                                print("DEBUG Build/Env:\n\(msg)")
+                                debugShow("Build/Environment", msg)
+                            }
+                        } label: {
+                            Label("Show Build/Environment Diagnostics", systemImage: "info.circle")
+                        }
                     }
                 }
+            } header: {
+                // Custom header with caret chevron
+                Button {
+                    debugUtilitiesExpanded.toggle()
+                } label: {
+                    HStack {
+                        Text("Debug Utilities")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .rotationEffect(debugUtilitiesExpanded ? .degrees(90) : .degrees(0))
+                            .foregroundStyle(.secondary)
+                            .animation(.easeInOut(duration: 0.2), value: debugUtilitiesExpanded)
+                    }
+                }
+                .buttonStyle(.plain)
             }
             .alert(debugAlertTitle, isPresented: $showDebugAlert) {
                 Button("OK", role: .cancel) {}
             } message: {
                 Text(debugAlertMessage)
             }
+            .headerProminence(.increased)
             #endif
         }
         .navigationTitle("Settings")

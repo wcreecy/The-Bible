@@ -1915,34 +1915,94 @@ struct HomeView: View {
     // MARK: - Dynamic body using saved layout
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                titleCard
+        // Build the list of visible cards in the saved order
+        let activeCards: [HomeCardID] = layoutOrder.filter { !hiddenSet.contains($0) }
 
-                // Render reorderable/hideable cards based on saved layout
-                ForEach(layoutOrder, id: \.self) { card in
-                    if !hiddenSet.contains(card) {
-                        switch card {
-                        case .verseOfDay:
-                            verseOfDayCard
-                        case .dailyFocus:
-                            dailyFocusCard
-                        case .timer:
-                            timerCard
-                        case .resumeReading:
-                            resumeCard
-                        case .games:
-                            gamesCard
-                        case .streaks:
-                            streaksCard
-                        case .bibleStats:
-                            bibleStatsCard
+        ScrollView {
+            if isPad {
+                // iPad: Title card full width, then an adaptive two-column grid if we have enough cards.
+                VStack(spacing: 16) {
+                    titleCard
+
+                    if activeCards.count >= 2 {
+                        // Two equal columns
+                        let columns = [
+                            GridItem(.flexible(), spacing: 16, alignment: .top),
+                            GridItem(.flexible(), spacing: 16, alignment: .top)
+                        ]
+                        LazyVGrid(columns: columns, alignment: .center, spacing: 16) {
+                            ForEach(activeCards, id: \.self) { card in
+                                switch card {
+                                case .verseOfDay:
+                                    verseOfDayCard
+                                case .dailyFocus:
+                                    dailyFocusCard
+                                case .timer:
+                                    timerCard
+                                case .resumeReading:
+                                    resumeCard
+                                case .games:
+                                    gamesCard
+                                case .streaks:
+                                    streaksCard
+                                case .bibleStats:
+                                    bibleStatsCard
+                                }
+                            }
+                        }
+                    } else {
+                        // Fallback to single column when there aren't enough cards
+                        VStack(spacing: 16) {
+                            ForEach(activeCards, id: \.self) { card in
+                                switch card {
+                                case .verseOfDay:
+                                    verseOfDayCard
+                                case .dailyFocus:
+                                    dailyFocusCard
+                                case .timer:
+                                    timerCard
+                                case .resumeReading:
+                                    resumeCard
+                                case .games:
+                                    gamesCard
+                                case .streaks:
+                                    streaksCard
+                                case .bibleStats:
+                                    bibleStatsCard
+                                }
+                            }
                         }
                     }
                 }
+                .padding(.horizontal, 24)
+            } else {
+                // iPhone: original single-column stack
+                VStack(spacing: 16) {
+                    titleCard
+
+                    ForEach(layoutOrder, id: \.self) { card in
+                        if !hiddenSet.contains(card) {
+                            switch card {
+                            case .verseOfDay:
+                                verseOfDayCard
+                            case .dailyFocus:
+                                dailyFocusCard
+                            case .timer:
+                                timerCard
+                            case .resumeReading:
+                                resumeCard
+                            case .games:
+                                gamesCard
+                            case .streaks:
+                                streaksCard
+                            case .bibleStats:
+                                bibleStatsCard
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
             }
-            // Adjusted: give iPhone horizontal padding too so cards don’t touch edges
-            .padding(.horizontal, isPad ? 24 : 16)
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationTitle("")
@@ -3016,3 +3076,4 @@ private final class DebouncedWidgetReloader {
         queue.asyncAfter(deadline: .now() + 0.6, execute: item)
     }
 }
+
