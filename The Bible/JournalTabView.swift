@@ -544,10 +544,59 @@ struct JournalTabView: View {
         }
     }
 
+    // Compact header row to guarantee visibility of New/Select in portrait
+    private var compactHeaderActions: some View {
+        HStack(spacing: 10) {
+            if selectionMode {
+                Button(role: .destructive) {
+                    showBulkDeleteAlert = true
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.red)
+
+                Button {
+                    selectionMode = false
+                    selectedForDeletion.removeAll()
+                } label: {
+                    Label("Cancel", systemImage: "xmark")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+            } else {
+                Button {
+                    journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
+                } label: {
+                    Label("New", systemImage: "plus")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+
+                Button {
+                    selectionMode = true
+                } label: {
+                    Label("Select", systemImage: "checkmark.circle")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+    }
+
     // Extracted list content for compact layout
     @ViewBuilder
     private var compactList: some View {
         List(selection: $selectedForDeletion) {
+            // Header actions visible in compact portrait to ensure access to New/Select
+            Section {
+                compactHeaderActions
+                    .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+            }
+
             // Filter banner pinned at top when filtered/searching
             if isFiltered {
                 Section {
