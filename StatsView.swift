@@ -438,7 +438,7 @@ struct StatsView: View {
     private var otNtCard: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 8) {
-                Text("OT vs NT")
+                Text("OT vs NT: \(timeScope.rawValue)")
                     .font(.headline)
                 HStack(spacing: 8) {
                     Text("OT")
@@ -679,7 +679,7 @@ struct StatsView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         // Make the scope explicit in the title for clarity
-                        Text("Total Bible Reading Time — \(timeScope.rawValue)")
+                        Text("Total Bible Reading Time: \(timeScope.rawValue)")
                             .font(.headline)
                         Spacer()
                         Text(BibleStatsStore.shared.format(scopedTotalSeconds))

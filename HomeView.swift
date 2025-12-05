@@ -378,38 +378,35 @@ struct HomeView: View {
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
     @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds: Int = 0
 
-    // Small filling flame icon
-    private struct FlameFillIcon: View {
-        var progress: Double // 0...1
-        var size: CGFloat = 20
-        var tint: Color = .orange
-
-        var clamped: Double { max(0, min(1, progress)) }
+    // Progress-fill text used in the title card subtitle
+    private struct ProgressFillText: View {
+        let text: String
+        let font: Font
+        let progress: Double // 0...1
+        // Gradient from blue (cold) to red (hot)
+        private var gradient: LinearGradient {
+            LinearGradient(colors: [.blue, .red], startPoint: .leading, endPoint: .trailing)
+        }
 
         var body: some View {
-            ZStack {
-                // Filled layer masked by vertical progress
-                Image(systemName: "flame.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(tint)
+            ZStack(alignment: .leading) {
+                Text(text)
+                    .font(font)
+                    .foregroundStyle(.secondary)
+                // Overlay the same text, but clipped horizontally by progress, filled with gradient
+                Text(text)
+                    .font(font)
+                    .foregroundStyle(gradient)
                     .mask(
                         GeometryReader { geo in
-                            let h = geo.size.height
-                            let fillHeight = h * clamped
+                            let width = max(0, min(1, progress)) * geo.size.width
                             Rectangle()
-                                .frame(width: geo.size.width, height: fillHeight)
-                                .position(x: geo.size.width / 2, y: h - fillHeight / 2)
+                                .frame(width: width, height: geo.size.height)
+                                .alignmentGuide(.leading) { d in d[.leading] }
                         }
                     )
-                // Outline on top to keep “unfilled” look
-                Image(systemName: "flame")
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(.secondary)
             }
-            .frame(width: size, height: size)
-            .accessibilityHidden(true)
+            .accessibilityLabel(text)
         }
     }
 
@@ -422,9 +419,8 @@ struct HomeView: View {
         let titleWeight: Font.Weight = .black
         let subtitleFont: Font = isPad ? .title3.weight(.semibold) : .subheadline.weight(.semibold)
 
-        // Compute today's daily goal progress for the flame
+        // Compute today's daily goal progress for the subtitle fill
         let goalSeconds = max(1, dailyGoalMinutes) * 60
-        // Use Bible reading time (today) from BibleStatsStore instead of app usage time
         let todayReadingSeconds = BibleStatsStore.shared.totalForLast(days: 1)
         let progress = min(1.0, Double(max(0, todayReadingSeconds)) / Double(goalSeconds))
         let percent = Int(round(progress * 100))
@@ -437,22 +433,18 @@ struct HomeView: View {
             tint: .blue,
             titleFont: titleFont,
             titleFontWeight: titleWeight,
-            centerHeader: true, // Center on iPhone and iPad
-            titleAccessory: {
-                // Place small flame next to the title
-                HStack(spacing: 6) {
-                    FlameFillIcon(progress: progress, size: isPad ? 22 : 18, tint: .orange)
-                        .accessibilityHidden(true)
-                }
-            }
+            centerHeader: true // Center on iPhone and iPad
         ) {
             VStack(spacing: isPad ? 16 : 8) {
-                Text("What does God have for YOU today?")
-                    .font(subtitleFont)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .multilineTextAlignment(.center)
-                    .accessibilityLabel("What does God have for you today? Daily goal progress \(percent) percent. Current streak \(streak) days.")
+                // Subtitle that fills with a blue->red gradient as progress increases
+                ProgressFillText(
+                    text: "What does God have for YOU today?",
+                    font: isPad ? .title3.weight(.semibold) : .subheadline.weight(.semibold),
+                    progress: progress
+                )
+                .frame(maxWidth: .infinity, alignment: .center)
+                .multilineTextAlignment(.center)
+                .accessibilityLabel("What does God have for you today? Daily goal progress \(percent) percent. Current streak \(streak) days.")
 
                 HStack(spacing: isPad ? 16 : 12) {
                     Button {
@@ -865,8 +857,9 @@ struct HomeView: View {
         return min(1.0, Double(used) / Double(dailyGoalSeconds))
     }
     private var remainingSecondsToday: Int {
-        // CHANGED: align with Stats tab by using bibleVM.todaySeconds (session-derived)
-        let used = max(0, bibleVM.todaySeconds)
+        // UPDATED: align with StreakTracker (BibleStatsStore daily totals) to avoid mismatch.
+        let todayKey = BibleStatsStore.isoDateString(Date())
+        let used = max(0, BibleStatsStore.shared.loadDailyTotals()[todayKey, default: 0])
         return max(0, dailyGoalSeconds - used)
     }
     private var remainingFormatted: String {
@@ -1568,8 +1561,9 @@ struct HomeView: View {
         let best = StreakTracker.bestStreak
         let last = StreakTracker.lastVisitDate
 
-        // CHANGED: align used seconds with Stats tab via HomeBibleStatsViewModel (session-derived today)
-        let usedSecs = max(0, bibleVM.todaySeconds)
+        // UPDATED: Use BibleStatsStore daily totals for today's used seconds to match StreakTracker.
+        let todayKey = BibleStatsStore.isoDateString(Date())
+        let usedSecs = max(0, BibleStatsStore.shared.loadDailyTotals()[todayKey, default: 0])
         let goalSecs = dailyGoalSeconds
         let progress = min(1.0, Double(usedSecs) / Double(goalSecs))
 
