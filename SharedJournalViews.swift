@@ -210,6 +210,9 @@ struct CursorTextView: UIViewRepresentable {
     var linkify: ((String) -> AttributedString)? = nil
     var onLinkTap: ((ScriptureRef) -> Void)? = nil
 
+    // Adopt the SwiftUI environment font to match the rest of the app
+    @Environment(\.font) private var envFont
+
     // MARK: - Normalization to ensure dynamic text color in light/dark
 
     private func normalizedAttributedString(_ attr: NSAttributedString) -> NSAttributedString {
@@ -232,6 +235,15 @@ struct CursorTextView: UIViewRepresentable {
         // Do not set a blanket .label here, because UITextView uses typingAttributes for new text,
         // and leaving runs without a color lets UIKit use view.textColor (.label) which adapts.
         return mutable
+    }
+
+    // Convert SwiftUI Font environment into a UIFont; fall back to preferred body
+    private func resolvedUIFont() -> UIFont {
+        // If SwiftUI provides a concrete font (e.g., custom via FontFamilyEnvironmentModifier), use it.
+        if let uiFont = UIFont.preferredFont(forTextStyle: .body).withTraits(from: envFont) {
+            return uiFont
+        }
+        return UIFont.preferredFont(forTextStyle: .body)
     }
 
     func makeUIView(context: Context) -> UITextView {
@@ -270,7 +282,11 @@ struct CursorTextView: UIViewRepresentable {
         tv.smartQuotesType = .default
         tv.smartInsertDeleteType = .default
 
-        tv.font = UIFont.preferredFont(forTextStyle: .body)
+        // Apply app-wide body font (resolves from SwiftUI environment)
+        let bodyFont = resolvedUIFont()
+        tv.font = bodyFont
+        tv.typingAttributes[.font] = bodyFont
+
         tv.textContainer.lineFragmentPadding = 5
         tv.textContainerInset = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
 
@@ -281,6 +297,7 @@ struct CursorTextView: UIViewRepresentable {
             // Reassert dynamic colors immediately after setting attributedText
             tv.textColor = .label
             tv.typingAttributes[.foregroundColor] = UIColor.label
+            tv.typingAttributes[.font] = bodyFont
         } else {
             tv.text = text
         }
@@ -305,6 +322,15 @@ struct CursorTextView: UIViewRepresentable {
             uiView.typingAttributes[.foregroundColor] = UIColor.label
         }
 
+        // Ensure font matches environment (size/family)
+        let bodyFont = resolvedUIFont()
+        if uiView.font != bodyFont {
+            uiView.font = bodyFont
+        }
+        if (uiView.typingAttributes[.font] as? UIFont) != bodyFont {
+            uiView.typingAttributes[.font] = bodyFont
+        }
+
         // Update text (preserving selection)
         let currentString = uiView.text ?? ""
         if let linkify {
@@ -314,9 +340,10 @@ struct CursorTextView: UIViewRepresentable {
                 let oldRange = uiView.selectedRange
                 let linked = NSAttributedString(linkify(text))
                 uiView.attributedText = normalizedAttributedString(linked)
-                // Immediately reassert dynamic colors after assigning attributedText
+                // Immediately reassert dynamic colors and font after assigning attributedText
                 uiView.textColor = .label
                 uiView.typingAttributes[.foregroundColor] = UIColor.label
+                uiView.typingAttributes[.font] = bodyFont
                 uiView.selectedRange = oldRange
                 context.coordinator.lastLinkifiedText = text
                 context.coordinator.isProgrammaticUpdate = false
@@ -410,15 +437,19 @@ struct CursorTextView: UIViewRepresentable {
                 let oldRange = textView.selectedRange
                 let linked = NSAttributedString(linkify(newText))
                 textView.attributedText = parent.normalizedAttributedString(linked)
-                // Immediately reassert dynamic colors after assigning attributedText
+                // Immediately reassert dynamic colors and font after assigning attributedText
                 textView.textColor = .label
                 textView.typingAttributes[.foregroundColor] = UIColor.label
+                textView.typingAttributes[.font] = parent.resolvedUIFont()
                 textView.selectedRange = oldRange
             }
 
             // Ensure typing attributes stay dynamic
             if (textView.typingAttributes[.foregroundColor] as? UIColor) != UIColor.label {
                 textView.typingAttributes[.foregroundColor] = UIColor.label
+            }
+            if (textView.typingAttributes[.font] as? UIFont) != parent.resolvedUIFont() {
+                textView.typingAttributes[.font] = parent.resolvedUIFont()
             }
 
             DispatchQueue.main.async {
@@ -498,6 +529,34 @@ struct CursorTextView: UIViewRepresentable {
             }
             // Not our custom scheme; allow system
             return true
+        }
+    }
+}
+
+private extension UIFont {
+    // Try to derive a UIFont from a SwiftUI Font if possible.
+    // If envFont is nil or not concrete, return preferred body with no change.
+    func withTraits(from swiftUIFont: Font?) -> UIFont? {
+        guard let swiftUIFont else { return self }
+        // Attempt to resolve a UIFontDescriptor from the SwiftUI font via TextStyle mapping
+        // SwiftUI Font doesn’t expose direct UIFont; we’ll map common cases.
+        switch swiftUIFont {
+        case .largeTitle: return UIFont.preferredFont(forTextStyle: .largeTitle)
+        case .title: return UIFont.preferredFont(forTextStyle: .title1)
+        case .title2: return UIFont.preferredFont(forTextStyle: .title2)
+        case .title3: return UIFont.preferredFont(forTextStyle: .title3)
+        case .headline: return UIFont.preferredFont(forTextStyle: .headline)
+        case .subheadline: return UIFont.preferredFont(forTextStyle: .subheadline)
+        case .body: return UIFont.preferredFont(forTextStyle: .body)
+        case .callout: return UIFont.preferredFont(forTextStyle: .callout)
+        case .footnote: return UIFont.preferredFont(forTextStyle: .footnote)
+        case .caption: return UIFont.preferredFont(forTextStyle: .caption1)
+        case .caption2: return UIFont.preferredFont(forTextStyle: .caption2)
+        default:
+            // For custom fonts injected by FontFamilyEnvironmentModifier, SwiftUI sets a concrete font on the environment,
+            // but we cannot read the name/size directly. Rely on the global environment already applied to the view tree;
+            // keep body size which will be scaled by dynamicTypeSize from Settings.
+            return self
         }
     }
 }

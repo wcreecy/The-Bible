@@ -1493,7 +1493,7 @@ struct HomeView: View {
                     // Row: Top books (Top 3, ranked list without progress bars)
                     VStack(alignment: .leading, spacing: 8) {
                         // Title only (removed trailing first top book text)
-                        Text("Top Books")
+                        Text("Top Books (All-Time)")
                             .font(.headline)
                             .foregroundStyle(.secondary)
 
