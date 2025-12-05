@@ -172,7 +172,7 @@ struct TagChipRow: View {
 
     init(tags: [String], selectedTags: Set<String> = [], showColorPicker: Bool = false, onTap: ((String) -> Void)? = nil, onColorChange: ((String, Color) -> Void)? = nil) {
         self.tags = tags
-        self.selectedTags = selectedTags
+               self.selectedTags = selectedTags
         self.showColorPicker = showColorPicker
         self.onTap = onTap
         self.onColorChange = onColorChange
@@ -278,6 +278,9 @@ struct CursorTextView: UIViewRepresentable {
         if let linkify {
             let linked = NSAttributedString(linkify(text))
             tv.attributedText = normalizedAttributedString(linked)
+            // Reassert dynamic colors immediately after setting attributedText
+            tv.textColor = .label
+            tv.typingAttributes[.foregroundColor] = UIColor.label
         } else {
             tv.text = text
         }
@@ -311,6 +314,9 @@ struct CursorTextView: UIViewRepresentable {
                 let oldRange = uiView.selectedRange
                 let linked = NSAttributedString(linkify(text))
                 uiView.attributedText = normalizedAttributedString(linked)
+                // Immediately reassert dynamic colors after assigning attributedText
+                uiView.textColor = .label
+                uiView.typingAttributes[.foregroundColor] = UIColor.label
                 uiView.selectedRange = oldRange
                 context.coordinator.lastLinkifiedText = text
                 context.coordinator.isProgrammaticUpdate = false
@@ -404,6 +410,9 @@ struct CursorTextView: UIViewRepresentable {
                 let oldRange = textView.selectedRange
                 let linked = NSAttributedString(linkify(newText))
                 textView.attributedText = parent.normalizedAttributedString(linked)
+                // Immediately reassert dynamic colors after assigning attributedText
+                textView.textColor = .label
+                textView.typingAttributes[.foregroundColor] = UIColor.label
                 textView.selectedRange = oldRange
             }
 
