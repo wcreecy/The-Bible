@@ -18,7 +18,7 @@ struct BeatTheClockGameView: View {
 
     // Current round
     @State private var targetLabel: String = ""
-    @State private var referenceBookName: String? = nil // parsed from firstReference
+    @State private var referenceBookName: String? = nil
     @State private var currentEntryIsPerson: Bool = true
 
     // Timer
@@ -38,7 +38,7 @@ struct BeatTheClockGameView: View {
 
     // Search
     @State private var searchText: String = ""
-    @State private var selectionLocked: Bool = false // prevent multiple submissions
+    @State private var selectionLocked: Bool = false
     @FocusState private var searchFieldFocused: Bool
     @State private var acceptableBooks: Set<String> = []
     @State private var showAnswers: Bool = false
@@ -128,7 +128,6 @@ struct BeatTheClockGameView: View {
                     Spacer(minLength: 32)
                 } else {
                     VStack(alignment: .leading, spacing: 12) {
-                        // Scoreboard (shared)
                         GameScoreboardCard(
                             currentCorrect: score,
                             currentAnswered: answered,
@@ -138,7 +137,6 @@ struct BeatTheClockGameView: View {
                             allTimeBestStreak: allTimeBestStreak
                         )
 
-                        // Scoreboard
                         HStack {
                             Text("Score: \(score)")
                                 .font(.headline)
@@ -155,7 +153,6 @@ struct BeatTheClockGameView: View {
                             .foregroundStyle(timerColor)
                         }
 
-                        // Prompt card
                         GroupBox {
                             VStack(alignment: .leading, spacing: 6) {
                                 Text(currentEntryIsPerson ? "Person" : "Place")
@@ -170,7 +167,6 @@ struct BeatTheClockGameView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
 
-                        // Search
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Type a Bible book")
                                 .font(.headline)
@@ -187,7 +183,6 @@ struct BeatTheClockGameView: View {
                                     let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
                                     guard !trimmed.isEmpty else { return }
                                     searchText = ""
-                                    // Refocus the field to quickly type a new answer
                                     searchFieldFocused = true
                                 }) {
                                     Image(systemName: "xmark.circle.fill")
@@ -200,14 +195,11 @@ struct BeatTheClockGameView: View {
                             }
 
                             if !filteredBooks.isEmpty {
-                                // Suggestions list
                                 VStack(spacing: 6) {
                                     ForEach(filteredBooks.prefix(8), id: \.self) { name in
                                         Button(action: {
-                                            // Reflect selection in the text field, then auto-submit
                                             searchText = name
                                             submit(bookName: name)
-                                            // Optionally dismiss keyboard focus after submission
                                             searchFieldFocused = false
                                         }) {
                                             HStack {
@@ -228,7 +220,6 @@ struct BeatTheClockGameView: View {
                             }
                         }
 
-                        // Controls
                         HStack(spacing: 12) {
                             Button("Skip") { endRound(correct: false) }
                                 .buttonStyle(ModernPillButtonStyle(tint: .orange))
@@ -265,10 +256,8 @@ struct BeatTheClockGameView: View {
         }
         .onReceive(timer) { _ in
             guard started, !selectionLocked else { return }
-            // Pulse big at the start of each second, then shrink back quickly
             if remainingSeconds > 0 {
                 pulse = true
-                // Haptics only when timer is in red zone (<= 5 seconds)
                 if remainingSeconds <= 5 {
                     let generator = UIImpactFeedbackGenerator(style: .heavy)
                     generator.impactOccurred()
@@ -328,7 +317,6 @@ struct BeatTheClockGameView: View {
         remainingSeconds = roundTime
         acceptableBooks = []
         pulse = false
-        // Pick a random entry based on category
         switch category {
         case .people:
             guard let entry = loadedPeople.randomElement() else { targetLabel = ""; referenceBookName = nil; return }
@@ -363,11 +351,8 @@ struct BeatTheClockGameView: View {
                 targetLabel = ""; referenceBookName = nil; return
             }
         }
-        // Build acceptable books set for this target
         acceptableBooks = booksMentioning(targetLabel)
         if let ref = referenceBookName { acceptableBooks.insert(ref) }
-
-        // Focus the search field so the user can immediately start typing
         DispatchQueue.main.async {
             self.searchFieldFocused = true
         }
@@ -389,12 +374,24 @@ struct BeatTheClockGameView: View {
             score += 1
             currentStreak += 1
             if currentStreak > currentBestStreak { currentBestStreak = currentStreak }
-            updateAllTime(correct: 1, answered: 1, streak: currentBestStreak)
+            // Centralized write
+            GameStats.shared.recordRound(
+                game: .beatclock,
+                difficulty: mapDifficulty(difficulty),
+                correct: 1,
+                answered: 1,
+                currentBestStreak: currentBestStreak
+            )
             let generator = UINotificationFeedbackGenerator(); generator.notificationOccurred(.success)
         } else {
-            // Removed: score -= 1
             currentStreak = 0
-            updateAllTime(correct: 0, answered: 1, streak: currentBestStreak)
+            GameStats.shared.recordRound(
+                game: .beatclock,
+                difficulty: mapDifficulty(difficulty),
+                correct: 0,
+                answered: 1,
+                currentBestStreak: currentBestStreak
+            )
             let generator = UINotificationFeedbackGenerator(); generator.notificationOccurred(.error)
         }
     }
@@ -407,17 +404,27 @@ struct BeatTheClockGameView: View {
             score += 1
             currentStreak += 1
             if currentStreak > currentBestStreak { currentBestStreak = currentStreak }
-            updateAllTime(correct: 1, answered: 1, streak: currentBestStreak)
+            GameStats.shared.recordRound(
+                game: .beatclock,
+                difficulty: mapDifficulty(difficulty),
+                correct: 1,
+                answered: 1,
+                currentBestStreak: currentBestStreak
+            )
         } else {
-            // Removed: score -= 1
             currentStreak = 0
-            updateAllTime(correct: 0, answered: 1, streak: currentBestStreak)
+            GameStats.shared.recordRound(
+                game: .beatclock,
+                difficulty: mapDifficulty(difficulty),
+                correct: 0,
+                answered: 1,
+                currentBestStreak: currentBestStreak
+            )
         }
     }
 
     private func parseBookName(from reference: String?) -> String? {
         guard let ref = reference, !ref.isEmpty else { return nil }
-        // Expect formats like "Genesis 1:1" or "1 Samuel 3:4"; take tokens except last
         let parts = ref.split { $0.isWhitespace }
         guard parts.count >= 2 else { return nil }
         let book = parts.dropLast().joined(separator: " ")
@@ -456,27 +463,11 @@ struct BeatTheClockGameView: View {
         switch difficulty { case .easy: return "easy"; case .medium: return "medium"; case .hard: return "hard" }
     }
 
-    private func updateAllTime(correct addCorrect: Int, answered addAnswered: Int, streak: Int) {
-        let defaults = UserDefaults.standard
-        let suffix = difficultyKeySuffix()
-        let correctKey = "beatclockAllTimeCorrect_\(suffix)"
-        let answeredKey = "beatclockAllTimeAnswered_\(suffix)"
-        let bestKey = "beatclockAllTimeBestStreak_\(suffix)"
-        let newCorrect = defaults.integer(forKey: correctKey) + addCorrect
-        let newAnswered = defaults.integer(forKey: answeredKey) + addAnswered
-        let newBest = max(defaults.integer(forKey: bestKey), streak)
-        defaults.set(newCorrect, forKey: correctKey)
-        defaults.set(newAnswered, forKey: answeredKey)
-        defaults.set(newBest, forKey: bestKey)
-
-        // NEW: push to iCloud KVS immediately
-        let kvs = iCloudSyncCoordinator.shared
-        kvs.pushKey(correctKey)
-        kvs.pushKey(answeredKey)
-        kvs.pushKey(bestKey)
+    private func mapDifficulty(_ d: Difficulty) -> GameStats.Difficulty {
+        switch d {
+        case .easy: return .easy
+        case .medium: return .medium
+        case .hard: return .hard
+        }
     }
-}
-
-#Preview {
-    NavigationStack { BeatTheClockGameView() }
 }

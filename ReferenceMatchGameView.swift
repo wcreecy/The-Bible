@@ -30,6 +30,7 @@ struct ReferenceMatchGameView: View {
     @State private var currentStreak: Int = 0
     @State private var currentBestStreak: Int = 0
 
+    // History of questions to support Previous/Next navigation
     @State private var history: [(book: Book, chapter: Chapter, verse: Verse, options: [AnswerOption], correctIndex: Int, selectedIndex: Int?)] = []
     @State private var currentIndex: Int = -1
 
@@ -114,7 +115,6 @@ struct ReferenceMatchGameView: View {
                         .frame(maxWidth: 240)
                     Spacer(minLength: 32)
                 } else {
-                    // Scoreboard (shared)
                     GameScoreboardCard(
                         currentCorrect: score,
                         currentAnswered: answered,
@@ -124,7 +124,6 @@ struct ReferenceMatchGameView: View {
                         allTimeBestStreak: allTimeBestStreak
                     )
 
-                    // Reference card
                     GroupBox {
                         VStack(alignment: .leading, spacing: 8) {
                             if let b = refBook, let c = refChapter, let v = refVerse {
@@ -226,6 +225,8 @@ struct ReferenceMatchGameView: View {
         }
     }
 
+    // MARK: - Game flow
+
     private func startGame() {
         score = 0
         answered = 0
@@ -260,223 +261,116 @@ struct ReferenceMatchGameView: View {
                 let generator = UINotificationFeedbackGenerator()
                 generator.notificationOccurred(.success)
             }
-            updateAllTime(correct: 1, answered: 1, streak: currentBestStreak)
+            GameStats.shared.recordRound(
+                game: .refmatch,
+                difficulty: mapDifficulty(difficulty),
+                correct: 1,
+                answered: 1,
+                currentBestStreak: currentBestStreak
+            )
         } else {
             currentStreak = 0
-            updateAllTime(correct: 0, answered: 1, streak: currentBestStreak)
+            GameStats.shared.recordRound(
+                game: .refmatch,
+                difficulty: mapDifficulty(difficulty),
+                correct: 0,
+                answered: 1,
+                currentBestStreak: currentBestStreak
+            )
         }
     }
 
+    // MARK: - Question generation and history
+
     private func generateQuestion() {
-        // Define Old and New Testament sets
-        let oldTestamentSet: Set<String> = [
-            "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
-            "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings",
-            "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job",
-            "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah",
-            "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel",
-            "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk",
-            "Zephaniah", "Haggai", "Zechariah", "Malachi"
-        ]
-        let newTestamentSet: Set<String> = [
-            "Matthew", "Mark", "Luke", "John", "Acts", "Romans",
-            "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians",
-            "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians",
-            "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews",
-            "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John",
-            "Jude", "Revelation"
-        ]
-
-        var filteredBooks: [Book]
-        switch verseScopeRaw {
-        case "old":
-            filteredBooks = BibleData.books.filter { oldTestamentSet.contains($0.name) }
-        case "new":
-            filteredBooks = BibleData.books.filter { newTestamentSet.contains($0.name) }
-        default:
-            filteredBooks = BibleData.books
-        }
-
-        guard let book = filteredBooks.randomElement(),
+        // Choose a reference book/chapter/verse according to scope
+        let books = scopedBooks()
+        guard let book = books.randomElement(),
               let chapter = book.chapters.randomElement(),
-              let verse = chapter.verses.randomElement() else {
-            refBook = nil; refChapter = nil; refVerse = nil; options = []; correctIndex = -1; return
-        }
-        refBook = book; refChapter = chapter; refVerse = verse
+              let verse = chapter.verses.randomElement()
+        else { return }
 
-        // Build correct option
-        let correctFull = verse.text
-        let correctSnippet = snippet(for: correctFull)
+        // Build options according to difficulty rules
         let correct = AnswerOption(
-            snippet: correctSnippet,
+            snippet: snippet(for: verse.text),
             bookName: book.name,
             chapterNumber: chapter.number,
             verseNumber: verse.number,
-            verseText: correctFull
+            verseText: verse.text
         )
 
-        // Build distractors per difficulty
-        let correctIsOT = oldTestamentSet.contains(book.name)
-        let correctIsNT = newTestamentSet.contains(book.name)
-
-        // Candidate books pool for distractors
-        let distractorBooks: [Book] = {
-            switch difficulty {
-            case .easy:
-                // Any book (respecting verseScopeRaw via filteredBooks)
-                return filteredBooks
-            case .medium:
-                // Same testament as the correct book
-                if correctIsOT {
-                    return filteredBooks.filter { oldTestamentSet.contains($0.name) }
-                } else if correctIsNT {
-                    return filteredBooks.filter { newTestamentSet.contains($0.name) }
-                } else {
-                    return filteredBooks
-                }
-            case .hard:
-                // Same book only
-                return filteredBooks.filter { $0.name == book.name }
-            }
-        }()
-
         var distractors: [AnswerOption] = []
-        var snippetSet: Set<String> = [correct.snippet]
-        var safety = 0
+        let neededDistractors = 3 // 4 options total
 
-        while distractors.count < 3 && safety < 5000 {
-            safety += 1
-
-            // Pick a book from the allowed pool
-            guard let b = distractorBooks.randomElement() else { continue }
-
-            // For hard mode, ensure we can pick a verse from the same book but not the exact same reference
-            if difficulty == .hard {
-                guard let c = b.chapters.randomElement(),
-                      let v = c.verses.randomElement()
-                else { continue }
-                // Avoid identical reference to correct
-                if b.name == book.name && c.number == chapter.number && v.number == verse.number { continue }
-                let snip = snippet(for: v.text)
-                if !snippetSet.contains(snip) {
-                    snippetSet.insert(snip)
-                    distractors.append(AnswerOption(
-                        snippet: snip,
-                        bookName: b.name,
-                        chapterNumber: c.number,
-                        verseNumber: v.number,
-                        verseText: v.text
-                    ))
-                }
-            } else {
-                // Easy/Medium: any verse from the candidate book
-                guard let c = b.chapters.randomElement(),
-                      let v = c.verses.randomElement()
-                else { continue }
-                // Avoid identical reference to correct
-                if b.name == book.name && c.number == chapter.number && v.number == verse.number { continue }
-                let snip = snippet(for: v.text)
-                if !snippetSet.contains(snip) {
-                    snippetSet.insert(snip)
-                    distractors.append(AnswerOption(
-                        snippet: snip,
-                        bookName: b.name,
-                        chapterNumber: c.number,
-                        verseNumber: v.number,
-                        verseText: v.text
-                    ))
-                }
-            }
+        switch difficulty {
+        case .easy:
+            distractors = makeDistractorsAnywhere(excluding: (book.name, chapter.number, verse.number), count: neededDistractors)
+        case .medium:
+            let sameTestamentBooks = booksInSameTestament(as: book)
+            distractors = makeDistractors(from: sameTestamentBooks, excluding: (book.name, chapter.number, verse.number), count: neededDistractors)
+        case .hard:
+            distractors = makeDistractorsSameBook(book: book, excluding: (chapter.number, verse.number), count: neededDistractors)
         }
 
-        var allOptions = distractors
-        allOptions.append(correct)
-        allOptions.shuffle()
-        options = allOptions
-        correctIndex = options.firstIndex(where: { $0.bookName == book.name && $0.chapterNumber == chapter.number && $0.verseNumber == verse.number }) ?? -1
+        var opts = distractors
+        opts.append(correct)
+        opts.shuffle()
 
-        var newHistory = history
-        newHistory.append((book: book, chapter: chapter, verse: verse, options: options, correctIndex: correctIndex, selectedIndex: nil))
-        history = newHistory
+        let correctIdx = opts.firstIndex(where: { $0.bookName == book.name && $0.chapterNumber == chapter.number && $0.verseNumber == verse.number }) ?? -1
+
+        // Update current ref
+        refBook = book
+        refChapter = chapter
+        refVerse = verse
+        options = opts
+        correctIndex = correctIdx
+        selectedIndex = nil
+
+        // Append to history and advance index
+        history.append((book: book, chapter: chapter, verse: verse, options: opts, correctIndex: correctIdx, selectedIndex: nil))
         currentIndex = history.count - 1
-        loadFromHistory()
     }
 
     private func loadFromHistory() {
         guard currentIndex >= 0 && currentIndex < history.count else { return }
-        let h = history[currentIndex]
-        refBook = h.book
-        refChapter = h.chapter
-        refVerse = h.verse
-        options = h.options
-        correctIndex = h.correctIndex
-        selectedIndex = h.selectedIndex
+        let entry = history[currentIndex]
+        refBook = entry.book
+        refChapter = entry.chapter
+        refVerse = entry.verse
+        options = entry.options
+        correctIndex = entry.correctIndex
+        selectedIndex = entry.selectedIndex
     }
 
-    private func snippet(for text: String) -> String {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.count <= 160 { return trimmed }
-        let idx = trimmed.index(trimmed.startIndex, offsetBy: 160)
-        return String(trimmed[..<idx]) + "…"
-    }
+    // MARK: - Option visuals
 
     private func buttonBackground(forIndex idx: Int) -> Color {
-        guard let sel = selectedIndex else { return Color(.secondarySystemBackground) }
+        guard let sel = selectedIndex else {
+            return Color(.secondarySystemBackground)
+        }
         if idx == correctIndex {
-            return sel == idx ? Color.green.opacity(0.25) : Color.green.opacity(0.15)
-        } else if sel == idx {
-            return Color.red.opacity(0.25)
+            return Color.green.opacity(0.18)
+        }
+        if idx == sel, sel != correctIndex {
+            return Color.red.opacity(0.18)
         }
         return Color(.secondarySystemBackground)
     }
 
     private func buttonBorder(forIndex idx: Int) -> Color {
-        guard let sel = selectedIndex else { return Color.black.opacity(0.12) }
-        if idx == correctIndex { return .green }
-        if idx == sel { return .red }
+        guard let sel = selectedIndex else {
+            return Color.black.opacity(0.12)
+        }
+        if idx == correctIndex {
+            return Color.green.opacity(0.6)
+        }
+        if idx == sel, sel != correctIndex {
+            return Color.red.opacity(0.6)
+        }
         return Color.black.opacity(0.12)
     }
 
-    @ViewBuilder
-    private func statPill(title: String, value: String, tint: Color) -> some View {
-        VStack(spacing: 2) {
-            Text(title)
-                .font(.caption2)
-                .foregroundColor(.secondary)
-            Text(value)
-                .font(.headline)
-                .foregroundColor(tint)
-        }
-        .padding(8)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(tint.opacity(0.12))
-        )
-    }
-
-    private func updateAllTime(correct addCorrect: Int, answered addAnswered: Int, streak: Int) {
-        let defaults = UserDefaults.standard
-        let suffix = difficultyKeySuffix()
-        let correctKey = "refmatchAllTimeCorrect_\(suffix)"
-        let answeredKey = "refmatchAllTimeAnswered_\(suffix)"
-        let bestKey = "refmatchAllTimeBestStreak_\(suffix)"
-        let newCorrect = defaults.integer(forKey: correctKey) + addCorrect
-        let newAnswered = defaults.integer(forKey: answeredKey) + addAnswered
-        let newBest = max(defaults.integer(forKey: bestKey), streak)
-        defaults.set(newCorrect, forKey: correctKey)
-        defaults.set(newAnswered, forKey: answeredKey)
-        defaults.set(newBest, forKey: bestKey)
-    }
-
-    private func difficultyKeySuffix() -> String {
-        switch difficulty { case .easy: return "easy"; case .medium: return "medium"; case .hard: return "hard" }
-    }
-
-    private func percentString(correct: Int, answered: Int) -> String {
-        guard answered > 0 else { return "0%" }
-        let pct = Int(round((Double(correct) / Double(answered)) * 100.0))
-        return "\(pct)%"
-    }
+    // MARK: - Favorites helpers (SwiftData)
 
     private func currentFavoriteExists() -> Bool {
         guard let b = refBook, let c = refChapter, let v = refVerse else { return false }
@@ -487,25 +381,7 @@ struct ReferenceMatchGameView: View {
 
     private func toggleFavoriteCurrent() {
         guard let b = refBook, let c = refChapter, let v = refVerse else { return }
-        if let existing = favorites.first(where: { $0.bookName == b.name && $0.chapterNumber == c.number && $0.verseNumber == v.number }) {
-            modelContext.delete(existing)
-            try? modelContext.save()
-        } else {
-            let fav = Favorite(
-                bookName: b.name,
-                chapterNumber: c.number,
-                verseNumber: v.number,
-                verseText: v.text
-            )
-            modelContext.insert(fav)
-            try? modelContext.save()
-        }
-    }
-
-    private func isFavorited(bookName: String, chapterNumber: Int, verseNumber: Int) -> Bool {
-        favorites.contains { fav in
-            fav.bookName == bookName && fav.chapterNumber == chapterNumber && fav.verseNumber == verseNumber
-        }
+        toggleFavorite(bookName: b.name, chapterNumber: c.number, verseNumber: v.number, verseText: v.text)
     }
 
     private func toggleFavorite(bookName: String, chapterNumber: Int, verseNumber: Int, verseText: String) {
@@ -513,18 +389,136 @@ struct ReferenceMatchGameView: View {
             modelContext.delete(existing)
             try? modelContext.save()
         } else {
-            let fav = Favorite(
-                bookName: bookName,
-                chapterNumber: chapterNumber,
-                verseNumber: verseNumber,
-                verseText: verseText
-            )
+            let fav = Favorite(bookName: bookName, chapterNumber: chapterNumber, verseNumber: verseNumber, verseText: verseText)
             modelContext.insert(fav)
             try? modelContext.save()
         }
     }
-}
 
-#Preview {
-    NavigationStack { ReferenceMatchGameView() }
+    private func isFavorited(bookName: String, chapterNumber: Int, verseNumber: Int) -> Bool {
+        favorites.contains { $0.bookName == bookName && $0.chapterNumber == chapterNumber && $0.verseNumber == verseNumber }
+    }
+
+    // MARK: - Generation utilities
+
+    private func scopedBooks() -> [Book] {
+        let all = BibleData.books
+        guard !all.isEmpty else { return [] }
+        switch verseScopeRaw {
+        case "old":
+            return booksInOT()
+        case "new":
+            return booksInNT()
+        default:
+            return all
+        }
+    }
+
+    private func booksInOT() -> [Book] {
+        let all = BibleData.books
+        guard let mattIdx = all.firstIndex(where: { $0.name == "Matthew" }) else { return all } // fallback: all if not found
+        return Array(all.prefix(mattIdx))
+    }
+
+    private func booksInNT() -> [Book] {
+        let all = BibleData.books
+        guard let mattIdx = all.firstIndex(where: { $0.name == "Matthew" }) else { return [] } // fallback: none if not found
+        return Array(all.suffix(from: mattIdx))
+    }
+
+    private func booksInSameTestament(as book: Book) -> [Book] {
+        let all = BibleData.books
+        guard let mattIdx = all.firstIndex(where: { $0.name == "Matthew" }),
+              let idx = all.firstIndex(where: { $0.name == book.name }) else {
+            // fallback to whole scope if unknown
+            return scopedBooks()
+        }
+        if idx < mattIdx {
+            // OT
+            return verseScopeRaw == "new" ? [] : Array(all.prefix(mattIdx))
+        } else {
+            // NT
+            return verseScopeRaw == "old" ? [] : Array(all.suffix(from: mattIdx))
+        }
+    }
+
+    private func makeDistractorsAnywhere(excluding target: (book: String, chapter: Int, verse: Int), count: Int) -> [AnswerOption] {
+        let all = scopedBooks()
+        return makeDistractors(from: all, excluding: target, count: count)
+    }
+
+    private func makeDistractors(from books: [Book], excluding target: (book: String, chapter: Int, verse: Int), count: Int) -> [AnswerOption] {
+        var picks: Set<String> = []
+        var out: [AnswerOption] = []
+        let shuffledBooks = books.shuffled()
+        outer: for b in shuffledBooks {
+            for c in b.chapters.shuffled() {
+                for v in c.verses.shuffled() {
+                    if b.name == target.book && c.number == target.chapter && v.number == target.verse { continue }
+                    let key = "\(b.name)-\(c.number)-\(v.number)"
+                    if picks.contains(key) { continue }
+                    picks.insert(key)
+                    out.append(AnswerOption(
+                        snippet: snippet(for: v.text),
+                        bookName: b.name,
+                        chapterNumber: c.number,
+                        verseNumber: v.number,
+                        verseText: v.text
+                    ))
+                    if out.count >= count { break outer }
+                }
+            }
+        }
+        return out
+    }
+
+    private func makeDistractorsSameBook(book: Book, excluding target: (chapter: Int, verse: Int), count: Int) -> [AnswerOption] {
+        var picks: Set<String> = []
+        var out: [AnswerOption] = []
+        for c in book.chapters.shuffled() {
+            for v in c.verses.shuffled() {
+                if c.number == target.chapter && v.number == target.verse { continue }
+                let key = "\(c.number)-\(v.number)"
+                if picks.contains(key) { continue }
+                picks.insert(key)
+                out.append(AnswerOption(
+                    snippet: snippet(for: v.text),
+                    bookName: book.name,
+                    chapterNumber: c.number,
+                    verseNumber: v.number,
+                    verseText: v.text
+                ))
+                if out.count >= count { return out }
+            }
+        }
+        // If not enough within the same book (short books), top up from same testament to maintain difficulty flavor
+        if out.count < count {
+            let sameTestament = booksInSameTestament(as: book)
+            let topUp = makeDistractors(from: sameTestament, excluding: (book.name, target.chapter, target.verse), count: count - out.count)
+            out.append(contentsOf: topUp)
+        }
+        return out
+    }
+
+    private func snippet(for text: String) -> String {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let maxLen = 160
+        if trimmed.count <= maxLen { return "“\(trimmed)”" }
+        let idx = trimmed.index(trimmed.startIndex, offsetBy: maxLen)
+        return "“\(trimmed[..<idx])…”"
+    }
+
+    // MARK: - Stats helpers
+
+    private func difficultyKeySuffix() -> String {
+        switch difficulty { case .easy: return "easy"; case .medium: return "medium"; case .hard: return "hard" }
+    }
+
+    private func mapDifficulty(_ d: Difficulty) -> GameStats.Difficulty {
+        switch d {
+        case .easy: return .easy
+        case .medium: return .medium
+        case .hard: return .hard
+        }
+    }
 }

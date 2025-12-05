@@ -100,7 +100,6 @@ struct HangmanGameView: View {
     @State private var tappedKey: Character? = nil
     @State private var currentTargetReference: String? = nil
 
-    // History of completed rounds for "Previous" viewing
     private struct HangmanSnapshot: Identifiable {
         let id = UUID()
         let category: Theme
@@ -184,7 +183,6 @@ struct HangmanGameView: View {
                         .opacity(0.001)
                         .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidChangeNotification)) { note in
                             if let tf = note.object as? UITextField, let text = tf.text, let ch = text.last {
-                                // Clear field and process input
                                 tf.text = ""
                                 if ch.isLetter {
                                     guess(ch)
@@ -193,7 +191,6 @@ struct HangmanGameView: View {
                         }
 
                     VStack(alignment: .leading, spacing: 8) {
-                        // Row 1: Title and Category pill
                         HStack(alignment: .center, spacing: 12) {
                             Spacer()
                             HStack(spacing: 8) {
@@ -215,7 +212,6 @@ struct HangmanGameView: View {
                             .foregroundStyle(.tint)
                         }
 
-                        // Row 2: Reference, Previous, Next
                         HStack(spacing: 8) {
                             if let ref = firstReferenceForCurrentTarget(), shouldShowReference() {
                                 Button {
@@ -244,7 +240,6 @@ struct HangmanGameView: View {
                         }
                     }
 
-                    // Scoreboard (shared)
                     GameScoreboardCard(
                         currentCorrect: score,
                         currentAnswered: answered,
@@ -254,23 +249,19 @@ struct HangmanGameView: View {
                         allTimeBestStreak: allTimeBestStreak
                     )
 
-                    // Word Display
                     Text(spacedDisplayWord())
                         .font(.system(size: 30, weight: .semibold, design: .monospaced))
                         .fontDesign(appFontDesign)
                         .padding(.top, 8)
                         .accessibilityLabel("Word to guess")
 
-                    // Lives
                     Text("Mistakes: \(wrongGuesses)/\(maxWrong)")
                         .font(.subheadline)
                         .foregroundStyle(wrongGuesses >= maxWrong - 1 ? .red : .secondary)
 
-                    // Keyboard
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 7), spacing: 6) {
                         ForEach(alphabet, id: \.self) { ch in
                             Button(action: {
-                                // Trigger a brief scale animation on the tapped key
                                 withAnimation(.spring(response: 0.18, dampingFraction: 0.65)) {
                                     tappedKey = ch
                                 }
@@ -279,7 +270,6 @@ struct HangmanGameView: View {
                                         tappedKey = nil
                                     }
                                 }
-                                // Process the guess
                                 guess(ch)
                             }) {
                                 Text(String(ch))
@@ -442,17 +432,14 @@ struct HangmanGameView: View {
         guard !guessedLetters.contains(upper) else { return }
         guessedLetters.insert(upper)
 
-        // Haptics setup
         let light = UIImpactFeedbackGenerator(style: .light)
         let heavy = UIImpactFeedbackGenerator(style: .heavy)
 
         let upperTarget = targetWord.uppercased()
         if upperTarget.contains(upper) {
-            // Reveal letters
             var chars = Array(displayWord)
             for (i, t) in upperTarget.enumerated() {
                 if t == upper {
-                    // Preserve original case but display uppercase
                     let originalChar = targetWord[targetWord.index(targetWord.startIndex, offsetBy: i)]
                     chars[i] = Character(String(originalChar).uppercased())
                 }
@@ -481,7 +468,6 @@ struct HangmanGameView: View {
         roundOver = true
         didWin = win
 
-        // Save a snapshot of this completed round for "Previous"
         let snapshot = HangmanSnapshot(
             category: currentRoundCategory,
             targetWord: targetWord,
@@ -499,14 +485,26 @@ struct HangmanGameView: View {
             currentStreak += 1
             if currentStreak > currentBestStreak {
                 currentBestStreak = currentStreak
-                // Optional haptic feedback on new best streak
                 let generator = UINotificationFeedbackGenerator()
                 generator.notificationOccurred(.success)
             }
-            updateAllTime(correct: 1, answered: 1, streak: currentBestStreak)
+            // Centralized write
+            GameStats.shared.recordRound(
+                game: .hangman,
+                difficulty: mapDifficulty(difficulty),
+                correct: 1,
+                answered: 1,
+                currentBestStreak: currentBestStreak
+            )
         } else {
             currentStreak = 0
-            updateAllTime(correct: 0, answered: 1, streak: currentBestStreak)
+            GameStats.shared.recordRound(
+                game: .hangman,
+                difficulty: mapDifficulty(difficulty),
+                correct: 0,
+                answered: 1,
+                currentBestStreak: currentBestStreak
+            )
         }
     }
 
@@ -518,22 +516,15 @@ struct HangmanGameView: View {
         }
     }
 
-    private func updateAllTime(correct addCorrect: Int, answered addAnswered: Int, streak: Int) {
-        let defaults = UserDefaults.standard
-        let suffix = difficultyKeySuffix()
-        let correctKey = "hangmanAllTimeCorrect_\(suffix)"
-        let answeredKey = "hangmanAllTimeAnswered_\(suffix)"
-        let bestKey = "hangmanAllTimeBestStreak_\(suffix)"
-        let newCorrect = defaults.integer(forKey: correctKey) + addCorrect
-        let newAnswered = defaults.integer(forKey: answeredKey) + addAnswered
-        let newBest = max(defaults.integer(forKey: bestKey), streak)
-        defaults.set(newCorrect, forKey: correctKey)
-        defaults.set(newAnswered, forKey: answeredKey)
-        defaults.set(newBest, forKey: bestKey)
+    private func mapDifficulty(_ d: Difficulty) -> GameStats.Difficulty {
+        switch d {
+        case .easy: return .easy
+        case .medium: return .medium
+        case .hard: return .hard
+        }
     }
 
     private func generateRound() {
-        // Determine actual category for this round
         let actualCategory: Theme
         if theme == .all {
             actualCategory = [Theme.people, Theme.places, Theme.books].randomElement()!
@@ -565,7 +556,6 @@ struct HangmanGameView: View {
         case .places:
             if loadedPlaces.isEmpty { loadedPlaces = GameDataLoaders.loadLocations() }
             guard !loadedPlaces.isEmpty else { return }
-            // Try multiple times to get a valid, non-empty location
             var picked: String? = nil
             for _ in 0..<50 {
                 if let entry = loadedPlaces.randomElement() {
@@ -625,13 +615,10 @@ struct HangmanGameView: View {
     private func shouldShowReference() -> Bool {
         switch difficulty {
         case .easy:
-            // Always show during an active round
             return started && !targetWord.isEmpty && !displayWord.isEmpty
         case .medium:
-            // Show when down to three or more wrong guesses
             return roundOver || wrongGuesses >= 3
         case .hard:
-            // Only after the round ends (win or lose)
             return roundOver
         }
     }
@@ -641,24 +628,19 @@ struct HangmanGameView: View {
     }
 
     private func openFirstReference(_ ref: String) {
-        // Expect formats like "Genesis 1:1" or "1 Samuel 3:4"; tolerate abbreviations and punctuation like "1kgs 10:15", "act 6:5", "John 3:16–18", or trailing commas/periods
         let trimmed = ref.trimmingCharacters(in: .whitespacesAndNewlines)
         let parts = trimmed.split { $0.isWhitespace }
         guard let lastPart = parts.last else { return }
-        // Clean the last token: remove common trailing punctuation and normalize en dashes to hyphens
         var last = String(lastPart)
-        last = last.replacingOccurrences(of: "\u{2013}", with: "-") // en dash
-        last = last.replacingOccurrences(of: "\u{2014}", with: "-") // em dash
+        last = last.replacingOccurrences(of: "\u{2013}", with: "-")
+        last = last.replacingOccurrences(of: "\u{2014}", with: "-")
         last = last.trimmingCharacters(in: CharacterSet(charactersIn: ",;.)]”’\""))
-        // Extract chapter and verse from the last token
         guard let colonIndex = last.firstIndex(of: ":") else { return }
         let chapterSlice = last[..<colonIndex]
         let verseSlice = last[last.index(after: colonIndex)...]
-        // Take only leading digits for chapter and verse (ignore ranges like 16-18 or suffixes like 16a)
         let chapterDigits = chapterSlice.prefix { $0.isNumber }
         let verseDigits = verseSlice.prefix { $0.isNumber }
         guard let chapterNum = Int(chapterDigits), let verseNum = Int(verseDigits) else { return }
-        // Book name is everything before the last token
         let bookRaw = parts.dropLast().joined(separator: " ")
         guard let book = resolveBook(named: bookRaw) else { return }
         guard let chapter = book.chapters.first(where: { $0.number == chapterNum }) else { return }
@@ -669,17 +651,14 @@ struct HangmanGameView: View {
     }
 
     private func resolveBook(named raw: String) -> Book? {
-        // Try direct match first
         if let direct = BibleData.books.first(where: { $0.name.caseInsensitiveCompare(raw) == .orderedSame }) {
             return direct
         }
-        // Try inserting space between leading digits and letters (e.g., "1Samuel" -> "1 Samuel", "1kgs" -> "1 kgs")
         let spaced = insertSpaceBetweenLeadingDigitsAndLetters(in: raw)
         let normalized = normalizeBookName(spaced)
         if let match = BibleData.books.first(where: { $0.name.compare(normalized, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
             return match
         }
-        // Try relaxed comparison: remove spaces and compare
         let collapsed = normalized.replacingOccurrences(of: " ", with: "")
         if let match = BibleData.books.first(where: { $0.name.replacingOccurrences(of: " ", with: "").compare(collapsed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
             return match
@@ -688,7 +667,6 @@ struct HangmanGameView: View {
     }
 
     private func normalizeBookName(_ s: String) -> String {
-        // Lowercase tokens, expand common abbreviations, then title-case appropriately
         let abbrev: [String: String] = [
             "gen": "Genesis", "ex": "Exodus", "lev": "Leviticus", "num": "Numbers", "deut": "Deuteronomy",
             "jos": "Joshua", "judg": "Judges", "rut": "Ruth",
@@ -704,40 +682,30 @@ struct HangmanGameView: View {
             "phm": "Philemon", "heb": "Hebrews", "jas": "James", "pet": "Peter", "petr": "Peter",
             "joh": "John", "jud": "Jude", "rev": "Revelation"
         ]
-        // Tokenize by whitespace and punctuation
         let cleaned = s.replacingOccurrences(of: ".", with: " ")
             .replacingOccurrences(of: "_", with: " ")
             .replacingOccurrences(of: "-", with: " ")
         var tokens = cleaned.split{ $0.isWhitespace }.map { String($0) }
-        // If first token is a number stuck to letters (e.g., "1kgs"), separate
         if let first = tokens.first, first.first?.isNumber == true, first.drop(while: { $0.isNumber }).first?.isLetter == true {
             let digits = String(first.prefix { $0.isNumber })
             let rest = String(first.drop { $0.isNumber })
             tokens[0] = digits
             if rest.isEmpty == false { tokens.insert(rest, at: 1) }
         }
-        // Map abbreviations
         let mapped = tokens.enumerated().map { (idx, t) -> String in
             let lower = t.lowercased()
             if let exp = abbrev[lower] { return exp }
-            // Title-case otherwise, but keep numeric ordinals as-is
             if Int(lower) != nil { return t }
             return t.prefix(1).uppercased() + t.dropFirst().lowercased()
         }
-        // Special handling: if sequence like ["1", "Kings"] or ["2", "Samuel"], join with space
         return mapped.joined(separator: " ")
     }
 
     private func insertSpaceBetweenLeadingDigitsAndLetters(in s: String) -> String {
         guard let first = s.first, first.isNumber else { return s }
-        // Insert a space after the leading digit sequence if next is a letter
         let digits = String(s.prefix { $0.isNumber })
         let rest = String(s.drop { $0.isNumber })
         if rest.first?.isLetter == true { return digits + " " + rest }
         return s
     }
-}
-
-#Preview {
-    NavigationStack { HangmanGameView() }
 }

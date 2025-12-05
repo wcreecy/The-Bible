@@ -3,134 +3,7 @@ import SwiftUI
 struct GamesCardView: View {
     // Collapsible state
     @State private var expanded: Bool = false
-
-    private struct GameStat {
-        let name: String
-        let correct: Int
-        let answered: Int
-        let bestStreak: Int?
-    }
-
-    private func readInt(_ key: String) -> Int {
-        UserDefaults.standard.integer(forKey: key)
-    }
-
-    // MARK: - Safe aggregators with legacy fallback
-
-    private func sumWithFallback(prefix: String, parts: [String], legacyKey: String?) -> Int {
-        let values = parts.map { readInt("\(prefix)\($0)") }
-        let sum = values.reduce(0, +)
-        if sum > 0 { return sum }
-        // Fallback to legacy only if no per-difficulty data exists
-        if let legacy = legacyKey { return readInt(legacy) }
-        return 0
-    }
-
-    private func maxWithFallback(prefix: String, parts: [String], legacyKey: String?) -> Int {
-        let values = parts.map { readInt("\(prefix)\($0)") }
-        let maxVal = values.max() ?? 0
-        if maxVal > 0 { return maxVal }
-        if let legacy = legacyKey { return readInt(legacy) }
-        return 0
-    }
-
-    // MARK: - Per-game stats
-
-    private var quizStat: GameStat {
-        // Quiz uses easy/normal/hard (keep existing keys)
-        let correct = readInt("quizAllTimeCorrect_easy")
-                 + readInt("quizAllTimeCorrect_normal")
-                 + readInt("quizAllTimeCorrect_hard")
-        let answered = readInt("quizAllTimeAnswered_easy")
-                  + readInt("quizAllTimeAnswered_normal")
-                  + readInt("quizAllTimeAnswered_hard")
-        let best = max(
-            readInt("quizAllTimeBestStreak_easy"),
-            readInt("quizAllTimeBestStreak_normal"),
-            readInt("quizAllTimeBestStreak_hard")
-        )
-        return .init(name: "Quiz", correct: correct, answered: answered, bestStreak: best)
-    }
-
-    private var hangmanStat: GameStat {
-        // Prefer per-difficulty (_easy/_medium/_hard); fallback to legacy unsuffixed only if all zero
-        let correct = sumWithFallback(
-            prefix: "hangmanAllTimeCorrect",
-            parts: ["_easy", "_medium", "_hard"],
-            legacyKey: "hangmanAllTimeCorrect"
-        )
-        let answered = sumWithFallback(
-            prefix: "hangmanAllTimeAnswered",
-            parts: ["_easy", "_medium", "_hard"],
-            legacyKey: "hangmanAllTimeAnswered"
-        )
-        let best = maxWithFallback(
-            prefix: "hangmanAllTimeBestStreak",
-            parts: ["_easy", "_medium", "_hard"],
-            legacyKey: "hangmanAllTimeBestStreak"
-        )
-        return .init(name: "Hangman", correct: correct, answered: answered, bestStreak: best == 0 ? nil : best)
-    }
-
-    private var refMatchStat: GameStat {
-        // Prefer per-difficulty; fallback to legacy unsuffixed only if all zero
-        let correct = sumWithFallback(
-            prefix: "refmatchAllTimeCorrect",
-            parts: ["_easy", "_medium", "_hard"],
-            legacyKey: "refmatchAllTimeCorrect"
-        )
-        let answered = sumWithFallback(
-            prefix: "refmatchAllTimeAnswered",
-            parts: ["_easy", "_medium", "_hard"],
-            legacyKey: "refmatchAllTimeAnswered"
-        )
-        let best = maxWithFallback(
-            prefix: "refmatchAllTimeBestStreak",
-            parts: ["_easy", "_medium", "_hard"],
-            legacyKey: "refmatchAllTimeBestStreak"
-        )
-        return .init(name: "Verse Match", correct: correct, answered: answered, bestStreak: best == 0 ? nil : best)
-    }
-
-    private var beatClockStat: GameStat {
-        // Beat the Clock uses per-difficulty only
-        let correct = readInt("beatclockAllTimeCorrect_easy")
-                 + readInt("beatclockAllTimeCorrect_medium")
-                 + readInt("beatclockAllTimeCorrect_hard")
-        let answered = readInt("beatclockAllTimeAnswered_easy")
-                  + readInt("beatclockAllTimeAnswered_medium")
-                  + readInt("beatclockAllTimeAnswered_hard")
-        let best = max(
-            readInt("beatclockAllTimeBestStreak_easy"),
-            readInt("beatclockAllTimeBestStreak_medium"),
-            readInt("beatclockAllTimeBestStreak_hard")
-        )
-        return .init(name: "Beat the Clock", correct: correct, answered: answered, bestStreak: best)
-    }
-
-    private var bookOrderStat: GameStat {
-        // Book Order uses unsuffixed keys
-        let c = readInt("bookorderAllTimeCorrect")
-        let a = readInt("bookorderAllTimeAnswered")
-        let best = readInt("bookorderAllTimeBestStreak")
-        return .init(name: "Book Order", correct: c, answered: a, bestStreak: best == 0 ? nil : best)
-    }
-
-    private var allGameStats: [GameStat] {
-        [quizStat, hangmanStat, refMatchStat, beatClockStat, bookOrderStat]
-    }
-
-    private var totalAnsweredAllGames: Int {
-        allGameStats.reduce(0) { $0 + $1.answered }
-    }
-    private var totalCorrectAllGames: Int {
-        allGameStats.reduce(0) { $0 + $1.correct }
-    }
-
-    private func percent(_ correct: Int, _ answered: Int) -> Double {
-        guard answered > 0 else { return 0 }
-        return (Double(correct) / Double(answered)) * 100.0
-    }
+    @State private var version: Int = 0 // tie to GameStats version for refresh
 
     private func colorForPercent(_ pct: Double) -> Color {
         if pct < 60 { return .red }
@@ -153,9 +26,10 @@ struct GamesCardView: View {
 
     var body: some View {
         GroupBox {
-            let totalAnswered = totalAnsweredAllGames
-            let totalCorrect = totalCorrectAllGames
-            let gamerPct = percent(totalCorrect, totalAnswered)
+            let breakdown = GameStats.shared.breakdownSnapshot()
+            let totalAnswered = breakdown.totalAnswered
+            let totalCorrect = breakdown.totalCorrect
+            let gamerPct = breakdown.percentage
             let gamerColor = colorForPercent(gamerPct)
             let isEmpty = (totalAnswered == 0)
 
@@ -198,7 +72,7 @@ struct GamesCardView: View {
                                             .frame(width: colWidth, alignment: .center)
                                     }
 
-                                    let stats = allGameStats
+                                    let stats = breakdown.entries
 
                                     let shares: [Double] = stats.map { s in
                                         totalAnswered > 0 ? (Double(s.answered) / Double(totalAnswered)) * 100.0 : 0
@@ -312,6 +186,9 @@ struct GamesCardView: View {
             }
         } label: {
             Label("Games", systemImage: "gamecontroller")
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
+            version &+= 1 // trigger refresh
         }
     }
 }

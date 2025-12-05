@@ -13,7 +13,6 @@ enum BookSourceScope: String, CaseIterable, Identifiable {
 }
 
 struct BibleCanon {
-    /// Hardcoded fallback Protestant canonical 66 books in order
     static let fallbackCanon: [String] = [
         "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
         "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel",
@@ -31,7 +30,6 @@ struct BibleCanon {
         "Jude", "Revelation"
     ]
     
-    /// Returns the canonical order of books using BibleData if available, else fallback
     static func canonicalOrder() -> [String] {
         if !BibleData.books.isEmpty {
             return BibleData.books.map { $0.name }
@@ -40,7 +38,6 @@ struct BibleCanon {
     }
 }
 
-/// Represents a single round of the Book Order game
 struct BookOrderRound {
     let prompt: String
     let shuffled: [String]
@@ -49,8 +46,6 @@ struct BookOrderRound {
 
 @MainActor
 final class BookOrderGameViewModel: ObservableObject {
-    // MARK: - Published Properties
-    
     @Published var started: Bool = false
     @Published var currentItems: [String] = []
     @Published var correctOrder: [String] = []
@@ -66,18 +61,12 @@ final class BookOrderGameViewModel: ObservableObject {
     @Published var difficulty: BookOrderDifficulty = .normal
     @Published var source: BookSourceScope = .both
     
-    // MARK: - Round info for prompt display
-    
     private var sliceFirst: String? = nil
     private var sliceLast: String? = nil
-    
-    // MARK: - Persistence keys
     
     private let keyAllTimeCorrect = "bookorderAllTimeCorrect"
     private let keyAllTimeAnswered = "bookorderAllTimeAnswered"
     private let keyAllTimeBestStreak = "bookorderAllTimeBestStreak"
-    
-    // MARK: - Computed persisted all-time stats
     
     var allTimeCorrect: Int {
         get { UserDefaults.standard.integer(forKey: keyAllTimeCorrect) }
@@ -93,8 +82,6 @@ final class BookOrderGameViewModel: ObservableObject {
         get { UserDefaults.standard.integer(forKey: keyAllTimeBestStreak) }
         set { UserDefaults.standard.set(newValue, forKey: keyAllTimeBestStreak) }
     }
-    
-    // MARK: - Game logic
     
     func startGame() {
         score = 0
@@ -115,7 +102,6 @@ final class BookOrderGameViewModel: ObservableObject {
         case .both:
             return canon
         case .ot:
-            // Old Testament is first 39 in the fallback list; if BibleData order is used and differs, prefer names up to the first 39 that match fallback
             let fallback = BibleCanon.fallbackCanon
             let otSet = Set(fallback.prefix(39))
             return canon.filter { otSet.contains($0) }
@@ -129,7 +115,6 @@ final class BookOrderGameViewModel: ObservableObject {
     func nextRound() {
         let canon = workingCanon()
         guard !canon.isEmpty else {
-            // Not enough books to play
             currentItems = []
             correctOrder = []
             sliceFirst = nil
@@ -185,15 +170,10 @@ final class BookOrderGameViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Comparison helpers
-    
-    /// Whether the UI should show a side-by-side comparison of the user's submission and the correct order
     var shouldShowComparison: Bool {
         showingCorrectOrder && lastSubmittedOrder != nil && !correctOrder.isEmpty
     }
     
-    /// Pairs the user's submitted order with the correct order for side-by-side display
-    /// Each tuple indicates the user's pick, the correct item at that position, and whether they match
     var comparisonRows: [(your: String, correct: String, isMatch: Bool)] {
         guard let submitted = lastSubmittedOrder else { return [] }
         let count = min(submitted.count, correctOrder.count)
@@ -234,17 +214,21 @@ final class BookOrderGameViewModel: ObservableObject {
     }
     
     private func updateAllTime(correct: Int, answered: Int, streak: Int) {
+        // Keep local mirrors for UI (optional), but centralize authoritative write:
         allTimeCorrect += correct
         allTimeAnswered += answered
         if streak > allTimeBestStreak {
             allTimeBestStreak = streak
         }
 
-        // NEW: push to iCloud KVS immediately
-        let kvs = iCloudSyncCoordinator.shared
-        kvs.pushKey(keyAllTimeCorrect)
-        kvs.pushKey(keyAllTimeAnswered)
-        kvs.pushKey(keyAllTimeBestStreak)
+        // Centralized write to sync + notify
+        GameStats.shared.recordRound(
+            game: .bookorder,
+            difficulty: .none,
+            correct: correct,
+            answered: answered,
+            currentBestStreak: max(streak, allTimeBestStreak)
+        )
     }
     
     func move(from source: IndexSet, to destination: Int) {
@@ -258,7 +242,6 @@ extension BookOrderGameViewModel {
     static func preview() -> BookOrderGameViewModel {
         let vm = BookOrderGameViewModel()
         let canon = BibleCanon.canonicalOrder()
-        // Fixed slice for preview: first 6 books
         let sliceLength = 6
         let startIndex = 0
         let slice = Array(canon[startIndex..<(startIndex+sliceLength)])
