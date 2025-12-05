@@ -1735,64 +1735,55 @@ struct HomeView: View {
 
     // MARK: - Dynamic body using saved layout
 
+    // Helper to render a card by ID (avoids duplicating the switch)
+    @ViewBuilder
+    private func card(for id: HomeCardID) -> some View {
+        switch id {
+        case .verseOfDay:
+            verseOfDayCard
+        case .dailyFocus:
+            dailyFocusCard
+        case .timer:
+            timerCard
+        case .resumeReading:
+            resumeCard
+        case .games:
+            gamesCard
+        case .streaks:
+            streaksCard
+        case .bibleStats:
+            bibleStatsCard
+        }
+    }
+
     var body: some View {
         // Build the list of visible cards in the saved order
         let activeCards: [HomeCardID] = layoutOrder.filter { !hiddenSet.contains($0) }
 
         ScrollView {
             if isPad {
-                // iPad: Title card full width, then an adaptive two-column grid if we have enough cards.
+                // iPad: Title card full width, then two independent vertical columns for consistent spacing
+                // Split the cards into two columns (even/odd index keeps overall order visually top-to-bottom)
+                let leftCards = activeCards.enumerated().compactMap { $0.offset % 2 == 0 ? $0.element : nil }
+                let rightCards = activeCards.enumerated().compactMap { $0.offset % 2 == 1 ? $0.element : nil }
+
                 VStack(spacing: 16) {
                     titleCard
 
-                    if activeCards.count >= 2 {
-                        // Two equal columns
-                        let columns = [
-                            GridItem(.flexible(), spacing: 16, alignment: .top),
-                            GridItem(.flexible(), spacing: 16, alignment: .top)
-                        ]
-                        LazyVGrid(columns: columns, alignment: .center, spacing: 16) {
-                            ForEach(activeCards, id: \.self) { card in
-                                switch card {
-                                case .verseOfDay:
-                                    verseOfDayCard
-                                case .dailyFocus:
-                                    dailyFocusCard
-                                case .timer:
-                                    timerCard
-                                case .resumeReading:
-                                    resumeCard
-                                case .games:
-                                    gamesCard
-                                case .streaks:
-                                    streaksCard
-                                case .bibleStats:
-                                    bibleStatsCard
-                                }
-                            }
-                        }
-                    } else {
-                        // Fallback to single column when there aren't enough cards
+                    HStack(alignment: .top, spacing: 16) {
                         VStack(spacing: 16) {
-                            ForEach(activeCards, id: \.self) { card in
-                                switch card {
-                                case .verseOfDay:
-                                    verseOfDayCard
-                                case .dailyFocus:
-                                    dailyFocusCard
-                                case .timer:
-                                    timerCard
-                                case .resumeReading:
-                                    resumeCard
-                                case .games:
-                                    gamesCard
-                                case .streaks:
-                                    streaksCard
-                                case .bibleStats:
-                                    bibleStatsCard
-                                }
+                            ForEach(leftCards, id: \.self) { id in
+                                card(for: id)
                             }
                         }
+                        .frame(maxWidth: .infinity, alignment: .top)
+
+                        VStack(spacing: 16) {
+                            ForEach(rightCards, id: \.self) { id in
+                                card(for: id)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .top)
                     }
                 }
                 .padding(.horizontal, 24)
@@ -1801,24 +1792,9 @@ struct HomeView: View {
                 VStack(spacing: 16) {
                     titleCard
 
-                    ForEach(layoutOrder, id: \.self) { card in
-                        if !hiddenSet.contains(card) {
-                            switch card {
-                            case .verseOfDay:
-                                verseOfDayCard
-                            case .dailyFocus:
-                                dailyFocusCard
-                            case .timer:
-                                timerCard
-                            case .resumeReading:
-                                resumeCard
-                            case .games:
-                                gamesCard
-                            case .streaks:
-                                streaksCard
-                            case .bibleStats:
-                                bibleStatsCard
-                            }
+                    ForEach(layoutOrder, id: \.self) { cardID in
+                        if !hiddenSet.contains(cardID) {
+                            card(for: cardID)
                         }
                     }
                 }
@@ -2899,4 +2875,3 @@ private final class DebouncedWidgetReloader {
         queue.asyncAfter(deadline: .now() + 0.6, execute: item)
     }
 }
-
