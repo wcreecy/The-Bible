@@ -190,8 +190,9 @@ struct StatsView: View {
                     }
                 }
                 .onAppear {
-                    let totals = BibleStatsStore.shared.loadTotals()
-                    genreDetailRows = rowsForGenre(genre, totals: totals)
+                    // Use scoped per-book totals for the selected timeframe
+                    let totalsMap = scopedPerBookTotals
+                    genreDetailRows = rowsForGenre(genre, totals: totalsMap)
                 }
             }
         }
@@ -203,9 +204,10 @@ struct StatsView: View {
         .onReceive(NotificationCenter.default.publisher(for: .chapterProgressChanged)) { _ in
             refreshAll()
         }
-        // Keep OT/NT in sync with the selected scope
+        // Keep OT/NT and Genre in sync with the selected scope
         .onChange(of: timeScope) {
             recomputeOTNTFromScope()
+            recomputeGenresFromScope()
         }
     }
 
@@ -438,7 +440,7 @@ struct StatsView: View {
     private var otNtCard: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 8) {
-                Text("OT vs NT: \(timeScope.rawValue)")
+                Text("OT vs NT — \(timeScope.rawValue)")
                     .font(.headline)
                 HStack(spacing: 8) {
                     Text("OT")
@@ -602,7 +604,7 @@ struct StatsView: View {
             GroupBox {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
-                        Text("Genre Distribution")
+                        Text("Genre Distribution — \(timeScope.rawValue)")
                             .font(.headline)
                         Spacer()
                         Button {
@@ -627,7 +629,8 @@ struct StatsView: View {
                                 Button {
                                     if let g = Genre(rawValue: item.genre) {
                                         selectedGenre = g
-                                        genreDetailRows = rowsForGenre(g, totals: perBookTotals)
+                                        // rows should reflect the same scoped timeframe
+                                        genreDetailRows = rowsForGenre(g, totals: scopedPerBookTotals)
                                     }
                                 } label: {
                                     HStack(spacing: 8) {
@@ -679,7 +682,7 @@ struct StatsView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         // Make the scope explicit in the title for clarity
-                        Text("Total Bible Reading Time: \(timeScope.rawValue)")
+                        Text("Total Bible Reading Time — \(timeScope.rawValue)")
                             .font(.headline)
                         Spacer()
                         Text(BibleStatsStore.shared.format(scopedTotalSeconds))
@@ -765,6 +768,8 @@ struct StatsView: View {
             showBookProgressDetails = false
             showTotalsSection = false
             showGenreSection = true
+            // Ensure genre list is refreshed for current scope when opening
+            recomputeGenresFromScope()
         }
     }
 
@@ -784,8 +789,9 @@ struct StatsView: View {
         refreshTotals()
         refreshChartsAndMonth()
         refreshSessionScopedPerBook() // build session-derived per-book maps
-        // Ensure OT/NT matches the current scope after all scoped datasets are refreshed
+        // Ensure OT/NT and Genre match the current scope after datasets are refreshed
         recomputeOTNTFromScope()
+        recomputeGenresFromScope()
     }
 
     private func refreshTotals() {
@@ -843,8 +849,8 @@ struct StatsView: View {
             _ = thisWeekStart
         }
 
-        // Removed: setting otSeconds/ntSeconds here using all-time totals
-        // We'll compute OT/NT from the currently scoped per-book totals instead.
+        // Removed: setting perGenreTotals here from all-time totals.
+        // We'll compute Genre from the currently scoped per-book totals instead.
 
         computeCompletionMetricsVerseComplete()
         computePerBookProgressVerseComplete()
@@ -856,12 +862,6 @@ struct StatsView: View {
         } else {
             lastReadBookChapter = "—"
             lastReadTimeText = "—"
-        }
-
-        // Keep genre totals using all-time per-book fallback (display-only)
-        perGenreTotals = computeGenreTotals(from: totals)
-        if let g = selectedGenre {
-            genreDetailRows = rowsForGenre(g, totals: totals)
         }
     }
 
@@ -1090,6 +1090,11 @@ struct StatsView: View {
         }
     }
 
+    // Compute genre totals from the currently scoped per-book map
+    private var scopedPerGenreTotalsComputed: [(genre: String, seconds: Int)] {
+        computeGenreTotals(from: scopedPerBookTotals)
+    }
+
     // MARK: - Helpers
 
     private var weekDeltaOnlyValue: String {
@@ -1205,12 +1210,20 @@ struct StatsView: View {
         return formatter.string(from: date)
     }
 
-    // MARK: - OT/NT recompute
+    // MARK: - Scope recompute
 
     private func recomputeOTNTFromScope() {
         let split = BibleStatsStore.shared.splitOTNT(totals: scopedPerBookTotals)
         otSeconds = split.ot
         ntSeconds = split.nt
+    }
+
+    private func recomputeGenresFromScope() {
+        perGenreTotals = scopedPerGenreTotalsComputed
+        // Update open detail rows if a genre is selected
+        if let g = selectedGenre {
+            genreDetailRows = rowsForGenre(g, totals: scopedPerBookTotals)
+        }
     }
 }
 
