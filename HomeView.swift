@@ -1210,70 +1210,10 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - NEW: Games Card
+    // MARK: - NEW: Games Card (Home) using centralized GameStats
 
-    private struct GameStat {
-        let name: String
-        let correct: Int
-        let answered: Int
-        let bestStreak: Int?
-    }
-
-    private func readInt(_ key: String) -> Int {
-        UserDefaults.standard.integer(forKey: key)
-    }
-
-    private var quizStat: GameStat {
-        let c = readInt("quizAllTimeCorrect_easy") + readInt("quizAllTimeCorrect_normal") + readInt("quizAllTimeCorrect_hard")
-        let a = readInt("quizAllTimeAnswered_easy") + readInt("quizAllTimeAnswered_normal") + readInt("quizAllTimeAnswered_hard")
-        let best = max(readInt("quizAllTimeBestStreak_easy"), readInt("quizAllTimeBestStreak_normal"), readInt("quizAllTimeBestStreak_hard"))
-        return .init(name: "Quiz", correct: c, answered: a, bestStreak: best)
-    }
-
-    private var hangmanStat: GameStat {
-        // Per-difficulty keys
-        let c = readInt("hangmanAllTimeCorrect_easy") + readInt("hangmanAllTimeCorrect_medium") + readInt("hangmanAllTimeCorrect_hard") + readInt("hangmanAllTimeCorrect")
-        let a = readInt("hangmanAllTimeAnswered_easy") + readInt("hangmanAllTimeAnswered_medium") + readInt("hangmanAllTimeAnswered_hard") + readInt("hangmanAllTimeAnswered")
-        let best = max(readInt("hangmanAllTimeBestStreak_easy"), readInt("hangmanAllTimeBestStreak_medium"), readInt("hangmanAllTimeBestStreak_hard"), readInt("hangmanAllTimeBestStreak"))
-        return .init(name: "Hangman", correct: c, answered: a, bestStreak: best == 0 ? nil : best)
-    }
-
-    private var refMatchStat: GameStat {
-        let c = readInt("refmatchAllTimeCorrect_easy") + readInt("refmatchAllTimeCorrect_medium") + readInt("refmatchAllTimeCorrect_hard") + readInt("refmatchAllTimeCorrect")
-        let a = readInt("refmatchAllTimeAnswered_easy") + readInt("refmatchAllTimeAnswered_medium") + readInt("refmatchAllTimeAnswered_hard") + readInt("refmatchAllTimeAnswered")
-        let best = max(readInt("refmatchAllTimeBestStreak_easy"), readInt("refmatchAllTimeBestStreak_medium"), readInt("refmatchAllTimeBestStreak_hard"), readInt("refmatchAllTimeBestStreak"))
-        return .init(name: "Verse Match", correct: c, answered: a, bestStreak: best == 0 ? nil : best)
-    }
-
-    private var beatClockStat: GameStat {
-        let c = readInt("beatclockAllTimeCorrect_easy") + readInt("beatclockAllTimeCorrect_medium") + readInt("beatclockAllTimeCorrect_hard")
-        let a = readInt("beatclockAllTimeAnswered_easy") + readInt("beatclockAllTimeAnswered_medium") + readInt("beatclockAllTimeAnswered_hard")
-        let best = max(readInt("beatclockAllTimeBestStreak_easy"), readInt("beatclockAllTimeBestStreak_medium"), readInt("beatclockAllTimeBestStreak_hard"))
-        return .init(name: "Beat the Clock", correct: c, answered: a, bestStreak: best)
-    }
-
-    private var bookOrderStat: GameStat {
-        let c = readInt("bookorderAllTimeCorrect")
-        let a = readInt("bookorderAllTimeAnswered")
-        let best = readInt("bookorderAllTimeBestStreak")
-        return .init(name: "Book Order", correct: c, answered: a, bestStreak: best == 0 ? nil : best)
-    }
-
-    private var allGameStats: [GameStat] {
-        [quizStat, hangmanStat, refMatchStat, beatClockStat, bookOrderStat]
-    }
-
-    private var totalAnsweredAllGames: Int {
-        allGameStats.reduce(0) { $0 + $1.answered }
-    }
-    private var totalCorrectAllGames: Int {
-        allGameStats.reduce(0) { $0 + $1.correct }
-    }
-
-    private func percent(_ correct: Int, _ answered: Int) -> Double {
-        guard answered > 0 else { return 0 }
-        return (Double(correct) / Double(answered)) * 100.0
-    }
+    // Local token to re-render on external sync merges
+    @State private var gameStatsVersion: Int = 0
 
     private func colorForPercent(_ pct: Double) -> Color {
         if pct < 60 { return .red }
@@ -1287,12 +1227,12 @@ struct HomeView: View {
 
     @ViewBuilder
     private var gamesCard: some View {
-        let totalAnswered = totalAnsweredAllGames
-        let totalCorrect = totalCorrectAllGames
-        let gamerPct = percent(totalCorrect, totalAnswered)
+        // Pull a fresh snapshot; reading version in the view ties it to state updates
+        let _ = gameStatsVersion
+        let snap = GameStats.shared.snapshot()
+        let gamerPct = snap.percentage
         let gamerColor = colorForPercent(gamerPct)
-
-        let isEmpty = (totalAnswered == 0)
+        let isEmpty = (snap.totalAnswered == 0)
 
         HeroCard(
             title: "Games",
@@ -1300,145 +1240,22 @@ struct HomeView: View {
             icon: "gamecontroller",
             tint: isEmpty ? .secondary : gamerColor,
             backgroundColor: nil,
-            strokeColor: nil // removed colored outline around the Games card
+            strokeColor: nil
         ) {
             VStack(alignment: .leading, spacing: 12) {
                 DisclosureGroup(isExpanded: $gamesExpanded) {
-                    // Expanded content with horizontal scroll to prevent overflow on compact widths
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        VStack(alignment: .leading, spacing: 12) {
-                            if isEmpty {
-                                Text("Play any game to build your Gamer Score.")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                            } else {
-                                // Expanded content: Player Stat Sheet
-                                Divider()
-
-                                // Player Stat Sheet with header and aligned columns (center numeric columns)
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Player Stat Sheet")
-                                        .font(.subheadline).bold()
-                                        .foregroundStyle(.secondary)
-
-                                    // Column metrics
-                                    let nameWidth: CGFloat = 140
-                                    let colWidth: CGFloat = 72
-
-                                    // Header
-                                    HStack(spacing: 10) {
-                                        Text("Game")
-                                            .font(.caption.weight(.semibold))
-                                            .foregroundStyle(.secondary)
-                                            .frame(width: nameWidth, alignment: .leading)
-                                        Spacer(minLength: 0)
-                                        Text("Played")
-                                            .font(.caption.weight(.semibold))
-                                            .foregroundStyle(.secondary)
-                                            .frame(width: colWidth, alignment: .center)
-                                        Text("Avg")
-                                            .font(.caption.weight(.semibold))
-                                            .foregroundStyle(.secondary)
-                                            .frame(width: colWidth, alignment: .center)
-                                        Text("Streak")
-                                            .font(.caption.weight(.semibold))
-                                            .foregroundStyle(.secondary)
-                                            .frame(width: colWidth, alignment: .center)
-                                    }
-
-                                    // Rows
-                                    let stats = allGameStats
-
-                                    // Precompute column values for highlighting
-                                    let shares: [Double] = stats.map { s in
-                                        totalAnswered > 0 ? (Double(s.answered) / Double(totalAnswered)) * 100.0 : 0
-                                    }
-                                    let avgs: [Double] = stats.map { s in
-                                        s.answered > 0 ? (Double(s.correct) / Double(s.answered)) * 100.0 : 0
-                                    }
-                                    let streaks: [Int] = stats.map { s in
-                                        s.bestStreak ?? 0
-                                    }
-
-                                    // Determine unique maxima (no highlight if tie or all zero)
-                                    let bestShareIndex = uniqueMaxIndex(shares)
-                                    let bestAvgIndex = uniqueMaxIndex(avgs)
-                                    let bestStreakIndex = uniqueMaxIndex(streaks)
-
-                                    // Determine unique minima (no highlight if tie)
-                                    let worstShareIndex = uniqueMinIndex(shares)
-                                    let worstAvgIndex = uniqueMinIndex(avgs)
-                                    // For streaks, only consider > 0 values; map zeros to a sentinel so they don’t become the minimum highlight
-                                    let streaksForMin: [Int] = streaks.map { $0 == 0 ? Int.max : $0 }
-                                    let worstStreakIndex = uniqueMinIndex(streaksForMin)
-
-                                    ForEach(Array(stats.enumerated()), id: \.offset) { pair in
-                                        let idx = pair.offset
-                                        let s = pair.element
-                                        let share = shares[idx]
-                                        let avg = avgs[idx]
-                                        let best = streaks[idx]
-
-                                        HStack(spacing: 10) {
-                                            Text(s.name)
-                                                .font(.subheadline.weight(.semibold))
-                                                .frame(width: nameWidth, alignment: .leading)
-
-                                            Spacer(minLength: 0)
-
-                                            // Played share column
-                                            Text("\(Int(round(share)))%")
-                                                .font(.footnote)
-                                                .monospacedDigit()
-                                                .frame(width: colWidth, alignment: .center)
-                                                .foregroundStyle(
-                                                    bestShareIndex == idx ? Color.green :
-                                                    (worstShareIndex == idx ? Color.red : Color.primary)
-                                                )
-
-                                            // Average accuracy column
-                                            Text("\(Int(round(avg)))%")
-                                                .font(.footnote)
-                                                .monospacedDigit()
-                                                .frame(width: colWidth, alignment: .center)
-                                                .foregroundStyle(
-                                                    bestAvgIndex == idx ? Color.green :
-                                                    (worstAvgIndex == idx ? Color.red : Color.primary)
-                                                )
-
-                                            // Streak column (dash when nil/zero). Avoid red highlight for zero/absent streaks.
-                                            Text(s.bestStreak != nil && s.bestStreak! > 0 ? "\(best)" : "—")
-                                                .font(.footnote)
-                                                .monospacedDigit()
-                                                .frame(width: colWidth, alignment: .center)
-                                                .foregroundStyle(
-                                                    s.bestStreak != nil && s.bestStreak! > 0
-                                                    ? (bestStreakIndex == idx ? Color.green :
-                                                       (worstStreakIndex == idx ? Color.red : Color.primary))
-                                                    : Color.primary
-                                                )
-                                        }
-                                        .foregroundStyle(s.answered == 0 ? .secondary : .primary)
-                                        .accessibilityElement(children: .ignore)
-                                        .accessibilityLabel(
-                                            {
-                                                var parts: [String] = [s.name]
-                                                parts.append("Share \(Int(round(share))) percent")
-                                                parts.append("Average \(Int(round(avg))) percent")
-                                                if let bs = s.bestStreak, bs > 0 {
-                                                    parts.append("Best streak \(bs)")
-                                                }
-                                                return parts.joined(separator: ". ") + "."
-                                            }()
-                                        )
-                                    }
-                                }
-                            }
+                    // Keep expanded UI minimal here; detailed stat sheet is in Stats tab's GamesCardView
+                    VStack(alignment: .leading, spacing: 8) {
+                        if isEmpty {
+                            Text("Play any game to build your Gamer Score.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text("Your Gamer Score is the percentage of correct answers across all games.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
                         }
-                        .padding(.trailing, 4)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
                 } label: {
                     // Collapsed label: Gamer Score row only
                     VStack(alignment: .leading, spacing: 6) {
@@ -1467,6 +1284,10 @@ struct HomeView: View {
                 }
                 .animation(.spring(response: 0.25, dampingFraction: 0.9), value: gamesExpanded)
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
+            // bump local version to trigger recompute/redraw
+            gameStatsVersion &+= 1
         }
     }
 
@@ -2083,6 +1904,9 @@ struct HomeView: View {
 
             // Initial load of Bible Stats (even if card is hidden, keep state fresh)
             bibleVM.refresh()
+
+            // Initialize GameStats and bind to its version for immediate refresh
+            gameStatsVersion = GameStats.shared.snapshot().totalAnswered // seed read; any value ok
         }
         // Update when AppStorage strings change (e.g., after Settings saves or user toggles)
         .onChange(of: homeCardOrderRaw) { _, _ in decodeHomeLayout() }
@@ -2463,7 +2287,6 @@ struct HomeView: View {
     }
 
     private func startFinishAlerts() {
-        stopFinishAlerts()
         let soundID = selectedFinishSoundID
         finishHapticTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { _ in
             AudioServicesPlaySystemSound(soundID)

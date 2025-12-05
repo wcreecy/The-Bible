@@ -44,13 +44,18 @@ enum FontSizePreference: String, CaseIterable, Identifiable {
     }
 
     // Map to SwiftUI DynamicTypeSize. Returning nil means use the system setting.
+    // Bumped each preset up by two steps:
+    // • Small: xSmall → medium
+    // • Medium: medium → xLarge
+    // • Large: xLarge → xxxLarge
+    // • Extra Large: xxLarge → accessibility1 (bigger than xxxLarge on most SDKs)
     var dynamicTypeSize: DynamicTypeSize? {
         switch self {
         case .system: return nil
-        case .small: return .xSmall
-        case .medium: return .medium
-        case .large: return .xLarge
-        case .extraLarge: return .xxLarge
+        case .small: return .large
+        case .medium: return .xLarge
+        case .large: return .xxLarge
+        case .extraLarge: return .xxxLarge
         }
     }
 }
