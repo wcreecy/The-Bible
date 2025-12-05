@@ -22,6 +22,9 @@ final class HomeBibleStatsViewModel: ObservableObject {
     @Published var topBooks: [(book: String, seconds: Int)] = []
     @Published var maxTopSeconds: Int = 1
 
+    // New: label to indicate timeframe for Top Books (matches Stats tab behavior)
+    @Published var topBooksScopeLabel: String = "All Time"
+
     private var cancellable: AnyCancellable?
     private var externalUpdateCancellable: AnyCancellable?
 
@@ -107,13 +110,20 @@ final class HomeBibleStatsViewModel: ObservableObject {
             lastReadRelativeTime = "—"
         }
 
-        // Top books (compute 5, UI will show 3/5)
-        let all = totals.sorted { lhs, rhs in
+        // Top books — match Stats tab “All Time” behavior:
+        // Prefer session-derived all-time map within retention; fallback to legacy totals if none.
+        let sessionDerived: [String: Int] = groupSessionsByBook(
+            ReadingSessionsStore.shared.sessions(inLastDays: 180)
+        )
+        let sourceTotals: [String: Int] = sessionDerived.isEmpty ? totals : sessionDerived
+        let all = sourceTotals.sorted { lhs, rhs in
             if lhs.value == rhs.value { return lhs.key < rhs.key }
             return lhs.value > rhs.value
         }
         topBooks = all.prefix(5).map { ($0.key, $0.value) }
         maxTopSeconds = max(1, topBooks.map { $0.seconds }.max() ?? 1)
+        // Label for timeframe (explicit; matches Stats tab's all-time scope)
+        topBooksScopeLabel = "All Time"
     }
 
     private func computeCompletionMetrics(visitedChapters: Set<String>) {
@@ -151,5 +161,16 @@ final class HomeBibleStatsViewModel: ObservableObject {
         let f = RelativeDateTimeFormatter()
         f.unitsStyle = .short
         return f.localizedString(for: date, relativeTo: now)
+    }
+
+    // Group sessions by book and sum durations (mirrors StatsView logic)
+    private func groupSessionsByBook(_ sessions: [ReadingSessionsStore.Session]) -> [String: Int] {
+        var map: [String: Int] = [:]
+        for s in sessions {
+            let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
+            guard dur > 0 else { continue }
+            map[s.book, default: 0] += dur
+        }
+        return map
     }
 }
