@@ -74,6 +74,24 @@ final class iCloudSyncCoordinator {
         lastPushDate = Date()
     }
 
+    // NEW: Centralized reset for all game counters (all scoreboard keys).
+    func resetAllGameCountersToZero() {
+        // Zero every game key we know, stamp timestamps, and mirror to KVS.
+        let gameKeys = Array(hangmanKeys + beatClockKeys + refMatchKeys + quizKeys + bookOrderKeys)
+        for key in gameKeys {
+            defaults.set(0, forKey: key)
+            // Update per-key timestamp so the zero wins in LWW merges.
+            writeLocalTimestampNow(for: key)
+            kvs.set(0, forKey: key)
+            writeRemoteTimestampNow(for: key)
+        }
+        kvs.synchronize()
+        lastPushDate = Date()
+
+        // Invalidate any in-memory consumers and notify UI to refresh scoreboards.
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
     // MARK: - Key sets
 
     // BibleStatsStore keys

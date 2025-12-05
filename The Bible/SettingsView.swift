@@ -817,35 +817,8 @@ struct SettingsView: View {
             .alert("Reset All-time Stats?", isPresented: $showingResetQuizAlert) {
                 Button("Cancel", role: .cancel) {}
                 Button("Reset", role: .destructive) {
-                    UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect_easy")
-                    UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered_easy")
-                    UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak_easy")
-                    UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect_normal")
-                    UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered_normal")
-                    UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak_normal")
-                    UserDefaults.standard.set(0, forKey: "quizAllTimeCorrect_hard")
-                    UserDefaults.standard.set(0, forKey: "quizAllTimeAnswered_hard")
-                    UserDefaults.standard.set(0, forKey: "quizAllTimeBestStreak_hard")
-                    ["", "_easy", "_medium", "_hard"].forEach { suf in
-                        UserDefaults.standard.set(0, forKey: "hangmanAllTimeCorrect\(suf)")
-                        UserDefaults.standard.set(0, forKey: "hangmanAllTimeAnswered\(suf)")
-                        UserDefaults.standard.set(0, forKey: "hangmanAllTimeBestStreak\(suf)")
-                    }
-                    ["", "_easy", "_medium", "_hard"].forEach { suf in
-                        UserDefaults.standard.set(0, forKey: "refmatchAllTimeCorrect\(suf)")
-                        UserDefaults.standard.set(0, forKey: "refmatchAllTimeAnswered\(suf)")
-                        UserDefaults.standard.set(0, forKey: "refmatchAllTimeBestStreak\(suf)")
-                    }
-                    ["_easy", "_medium", "_hard"].forEach { suf in
-                        UserDefaults.standard.set(0, forKey: "beatclockAllTimeCorrect\(suf)")
-                        UserDefaults.standard.set(0, forKey: "beatclockAllTimeAnswered\(suf)")
-                        UserDefaults.standard.set(0, forKey: "beatclockAllTimeBestStreak\(suf)")
-                    }
-                    UserDefaults.standard.set(0, forKey: "bookorderAllTimeCorrect")
-                    UserDefaults.standard.set(0, forKey: "bookorderAllTimeAnswered")
-                    UserDefaults.standard.set(0, forKey: "bookorderAllTimeBestStreak")
-                    // Push game keys to iCloud KVS
-                    iCloudSyncCoordinator.shared.pushAllNow()
+                    // Centralized reset: zero all known game scoreboard keys and push to iCloud KVS with fresh timestamps.
+                    iCloudSyncCoordinator.shared.resetAllGameCountersToZero()
                 }
             } message: {
                 Text("Your all-time game scores will be reset. Would you like to continue?")

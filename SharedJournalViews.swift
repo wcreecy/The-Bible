@@ -206,15 +206,51 @@ struct CursorTextView: UIViewRepresentable {
     @Binding var bottomInset: CGFloat
     var onChange: ((String) -> Void)? = nil
 
-    // New: optional inline linkifier and link tap callback
+    // Optional inline linkifier and link tap callback
     var linkify: ((String) -> AttributedString)? = nil
     var onLinkTap: ((ScriptureRef) -> Void)? = nil
+
+    // MARK: - Normalization to ensure dynamic text color in light/dark
+
+    private func normalizedAttributedString(_ attr: NSAttributedString) -> NSAttributedString {
+        let mutable = NSMutableAttributedString(attributedString: attr)
+        let fullRange = NSRange(location: 0, length: mutable.length)
+
+        // Remove any explicit black foreground colors; we’ll rely on .label as the default.
+        mutable.enumerateAttribute(.foregroundColor, in: fullRange, options: []) { value, range, _ in
+            if let color = value as? UIColor {
+                // Detect exact black (sRGB 0,0,0,1)
+                var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+                if color.getRed(&r, green: &g, blue: &b, alpha: &a) {
+                    if r == 0 && g == 0 && b == 0 && a > 0 {
+                        mutable.removeAttribute(.foregroundColor, range: range)
+                    }
+                }
+            }
+        }
+
+        // Do not set a blanket .label here, because UITextView uses typingAttributes for new text,
+        // and leaving runs without a color lets UIKit use view.textColor (.label) which adapts.
+        return mutable
+    }
 
     func makeUIView(context: Context) -> UITextView {
         let tv = UITextView()
         tv.isScrollEnabled = true
         tv.backgroundColor = .clear
         tv.delegate = context.coordinator
+
+        // Dynamic, adaptive colors for text and caret/selection
+        tv.textColor = .label
+        tv.tintColor = .tintColor
+        tv.typingAttributes[.foregroundColor] = UIColor.label
+
+        // Match keyboard appearance to interface style
+        if let style = UIApplication.shared.connectedScenes
+            .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
+            .first?.traitCollection.userInterfaceStyle {
+            tv.keyboardAppearance = (style == .dark) ? .dark : .light
+        }
 
         // Enable editing and selection
         tv.isEditable = true
@@ -227,7 +263,7 @@ struct CursorTextView: UIViewRepresentable {
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
 
-        // Enable autocorrect/spell check and automatic capitalization
+        // Text behavior
         tv.autocorrectionType = .default
         tv.autocapitalizationType = .sentences
         tv.smartDashesType = .default
@@ -238,10 +274,10 @@ struct CursorTextView: UIViewRepresentable {
         tv.textContainer.lineFragmentPadding = 5
         tv.textContainerInset = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
 
-        // Seed text (attributed if linkify provided)
+        // Seed text
         if let linkify {
             let linked = NSAttributedString(linkify(text))
-            tv.attributedText = linked
+            tv.attributedText = normalizedAttributedString(linked)
         } else {
             tv.text = text
         }
@@ -258,27 +294,33 @@ struct CursorTextView: UIViewRepresentable {
         context.coordinator.isInSwiftUIUpdate = true
         defer { context.coordinator.isInSwiftUIUpdate = false }
 
+        // Keep dynamic colors enforced
+        if uiView.textColor != .label {
+            uiView.textColor = .label
+        }
+        if (uiView.typingAttributes[.foregroundColor] as? UIColor) != UIColor.label {
+            uiView.typingAttributes[.foregroundColor] = UIColor.label
+        }
+
         // Update text (preserving selection)
         let currentString = uiView.text ?? ""
-        if currentString != text {
-            context.coordinator.isProgrammaticUpdate = true
-            let oldRange = uiView.selectedRange
-            if let linkify {
-                uiView.attributedText = NSAttributedString(linkify(text))
-                context.coordinator.lastLinkifiedText = text
-            } else {
-                uiView.text = text
-            }
-            uiView.selectedRange = oldRange
-            context.coordinator.isProgrammaticUpdate = false
-        } else if let linkify {
-            // Re-apply attributes if needed without changing the underlying text
-            if context.coordinator.lastLinkifiedText != text {
+        if let linkify {
+            // When linkify is used, we must manage attributedText
+            if context.coordinator.lastLinkifiedText != text || uiView.attributedText?.string != text {
                 context.coordinator.isProgrammaticUpdate = true
                 let oldRange = uiView.selectedRange
-                uiView.attributedText = NSAttributedString(linkify(text))
+                let linked = NSAttributedString(linkify(text))
+                uiView.attributedText = normalizedAttributedString(linked)
                 uiView.selectedRange = oldRange
                 context.coordinator.lastLinkifiedText = text
+                context.coordinator.isProgrammaticUpdate = false
+            }
+        } else {
+            if currentString != text {
+                context.coordinator.isProgrammaticUpdate = true
+                let oldRange = uiView.selectedRange
+                uiView.text = text
+                uiView.selectedRange = oldRange
                 context.coordinator.isProgrammaticUpdate = false
             }
         }
@@ -355,13 +397,21 @@ struct CursorTextView: UIViewRepresentable {
             }
             updateCaretRect(textView)
             scrollCaretVisible(textView)
+
             // Re-apply linkification on change if provided
             if let linkify = parent.linkify {
                 lastLinkifiedText = newText
                 let oldRange = textView.selectedRange
-                textView.attributedText = NSAttributedString(linkify(newText))
+                let linked = NSAttributedString(linkify(newText))
+                textView.attributedText = parent.normalizedAttributedString(linked)
                 textView.selectedRange = oldRange
             }
+
+            // Ensure typing attributes stay dynamic
+            if (textView.typingAttributes[.foregroundColor] as? UIColor) != UIColor.label {
+                textView.typingAttributes[.foregroundColor] = UIColor.label
+            }
+
             DispatchQueue.main.async {
                 self.parent.onChange?(textView.text)
             }
@@ -429,7 +479,7 @@ struct CursorTextView: UIViewRepresentable {
         // Intercept link taps inside editable text
         func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
             if let ref = BibleReferenceLinker.parse(url: URL) {
-                if let content = BibleReferenceLinker.loadVerses(for: ref) {
+                if let _ = BibleReferenceLinker.loadVerses(for: ref) {
                     DispatchQueue.main.async {
                         self.parent.onLinkTap?(ref)
                     }
