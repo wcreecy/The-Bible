@@ -37,8 +37,12 @@ final class GameStats: ObservableObject {
             forName: .gameStatsExternallyUpdated,
             object: nil,
             queue: .main
-        ) { [weak self] _ in
-            self?.version &+= 1
+        ) { _ in
+            // Hop to the main actor before mutating an @MainActor-isolated property,
+            // and avoid capturing `self` in the @Sendable closure.
+            Task { @MainActor in
+                GameStats.shared.version &+= 1
+            }
         }
     }
 
@@ -69,7 +73,8 @@ final class GameStats: ObservableObject {
         var totalAnswered: Int { entries.reduce(0) { $0 + max(0, $1.answered) } }
         var percentage: Double {
             guard totalAnswered > 0 else { return 0 }
-            return (Double(totalCorrect) / Double(totalAnswered)) * 100.0
+            let raw = (Double(totalCorrect) / Double(totalAnswered)) * 100.0
+            return min(100, max(0, raw))
         }
     }
 
@@ -186,21 +191,21 @@ final class GameStats: ObservableObject {
         UserDefaults.standard.integer(forKey: key)
     }
 
-    // Prefer per-difficulty keys; fall back to legacy unsuffixed if all zeros
-    private func sumWithFallback(prefix: String, parts: [String], legacyKey: String?) -> Int {
-        let values = parts.map { readInt("\(prefix)\($0)") }
-        let sum = values.reduce(0, +)
-        if sum > 0 { return sum }
-        if let legacy = legacyKey { return readInt(legacy) }
-        return 0
+    // Aggregate across both suffixed parts and legacy key
+    private func sumAcross(prefix: String, parts: [String], legacyKey: String?) -> Int {
+        let sumParts = parts.reduce(0) { acc, suffix in
+            acc + readInt("\(prefix)\(suffix)")
+        }
+        let legacy = legacyKey.map { readInt($0) } ?? 0
+        return max(0, sumParts + legacy)
     }
 
-    private func maxWithFallback(prefix: String, parts: [String], legacyKey: String?) -> Int {
-        let values = parts.map { readInt("\(prefix)\($0)") }
-        let maxVal = values.max() ?? 0
-        if maxVal > 0 { return maxVal }
-        if let legacy = legacyKey { return readInt(legacy) }
-        return 0
+    private func maxAcross(prefix: String, parts: [String], legacyKey: String?) -> Int {
+        var values: [Int] = parts.map { readInt("\(prefix)\($0)") }
+        if let legacy = legacyKey {
+            values.append(readInt(legacy))
+        }
+        return max(0, values.max() ?? 0)
     }
 
     private struct GameStat {
@@ -209,47 +214,33 @@ final class GameStats: ObservableObject {
         let bestStreak: Int?
     }
 
+    // Updated: aggregate suffixed + legacy for Quiz
     private var quiz: GameStat {
-        let c = readInt("quizAllTimeCorrect_easy")
-              + readInt("quizAllTimeCorrect_normal")
-              + readInt("quizAllTimeCorrect_hard")
-        let a = readInt("quizAllTimeAnswered_easy")
-              + readInt("quizAllTimeAnswered_normal")
-              + readInt("quizAllTimeAnswered_hard")
-        let best = max(
-            readInt("quizAllTimeBestStreak_easy"),
-            readInt("quizAllTimeBestStreak_normal"),
-            readInt("quizAllTimeBestStreak_hard")
-        )
+        let c = sumAcross(prefix: "quizAllTimeCorrect", parts: ["_easy","_normal","_hard"], legacyKey: "quizAllTimeCorrect")
+        let a = sumAcross(prefix: "quizAllTimeAnswered", parts: ["_easy","_normal","_hard"], legacyKey: "quizAllTimeAnswered")
+        let best = maxAcross(prefix: "quizAllTimeBestStreak", parts: ["_easy","_normal","_hard"], legacyKey: "quizAllTimeBestStreak")
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
     private var hangman: GameStat {
-        let c = sumWithFallback(prefix: "hangmanAllTimeCorrect", parts: ["_easy","_medium","_hard"], legacyKey: "hangmanAllTimeCorrect")
-        let a = sumWithFallback(prefix: "hangmanAllTimeAnswered", parts: ["_easy","_medium","_hard"], legacyKey: "hangmanAllTimeAnswered")
-        let best = maxWithFallback(prefix: "hangmanAllTimeBestStreak", parts: ["_easy","_medium","_hard"], legacyKey: "hangmanAllTimeBestStreak")
+        let c = sumAcross(prefix: "hangmanAllTimeCorrect", parts: ["_easy","_medium","_hard"], legacyKey: "hangmanAllTimeCorrect")
+        let a = sumAcross(prefix: "hangmanAllTimeAnswered", parts: ["_easy","_medium","_hard"], legacyKey: "hangmanAllTimeAnswered")
+        let best = maxAcross(prefix: "hangmanAllTimeBestStreak", parts: ["_easy","_medium","_hard"], legacyKey: "hangmanAllTimeBestStreak")
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
     private var refmatch: GameStat {
-        let c = sumWithFallback(prefix: "refmatchAllTimeCorrect", parts: ["_easy","_medium","_hard"], legacyKey: "refmatchAllTimeCorrect")
-        let a = sumWithFallback(prefix: "refmatchAllTimeAnswered", parts: ["_easy","_medium","_hard"], legacyKey: "refmatchAllTimeAnswered")
-        let best = maxWithFallback(prefix: "refmatchAllTimeBestStreak", parts: ["_easy","_medium","_hard"], legacyKey: "refmatchAllTimeBestStreak")
+        let c = sumAcross(prefix: "refmatchAllTimeCorrect", parts: ["_easy","_medium","_hard"], legacyKey: "refmatchAllTimeCorrect")
+        let a = sumAcross(prefix: "refmatchAllTimeAnswered", parts: ["_easy","_medium","_hard"], legacyKey: "refmatchAllTimeAnswered")
+        let best = maxAcross(prefix: "refmatchAllTimeBestStreak", parts: ["_easy","_medium","_hard"], legacyKey: "refmatchAllTimeBestStreak")
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
+    // Updated: aggregate suffixed + legacy for Beat the Clock
     private var beatclock: GameStat {
-        let c = readInt("beatclockAllTimeCorrect_easy")
-              + readInt("beatclockAllTimeCorrect_medium")
-              + readInt("beatclockAllTimeCorrect_hard")
-        let a = readInt("beatclockAllTimeAnswered_easy")
-              + readInt("beatclockAllTimeAnswered_medium")
-              + readInt("beatclockAllTimeAnswered_hard")
-        let best = max(
-            readInt("beatclockAllTimeBestStreak_easy"),
-            readInt("beatclockAllTimeBestStreak_medium"),
-            readInt("beatclockAllTimeBestStreak_hard")
-        )
+        let c = sumAcross(prefix: "beatclockAllTimeCorrect", parts: ["_easy","_medium","_hard"], legacyKey: "beatclockAllTimeCorrect")
+        let a = sumAcross(prefix: "beatclockAllTimeAnswered", parts: ["_easy","_medium","_hard"], legacyKey: "beatclockAllTimeAnswered")
+        let best = maxAcross(prefix: "beatclockAllTimeBestStreak", parts: ["_easy","_medium","_hard"], legacyKey: "beatclockAllTimeBestStreak")
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
@@ -269,6 +260,7 @@ final class GameStats: ObservableObject {
 
     private func percentage(correct: Int, answered: Int) -> Double {
         guard answered > 0 else { return 0 }
-        return (Double(correct) / Double(answered)) * 100.0
+        let raw = (Double(correct) / Double(answered)) * 100.0
+        return min(100, max(0, raw))
     }
 }

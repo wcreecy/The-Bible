@@ -33,8 +33,8 @@ final class ReadingSessionsStore {
         static var provider: UserDefaults { UserDefaults.standard }
     }
 
-    // Keep a rolling window to prevent unbounded growth (e.g., 180 days)
-    private let maxRetentionDays: Int = 180
+    // Keep a rolling window to prevent unbounded growth (raised to ~5 years for “All Time”)
+    private let maxRetentionDays: Int = 1825
 
     // In-memory cache, lazily loaded
     private var cacheAllSessions: [Session]?
@@ -73,6 +73,16 @@ final class ReadingSessionsStore {
         return loadAll().filter { $0.end >= start && $0.end < monthEnd }
     }
 
+    // Clear all stored sessions (used by debug tools)
+    func clearAll() {
+        cacheAllSessions = []
+        let defaults = Defaults.provider
+        defaults.removeObject(forKey: Defaults.key)
+        // Push sessions key removal to iCloud KVS for cross-device sync and notify listeners
+        iCloudSyncCoordinator.shared.pushKey(Defaults.key)
+        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+    }
+
     // MARK: - Persistence + cache
 
     private func loadAll() -> [Session] {
@@ -95,9 +105,12 @@ final class ReadingSessionsStore {
         let defaults = Defaults.provider
         if let data = try? JSONEncoder().encode(arr) {
             defaults.set(data, forKey: Defaults.key)
+        } else {
+            defaults.removeObject(forKey: Defaults.key)
         }
         // Push sessions to iCloud KVS for cross-device sync and refresh listeners
         iCloudSyncCoordinator.shared.pushKey(Defaults.key)
         NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 }
+

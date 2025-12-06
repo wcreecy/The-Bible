@@ -47,10 +47,8 @@ final class HomeBibleStatsViewModel: ObservableObject {
 
     func refresh(now: Date = Date()) {
         let store = BibleStatsStore.shared
-        let totals = store.loadTotals()
-        totalSeconds = totals.values.reduce(0, +)
 
-        // Match Stats tab: use ReadingSessionsStore (GMT day boundaries) for Today/This Week/Last Week
+        // Sessions-only for totals and time windows
         var gmtCal = Calendar.current
         gmtCal.timeZone = .gmt
 
@@ -92,11 +90,21 @@ final class HomeBibleStatsViewModel: ObservableObject {
             }
         }
 
-        let split = store.splitOTNT(totals: totals)
+        // All Time total (sessions-only, 5-year retention)
+        do {
+            let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: now, calendar: gmtCal)
+            totalSeconds = allSessions.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
+        }
+
+        // OT/NT split uses per-book totals; compute from sessions-only for the same 5-year window
+        let sessionDerivedAllTime: [String: Int] = groupSessionsByBook(
+            ReadingSessionsStore.shared.sessions(inLastDays: 1825)
+        )
+        let split = store.splitOTNT(totals: sessionDerivedAllTime)
         otSeconds = split.ot
         ntSeconds = split.nt
 
-        // Visited and completion
+        // Visited and completion (progress still from BibleStatsStore)
         let visited = store.loadVisitedChapters()
         visitedCount = visited.count
         computeCompletionMetrics(visitedChapters: visited)
@@ -110,19 +118,13 @@ final class HomeBibleStatsViewModel: ObservableObject {
             lastReadRelativeTime = "—"
         }
 
-        // Top books — match Stats tab “All Time” behavior:
-        // Prefer session-derived all-time map within retention; fallback to legacy totals if none.
-        let sessionDerived: [String: Int] = groupSessionsByBook(
-            ReadingSessionsStore.shared.sessions(inLastDays: 180)
-        )
-        let sourceTotals: [String: Int] = sessionDerived.isEmpty ? totals : sessionDerived
-        let all = sourceTotals.sorted { lhs, rhs in
+        // Top books — sessions-only within the 5-year window
+        let all = sessionDerivedAllTime.sorted { lhs, rhs in
             if lhs.value == rhs.value { return lhs.key < rhs.key }
             return lhs.value > rhs.value
         }
         topBooks = all.prefix(5).map { ($0.key, $0.value) }
         maxTopSeconds = max(1, topBooks.map { $0.seconds }.max() ?? 1)
-        // Label for timeframe (explicit; matches Stats tab's all-time scope)
         topBooksScopeLabel = "All Time"
     }
 
@@ -163,7 +165,7 @@ final class HomeBibleStatsViewModel: ObservableObject {
         return f.localizedString(for: date, relativeTo: now)
     }
 
-    // Group sessions by book and sum durations (mirrors StatsView logic)
+    // Group sessions by book and sum durations (sessions-only)
     private func groupSessionsByBook(_ sessions: [ReadingSessionsStore.Session]) -> [String: Int] {
         var map: [String: Int] = [:]
         for s in sessions {

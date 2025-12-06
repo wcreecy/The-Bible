@@ -417,11 +417,12 @@ struct HomeView: View {
         let buttonScale: CGFloat = isPad ? 1.25 : 1.0
         let titleFont: Font = isPad ? .system(.largeTitle, design: .default) : .largeTitle
         let titleWeight: Font.Weight = .black
-        let subtitleFont: Font = isPad ? .title3.weight(.semibold) : .subheadline.weight(.semibold)
+        let _: Font = isPad ? .title3.weight(.semibold) : .subheadline.weight(.semibold)
 
         // Compute today's daily goal progress for the subtitle fill
         let goalSeconds = max(1, dailyGoalMinutes) * 60
-        let todayReadingSeconds = BibleStatsStore.shared.totalForLast(days: 1)
+        // CHANGED: Use sessions-based local-day total to align with Streaks card
+        let todayReadingSeconds = BibleStatsStore.shared.todayTotalSeconds()
         let progress = min(1.0, Double(max(0, todayReadingSeconds)) / Double(goalSeconds))
         let percent = Int(round(progress * 100))
         let streak = StreakTracker.currentStreak
@@ -1215,9 +1216,6 @@ struct HomeView: View {
         else { return .green }
     }
 
-    // Collapsible Games Card state
-    @State private var gamesExpanded: Bool = false
-
     @ViewBuilder
     private var gamesCard: some View {
         // Pull a fresh snapshot; reading version in the view ties it to state updates
@@ -1236,47 +1234,52 @@ struct HomeView: View {
             strokeColor: nil
         ) {
             VStack(alignment: .leading, spacing: 12) {
-                DisclosureGroup(isExpanded: $gamesExpanded) {
-                    // Keep expanded UI minimal here; detailed stat sheet is in Stats tab's GamesCardView
-                    VStack(alignment: .leading, spacing: 8) {
-                        if isEmpty {
-                            Text("Play any game to build your Gamer Score.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        } else {
-                            Text("Your Gamer Score is the percentage of correct answers across all games.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                } label: {
-                    // Collapsed label: Gamer Score row only
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack(spacing: 10) {
-                            Text("Gamer Score:")
-                                .font(.headline)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            if isEmpty {
-                                Text("Let’s play!")
-                                    .font(.system(size: 22, weight: .semibold, design: .rounded))
-                                    .foregroundStyle(.secondary)
-                            } else {
-                                Text("\(Int(round(gamerPct)))%")
-                                    .font(.system(size: 20, weight: .bold, design: .rounded))
-                                    .foregroundStyle(gamerColor)
-                                    .accessibilityHidden(true)
-                                    .overlay(
-                                        Color.clear
-                                            .accessibilityElement(children: .ignore)
-                                            .accessibilityLabel("Gamer Score \(Int(round(gamerPct))) percent.")
-                                    )
-                            }
-                        }
+                // Compact header: Gamer Score
+                HStack(spacing: 10) {
+                    Text("Gamer Score:")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    if isEmpty {
+                        Text("Let’s play!")
+                            .font(.system(size: 22, weight: .semibold, design: .rounded))
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text("\(Int(round(gamerPct)))%")
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .foregroundStyle(gamerColor)
+                            .accessibilityHidden(true)
+                            .overlay(
+                                Color.clear
+                                    .accessibilityElement(children: .ignore)
+                                    .accessibilityLabel("Gamer Score \(Int(round(gamerPct))) percent.")
+                            )
                     }
                 }
-                .animation(.spring(response: 0.25, dampingFraction: 0.9), value: gamesExpanded)
+
+                // Navigation buttons
+                HStack(spacing: 10) {
+                    Button {
+                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 3])
+                    } label: {
+                        Label("Games", systemImage: "gamecontroller")
+                    }
+                    .buttonStyle(ModernPillButtonStyle(tint: .blue))
+
+                    Button {
+                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 6])
+                    } label: {
+                        Label("Stats", systemImage: "chart.bar")
+                    }
+                    .buttonStyle(ModernPillButtonStyle(tint: .teal))
+                }
+                .padding(.top, 2)
             }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            // Light press anywhere on the card navigates to Games tab
+            NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 3])
         }
         .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
             // bump local version to trigger recompute/redraw
@@ -1561,11 +1564,11 @@ struct HomeView: View {
         let best = StreakTracker.bestStreak
         let last = StreakTracker.lastVisitDate
 
-        // UPDATED: Use BibleStatsStore daily totals for today's used seconds to match StreakTracker.
-        let todayKey = BibleStatsStore.isoDateString(Date())
-        let usedSecs = max(0, BibleStatsStore.shared.loadDailyTotals()[todayKey, default: 0])
+        // UPDATED: Use authoritative sessions-based "today" total
         let goalSecs = dailyGoalSeconds
-        let progress = min(1.0, Double(usedSecs) / Double(goalSecs))
+        let todayTotal = BibleStatsStore.shared.todayTotalSeconds()
+        let progress = min(1.0, Double(todayTotal) / Double(goalSecs))
+        let goalMet = BibleStatsStore.shared.isDailyGoalMet(goalSeconds: goalSecs)
 
         HeroCard(
             title: "Daily Bible Streak",
@@ -1621,14 +1624,17 @@ struct HomeView: View {
                             .foregroundStyle(.secondary)
                     }
                     ProgressView(value: progress)
-                        .tint(progress >= 1.0 ? .green : .blue)
+                        .tint(goalMet ? .green : .blue)
                     HStack {
-                        if progress >= 1.0 {
+                        if goalMet {
                             Label("Great job! You reached your goal today.", systemImage: "checkmark.seal.fill")
                                 .foregroundStyle(.green)
                                 .font(.footnote.weight(.semibold))
                         } else {
-                            Label(remainingFormatted, systemImage: "clock")
+                            let remaining = max(0, goalSecs - todayTotal)
+                            let m = remaining / 60
+                            let s = remaining % 60
+                            Label("\(m)m \(s)s left", systemImage: "clock")
                                 .foregroundStyle(.secondary)
                                 .font(.footnote)
                         }
@@ -1667,6 +1673,11 @@ struct HomeView: View {
                 // Refresh reads of @AppStorage-backed usage values on return to Home
                 _ = dailyUsageTodayKey
             }
+        }
+        // Keep the card live when Bible reading stats change (cross-device, sessions, etc.)
+        .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
+            // No-op body; state derives from BibleStatsStore on render.
+            // Trigger a redraw by touching a benign @State if needed in future.
         }
     }
 
@@ -1911,6 +1922,10 @@ struct HomeView: View {
         .onChange(of: votdRefresh1Minute) { _, _ in scheduleNextVerseRefreshTimer() }
         .onChange(of: votdRefresh2Hour) { _, _ in scheduleNextVerseRefreshTimer() }
         .onChange(of: votdRefresh2Minute) { _, _ in scheduleNextVerseRefreshTimer() }
+        // Keep Home view live with Bible stats changes too
+        .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
+            // bibleVM already refreshes on appear/active; nothing else required for computed streak card.
+        }
         .sheet(isPresented: $showPrayerStudySheet) {
             PrayerStudyTimerSetupView(onStart: { minutes in
                 startTimer(minutes: minutes)
@@ -1926,9 +1941,8 @@ struct HomeView: View {
         } message: {
             Text("Your prayer/study timer has completed.")
         }
-        // Reset Games card state whenever leaving Home
+        // Reset expanded states whenever leaving Home
         .onDisappear {
-            gamesExpanded = false
             streaksExpanded = false
         }
     }

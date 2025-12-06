@@ -93,22 +93,16 @@ struct StopStopwatchIntent: AppIntent {
 
     @MainActor
     private static func endAllStopwatchActivitiesViaIntent() async {
-        guard #available(iOS 16.1, *) else { return }
         let activities = Activity<StopwatchAttributes>.activities
         for activity in activities {
+            let finalState = StopwatchAttributes.ContentState(status: "Stopped", elapsed: 0)
             if #available(iOS 17.0, *) {
-                let finalState = StopwatchAttributes.ContentState(status: "Stopped", elapsed: 0)
                 let finalContent = ActivityContent(state: finalState, staleDate: nil)
                 await activity.end(finalContent, dismissalPolicy: .immediate)
-            } else if #available(iOS 16.2, *) {
-                let finalState = StopwatchAttributes.ContentState(status: "Stopped", elapsed: 0)
-                await activity.end(using: finalState, dismissalPolicy: .immediate)
             } else {
-                // iOS 16.1: no dismissalPolicy; still end all explicitly
-                let finalState = StopwatchAttributes.ContentState(status: "Stopped", elapsed: 0)
-                await activity.end(using: finalState)
+                // iOS 16.x
+                await activity.end(using: finalState, dismissalPolicy: .immediate)
             }
         }
     }
 }
-

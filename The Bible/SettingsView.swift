@@ -44,7 +44,7 @@ struct SettingsView: View {
     @State private var isRefreshingCloudStatus: Bool = false
 
     // MARK: - Home layout configuration
-    private enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
+    enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
         case verseOfDay, dailyFocus, timer, resumeReading, games, streaks, bibleStats
         var id: String { rawValue }
         var title: String {
@@ -379,6 +379,13 @@ struct SettingsView: View {
                         } label: {
                             Label("Dump Reading Totals", systemImage: "text.justify.left")
                         }
+
+                        // NEW: Seed randomized reading stats for the past 31 days
+                        Button {
+                            seedRandomReadingStatsPast31Days()
+                        } label: {
+                            Label("Seed Random Reading Stats (31 Days)", systemImage: "sparkles")
+                        }
                     }
 
                     // Chapter/verse progress
@@ -564,6 +571,8 @@ struct SettingsView: View {
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Done") {
                             dailyGoalMinutes = localDailyGoalMinutes
+                            // Push to iCloud KVS immediately so other devices get it fast
+                            iCloudSyncCoordinator.shared.pushKey("dailyGoalMinutes")
                             dailyGoalSheetToken = nil
                         }
                     }
@@ -959,141 +968,171 @@ struct SettingsView: View {
         showDebugAlert = true
     }
 
-    private func defaultBookForDebug() -> Book? {
-        if let john = BibleData.books.first(where: { $0.name == "John" }) {
-            return john
+    private func clearReadingSessionsOnly() {
+        ReadingSessionsStore.shared.clearAll()
+        debugShow("Reading Sessions", "Cleared all reading sessions.")
+    }
+
+    // Seed 1–3 sessions per day over the last 7 days with random books/chapters and 5–25 minute durations.
+    private func seedSampleSessionsLast7Days() {
+        var gmtCal = Calendar.current
+        gmtCal.timeZone = .gmt
+
+        // Build a list of candidate books (fallback if BibleData is empty)
+        let bookNames: [String] = {
+            let fromData = BibleData.books.map { $0.name }
+            if !fromData.isEmpty { return fromData }
+            return ["Genesis", "Psalms", "Proverbs", "Isaiah", "Matthew", "Mark", "Luke", "John", "Acts", "Romans"]
+        }()
+
+        let today = Date()
+        for dayOffset in 0..<7 {
+            guard let baseDay = gmtCal.date(byAdding: .day, value: -dayOffset, to: gmtCal.startOfDay(for: today)) else { continue }
+            let sessionsCount = Int.random(in: 1...3)
+            for _ in 0..<sessionsCount {
+                // Pick a book and an optional chapter if available
+                let book = bookNames.randomElement() ?? "John"
+                let chapter: Int? = {
+                    if let b = BibleData.books.first(where: { $0.name == book }), !b.chapters.isEmpty {
+                        return b.chapters.randomElement()?.number
+                    }
+                    return nil
+                }()
+
+                // Choose a random start time during the day and a duration 5–25 minutes
+                let startSeconds = Int.random(in: 8*3600...22*3600) // somewhere between 8:00 and 22:00 GMT
+                let duration = Int.random(in: 5*60...25*60)
+                let start = gmtCal.date(byAdding: .second, value: startSeconds, to: baseDay) ?? baseDay
+                let end = start.addingTimeInterval(TimeInterval(duration))
+
+                let session = ReadingSessionsStore.Session(start: start, end: end, book: book, chapter: chapter)
+                ReadingSessionsStore.shared.appendSession(session)
+            }
         }
+
+        debugShow("Seeded Sessions", "Inserted random sessions for the last 7 days.")
+    }
+
+    private func seedRandomReadingStatsPast31Days() {
+        // For the last 31 days, randomly add small reading totals to daily totals by book and sessions.
+        var cal = Calendar.current
+        cal.timeZone = .gmt
+        let books = BibleData.books
+        guard !books.isEmpty else {
+            debugShow("Seed Stats", "No Bible data available.")
+            return
+        }
+
+        for dayOffset in 0..<31 {
+            guard let day = cal.date(byAdding: .day, value: -dayOffset, to: cal.startOfDay(for: Date())) else { continue }
+            // Pick 1–3 books and assign 3–20 minutes each
+            let pickCount = Int.random(in: 1...3)
+            let picks = (0..<pickCount).compactMap { _ in books.randomElement() }
+            for b in picks {
+                let seconds = Int.random(in: 3*60...20*60)
+                BibleStatsStore.shared.addToToday(bookName: b.name, seconds: seconds, calendar: cal)
+
+                // Also add a session to reflect in charts
+                let start = day.addingTimeInterval(TimeInterval(Int.random(in: 7*3600...21*3600)))
+                let end = start.addingTimeInterval(TimeInterval(seconds))
+                let chapter = b.chapters.randomElement()?.number
+                let s = ReadingSessionsStore.Session(start: start, end: end, book: b.name, chapter: chapter)
+                ReadingSessionsStore.shared.appendSession(s)
+            }
+        }
+
+        debugShow("Seed Stats", "Seeded random reading stats for the past 31 days.")
+    }
+
+    private func defaultBook() -> Book? {
+        if let john = BibleData.books.first(where: { $0.name == "John" }) { return john }
         return BibleData.books.first
     }
 
-    private func seedSampleSessionsLast7Days() {
-        guard let bookA = BibleData.books.first,
-              let bookB = BibleData.books.dropFirst().first ?? BibleData.books.first else {
-            debugShow("Seed Sessions", "No books available.")
-            return
-        }
-        let cal = Calendar.current
-        var created = 0
-        for i in 0..<7 {
-            guard let end = cal.date(byAdding: .day, value: -i, to: Date()) else { continue }
-            let minutes = Int.random(in: 12...18)
-            let duration = TimeInterval(minutes * 60)
-            let start = end.addingTimeInterval(-duration)
-            let pick = (i % 2 == 0) ? bookA : bookB
-            let chapter = pick.chapters.randomElement()?.number
-            let session = ReadingSessionsStore.Session(start: start, end: end, book: pick.name, chapter: chapter)
-            ReadingSessionsStore.shared.appendSession(session)
-            created += 1
-        }
-        debugShow("Seed Sessions", "Created \(created) sessions over the last 7 days.")
-    }
-
-    private func clearReadingSessionsOnly() {
-        let defaults = UserDefaults.standard
-        defaults.removeObject(forKey: "readingSessions")
-        // Let the store invalidate cache
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
-        // Push cleared key to KVS
-        iCloudSyncCoordinator.shared.pushKey("readingSessions")
-        debugShow("Reading Sessions", "Cleared all sessions.")
-    }
-
     private func markFirstThreeChaptersComplete() {
-        guard let book = defaultBookForDebug() else {
-            debugShow("Mark Chapters", "No book found.")
+        guard let book = defaultBook() else {
+            debugShow("Chapters", "No book available.")
             return
         }
-        let chapters = Array(book.chapters.prefix(3))
-        var marked = 0
+        let chapters = book.chapters.prefix(3)
         for chap in chapters {
             let totalVerses = chap.verses.count
-            guard totalVerses > 0 else { continue }
-            let allVerses = Array(1...totalVerses)
-            BibleStatsStore.shared.saveSeenVerses(allVerses, bookName: book.name, chapter: chap.number)
-            BibleStatsStore.shared.markVisited(bookName: book.name, chapterNumber: chap.number)
-            // also set last read to this chapter (optional debug convenience)
-            BibleStatsStore.shared.saveLastRead(bookName: book.name, chapterNumber: chap.number, date: Date())
-            marked += 1
+            let verses = chap.verses.map { $0.number }
+            BibleStatsStore.shared.saveSeenVerses(verses, bookName: book.name, chapter: chap.number)
         }
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
-        debugShow("Mark Chapters", "Marked \(marked) chapters as read in \(book.name).")
+        debugShow("Chapters", "Marked first 3 chapters of \(book.name) complete.")
     }
 
     private func clearChapterOneForDefaultBook() {
-        guard let book = defaultBookForDebug() else {
-            debugShow("Clear Chapter", "No book found.")
+        guard let book = defaultBook() else {
+            debugShow("Chapters", "No book available.")
             return
         }
-        let chapterNum = 1
-        BibleStatsStore.shared.saveSeenVerses([], bookName: book.name, chapter: chapterNum)
+        BibleStatsStore.shared.saveSeenVerses([], bookName: book.name, chapter: 1)
         var visited = BibleStatsStore.shared.loadVisitedChapters()
-        visited.remove("\(book.name):\(chapterNum)")
+        visited.remove("\(book.name):1")
         BibleStatsStore.shared.saveVisitedChapters(visited)
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
-        debugShow("Clear Chapter", "Cleared seen verses for \(book.name) \(chapterNum).")
+        debugShow("Chapters", "Cleared Chapter 1 seen verses for \(book.name).")
     }
 
     private func logVerseCoverageForDefaultBook() {
-        guard let book = defaultBookForDebug() else {
-            debugShow("Coverage", "No book found.")
+        guard let book = defaultBook() else {
+            debugShow("Coverage", "No book available.")
             return
         }
-        var total = 0
-        var completed = 0
-        for chap in book.chapters {
-            let count = chap.verses.count
-            total += count
+        var lines: [String] = []
+        for chap in book.chapters.prefix(5) {
+            let total = chap.verses.count
             let seen = BibleStatsStore.shared.loadSeenVerses(bookName: book.name, chapter: chap.number)
-            completed += min(count, seen.count)
+            let pct = total > 0 ? Int(round(Double(seen.count) / Double(total) * 100.0)) : 0
+            lines.append("Chapter \(chap.number): \(seen.count)/\(total) (\(pct)%)")
         }
-        print("DEBUG Coverage for \(book.name): \(completed)/\(total) verses")
-        debugShow("Coverage", "\(book.name): \(completed)/\(total) verses")
+        let msg = lines.joined(separator: "\n")
+        print("DEBUG Coverage for \(book.name):\n\(msg)")
+        debugShow("Coverage (\(book.name))", msg)
     }
 
     private func deleteAllFavorites() {
-        var deleted = 0
-        for f in favorites {
-            modelContext.delete(f)
-            deleted += 1
-        }
         do {
+            for f in favorites {
+                modelContext.delete(f)
+            }
             try modelContext.save()
-            debugShow("Favorites", "Deleted \(deleted) favorites.")
+            debugShow("Favorites", "Deleted all favorites.")
         } catch {
-            debugShow("Favorites", "Error deleting favorites: \(error.localizedDescription)")
+            debugShow("Favorites", "Error deleting: \(error.localizedDescription)")
         }
     }
 
     private func insertSampleJournalEntry() {
         let entry = JournalEntry()
-        entry.title = "Debug Sample"
-        entry.body = "This is a debug sample entry. John 3:16"
-        entry.tags = ["debug", "sample"]
+        entry.title = "Sample Entry \(Int.random(in: 100...999))"
+        entry.body = "This is a sample journal entry created from Settings debug."
+        entry.tags = ["sample", "debug"]
         entry.updatedAt = Date()
         modelContext.insert(entry)
         do {
             try modelContext.save()
-            debugShow("Journal", "Inserted sample entry.")
+            debugShow("Journal", "Inserted a sample entry.")
         } catch {
-            debugShow("Journal", "Failed to insert: \(error.localizedDescription)")
+            debugShow("Journal", "Save failed: \(error.localizedDescription)")
         }
     }
 
     private func writeTestVOTDToDefaultsAndAppGroup() {
-        // Use a simple stable verse
-        let book = "John"
-        let chapter = 3
-        let verse = 16
-        let text = "For God so loved the world, that he gave his only begotten Son..."
+        // Use a random verse similar to RefreshVerseOfDayIntent
+        let scopeRaw = verseScopeRaw
+        let specificBook = verseSpecificBook
+        let (book, chapter, verse, text) = pickRandomVerse(scopeRaw: scopeRaw, specificBook: specificBook)
 
-        // Standard defaults (app UI)
-        let std = UserDefaults.standard
-        std.set(book, forKey: "verseOfDayBook")
-        std.set(chapter, forKey: "verseOfDayChapter")
-        std.set(verse, forKey: "verseOfDayNumber")
-        std.set(text, forKey: "verseOfDayText")
+        let defaults = UserDefaults.standard
+        defaults.set(book, forKey: "verseOfDayBook")
+        defaults.set(chapter, forKey: "verseOfDayChapter")
+        defaults.set(verse, forKey: "verseOfDayNumber")
+        defaults.set(text, forKey: "verseOfDayText")
 
-        // Shared App Group (widget)
         if let shared = UserDefaults(suiteName: "group.bible.app") {
             shared.set(book, forKey: "verseOfDayBook")
             shared.set(chapter, forKey: "verseOfDayChapter")
@@ -1101,92 +1140,138 @@ struct SettingsView: View {
             shared.set(text, forKey: "verseOfDayText")
         }
 
-        debugShow("Verse of the Day", "Wrote test VOTD to app + App Group.")
+        debugShow("Verse of the Day", "Wrote a test VOTD to defaults and app group.")
+    }
+
+    private func pickRandomVerse(scopeRaw: String, specificBook: String) -> (book: String, chapter: Int, verse: Int, text: String) {
+        let allBooks = BibleData.books
+        guard !allBooks.isEmpty else { return ("", 0, 0, "") }
+
+        enum Scope { case old, new, whole, book }
+        let scope: Scope
+        switch scopeRaw {
+        case "old": scope = .old
+        case "new": scope = .new
+        case "book": scope = .book
+        default: scope = .whole
+        }
+
+        let oldTestament: Set<String> = [
+            "Genesis","Exodus","Leviticus","Numbers","Deuteronomy",
+            "Joshua","Judges","Ruth","1 Samuel","2 Samuel",
+            "1 Kings","2 Kings","1 Chronicles","2 Chronicles","Ezra",
+            "Nehemiah","Esther","Job","Psalms","Proverbs",
+            "Ecclesiastes","Song of Solomon","Isaiah","Jeremiah","Lamentations",
+            "Ezekiel","Daniel","Hosea","Joel","Amos",
+            "Obadiah","Jonah","Micah","Nahum","Habakkuk",
+            "Zephaniah","Haggai","Zechariah","Malachi"
+        ]
+
+        let books: [Book]
+        switch scope {
+        case .old:
+            books = allBooks.filter { oldTestament.contains($0.name) }
+        case .new:
+            books = allBooks.filter { !oldTestament.contains($0.name) }
+        case .book:
+            if let chosen = allBooks.first(where: { $0.name == specificBook }) {
+                books = [chosen]
+            } else {
+                books = allBooks
+            }
+        case .whole:
+            books = allBooks
+        }
+
+        guard let book = books.randomElement(),
+              let chapter = book.chapters.randomElement(),
+              let verse = chapter.verses.randomElement() else {
+            return ("", 0, 0, "")
+        }
+        return (book.name, chapter.number, verse.number, verse.text)
     }
     #endif
 }
 
-extension SettingsView {
-    private struct HomeLayoutEditorView: View {
-        @Binding var order: [HomeCardID]
-        @Binding var hidden: Set<HomeCardID>
-        var save: () -> Void
+// MARK: - Minimal Home Layout Editor
 
-        var body: some View {
-            VStack(spacing: 12) {
-                List {
-                    ForEach(order, id: \.self) { card in
-                        HStack {
-                            Label(card.title, systemImage: card.systemImage)
-                                .opacity(hidden.contains(card) ? 0.45 : 1.0)
+private struct HomeLayoutEditorView: View {
+    @Binding var order: [SettingsView.HomeCardID]
+    @Binding var hidden: Set<SettingsView.HomeCardID>
+    var onDone: () -> Void
 
-                            Spacer()
+    @Environment(\.dismiss) private var dismiss
 
-                            Button {
-                                if hidden.contains(card) {
-                                    hidden.remove(card)
-                                } else {
-                                    hidden.insert(card)
-                                }
-                                save()
-                            } label: {
-                                Image(systemName: hidden.contains(card) ? "eye.slash" : "eye")
-                                    .foregroundStyle(hidden.contains(card) ? .secondary : .primary)
-                                    .imageScale(.medium)
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel(hidden.contains(card) ? "Show \(card.title)" : "Hide \(card.title)")
+    var body: some View {
+        List {
+            Section("Order") {
+                ForEach(order) { id in
+                    HStack {
+                        Image(systemName: id.systemImage)
+                            .foregroundStyle(.secondary)
+                        Text(id.title)
+                        Spacer()
+                        if hidden.contains(id) {
+                            Text("Hidden")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                         }
                     }
-                    .onMove { indices, newOffset in
-                        order.move(fromOffsets: indices, toOffset: newOffset)
-                        save()
-                    }
                 }
-                .environment(\.editMode, .constant(.active))
-
-                HStack(spacing: 12) {
-                    Button {
-                        hidden.removeAll()
-                        save()
-                    } label: {
-                        Label("Show All", systemImage: "eye")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-
-                    Button {
-                        order = HomeCardID.allCases
-                        hidden = [.games, .streaks, .bibleStats]
-                        save()
-                    } label: {
-                        Label("Restore Default", systemImage: "arrow.counterclockwise")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
+                .onMove { indices, newOffset in
+                    order.move(fromOffsets: indices, toOffset: newOffset)
                 }
-                .padding(.horizontal)
-                .padding(.bottom, 8)
             }
-            .navigationTitle("Reorder Home")
-            .onDisappear { save() }
+
+            Section("Visibility") {
+                ForEach(order) { id in
+                    Toggle(isOn: Binding(
+                        get: { !hidden.contains(id) },
+                        set: { newVal in
+                            if newVal { hidden.remove(id) } else { hidden.insert(id) }
+                        }
+                    )) {
+                        HStack {
+                            Image(systemName: id.systemImage)
+                                .foregroundStyle(.secondary)
+                            Text(id.title)
+                        }
+                    }
+                }
+            }
+        }
+        .navigationTitle("Home Layout")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) { EditButton() }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Done") {
+                    onDone()
+                    dismiss()
+                }
+            }
         }
     }
 }
 
+// MARK: - Font family environment modifier
+
 private struct FontFamilyEnvironmentModifier: ViewModifier {
     let prefRaw: String
+
     func body(content: Content) -> some View {
         let pref = FontFamilyPreference(rawValue: prefRaw) ?? .system
-        let fontDesign = pref.fontDesign ?? .default
-        if let name = pref.customFontName {
+        let baseSize: CGFloat = 17 // base; ContentView overrides for non-Settings tabs
+
+        if let custom = pref.customFontName {
             content
-                .font(.custom(name, size: 17))
-                .fontDesign(fontDesign)
+                .font(.custom(custom, size: baseSize))
+                .fontDesign(.default)
         } else {
+            let design = pref.fontDesign ?? .default
             content
-                .font(.system(size: 17))
-                .fontDesign(fontDesign)
+                .font(.system(size: baseSize))
+                .fontDesign(design)
         }
     }
 }

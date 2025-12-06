@@ -74,20 +74,14 @@ final class StopwatchActivityController {
                     )
                     let content = ActivityContent(state: final, staleDate: nil)
                     await act.end(content, dismissalPolicy: .immediate)
-                } else if #available(iOS 16.2, *) {
-                    let current = act.contentState
-                    let final = StopwatchAttributes.ContentState(
-                        status: finalStatus ?? current.status,
-                        elapsed: finalStatus == nil ? current.elapsed : 0
-                    )
-                    await act.end(using: final, dismissalPolicy: .immediate)
                 } else {
-                    // iOS 16.1
+                    // iOS 16.x
                     let current = act.contentState
                     let final = StopwatchAttributes.ContentState(
                         status: finalStatus ?? current.status,
                         elapsed: finalStatus == nil ? current.elapsed : 0
                     )
+                    // On iOS 16.x, always use the basic end(using:) to avoid redundant availability checks
                     await act.end(using: final)
                 }
             }
@@ -104,15 +98,13 @@ final class StopwatchActivityController {
                 if #available(iOS 17.0, *) {
                     let content = ActivityContent(state: act.content.state, staleDate: nil)
                     await act.end(content, dismissalPolicy: .immediate)
-                } else if #available(iOS 16.2, *) {
-                    let state = act.contentState
-                    await act.end(using: state, dismissalPolicy: .immediate)
                 } else {
-                    // iOS 16.1
-                    await act.end(using: act.contentState)
+                    // iOS 16.x
+                    let state = act.contentState
+                    // On iOS 16.x, always use the basic end(using:) to avoid redundant availability checks
+                    await act.end(using: state)
                 }
             }
         }
     }
 }
-

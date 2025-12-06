@@ -555,6 +555,14 @@ struct ReadingView: View {
         return orderedBookNames.firstIndex(of: currentBook.name)
     }
 
+    // Haptic helper
+    private func playImpact(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
+        #if canImport(UIKit)
+        let gen = UIImpactFeedbackGenerator(style: style)
+        gen.impactOccurred()
+        #endif
+    }
+
     @MainActor
     private func nextChapter() async {
         guard let bookIdx = indexOfCurrentBookInCanonical() else { return }
@@ -565,6 +573,8 @@ struct ReadingView: View {
             topVisibleVerseID = rowID(for: 1)
             // Persist progress for the new chapter start
             saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: 1)
+            // Light haptic for in-book chapter change
+            playImpact(.light)
             return
         }
         // Move to first chapter of next book if available
@@ -579,6 +589,8 @@ struct ReadingView: View {
         topVisibleVerseID = rowID(for: 1)
         ReadingTimeTracker.shared.changeBook(to: currentBook.name, chapter: currentChapter.number)
         saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: 1)
+        // Heavy haptic for book change
+        playImpact(.heavy)
     }
 
     @MainActor
@@ -589,6 +601,8 @@ struct ReadingView: View {
             currentVerse = 1
             topVisibleVerseID = rowID(for: 1)
             saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: 1)
+            // Light haptic for in-book chapter change
+            playImpact(.light)
             return
         }
         // Move to last chapter of previous book if available
@@ -603,6 +617,8 @@ struct ReadingView: View {
         topVisibleVerseID = rowID(for: 1)
         ReadingTimeTracker.shared.changeBook(to: currentBook.name, chapter: currentChapter.number)
         saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: 1)
+        // Heavy haptic for book change
+        playImpact(.heavy)
     }
 
     // MARK: - IDs
@@ -676,4 +692,3 @@ struct ReadingView: View {
         "“\(text)” — \(bookName) \(chapter):\(verse)"
     }
 }
-

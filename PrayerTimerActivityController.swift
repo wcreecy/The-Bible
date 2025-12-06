@@ -154,18 +154,8 @@ final class PrayerTimerActivityController {
                     )
                     let content = ActivityContent(state: finalState, staleDate: nil)
                     await act.end(content, dismissalPolicy: .immediate)
-                } else if #available(iOS 16.2, *) {
-                    let state = act.contentState
-                    let finalState = PrayerTimerAttributes.ContentState(
-                        status: finalStatus ?? state.status,
-                        remaining: finalStatus == nil ? state.remaining : 0,
-                        total: finalStatus == nil ? state.total : 0,
-                        focusTitle: finalStatus == nil ? state.focusTitle : nil,
-                        focusBody: finalStatus == nil ? state.focusBody : nil
-                    )
-                    await act.end(using: finalState, dismissalPolicy: .immediate)
                 } else {
-                    // iOS 16.1: no dismissalPolicy API; end all explicitly
+                    // iOS 16.x fallback
                     let state = act.contentState
                     let finalState = PrayerTimerAttributes.ContentState(
                         status: finalStatus ?? state.status,
@@ -189,14 +179,11 @@ final class PrayerTimerActivityController {
             for act in activities {
                 if #available(iOS 17.0, *) {
                     await act.end(act.content, dismissalPolicy: .immediate)
-                } else if #available(iOS 16.2, *) {
-                    await act.end(act.content, dismissalPolicy: .immediate)
                 } else {
-                    // iOS 16.1
+                    // iOS 16.x
                     await act.end()
                 }
             }
         }
     }
 }
-

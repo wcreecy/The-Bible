@@ -118,6 +118,9 @@ struct The_Bible__iOS_App: App {
                     await cloudKitManager.prepare()
                     iCloudSyncCoordinator.shared.start()
 
+                    // Run the GMT→local daily key migration once before any stats/streaks are read.
+                    BibleStatsStore.shared.migrateDailyKeysFromGMTToLocalIfNeeded()
+
                     // Async, non-deprecated environment hint using StoreKit
                     let hint = await The_Bible__iOS_App.computeStoreEnvironmentHint()
                     if let hint {
@@ -127,13 +130,15 @@ struct The_Bible__iOS_App: App {
                 .onChange(of: scenePhase) { _, newPhase in
                     switch newPhase {
                     case .active:
+                        // Ensure KVS merges are applied immediately when app becomes active.
+                        NSUbiquitousKeyValueStore.default.synchronize()
                         UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
                         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
                         Task { await cloudKitManager.refresh() }
                     case .background:
                         Task {
                             await cloudKitManager.flushPending()
-                            // NEW: opportunistically push all known KVS keys on background
+                            // Opportunistically push all known KVS keys on background
                             iCloudSyncCoordinator.shared.pushAllNow()
                         }
                     default:
@@ -143,7 +148,7 @@ struct The_Bible__iOS_App: App {
                 .onAppear {
                     CloudKitManager.logEntitlementHints(containerIdentifier: "iCloud.creecy.bible")
                 }
-                // NEW: Handle widget deep links here too, and broadcast a tab switch.
+                // Handle widget deep links here too, and broadcast a tab switch.
                 .onOpenURL { url in
                     guard url.scheme?.lowercased() == "thebible" else { return }
                     let host = url.host?.lowercased() ?? ""
@@ -306,4 +311,3 @@ final class CloudKitManager: ObservableObject {
         print("   • Ensure iCloud capability with CloudKit is ON and container is checked for this target/configuration.")
     }
 }
-

@@ -106,6 +106,11 @@ final class iCloudSyncCoordinator {
     // Reading sessions key
     private var sessions_key: String { "readingSessions" }
 
+    // Settings keys to sync across devices
+    private let settingsKeys: [String] = [
+        "dailyGoalMinutes"
+    ]
+
     // Game keys: Hangman
     private let hangmanKeys: [String] = {
         let diffs = ["easy", "medium", "hard"]
@@ -182,7 +187,7 @@ final class iCloudSyncCoordinator {
     }
 
     private var allKnownKeys: Set<String> {
-        Set(bibleStatsKeys + sessionKeys + hangmanKeys + beatClockKeys + refMatchKeys + quizKeys + bookOrderKeys)
+        Set(bibleStatsKeys + sessionKeys + settingsKeys + hangmanKeys + beatClockKeys + refMatchKeys + quizKeys + bookOrderKeys)
     }
 
     // MARK: - Bootstrap
@@ -251,6 +256,13 @@ final class iCloudSyncCoordinator {
     // MARK: - Mirroring local -> KVS
 
     private func mirrorLocalKeyToKVS(_ key: String) {
+        // Settings keys (simple scalar Ints for now)
+        if settingsKeys.contains(key) {
+            let v = defaults.integer(forKey: key)
+            kvs.set(v, forKey: key)
+            return
+        }
+
         // We store JSON blobs for complex values, and Ints directly for counters.
         if isGameCounterKey(key) {
             let v = defaults.integer(forKey: key)
@@ -276,6 +288,16 @@ final class iCloudSyncCoordinator {
     // MARK: - Merging KVS -> local
 
     private func mergeIncomingKVSValue(forKey key: String) {
+        // Settings keys (simple scalar Ints)
+        if settingsKeys.contains(key) {
+            let remoteVal = Int(kvs.longLong(forKey: key))
+            // Only update if different to avoid churn
+            if defaults.integer(forKey: key) != remoteVal {
+                defaults.set(remoteVal, forKey: key)
+            }
+            return
+        }
+
         if isGameCounterKey(key) {
             // Last-write-wins using per-key timestamps
             let remoteTS = readRemoteTimestamp(for: key)
@@ -549,4 +571,3 @@ extension Notification.Name {
     // If you deep link to a passage elsewhere, you already have:
     // static let openBibleReference = Notification.Name("openBibleReference")
 }
-

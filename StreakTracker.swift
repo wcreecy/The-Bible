@@ -12,6 +12,16 @@ enum StreakTracker {
     private static var defaults: UserDefaults { .standard }
     private static var calendar: Calendar { Calendar.current }
 
+    // Local-day date formatter for keys (yyyy-MM-dd in the user's current time zone)
+    private static let localDayFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.calendar = Calendar.current
+        df.timeZone = Calendar.current.timeZone
+        df.locale = Locale(identifier: "en_US_POSIX")
+        df.dateFormat = "yyyy-MM-dd"
+        return df
+    }()
+
     // MARK: - Settings
 
     /// Returns the daily goal in seconds from Settings (defaults to 30 minutes if unset).
@@ -28,14 +38,16 @@ enum StreakTracker {
         BibleStatsStore.shared.loadDailyTotals()
     }
 
-    /// Formats a local date as the ISO key used by BibleStatsStore (UTC-normalized).
-    private static func isoKey(for date: Date) -> String {
-        BibleStatsStore.isoDateString(date)
+    /// Local-day key used for daily totals (yyyy-MM-dd in the user's current time zone).
+    private static func localDayKey(for date: Date) -> String {
+        // Normalize to local start of day to avoid 23:00/01:00 boundary issues around DST
+        let start = calendar.startOfDay(for: date)
+        return localDayFormatter.string(from: start)
     }
 
     /// Whether the goal was met on a given local day, derived from daily reading totals.
     static func isGoalMet(on date: Date) -> Bool {
-        let key = isoKey(for: date)
+        let key = localDayKey(for: date)
         let seconds = dailyReadingTotals()[key, default: 0]
         return seconds >= dailyGoalSeconds
     }
@@ -44,23 +56,21 @@ enum StreakTracker {
     static var lastVisitDate: Date? {
         let dict = dailyReadingTotals()
         guard !dict.isEmpty else { return nil }
-        // Find the latest date whose total meets the goal
-        let keys = dict.keys
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withFullDate]
-        let metDates: [Date] = keys.compactMap { key in
-            guard let d = formatter.date(from: key) else { return nil }
-            return dict[key, default: 0] >= dailyGoalSeconds ? d : nil
+
+        // Collect all keys that meet goal and convert back to local Date (startOfDay)
+        let metDates: [Date] = dict.compactMap { key, value in
+            guard value >= dailyGoalSeconds,
+                  let day = localDayFormatter.date(from: key) else { return nil }
+            return day
         }
         return metDates.max()
     }
 
     /// Current consecutive-day streak ending today (or yesterday if today not met yet).
     static var currentStreak: Int {
-        // Walk backward from today; count consecutive days meeting the goal
         var count = 0
         var day = Date()
-        // If today not met, allow the streak to end yesterday
+        // If today not met, allow the streak to end yesterday (local)
         if !isGoalMet(on: day) {
             if let y = calendar.date(byAdding: .day, value: -1, to: day) {
                 day = y
@@ -79,24 +89,19 @@ enum StreakTracker {
         let dict = dailyReadingTotals()
         guard !dict.isEmpty else { return 0 }
 
-        // Convert keys to Dates and filter days meeting goal
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withFullDate]
+        // Days (as keys) that met the goal
         let metDays: Set<String> = Set(dict.filter { $0.value >= dailyGoalSeconds }.map { $0.key })
-
-        // If nothing met, best is 0
         if metDays.isEmpty { return 0 }
 
-        // Build a sorted list of all dates present in daily totals
-        let allDates: [Date] = dict.keys.compactMap { formatter.date(from: $0) }.sorted()
+        // Build sorted list of all days present (as Dates at local startOfDay)
+        let allDates: [Date] = dict.keys.compactMap { localDayFormatter.date(from: $0) }.sorted()
         guard let minDay = allDates.first, let maxDay = allDates.last else { return 0 }
 
-        // Walk from min to max, count consecutive met days
         var best = 0
         var current = 0
         var cursor = minDay
         while cursor <= maxDay {
-            let key = isoKey(for: cursor)
+            let key = localDayKey(for: cursor)
             if metDays.contains(key) {
                 current += 1
                 best = max(best, current)

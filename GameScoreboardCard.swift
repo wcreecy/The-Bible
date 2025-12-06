@@ -139,7 +139,9 @@ public struct GameScoreboardCard: View {
 
     private func percentString(correct: Int, answered: Int) -> String {
         guard answered > 0 else { return "0%" }
-        let pct = Int(round((Double(correct) / Double(answered)) * 100.0))
+        let raw = (Double(correct) / Double(answered)) * 100.0
+        let clamped = min(100.0, max(0.0, raw))
+        let pct = Int(round(clamped))
         return "\(pct)%"
     }
 }

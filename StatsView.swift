@@ -18,12 +18,11 @@ struct StatsView: View {
         var id: String { rawValue }
     }
 
+    // Minimum duration for a session to be counted in averages/series
+    private let minSessionSeconds: Int = 45
+
     @State private var sortMode: SortMode = .canonical
     @State private var timeScope: TimeScope = .allTime
-
-    // Core stats (all-time fallback aggregates from KVS)
-    @State private var perBookTotals: [String: Int] = [:]   // legacy/fallback all-time (KVS)
-    @State private var totalSeconds: Int = 0                // sum of perBookTotals
 
     // Session-derived scoped datasets
     @State private var perBookAllTimeSessionTotals: [String: Int] = [:] // sessions within retention
@@ -69,11 +68,6 @@ struct StatsView: View {
     // Now shows last 20 sessions overall
     @State private var sessionsLast7: [(index: Int, minutes: Int)] = []
     @State private var avgSessionSecondsLast7: Int = 0
-
-    // Keep these for other cards that still use them
-    @State private var weekdayTotals: [(weekday: Int, seconds: Int)] = []
-    @State private var hourBuckets: [(hour: Int, seconds: Int)] = []
-    @State private var avgSessionSeconds: Int = 0
 
     // New: This Month metrics
     @State private var monthTotalSeconds: Int = 0
@@ -795,11 +789,6 @@ struct StatsView: View {
     }
 
     private func refreshTotals() {
-        let store = BibleStatsStore.shared
-        let totals = store.loadTotals()
-        perBookTotals = totals
-        totalSeconds = totals.values.reduce(0, +)
-
         // Use sessions (GMT) for Today and This Week, to match charts
         var gmtCal = Calendar.current
         gmtCal.timeZone = .gmt
@@ -849,14 +838,11 @@ struct StatsView: View {
             _ = thisWeekStart
         }
 
-        // Removed: setting perGenreTotals here from all-time totals.
-        // We'll compute Genre from the currently scoped per-book totals instead.
-
         computeCompletionMetricsVerseComplete()
         computePerBookProgressVerseComplete()
         computeVerseTotalsAndCompleted() // NEW
 
-        if let last = store.loadLastRead() {
+        if let last = BibleStatsStore.shared.loadLastRead() {
             lastReadBookChapter = "\(last.bookName) \(last.chapterNumber)"
             lastReadTimeText = timeOnlyString(last.date)
         } else {
@@ -888,38 +874,23 @@ struct StatsView: View {
             last7Daily = days
         }
 
-        // Sessions: last 20 overall (within retention window)
-        let sessionsAll = ReadingSessionsStore.shared.sessions(inLastDays: 180).sorted { $0.end < $1.end }
+        // Sessions: last 20 overall (within retention), excluding very short sessions (< minSessionSeconds)
+        let sessionsAll = ReadingSessionsStore.shared.sessions(inLastDays: 1825)
+            .filter { Int(max(0, $0.end.timeIntervalSince($0.start))) >= minSessionSeconds }
+            .sorted { $0.end < $1.end }
         let lastTwenty = Array(sessionsAll.suffix(20))
-        // Average over sessions that occurred in the last 7 days
+        // Average over sessions that occurred in the last 7 days, excluding < minSessionSeconds
         let sessionsIn7Days = ReadingSessionsStore.shared.sessions(inLastDays: 7)
+            .filter { Int(max(0, $0.end.timeIntervalSince($0.start))) >= minSessionSeconds }
         avgSessionSecondsLast7 = averageSessionLength(sessions: sessionsIn7Days)
-        // Keep the chart as last 20 sessions overall
+        // Keep the chart as last 20 sessions overall (filtered)
         sessionsLast7 = lastTwenty.enumerated().map { (idx, s) in
             let durSec = Int(max(0, s.end.timeIntervalSince(s.start)))
             let minutes = Int(round(Double(durSec) / 60.0))
             return (index: idx + 1, minutes: minutes)
         }
 
-        // Keep the broader habits aggregates for other parts if needed (still based on daily totals legacy)
-        let dailyDict = BibleStatsStore.shared.loadDailyTotals()
-        let last56 = (0..<56).compactMap { i -> (Date, Int)? in
-            guard let d = cal.date(byAdding: .day, value: -i, to: Date()) else { return nil }
-            let key = BibleStatsStore.isoDateString(d)
-            return (d, dailyDict[key, default: 0])
-        }
-        var weekdayAgg: [Int: Int] = [:] // 1...7
-        for (d, s) in last56 {
-            let wd = cal.component(.weekday, from: d)
-            weekdayAgg[wd, default: 0] += s
-        }
-        weekdayTotals = (1...7).map { (weekday: $0, seconds: weekdayAgg[$0, default: 0]) }
-
-        let sessions30 = ReadingSessionsStore.shared.sessions(inLastDays: 30)
-        avgSessionSeconds = averageSessionLength(sessions: sessions30)
-        hourBuckets = bucketsByHour(sessions: sessions30)
-
-        // This Month section (session-derived total already)
+        // This Month section (sessions-only)
         let now = Date()
         monthTotalSeconds = BibleStatsStore.shared.totalForMonth(containing: now)
         let comps = BibleStatsStore.shared.chapterCompletions(inMonth: now)
@@ -940,8 +911,8 @@ struct StatsView: View {
         let monthSessions = ReadingSessionsStore.shared.sessions(inMonthContaining: now)
         perBookMonthTotals = groupSessionsByBook(monthSessions)
 
-        // All time (within retention window of ReadingSessionsStore)
-        let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 180)
+        // All time (within retention window of ReadingSessionsStore; now 5 years)
+        let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825)
         perBookAllTimeSessionTotals = groupSessionsByBook(allSessions)
 
         // Update Top 3 books for month from the session-derived map
@@ -953,19 +924,11 @@ struct StatsView: View {
     }
 
     private func averageSessionLength(sessions: [ReadingSessionsStore.Session]) -> Int {
-        guard !sessions.isEmpty else { return 0 }
-        let total = sessions.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
-        return total / sessions.count
-    }
-
-    private func bucketsByHour(sessions: [ReadingSessionsStore.Session]) -> [(hour: Int, seconds: Int)] {
-        var buckets: [Int: Int] = [:] // 0...23
-        for s in sessions {
-            let h = Calendar.current.component(.hour, from: s.start)
-            let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
-            buckets[h, default: 0] += dur
-        }
-        return (0...23).map { (hour: $0, seconds: buckets[$0, default: 0]) }
+        // Ignore very short sessions (< minSessionSeconds)
+        let filtered = sessions.filter { Int(max(0, $0.end.timeIntervalSince($0.start))) >= minSessionSeconds }
+        guard !filtered.isEmpty else { return 0 }
+        let total = filtered.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
+        return total / filtered.count
     }
 
     // Group sessions by book name and sum durations
@@ -1054,8 +1017,8 @@ struct StatsView: View {
     private var scopedPerBookTotals: [String: Int] {
         switch timeScope {
         case .allTime:
-            // Prefer session-derived if any; else fallback to legacy all-time totals
-            return perBookAllTimeSessionTotals.isEmpty ? perBookTotals : perBookAllTimeSessionTotals
+            // Sessions-only for All Time (no fallback)
+            return perBookAllTimeSessionTotals
         case .thisMonth:
             return perBookMonthTotals
         case .last7:
@@ -1105,15 +1068,34 @@ struct StatsView: View {
         return "\(sign)\(BibleStatsStore.shared.format(absVal))"
     }
 
+    // Sessions-only computation for “today vs yesterday”, using GMT day boundaries to match charts and todaySeconds.
     private var todayDeltaOnlyValue: String {
-        let store = BibleStatsStore.shared
-        let last2 = store.totalForLast(days: 2)
-        let yesterday = max(0, last2 - todaySeconds)
-        let delta = todaySeconds - yesterday
+        var gmtCal = Calendar.current
+        gmtCal.timeZone = .gmt
+        let startOfToday = gmtCal.startOfDay(for: Date())
+        guard let startOfYesterday = gmtCal.date(byAdding: .day, value: -1, to: startOfToday),
+              let endOfYesterday = gmtCal.date(byAdding: .second, value: -1, to: startOfToday)
+        else { return "—" }
+
+        let yesterdaySeconds = totalSecondsForDay(from: startOfYesterday, to: endOfYesterday, calendar: gmtCal)
+        let delta = todaySeconds - yesterdaySeconds
         if delta == 0 { return "—" }
         let sign = delta > 0 ? "+" : "−"
         let absVal = abs(delta)
         return "\(sign)\(BibleStatsStore.shared.format(absVal))"
+    }
+
+    // Sum all sessions whose end falls within [start, end] inclusive window (GMT day)
+    private func totalSecondsForDay(from start: Date, to end: Date, calendar: Calendar) -> Int {
+        // Fetch enough sessions to cover the two-day span (yesterday + today) to be safe
+        let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 2, now: end, calendar: calendar)
+        return sessions.reduce(0) { acc, s in
+            if s.end >= start && s.end <= end {
+                return acc + Int(max(0, s.end.timeIntervalSince(s.start)))
+            } else {
+                return acc
+            }
+        }
     }
 
     enum Genre: String, CaseIterable, Identifiable {
@@ -1354,3 +1336,4 @@ private struct BookChaptersDetailView: View {
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 }
+
