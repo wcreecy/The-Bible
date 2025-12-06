@@ -1393,13 +1393,20 @@ struct HomeView: View {
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                         .monospacedDigit()
-                        .lineLimit(1)
-                        .truncationMode(.tail)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                } else {
+                    Text(subtitle)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(10)
+        .padding(12) // was 10; slightly taller to allow 2 lines comfortably
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(tint.opacity(0.08))
@@ -1416,14 +1423,16 @@ struct HomeView: View {
                 .font(.caption).foregroundStyle(.secondary)
             Text(ref)
                 .font(.subheadline.weight(.semibold))
-                .lineLimit(1)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
             Text(relative)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
-                .lineLimit(1)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(10)
+        .padding(12) // was 10; slightly taller to allow 2 lines comfortably
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(Color.orange.opacity(0.08))
