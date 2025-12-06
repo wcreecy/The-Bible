@@ -60,6 +60,12 @@ struct ReadingView: View {
     // Track current tab (listen to ContentView .switchToTab notifications)
     @State private var currentTabIndex: Int = 1 // assume Bible by default
 
+    // Search sheet state
+    @State private var showSearchSheet: Bool = false
+    @State private var searchQuery: String = ""
+    @State private var searchResults: [SearchResult] = []
+    @State private var isSearching: Bool = false
+
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
         self.chapter = chapter
@@ -83,6 +89,19 @@ struct ReadingView: View {
             .environment(\.font, nil)
             .navigationTitle("\(currentBook.name) \(currentChapter.number)")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        searchQuery = ""
+                        searchResults = []
+                        isSearching = false
+                        showSearchSheet = true
+                    } label: {
+                        Image(systemName: "magnifyingglass")
+                    }
+                    .accessibilityLabel("Search Bible")
+                }
+            }
             .onAppear(perform: onAppear)
             .onAppear {
                 // Start reading-time tracking for this book (with chapter info)
@@ -161,6 +180,84 @@ struct ReadingView: View {
                 }
             }
             .appToast(isPresented: $showFavoriteToast, symbol: favoriteToastSymbol, text: favoriteToastText, tint: favoriteToastTint)
+            .fullScreenCover(isPresented: $showSearchSheet) {
+                NavigationStack {
+                    // Use a top-aligned container so the search field stays at the top
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Image(systemName: "magnifyingglass")
+                                    .foregroundStyle(.secondary)
+                                TextField("Search Bible (type at least two words)", text: $searchQuery)
+                                    .textInputAutocapitalization(.never)
+                                    .autocorrectionDisabled(true)
+                                    .onChange(of: searchQuery) { _, newValue in
+                                        runSearchIfEligible(query: newValue)
+                                    }
+                                    .submitLabel(.search)
+                                    .onSubmit {
+                                        runSearchIfEligible(query: searchQuery, force: true)
+                                    }
+                            }
+                            .padding(10)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .fill(Color(.secondarySystemBackground))
+                            )
+
+                            if isSearching {
+                                ProgressView("Searching…")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            } else if searchResults.isEmpty {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    if eligibleWordCount(in: searchQuery) < 2 {
+                                        Text("Type at least two words to search.")
+                                            .foregroundStyle(.secondary)
+                                    } else {
+                                        Text("No results found.")
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            } else {
+                                // Use a plain List-like layout within the scroll view
+                                VStack(spacing: 0) {
+                                    ForEach(searchResults) { item in
+                                        Button {
+                                            jumpToSearchResult(item)
+                                        } label: {
+                                            VStack(alignment: .leading, spacing: 4) {
+                                                Text("\(item.bookName) \(item.chapterNumber):\(item.verseNumber)")
+                                                    .font(.subheadline.weight(.semibold))
+                                                Text("“\(item.verseText)”")
+                                                    .font(.footnote)
+                                                    .foregroundStyle(.secondary)
+                                                    .lineLimit(3)
+                                            }
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                            .padding(.vertical, 10)
+                                        }
+                                        .buttonStyle(.plain)
+                                        if item.id != searchResults.last?.id {
+                                            Divider()
+                                        }
+                                    }
+                                }
+                                .background(Color(.systemBackground))
+                                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            }
+                        }
+                        .padding(16)
+                    }
+                    .navigationTitle("Search")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Close") { showSearchSheet = false }
+                        }
+                    }
+                }
+            }
     }
 
     @ViewBuilder
@@ -690,5 +787,120 @@ struct ReadingView: View {
     // MARK: - Share text helper
     private func shareText(bookName: String, chapter: Int, verse: Int, text: String) -> String {
         "“\(text)” — \(bookName) \(chapter):\(verse)"
+    }
+}
+
+// MARK: - Search support
+
+private struct SearchResult: Identifiable, Hashable {
+    let id = UUID()
+    let bookName: String
+    let chapterNumber: Int
+    let verseNumber: Int
+    let verseText: String
+}
+
+private extension ReadingView {
+    // Only run search if at least two tokens are present (split on whitespace OR punctuation), mirroring SearchView
+    private func eligibleWordCount(in text: String) -> Int {
+        let tokens = text
+            .lowercased()
+            .split { $0.isWhitespace || $0.isPunctuation }
+            .map(String.init)
+            .filter { !$0.isEmpty }
+        return tokens.count
+    }
+
+    private func runSearchIfEligible(query: String, force: Bool = false) {
+        // Tokenize exactly like SearchView
+        let tokens = query
+            .lowercased()
+            .split { $0.isWhitespace || $0.isPunctuation }
+            .map(String.init)
+            .filter { !$0.isEmpty }
+
+        // Require at least 2 tokens unless force is true
+        guard force || tokens.count >= 2 else {
+            searchResults = []
+            isSearching = false
+            return
+        }
+
+        isSearching = true
+
+        // Contains-ALL-tokens match, same as SearchView, but cap at 100 results
+        let maxResults = 100
+        DispatchQueue.global(qos: .userInitiated).async {
+            var results: [SearchResult] = []
+            outer: for b in BibleData.books {
+                for c in b.chapters {
+                    for v in c.verses {
+                        let lower = v.text.lowercased()
+                        var matchesAll = true
+                        for t in tokens {
+                            if !lower.contains(t) { matchesAll = false; break }
+                        }
+                        if matchesAll {
+                            results.append(SearchResult(bookName: b.name, chapterNumber: c.number, verseNumber: v.number, verseText: v.text))
+                            if results.count >= maxResults { break outer }
+                        }
+                    }
+                }
+            }
+            DispatchQueue.main.async {
+                self.searchResults = results
+                self.isSearching = false
+            }
+        }
+    }
+
+    private func jumpToSearchResult(_ item: SearchResult) {
+        // 1) Resolve target book and chapter index
+        guard let targetBook = BibleData.books.first(where: { $0.name == item.bookName }) else { return }
+        let targetChapterIndex = targetBook.chapters.firstIndex(where: { $0.number == item.chapterNumber }) ?? 0
+        let targetChapter = targetBook.chapters[targetChapterIndex]
+
+        // 2) Clamp the verse to the actual verse count for that chapter
+        let clampedVerse = min(max(1, item.verseNumber), targetChapter.verses.count)
+
+        // 3) Apply state together
+        currentBook = targetBook
+        if let idx = orderedBookNames.firstIndex(of: targetBook.name) {
+            currentBookNameIndex = idx
+        }
+        currentChapterIndex = targetChapterIndex
+        currentVerse = clampedVerse
+
+        // Avoid initial mass-marking; we’ll manage highlight explicitly
+        suppressInitialMarking = (clampedVerse > 1)
+        hasCompletedInitialAppear = !suppressInitialMarking
+        highlightOnAppear = false
+
+        // 4) Defer scrolling until the new chapter is rendered
+        Task { @MainActor in
+            // Let SwiftUI finish updating the list for the new book/chapter
+            await Task.yield()
+
+            // Now scroll to the exact verse row ID
+            withAnimation(.easeInOut(duration: 0.35)) {
+                topVisibleVerseID = rowID(for: clampedVerse)
+            }
+
+            // 5) Highlight the verse for 3 seconds
+            highlightedVerse = clampedVerse
+            // Re-assert once more on the next run loop to be extra safe
+            await Task.yield()
+            highlightedVerse = clampedVerse
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            withAnimation { highlightedVerse = nil }
+        }
+
+        // 6) Update trackers and progress
+        ReadingTimeTracker.shared.changeBook(to: targetBook.name, chapter: targetChapter.number)
+        ReadingTimeTracker.shared.setCurrentLocation(bookName: targetBook.name, chapter: targetChapter.number)
+        saveProgress(bookName: targetBook.name, chapter: targetChapter.number, verse: clampedVerse)
+
+        // 7) Close sheet
+        showSearchSheet = false
     }
 }
