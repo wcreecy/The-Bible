@@ -74,6 +74,10 @@ struct SettingsView: View {
     @AppStorage("homeCardOrder") private var homeCardOrderRaw: String = ""
     @AppStorage("homeCardHidden") private var homeCardHiddenRaw: String = ""
 
+    // Favorite layout storage
+    @AppStorage("homeCardFavoriteOrder") private var homeCardFavoriteOrderRaw: String = ""
+    @AppStorage("homeCardFavoriteHidden") private var homeCardFavoriteHiddenRaw: String = ""
+
     @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
     @State private var hiddenSet: Set<HomeCardID> = []
 
@@ -110,6 +114,49 @@ struct SettingsView: View {
             homeCardHiddenRaw = raw
         }
         NotificationCenter.default.post(name: .init("homeLayoutChanged"), object: nil)
+    }
+
+    // Favorite layout helpers
+    private var hasFavoriteLayout: Bool {
+        // Consider a favorite present if at least order exists
+        !homeCardFavoriteOrderRaw.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private func saveFavoriteLayout() {
+        let orderIDs = layoutOrder.map { $0.rawValue }
+        if let data = try? JSONEncoder().encode(orderIDs),
+           let raw = String(data: data, encoding: .utf8) {
+            homeCardFavoriteOrderRaw = raw
+        }
+        let hiddenIDs = Array(hiddenSet).map { $0.rawValue }
+        if let data = try? JSONEncoder().encode(hiddenIDs),
+           let raw = String(data: data, encoding: .utf8) {
+            homeCardFavoriteHiddenRaw = raw
+        }
+    }
+
+    private func loadFavoriteLayout() -> (order: [HomeCardID], hidden: Set<HomeCardID>)? {
+        guard let orderData = homeCardFavoriteOrderRaw.data(using: .utf8),
+              let orderIDs = try? JSONDecoder().decode([String].self, from: orderData) else { return nil }
+        let mappedOrder = orderIDs.compactMap { HomeCardID(rawValue: $0) }
+        var order = mappedOrder
+        // Ensure any newly added IDs exist at the end
+        let missing = HomeCardID.allCases.filter { !order.contains($0) }
+        order.append(contentsOf: missing)
+
+        var hidden: Set<HomeCardID> = []
+        if let hiddenData = homeCardFavoriteHiddenRaw.data(using: .utf8),
+           let hiddenIDs = try? JSONDecoder().decode([String].self, from: hiddenData) {
+            hidden = Set(hiddenIDs.compactMap { HomeCardID(rawValue: $0) })
+        }
+        return (order, hidden)
+    }
+
+    private func applyFavoriteLayout() {
+        guard let fav = loadFavoriteLayout() else { return }
+        layoutOrder = fav.order
+        hiddenSet = fav.hidden
+        saveHomeLayout()
     }
 
     private var refresh1DateBinding: Binding<Date> {
@@ -304,7 +351,7 @@ struct SettingsView: View {
                     let count = favorites.count
                     if let latest = favorites.first {
                         print("Favorites count: \(count)")
-                        print("Latest -> book: \(latest.bookName), chapter: \(latest.chapterNumber), verse: \(latest.verseNumber), text: \(latest.verseText), createdAt: \(latest.createdAt)")
+                        print("Latest -> book: \(latest.bookName), chapter: \(latest.chapterNumber), verse: \(latest.verseText), text: \(latest.verseText), createdAt: \(latest.createdAt)")
                     } else {
                         print("Favorites count: \(count) (no items)")
                     }
@@ -805,9 +852,18 @@ struct SettingsView: View {
         Section(header: Text("Home Layout"), footer: Text("Reorder or hide sections on the Home page. The title card always stays at the top.").font(.footnote).foregroundStyle(.secondary)) {
 
             NavigationLink {
-                HomeLayoutEditorView(order: $layoutOrder, hidden: $hiddenSet) {
-                    saveHomeLayout()
-                }
+                HomeLayoutEditorView(
+                    order: $layoutOrder,
+                    hidden: $hiddenSet,
+                    onDone: { saveHomeLayout() },
+                    onSaveFavorite: {
+                        saveFavoriteLayout()
+                    },
+                    onResetToFavorite: {
+                        applyFavoriteLayout()
+                    },
+                    hasFavorite: hasFavoriteLayout
+                )
             } label: {
                 Label("Edit Order & Visibility", systemImage: "arrow.up.arrow.down")
             }
@@ -1200,57 +1256,114 @@ private struct HomeLayoutEditorView: View {
     @Binding var hidden: Set<SettingsView.HomeCardID>
     var onDone: () -> Void
 
-    @Environment(\.dismiss) private var dismiss
+    // New: favorite handlers & state
+    var onSaveFavorite: () -> Void
+    var onResetToFavorite: () -> Void
+    var hasFavorite: Bool
+
+    // Force edit mode so drag handles are available immediately
+    @State private var editMode: EditMode = .active
+
+    private func isVisible(_ id: SettingsView.HomeCardID) -> Bool {
+        !hidden.contains(id)
+    }
+
+    private func toggleVisibility(_ id: SettingsView.HomeCardID) {
+        if hidden.contains(id) {
+            hidden.remove(id)
+        } else {
+            hidden.insert(id)
+        }
+        onDone() // auto-save on toggle
+    }
+
+    private func resetToDefault() {
+        order = SettingsView.HomeCardID.allCases
+        hidden = [.games, .streaks, .bibleStats]
+        onDone() // auto-save
+    }
+
+    private func showAll() {
+        hidden.removeAll()
+        onDone() // auto-save
+    }
+
+    // Uniform footer button factory
+    @ViewBuilder
+    private func footerButton(title: String, systemImage: String, disabled: Bool = false, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Label(title, systemImage: systemImage)
+                .frame(maxWidth: .infinity)
+                .lineLimit(1)
+                .minimumScaleFactor(0.9)
+        }
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.roundedRectangle(radius: 12))
+        .tint(.accentColor)
+        .controlSize(.regular)
+        .font(.subheadline)
+        .disabled(disabled)
+    }
 
     var body: some View {
         List {
-            Section("Order") {
+            Section {
                 ForEach(order) { id in
                     HStack {
                         Image(systemName: id.systemImage)
                             .foregroundStyle(.secondary)
                         Text(id.title)
                         Spacer()
-                        if hidden.contains(id) {
-                            Text("Hidden")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                        Button {
+                            toggleVisibility(id)
+                        } label: {
+                            Image(systemName: isVisible(id) ? "eye" : "eye.slash")
+                                .foregroundStyle(isVisible(id) ? .blue : .secondary)
+                                .accessibilityLabel(isVisible(id) ? "Hide" : "Show")
                         }
+                        .buttonStyle(.plain)
+                        .accessibilityHint("Toggles visibility on the Home page")
                     }
                 }
                 .onMove { indices, newOffset in
                     order.move(fromOffsets: indices, toOffset: newOffset)
+                    onDone() // auto-save on reorder
                 }
-            }
-
-            Section("Visibility") {
-                ForEach(order) { id in
-                    Toggle(isOn: Binding(
-                        get: { !hidden.contains(id) },
-                        set: { newVal in
-                            if newVal { hidden.remove(id) } else { hidden.insert(id) }
+            } header: {
+                Text("Order & Visibility")
+            } footer: {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 12) {
+                        footerButton(title: "Reset", systemImage: "arrow.counterclockwise") {
+                            resetToDefault()
                         }
-                    )) {
-                        HStack {
-                            Image(systemName: id.systemImage)
-                                .foregroundStyle(.secondary)
-                            Text(id.title)
+                        footerButton(title: "Show All", systemImage: "eye") {
+                            showAll()
+                        }
+                        footerButton(title: "Use Favorite", systemImage: "star", disabled: !hasFavorite) {
+                            onResetToFavorite()
                         }
                     }
+                    Text("Drag to reorder. Tap the eye to show or hide a card on the Home page.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 2)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
+        .environment(\.editMode, $editMode) // present in edit mode automatically
         .navigationTitle("Home Layout")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) { EditButton() }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Done") {
-                    onDone()
-                    dismiss()
+            // New: Save as Favorite button
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Save as Favorite") {
+                    onSaveFavorite()
                 }
             }
         }
+        // No additional toolbar edit/done buttons
     }
 }
 
