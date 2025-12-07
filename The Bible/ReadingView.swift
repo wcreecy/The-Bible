@@ -101,6 +101,24 @@ struct ReadingView: View {
                     }
                     .accessibilityLabel("Search Bible")
                 }
+                // Tappable title: jump back to the Books list on the Bible tab
+                ToolbarItem(placement: .principal) {
+                    Button {
+                        let h = UIImpactFeedbackGenerator(style: .light)
+                        h.impactOccurred()
+                        // Ask the app to switch to Bible tab and reset its navigation to BooksView
+                        NotificationCenter.default.post(name: .resetBibleNavigation, object: nil)
+                    } label: {
+                        Text("\(currentBook.name) \(currentChapter.number)")
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Back to Books")
+                    .accessibilityHint("Go to the list of books")
+                }
             }
             .onAppear(perform: onAppear)
             .onAppear {

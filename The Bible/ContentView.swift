@@ -12,6 +12,7 @@ extension Notification.Name {
     static let openBibleReference = Notification.Name("OpenBibleReference")
     static let openSettingsTab = Notification.Name("OpenSettingsTab")
     // Use the centralized definition of `switchToTab` in iCloudSyncCoordinator.swift
+    static let resetBibleNavigation = Notification.Name("ResetBibleNavigation")
 }
 
 struct ContentView: View {
@@ -286,6 +287,13 @@ struct ContentView: View {
         .onReceive(NotificationCenter.default.publisher(for: .openSettingsTab)) { _ in
             selectedTab = 7
         }
+        .onReceive(NotificationCenter.default.publisher(for: .resetBibleNavigation)) { _ in
+            // Ensure Bible tab is visible, then reset the Bible nav stack to Books list
+            selectedTab = 1
+            DispatchQueue.main.async {
+                bibleCoordinator.reset()
+            }
+        }
         .onChange(of: scenePhase) { _, newPhase in
             switch newPhase {
             case .active:
@@ -428,4 +436,3 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-
