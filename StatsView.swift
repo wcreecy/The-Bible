@@ -79,6 +79,9 @@ struct StatsView: View {
     @State private var sessionsLast7: [(index: Int, minutes: Int)] = []
     @State private var avgSessionSecondsLast7: Int = 0
 
+    // Consistency card (last 30 days)
+    @State private var last30Daily: [(date: Date, seconds: Int)] = []
+
     // New: This Month metrics
     @State private var monthTotalSeconds: Int = 0
     @State private var monthChaptersCompleted: Int = 0
@@ -155,6 +158,9 @@ struct StatsView: View {
 
                 // Average Session Length (last 20 sessions)
                 averageSessionCard
+
+                // NEW: Consistency — last 30 days
+                consistencyCard
 
                 // Revamped: Bible Reading Progress
                 bookReadingProgressCard
@@ -362,6 +368,71 @@ struct StatsView: View {
                 }
             }
         }
+    }
+
+    // NEW: Consistency — last 30 days
+    private var consistencyCard: some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Consistency — last 30 days")
+                    .font(.headline)
+
+                // Row of 30 small squares, horizontally scrollable
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(last30Daily, id: \.date) { item in
+                            consistencySquare(for: item.seconds)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+
+                // Legend
+                HStack(spacing: 16) {
+                    legendItem(color: consistencyColor(for: 0), label: "0")
+                    legendItem(color: consistencyColor(for: 5*60), label: "5m")
+                    legendItem(color: consistencyColor(for: 15*60), label: "15m")
+                    legendItem(color: consistencyColor(for: 30*60), label: "30m")
+                    legendItem(color: consistencyColor(for: 60*60), label: "1h+")
+                }
+            }
+        }
+    }
+
+    private func consistencySquare(for seconds: Int) -> some View {
+        RoundedRectangle(cornerRadius: 6, style: .continuous)
+            .fill(consistencyColor(for: seconds))
+            .frame(width: 20, height: 20)
+            .overlay(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .stroke(Color.black.opacity(0.08), lineWidth: 1)
+            )
+            .accessibilityHidden(true)
+    }
+
+    private func legendItem(color: Color, label: String) -> some View {
+        HStack(spacing: 6) {
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .fill(color)
+                .frame(width: 18, height: 18)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .stroke(Color.black.opacity(0.08), lineWidth: 1)
+                )
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    // Threshold-based color mapping (high-contrast palette)
+    private func consistencyColor(for seconds: Int) -> Color {
+        if seconds <= 0 { return Color.gray.opacity(0.28) }       // 0
+        if seconds >= 60*60 { return Color.orange }               // 1h+
+        if seconds >= 30*60 { return Color.green }                // 30m
+        if seconds >= 15*60 { return Color.teal }                 // 15m
+        // 5m+
+        return Color.blue
     }
 
     private func pill(_ title: String, value: String) -> some View {
@@ -1104,6 +1175,9 @@ struct StatsView: View {
             return (index: idx + 1, minutes: minutes)
         }
 
+        // Consistency (last 30 days) — reuse dailySeries helper
+        last30Daily = dailySeries(lastNDays: 30, now: Date(), calendar: cal)
+
         // This Month section:
         // monthChaptersCompleted stays from chapter completion dates (not session-derived).
         let now = Date()
@@ -1652,24 +1726,40 @@ struct StatsView: View {
     }
 
     private func dailySeriesForMonth(containing date: Date, calendar: Calendar) -> [(date: Date, seconds: Int)] {
-        let sessions = ReadingSessionsStore.shared.sessions(inMonthContaining: date, calendar: calendar)
+        // Use a strictly local, autoupdating calendar for both session bucketing and day iteration
+        var cal = Calendar.autoupdatingCurrent
+        cal.timeZone = TimeZone.autoupdatingCurrent
+
+        // Fetch sessions for the month using the same calendar semantics
+        let sessions = ReadingSessionsStore.shared.sessions(inMonthContaining: date, calendar: cal)
+
+        // Bucket sessions by local-day ISO key
         var buckets: [String: Int] = [:]
         for s in sessions {
             let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
-            let key = BibleStatsStore.isoDateString(s.end, calendar: calendar)
+            let key = BibleStatsStore.isoDateString(s.end, calendar: cal)
             buckets[key, default: 0] += dur
         }
-        var cal = calendar
-        let year = cal.component(.year, from: date)
-        let month = cal.component(.month, from: date)
-        guard let start = cal.date(from: DateComponents(year: year, month: month)),
-              let range = cal.range(of: .day, in: .month, for: start) else {
+
+        // Compute local start of month and start of next month
+        let comps = cal.dateComponents([.year, .month], from: date)
+        guard
+            let startOfMonth = cal.date(from: comps),
+            let startOfNextMonth = cal.date(byAdding: .month, value: 1, to: startOfMonth)
+        else {
             return []
         }
-        let series: [(Date, Int)] = range.compactMap { day -> (Date, Int)? in
-            guard let d = cal.date(from: DateComponents(year: year, month: month, day: day)) else { return nil }
-            let key = BibleStatsStore.isoDateString(d, calendar: cal)
-            return (d, buckets[key, default: 0])
+
+        // Build contiguous daily series from startOfMonth to (but not including) startOfNextMonth
+        var series: [(Date, Int)] = []
+        var cursor = startOfMonth
+        while cursor < startOfNextMonth {
+            let key = BibleStatsStore.isoDateString(cursor, calendar: cal)
+            let seconds = buckets[key, default: 0]
+            series.append((cursor, seconds))
+            // Step exactly one local day
+            guard let next = cal.date(byAdding: .day, value: 1, to: cursor) else { break }
+            cursor = next
         }
         return series
     }
@@ -1889,4 +1979,3 @@ private struct BookChaptersDetailView: View {
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 }
-
