@@ -110,7 +110,7 @@ struct StatsView: View {
 
     // Totals card dynamic metrics
     @State private var totalsDaily: [(date: Date, seconds: Int)] = []
-    @State private var avgDailySecondsInScope: Int = 0
+    @State private var avgSecondsPerActiveBucketInScope: Int = 0
     @State private var activeDaysInScope: Int = 0
     @State private var topBookInScope: String = "—"
 
@@ -165,6 +165,32 @@ struct StatsView: View {
 
     private func formatInt(_ value: Int) -> String {
         value.formatted(.number.grouping(.automatic))
+    }
+
+    // MARK: - Active bucket label for Totals card
+
+    private var activeBucketLabel: String {
+        switch currentBarUnit {
+        case .day: return "Active Days"
+        case .weekOfYear: return "Active Weeks"
+        case .month: return "Active Months"
+        case .year: return "Active Years"
+        default: return "Active"
+        }
+    }
+
+    private var avgPerActiveBucketLabel: String {
+        switch currentBarUnit {
+        case .day: return "Avg per active day"
+        case .weekOfYear: return "Avg per active week"
+        case .month: return "Avg per active month"
+        case .year: return "Avg per active year"
+        default: return "Avg per active period"
+        }
+    }
+
+    private var activeBucketCount: Int {
+        totalsDaily.reduce(0) { $0 + ($1.seconds > 0 ? 1 : 0) }
     }
 
     var body: some View {
@@ -321,7 +347,7 @@ struct StatsView: View {
                     insightBestDayText.map { InsightChipModel(icon: "calendar.badge.clock", title: "Best Day", detail: $0, tint: .blue) },
                     insightNewStreakText.map { InsightChipModel(icon: "flame.fill", title: "Streak", detail: $0, tint: .orange) },
                     insightSevenDayAvgVsMonthText.map { InsightChipModel(icon: "chart.line.uptrend.xyaxis", title: "7‑day Avg", detail: $0, tint: .green) },
-                    insightGoalHitsLast7Text.map { InsightChipModel(icon: "target", title: "Goal Hits", detail: $0, tint: .purple) },
+                    insightGoalHitsLast7Text.map { InsightChipModel(icon: "target", title: $0.contains("7") ? "Goal Hits" : "Goal", detail: $0, tint: .purple) },
                     insightLongestSessionText.map { InsightChipModel(icon: "timer", title: "Longest Session", detail: $0, tint: .teal) },
                     insightTopBookThisMonthText.map { InsightChipModel(icon: "book.fill", title: "Top Book", detail: $0, tint: .pink) }
                 ].compactMap { $0 }
@@ -1018,8 +1044,8 @@ struct StatsView: View {
 
                     // Quick insights — clean, uniform chips
                     LazyVGrid(columns: chipGridColumns, spacing: 8) {
-                        metricChip(title: "Active days", value: "\(formatInt(activeDaysInScope))")
-                        metricChip(title: "Avg per active day", value: BibleStatsStore.shared.format(avgDailySecondsInScope))
+                        metricChip(title: activeBucketLabel, value: "\(formatInt(activeBucketCount))")
+                        metricChip(title: avgPerActiveBucketLabel, value: BibleStatsStore.shared.format(avgSecondsPerActiveBucketInScope))
                         metricChip(title: "Top book", value: topBookInScope)
                     }
 
@@ -1036,14 +1062,16 @@ struct StatsView: View {
                                         x: .value("Date", item.date, unit: currentBarUnit),
                                         y: .value("Minutes", minutes)
                                     )
-                                    .foregroundStyle(Color.accentColor.opacity(0.85))
-                                    .cornerRadius(4)
+                                    // Make the "This Month" daily bars feel smaller/less cramped
+                                    .foregroundStyle(
+                                        (timeScope == .thisMonth ? Color.accentColor.opacity(0.75) : Color.accentColor.opacity(0.85))
+                                    )
+                                    .cornerRadius(3)
                                     // Show value above each bar when daily bars are displayed.
-                                    // We want labels for the month (daily bars), and it also looks good for last 7.
                                     .annotation(position: .top, alignment: .center) {
                                         if minutes > 0, shouldShowBarValueLabels {
                                             Text("\(minutes)")
-                                                .font(.caption2.weight(.semibold))
+                                                .font(timeScope == .thisMonth ? .system(size: 7, weight: .semibold) : .caption2.weight(.semibold))
                                                 .foregroundStyle(.secondary)
                                                 .monospacedDigit()
                                         }
@@ -1052,6 +1080,11 @@ struct StatsView: View {
                             }
                             .chartYAxisLabel("Minutes")
                             .chartXAxis { chartXAxisMarks }
+                            // Add subtle horizontal padding to give daily bars in "This Month" some breathing room
+                            .chartPlotStyle { area in
+                                area
+                                    .padding(.horizontal, timeScope == .thisMonth ? 6 : 0)
+                            }
                             .frame(height: 160)
                         }
                     } else {
@@ -1824,7 +1857,7 @@ struct StatsView: View {
         // Quick insights
         activeDaysInScope = totalsDaily.reduce(0) { $0 + ($1.seconds > 0 ? 1 : 0) }
         let totalInSeries = totalsDaily.reduce(0) { $0 + $1.seconds }
-        avgDailySecondsInScope = activeDaysInScope > 0 ? totalInSeries / activeDaysInScope : 0
+        avgSecondsPerActiveBucketInScope = activeDaysInScope > 0 ? totalInSeries / activeDaysInScope : 0
 
         // Top book (from the same scoped totals map used elsewhere)
         if let top = scopedPerBookTotals.sorted(by: { lhs, rhs in
