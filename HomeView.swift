@@ -1287,7 +1287,7 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - NEW: Bible Stats Card (collapsible; compact label shows only 3 mini-pills; expanded shows more)
+    // MARK: - NEW: Bible Stats Card (collapsed only; summary mini-pills)
 
     @StateObject private var bibleVM = HomeBibleStatsViewModel()
     @AppStorage("bibleStatsExpanded") private var bibleStatsExpanded: Bool = false
@@ -1300,68 +1300,31 @@ struct HomeView: View {
             icon: "chart.bar.fill",
             tint: .teal
         ) {
-            DisclosureGroup(isExpanded: $bibleStatsExpanded) {
-                // Expanded content: Top Books (Top 3) and Completion (OT/NT graph removed)
-                VStack(alignment: .leading, spacing: 12) {
-                    // Add a horizontal separator to create space from the mini-pills row above
-                    Divider()
-                        .padding(.vertical, 4)
-
-                    // Row: Top books (Top 3, ranked list without progress bars)
-                    VStack(alignment: .leading, spacing: 8) {
-                        // Title only (removed trailing first top book text)
-                        Text("Top Books (All-Time)")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-
-                        let rows = Array(bibleVM.topBooks.prefix(3))
-                        ForEach(Array(rows.enumerated()), id: \.offset) { index, entry in
-                            HStack(spacing: 10) {
-                                // Rank badge
-                                Text("\(index + 1)")
-                                    .font(.caption.weight(.bold))
-                                    .foregroundStyle(.white)
-                                    .frame(width: 20, height: 20)
-                                    .background(Circle().fill(index == 0 ? Color.teal : (index == 1 ? Color.blue : Color.gray)))
-                                    .accessibilityHidden(true)
-
-                                // Book name
-                                Text(entry.book)
-                                    .font(.subheadline.weight(.semibold))
-                                    .lineLimit(1)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                                // Time
-                                Text(BibleStatsStore.shared.format(entry.seconds))
-                                    .font(.footnote.monospacedDigit())
-                                    .foregroundStyle(.secondary)
-                            }
-                            .padding(.vertical, 4)
-                            .padding(.horizontal, 8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .fill(Color.teal.opacity(0.06))
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .stroke(Color.teal.opacity(0.12), lineWidth: 1)
-                            )
-                        }
-                    }
-
-
-                }
-                .transition(.opacity.combined(with: .move(edge: .top)))
-            } label: {
-                // Collapsed/label content: only the three mini-pills
+            // Collapsed/label content only: show summary mini-pills in a horizontal scroller
+            ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
-                    // Today with delta vs yesterday (new)
+                    // Today with delta vs yesterday
                     statMiniPill(title: "Today", value: bibleVM.formatted(bibleVM.todaySeconds), subtitle: bibleVM.todayDeltaOnlyValue, tint: .blue)
+                    // This Week with delta vs last week
                     statMiniPill(title: "This Week", value: bibleVM.formatted(bibleVM.thisWeekSeconds), subtitle: bibleVM.weekDeltaOnlyValue, tint: .green)
+                    // New: This Month (sessions-only via BibleStatsStore) with delta vs last month
+                    let monthSeconds = BibleStatsStore.shared.totalForMonth(containing: Date())
+                    let lastMonthDate = Calendar.current.date(byAdding: .month, value: -1, to: Date()) ?? Date()
+                    let lastMonthSeconds = BibleStatsStore.shared.totalForMonth(containing: lastMonthDate)
+                    let monthDeltaOnlyValue: String = {
+                        let delta = monthSeconds - lastMonthSeconds
+                        if delta == 0 { return "—" }
+                        let sign = delta > 0 ? "+" : "−"
+                        return "\(sign)\(bibleVM.formatted(abs(delta)))"
+                    }()
+                    statMiniPill(title: "This Month", value: bibleVM.formatted(monthSeconds), subtitle: monthDeltaOnlyValue, tint: .mint)
+                    // New: All-time (sessions-only within retention)
+                    statMiniPill(title: "All-time", value: bibleVM.formatted(bibleVM.totalSeconds), subtitle: nil, tint: .purple)
+                    // Last Read
                     lastReadMiniPill(title: "Last Read", ref: bibleVM.lastReadBookChapter, relative: bibleVM.lastReadRelativeTime)
                 }
+                .padding(.vertical, 2)
             }
-            .animation(.spring(response: 0.25, dampingFraction: 0.9), value: bibleStatsExpanded)
             .onAppear {
                 bibleVM.refresh()
             }
@@ -1387,7 +1350,7 @@ struct HomeView: View {
                 .monospacedDigit()
             // Show subtitle for both Today and This Week when provided
             if let subtitle, !subtitle.isEmpty {
-                let prefix = (title == "This Week") ? "vs lst wk: " : (title == "Today" ? "vs yday: " : "")
+                let prefix = (title == "This Week") ? "vs lst wk: " : (title == "Today" ? "vs yday: " : (title == "This Month" ? "vs lst mo: " : ""))
                 if !prefix.isEmpty {
                     Text("\(prefix)\(subtitle)")
                         .font(.caption2)
