@@ -101,6 +101,16 @@ struct StatsView: View {
     // Size-class aware layout
     @Environment(\.horizontalSizeClass) private var hSizeClass
 
+    // Totals card dynamic metrics
+    @State private var totalsDaily: [(date: Date, seconds: Int)] = []
+    @State private var avgDailySecondsInScope: Int = 0
+    @State private var activeDaysInScope: Int = 0
+    @State private var topBookInScope: String = "—"
+
+    // All-time aggregation mode for the totals chart
+    private enum Aggregation { case daily, weekly, monthly, yearly }
+    @State private var allTimeAggregation: Aggregation = .daily
+
     private var orderedAllBooks: [String] {
         if !BibleData.books.isEmpty {
             return BibleData.books.map { $0.name }
@@ -254,6 +264,7 @@ struct StatsView: View {
         .onChange(of: timeScope) {
             recomputeOTNTFromScope()
             recomputeGenresFromScope()
+            recomputeTotalsCardMetrics()
         }
     }
 
@@ -648,7 +659,7 @@ struct StatsView: View {
                     .tint(.accentColor)
                     .disabled(lastReadEntry == nil)
 
-                    Button {
+                Button {
                         if let t = nextUnread {
                             openReader(bookName: t.book, chapter: t.chapter, verse: 1)
                         }
@@ -827,6 +838,38 @@ struct StatsView: View {
                     }
                     .pickerStyle(.segmented)
 
+                    // Quick insights — clean, uniform chips
+                    LazyVGrid(columns: chipGridColumns, spacing: 8) {
+                        metricChip(title: "Active days", value: "\(activeDaysInScope)")
+                        metricChip(title: "Avg per active day", value: BibleStatsStore.shared.format(avgDailySecondsInScope))
+                        metricChip(title: "Top book", value: topBookInScope)
+                    }
+
+                    // Daily/Weekly/Monthly/Yearly chart for the selected scope
+                    if !totalsDaily.isEmpty {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(totalsChartSubtitle)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Chart {
+                                ForEach(totalsDaily, id: \.date) { item in
+                                    let minutes = Int(round(Double(item.seconds) / 60.0))
+                                    BarMark(
+                                        x: .value("Date", item.date, unit: currentBarUnit),
+                                        y: .value("Minutes", minutes)
+                                    )
+                                    .foregroundStyle(Color.accentColor.opacity(0.85))
+                                    .cornerRadius(4)
+                                }
+                            }
+                            .chartYAxisLabel("Minutes")
+                            .chartXAxis { chartXAxisMarks }
+                            .frame(height: 160)
+                        }
+                    } else {
+                        ContentUnavailableView("No data in this period", systemImage: "chart.bar.xaxis")
+                    }
+
                     // Make only this row the tap target to expand/collapse
                     Button {
                         withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
@@ -871,6 +914,40 @@ struct StatsView: View {
         }
     }
 
+    // Responsive grid for chips: 2 columns on compact (iPhone), 3 on regular (iPad)
+    private var chipGridColumns: [GridItem] {
+        if hSizeClass == .compact {
+            return [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)]
+        } else {
+            return [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)]
+        }
+    }
+
+    private func metricChip(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+            Text(value)
+                .font(.footnote.weight(.semibold))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.black.opacity(0.08), lineWidth: 1)
+        )
+    }
+
     // MARK: - One-open-only toggles
 
     private func toggleBookProgress() {
@@ -900,6 +977,8 @@ struct StatsView: View {
         // Ensure OT/NT and Genre match the current scope after datasets are refreshed
         recomputeOTNTFromScope()
         recomputeGenresFromScope()
+        // Recompute dynamic totals card metrics
+        recomputeTotalsCardMetrics()
     }
 
     private func refreshTotals() {
@@ -1414,6 +1493,249 @@ struct StatsView: View {
         }
         .padding(.vertical, 2)
     }
+
+    // MARK: - Totals card metrics
+
+    private var totalsChartSubtitle: String {
+        switch timeScope {
+        case .last7:
+            return "Daily minutes — Last 7 days"
+        case .thisMonth:
+            // Bars are daily; ticks are weekly for readability.
+            return "Daily minutes — This month"
+        case .allTime:
+            switch allTimeAggregation {
+            case .monthly: return "Monthly minutes — All-time"
+            case .yearly:  return "Yearly minutes — All-time"
+            case .weekly:  return "Weekly minutes — All-time"
+            case .daily:   return "Daily minutes — All-time"
+            }
+        }
+    }
+
+    // Compute the current aggregation for the X axis outside the result builder
+    private var currentXAxisAggregation: Aggregation {
+        if timeScope == .allTime {
+            return allTimeAggregation
+        } else if timeScope == .thisMonth {
+            return .weekly
+        } else {
+            return .daily
+        }
+    }
+
+    // The unit used to bucket bars (explicit so bars look right)
+    private var currentBarUnit: Calendar.Component {
+        switch timeScope {
+        case .last7:
+            return .day
+        case .thisMonth:
+            // Bars are daily, ticks are weekly
+            return .day
+        case .allTime:
+            switch allTimeAggregation {
+            case .monthly: return .month
+            case .yearly:  return .year
+            case .weekly:  return .weekOfYear
+            case .daily:   return .day
+            }
+        }
+    }
+
+    // Axis marks adapted to current aggregation
+    @AxisContentBuilder
+    private var chartXAxisMarks: some AxisContent {
+        switch currentXAxisAggregation {
+        case .daily:
+            AxisMarks(values: .stride(by: .day, count: 1)) { _ in
+                AxisGridLine()
+                AxisTick()
+                AxisValueLabel(format: .dateTime.day().month(.abbreviated))
+            }
+        case .weekly:
+            AxisMarks(values: .stride(by: .weekOfYear, count: 1)) { _ in
+                AxisGridLine()
+                AxisTick()
+                AxisValueLabel(format: .dateTime.month(.abbreviated).day())
+            }
+        case .monthly:
+            AxisMarks(values: .stride(by: .month, count: 1)) { _ in
+                AxisGridLine()
+                AxisTick()
+                AxisValueLabel(format: .dateTime.month(.abbreviated).year())
+            }
+        case .yearly:
+            AxisMarks(values: .stride(by: .year, count: 1)) { _ in
+                AxisGridLine()
+                AxisTick()
+                AxisValueLabel(format: .dateTime.year())
+            }
+        }
+    }
+
+    private func recomputeTotalsCardMetrics() {
+        // Build daily/weekly/monthly/yearly series and quick insights based on the selected scope using sessions (GMT day boundaries)
+        var gmtCal = Calendar.current
+        gmtCal.timeZone = .gmt
+
+        let now = Date()
+
+        switch timeScope {
+        case .last7:
+            totalsDaily = dailySeries(lastNDays: 7, now: now, calendar: gmtCal)
+            allTimeAggregation = .daily
+        case .thisMonth:
+            totalsDaily = dailySeriesForMonth(containing: now, calendar: gmtCal)
+            allTimeAggregation = .weekly // axis ticks will show weekly marks
+        case .allTime:
+            let r = allTimeAggregatedSeries(calendar: gmtCal)
+            totalsDaily = r.series
+            allTimeAggregation = r.aggregation
+        }
+
+        // Quick insights
+        activeDaysInScope = totalsDaily.reduce(0) { $0 + ($1.seconds > 0 ? 1 : 0) }
+        let totalInSeries = totalsDaily.reduce(0) { $0 + $1.seconds }
+        avgDailySecondsInScope = activeDaysInScope > 0 ? totalInSeries / activeDaysInScope : 0
+
+        // Top book (from the same scoped totals map used elsewhere)
+        if let top = scopedPerBookTotals.sorted(by: { lhs, rhs in
+            if lhs.value == rhs.value { return lhs.key < rhs.key }
+            return lhs.value > rhs.value
+        }).first, top.value > 0 {
+            topBookInScope = top.key
+        } else {
+            topBookInScope = "—"
+        }
+    }
+
+    private func dailySeries(lastNDays: Int, now: Date, calendar: Calendar) -> [(date: Date, seconds: Int)] {
+        guard lastNDays > 0 else { return [] }
+        let sessions = ReadingSessionsStore.shared.sessions(inLastDays: lastNDays, now: now, calendar: calendar)
+        var buckets: [String: Int] = [:] // yyyy-MM-dd -> seconds
+        for s in sessions {
+            let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
+            let key = BibleStatsStore.isoDateString(s.end, calendar: calendar)
+            buckets[key, default: 0] += dur
+        }
+        // Build contiguous sequence (oldest -> newest)
+        let series: [(Date, Int)] = (0..<lastNDays).compactMap { i -> (Date, Int)? in
+            guard let d = calendar.date(byAdding: .day, value: -(lastNDays - 1 - i), to: calendar.startOfDay(for: now)) else { return nil }
+            let key = BibleStatsStore.isoDateString(d, calendar: calendar)
+            return (d, buckets[key, default: 0])
+        }
+        return series
+    }
+
+    private func dailySeriesForMonth(containing date: Date, calendar: Calendar) -> [(date: Date, seconds: Int)] {
+        let sessions = ReadingSessionsStore.shared.sessions(inMonthContaining: date, calendar: calendar)
+        var buckets: [String: Int] = [:]
+        for s in sessions {
+            let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
+            let key = BibleStatsStore.isoDateString(s.end, calendar: calendar)
+            buckets[key, default: 0] += dur
+        }
+        var cal = calendar
+        let year = cal.component(.year, from: date)
+        let month = cal.component(.month, from: date)
+        guard let start = cal.date(from: DateComponents(year: year, month: month)),
+              let range = cal.range(of: .day, in: .month, for: start) else {
+            return []
+        }
+        let series: [(Date, Int)] = range.compactMap { day -> (Date, Int)? in
+            guard let d = cal.date(from: DateComponents(year: year, month: month, day: day)) else { return nil }
+            let key = BibleStatsStore.isoDateString(d, calendar: cal)
+            return (d, buckets[key, default: 0])
+        }
+        return series
+    }
+
+    private func allTimeAggregatedSeries(calendar: Calendar) -> (series: [(date: Date, seconds: Int)], aggregation: Aggregation) {
+        // Use a long window that matches other “all time” computations in this view
+        let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: Date(), calendar: calendar)
+        guard !sessions.isEmpty else { return ([], .daily) }
+
+        let ends = sessions.map { $0.end }
+        let now = Date()
+        let start = calendar.startOfDay(for: ends.min() ?? now)
+        let end = calendar.startOfDay(for: now)
+
+        // Choose aggregation based on number of months spanned
+        let monthsSpan = calendar.dateComponents([.month], from: start, to: end).month ?? 0
+
+        // Prefer monthly buckets up to a year of data, otherwise yearly
+        let aggregation: Aggregation = (monthsSpan <= 12) ? .monthly : .yearly
+
+        // Helper to find the bucket start date for a given date
+        func bucketStart(for date: Date) -> Date {
+            switch aggregation {
+            case .monthly:
+                let comps = calendar.dateComponents([.year, .month], from: date)
+                return calendar.date(from: comps) ?? calendar.startOfDay(for: date)
+            case .yearly:
+                let comps = calendar.dateComponents([.year], from: date)
+                return calendar.date(from: comps) ?? calendar.startOfDay(for: date)
+            default:
+                // Not used for all-time
+                return calendar.startOfDay(for: date)
+            }
+        }
+
+        // Sum sessions into buckets
+        var buckets: [Date: Int] = [:]
+        for s in sessions {
+            let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
+            let key = bucketStart(for: s.end)
+            buckets[key, default: 0] += dur
+        }
+
+        // Build a contiguous series from start to end at the chosen aggregation
+        var series: [(Date, Int)] = []
+        var cursor: Date = {
+            switch aggregation {
+            case .monthly:
+                let comps = calendar.dateComponents([.year, .month], from: start)
+                return calendar.date(from: comps) ?? start
+            case .yearly:
+                let comps = calendar.dateComponents([.year], from: start)
+                return calendar.date(from: comps) ?? start
+            default:
+                return start
+            }
+        }()
+
+        func step(_ date: Date) -> Date {
+            switch aggregation {
+            case .monthly: return calendar.date(byAdding: .month, value: 1, to: date) ?? date
+            case .yearly: return calendar.date(byAdding: .year, value: 1, to: date) ?? date
+            default: return date
+            }
+        }
+
+        while cursor <= end {
+            let val = buckets[cursor, default: 0]
+            series.append((cursor, val))
+            cursor = step(cursor)
+        }
+
+        // Cap monthly series to last 6 or 12 months to keep axis readable
+        if aggregation == .monthly {
+            let maxMonths = (monthsSpan <= 6) ? 6 : 12
+            if series.count > maxMonths {
+                series = Array(series.suffix(maxMonths))
+            }
+        }
+
+        // Cap yearly series to last 10 years to avoid overly thin bars
+        if aggregation == .yearly {
+            let maxYears = 10
+            if series.count > maxYears {
+                series = Array(series.suffix(maxYears))
+            }
+        }
+
+        return (series, aggregation)
+    }
 }
 
 // MARK: - Small Progress Ring
@@ -1543,4 +1865,3 @@ private struct BookChaptersDetailView: View {
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 }
-
