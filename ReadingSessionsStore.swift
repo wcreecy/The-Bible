@@ -44,26 +44,26 @@ final class ReadingSessionsStore {
     func appendSession(_ session: Session) {
         var all = loadAll()
         all.append(session)
-        // Prune older than retention window
-        let cutoff = Calendar.current.date(byAdding: .day, value: -maxRetentionDays, to: Date()) ?? Date.distantPast
+        // Prune older than retention window using local calendar
+        let cutoff = Calendar.autoupdatingCurrent.date(byAdding: .day, value: -maxRetentionDays, to: Date()) ?? Date.distantPast
         all = all.filter { $0.end >= cutoff }
         saveAll(all)
     }
 
-    // Normalize to GMT midnight boundaries to match BibleStatsStore’s ISO date keys.
-    func sessions(inLastDays days: Int, now: Date = Date(), calendar: Calendar = .current) -> [Session] {
+    // Normalize to local start-of-day boundaries for rolling day windows.
+    func sessions(inLastDays days: Int, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> [Session] {
         guard days > 0 else { return [] }
-        var gmtCal = calendar
-        gmtCal.timeZone = .gmt
-        // Compute cutoff at start of day (GMT) days ago
-        let startOfTodayGMT = gmtCal.startOfDay(for: now)
-        let cutoff = gmtCal.date(byAdding: .day, value: -days, to: startOfTodayGMT) ?? .distantPast
+        var cal = calendar
+        cal.timeZone = TimeZone.autoupdatingCurrent
+        // Compute cutoff at start of local day N days ago
+        let startOfToday = cal.startOfDay(for: now)
+        let cutoff = cal.date(byAdding: .day, value: -days, to: startOfToday) ?? .distantPast
         return loadAll().filter { $0.end >= cutoff }
     }
 
-    func sessions(inMonthContaining date: Date, calendar: Calendar = .current) -> [Session] {
+    func sessions(inMonthContaining date: Date, calendar: Calendar = .autoupdatingCurrent) -> [Session] {
         var cal = calendar
-        cal.timeZone = .gmt
+        cal.timeZone = TimeZone.autoupdatingCurrent
         let comps = cal.dateComponents([.year, .month], from: date)
         guard let start = cal.date(from: comps),
               let range = cal.range(of: .day, in: .month, for: start),

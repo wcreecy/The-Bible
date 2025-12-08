@@ -108,7 +108,7 @@ final class BibleStatsStore {
         NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 
-    func addToToday(seconds: Int, calendar: Calendar = .current) {
+    func addToToday(seconds: Int, calendar: Calendar = .autoupdatingCurrent) {
         guard seconds > 0 else { return }
         var dict = loadDailyTotals()
         let today = Self.isoDateString(Date(), calendar: calendar)
@@ -116,7 +116,7 @@ final class BibleStatsStore {
         saveDailyTotals(dict)
     }
 
-    func totalForLast(days: Int, including today: Date = Date(), calendar: Calendar = .current) -> Int {
+    func totalForLast(days: Int, including today: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> Int {
         guard days > 0 else { return 0 }
         let dict = loadDailyTotals()
         var sum = 0
@@ -130,11 +130,11 @@ final class BibleStatsStore {
     }
 
     // Sessions-only: compute month total strictly from ReadingSessionsStore (no fallback to daily totals)
-    func totalForMonth(containing date: Date, calendar: Calendar = .current) -> Int {
+    func totalForMonth(containing date: Date, calendar: Calendar = .autoupdatingCurrent) -> Int {
         return totalForMonthFromSessions(containing: date, calendar: calendar)
     }
 
-    private func totalForMonthFromSessions(containing date: Date, calendar: Calendar = .current) -> Int {
+    private func totalForMonthFromSessions(containing date: Date, calendar: Calendar = .autoupdatingCurrent) -> Int {
         let sessions = ReadingSessionsStore.shared.sessions(inMonthContaining: date, calendar: calendar)
         var total = 0
         for s in sessions {
@@ -160,7 +160,7 @@ final class BibleStatsStore {
         NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 
-    func addToToday(bookName: String, seconds: Int, calendar: Calendar = .current) {
+    func addToToday(bookName: String, seconds: Int, calendar: Calendar = .autoupdatingCurrent) {
         guard seconds > 0, !bookName.isEmpty else { return }
         var dict = loadDailyTotalsByBook()
         let today = Self.isoDateString(Date(), calendar: calendar)
@@ -170,7 +170,7 @@ final class BibleStatsStore {
         saveDailyTotalsByBook(dict)
     }
 
-    func totalsByBookForMonth(containing date: Date, calendar: Calendar = .current) -> [String: Int] {
+    func totalsByBookForMonth(containing date: Date, calendar: Calendar = .autoupdatingCurrent) -> [String: Int] {
         let dict = loadDailyTotalsByBook()
         let keys = Self.isoKeysForMonth(containing: date, calendar: calendar)
         var result: [String: Int] = [:]
@@ -185,7 +185,7 @@ final class BibleStatsStore {
     }
 
     // Per-book totals for a rolling window of the last N days (including today)
-    func totalsByBookForLast(days: Int, including today: Date = Date(), calendar: Calendar = .current) -> [String: Int] {
+    func totalsByBookForLast(days: Int, including today: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> [String: Int] {
         guard days > 0 else { return [:] }
         let dict = loadDailyTotalsByBook()
         var result: [String: Int] = [:]
@@ -368,11 +368,11 @@ final class BibleStatsStore {
         NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 
-    func chapterCompletions(inMonth date: Date, calendar: Calendar = .current) -> [String: Date] {
+    func chapterCompletions(inMonth date: Date, calendar: Calendar = .autoupdatingCurrent) -> [String: Date] {
         let map = loadChapterCompletionDates()
         var cal = calendar
         // Use local time zone for month grouping
-        cal.timeZone = Calendar.current.timeZone
+        cal.timeZone = TimeZone.autoupdatingCurrent
         let year = cal.component(.year, from: date)
         let month = cal.component(.month, from: date)
         return map.filter { (_, d) in
@@ -398,9 +398,9 @@ final class BibleStatsStore {
     // MARK: - ISO helpers
 
     // Local-day key (yyyy-MM-dd) aligned to the user's current time zone and startOfDay
-    static func isoDateString(_ date: Date, calendar: Calendar = .current) -> String {
+    static func isoDateString(_ date: Date, calendar: Calendar = .autoupdatingCurrent) -> String {
         var cal = calendar
-        cal.timeZone = Calendar.current.timeZone
+        cal.timeZone = TimeZone.autoupdatingCurrent
         let start = cal.startOfDay(for: date)
         let comps = cal.dateComponents([.year, .month, .day], from: start)
         let y = comps.year ?? 1970
@@ -409,9 +409,9 @@ final class BibleStatsStore {
         return String(format: "%04d-%02d-%02d", y, m, d)
     }
 
-    static func isoKeysForMonth(containing date: Date, calendar: Calendar = .current) -> [String] {
+    static func isoKeysForMonth(containing date: Date, calendar: Calendar = .autoupdatingCurrent) -> [String] {
         var cal = calendar
-        cal.timeZone = Calendar.current.timeZone
+        cal.timeZone = TimeZone.autoupdatingCurrent
         let year = cal.component(.year, from: date)
         let month = cal.component(.month, from: date)
         guard let start = cal.date(from: DateComponents(year: year, month: month)),
@@ -425,7 +425,7 @@ final class BibleStatsStore {
 
     // MARK: - Migration
 
-    // Call this once at app launch (before using totals) to re-bucket GMT keys to local-day keys.
+    // Call this once at app launch (before using totals) to re-bucket legacy UTC/GMT keys to local-day keys.
     func migrateDailyKeysFromGMTToLocalIfNeeded() {
         let defaults = Defaults.provider
         if defaults.bool(forKey: Defaults.keyDidMigrateDailyKeysToLocal) {
@@ -442,11 +442,11 @@ final class BibleStatsStore {
             return
         }
 
-        // Helper to convert a GMT yyyy-MM-dd key to a local yyyy-MM-dd key
+        // Helper to convert a legacy yyyy-MM-dd key (interpreted at UTC noon) to a local yyyy-MM-dd key
         func convertGMTKeyToLocal(_ gmtKey: String) -> String? {
-            // Build a Date at noon GMT for the given yyyy-MM-dd to avoid DST edges
-            var gmtCal = Calendar(identifier: .gregorian)
-            gmtCal.timeZone = TimeZone(secondsFromGMT: 0) ?? .gmt
+            // Build a Date at noon UTC for the given yyyy-MM-dd to avoid DST edges
+            var utcCal = Calendar(identifier: .gregorian)
+            utcCal.timeZone = TimeZone(secondsFromGMT: 0) ?? TimeZone.autoupdatingCurrent
             let parts = gmtKey.split(separator: "-").compactMap { Int($0) }
             guard parts.count == 3 else { return nil }
             var comps = DateComponents()
@@ -456,10 +456,10 @@ final class BibleStatsStore {
             comps.hour = 12
             comps.minute = 0
             comps.second = 0
-            guard let gmtDateNoon = gmtCal.date(from: comps) else { return nil }
+            guard let utcDateNoon = utcCal.date(from: comps) else { return nil }
 
             // Now get local startOfDay and format using current local calendar/time zone
-            return Self.isoDateString(gmtDateNoon, calendar: .current)
+            return Self.isoDateString(utcDateNoon, calendar: .autoupdatingCurrent)
         }
 
         // Migrate dailyTotals
@@ -496,9 +496,9 @@ final class BibleStatsStore {
 
     // Sum all reading session seconds that overlap the user's local "today".
     // Uses ReadingSessionsStore as the source of truth to keep Today and Streak in sync.
-    func todayTotalSeconds(now: Date = Date(), calendar: Calendar = .current) -> Int {
+    func todayTotalSeconds(now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> Int {
         var cal = calendar
-        cal.timeZone = Calendar.current.timeZone
+        cal.timeZone = TimeZone.autoupdatingCurrent
         let startOfDay = cal.startOfDay(for: now)
         guard let startOfTomorrow = cal.date(byAdding: .day, value: 1, to: startOfDay) else { return 0 }
 
@@ -517,9 +517,10 @@ final class BibleStatsStore {
     }
 
     // Convenience: check if today's total meets the given goal seconds using the same source.
-    func isDailyGoalMet(goalSeconds: Int, now: Date = Date(), calendar: Calendar = .current) -> Bool {
+    func isDailyGoalMet(goalSeconds: Int, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> Bool {
         return todayTotalSeconds(now: now, calendar: calendar) >= max(1, goalSeconds)
     }
 
     // ... rest of file unchanged ...
 }
+

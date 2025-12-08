@@ -76,7 +76,6 @@ struct StatsView: View {
 
     // Expand/collapse for existing sections
     @State private var showBookProgressDetails: Bool = false
-    @State private var showGenreSection: Bool = false
     @State private var showTotalsSection: Bool = false
 
     // Daily goal minutes (for goal progress glance pill)
@@ -594,78 +593,45 @@ struct StatsView: View {
     }
 
     private var genreSection: some View {
-        ZStack {
-            GroupBox {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        Text("Genre Distribution — \(timeScope.rawValue)")
-                            .font(.headline)
-                        Spacer()
+        GroupBox {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Genre Distribution — \(timeScope.rawValue)")
+                    .font(.headline)
+
+                let maxVal = max(1, perGenreTotals.map { $0.seconds }.max() ?? 1)
+                VStack(spacing: 8) {
+                    ForEach(perGenreTotals, id: \.genre) { item in
                         Button {
-                            withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                                toggleGenre()
+                            if let g = Genre(rawValue: item.genre) {
+                                selectedGenre = g
+                                // rows should reflect the same scoped timeframe
+                                genreDetailRows = rowsForGenre(g, totals: scopedPerBookTotals)
                             }
                         } label: {
-                            HStack(spacing: 6) {
-                                Text(showGenreSection ? "Hide" : "Show")
-                                    .font(.footnote.weight(.semibold))
-                                Image(systemName: showGenreSection ? "chevron.up" : "chevron.down")
-                                    .font(.footnote.weight(.semibold))
+                            HStack(spacing: 8) {
+                                Text(item.genre)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .frame(width: 110, alignment: .leading)
+                                GeometryReader { geo in
+                                    let frac = CGFloat(item.seconds) / CGFloat(maxVal)
+                                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                        .fill(genreColor(item.genre).opacity(0.7))
+                                        .frame(width: geo.size.width * frac, height: 10, alignment: .leading)
+                                }
+                                .frame(height: 10)
+                                Text(BibleStatsStore.shared.format(item.seconds))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .monospacedDigit()
+                                    .frame(width: 60, alignment: .trailing)
                             }
+                            .frame(height: 16)
                         }
                         .buttonStyle(.plain)
-                    }
-
-                    if showGenreSection {
-                        let maxVal = max(1, perGenreTotals.map { $0.seconds }.max() ?? 1)
-                        VStack(spacing: 8) {
-                            ForEach(perGenreTotals, id: \.genre) { item in
-                                Button {
-                                    if let g = Genre(rawValue: item.genre) {
-                                        selectedGenre = g
-                                        // rows should reflect the same scoped timeframe
-                                        genreDetailRows = rowsForGenre(g, totals: scopedPerBookTotals)
-                                    }
-                                } label: {
-                                    HStack(spacing: 8) {
-                                        Text(item.genre)
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                            .frame(width: 110, alignment: .leading)
-                                        GeometryReader { geo in
-                                            let frac = CGFloat(item.seconds) / CGFloat(maxVal)
-                                            RoundedRectangle(cornerRadius: 6, style: .continuous)
-                                                .fill(genreColor(item.genre).opacity(0.7))
-                                                .frame(width: geo.size.width * frac, height: 10, alignment: .leading)
-                                        }
-                                        .frame(height: 10)
-                                        Text(BibleStatsStore.shared.format(item.seconds))
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                            .monospacedDigit()
-                                            .frame(width: 60, alignment: .trailing)
-                                    }
-                                    .frame(height: 16)
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("\(item.genre) \(BibleStatsStore.shared.format(item.seconds))")
-                            }
-                        }
-                        .transition(.opacity.combined(with: .move(edge: .top)))
+                        .accessibilityLabel("\(item.genre) \(BibleStatsStore.shared.format(item.seconds))")
                     }
                 }
-            }
-
-            // Tap anywhere on the card to expand when collapsed
-            if !showGenreSection {
-                Color.clear
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                            toggleGenre()
-                        }
-                    }
-                    .accessibilityHidden(true)
             }
         }
     }
@@ -749,21 +715,8 @@ struct StatsView: View {
         if showBookProgressDetails {
             showBookProgressDetails = false
         } else {
-            showGenreSection = false
             showTotalsSection = false
             showBookProgressDetails = true
-        }
-    }
-
-    private func toggleGenre() {
-        if showGenreSection {
-            showGenreSection = false
-        } else {
-            showBookProgressDetails = false
-            showTotalsSection = false
-            showGenreSection = true
-            // Ensure genre list is refreshed for current scope when opening
-            recomputeGenresFromScope()
         }
     }
 
@@ -772,7 +725,6 @@ struct StatsView: View {
             showTotalsSection = false
         } else {
             showBookProgressDetails = false
-            showGenreSection = false
             showTotalsSection = true
         }
     }
@@ -1336,4 +1288,3 @@ private struct BookChaptersDetailView: View {
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 }
-

@@ -1029,10 +1029,10 @@ struct SettingsView: View {
         debugShow("Reading Sessions", "Cleared all reading sessions.")
     }
 
-    // Seed 1–3 sessions per day over the last 7 days with random books/chapters and 5–25 minute durations.
+    // Seed 1–3 sessions per day over the last 7 days with random books/chapters and 5–25 minute durations (local time).
     private func seedSampleSessionsLast7Days() {
-        var gmtCal = Calendar.current
-        gmtCal.timeZone = .gmt
+        var cal = Calendar.autoupdatingCurrent
+        cal.timeZone = TimeZone.autoupdatingCurrent
 
         // Build a list of candidate books (fallback if BibleData is empty)
         let bookNames: [String] = {
@@ -1043,7 +1043,7 @@ struct SettingsView: View {
 
         let today = Date()
         for dayOffset in 0..<7 {
-            guard let baseDay = gmtCal.date(byAdding: .day, value: -dayOffset, to: gmtCal.startOfDay(for: today)) else { continue }
+            guard let baseDay = cal.date(byAdding: .day, value: -dayOffset, to: cal.startOfDay(for: today)) else { continue }
             let sessionsCount = Int.random(in: 1...3)
             for _ in 0..<sessionsCount {
                 // Pick a book and an optional chapter if available
@@ -1055,10 +1055,10 @@ struct SettingsView: View {
                     return nil
                 }()
 
-                // Choose a random start time during the day and a duration 5–25 minutes
-                let startSeconds = Int.random(in: 8*3600...22*3600) // somewhere between 8:00 and 22:00 GMT
+                // Choose a random start time during the day and a duration 5–25 minutes (local)
+                let startSeconds = Int.random(in: 8*3600...22*3600) // somewhere between 8:00 and 22:00 local
                 let duration = Int.random(in: 5*60...25*60)
-                let start = gmtCal.date(byAdding: .second, value: startSeconds, to: baseDay) ?? baseDay
+                let start = cal.date(byAdding: .second, value: startSeconds, to: baseDay) ?? baseDay
                 let end = start.addingTimeInterval(TimeInterval(duration))
 
                 let session = ReadingSessionsStore.Session(start: start, end: end, book: book, chapter: chapter)
@@ -1070,9 +1070,9 @@ struct SettingsView: View {
     }
 
     private func seedRandomReadingStatsPast31Days() {
-        // For the last 31 days, randomly add small reading totals to daily totals by book and sessions.
-        var cal = Calendar.current
-        cal.timeZone = .gmt
+        // For the last 31 days, randomly add small reading totals to daily totals by book and sessions (local time).
+        var cal = Calendar.autoupdatingCurrent
+        cal.timeZone = TimeZone.autoupdatingCurrent
         let books = BibleData.books
         guard !books.isEmpty else {
             debugShow("Seed Stats", "No Bible data available.")
@@ -1392,3 +1392,4 @@ private struct FontFamilyEnvironmentModifier: ViewModifier {
 #Preview {
     NavigationStack { SettingsView() }
 }
+
