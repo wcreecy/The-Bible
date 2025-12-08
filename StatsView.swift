@@ -148,10 +148,22 @@ struct StatsView: View {
         [GridItem(.adaptive(minimum: 150), spacing: 10)]
     }
 
+    // MARK: - Smart Insights state
+
+    @State private var insightBestDayText: String? = nil
+    @State private var insightNewStreakText: String? = nil
+    @State private var insightSevenDayAvgVsMonthText: String? = nil
+    @State private var insightGoalHitsLast7Text: String? = nil
+    @State private var insightLongestSessionText: String? = nil
+    @State private var insightTopBookThisMonthText: String? = nil
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
                 glanceRow
+
+                // Smart Insights
+                smartInsightsCard
 
                 // This Month section
                 thisMonthCard
@@ -271,6 +283,53 @@ struct StatsView: View {
             recomputeOTNTFromScope()
             recomputeGenresFromScope()
             recomputeTotalsCardMetrics()
+        }
+    }
+
+    // MARK: - Smart Insights
+
+    private var smartInsightsCard: some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("Smart Insights")
+                        .font(.headline)
+                    Spacer()
+                    Button {
+                        computeInsights()
+                    } label: {
+                        Label("Refresh insights", systemImage: "arrow.clockwise")
+                            .labelStyle(.iconOnly)
+                            .font(.subheadline)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.secondary)
+                }
+
+                // Build tile models from available insights (short, glanceable)
+                let tiles: [InsightChipModel] = [
+                    insightBestDayText.map { InsightChipModel(icon: "calendar.badge.clock", title: "Best Day", detail: $0, tint: .blue) },
+                    insightNewStreakText.map { InsightChipModel(icon: "flame.fill", title: "Streak", detail: $0, tint: .orange) },
+                    insightSevenDayAvgVsMonthText.map { InsightChipModel(icon: "chart.line.uptrend.xyaxis", title: "7‑day Avg", detail: $0, tint: .green) },
+                    insightGoalHitsLast7Text.map { InsightChipModel(icon: "target", title: "Goal Hits", detail: $0, tint: .purple) },
+                    insightLongestSessionText.map { InsightChipModel(icon: "timer", title: "Longest Session", detail: $0, tint: .teal) },
+                    insightTopBookThisMonthText.map { InsightChipModel(icon: "book.fill", title: "Top Book", detail: $0, tint: .pink) }
+                ].compactMap { $0 }
+
+                if tiles.isEmpty {
+                    ContentUnavailableView("No insights yet", systemImage: "sparkles")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                } else {
+                    // Two-column adaptive grid with glanceable tiles
+                    let columns = [GridItem(.adaptive(minimum: 260), spacing: 10)]
+                    LazyVGrid(columns: columns, alignment: .leading, spacing: 10) {
+                        ForEach(tiles) { model in
+                            InsightTile(model: model)
+                        }
+                    }
+                    .transition(.opacity)
+                }
+            }
         }
     }
 
@@ -425,14 +484,13 @@ struct StatsView: View {
         }
     }
 
-    // Threshold-based color mapping (high-contrast palette)
+    // Threshold-based color mapping (blue, teal, orange, red)
     private func consistencyColor(for seconds: Int) -> Color {
-        if seconds <= 0 { return Color.gray.opacity(0.28) }       // 0
-        if seconds >= 60*60 { return Color.orange }               // 1h+
-        if seconds >= 30*60 { return Color.green }                // 30m
-        if seconds >= 15*60 { return Color.teal }                 // 15m
-        // 5m+
-        return Color.blue
+        if seconds <= 0 { return Color.gray.opacity(0.28) } // 0
+        if seconds >= 60*60 { return .red }                 // 1h+
+        if seconds >= 30*60 { return .orange }              // 30m–<1h
+        if seconds >= 15*60 { return .teal }                // 15m–<30m
+        return .blue                                        // 0–<15m (non-zero)
     }
 
     private func pill(_ title: String, value: String) -> some View {
@@ -1073,6 +1131,8 @@ struct StatsView: View {
         recomputeGenresFromScope()
         // Recompute dynamic totals card metrics
         recomputeTotalsCardMetrics()
+        // Smart insights last
+        computeInsights()
     }
 
     private func refreshTotals() {
@@ -1850,6 +1910,142 @@ struct StatsView: View {
 
         return (series, aggregation)
     }
+
+    // MARK: - Smart insights computation
+
+    private func computeInsights() {
+        let cal = Calendar.autoupdatingCurrent
+        let now = Date()
+
+        // Best day in last 90 days
+        do {
+            let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 90, now: now, calendar: cal)
+            var buckets: [String: Int] = [:]
+            for s in sessions {
+                let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
+                let key = BibleStatsStore.isoDateString(s.end, calendar: cal)
+                buckets[key, default: 0] += dur
+            }
+            if let (bestKey, bestSeconds) = buckets.max(by: { $0.value < $1.value }),
+               bestSeconds > 0 {
+                // Format date like "Mar 12"
+                let df = DateFormatter()
+                df.calendar = cal
+                df.timeZone = cal.timeZone
+                df.setLocalizedDateFormatFromTemplate("MMM d")
+                let date = df.date(from: bestKey) ?? cal.startOfDay(for: now) // bestKey is yyyy-MM-dd; parsing with df might fail
+                // Parse yyyy-MM-dd reliably
+                let isoParser = DateFormatter()
+                isoParser.calendar = cal
+                isoParser.timeZone = cal.timeZone
+                isoParser.dateFormat = "yyyy-MM-dd"
+                let bestDate = isoParser.date(from: bestKey) ?? date
+                let pretty = df.string(from: bestDate)
+                let val = BibleStatsStore.shared.format(bestSeconds)
+                insightBestDayText = "Best day in 90 days: \(val) (\(pretty))"
+            } else {
+                insightBestDayText = nil
+            }
+        }
+
+        // New streak: compare current streak today vs yesterday
+        do {
+            let current = StreakTracker.currentStreak
+            // Compute yesterday's streak by evaluating with a shifted "today"
+            let yesterday: Int = {
+                var count = 0
+                var day = cal.date(byAdding: .day, value: -1, to: now) ?? now
+                // If yesterday not met, allow streak to end the day before yesterday
+                if !StreakTracker.isGoalMet(on: day) {
+                    if let prev = cal.date(byAdding: .day, value: -1, to: day) {
+                        day = prev
+                    }
+                }
+                while StreakTracker.isGoalMet(on: day) {
+                    count += 1
+                    guard let prev = cal.date(byAdding: .day, value: -1, to: day) else { break }
+                    day = prev
+                }
+                return count
+            }()
+            if current > 0, current > yesterday {
+                insightNewStreakText = "New streak: \(current) day\(current == 1 ? "" : "s") in a row"
+            } else {
+                insightNewStreakText = nil
+            }
+        }
+
+        // 7‑day average up/down vs last month (use previous calendar month's daily average)
+        do {
+            let last7 = dailySeries(lastNDays: 7, now: now, calendar: cal)
+            let avg7 = last7.isEmpty ? 0 : last7.reduce(0) { $0 + $1.seconds } / last7.count
+
+            // Previous month average per day
+            if let prevMonth = cal.date(byAdding: .month, value: -1, to: now) {
+                let prevMonthSeries = dailySeriesForMonth(containing: prevMonth, calendar: cal)
+                let prevAvgPerDay = prevMonthSeries.isEmpty ? 0 : prevMonthSeries.reduce(0) { $0 + $1.seconds } / prevMonthSeries.count
+                if prevAvgPerDay > 0 {
+                    let change = Double(avg7 - prevAvgPerDay) / Double(prevAvgPerDay) * 100.0
+                    let pct = Int(round(abs(change)))
+                    if pct >= 1 {
+                        insightSevenDayAvgVsMonthText = change >= 0
+                        ? "7‑day average up \(pct)% vs last month"
+                        : "7‑day average down \(pct)% vs last month"
+                    } else {
+                        insightSevenDayAvgVsMonthText = nil
+                    }
+                } else {
+                    insightSevenDayAvgVsMonthText = nil
+                }
+            } else {
+                insightSevenDayAvgVsMonthText = nil
+            }
+        }
+
+        // Goal hits in last 7 days
+        do {
+            var hits = 0
+            for i in 0..<7 {
+                if let day = cal.date(byAdding: .day, value: -i, to: cal.startOfDay(for: now)) {
+                    if StreakTracker.isGoalMet(on: day) { hits += 1 }
+                }
+            }
+            if hits > 0 {
+                insightGoalHitsLast7Text = "You hit your goal \(hits) of the last 7 days"
+            } else {
+                insightGoalHitsLast7Text = nil
+            }
+        }
+
+        // Longest session in last 30 days
+        do {
+            let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 30, now: now, calendar: cal)
+            if let longest = sessions.max(by: { ($0.end.timeIntervalSince($0.start)) < ($1.end.timeIntervalSince($1.start)) }) {
+                let dur = Int(max(0, longest.end.timeIntervalSince(longest.start)))
+                if dur >= minSessionSeconds {
+                    let df = DateFormatter()
+                    df.calendar = cal
+                    df.timeZone = cal.timeZone
+                    df.setLocalizedDateFormatFromTemplate("MMM d")
+                    let when = df.string(from: longest.end)
+                    insightLongestSessionText = "Longest session in 30 days: \(BibleStatsStore.shared.format(dur)) (\(when))"
+                } else {
+                    insightLongestSessionText = nil
+                }
+            } else {
+                insightLongestSessionText = nil
+            }
+        }
+
+        // Most-read book this month
+        do {
+            if let top = monthTop3Books.first, top.seconds > 0 {
+                insightTopBookThisMonthText = "Most‑read book this month: \(top.book)"
+            } else {
+                insightTopBookThisMonthText = nil
+            }
+        }
+    }
 }
 
 // MARK: - Small Progress Ring
@@ -1979,3 +2175,57 @@ private struct BookChaptersDetailView: View {
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 }
+
+// MARK: - Smart Insights chip view
+
+private struct InsightChipModel: Identifiable, Hashable {
+    let id = UUID()
+    let icon: String
+    let title: String
+    let detail: String
+    let tint: Color
+}
+
+// New, glanceable tile presentation for insights
+private struct InsightTile: View {
+    let model: InsightChipModel
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            // Leading color bar + icon
+            ZStack {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(model.tint.opacity(0.12))
+                Image(systemName: model.icon)
+                    .foregroundStyle(model.tint)
+                    .font(.system(size: 18, weight: .semibold))
+            }
+            .frame(width: 44, height: 44)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(model.title)
+                    .font(.subheadline.weight(.semibold))
+                Text(model.detail)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(model.tint.opacity(0.35), lineWidth: 1)
+        )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(model.title). \(model.detail)")
+    }
+}
+
+// Retained but no longer used; can be removed if desired.
+// private struct InsightChip: View { ... } // removed usage above
