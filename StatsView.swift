@@ -982,42 +982,41 @@ struct StatsView: View {
     }
 
     private func refreshTotals() {
-        // Use sessions (GMT) for Today and This Week, to match charts
-        var gmtCal = Calendar.current
-        gmtCal.timeZone = .gmt
+        // Use sessions (local time) for Today and This Week, to match charts
+        let cal = Calendar.current
 
-        // Today: sum durations for sessions that ended today (GMT)
+        // Today: sum durations for sessions that ended today (local)
         do {
-            let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: gmtCal)
-            let todayKey = BibleStatsStore.isoDateString(Date(), calendar: gmtCal)
+            let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: cal)
+            let todayKey = BibleStatsStore.isoDateString(Date(), calendar: cal)
             todaySeconds = sessions7.reduce(0) { acc, s in
-                let key = BibleStatsStore.isoDateString(s.end, calendar: gmtCal)
+                let key = BibleStatsStore.isoDateString(s.end, calendar: cal)
                 let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
                 return acc + (key == todayKey ? dur : 0)
             }
         }
 
-        // This week: last 7 days total from sessions (GMT)
+        // This week: last 7 days total from sessions (local)
         do {
-            let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: gmtCal)
+            let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: cal)
             thisWeekSeconds = sessions7.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
         }
 
-        // Last week: the 7-day window ending 7 days ago (days -8...-14 from today), via sessions (GMT)
+        // Last week: the 7-day window ending 7 days ago (days -8...-14 from today), via sessions (local)
         do {
-            // Compute cutoff windows with GMT start-of-day boundaries
-            let startOfToday = gmtCal.startOfDay(for: Date())
+            // Compute cutoff windows with local start-of-day boundaries
+            let startOfToday = cal.startOfDay(for: Date())
             guard
-                let thisWeekStart = gmtCal.date(byAdding: .day, value: -6, to: startOfToday),
-                let lastWeekEnd = gmtCal.date(byAdding: .day, value: -7, to: startOfToday),
-                let lastWeekStart = gmtCal.date(byAdding: .day, value: -13, to: startOfToday)
+                let thisWeekStart = cal.date(byAdding: .day, value: -6, to: startOfToday),
+                let lastWeekEnd = cal.date(byAdding: .day, value: -7, to: startOfToday),
+                let lastWeekStart = cal.date(byAdding: .day, value: -13, to: startOfToday)
             else {
                 lastWeekSeconds = 0
                 return
             }
 
             // Fetch enough sessions to cover last 14 days
-            let sessions14 = ReadingSessionsStore.shared.sessions(inLastDays: 14, now: Date(), calendar: gmtCal)
+            let sessions14 = ReadingSessionsStore.shared.sessions(inLastDays: 14, now: Date(), calendar: cal)
             // Sum sessions whose end falls within last week's window [lastWeekStart, lastWeekEnd)
             lastWeekSeconds = sessions14.reduce(0) { acc, s in
                 if s.end >= lastWeekStart && s.end < lastWeekEnd {
@@ -1027,7 +1026,6 @@ struct StatsView: View {
                 }
             }
 
-            // Note: thisWeekStart is not used directly above, but kept for clarity on window boundaries
             _ = thisWeekStart
         }
 
@@ -1049,33 +1047,31 @@ struct StatsView: View {
     private func refreshChartsAndMonth() {
         let cal = Calendar.current
 
-        // Last 7 days daily bars — now aggregated from sessions per GMT day
+        // Last 7 days daily bars — aggregated from sessions per local day
         do {
-            var gmtCal = cal
-            gmtCal.timeZone = .gmt
-            let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: gmtCal)
+            let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: cal)
             var buckets: [String: Int] = [:] // ISO yyyy-MM-dd -> seconds
             for s in sessions {
                 let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
-                let key = BibleStatsStore.isoDateString(s.end, calendar: gmtCal)
+                let key = BibleStatsStore.isoDateString(s.end, calendar: cal)
                 buckets[key, default: 0] += dur
             }
             // Build a contiguous last-7-days sequence (oldest -> newest)
             let days: [(Date, Int)] = (0..<7).compactMap { i -> (Date, Int)? in
-                guard let d = gmtCal.date(byAdding: .day, value: -i, to: Date()) else { return nil }
-                let key = BibleStatsStore.isoDateString(d, calendar: gmtCal)
+                guard let d = cal.date(byAdding: .day, value: -i, to: Date()) else { return nil }
+                let key = BibleStatsStore.isoDateString(d, calendar: cal)
                 return (d, buckets[key, default: 0])
             }.sorted { $0.0 < $1.0 }
             last7Daily = days
         }
 
         // Sessions: last 20 overall (within retention), excluding very short sessions (< minSessionSeconds)
-        let sessionsAll = ReadingSessionsStore.shared.sessions(inLastDays: 1825)
+        let sessionsAll = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: Date(), calendar: cal)
             .filter { Int(max(0, $0.end.timeIntervalSince($0.start))) >= minSessionSeconds }
             .sorted { $0.end < $1.end }
         let lastTwenty = Array(sessionsAll.suffix(20))
         // Average over sessions that occurred in the last 7 days, excluding < minSessionSeconds
-        let sessionsIn7Days = ReadingSessionsStore.shared.sessions(inLastDays: 7)
+        let sessionsIn7Days = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: cal)
             .filter { Int(max(0, $0.end.timeIntervalSince($0.start))) >= minSessionSeconds }
         avgSessionSecondsLast7 = averageSessionLength(sessions: sessionsIn7Days)
         // Keep the chart as last 20 sessions overall (filtered)
@@ -1097,17 +1093,19 @@ struct StatsView: View {
 
     // Build session-derived per-book maps for last7, thisMonth, and all-time (within retention).
     private func refreshSessionScopedPerBook() {
+        let cal = Calendar.current
+        let now = Date()
+
         // Last 7 days
-        let last7Sessions = ReadingSessionsStore.shared.sessions(inLastDays: 7)
+        let last7Sessions = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: now, calendar: cal)
         perBookLast7Totals = groupSessionsByBook(last7Sessions)
 
         // This month
-        let now = Date()
-        let monthSessions = ReadingSessionsStore.shared.sessions(inMonthContaining: now)
+        let monthSessions = ReadingSessionsStore.shared.sessions(inMonthContaining: now, calendar: cal)
         perBookMonthTotals = groupSessionsByBook(monthSessions)
 
         // All time (within retention window of ReadingSessionsStore; now 5 years)
-        let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825)
+        let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: now, calendar: cal)
         perBookAllTimeSessionTotals = groupSessionsByBook(allSessions)
 
         // Update Top 3 books for month from the session-derived map
@@ -1263,16 +1261,15 @@ struct StatsView: View {
         return "\(sign)\(BibleStatsStore.shared.format(absVal))"
     }
 
-    // Sessions-only computation for “today vs yesterday”, using GMT day boundaries to match charts and todaySeconds.
+    // Sessions-only computation for “today vs yesterday”, using local day boundaries to match charts and todaySeconds.
     private var todayDeltaOnlyValue: String {
-        var gmtCal = Calendar.current
-        gmtCal.timeZone = .gmt
-        let startOfToday = gmtCal.startOfDay(for: Date())
-        guard let startOfYesterday = gmtCal.date(byAdding: .day, value: -1, to: startOfToday),
-              let endOfYesterday = gmtCal.date(byAdding: .second, value: -1, to: startOfToday)
+        let cal = Calendar.current
+        let startOfToday = cal.startOfDay(for: Date())
+        guard let startOfYesterday = cal.date(byAdding: .day, value: -1, to: startOfToday),
+              let endOfYesterday = cal.date(byAdding: .second, value: -1, to: startOfToday)
         else { return "—" }
 
-        let yesterdaySeconds = totalSecondsForDay(from: startOfYesterday, to: endOfYesterday, calendar: gmtCal)
+        let yesterdaySeconds = totalSecondsForDay(from: startOfYesterday, to: endOfYesterday, calendar: cal)
         let delta = todaySeconds - yesterdaySeconds
         if delta == 0 { return "—" }
         let sign = delta > 0 ? "+" : "−"
@@ -1280,7 +1277,7 @@ struct StatsView: View {
         return "\(sign)\(BibleStatsStore.shared.format(absVal))"
     }
 
-    // Sum all sessions whose end falls within [start, end] inclusive window (GMT day)
+    // Sum all sessions whose end falls within [start, end] inclusive window (local day)
     private func totalSecondsForDay(from start: Date, to end: Date, calendar: Calendar) -> Int {
         // Fetch enough sessions to cover the two-day span (yesterday + today) to be safe
         let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 2, now: end, calendar: calendar)
@@ -1574,21 +1571,19 @@ struct StatsView: View {
     }
 
     private func recomputeTotalsCardMetrics() {
-        // Build daily/weekly/monthly/yearly series and quick insights based on the selected scope using sessions (GMT day boundaries)
-        var gmtCal = Calendar.current
-        gmtCal.timeZone = .gmt
-
+        // Build daily/weekly/monthly/yearly series and quick insights based on the selected scope using sessions (local day boundaries)
+        let cal = Calendar.current
         let now = Date()
 
         switch timeScope {
         case .last7:
-            totalsDaily = dailySeries(lastNDays: 7, now: now, calendar: gmtCal)
+            totalsDaily = dailySeries(lastNDays: 7, now: now, calendar: cal)
             allTimeAggregation = .daily
         case .thisMonth:
-            totalsDaily = dailySeriesForMonth(containing: now, calendar: gmtCal)
+            totalsDaily = dailySeriesForMonth(containing: now, calendar: cal)
             allTimeAggregation = .weekly // axis ticks will show weekly marks
         case .allTime:
-            let r = allTimeAggregatedSeries(calendar: gmtCal)
+            let r = allTimeAggregatedSeries(calendar: cal)
             totalsDaily = r.series
             allTimeAggregation = r.aggregation
         }
