@@ -161,6 +161,12 @@ struct StatsView: View {
     @State private var insightLongestSessionText: String? = nil
     @State private var insightTopBookThisMonthText: String? = nil
 
+    // MARK: - Integer formatting
+
+    private func formatInt(_ value: Int) -> String {
+        value.formatted(.number.grouping(.automatic))
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -359,7 +365,7 @@ struct StatsView: View {
                 }
 
                 HStack(spacing: 12) {
-                    pill("Chapters completed", value: "\(monthChaptersCompleted)")
+                    pill("Chapters completed", value: "\(formatInt(monthChaptersCompleted))")
                     // Show only the single top book by time this month
                     let topSummary: String = monthTop3Books.first.map { $0.book } ?? "—"
                     pill("Top book", value: topSummary)
@@ -378,6 +384,15 @@ struct StatsView: View {
                                     y: .value("Minutes", minutes)
                                 )
                                 .foregroundStyle(Color.accentColor)
+                                // Label above each bar for last 7 days chart too (nice consistency)
+                                .annotation(position: .top, alignment: .center) {
+                                    if minutes > 0 {
+                                        Text("\(minutes)")
+                                            .font(.caption2.weight(.semibold))
+                                            .foregroundStyle(.secondary)
+                                            .monospacedDigit()
+                                    }
+                                }
                             }
                         }
                         .chartYAxisLabel("Minutes")
@@ -721,15 +736,15 @@ struct StatsView: View {
                             Text("Bible Reading Progress")
                                 .font(.headline)
                             HStack(spacing: 8) {
-                                Text("\(booksCompleted)/\(totalBooks) books")
+                                Text("\(formatInt(booksCompleted))/\(formatInt(totalBooks)) books")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                     .monospacedDigit()
-                                Text("• \(visitedCount)/\(totalChapters) chapters")
+                                Text("• \(formatInt(visitedCount))/\(formatInt(totalChapters)) chapters")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                     .monospacedDigit()
-                                Text("• \(completedVerses)/\(totalVerses) verses")
+                                Text("• \(formatInt(completedVerses))/\(formatInt(totalVerses)) verses")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                     .monospacedDigit()
@@ -890,7 +905,7 @@ struct StatsView: View {
                                         Text(name)
                                             .font(.subheadline)
                                             .lineLimit(1)
-                                        Text("\(prog.read)/\(prog.total) chapters")
+                                        Text("\(formatInt(prog.read))/\(formatInt(prog.total)) chapters")
                                             .font(.caption2)
                                             .foregroundStyle(.secondary)
                                             .monospacedDigit()
@@ -1003,7 +1018,7 @@ struct StatsView: View {
 
                     // Quick insights — clean, uniform chips
                     LazyVGrid(columns: chipGridColumns, spacing: 8) {
-                        metricChip(title: "Active days", value: "\(activeDaysInScope)")
+                        metricChip(title: "Active days", value: "\(formatInt(activeDaysInScope))")
                         metricChip(title: "Avg per active day", value: BibleStatsStore.shared.format(avgDailySecondsInScope))
                         metricChip(title: "Top book", value: topBookInScope)
                     }
@@ -1023,6 +1038,16 @@ struct StatsView: View {
                                     )
                                     .foregroundStyle(Color.accentColor.opacity(0.85))
                                     .cornerRadius(4)
+                                    // Show value above each bar when daily bars are displayed.
+                                    // We want labels for the month (daily bars), and it also looks good for last 7.
+                                    .annotation(position: .top, alignment: .center) {
+                                        if minutes > 0, shouldShowBarValueLabels {
+                                            Text("\(minutes)")
+                                                .font(.caption2.weight(.semibold))
+                                                .foregroundStyle(.secondary)
+                                                .monospacedDigit()
+                                        }
+                                    }
                                 }
                             }
                             .chartYAxisLabel("Minutes")
@@ -1074,6 +1099,22 @@ struct StatsView: View {
                     }
                 }
             }
+        }
+    }
+
+    // Whether to show numeric labels above bars for the current scope/aggregation.
+    private var shouldShowBarValueLabels: Bool {
+        switch timeScope {
+        case .thisMonth:
+            // Daily bars in month view — show labels
+            return true
+        case .last7:
+            // Also show labels for last 7 days (small, readable)
+            return true
+        case .allTime:
+            // For all-time, labels can get crowded depending on aggregation.
+            // We’ll hide them to keep the chart clean.
+            return false
         }
     }
 
@@ -1635,19 +1676,19 @@ struct StatsView: View {
             VStack(spacing: 8) {
                 metricRow(
                     title: "Books",
-                    countText: "\(booksCompleted)/\(totalBooks)",
+                    countText: "\(formatInt(booksCompleted))/\(formatInt(totalBooks))",
                     percent: booksPercent,
                     tint: .green
                 )
                 metricRow(
                     title: "Chapters",
-                    countText: "\(visitedCount)/\(totalChapters)",
+                    countText: "\(formatInt(visitedCount))/\(formatInt(totalChapters))",
                     percent: chaptersPercent,
                     tint: .blue
                 )
                 metricRow(
                     title: "Verses",
-                    countText: "\(completedVerses)/\(totalVerses)",
+                    countText: "\(formatInt(completedVerses))/\(formatInt(totalVerses))",
                     percent: versesPercent,
                     tint: .accentColor
                 )
@@ -2171,7 +2212,7 @@ private struct BookChaptersDetailView: View {
                             let complete = total > 0 && BibleStatsStore.shared.isChapterComplete(bookName: b.name, chapter: chap, totalVerses: total)
                             return acc + (complete ? 1 : 0)
                         }
-                        Text("\(readCount)/\(chapterNumbers.count) chapters read")
+                        Text("\(readCount.formatted(.number.grouping(.automatic)))/\(chapterNumbers.count.formatted(.number.grouping(.automatic))) chapters read")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
