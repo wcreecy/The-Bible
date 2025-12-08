@@ -18,6 +18,14 @@ struct StatsView: View {
         var id: String { rawValue }
     }
 
+    // Filter for Book Progress grid
+    private enum BookFilter: String, CaseIterable, Identifiable {
+        case all = "All"
+        case ot = "OT"
+        case nt = "NT"
+        var id: String { rawValue }
+    }
+
     // Minimum duration for a session to be counted in averages/series
     private let minSessionSeconds: Int = 45
 
@@ -35,6 +43,8 @@ struct StatsView: View {
     @State private var lastWeekSeconds: Int = 0
     @State private var lastReadBookChapter: String = "—"
     @State private var lastReadTimeText: String = "—"
+    // New: keep the object for navigation
+    @State private var lastReadEntry: BibleStatsStore.LastRead? = nil
 
     @State private var otSeconds: Int = 0
     @State private var ntSeconds: Int = 0
@@ -84,11 +94,45 @@ struct StatsView: View {
     // Ensure all glance boxes visually match height
     private let glanceCardMinHeight: CGFloat = 86
 
+    // New: filter/search for Book Progress grid
+    @State private var bookFilter: BookFilter = .all
+    @State private var bookSearch: String = ""
+
+    // Size-class aware layout
+    @Environment(\.horizontalSizeClass) private var hSizeClass
+
     private var orderedAllBooks: [String] {
         if !BibleData.books.isEmpty {
             return BibleData.books.map { $0.name }
         }
         return BibleCanon.canonicalOrder()
+    }
+
+    // OT/NT helpers (canonical split by "Matthew")
+    private var canonicalIndexMap: [String: Int] {
+        Dictionary(uniqueKeysWithValues: BibleData.books.enumerated().map { ($1.name, $0) })
+    }
+    private var matthewIndex: Int { canonicalIndexMap["Matthew"] ?? Int.max }
+
+    // Filtered books for the grid
+    private var filteredBookNames: [String] {
+        let base: [String] = {
+            switch bookFilter {
+            case .all: return orderedAllBooks
+            case .ot:
+                return orderedAllBooks.filter { (canonicalIndexMap[$0] ?? Int.max) < matthewIndex }
+            case .nt:
+                return orderedAllBooks.filter { (canonicalIndexMap[$0] ?? Int.max) >= matthewIndex }
+            }
+        }()
+        let q = bookSearch.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !q.isEmpty else { return base }
+        return base.filter { $0.localizedCaseInsensitiveContains(q) }
+    }
+
+    // Adaptive grid for book tiles
+    private var bookGridColumns: [GridItem] {
+        [GridItem(.adaptive(minimum: 150), spacing: 10)]
     }
 
     var body: some View {
@@ -102,7 +146,7 @@ struct StatsView: View {
                 // Average Session Length (last 20 sessions)
                 averageSessionCard
 
-                // Existing: Book Reading Progress
+                // Revamped: Bible Reading Progress
                 bookReadingProgressCard
 
                 // Existing: Total Bible Reading Time + Per-book table (collapsible)
@@ -153,6 +197,15 @@ struct StatsView: View {
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("Close") { selectedBookForChapters = nil }
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            // Quick jump: Next unread in this book (if any)
+                            if let next = nextUnreadChapter(in: key.bookName) {
+                                Button("Open Next Unread") {
+                                    openReader(bookName: key.bookName, chapter: next, verse: 1)
+                                    selectedBookForChapters = nil
+                                }
+                            }
                         }
                     }
             }
@@ -474,120 +527,229 @@ struct StatsView: View {
     }
 
     private var bookReadingProgressCard: some View {
-        // Compute books completion percent for collapsed view and ring
+        // Compute books completion percent for summary ring
         let booksPercent: Int = {
             let denom = max(1, totalBooks)
             let pct = Int(round((Double(booksCompleted) / Double(denom)) * 100.0))
             return max(0, min(100, pct))
         }()
-        // Compute verses completion percent
+        // Compute verses completion percent for summary ring
         let versesPercent: Int = {
             let denom = max(1, totalVerses)
             let pct = Int(round((Double(completedVerses) / Double(denom)) * 100.0))
             return max(0, min(100, pct))
         }()
 
-        return ZStack {
-            GroupBox {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(spacing: 12) {
+        let nextUnread = nextUnreadGlobal()
+
+        return GroupBox {
+            VStack(alignment: .leading, spacing: 10) {
+                // Collapsed header: adaptive by size class
+                if hSizeClass == .compact {
+                    compactProgressHeader(
+                        booksPercent: booksPercent,
+                        chaptersPercent: bibleCompletionPercent,
+                        versesPercent: versesPercent
+                    )
+                } else {
+                    // Regular width (iPad): keep the existing header with inline counts and three labeled rings
+                    HStack(alignment: .center, spacing: 14) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Bible Reading Progress")
                                 .font(.headline)
-                            // Collapsed subtitle lines: Books, Chapters, Verses
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("\(booksCompleted)/\(totalBooks) books • \(booksPercent)%")
+                            HStack(spacing: 8) {
+                                Text("\(booksCompleted)/\(totalBooks) books")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                     .monospacedDigit()
-                                Text("\(visitedCount)/\(totalChapters) chapters • \(bibleCompletionPercent)%")
+                                Text("• \(visitedCount)/\(totalChapters) chapters")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                     .monospacedDigit()
-                                Text("\(completedVerses)/\(totalVerses) verses • \(versesPercent)%")
+                                Text("• \(completedVerses)/\(totalVerses) verses")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                     .monospacedDigit()
                             }
                         }
                         Spacer()
-                        // Progress ring now shows verses completion percent
-                        ProgressRing(
-                            progress: Double(versesPercent) / 100.0,
-                            lineWidth: 8,
-                            size: 30,
-                            tint: .accentColor,
-                            track: Color.primary.opacity(0.12),
-                            label: {
-                                Text("\(versesPercent)%")
-                                    .font(.caption2.weight(.semibold))
-                                    .monospacedDigit()
+                        // Reordered and labeled rings: Books • Chapters • Verses
+                        HStack(spacing: 12) {
+                            VStack(spacing: 4) {
+                                Text("Books")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                ProgressRing(
+                                    progress: Double(booksPercent) / 100.0,
+                                    lineWidth: 7,
+                                    size: 40,
+                                    tint: .green,
+                                    track: Color.primary.opacity(0.12),
+                                    label: {
+                                        Text("\(booksPercent)%")
+                                            .font(.caption2.weight(.semibold))
+                                            .monospacedDigit()
+                                    }
+                                )
+                                .accessibilityLabel(Text("Books \(booksPercent) percent complete"))
                             }
-                        )
+                            VStack(spacing: 4) {
+                                Text("Chapters")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                ProgressRing(
+                                    progress: Double(bibleCompletionPercent) / 100.0,
+                                    lineWidth: 7,
+                                    size: 40,
+                                    tint: .blue,
+                                    track: Color.primary.opacity(0.12),
+                                    label: {
+                                        Text("\(bibleCompletionPercent)%")
+                                            .font(.caption2.weight(.semibold))
+                                            .monospacedDigit()
+                                    }
+                                )
+                                .accessibilityLabel(Text("Chapters \(bibleCompletionPercent) percent complete"))
+                            }
+                            VStack(spacing: 4) {
+                                Text("Verses")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                ProgressRing(
+                                    progress: Double(versesPercent) / 100.0,
+                                    lineWidth: 7,
+                                    size: 40,
+                                    tint: .accentColor,
+                                    track: Color.primary.opacity(0.12),
+                                    label: {
+                                        Text("\(versesPercent)%")
+                                            .font(.caption2.weight(.semibold))
+                                            .monospacedDigit()
+                                    }
+                                )
+                                .accessibilityLabel(Text("Verses \(versesPercent) percent complete"))
+                            }
+                        }
                     }
+                }
+
+                // Navigation actions: Continue Reading, Next Unread
+                HStack(spacing: 10) {
                     Button {
-                        withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                            toggleBookProgress()
+                        if let last = lastReadEntry {
+                            openReader(bookName: last.bookName, chapter: last.chapterNumber, verse: 1)
                         }
                     } label: {
-                        HStack {
-                            Text(showBookProgressDetails ? "Hide details" : "Show details")
-                                .font(.footnote.weight(.semibold))
-                            Spacer()
-                            Image(systemName: showBookProgressDetails ? "chevron.up" : "chevron.down")
-                                .font(.footnote.weight(.semibold))
-                        }
-                        .padding(.vertical, 6)
+                        Label("Continue Reading", systemImage: "arrowtriangle.right.fill")
+                            .font(.footnote.weight(.semibold))
+                            .labelStyle(.titleAndIcon)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.borderedProminent)
+                    .tint(.accentColor)
+                    .disabled(lastReadEntry == nil)
 
-                    if showBookProgressDetails {
-                        VStack(spacing: 8) {
-                            ForEach(orderedAllBooks, id: \.self) { name in
-                                let prog = bookProgress[name] ?? (0, 1, 0.0)
-                                Button {
-                                    selectedBookForChapters = name
-                                } label: {
-                                    HStack(spacing: 8) {
+                    Button {
+                        if let t = nextUnread {
+                            openReader(bookName: t.book, chapter: t.chapter, verse: 1)
+                        }
+                    } label: {
+                        Label("Next Unread", systemImage: "sparkles")
+                            .font(.footnote.weight(.semibold))
+                            .labelStyle(.titleAndIcon)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(.blue)
+                    .disabled(nextUnread == nil)
+                }
+
+                // Expand/collapse
+                Button {
+                    withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+                        toggleBookProgress()
+                    }
+                } label: {
+                    HStack {
+                        Text(showBookProgressDetails ? "Hide details" : "Show details")
+                            .font(.footnote.weight(.semibold))
+                        Spacer()
+                        Image(systemName: showBookProgressDetails ? "chevron.up" : "chevron.down")
+                            .font(.footnote.weight(.semibold))
+                    }
+                    .padding(.vertical, 6)
+                }
+                .buttonStyle(.plain)
+
+                if showBookProgressDetails {
+                    // Filter + Search
+                    VStack(alignment: .leading, spacing: 8) {
+                        Picker("Filter", selection: $bookFilter) {
+                            ForEach(BookFilter.allCases) { f in
+                                Text(f.rawValue).tag(f)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+
+                        HStack(spacing: 8) {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundStyle(.secondary)
+                            TextField("Search books", text: $bookSearch)
+                                .textInputAutocapitalization(.words)
+                                .autocorrectionDisabled(true)
+                        }
+                        .padding(8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .fill(Color(.secondarySystemBackground))
+                        )
+                    }
+
+                    // Book tiles grid
+                    LazyVGrid(columns: bookGridColumns, spacing: 10) {
+                        ForEach(filteredBookNames, id: \.self) { name in
+                            let prog = bookProgress[name] ?? (0, 1, 0.0)
+                            Button {
+                                selectedBookForChapters = name
+                            } label: {
+                                HStack(spacing: 10) {
+                                    ProgressRing(
+                                        progress: prog.fraction,
+                                        lineWidth: 6,
+                                        size: 34,
+                                        tint: .accentColor,
+                                        track: Color.primary.opacity(0.12),
+                                        label: {
+                                            Text("\(Int(round(prog.fraction * 100)))%")
+                                                .font(.caption2.weight(.semibold))
+                                                .monospacedDigit()
+                                        }
+                                    )
+                                    VStack(alignment: .leading, spacing: 2) {
                                         Text(name)
                                             .font(.subheadline)
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                        GeometryReader { geo in
-                                            ZStack(alignment: .leading) {
-                                                RoundedRectangle(cornerRadius: 3, style: .continuous)
-                                                    .fill(Color.primary.opacity(0.10))
-                                                RoundedRectangle(cornerRadius: 3, style: .continuous)
-                                                    .fill(Color.accentColor.opacity(0.65))
-                                                    .frame(width: geo.size.width * CGFloat(prog.fraction))
-                                            }
-                                        }
-                                        .frame(width: 120, height: 6)
-                                        Text("\(prog.read)/\(prog.total)")
+                                            .lineLimit(1)
+                                        Text("\(prog.read)/\(prog.total) chapters")
                                             .font(.caption2)
                                             .foregroundStyle(.secondary)
                                             .monospacedDigit()
-                                            .frame(width: 44, alignment: .trailing)
                                     }
+                                    Spacer(minLength: 0)
                                 }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("\(name) \(prog.read) of \(prog.total) chapters")
+                                .padding(10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .fill(Color(.secondarySystemBackground))
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .stroke(Color.black.opacity(0.08), lineWidth: 1)
+                                )
                             }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("\(name) \(prog.read) of \(prog.total) chapters")
                         }
-                        .transition(.opacity.combined(with: .move(edge: .top)))
                     }
+                    .transition(.opacity.combined(with: .move(edge: .top)))
                 }
-            }
-
-            // Tap anywhere on the card to expand when collapsed
-            if !showBookProgressDetails {
-                Color.clear
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                            toggleBookProgress()
-                        }
-                    }
-                    .accessibilityHidden(true)
             }
         }
     }
@@ -795,9 +957,11 @@ struct StatsView: View {
         computeVerseTotalsAndCompleted() // NEW
 
         if let last = BibleStatsStore.shared.loadLastRead() {
+            lastReadEntry = last
             lastReadBookChapter = "\(last.bookName) \(last.chapterNumber)"
             lastReadTimeText = timeOnlyString(last.date)
         } else {
+            lastReadEntry = nil
             lastReadBookChapter = "—"
             lastReadTimeText = "—"
         }
@@ -1050,6 +1214,38 @@ struct StatsView: View {
         }
     }
 
+    // Navigation helper: open reader via app-wide notification
+    private func openReader(bookName: String, chapter: Int, verse: Int = 1) {
+        NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
+            "book": bookName,
+            "chapter": chapter,
+            "verse": verse
+        ])
+    }
+
+    // Find first unread chapter globally (canonical order)
+    private func nextUnreadGlobal() -> (book: String, chapter: Int)? {
+        for b in BibleData.books {
+            for c in b.chapters {
+                let totalVerses = c.verses.count
+                let complete = totalVerses > 0 && BibleStatsStore.shared.isChapterComplete(bookName: b.name, chapter: c.number, totalVerses: totalVerses)
+                if !complete { return (b.name, c.number) }
+            }
+        }
+        return nil
+    }
+
+    // Find first unread chapter in a given book
+    private func nextUnreadChapter(in bookName: String) -> Int? {
+        guard let b = BibleData.books.first(where: { $0.name == bookName }) else { return nil }
+        for c in b.chapters {
+            let totalVerses = c.verses.count
+            let complete = totalVerses > 0 && BibleStatsStore.shared.isChapterComplete(bookName: b.name, chapter: c.number, totalVerses: totalVerses)
+            if !complete { return c.number }
+        }
+        return nil
+    }
+
     enum Genre: String, CaseIterable, Identifiable {
         case Law = "Law"
         case History = "History"
@@ -1158,6 +1354,65 @@ struct StatsView: View {
         if let g = selectedGenre {
             genreDetailRows = rowsForGenre(g, totals: scopedPerBookTotals)
         }
+    }
+
+    // MARK: - Compact header helpers
+
+    @ViewBuilder
+    private func compactProgressHeader(booksPercent: Int, chaptersPercent: Int, versesPercent: Int) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Bible Reading Progress")
+                .font(.headline)
+
+            VStack(spacing: 8) {
+                metricRow(
+                    title: "Books",
+                    countText: "\(booksCompleted)/\(totalBooks)",
+                    percent: booksPercent,
+                    tint: .green
+                )
+                metricRow(
+                    title: "Chapters",
+                    countText: "\(visitedCount)/\(totalChapters)",
+                    percent: chaptersPercent,
+                    tint: .blue
+                )
+                metricRow(
+                    title: "Verses",
+                    countText: "\(completedVerses)/\(totalVerses)",
+                    percent: versesPercent,
+                    tint: .accentColor
+                )
+            }
+        }
+    }
+
+    private func metricRow(title: String, countText: String, percent: Int, tint: Color) -> some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(countText)
+                    .font(.footnote.weight(.semibold))
+                    .monospacedDigit()
+            }
+            Spacer(minLength: 8)
+            ProgressRing(
+                progress: Double(percent) / 100.0,
+                lineWidth: 7,
+                size: 36,
+                tint: tint,
+                track: Color.primary.opacity(0.12),
+                label: {
+                    Text("\(percent)%")
+                        .font(.caption2.weight(.semibold))
+                        .monospacedDigit()
+                }
+            )
+            .accessibilityLabel(Text("\(title) \(percent) percent complete"))
+        }
+        .padding(.vertical, 2)
     }
 }
 
@@ -1288,3 +1543,4 @@ private struct BookChaptersDetailView: View {
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 }
+
