@@ -497,8 +497,20 @@ struct StatsView: View {
     private var otNtCard: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 8) {
-                Text("OT vs NT — \(timeScope.rawValue)")
-                    .font(.headline)
+                HStack {
+                    Text("OT vs NT — \(timeScope.rawValue)")
+                        .font(.headline)
+                    Spacer()
+                }
+
+                // Scope picker for this card (shares the same timeScope state)
+                Picker("Scope", selection: $timeScope) {
+                    ForEach(TimeScope.allCases) { scope in
+                        Text(scope.rawValue).tag(scope)
+                    }
+                }
+                .pickerStyle(.segmented)
+
                 HStack(spacing: 8) {
                     Text("OT")
                         .font(.caption.weight(.semibold))
@@ -768,8 +780,19 @@ struct StatsView: View {
     private var genreSection: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Genre Distribution — \(timeScope.rawValue)")
-                    .font(.headline)
+                HStack {
+                    Text("Genre Distribution — \(timeScope.rawValue)")
+                        .font(.headline)
+                    Spacer()
+                }
+
+                // Scope picker for this card (shares the same timeScope state)
+                Picker("Scope", selection: $timeScope) {
+                    ForEach(TimeScope.allCases) { scope in
+                        Text(scope.rawValue).tag(scope)
+                    }
+                }
+                .pickerStyle(.segmented)
 
                 let maxVal = max(1, perGenreTotals.map { $0.seconds }.max() ?? 1)
                 VStack(spacing: 8) {
@@ -1081,14 +1104,15 @@ struct StatsView: View {
             return (index: idx + 1, minutes: minutes)
         }
 
-        // This Month section (sessions-only)
+        // This Month section:
+        // monthChaptersCompleted stays from chapter completion dates (not session-derived).
         let now = Date()
-        monthTotalSeconds = BibleStatsStore.shared.totalForMonth(containing: now)
         let comps = BibleStatsStore.shared.chapterCompletions(inMonth: now)
         monthChaptersCompleted = comps.count
 
-        // Top 3 books for month will be recomputed from session-derived perBookMonthTotals in refreshSessionScopedPerBook()
-        // monthTop3Books is set there.
+        // monthTotalSeconds is computed from perBookMonthTotals in refreshSessionScopedPerBook(),
+        // ensuring it matches the OT/NT, Genre, and Totals sections.
+        // monthTop3Books is also set in refreshSessionScopedPerBook().
     }
 
     // Build session-derived per-book maps for last7, thisMonth, and all-time (within retention).
@@ -1103,6 +1127,8 @@ struct StatsView: View {
         // This month
         let monthSessions = ReadingSessionsStore.shared.sessions(inMonthContaining: now, calendar: cal)
         perBookMonthTotals = groupSessionsByBook(monthSessions)
+        // Compute month total from the same per-book map used by other sections
+        monthTotalSeconds = perBookMonthTotals.values.reduce(0, +)
 
         // All time (within retention window of ReadingSessionsStore; now 5 years)
         let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: now, calendar: cal)
@@ -1130,7 +1156,10 @@ struct StatsView: View {
         for s in sessions {
             let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
             guard dur > 0 else { continue }
-            map[s.book, default: 0] += dur
+            // Ignore empty/whitespace-only book names so per-book maps align with UI
+            let name = s.book.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !name.isEmpty else { continue }
+            map[name, default: 0] += dur
         }
         return map
     }
@@ -1747,7 +1776,7 @@ private struct ProgressRing<Label: View>: View {
         self.progress = max(0, min(1, progress))
         self.lineWidth = lineWidth
         self.size = size
-        self.tint = tint
+               self.tint = tint
         self.track = track
         self.label = label()
     }
@@ -1860,3 +1889,4 @@ private struct BookChaptersDetailView: View {
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }
 }
+
