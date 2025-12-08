@@ -87,6 +87,10 @@ struct StatsView: View {
     @State private var monthChaptersCompleted: Int = 0
     @State private var monthTop3Books: [(book: String, seconds: Int)] = []
 
+    // New: Summary glance additions
+    @State private var totalSecondsAllTime: Int = 0
+    @State private var lastMonthSeconds: Int = 0
+
     // Expand/collapse for existing sections
     @State private var showBookProgressDetails: Bool = false
     @State private var showTotalsSection: Bool = false
@@ -550,75 +554,82 @@ struct StatsView: View {
         return formatter.string(from: date)
     }
 
-    // MARK: - Cards (existing ones kept)
+    // MARK: - Top glance row (scrollable mini‑pills matching Home)
 
     private var glanceRow: some View {
-        HStack(spacing: 12) {
-            statMiniCard(title: "Today", value: BibleStatsStore.shared.format(todaySeconds), subtitle: todayDeltaOnlyValue, tint: .blue)
-            statMiniCard(title: "This Week", value: BibleStatsStore.shared.format(thisWeekSeconds), subtitle: weekDeltaOnlyValue, tint: .green)
-            lastReadMiniCard
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                statMiniPill(title: "Today", value: BibleStatsStore.shared.format(todaySeconds), subtitle: todayDeltaOnlyValue, tint: .blue)
+                statMiniPill(title: "This Week", value: BibleStatsStore.shared.format(thisWeekSeconds), subtitle: weekDeltaOnlyValue, tint: .green)
+                statMiniPill(title: "This Month", value: BibleStatsStore.shared.format(monthTotalSeconds), subtitle: monthDeltaOnlyValue, tint: .mint)
+                statMiniPill(title: "All-time", value: BibleStatsStore.shared.format(totalSecondsAllTime), subtitle: nil, tint: .purple)
+                lastReadMiniPill(title: "Last Read", ref: lastReadBookChapter, relative: lastReadTimeText)
+            }
+            .padding(.vertical, 2)
         }
     }
 
-    private func statMiniCard(title: String, value: String, subtitle: String? = nil, tint: Color) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
+    private func statMiniPill(title: String, value: String, subtitle: String? = nil, tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.caption).foregroundStyle(.secondary)
             Text(value)
-                .font(.headline.weight(.semibold)) // smaller than title3 to help stay on one line
-                .lineLimit(1)
-                .truncationMode(.tail)
+                .font(.subheadline.weight(.semibold))
                 .monospacedDigit()
+                .lineLimit(1)
             if let subtitle, !subtitle.isEmpty, subtitle != "—" {
-                let prefix = (title == "This Week") ? "vs last week: " : (title == "Today" ? "vs yesterday: " : "")
+                let prefix = (title == "This Week") ? "vs lst wk: " : (title == "Today" ? "vs yday: " : (title == "This Month" ? "vs lst mo: " : ""))
                 if !prefix.isEmpty {
                     Text("\(prefix)\(subtitle)")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                         .monospacedDigit()
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 } else {
                     Text(subtitle)
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                         .monospacedDigit()
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(minHeight: glanceCardMinHeight) // ensure consistent height
         .padding(12)
         .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(tint.opacity(0.08))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(tint.opacity(0.25), lineWidth: 1)
         )
     }
 
-    private var lastReadMiniCard: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Last Read")
+    private func lastReadMiniPill(title: String, ref: String, relative: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
                 .font(.caption).foregroundStyle(.secondary)
-            Text(lastReadBookChapter)
-                .font(.footnote.weight(.semibold)) // slightly smaller to avoid wrapping
-                .lineLimit(1)
-                .truncationMode(.tail)
-            Text(lastReadTimeText)
+            Text(ref)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(relative)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
-                .lineLimit(1)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(minHeight: glanceCardMinHeight) // ensure consistent height
         .padding(12)
         .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(Color.orange.opacity(0.08))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(Color.orange.opacity(0.25), lineWidth: 1)
         )
     }
@@ -1267,6 +1278,15 @@ struct StatsView: View {
         // All time (within retention window of ReadingSessionsStore; now 5 years)
         let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: now, calendar: cal)
         perBookAllTimeSessionTotals = groupSessionsByBook(allSessions)
+        totalSecondsAllTime = allSessions.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
+
+        // Last month seconds (for delta)
+        if let prevMonth = cal.date(byAdding: .month, value: -1, to: now) {
+            let lastMonthSessions = ReadingSessionsStore.shared.sessions(inMonthContaining: prevMonth, calendar: cal)
+            lastMonthSeconds = lastMonthSessions.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
+        } else {
+            lastMonthSeconds = 0
+        }
 
         // Update Top 3 books for month from the session-derived map
         let sortedTop = perBookMonthTotals.sorted { lhs, rhs in
@@ -1434,6 +1454,15 @@ struct StatsView: View {
 
         let yesterdaySeconds = totalSecondsForDay(from: startOfYesterday, to: endOfYesterday, calendar: cal)
         let delta = todaySeconds - yesterdaySeconds
+        if delta == 0 { return "—" }
+        let sign = delta > 0 ? "+" : "−"
+        let absVal = abs(delta)
+        return "\(sign)\(BibleStatsStore.shared.format(absVal))"
+    }
+
+    // New: Month delta vs last month, sessions-only
+    private var monthDeltaOnlyValue: String {
+        let delta = monthTotalSeconds - lastMonthSeconds
         if delta == 0 { return "—" }
         let sign = delta > 0 ? "+" : "−"
         let absVal = abs(delta)
@@ -2229,3 +2258,4 @@ private struct InsightTile: View {
 
 // Retained but no longer used; can be removed if desired.
 // private struct InsightChip: View { ... } // removed usage above
+
