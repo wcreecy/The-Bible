@@ -282,53 +282,99 @@ struct ReferenceMatchGameView: View {
 
     // MARK: - Question generation and history
 
-    private func generateQuestion() {
-        // Choose a reference book/chapter/verse according to scope
-        let books = scopedBooks()
-        guard let book = books.randomElement(),
-              let chapter = book.chapters.randomElement(),
-              let verse = chapter.verses.randomElement()
-        else { return }
+    private func generateQuestion(maxAttempts: Int = 8) {
+        var attempts = 0
+        while attempts < maxAttempts {
+            attempts += 1
 
-        // Build options according to difficulty rules
-        let correct = AnswerOption(
-            snippet: snippet(for: verse.text),
-            bookName: book.name,
-            chapterNumber: chapter.number,
-            verseNumber: verse.number,
-            verseText: verse.text
-        )
+            // Choose a reference book/chapter/verse according to scope (reference respects scope)
+            let books = scopedBooks()
+            guard let book = books.randomElement(),
+                  let chapter = book.chapters.randomElement(),
+                  let verse = chapter.verses.randomElement()
+            else { return }
 
-        var distractors: [AnswerOption] = []
-        let neededDistractors = 3 // 4 options total
+            // Build correct option
+            let correct = AnswerOption(
+                snippet: snippet(for: verse.text),
+                bookName: book.name,
+                chapterNumber: chapter.number,
+                verseNumber: verse.number,
+                verseText: verse.text
+            )
 
-        switch difficulty {
-        case .easy:
-            distractors = makeDistractorsAnywhere(excluding: (book.name, chapter.number, verse.number), count: neededDistractors)
-        case .medium:
-            let sameTestamentBooks = booksInSameTestament(as: book)
-            distractors = makeDistractors(from: sameTestamentBooks, excluding: (book.name, chapter.number, verse.number), count: neededDistractors)
-        case .hard:
-            distractors = makeDistractorsSameBook(book: book, excluding: (chapter.number, verse.number), count: neededDistractors)
+            // Build distractors according to difficulty rules
+            let neededDistractors = 3 // 4 options total
+            var distractors: [AnswerOption] = []
+
+            switch difficulty {
+            case .easy:
+                // Easy: distinct books across OT and NT, ignoring scope for distractors
+                if let built = makeDistinctBookDistractorsAcrossAll(
+                    excluding: (book: book.name, chapter: chapter.number, verse: verse.number),
+                    count: neededDistractors
+                ) {
+                    distractors = built
+                } else {
+                    continue // re-roll
+                }
+
+            case .medium:
+                // Medium: distinct books within the same testament as the correct answer
+                let sameTestamentBooks = booksInSameTestament(as: book)
+                if let built = makeDistinctBookDistractors(
+                    from: sameTestamentBooks,
+                    excludingBookName: book.name,
+                    excludingReference: (book: book.name, chapter: chapter.number, verse: verse.number),
+                    count: neededDistractors
+                ) {
+                    distractors = built
+                } else {
+                    continue // re-roll
+                }
+
+            case .hard:
+                // Hard: strictly same book; if not enough, re-roll
+                if let built = makeDistractorsSameBookStrict(
+                    book: book,
+                    excluding: (chapter: chapter.number, verse: verse.number),
+                    count: neededDistractors
+                ) {
+                    distractors = built
+                } else {
+                    continue // re-roll
+                }
+            }
+
+            var opts = distractors
+            opts.append(correct)
+            opts.shuffle()
+
+            guard let correctIdx = opts.firstIndex(where: { $0.bookName == book.name && $0.chapterNumber == chapter.number && $0.verseNumber == verse.number }) else {
+                continue // re-roll
+            }
+
+            // Update current ref
+            refBook = book
+            refChapter = chapter
+            refVerse = verse
+            options = opts
+            correctIndex = correctIdx
+            selectedIndex = nil
+
+            // Append to history and advance index
+            history.append((book: book, chapter: chapter, verse: verse, options: opts, correctIndex: correctIdx, selectedIndex: nil))
+            currentIndex = history.count - 1
+            return
         }
 
-        var opts = distractors
-        opts.append(correct)
-        opts.shuffle()
-
-        let correctIdx = opts.firstIndex(where: { $0.bookName == book.name && $0.chapterNumber == chapter.number && $0.verseNumber == verse.number }) ?? -1
-
-        // Update current ref
-        refBook = book
-        refChapter = chapter
-        refVerse = verse
-        options = opts
-        correctIndex = correctIdx
+        // Fallback if we couldn't generate a valid question after attempts (keep last known state)
+        refBook = nil
+        refChapter = nil
+        refVerse = nil
+        options = []
+        correctIndex = -1
         selectedIndex = nil
-
-        // Append to history and advance index
-        history.append((book: book, chapter: chapter, verse: verse, options: opts, correctIndex: correctIdx, selectedIndex: nil))
-        currentIndex = history.count - 1
     }
 
     private func loadFromHistory() {
@@ -435,44 +481,77 @@ struct ReferenceMatchGameView: View {
         }
         if idx < mattIdx {
             // OT
-            return verseScopeRaw == "new" ? [] : Array(all.prefix(mattIdx))
+            return Array(all.prefix(mattIdx))
         } else {
             // NT
-            return verseScopeRaw == "old" ? [] : Array(all.suffix(from: mattIdx))
+            return Array(all.suffix(from: mattIdx))
         }
     }
 
-    private func makeDistractorsAnywhere(excluding target: (book: String, chapter: Int, verse: Int), count: Int) -> [AnswerOption] {
-        let all = scopedBooks()
-        return makeDistractors(from: all, excluding: target, count: count)
+    // Distinct-book distractors across all books (ignores scope for Easy)
+    private func makeDistinctBookDistractorsAcrossAll(
+        excluding target: (book: String, chapter: Int, verse: Int),
+        count: Int
+    ) -> [AnswerOption]? {
+        let allBooks = BibleData.books
+        return makeDistinctBookDistractors(
+            from: allBooks,
+            excludingBookName: target.book,
+            excludingReference: (book: target.book, chapter: target.chapter, verse: target.verse),
+            count: count
+        )
     }
 
-    private func makeDistractors(from books: [Book], excluding target: (book: String, chapter: Int, verse: Int), count: Int) -> [AnswerOption] {
-        var picks: Set<String> = []
+    // Distinct-book distractors from a given set of books
+    private func makeDistinctBookDistractors(
+        from books: [Book],
+        excludingBookName: String,
+        excludingReference: (book: String, chapter: Int, verse: Int),
+        count: Int
+    ) -> [AnswerOption]? {
+        var usedBooks = Set<String>()
         var out: [AnswerOption] = []
-        let shuffledBooks = books.shuffled()
-        outer: for b in shuffledBooks {
-            for c in b.chapters.shuffled() {
+
+        // Shuffle book order first to encourage wide spread
+        for b in books.shuffled() {
+            guard b.name != excludingBookName else { continue }
+            if usedBooks.contains(b.name) { continue }
+
+            // Find any verse in this book that isn't the exact reference (book/chapter/verse)
+            var foundOption: AnswerOption? = nil
+            outer: for c in b.chapters.shuffled() {
                 for v in c.verses.shuffled() {
-                    if b.name == target.book && c.number == target.chapter && v.number == target.verse { continue }
-                    let key = "\(b.name)-\(c.number)-\(v.number)"
-                    if picks.contains(key) { continue }
-                    picks.insert(key)
-                    out.append(AnswerOption(
+                    if b.name == excludingReference.book && c.number == excludingReference.chapter && v.number == excludingReference.verse {
+                        continue
+                    }
+                    foundOption = AnswerOption(
                         snippet: snippet(for: v.text),
                         bookName: b.name,
                         chapterNumber: c.number,
                         verseNumber: v.number,
                         verseText: v.text
-                    ))
-                    if out.count >= count { break outer }
+                    )
+                    break outer
                 }
             }
+
+            if let opt = foundOption {
+                usedBooks.insert(b.name)
+                out.append(opt)
+                if out.count >= count { return out }
+            }
         }
-        return out
+
+        // Not enough distinct books found
+        return nil
     }
 
-    private func makeDistractorsSameBook(book: Book, excluding target: (chapter: Int, verse: Int), count: Int) -> [AnswerOption] {
+    // Strict same-book distractors; returns nil if not enough to meet count
+    private func makeDistractorsSameBookStrict(
+        book: Book,
+        excluding target: (chapter: Int, verse: Int),
+        count: Int
+    ) -> [AnswerOption]? {
         var picks: Set<String> = []
         var out: [AnswerOption] = []
         for c in book.chapters.shuffled() {
@@ -491,13 +570,8 @@ struct ReferenceMatchGameView: View {
                 if out.count >= count { return out }
             }
         }
-        // If not enough within the same book (short books), top up from same testament to maintain difficulty flavor
-        if out.count < count {
-            let sameTestament = booksInSameTestament(as: book)
-            let topUp = makeDistractors(from: sameTestament, excluding: (book.name, target.chapter, target.verse), count: count - out.count)
-            out.append(contentsOf: topUp)
-        }
-        return out
+        // If not enough within the same book, return nil so caller can re-roll
+        return nil
     }
 
     private func snippet(for text: String) -> String {
