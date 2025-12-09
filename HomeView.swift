@@ -34,17 +34,14 @@ struct HomeView: View {
 
     // Timer is now owned by controller
     @StateObject private var timerController = PrayerTimerController()
+    // New: Stopwatch controller
+    @StateObject private var stopwatchController = StopwatchController()
 
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
     @AppStorage("prayerMode") private var prayerMode: PrayerMode = .timer
-    @AppStorage("stopwatchRunning") private var stopwatchRunning: Bool = false
-    @AppStorage("stopwatchStartDate") private var stopwatchStartDate: Double = 0
-    @AppStorage("stopwatchAccumulated") private var stopwatchAccumulated: Int = 0
 
     private var sharedDefaults: UserDefaults? { UserDefaults(suiteName: "group.bible.app") }
-
-    @State private var stopwatchElapsed: Int = 0
 
     // Focus UI-only state (kept in HomeView)
     @FocusState private var focusTitleIsFocused: Bool
@@ -111,74 +108,6 @@ struct HomeView: View {
 
     private func debouncedReload(kind: String) {
         DebouncedWidgetReloader.shared.reload(kind: kind)
-    }
-
-    private func startMindfulLoggingIfNeeded() {
-        // Timer controller owns mindful logging; this remains for Stopwatch
-        guard isHealthKitAvailable else { return }
-        if mindfulStartDate == 0 {
-            mindfulStartDate = Date().timeIntervalSince1970
-        }
-    }
-
-    private func stopMindfulLogging() {
-        guard isHealthKitAvailable else { return }
-        if mindfulStartDate > 0 {
-            let startDate = Date(timeIntervalSince1970: mindfulStartDate)
-            let endDate = Date()
-            if endDate > startDate {
-                HealthKitManager.shared.saveMindfulSession(start: startDate, end: endDate, completion: nil)
-            }
-            mindfulStartDate = 0
-        }
-    }
-
-    // Stopwatch-specific mindful storage
-    @AppStorage("mindfulSessionStartDate") private var mindfulStartDate: Double = 0
-    @AppStorage("healthKitPrompted") private var healthKitPrompted: Bool = false
-
-    // MARK: - Home layout state (read from Settings)
-
-    @AppStorage("homeCardOrder") private var homeCardOrderRaw: String = ""
-    @AppStorage("homeCardHidden") private var homeCardHiddenRaw: String = ""
-
-    @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
-    @State private var hiddenSet: Set<HomeCardID> = []
-
-    private func decodeHomeLayout() {
-        // Order
-        if let data = homeCardOrderRaw.data(using: .utf8),
-           let ids = try? JSONDecoder().decode([String].self, from: data) {
-            // Filter out any legacy "dailyGoal" id
-            let filtered = ids.filter { $0 != "dailyGoal" }
-            let mapped = filtered.compactMap { HomeCardID(rawValue: $0) }
-            let missing = HomeCardID.allCases.filter { !mapped.contains($0) }
-            layoutOrder = mapped + missing
-        } else {
-            layoutOrder = HomeCardID.allCases
-        }
-        // Hidden
-        if let data = homeCardHiddenRaw.data(using: .utf8),
-           let ids = try? JSONDecoder().decode([String].self, from: data) {
-            let filtered = ids.filter { $0 != "dailyGoal" } // migrate legacy
-            hiddenSet = Set(filtered.compactMap { HomeCardID(rawValue: $0) })
-        } else {
-            hiddenSet = [.games, .streaks, .bibleStats]
-        }
-    }
-
-    // MARK: - Shared Small Views / Helpers
-
-    @ViewBuilder
-    private func ModePicker(disabled: Bool) -> some View {
-        Picker("Mode", selection: $prayerMode) {
-            Text("Timer").tag(PrayerMode.timer)
-            Text("Stopwatch").tag(PrayerMode.stopwatch)
-        }
-        .pickerStyle(.segmented)
-        .controlSize(.small)
-        .disabled(disabled)
-        .frame(maxWidth: 280)
     }
 
     private func mirrorLastReadToAppGroup() {
@@ -490,8 +419,8 @@ struct HomeView: View {
                     timerTintColor: timerTintColor,
                     formattedTime: { formattedTime($0) },
                     onOpenSetup: {
-                        if isHealthKitAvailable && !healthKitPrompted {
-                            Task { await requestHealthKitIfNeeded() }
+                        if isHealthKitAvailable && !(UserDefaults.standard.bool(forKey: "healthKitPrompted")) {
+                            Task { await requestHealthKitIfNeededForTimer() }
                         }
                         let generator = UIImpactFeedbackGenerator(style: .light)
                         generator.impactOccurred()
@@ -505,20 +434,20 @@ struct HomeView: View {
                     onAddFive: { timerController.addFive() },
                     onAddTen: { timerController.addTen() },
                     onStop: { timerController.stop() },
-                    stopwatchRunning: stopwatchRunning,
-                    modePicker: { disabled in AnyView(ModePicker(disabled: disabled)) }
+                    stopwatchRunning: stopwatchController.isRunning,
+                    modePicker: { disabled in AnyView(ModePicker(prayerMode: $prayerMode, disabled: disabled)) }
                 )
             } else {
                 StopwatchCard(
                     prayerMode: $prayerMode,
-                    stopwatchRunning: stopwatchRunning,
-                    stopwatchElapsed: stopwatchElapsed,
+                    stopwatchRunning: stopwatchController.isRunning,
+                    stopwatchElapsed: stopwatchController.elapsed,
                     formattedStopwatch: { formattedStopwatch($0) },
-                    onStart: { startStopwatch() },
-                    onPause: { pauseStopwatch() },
-                    onStop: { stopStopwatch() },
+                    onStart: { stopwatchController.start() },
+                    onPause: { stopwatchController.pause() },
+                    onStop: { stopwatchController.stop() },
                     isTimerRunning: timerController.isRunning,
-                    modePicker: { disabled in AnyView(ModePicker(disabled: disabled)) }
+                    modePicker: { disabled in AnyView(ModePicker(prayerMode: $prayerMode, disabled: disabled)) }
                 )
             }
         case .resumeReading:
@@ -657,22 +586,17 @@ struct HomeView: View {
             // Focus initial load
             focusVM.loadFromStorage()
 
-            if stopwatchRunning {
-                let now = Date().timeIntervalSince1970
-                let base = stopwatchAccumulated + Int(max(0, now - stopwatchStartDate))
-                stopwatchElapsed = base
-            } else {
-                stopwatchElapsed = stopwatchAccumulated
-            }
-
             dedupeReadingProgress()
 
             mirrorLastReadToAppGroup()
             handleOpenPendingVerse()
 
-            // Controller: appearance and handle any pending timer action
+            // Controllers
             timerController.onAppear()
             _ = timerController.handlePendingActionIfAny()
+
+            stopwatchController.onAppear()
+            _ = stopwatchController.handlePendingActionIfAny()
 
             // Load saved layout on appear
             decodeHomeLayout()
@@ -695,16 +619,15 @@ struct HomeView: View {
             switch newPhase {
             case .active:
                 _ = timerController.handlePendingActionIfAny()
-                handleStopwatchPendingAction()
+                _ = stopwatchController.handlePendingActionIfAny()
                 handleOpenPendingVerse()
                 bibleVM.refresh()
                 votdVM.handleScenePhaseChange(newPhase)
                 timerController.onSceneBecameActive()
+                stopwatchController.onSceneBecameActive()
             case .inactive, .background:
-                if !timerController.isRunning && !stopwatchRunning {
-                    stopMindfulLogging()
-                }
                 timerController.onSceneBecameInactiveOrBackground()
+                stopwatchController.onSceneBecameInactiveOrBackground()
             @unknown default:
                 break
             }
@@ -748,6 +671,19 @@ struct HomeView: View {
         }
     }
 
+    // Formatter for Stopwatch elapsed time (H:MM:SS or M:SS)
+    private func formattedStopwatch(_ totalSeconds: Int) -> String {
+        let s = max(0, totalSeconds)
+        let h = s / 3600
+        let m = (s % 3600) / 60
+        let sec = s % 60
+        if h > 0 {
+            return String(format: "%d:%02d:%02d", h, m, sec)
+        } else {
+            return String(format: "%d:%02d", m, sec)
+        }
+    }
+
     private func copyVerse(_ v: HomeVerseRef) {
         UIPasteboard.general.string = shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText)
         withAnimation(.spring()) { showCopyToast = true }
@@ -768,111 +704,6 @@ struct HomeView: View {
             modelContext.insert(fav)
             try? modelContext.save()
         }
-    }
-
-    // Stopwatch helper methods
-
-    private func startStopwatch() {
-        if isHealthKitAvailable && !healthKitPrompted {
-            Task { await requestHealthKitIfNeeded() }
-        }
-        let now = Date().timeIntervalSince1970
-        if stopwatchStartDate == 0 { stopwatchStartDate = now }
-        stopwatchRunning = true
-        startMindfulLoggingIfNeeded()
-        PrayerTimerActivityController.shared.cancel()
-        StopwatchActivityController.shared.start(sessionName: "Stopwatch", initialElapsed: stopwatchElapsed)
-        updateStopwatchTicker()
-    }
-
-    private func pauseStopwatch() {
-        guard stopwatchRunning else { return }
-        let now = Date().timeIntervalSince1970
-        if stopwatchStartDate > 0 {
-            let delta = Int(max(0, now - stopwatchStartDate))
-            stopwatchAccumulated += delta
-            stopwatchStartDate = 0
-        }
-        stopwatchRunning = false
-        StopwatchActivityController.shared.update(elapsed: stopwatchElapsed, isRunning: false)
-        updateStopwatchTicker()
-    }
-
-    private func stopStopwatch() {
-        if scenePhase != .active {
-            stopMindfulLogging()
-        }
-        stopwatchRunning = false
-        stopwatchStartDate = 0
-        stopwatchAccumulated = 0
-        stopwatchElapsed = 0
-        StopwatchActivityController.shared.finish(finalStatus: "Stopped")
-        updateStopwatchTicker()
-    }
-
-    private func updateStopwatchTicker() {
-        if stopwatchRunning {
-            if stopwatchTicker == nil {
-                stopwatchTicker = Timer.publish(every: 1, on: .main, in: .common)
-                    .autoconnect()
-                    .sink { _ in
-                        let now = Date().timeIntervalSince1970
-                        let base = stopwatchAccumulated + Int(max(0, now - stopwatchStartDate))
-                        stopwatchElapsed = base
-                        StopwatchActivityController.shared.update(elapsed: stopwatchElapsed, isRunning: true)
-                    }
-            }
-        } else {
-            stopwatchTicker?.cancel()
-            stopwatchTicker = nil
-        }
-    }
-
-    @State private var stopwatchTicker: AnyCancellable?
-
-    // New: mm:ss under an hour, hh:mm:ss at/after an hour
-    private func formattedStopwatch(_ totalSeconds: Int) -> String {
-        let hours = totalSeconds / 3600
-        let minutes = (totalSeconds % 3600) / 60
-        let seconds = totalSeconds % 60
-        if hours > 0 {
-            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
-        } else {
-            return String(format: "%02d:%02d", minutes, seconds)
-        }
-    }
-
-    private func handleStopwatchPendingAction() {
-        guard let shared = sharedDefaults else { return }
-        guard let action = shared.string(forKey: "stopwatchPendingAction") else { return }
-        shared.removeObject(forKey: "stopwatchPendingAction")
-        switch action {
-        case "togglePause":
-            if stopwatchRunning { pauseStopwatch() } else { startStopwatch() }
-        case "stop":
-            if stopwatchRunning || stopwatchElapsed > 0 { stopStopwatch() }
-        default:
-            break
-        }
-    }
-
-    // Permissions for Stopwatch only; PrayerTimerController handles its own
-    private func requestHealthKitIfNeeded() async {
-        guard isHealthKitAvailable && !healthKitPrompted else { return }
-        await withCheckedContinuation { continuation in
-            HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
-                Task { @MainActor in
-                    self.healthKitPrompted = true
-                }
-                continuation.resume()
-            }
-        }
-    }
-
-    // MARK: - Journal helper (matching ReadingView behavior)
-
-    private func openJournalForReference(text: String) {
-        journalComposer.present(initialBody: text, verseRef: nil, showTagColors: false)
     }
 
     // MARK: - Small helpers moved out of ViewBuilder to avoid result-builder declaration errors
@@ -899,8 +730,51 @@ struct HomeView: View {
         try? modelContext.save()
     }
 
+    // MARK: - Home layout state (read from Settings)
+
+    @AppStorage("homeCardOrder") private var homeCardOrderRaw: String = ""
+    @AppStorage("homeCardHidden") private var homeCardHiddenRaw: String = ""
+
+    @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
+    @State private var hiddenSet: Set<HomeCardID> = []
+
+    private func decodeHomeLayout() {
+        // Order
+        if let data = homeCardOrderRaw.data(using: .utf8),
+           let ids = try? JSONDecoder().decode([String].self, from: data) {
+            // Filter out any legacy "dailyGoal" id
+            let filtered = ids.filter { $0 != "dailyGoal" }
+            let mapped = filtered.compactMap { HomeCardID(rawValue: $0) }
+            let missing = HomeCardID.allCases.filter { !mapped.contains($0) }
+            layoutOrder = mapped + missing
+        } else {
+            layoutOrder = HomeCardID.allCases
+        }
+        // Hidden
+        if let data = homeCardHiddenRaw.data(using: .utf8),
+           let ids = try? JSONDecoder().decode([String].self, from: data) {
+            let filtered = ids.filter { $0 != "dailyGoal" } // migrate legacy
+            hiddenSet = Set(filtered.compactMap { HomeCardID(rawValue: $0) })
+        } else {
+            hiddenSet = [.games, .streaks, .bibleStats]
+        }
+    }
+
     // MARK: - NEW: Games Card (Home) using centralized GameStats
     @State private var gameStatsVersion: Int = 0
+
+    // Permissions helper for timer setup
+    private func requestHealthKitIfNeededForTimer() async {
+        guard HealthKitManager.shared.isAvailable() && !(UserDefaults.standard.bool(forKey: "healthKitPrompted")) else { return }
+        await withCheckedContinuation { continuation in
+            HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
+                Task { @MainActor in
+                    UserDefaults.standard.set(true, forKey: "healthKitPrompted")
+                }
+                continuation.resume()
+            }
+        }
+    }
 }
 
 private let oldTestamentBooks: Set<String> = [

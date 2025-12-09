@@ -28,6 +28,8 @@
 		2C2765742EE8D61600A321FE /* VerseOfDayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2765732EE8D61600A321FE /* VerseOfDayViewModel.swift */; };
 		2C2765762EE8E30D00A321FE /* FocusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2765752EE8E30D00A321FE /* FocusViewModel.swift */; };
 		2C2765782EE8E5B800A321FE /* PrayerTimerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2765772EE8E5B800A321FE /* PrayerTimerController.swift */; };
+		2C27657A2EE8EABD00A321FE /* StopwatchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2765792EE8EABD00A321FE /* StopwatchController.swift */; };
+		2C27657C2EE8EB3E00A321FE /* ModePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C27657B2EE8EB3E00A321FE /* ModePicker.swift */; };
 		2C3F38102EC4042D002CA795 /* Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3F380F2EC4042D002CA795 /* Styles.swift */; };
 		2C462E272ED7BC0500AE0E5F /* StreakTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C462E262ED7BC0400AE0E5F /* StreakTracker.swift */; };
 		2C49CF462EBE10000006FF79 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D972EB3895400A657FA /* HomeView.swift */; };
@@ -161,6 +163,8 @@
 		2C2765732EE8D61600A321FE /* VerseOfDayViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerseOfDayViewModel.swift; sourceTree = "<group>"; };
 		2C2765752EE8E30D00A321FE /* FocusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusViewModel.swift; sourceTree = "<group>"; };
 		2C2765772EE8E5B800A321FE /* PrayerTimerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimerController.swift; sourceTree = "<group>"; };
+		2C2765792EE8EABD00A321FE /* StopwatchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopwatchController.swift; sourceTree = "<group>"; };
+		2C27657B2EE8EB3E00A321FE /* ModePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModePicker.swift; sourceTree = "<group>"; };
 		2C279CFF2EBCC62A0023C46B /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		2C279D012EBCC62C0023C46B /* NavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationCoordinator.swift; sourceTree = "<group>"; };
 		2C3B0F6D2EB14F3D0089556C /* The Bible.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "The Bible.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -449,6 +453,8 @@
 				2C2765732EE8D61600A321FE /* VerseOfDayViewModel.swift */,
 				2C2765752EE8E30D00A321FE /* FocusViewModel.swift */,
 				2C2765772EE8E5B800A321FE /* PrayerTimerController.swift */,
+				2C2765792EE8EABD00A321FE /* StopwatchController.swift */,
+				2C27657B2EE8EB3E00A321FE /* ModePicker.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -855,6 +861,7 @@
 				2C2764FC2EE8C8E200A321FE /* StopwatchCard.swift in Sources */,
 				2C49CF4F2EBE10310006FF79 /* HealthKitManager.swift in Sources */,
 				2C49CF502EBE10310006FF79 /* HangmanGameView.swift in Sources */,
+				2C27657C2EE8EB3E00A321FE /* ModePicker.swift in Sources */,
 				2C49CF512EBE10310006FF79 /* BookSelectionLink.swift in Sources */,
 				2C4A26AF2EDB3BA30055FD1B /* ReadingSessionsStore.swift in Sources */,
 				2C2765022EE8C91A00A321FE /* BibleStatsCard.swift in Sources */,
@@ -878,6 +885,7 @@
 				2CC5D6E92ED608E8009E4C0E /* Haptics.swift in Sources */,
 				2C49CF542EBE10310006FF79 /* Route.swift in Sources */,
 				2C49CF552EBE10310006FF79 /* TimerSound.swift in Sources */,
+				2C27657A2EE8EABD00A321FE /* StopwatchController.swift in Sources */,
 				2CE599542ECF403500A24C9F /* SharedJournalViews.swift in Sources */,
 				2C2764EA2EE8C20A00A321FE /* WeekRow.swift in Sources */,
 				2C2764EC2EE8C20D00A321FE /* PrayerStudyTimerSetupView.swift in Sources */,
