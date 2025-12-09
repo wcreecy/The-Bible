@@ -349,7 +349,7 @@ struct HomeView: View {
                     TitleCardView(
                         isPad: isPad,
                         goalMinutes: dailyGoalMinutes,
-                        todayReadingSeconds: BibleStatsStore.shared.todayTotalSeconds(),
+                        todayReadingSeconds: bibleVM.todaySeconds,
                         streak: StreakTracker.currentStreak,
                         onSearch: {
                             DispatchQueue.main.async {
@@ -390,7 +390,7 @@ struct HomeView: View {
                     TitleCardView(
                         isPad: isPad,
                         goalMinutes: dailyGoalMinutes,
-                        todayReadingSeconds: BibleStatsStore.shared.todayTotalSeconds(),
+                        todayReadingSeconds: bibleVM.todaySeconds,
                         streak: StreakTracker.currentStreak,
                         onSearch: {
                             DispatchQueue.main.async {
