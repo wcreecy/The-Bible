@@ -32,59 +32,32 @@ struct HomeView: View {
     @Query(sort: \ReadingProgress.updatedAt, order: .reverse) private var progressList: [ReadingProgress]
     @State private var showPrayerStudySheet: Bool = false
 
-    @State private var isTimerRunning: Bool = false
-    @State private var isPaused: Bool = false
-    @State private var remainingSeconds: Int = 0
-    @AppStorage("prayerTimerEndDate") private var storedEndDate: Double = 0
-    @AppStorage("prayerTimerRunning") private var storedRunning: Bool = false
-    @AppStorage("prayerTimerPaused") private var storedPaused: Bool = false
-    @AppStorage("prayerTimerRemainingWhenPaused") private var storedRemainingWhenPaused: Int = 0
-    @AppStorage("prayerTimerTotalSeconds") private var storedTotalSeconds: Int = 0
+    // Timer is now owned by controller
+    @StateObject private var timerController = PrayerTimerController()
+
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
-    @AppStorage("prayerTimerStartDate") private var storedStartDate: Double = 0
-    @AppStorage("healthKitPrompted") private var healthKitPrompted: Bool = false
-    @AppStorage("mindfulSessionStartDate") private var mindfulStartDate: Double = 0
-    @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
-
-    @AppStorage("didRequestNotifications") private var didRequestNotifications: Bool = false
-
-    @AppStorage("verseOfDayPaused") private var verseOfDayPaused: Bool = false
-    @AppStorage("verseOfDayBook") private var storedVerseBook: String = ""
-    @AppStorage("verseOfDayChapter") private var storedVerseChapter: Int = 0
-    @AppStorage("verseOfDayNumber") private var storedVerseNumber: Int = 0
-    @AppStorage("verseOfDayText") private var storedVerseText: String = ""
-
     @AppStorage("prayerMode") private var prayerMode: PrayerMode = .timer
     @AppStorage("stopwatchRunning") private var stopwatchRunning: Bool = false
     @AppStorage("stopwatchStartDate") private var stopwatchStartDate: Double = 0
     @AppStorage("stopwatchAccumulated") private var stopwatchAccumulated: Int = 0
-    @AppStorage("focusTitle") private var focusTitle: String = ""
 
     private var sharedDefaults: UserDefaults? { UserDefaults(suiteName: "group.bible.app") }
 
-    @AppStorage("focusBody") private var focusBody: String = ""
     @State private var stopwatchElapsed: Int = 0
 
-    @State private var hasSavedFocus: Bool = false
+    // Focus UI-only state (kept in HomeView)
     @FocusState private var focusTitleIsFocused: Bool
     @FocusState private var focusBodyIsFocused: Bool
-
     @State private var isFocusBodyExpanded: Bool = false
 
-    // NEW: saved-at timestamp for Daily Focus confirmation
-    @State private var focusSavedAt: Date? = nil
-
-    // On-demand ticker: only active during timer/stopwatch sessions
-    @State private var tickerCancellable: AnyCancellable?
-    @State private var showFinishedAlert: Bool = false
+    // Finish alert presented by the controller
     @State private var finishHapticTimer: Timer? = nil
 
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
     @EnvironmentObject private var coordinator: NavigationCoordinator
     @EnvironmentObject private var journalComposer: JournalComposer
-    @State private var verseOfDay: HomeVerseRef? = nil
 
     @State private var showCopyToast: Bool = false
     @State private var showFocusSavedToast: Bool = false
@@ -93,18 +66,10 @@ struct HomeView: View {
 
     @Environment(\.scenePhase) private var scenePhase
 
-    private static let notificationID = "PrayerStudyTimerFinished"
-    private static let notificationTitle = "Prayer/Study Finished"
-    private static let notificationBody = "Your prayer/study timer has completed."
-
-    private var selectedFinishSoundID: SystemSoundID {
-        (TimerSound(rawValue: timerSoundSelection) ?? .default).systemSoundID
-    }
-
     private var timerTintColor: Color {
-        if remainingSeconds > 300 {
+        if timerController.remainingSeconds > 300 {
             return .green
-        } else if remainingSeconds > 120 {
+        } else if timerController.remainingSeconds > 120 {
             return .yellow
         } else {
             return .red
@@ -130,12 +95,11 @@ struct HomeView: View {
         progressList.first
     }
 
-    // Verse-of-the-Day: configurable times and scheduler
+    // Verse-of-the-Day: configurable times and scheduler (delegated to VM, keep keys observed)
     @AppStorage("votdRefresh1Hour") private var votdRefresh1Hour: Int = 6
     @AppStorage("votdRefresh1Minute") private var votdRefresh1Minute: Int = 0
     @AppStorage("votdRefresh2Hour") private var votdRefresh2Hour: Int = 18
     @AppStorage("votdRefresh2Minute") private var votdRefresh2Minute: Int = 0
-    @State private var nextRefreshTimer: Timer?
 
     // Bible store for async/on-demand loading
     @StateObject private var bibleStore = BibleStore.shared
@@ -150,6 +114,7 @@ struct HomeView: View {
     }
 
     private func startMindfulLoggingIfNeeded() {
+        // Timer controller owns mindful logging; this remains for Stopwatch
         guard isHealthKitAvailable else { return }
         if mindfulStartDate == 0 {
             mindfulStartDate = Date().timeIntervalSince1970
@@ -167,6 +132,10 @@ struct HomeView: View {
             mindfulStartDate = 0
         }
     }
+
+    // Stopwatch-specific mindful storage
+    @AppStorage("mindfulSessionStartDate") private var mindfulStartDate: Double = 0
+    @AppStorage("healthKitPrompted") private var healthKitPrompted: Bool = false
 
     // MARK: - Home layout state (read from Settings)
 
@@ -194,55 +163,8 @@ struct HomeView: View {
             let filtered = ids.filter { $0 != "dailyGoal" } // migrate legacy
             hiddenSet = Set(filtered.compactMap { HomeCardID(rawValue: $0) })
         } else {
-            // Match Settings defaults: Games and Streaks hidden by default
-            // NEW: Bible Stats hidden by default as requested
             hiddenSet = [.games, .streaks, .bibleStats]
         }
-    }
-
-    // MARK: - Next Verse Auto-Refresh Helpers (one-shot scheduler)
-
-    private func dateForToday(hour: Int, minute: Int, from now: Date = Date()) -> Date? {
-        let cal = Calendar.current
-        let comps = cal.dateComponents([.year, .month, .day], from: now)
-        return cal.date(from: DateComponents(year: comps.year, month: comps.month, day: comps.day, hour: hour, minute: minute, second: 0))
-    }
-
-    private func nextAutoRefreshDate(from now: Date = Date()) -> Date {
-        let cal = Calendar.current
-        guard let startOfTodayRefresh1 = dateForToday(hour: votdRefresh1Hour, minute: votdRefresh1Minute, from: now),
-              let startOfTodayRefresh2 = dateForToday(hour: votdRefresh2Hour, minute: votdRefresh2Minute, from: now) else {
-            return now
-        }
-        if now < startOfTodayRefresh1 { return startOfTodayRefresh1 }
-        if now < startOfTodayRefresh2 { return startOfTodayRefresh2 }
-        let tomorrow = cal.date(byAdding: .day, value: 1, to: now) ?? now
-        return dateForToday(hour: votdRefresh1Hour, minute: votdRefresh1Minute, from: tomorrow) ?? now
-    }
-
-    private var nextVerseRefreshDescription: String {
-        if verseOfDayPaused { return "Auto refresh is paused." }
-        let now = Date()
-        let next = nextAutoRefreshDate(from: now)
-        let cal = Calendar.current
-        let isSameDay = cal.isDate(now, inSameDayAs: next)
-        let isTomorrow = cal.isDate(next, inSameDayAs: cal.date(byAdding: .day, value: 1, to: now) ?? next)
-        let dayString: String = isSameDay ? "Today" : (isTomorrow ? "Tomorrow" : next.formatted(date: .abbreviated, time: .omitted))
-        let timeString = next.formatted(date: .omitted, time: .shortened)
-        return "Next auto refresh: \(dayString) at \(timeString)"
-    }
-
-    private func scheduleNextVerseRefreshTimer() {
-        nextRefreshTimer?.invalidate()
-        guard !verseOfDayPaused else { return }
-        let next = nextAutoRefreshDate()
-        let interval = max(1, next.timeIntervalSinceNow)
-        nextRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
-            loadRandomVerse()
-            // Schedule the next one
-            scheduleNextVerseRefreshTimer()
-        }
-        RunLoop.main.add(nextRefreshTimer!, forMode: .common)
     }
 
     // MARK: - Shared Small Views / Helpers
@@ -259,20 +181,9 @@ struct HomeView: View {
         .frame(maxWidth: 280)
     }
 
-    private func mirrorVerseToAppGroup(book: String, chapter: Int, verse: Int, text: String) {
-        guard let shared = sharedDefaults else { return }
-        shared.set(book, forKey: "verseOfDayBook")
-        shared.set(chapter, forKey: "verseOfDayChapter")
-        shared.set(verse, forKey: "verseOfDayNumber")
-        shared.set(text, forKey: "verseOfDayText")
-        // Reload only the Verse widget, debounced
-        DebouncedWidgetReloader.shared.reload(kind: "VerseWidget")
-    }
-
     private func mirrorLastReadToAppGroup() {
         guard let shared = sharedDefaults else { return }
         guard let p = progress else { return }
-        // Resolve using BibleData (always available)
         if let book = BibleData.books.first(where: { $0.name == p.bookName }),
            let chapter = book.chapters.first(where: { $0.number == p.chapterNumber }),
            let verse = chapter.verses.first(where: { $0.number == p.verseNumber }) {
@@ -280,7 +191,6 @@ struct HomeView: View {
             shared.set(p.chapterNumber, forKey: "lastReadChapter")
             shared.set(p.verseNumber, forKey: "lastReadVerse")
             shared.set(verse.text, forKey: "lastReadText")
-            // Reload only the Last Read widget, debounced
             DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
         }
     }
@@ -306,7 +216,6 @@ struct HomeView: View {
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
     @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds: Int = 0
 
-    // Helper reused by TitleCardView
     private func goalMinutesString(_ minutes: Int) -> String {
         let mins = max(0, minutes)
         let hrs = mins / 60
@@ -322,7 +231,6 @@ struct HomeView: View {
     @AppStorage("dailyUsageTodayKey") private var dailyUsageTodayKey: String = ""
 
     private var dailyGoalSeconds: Int { max(1, dailyGoalMinutes_streaks) * 60 }
-    // Use Bible reading time (today) rather than app usage
     private var dailyProgress: Double {
         let used = max(0, BibleStatsStore.shared.totalForLast(days: 1))
         return min(1.0, Double(used) / Double(dailyGoalSeconds))
@@ -358,7 +266,6 @@ struct HomeView: View {
 
     // Local UI state for expanding the calendar
     @State private var streaksExpanded: Bool = false
-    // Track the month being displayed (start with current month)
     @State private var calendarMonthAnchor: Date = Date()
 
     private func startOfMonth(for date: Date) -> Date {
@@ -509,16 +416,20 @@ struct HomeView: View {
 
     // MARK: - Dynamic body using saved layout
 
+    @StateObject private var votdVM = VerseOfDayViewModel()
+    @StateObject private var focusVM = FocusViewModel()
+    @StateObject private var bibleVM = HomeBibleStatsViewModel()
+
     @ViewBuilder
     private func card(for id: HomeCardID) -> some View {
         switch id {
         case .verseOfDay:
             VerseOfDayCard(
-                verseOfDay: $verseOfDay,
-                verseOfDayPaused: $verseOfDayPaused,
+                verseOfDay: $votdVM.verse,
+                verseOfDayPaused: $votdVM.paused,
                 isBibleStoreReady: bibleStore.isReady,
-                nextRefreshDescription: nextVerseRefreshDescription,
-                onRefresh: { loadRandomVerse() },
+                nextRefreshDescription: votdVM.nextRefreshDescription,
+                onRefresh: { votdVM.refreshNow() },
                 onCopy: { v in copyVerse(v) },
                 onShareText: { v in shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText) },
                 isFavorited: { v in isFavorited(v) },
@@ -529,23 +440,7 @@ struct HomeView: View {
                     coordinator.push(.reader(book: book, chapter: chapter, startVerse: v.verseNumber))
                 },
                 onTogglePaused: {
-                    let newValue = !verseOfDayPaused
-                    verseOfDayPaused = newValue
-                    if newValue, let v = verseOfDay {
-                        storedVerseBook = v.bookName
-                        storedVerseChapter = v.chapterNumber
-                        storedVerseNumber = v.verseNumber
-                        storedVerseText = v.verseText
-                    }
-                    mirrorVerseToAppGroup(book: storedVerseBook, chapter: storedVerseChapter, verse: storedVerseNumber, text: storedVerseText)
-                    if verseOfDayPaused {
-                        nextRefreshTimer?.invalidate()
-                        nextRefreshTimer = nil
-                    } else {
-                        scheduleNextVerseRefreshTimer()
-                    }
-                    let generator = UIImpactFeedbackGenerator(style: .medium)
-                    generator.impactOccurred()
+                    votdVM.togglePaused()
                 },
                 title: verseCardTitle,
                 icon: verseCardIcon
@@ -554,48 +449,29 @@ struct HomeView: View {
             .onTapGesture {
                 let generator = UIImpactFeedbackGenerator(style: .heavy)
                 generator.impactOccurred()
-                guard let v = verseOfDay,
+                guard let v = votdVM.verse,
                       let book = BibleData.books.first(where: { $0.name == v.bookName }),
                       let chapter = book.chapters.first(where: { $0.number == v.chapterNumber }) else { return }
                 coordinator.push(.reader(book: book, chapter: chapter, startVerse: v.verseNumber))
             }
         case .dailyFocus:
             DailyFocusCard(
-                focusTitle: $focusTitle,
-                focusBody: $focusBody,
-                hasSavedFocus: $hasSavedFocus,
-                focusSavedAt: $focusSavedAt,
+                focusTitle: $focusVM.title,
+                focusBody: $focusVM.body,
+                hasSavedFocus: $focusVM.hasSaved,
+                focusSavedAt: $focusVM.savedAt,
                 focusTitleIsFocused: _focusTitleIsFocused.projectedValue,
                 focusBodyIsFocused: _focusBodyIsFocused.projectedValue,
                 isFocusBodyExpanded: $isFocusBodyExpanded,
-                liveActivitiesEnabled: UserDefaults.standard.bool(forKey: "liveActivitiesEnabled"),
+                liveActivitiesEnabled: focusVM.liveActivitiesEnabled,
                 onSave: {
-                    sharedDefaults?.set(focusTitle, forKey: "focusTitle")
-                    sharedDefaults?.set(focusBody, forKey: "focusBody")
-                    let now = Date()
-                    sharedDefaults?.set(now.timeIntervalSince1970, forKey: "focusSavedAt")
-                    focusSavedAt = now
-
-                    StopwatchActivityController.shared.cancel()
-                    PrayerTimerActivityController.shared.ensureActivityForFocus(
-                        title: focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : focusTitle,
-                        body: focusBody.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : focusBody
-                    )
-                    hasSavedFocus = true
+                    focusVM.save()
                     focusTitleIsFocused = false
                     focusBodyIsFocused = false
                     withAnimation(.spring()) { showFocusSavedToast = true }
                 },
                 onClear: {
-                    focusTitle = ""
-                    focusBody = ""
-                    sharedDefaults?.set("", forKey: "focusTitle")
-                    sharedDefaults?.set("", forKey: "focusBody")
-                    sharedDefaults?.removeObject(forKey: "focusSavedAt")
-                    focusSavedAt = nil
-
-                    PrayerTimerActivityController.shared.cancel()
-                    hasSavedFocus = false
+                    focusVM.clear()
                     focusTitleIsFocused = false
                     focusBodyIsFocused = false
                     isFocusBodyExpanded = false
@@ -608,9 +484,9 @@ struct HomeView: View {
             if prayerMode == .timer {
                 PrayerTimerCard(
                     prayerMode: $prayerMode,
-                    isTimerRunning: isTimerRunning,
-                    isPaused: isPaused,
-                    remainingSeconds: remainingSeconds,
+                    isTimerRunning: timerController.isRunning,
+                    isPaused: timerController.isPaused,
+                    remainingSeconds: timerController.remainingSeconds,
                     timerTintColor: timerTintColor,
                     formattedTime: { formattedTime($0) },
                     onOpenSetup: {
@@ -622,13 +498,13 @@ struct HomeView: View {
                         showPrayerStudySheet = true
                     },
                     onStartPreset: { minutes in
-                        startTimer(minutes: minutes)
+                        timerController.start(minutes: minutes)
                     },
-                    onTogglePause: { togglePause() },
-                    onAddOne: { addOneMinute() },
-                    onAddFive: { addFiveMinutes() },
-                    onAddTen: { addTenMinutes() },
-                    onStop: { stopTimer() },
+                    onTogglePause: { timerController.togglePause() },
+                    onAddOne: { timerController.addOne() },
+                    onAddFive: { timerController.addFive() },
+                    onAddTen: { timerController.addTen() },
+                    onStop: { timerController.stop() },
                     stopwatchRunning: stopwatchRunning,
                     modePicker: { disabled in AnyView(ModePicker(disabled: disabled)) }
                 )
@@ -641,7 +517,7 @@ struct HomeView: View {
                     onStart: { startStopwatch() },
                     onPause: { pauseStopwatch() },
                     onStop: { stopStopwatch() },
-                    isTimerRunning: isTimerRunning,
+                    isTimerRunning: timerController.isRunning,
                     modePicker: { disabled in AnyView(ModePicker(disabled: disabled)) }
                 )
             }
@@ -683,7 +559,6 @@ struct HomeView: View {
     }
 
     var body: some View {
-        // Build the list of visible cards in the saved order
         let activeCards: [HomeCardID] = layoutOrder.filter { !hiddenSet.contains($0) }
 
         ScrollView {
@@ -770,38 +645,17 @@ struct HomeView: View {
         .appToast(isPresented: $showFocusSavedToast, symbol: "checkmark.seal.fill", text: "Focus Saved", tint: .green)
         .onAppear {
             Task { _ = await BibleLibrary.shared.bookNames() }
-
             bibleStore.ensureLoaded()
 
             if prayerMode == .focus { prayerMode = .timer }
 
-            isTimerRunning = storedRunning
-            isPaused = storedPaused
             isHealthKitAvailable = HealthKitManager.shared.isAvailable()
 
-            if storedRunning {
-                if isPaused {
-                    remainingSeconds = storedRemainingWhenPaused
-                } else if storedEndDate > 0 {
-                    let remaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
-                    remainingSeconds = remaining
-                    if remaining == 0 { handleTimerFinished() }
-                }
-            }
+            // Verse-of-the-Day initial handling moved to VM
+            votdVM.handleAppear()
 
-            if verseOfDayPaused {
-                if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
-                    verseOfDay = HomeVerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
-                    mirrorVerseToAppGroup(book: storedVerseBook, chapter: storedVerseChapter, verse: storedVerseNumber, text: storedVerseText)
-                }
-            } else {
-                if !storedVerseBook.isEmpty && storedVerseChapter > 0 && storedVerseNumber > 0 && !storedVerseText.isEmpty {
-                    verseOfDay = HomeVerseRef(bookName: storedVerseBook, chapterNumber: storedVerseChapter, verseNumber: storedVerseNumber, verseText: storedVerseText)
-                    mirrorVerseToAppGroup(book: storedVerseBook, chapter: storedVerseChapter, verse: storedVerseNumber, text: storedVerseText)
-                } else {
-                    loadRandomVerse()
-                }
-            }
+            // Focus initial load
+            focusVM.loadFromStorage()
 
             if stopwatchRunning {
                 let now = Date().timeIntervalSince1970
@@ -811,37 +665,19 @@ struct HomeView: View {
                 stopwatchElapsed = stopwatchAccumulated
             }
 
-            if let shared = sharedDefaults {
-                let savedTitle = (shared.string(forKey: "focusTitle") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-                let savedBody = (shared.string(forKey: "focusBody") ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-                hasSavedFocus = !(savedTitle.isEmpty && savedBody.isEmpty)
-                let ts = shared.double(forKey: "focusSavedAt")
-                if ts > 0 {
-                    focusSavedAt = Date(timeIntervalSince1970: ts)
-                } else {
-                    focusSavedAt = nil
-                }
-            } else {
-                hasSavedFocus = false
-                focusSavedAt = nil
-            }
-
-            // One-time safety net: if multiple ReadingProgress rows exist, keep newest and delete older
             dedupeReadingProgress()
 
             mirrorLastReadToAppGroup()
             handleOpenPendingVerse()
 
-            _ = handlePrayerTimerPendingAction()
-            handleStopwatchPendingAction()
+            // Controller: appearance and handle any pending timer action
+            timerController.onAppear()
+            _ = timerController.handlePendingActionIfAny()
 
-            scheduleNextVerseRefreshTimer()
-            updateTickerSubscription()
-
-            // Load saved layout on appear; migrate legacy dailyGoal id away
+            // Load saved layout on appear
             decodeHomeLayout()
 
-            // Initial load of Bible Stats (even if card is hidden, keep state fresh)
+            // Initial load of Bible Stats
             bibleVM.refresh()
 
             // Initialize GameStats and bind to its version for immediate refresh
@@ -858,39 +694,40 @@ struct HomeView: View {
         .onChange(of: scenePhase) { _, newPhase in
             switch newPhase {
             case .active:
-                startMindfulLoggingIfNeeded()
-                _ = handlePrayerTimerPendingAction()
+                _ = timerController.handlePendingActionIfAny()
                 handleStopwatchPendingAction()
                 handleOpenPendingVerse()
                 bibleVM.refresh()
+                votdVM.handleScenePhaseChange(newPhase)
+                timerController.onSceneBecameActive()
             case .inactive, .background:
-                if !isTimerRunning && !stopwatchRunning {
+                if !timerController.isRunning && !stopwatchRunning {
                     stopMindfulLogging()
                 }
+                timerController.onSceneBecameInactiveOrBackground()
             @unknown default:
                 break
             }
         }
-        .onChange(of: isTimerRunning) { _, _ in updateTickerSubscription() }
-        .onChange(of: stopwatchRunning) { _, _ in updateTickerSubscription() }
-        .onChange(of: votdRefresh1Hour) { _, _ in scheduleNextVerseRefreshTimer() }
-        .onChange(of: votdRefresh1Minute) { _, _ in scheduleNextVerseRefreshTimer() }
-        .onChange(of: votdRefresh2Hour) { _, _ in scheduleNextVerseRefreshTimer() }
-        .onChange(of: votdRefresh2Minute) { _, _ in scheduleNextVerseRefreshTimer() }
+        // Forward VOTD schedule changes to the VM
+        .onChange(of: votdRefresh1Hour) { _, _ in votdVM.refreshScheduleChanged() }
+        .onChange(of: votdRefresh1Minute) { _, _ in votdVM.refreshScheduleChanged() }
+        .onChange(of: votdRefresh2Hour) { _, _ in votdVM.refreshScheduleChanged() }
+        .onChange(of: votdRefresh2Minute) { _, _ in votdVM.refreshScheduleChanged() }
         .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
             // bibleVM already refreshes on appear/active
         }
         .sheet(isPresented: $showPrayerStudySheet) {
             PrayerStudyTimerSetupView(onStart: { minutes in
-                startTimer(minutes: minutes)
+                timerController.start(minutes: minutes)
                 showPrayerStudySheet = false
             })
             .presentationDetents([.medium, .large])
         }
-        .alert("Prayer/Study Finished", isPresented: $showFinishedAlert) {
+        .alert("Prayer/Study Finished", isPresented: $timerController.showFinishedAlert) {
             Button("Dismiss", role: .cancel) {
-                stopFinishAlerts()
-                showFinishedAlert = false
+                timerController.stopFinishAlerts()
+                timerController.showFinishedAlert = false
             }
         } message: {
             Text("Your prayer/study timer has completed.")
@@ -898,286 +735,6 @@ struct HomeView: View {
         .onDisappear {
             streaksExpanded = false
         }
-    }
-
-    // Ticker management
-    private func updateTickerSubscription() {
-        if isTimerRunning || stopwatchRunning {
-            if tickerCancellable == nil {
-                tickerCancellable = Timer.publish(every: 1, on: .main, in: .common)
-                    .autoconnect()
-                    .sink { _ in tick() }
-            }
-        } else {
-            tickerCancellable?.cancel()
-            tickerCancellable = nil
-        }
-    }
-
-    // Suppression windows to prevent immediate Live Activity/timer recompute churn after +1/+5/+10
-    @State private var suppressTimerActivityUpdatesUntil: Date = .distantPast
-    @State private var suppressTimerRecomputeUntil: Date = .distantPast
-
-    // Authoritative in-memory end date used briefly after adjustments to avoid @AppStorage staleness
-    @State private var liveEndDate: TimeInterval = 0
-
-    // One-shot token for pending actions so stale actions are ignored
-    @AppStorage("prayerTimerLastActionToken") private var lastActionToken: String = ""
-
-    private func tick() {
-        if handlePrayerTimerPendingAction() {
-            return
-        }
-        handleStopwatchPendingAction()
-
-        if isEditingFocus { return }
-
-        if isTimerRunning && !isPaused {
-            let now = Date().timeIntervalSince1970
-
-            if Date() < suppressTimerRecomputeUntil {
-                let after = max(0, remainingSeconds - 1)
-                remainingSeconds = after
-            } else {
-                let endToUse: TimeInterval
-                let endDelta = abs(liveEndDate - storedEndDate)
-                if liveEndDate > 0 && endDelta > 0.5 {
-                    endToUse = liveEndDate
-                } else {
-                    endToUse = storedEndDate
-                    liveEndDate = 0
-                }
-
-                let remaining = Int(max(0, endToUse - now))
-                remainingSeconds = remaining
-                if remaining == 0 { handleTimerFinished() }
-            }
-
-            if Date() >= suppressTimerActivityUpdatesUntil {
-                PrayerTimerActivityController.shared.update(
-                    remainingSeconds: remainingSeconds,
-                    totalSeconds: storedTotalSeconds,
-                    isPaused: isPaused
-                )
-            }
-        }
-
-        if stopwatchRunning {
-            let now = Date().timeIntervalSince1970
-            let base = stopwatchAccumulated + Int(max(0, now - stopwatchStartDate))
-            stopwatchElapsed = base
-            StopwatchActivityController.shared.update(elapsed: stopwatchElapsed, isRunning: true)
-        }
-    }
-
-    private func startTimer(minutes: Int) {
-        Task { await requestNotificationsIfNeeded() }
-        if isHealthKitAvailable && !healthKitPrompted {
-            Task { await requestHealthKitIfNeeded() }
-        }
-
-        let secs = max(1, minutes) * 60
-        remainingSeconds = secs
-
-        storedTotalSeconds = secs
-
-        let start = Date()
-        let end = start.addingTimeInterval(TimeInterval(secs))
-        isPaused = false
-        isTimerRunning = true
-
-        storedRunning = true
-        storedPaused = false
-        storedStartDate = start.timeIntervalSince1970
-        storedEndDate = end.timeIntervalSince1970
-
-        // Set authoritative live end date and suppression windows
-        liveEndDate = storedEndDate
-        suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(1.0)
-        suppressTimerRecomputeUntil = Date().addingTimeInterval(1.75)
-
-        storedRemainingWhenPaused = 0
-
-        startMindfulLoggingIfNeeded()
-        scheduleNotification(at: end)
-
-        StopwatchActivityController.shared.cancel()
-        PrayerTimerActivityController.shared.start(
-            sessionName: "Prayer/Study",
-            totalSeconds: storedTotalSeconds,
-            remainingSeconds: remainingSeconds,
-            isPaused: false
-        )
-
-        updateTickerSubscription()
-    }
-
-    private func togglePause() {
-        guard isTimerRunning else { return }
-        isPaused.toggle()
-        storedPaused = isPaused
-
-        if isPaused {
-            let now = Date().timeIntervalSince1970
-            let newRemain = Int(max(0, storedEndDate - now))
-            remainingSeconds = newRemain
-            storedRemainingWhenPaused = newRemain
-            cancelNotification()
-        } else {
-            let newEnd = Date().addingTimeInterval(TimeInterval(remainingSeconds))
-            storedEndDate = newEnd.timeIntervalSince1970
-
-            // Set authoritative live end date and suppression windows
-            liveEndDate = storedEndDate
-            suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(1.0)
-            suppressTimerRecomputeUntil = Date().addingTimeInterval(1.75)
-
-            storedRemainingWhenPaused = 0
-            scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
-        }
-        PrayerTimerActivityController.shared.update(
-            remainingSeconds: remainingSeconds,
-            totalSeconds: storedTotalSeconds,
-            isPaused: isPaused
-        )
-    }
-
-    private func addOneMinute() {
-        guard isTimerRunning else { return }
-        let delta: Int = 60
-        if isPaused {
-            let newRem = remainingSeconds + delta
-            remainingSeconds = newRem
-            storedRemainingWhenPaused = storedRemainingWhenPaused + delta
-            storedTotalSeconds = storedTotalSeconds + delta
-            PrayerTimerActivityController.shared.update(
-                remainingSeconds: remainingSeconds,
-                totalSeconds: storedTotalSeconds,
-                isPaused: isPaused
-            )
-        } else {
-            storedEndDate += TimeInterval(delta)
-            storedTotalSeconds += delta
-
-            let newRemaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
-            remainingSeconds = newRemaining
-
-            // Set authoritative live end date and suppression windows
-            liveEndDate = storedEndDate
-            suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(1.0)
-            suppressTimerRecomputeUntil = Date().addingTimeInterval(1.75)
-
-            scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
-            PrayerTimerActivityController.shared.update(
-                remainingSeconds: remainingSeconds,
-                totalSeconds: storedTotalSeconds,
-                isPaused: isPaused
-            )
-        }
-
-        let gen = UIImpactFeedbackGenerator(style: .light)
-        gen.impactOccurred()
-    }
-
-    private func addFiveMinutes() {
-        guard isTimerRunning else { return }
-        let delta: Int = 300
-        if isPaused {
-            let newRem = remainingSeconds + delta
-            remainingSeconds = newRem
-            storedRemainingWhenPaused = storedRemainingWhenPaused + delta
-            storedTotalSeconds = storedTotalSeconds + delta
-            PrayerTimerActivityController.shared.update(
-                remainingSeconds: remainingSeconds,
-                totalSeconds: storedTotalSeconds,
-                isPaused: isPaused
-            )
-        } else {
-            storedEndDate += TimeInterval(delta)
-            storedTotalSeconds += delta
-
-            let newRemaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
-            remainingSeconds = newRemaining
-
-            // Set authoritative live end date and suppression windows
-            liveEndDate = storedEndDate
-            suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(1.0)
-            suppressTimerRecomputeUntil = Date().addingTimeInterval(1.75)
-
-            scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
-            PrayerTimerActivityController.shared.update(
-                remainingSeconds: remainingSeconds,
-                totalSeconds: storedTotalSeconds,
-                isPaused: isPaused
-            )
-        }
-
-        let gen = UIImpactFeedbackGenerator(style: .light)
-        gen.impactOccurred()
-    }
-
-    private func addTenMinutes() {
-        guard isTimerRunning else { return }
-        let delta: Int = 600
-        if isPaused {
-            let newRem = remainingSeconds + delta
-            remainingSeconds = newRem
-            storedRemainingWhenPaused = storedRemainingWhenPaused + delta
-            storedTotalSeconds = storedTotalSeconds + delta
-            PrayerTimerActivityController.shared.update(
-                remainingSeconds: remainingSeconds,
-                totalSeconds: storedTotalSeconds,
-                isPaused: isPaused
-            )
-        } else {
-            storedEndDate += TimeInterval(delta)
-            storedTotalSeconds += delta
-
-            let newRemaining = Int(max(0, storedEndDate - Date().timeIntervalSince1970))
-            remainingSeconds = newRemaining
-
-            // Set authoritative live end date and suppression windows
-            liveEndDate = storedEndDate
-            suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(1.0)
-            suppressTimerRecomputeUntil = Date().addingTimeInterval(1.75)
-
-            scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
-            PrayerTimerActivityController.shared.update(
-                remainingSeconds: remainingSeconds,
-                totalSeconds: storedTotalSeconds,
-                isPaused: isPaused
-            )
-        }
-        let gen = UIImpactFeedbackGenerator(style: .light)
-        gen.impactOccurred()
-    }
-
-    private func resetTimerState() {
-        storedRunning = false
-        storedPaused = false
-        storedEndDate = 0
-        storedRemainingWhenPaused = 0
-        storedTotalSeconds = 0
-        storedStartDate = 0
-
-        isTimerRunning = false
-        isPaused = false
-        remainingSeconds = 0
-
-        // Clear live end date
-        liveEndDate = 0
-    }
-
-    private func stopTimer() {
-        if scenePhase != .active {
-            stopMindfulLogging()
-        }
-        resetTimerState()
-        cancelNotification()
-        stopFinishAlerts()
-        PrayerTimerActivityController.shared.cancel()
-        showFinishedAlert = false
-        updateTickerSubscription()
     }
 
     private func formattedTime(_ totalSeconds: Int) -> String {
@@ -1189,88 +746,6 @@ struct HomeView: View {
         } else {
             return String(format: "%02d:%02d", minutes, seconds)
         }
-    }
-
-    private func scheduleNotification(at date: Date) {
-        let center = UNUserNotificationCenter.current()
-        center.removePendingNotificationRequests(withIdentifiers: [Self.notificationID])
-
-        let content = UNMutableNotificationContent()
-        content.title = Self.notificationTitle
-        content.body = Self.notificationBody
-        content.sound = .default
-
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(1, date.timeIntervalSinceNow), repeats: false)
-        let request = UNNotificationRequest(identifier: Self.notificationID, content: content, trigger: trigger)
-        center.add(request, withCompletionHandler: nil)
-    }
-
-    private func cancelNotification() {
-        let center = UNUserNotificationCenter.current()
-        center.removePendingNotificationRequests(withIdentifiers: [Self.notificationID])
-    }
-
-    private func handleTimerFinished() {
-        if !isTimerRunning { return }
-        if scenePhase != .active {
-            stopMindfulLogging()
-        }
-        cancelNotification()
-        resetTimerState()
-        PrayerTimerActivityController.shared.finish()
-        showFinishedAlert = true
-        startFinishAlerts()
-        updateTickerSubscription()
-    }
-
-    private func startFinishAlerts() {
-        let soundID = selectedFinishSoundID
-        finishHapticTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { _ in
-            AudioServicesPlaySystemSound(soundID)
-            AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
-        }
-        AudioServicesPlaySystemSound(soundID)
-        AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
-    }
-
-    private func stopFinishAlerts() {
-        finishHapticTimer?.invalidate()
-        finishHapticTimer = nil
-    }
-
-    private func loadRandomVerse() {
-        if verseOfDayPaused { return }
-        let allBooks = BibleData.books
-        guard !allBooks.isEmpty else { return }
-
-        let scope = VerseScope(rawValue: verseScopeRaw) ?? .whole
-        let books: [Book]
-        switch scope {
-        case .old:
-            books = allBooks.filter { oldTestamentBooks.contains($0.name) }
-        case .new:
-            books = allBooks.filter { !oldTestamentBooks.contains($0.name) }
-        case .whole:
-            books = allBooks
-        case .book:
-            if let chosen = allBooks.first(where: { $0.name == verseSpecificBook }) {
-                books = [chosen]
-            } else {
-                books = allBooks
-            }
-        }
-
-        guard let book = books.randomElement(),
-              let chapter = book.chapters.randomElement(),
-              !chapter.verses.isEmpty,
-              let verse = chapter.verses.randomElement() else { return }
-
-        verseOfDay = HomeVerseRef(bookName: book.name, chapterNumber: chapter.number, verseNumber: verse.number, verseText: verse.text)
-        storedVerseBook = book.name
-        storedVerseChapter = chapter.number
-        storedVerseNumber = verse.number
-        storedVerseText = verse.text
-        mirrorVerseToAppGroup(book: book.name, chapter: chapter.number, verse: verse.number, text: verse.text)
     }
 
     private func copyVerse(_ v: HomeVerseRef) {
@@ -1307,7 +782,7 @@ struct HomeView: View {
         startMindfulLoggingIfNeeded()
         PrayerTimerActivityController.shared.cancel()
         StopwatchActivityController.shared.start(sessionName: "Stopwatch", initialElapsed: stopwatchElapsed)
-        updateTickerSubscription()
+        updateStopwatchTicker()
     }
 
     private func pauseStopwatch() {
@@ -1320,7 +795,7 @@ struct HomeView: View {
         }
         stopwatchRunning = false
         StopwatchActivityController.shared.update(elapsed: stopwatchElapsed, isRunning: false)
-        updateTickerSubscription()
+        updateStopwatchTicker()
     }
 
     private func stopStopwatch() {
@@ -1332,8 +807,28 @@ struct HomeView: View {
         stopwatchAccumulated = 0
         stopwatchElapsed = 0
         StopwatchActivityController.shared.finish(finalStatus: "Stopped")
-        updateTickerSubscription()
+        updateStopwatchTicker()
     }
+
+    private func updateStopwatchTicker() {
+        if stopwatchRunning {
+            if stopwatchTicker == nil {
+                stopwatchTicker = Timer.publish(every: 1, on: .main, in: .common)
+                    .autoconnect()
+                    .sink { _ in
+                        let now = Date().timeIntervalSince1970
+                        let base = stopwatchAccumulated + Int(max(0, now - stopwatchStartDate))
+                        stopwatchElapsed = base
+                        StopwatchActivityController.shared.update(elapsed: stopwatchElapsed, isRunning: true)
+                    }
+            }
+        } else {
+            stopwatchTicker?.cancel()
+            stopwatchTicker = nil
+        }
+    }
+
+    @State private var stopwatchTicker: AnyCancellable?
 
     // New: mm:ss under an hour, hh:mm:ss at/after an hour
     private func formattedStopwatch(_ totalSeconds: Int) -> String {
@@ -1345,44 +840,6 @@ struct HomeView: View {
         } else {
             return String(format: "%02d:%02d", minutes, seconds)
         }
-    }
-    
-    // Returns true if an action was consumed
-    @discardableResult
-    private func handlePrayerTimerPendingAction() -> Bool {
-        guard let shared = sharedDefaults else { return false }
-        guard let action = shared.string(forKey: "prayerTimerPendingAction") else { return false }
-
-        // Read token (new)
-        let token = shared.string(forKey: "prayerTimerActionToken") ?? ""
-        // If token already consumed, ignore stale action
-        if !token.isEmpty && token == lastActionToken {
-            // Clean up stale key to avoid repeated checks
-            shared.removeObject(forKey: "prayerTimerPendingAction")
-            shared.removeObject(forKey: "prayerTimerActionToken")
-            return false
-        }
-
-        // Consume keys up-front
-        shared.removeObject(forKey: "prayerTimerPendingAction")
-        shared.removeObject(forKey: "prayerTimerActionToken")
-
-        switch action {
-        case "togglePause":
-            if isTimerRunning { togglePause() }
-        case "add5":
-            if isTimerRunning { addFiveMinutes() }
-        case "stop":
-            if isTimerRunning { stopTimer() }
-        default:
-            break
-        }
-        // Record last consumed token
-        if !token.isEmpty {
-            lastActionToken = token
-        }
-        suppressTimerActivityUpdatesUntil = .distantPast
-        return true
     }
 
     private func handleStopwatchPendingAction() {
@@ -1399,66 +856,7 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Stopwatch control subviews
-
-    @ViewBuilder
-    private func stopwatchRunningControls() -> some View {
-        Button(action: { pauseStopwatch() }) {
-            Image(systemName: "pause.circle.fill")
-                .font(.system(size: 44))
-                .foregroundStyle(.yellow)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Pause")
-
-        Button(action: { stopStopwatch() }) {
-            Image(systemName: "stop.circle.fill")
-                .font(.system(size: 44))
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(.red)
-        .accessibilityLabel("Stop")
-    }
-
-    @ViewBuilder
-    private func stopwatchPausedControls() -> some View {
-        Button(action: { startStopwatch() }) {
-            Image(systemName: "play.circle.fill")
-                .font(.system(size: 44))
-                .foregroundStyle(.green)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Resume")
-
-        Button(action: { stopStopwatch() }) {
-            Image(systemName: "stop.circle.fill")
-                .font(.system(size: 44))
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(.red)
-        .accessibilityLabel("Stop")
-    }
-
-    @ViewBuilder
-    private func stopwatchReadyControls() -> some View {
-        Button(action: { startStopwatch() }) {
-            Image(systemName: "play.circle.fill")
-                .font(.system(size: 56))
-                .foregroundStyle(.green)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Start")
-    }
-
-    // MARK: - Permissions (async/await)
-
-    private func requestNotificationsIfNeeded() async {
-        guard !didRequestNotifications else { return }
-        let center = UNUserNotificationCenter.current()
-        _ = try? await center.requestAuthorization(options: [.alert, .sound, .badge])
-        didRequestNotifications = true
-    }
-
+    // Permissions for Stopwatch only; PrayerTimerController handles its own
     private func requestHealthKitIfNeeded() async {
         guard isHealthKitAvailable && !healthKitPrompted else { return }
         await withCheckedContinuation { continuation in
@@ -1494,7 +892,6 @@ struct HomeView: View {
     // MARK: - ReadingProgress safety dedupe on Home (one-time)
     private func dedupeReadingProgress() {
         guard progressList.count > 1 else { return }
-        // progressList is already sorted newest-first by the @Query
         let toDelete = progressList.dropFirst()
         for p in toDelete {
             modelContext.delete(p)
@@ -1504,9 +901,6 @@ struct HomeView: View {
 
     // MARK: - NEW: Games Card (Home) using centralized GameStats
     @State private var gameStatsVersion: Int = 0
-
-    // MARK: - NEW: Bible Stats Card
-    @StateObject private var bibleVM = HomeBibleStatsViewModel()
 }
 
 private let oldTestamentBooks: Set<String> = [
