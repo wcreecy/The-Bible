@@ -3,10 +3,7 @@ import SwiftUI
 struct StreaksCard: View {
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
 
-    // Expand/collapse calendar
-    @State private var streaksExpanded: Bool = false
-    // Month anchor for the calendar grid
-    @State private var calendarMonthAnchor: Date = Date()
+    @StateObject private var vm = StreaksViewModel()
 
     private var goalSeconds: Int { max(1, dailyGoalMinutes) * 60 }
 
@@ -32,10 +29,7 @@ struct StreaksCard: View {
     }
 
     private func friendlyDate(_ date: Date) -> String {
-        let cal = Calendar.current
-        if cal.isDateInToday(date) { return "Today" }
-        if cal.isDateInYesterday(date) { return "Yesterday" }
-        return date.formatted(date: .abbreviated, time: .omitted)
+        vm.friendlyDate(date)
     }
 
     var body: some View {
@@ -116,9 +110,9 @@ struct StreaksCard: View {
                 .padding(.top, 4)
 
                 // Expandable calendar
-                DisclosureGroup(isExpanded: $streaksExpanded) {
+                DisclosureGroup(isExpanded: $vm.isExpanded) {
                     VStack(alignment: .leading, spacing: 8) {
-                        calendarMonthView(anchor: calendarMonthAnchor)
+                        calendarMonthView(anchor: vm.monthAnchor)
                     }
                     .padding(.top, 4)
                 } label: {
@@ -127,56 +121,21 @@ struct StreaksCard: View {
                             .font(.headline)
                             .foregroundStyle(.secondary)
                         Spacer()
-                        Text(calendarMonthAnchor.formatted(.dateTime.month().year()))
+                        Text(vm.friendlyMonthYear)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
                 }
-                .animation(.spring(response: 0.25, dampingFraction: 0.9), value: streaksExpanded)
+                .animation(.spring(response: 0.25, dampingFraction: 0.9), value: vm.isExpanded)
             }
         }
         .accessibilityElement(children: .contain)
         .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
-            // Keep live by re-rendering; computed properties read updated singletons
+            // No-op; vm listens and nudges objectWillChange
         }
     }
 
-    // MARK: - Calendar helpers (local to this file)
-
-    private func startOfMonth(for date: Date) -> Date {
-        let cal = Calendar.current
-        let comps = cal.dateComponents([.year, .month], from: date)
-        return cal.date(from: comps) ?? date
-    }
-
-    private func daysGrid(for month: Date) -> [[Date?]] {
-        let cal = Calendar.current
-        let start = startOfMonth(for: month)
-        guard let range = cal.range(of: .day, in: .month, for: start) else { return [] }
-        let firstWeekday = cal.component(.weekday, from: start)
-        let daysCount = range.count
-
-        var grid: [[Date?]] = []
-        var row: [Date?] = []
-
-        let leading = (firstWeekday - cal.firstWeekday + 7) % 7
-        for _ in 0..<leading { row.append(nil) }
-
-        for day in 1...daysCount {
-            if let d = cal.date(byAdding: .day, value: day - 1, to: start) {
-                row.append(d)
-                if row.count == 7 {
-                    grid.append(row)
-                    row = []
-                }
-            }
-        }
-        if !row.isEmpty {
-            while row.count < 7 { row.append(nil) }
-            grid.append(row)
-        }
-        return grid
-    }
+    // MARK: - Calendar pieces (delegating to VM)
 
     private struct DayCell: View {
         let dayNumber: Int
@@ -207,19 +166,15 @@ struct StreaksCard: View {
 
     private struct WeekRow: View {
         let dates: [Date?]
+        let met: (Date) -> Bool
+        let future: (Date) -> Bool
 
         var body: some View {
             HStack(spacing: 6) {
                 ForEach(0..<7, id: \.self) { c in
                     if let day = dates[c] {
                         let dayNum = Calendar.current.component(.day, from: day)
-                        let met = StreakTracker.isGoalMet(on: day)
-                        let future = {
-                            let cal = Calendar.current
-                            if cal.isDate(day, inSameDayAs: Date()) { return false }
-                            return day > Date()
-                        }()
-                        DayCell(dayNumber: dayNum, met: met, future: future)
+                        DayCell(dayNumber: dayNum, met: met(day), future: future(day))
                     } else {
                         Color.clear
                             .frame(maxWidth: .infinity)
@@ -232,16 +187,13 @@ struct StreaksCard: View {
 
     @ViewBuilder
     private func calendarMonthView(anchor: Date) -> some View {
-        let cal = Calendar.current
-        let grid = daysGrid(for: anchor)
-        let weekdays = cal.shortWeekdaySymbols
+        let grid = vm.daysGrid(for: anchor)
+        let weekdays = vm.weekdayShortSymbols
 
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Button {
-                    if let prev = cal.date(byAdding: .month, value: -1, to: anchor) {
-                        calendarMonthAnchor = prev
-                    }
+                    vm.goToPreviousMonth()
                 } label: {
                     Image(systemName: "chevron.left.circle.fill")
                 }
@@ -250,9 +202,7 @@ struct StreaksCard: View {
                 Spacer()
 
                 Button {
-                    if let next = cal.date(byAdding: .month, value: 1, to: anchor) {
-                        calendarMonthAnchor = next
-                    }
+                    vm.goToNextMonth()
                 } label: {
                     Image(systemName: "chevron.right.circle.fill")
                 }
@@ -271,7 +221,11 @@ struct StreaksCard: View {
 
             VStack(spacing: 6) {
                 ForEach(0..<grid.count, id: \.self) { r in
-                    WeekRow(dates: grid[r])
+                    WeekRow(
+                        dates: grid[r],
+                        met: { vm.goalMet(for: $0) },
+                        future: { vm.isFuture($0) }
+                    )
                 }
             }
         }

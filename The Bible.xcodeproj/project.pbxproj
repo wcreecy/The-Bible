@@ -30,6 +30,7 @@
 		2C2765782EE8E5B800A321FE /* PrayerTimerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2765772EE8E5B800A321FE /* PrayerTimerController.swift */; };
 		2C27657A2EE8EABD00A321FE /* StopwatchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2765792EE8EABD00A321FE /* StopwatchController.swift */; };
 		2C27657C2EE8EB3E00A321FE /* ModePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C27657B2EE8EB3E00A321FE /* ModePicker.swift */; };
+		2C27657E2EE8ECB400A321FE /* StreaksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C27657D2EE8ECB400A321FE /* StreaksViewModel.swift */; };
 		2C3F38102EC4042D002CA795 /* Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3F380F2EC4042D002CA795 /* Styles.swift */; };
 		2C462E272ED7BC0500AE0E5F /* StreakTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C462E262ED7BC0400AE0E5F /* StreakTracker.swift */; };
 		2C49CF462EBE10000006FF79 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D972EB3895400A657FA /* HomeView.swift */; };
@@ -165,6 +166,7 @@
 		2C2765772EE8E5B800A321FE /* PrayerTimerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimerController.swift; sourceTree = "<group>"; };
 		2C2765792EE8EABD00A321FE /* StopwatchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopwatchController.swift; sourceTree = "<group>"; };
 		2C27657B2EE8EB3E00A321FE /* ModePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModePicker.swift; sourceTree = "<group>"; };
+		2C27657D2EE8ECB400A321FE /* StreaksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreaksViewModel.swift; sourceTree = "<group>"; };
 		2C279CFF2EBCC62A0023C46B /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		2C279D012EBCC62C0023C46B /* NavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationCoordinator.swift; sourceTree = "<group>"; };
 		2C3B0F6D2EB14F3D0089556C /* The Bible.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "The Bible.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -455,6 +457,7 @@
 				2C2765772EE8E5B800A321FE /* PrayerTimerController.swift */,
 				2C2765792EE8EABD00A321FE /* StopwatchController.swift */,
 				2C27657B2EE8EB3E00A321FE /* ModePicker.swift */,
+				2C27657D2EE8ECB400A321FE /* StreaksViewModel.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -881,6 +884,7 @@
 				2C49CF532EBE10310006FF79 /* NavigationCoordinator.swift in Sources */,
 				2C4F309E2EDA1DFE006C8DFD /* HomeBibleStatsViewModel.swift in Sources */,
 				2C2764F82EE8C8DB00A321FE /* DailyFocusCard.swift in Sources */,
+				2C27657E2EE8ECB400A321FE /* StreaksViewModel.swift in Sources */,
 				2C4F30982ED9150E006C8DFD /* ReadingTimeTracker.swift in Sources */,
 				2CC5D6E92ED608E8009E4C0E /* Haptics.swift in Sources */,
 				2C49CF542EBE10310006FF79 /* Route.swift in Sources */,

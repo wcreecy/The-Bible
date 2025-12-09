@@ -193,156 +193,6 @@ struct HomeView: View {
         StreaksCard()
     }
 
-    // Local UI state for expanding the calendar
-    @State private var streaksExpanded: Bool = false
-    @State private var calendarMonthAnchor: Date = Date()
-
-    private func startOfMonth(for date: Date) -> Date {
-        let cal = Calendar.current
-        let comps = cal.dateComponents([.year, .month], from: date)
-        return cal.date(from: comps) ?? date
-    }
-    private func daysGrid(for month: Date) -> [[Date?]] {
-        let cal = Calendar.current
-        let start = startOfMonth(for: month)
-        guard let range = cal.range(of: .day, in: .month, for: start) else { return [] }
-        let firstWeekday = cal.component(.weekday, from: start)
-        let daysCount = range.count
-
-        var grid: [[Date?]] = []
-        var row: [Date?] = []
-
-        let leading = (firstWeekday - cal.firstWeekday + 7) % 7
-        for _ in 0..<leading { row.append(nil) }
-
-        for day in 1...daysCount {
-            if let d = cal.date(byAdding: .day, value: day - 1, to: start) {
-                row.append(d)
-                if row.count == 7 {
-                    grid.append(row)
-                    row = []
-                }
-            }
-        }
-        if !row.isEmpty {
-            while row.count < 7 { row.append(nil) }
-            grid.append(row)
-        }
-        return grid
-    }
-
-    private func isFuture(_ date: Date, relativeTo today: Date = Date()) -> Bool {
-        let cal = Calendar.current
-        if cal.isDate(date, inSameDayAs: today) { return false }
-        return date > today
-    }
-
-    private struct DayCell: View {
-        let dayNumber: Int
-        let met: Bool
-        let future: Bool
-
-        var body: some View {
-            VStack(spacing: 4) {
-                Text("\(dayNumber)")
-                    .font(.caption)
-                    .foregroundStyle(future ? .tertiary : .secondary)
-                Image(systemName: met ? "checkmark.circle.fill" : "xmark.circle.fill")
-                    .font(.caption)
-                    .foregroundStyle(future ? AnyShapeStyle(.tertiary) : AnyShapeStyle(met ? Color.green : Color.red))
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 6)
-            .background(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(Color(.secondarySystemBackground))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(Color.black.opacity(0.06), lineWidth: 1)
-            )
-        }
-    }
-
-    private struct WeekRow: View {
-        let dates: [Date?]
-
-        var body: some View {
-            HStack(spacing: 6) {
-                ForEach(0..<7, id: \.self) { c in
-                    if let day = dates[c] {
-                        let dayNum = Calendar.current.component(.day, from: day)
-                        let met = StreakTracker.isGoalMet(on: day)
-                        let future = {
-                            let cal = Calendar.current
-                            if cal.isDate(day, inSameDayAs: Date()) { return false }
-                            return day > Date()
-                        }()
-                        DayCell(dayNumber: dayNum, met: met, future: future)
-                    } else {
-                        Color.clear
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 6)
-                    }
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func calendarMonthView(anchor: Date) -> some View {
-        let cal = Calendar.current
-        let grid = daysGrid(for: anchor)
-        let weekdays = cal.shortWeekdaySymbols
-
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Button {
-                    if let prev = cal.date(byAdding: .month, value: -1, to: anchor) {
-                        calendarMonthAnchor = prev
-                    }
-                } label: {
-                    Image(systemName: "chevron.left.circle.fill")
-                }
-                .buttonStyle(.plain)
-
-                Spacer()
-
-                Button {
-                    if let next = cal.date(byAdding: .month, value: 1, to: anchor) {
-                        calendarMonthAnchor = next
-                    }
-                } label: {
-                    Image(systemName: "chevron.right.circle.fill")
-                }
-                .buttonStyle(.plain)
-            }
-            .foregroundStyle(.blue)
-
-            HStack {
-                ForEach(weekdays, id: \.self) { w in
-                    Text(w.uppercased())
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity)
-                }
-            }
-
-            VStack(spacing: 6) {
-                ForEach(0..<grid.count, id: \.self) { r in
-                    WeekRow(dates: grid[r])
-                }
-            }
-        }
-    }
-
-    private func friendlyDate(_ date: Date) -> String {
-        let cal = Calendar.current
-        if cal.isDateInToday(date) { return "Today" }
-        if cal.isDateInYesterday(date) { return "Yesterday" }
-        return date.formatted(date: .abbreviated, time: .omitted)
-    }
-
     // MARK: - Dynamic body using saved layout
 
     @StateObject private var votdVM = VerseOfDayViewModel()
@@ -655,9 +505,6 @@ struct HomeView: View {
         } message: {
             Text("Your prayer/study timer has completed.")
         }
-        .onDisappear {
-            streaksExpanded = false
-        }
     }
 
     private func formattedTime(_ totalSeconds: Int) -> String {
@@ -794,4 +641,3 @@ private let oldTestamentBooks: Set<String> = [
 // Note: HeroCard, button styles, DayCell, WeekRow,
 // PrayerStudyTimerSetupView, and DebouncedWidgetReloader have been
 // moved to their own files as part of UI extraction.
-
