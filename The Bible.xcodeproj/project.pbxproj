@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		2C135C3B2EC650D900306AD5 /* GameScoreboardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */; };
+		2C23F7E92EE84C400028B5B3 /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C23F7E82EE84C400028B5B3 /* ButtonStyles.swift */; };
+		2C23F7EB2EE84C430028B5B3 /* HeroCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C23F7EA2EE84C430028B5B3 /* HeroCard.swift */; };
+		2C23F7ED2EE84C460028B5B3 /* DayCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C23F7EC2EE84C460028B5B3 /* DayCell.swift */; };
+		2C23F7EF2EE84C490028B5B3 /* WeekRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C23F7EE2EE84C490028B5B3 /* WeekRow.swift */; };
+		2C23F7F12EE84C4C0028B5B3 /* PrayerStudyTimerSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C23F7F02EE84C4C0028B5B3 /* PrayerStudyTimerSetupView.swift */; };
 		2C275BC02EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2C275BBF2EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf */; };
 		2C3F38102EC4042D002CA795 /* Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3F380F2EC4042D002CA795 /* Styles.swift */; };
 		2C462E272ED7BC0500AE0E5F /* StreakTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C462E262ED7BC0400AE0E5F /* StreakTracker.swift */; };
@@ -46,6 +51,7 @@
 		2C4F309A2ED91514006C8DFD /* BibleStatsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4F30992ED91514006C8DFD /* BibleStatsStore.swift */; };
 		2C4F309C2ED9BF4D006C8DFD /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4F309B2ED9BF4D006C8DFD /* StatsView.swift */; };
 		2C4F309E2EDA1DFE006C8DFD /* HomeBibleStatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4F309D2EDA1DFE006C8DFD /* HomeBibleStatsViewModel.swift */; };
+		2C553F282EE84E9F009C1528 /* DebouncedWidgetReloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C553F272EE84E9F009C1528 /* DebouncedWidgetReloader.swift */; };
 		2C7EA8BB2EDE7AEA0073F01C /* iCloudSyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EA8BA2EDE7AEA0073F01C /* iCloudSyncCoordinator.swift */; };
 		2C9CD7852EE2FFB90073622F /* GameStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9CD7842EE2FFB90073622F /* GameStats.swift */; };
 		2CB309D32EC2CE2D0032CB7D /* BibleReferenceLinker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB309D22EC2CE2D0032CB7D /* BibleReferenceLinker.swift */; };
@@ -121,6 +127,11 @@
 
 /* Begin PBXFileReference section */
 		2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScoreboardCard.swift; sourceTree = "<group>"; };
+		2C23F7E82EE84C400028B5B3 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
+		2C23F7EA2EE84C430028B5B3 /* HeroCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroCard.swift; sourceTree = "<group>"; };
+		2C23F7EC2EE84C460028B5B3 /* DayCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayCell.swift; sourceTree = "<group>"; };
+		2C23F7EE2EE84C490028B5B3 /* WeekRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekRow.swift; sourceTree = "<group>"; };
+		2C23F7F02EE84C4C0028B5B3 /* PrayerStudyTimerSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerStudyTimerSetupView.swift; sourceTree = "<group>"; };
 		2C275BBF2EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = "TheBibleApp-UserGuide.rtf"; sourceTree = "<group>"; };
 		2C279CFF2EBCC62A0023C46B /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		2C279D012EBCC62C0023C46B /* NavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationCoordinator.swift; sourceTree = "<group>"; };
@@ -147,6 +158,7 @@
 		2C4F30992ED91514006C8DFD /* BibleStatsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleStatsStore.swift; sourceTree = "<group>"; };
 		2C4F309B2ED9BF4D006C8DFD /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		2C4F309D2EDA1DFE006C8DFD /* HomeBibleStatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeBibleStatsViewModel.swift; sourceTree = "<group>"; };
+		2C553F272EE84E9F009C1528 /* DebouncedWidgetReloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebouncedWidgetReloader.swift; sourceTree = "<group>"; };
 		2C736D082EB9899600CD2E6F /* BibleSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleSplitView.swift; sourceTree = "<group>"; };
 		2C7841382EB407C0008DDBBF /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		2C7EA8BA2EDE7AEA0073F01C /* iCloudSyncCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iCloudSyncCoordinator.swift; sourceTree = "<group>"; };
@@ -390,6 +402,12 @@
 				2CE1B9612EDD1FFF001779B1 /* GamesCardView.swift */,
 				2C7EA8BA2EDE7AEA0073F01C /* iCloudSyncCoordinator.swift */,
 				2C9CD7842EE2FFB90073622F /* GameStats.swift */,
+				2C23F7E82EE84C400028B5B3 /* ButtonStyles.swift */,
+				2C23F7EA2EE84C430028B5B3 /* HeroCard.swift */,
+				2C23F7EC2EE84C460028B5B3 /* DayCell.swift */,
+				2C23F7EE2EE84C490028B5B3 /* WeekRow.swift */,
+				2C553F272EE84E9F009C1528 /* DebouncedWidgetReloader.swift */,
+				2C23F7F02EE84C4C0028B5B3 /* PrayerStudyTimerSetupView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -789,8 +807,10 @@
 				2CE599562ECF4D9600A24C9F /* SmartLinkSheet.swift in Sources */,
 				2C49CF7F2EBE27AE0006FF79 /* PrayerTimerAttributes.swift in Sources */,
 				2C49CF4C2EBE10260006FF79 /* QuizView.swift in Sources */,
+				2C23F7E92EE84C400028B5B3 /* ButtonStyles.swift in Sources */,
 				2C49CF4D2EBE10310006FF79 /* BibleSplitView.swift in Sources */,
 				2C49CF4E2EBE10310006FF79 /* BeatTheClockGameView.swift in Sources */,
+				2C23F7EB2EE84C430028B5B3 /* HeroCard.swift in Sources */,
 				2CD3DAA62EDA7EC900F89FB7 /* VersesChecklistView.swift in Sources */,
 				2C49CF4F2EBE10310006FF79 /* HealthKitManager.swift in Sources */,
 				2C49CF502EBE10310006FF79 /* HangmanGameView.swift in Sources */,
@@ -802,6 +822,7 @@
 				2C49CF522EBE10310006FF79 /* ShareText.swift in Sources */,
 				2C49CF872EBE2E9C0006FF79 /* StopwatchActivityController.swift in Sources */,
 				2CD7D8252EC9FF9A00849235 /* LastReadWidget.swift in Sources */,
+				2C23F7ED2EE84C460028B5B3 /* DayCell.swift in Sources */,
 				2C49CF822EBE27D40006FF79 /* PrayerTimerActivityController.swift in Sources */,
 				2CD7D8232EC9FF9A00849235 /* LastReadProvider.swift in Sources */,
 				2C4F309C2ED9BF4D006C8DFD /* StatsView.swift in Sources */,
@@ -812,6 +833,8 @@
 				2C49CF542EBE10310006FF79 /* Route.swift in Sources */,
 				2C49CF552EBE10310006FF79 /* TimerSound.swift in Sources */,
 				2CE599542ECF403500A24C9F /* SharedJournalViews.swift in Sources */,
+				2C23F7EF2EE84C490028B5B3 /* WeekRow.swift in Sources */,
+				2C23F7F12EE84C4C0028B5B3 /* PrayerStudyTimerSetupView.swift in Sources */,
 				2C135C3B2EC650D900306AD5 /* GameScoreboardCard.swift in Sources */,
 				2C4F309A2ED91514006C8DFD /* BibleStatsStore.swift in Sources */,
 				2C9CD7852EE2FFB90073622F /* GameStats.swift in Sources */,
@@ -827,6 +850,7 @@
 				2CBDF1DA2ED09F7E00CEE884 /* WordSearchGameView.swift in Sources */,
 				2C49CF472EBE10070006FF79 /* Toast.swift in Sources */,
 				2CB309D32EC2CE2D0032CB7D /* BibleReferenceLinker.swift in Sources */,
+				2C553F282EE84E9F009C1528 /* DebouncedWidgetReloader.swift in Sources */,
 				2CD7D8292ECA125200849235 /* PinnedVerseIntent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
