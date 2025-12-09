@@ -6,8 +6,9 @@ struct DailyFocusCard: View {
     @Binding var hasSavedFocus: Bool
     @Binding var focusSavedAt: Date?
 
-    @FocusState var focusTitleIsFocused: Bool
-    @FocusState var focusBodyIsFocused: Bool
+    // Accept focus bindings from parent instead of declaring local @FocusState
+    var focusTitleIsFocused: FocusState<Bool>.Binding
+    var focusBodyIsFocused: FocusState<Bool>.Binding
 
     @Binding var isFocusBodyExpanded: Bool
 
@@ -86,7 +87,7 @@ struct DailyFocusCard: View {
                     TextField("What's your focus on today?", text: $focusTitle)
                         .textFieldStyle(.roundedBorder)
                         .submitLabel(.done)
-                        .focused($focusTitleIsFocused)
+                        .focused(focusTitleIsFocused)
                 }
 
                 if hasTitle && isFocusBodyExpanded {
@@ -102,7 +103,7 @@ struct DailyFocusCard: View {
                                     .padding(.leading, 5)
                             }
                             TextEditor(text: $focusBody)
-                                .focused($focusBodyIsFocused)
+                                .focused(focusBodyIsFocused)
                                 .frame(minHeight: 120)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -137,7 +138,7 @@ struct DailyFocusCard: View {
                                 isFocusBodyExpanded = true
                             }
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                focusBodyIsFocused = true
+                                focusBodyIsFocused.wrappedValue = true
                             }
                         } label: {
                             Image(systemName: "chevron.down.circle")
@@ -149,7 +150,14 @@ struct DailyFocusCard: View {
                     }
                 }
                 .padding(.top, 4)
-                .toolbar { ToolbarItem(placement: .keyboard) { Button("Done") { focusTitleIsFocused = false; focusBodyIsFocused = false } } }
+                .toolbar {
+                    ToolbarItem(placement: .keyboard) {
+                        Button("Done") {
+                            focusTitleIsFocused.wrappedValue = false
+                            focusBodyIsFocused.wrappedValue = false
+                        }
+                    }
+                }
 
                 if hasSavedFocus, let savedAt = focusSavedAt {
                     let cal = Calendar.current

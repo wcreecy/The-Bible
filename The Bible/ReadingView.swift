@@ -801,11 +801,6 @@ struct ReadingView: View {
         withAnimation(.spring()) { showFavoriteToast = true }
         markActivityAndScheduleInactivity()
     }
-
-    // MARK: - Share text helper
-    private func shareText(bookName: String, chapter: Int, verse: Int, text: String) -> String {
-        "“\(text)” — \(bookName) \(chapter):\(verse)"
-    }
 }
 
 // MARK: - Search support
@@ -922,3 +917,4 @@ private extension ReadingView {
         showSearchSheet = false
     }
 }
+

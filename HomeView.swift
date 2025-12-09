@@ -25,7 +25,8 @@ private enum HomeCardID: String, CaseIterable, Identifiable {
 }
 
 struct HomeView: View {
-    private enum PrayerMode: String { case timer, stopwatch, focus }
+    // Visibility widened so split cards can reference it
+    enum PrayerMode: String { case timer, stopwatch, focus }
 
     // Always keep newest progress first so `progressList.first` is canonical
     @Query(sort: \ReadingProgress.updatedAt, order: .reverse) private var progressList: [ReadingProgress]
@@ -70,9 +71,6 @@ struct HomeView: View {
     @FocusState private var focusBodyIsFocused: Bool
 
     @State private var isFocusBodyExpanded: Bool = false
-
-    // NEW: move popover state here so it persists
-    @State private var showFocusInfoPopover: Bool = false
 
     // NEW: saved-at timestamp for Daily Focus confirmation
     @State private var focusSavedAt: Date? = nil
@@ -308,472 +306,14 @@ struct HomeView: View {
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
     @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds: Int = 0
 
-    // Progress-fill text used in the title card subtitle
-    private struct ProgressFillText: View {
-        let text: String
-        let font: Font
-        let progress: Double // 0...1
-        // Gradient from blue (cold) to red (hot)
-        private var gradient: LinearGradient {
-            LinearGradient(colors: [.blue, .red], startPoint: .leading, endPoint: .trailing)
-        }
-
-        var body: some View {
-            ZStack(alignment: .leading) {
-                Text(text)
-                    .font(font)
-                    .foregroundStyle(.secondary)
-                // Overlay the same text, but clipped horizontally by progress, filled with gradient
-                Text(text)
-                    .font(font)
-                    .foregroundStyle(gradient)
-                    .mask(
-                        GeometryReader { geo in
-                            let width = max(0, min(1, progress)) * geo.size.width
-                            Rectangle()
-                                .frame(width: width, height: geo.size.height)
-                                .alignmentGuide(.leading) { d in d[.leading] }
-                        }
-                    )
-            }
-            .accessibilityLabel(text)
-        }
-    }
-
-    @ViewBuilder
-    private var titleCard: some View {
-        // Determine iPad-specific sizing
-        let isPad = self.isPad
-        let buttonScale: CGFloat = isPad ? 1.25 : 1.0
-        let titleFont: Font = isPad ? .system(.largeTitle, design: .default) : .largeTitle
-        let titleWeight: Font.Weight = .black
-        let _: Font = isPad ? .title3.weight(.semibold) : .subheadline.weight(.semibold)
-
-        // Compute today's daily goal progress for the subtitle fill
-        let goalSeconds = max(1, dailyGoalMinutes) * 60
-        // CHANGED: Use sessions-based local-day total to align with Streaks card
-        let todayReadingSeconds = BibleStatsStore.shared.todayTotalSeconds()
-        let progress = min(1.0, Double(max(0, todayReadingSeconds)) / Double(goalSeconds))
-        let percent = Int(round(progress * 100))
-        let streak = StreakTracker.currentStreak
-
-        HeroCard(
-            title: "Word of God",
-            subtitle: nil,
-            icon: "book.fill",
-            tint: .blue,
-            titleFont: titleFont,
-            titleFontWeight: titleWeight,
-            centerHeader: true // Center on iPhone and iPad
-        ) {
-            VStack(spacing: isPad ? 16 : 8) {
-                // Subtitle that fills with a blue->red gradient as progress increases
-                ProgressFillText(
-                    text: "What does God have for YOU today?",
-                    font: isPad ? .title3.weight(.semibold) : .subheadline.weight(.semibold),
-                    progress: progress
-                )
-                .frame(maxWidth: .infinity, alignment: .center)
-                .multilineTextAlignment(.center)
-                .accessibilityLabel("What does God have for you today? Daily goal progress \(percent) percent. Current streak \(streak) days.")
-
-                HStack(spacing: isPad ? 16 : 12) {
-                    Button {
-                        DispatchQueue.main.async {
-                            NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 5])
-                        }
-                    } label: {
-                        Label("Search", systemImage: "magnifyingglass")
-                            .lineLimit(1)
-                            .allowsTightening(true)
-                            .minimumScaleFactor(0.85)
-                    }
-                    .buttonStyle(SubtlePillButtonStyle(emphasized: false, sizeScale: buttonScale))
-
-                    Button {
-                        DispatchQueue.main.async {
-                            NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 1])
-                        }
-                    } label: {
-                        Label("Read", systemImage: "book")
-                            .lineLimit(1)
-                            .allowsTightening(true)
-                            .minimumScaleFactor(0.85)
-                    }
-                    .buttonStyle(SubtlePillButtonStyle(emphasized: true, sizeScale: buttonScale))
-
-                    Button {
-                        DispatchQueue.main.async {
-                            NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 4])
-                        }
-                    } label: {
-                        Label("Favorites", systemImage: "heart")
-                            .lineLimit(1)
-                            .allowsTightening(true)
-                            .minimumScaleFactor(0.85)
-                    }
-                    .buttonStyle(SubtlePillButtonStyle(emphasized: false, sizeScale: buttonScale))
-                }
-                .frame(maxWidth: .infinity, alignment: .center)
-            }
-        }
-        .frame(maxWidth: 700)
-        .frame(maxWidth: .infinity, alignment: .center)
-    }
-
-    @ViewBuilder
-    private var verseOfDayCard: some View {
-        HeroCard(
-            title: verseCardTitle,
-            subtitle: nil,
-            icon: verseCardIcon,
-            tint: .orange,
-            trailingAccessory: {
-                HStack(spacing: 8) {
-                    if verseOfDayPaused {
-                        Text("Paused")
-                            .font(.caption2).bold()
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(
-                                Capsule().fill(Color.red.opacity(0.15))
-                            )
-                            .overlay(
-                                Capsule().stroke(Color.red.opacity(0.4), lineWidth: 1)
-                            )
-                            .foregroundStyle(.red)
-                    }
-                    Button(action: {
-                        let newValue = !verseOfDayPaused
-                        verseOfDayPaused = newValue
-                        if newValue, let v = verseOfDay {
-                            storedVerseBook = v.bookName
-                            storedVerseChapter = v.chapterNumber
-                            storedVerseNumber = v.verseNumber
-                            storedVerseText = v.verseText
-                        }
-                        mirrorVerseToAppGroup(book: storedVerseBook, chapter: storedVerseChapter, verse: storedVerseNumber, text: storedVerseText)
-                        if verseOfDayPaused {
-                            nextRefreshTimer?.invalidate()
-                            nextRefreshTimer = nil
-                        } else {
-                            scheduleNextVerseRefreshTimer()
-                        }
-                        let generator = UIImpactFeedbackGenerator(style: .medium)
-                        generator.impactOccurred()
-                    }) {
-                        Image(systemName: verseOfDayPaused ? "pause.circle.fill" : "pause.circle")
-                            .font(.title3)
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(verseOfDayPaused ? Color.red : Color.blue)
-                    .accessibilityLabel(verseOfDayPaused ? "Unpause Verse Refresh" : "Pause Verse Refresh")
-                    .help(verseOfDayPaused ? "Unpause Verse Refresh" : "Pause Verse Refresh")
-                }
-            }
-        ) {
-            VStack(alignment: .leading, spacing: 10) {
-                if let v = verseOfDay {
-                    Text(v.verseText)
-                        .font(.headline)
-                        .italic()
-                        .lineLimit(8)
-                        .truncationMode(.tail)
-                    Text("\(v.bookName) \(v.chapterNumber):\(v.verseNumber)")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-
-                    HStack(spacing: 24) {
-                        Button(action: { loadRandomVerse() }) {
-                            Label("Refresh", systemImage: "arrow.clockwise")
-                        }
-                        .labelStyle(.iconOnly)
-                        .foregroundStyle(verseOfDayPaused ? AnyShapeStyle(.secondary) : AnyShapeStyle(.green))
-                        .font(.title3)
-                        .help("Refresh")
-                        .disabled(verseOfDayPaused)
-
-                        Button(action: {
-                            copyVerse(v)
-                        }) {
-                            Label("Copy", systemImage: "doc.on.doc")
-                        }
-                        .labelStyle(.iconOnly)
-                        .font(.title3)
-                        .help("Copy")
-
-                        ShareLink(item: shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText)) {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                        .font(.title3)
-                        .help("Share")
-
-                        Button(action: {
-                            let refText = "\(v.bookName) \(v.chapterNumber):\(v.verseNumber)"
-                            openJournalForReference(text: refText)
-                        }) {
-                            Image(systemName: "book.closed")
-                        }
-                        .font(.title3)
-                        .foregroundStyle(.brown)
-                        .help("Journal")
-
-                        Button(action: { toggleFavorite(for: v) }) {
-                            Image(systemName: isFavorited(v) ? "heart.fill" : "heart")
-                                .foregroundStyle(.red)
-                        }
-                        .font(.title3)
-                        .help("Favorite")
-                    }
-                    .frame(maxWidth: .infinity)
-
-                    Text(nextVerseRefreshDescription)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .padding(.top, 4)
-                } else {
-                    VStack(alignment: .leading, spacing: 6) {
-                        if !bibleStore.isReady {
-                            Text("Loading verse data…")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .redacted(reason: .placeholder)
-                        } else {
-                            Text("Verse will refresh automatically at your selected times.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                        Text(nextVerseRefreshDescription)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                let generator = UIImpactFeedbackGenerator(style: .heavy)
-                generator.impactOccurred()
-                guard let v = verseOfDay,
-                      let book = BibleData.books.first(where: { $0.name == v.bookName }),
-                      let chapter = book.chapters.first(where: { $0.number == v.chapterNumber }) else { return }
-                coordinator.push(.reader(book: book, chapter: chapter, startVerse: v.verseNumber))
-            }
-            .contextMenu {
-                if let v = verseOfDay {
-                    Button {
-                        copyVerse(v)
-                    } label: {
-                        Label("Copy", systemImage: "doc.on.doc")
-                    }
-
-                    ShareLink(item: shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText)) {
-                        Label("Share", systemImage: "square.and.arrow.up")
-                    }
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var dailyFocusCard: some View {
-        @AppStorage("liveActivitiesEnabled") var liveActivitiesEnabled: Bool = true
-
-        HeroCard(
-            title: "Daily Focus",
-            subtitle: nil,
-            icon: "target",
-            tint: .purple,
-            trailingAccessory: {
-                HStack(spacing: 8) {
-                    if hasSavedFocus {
-                        Text("Saved")
-                            .font(.caption2).bold()
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(
-                                Capsule().fill(Color.green.opacity(0.15))
-                            )
-                            .overlay(
-                                Capsule().stroke(Color.green.opacity(0.5), lineWidth: 1)
-                            )
-                            .foregroundStyle(.green)
-                            .accessibilityHidden(false)
-                            .accessibilityLabel("Saved Focus")
-                    }
-                    Button {
-                        showFocusInfoPopover.toggle()
-                    } label: {
-                        Image(systemName: "info.circle")
-                            .font(.title3)
-                    }
-                    .buttonStyle(.plain)
-                    .popover(isPresented: $showFocusInfoPopover) {
-                        ScrollView {
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text("About Daily Focus")
-                                    .font(.headline)
-                                Text("Type a title and optional notes, then save. Your focus will appear on the dynamic island (iPhone only) and the lock screen when live activities are enabled (enable/disable live activities from the app's settings menu).")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                    .multilineTextAlignment(.leading)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                Button("Got it") { showFocusInfoPopover = false }
-                                    .buttonStyle(.borderedProminent)
-                            }
-                            .padding()
-                        }
-                        .presentationDetents([.medium, .large])
-                    }
-                }
-            }
-        ) {
-            VStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Today's Focus")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    TextField("What's your focus on today?", text: $focusTitle)
-                        .textFieldStyle(.roundedBorder)
-                        .submitLabel(.done)
-                        .focused($focusTitleIsFocused)
-                }
-
-                let hasTitle = !focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-
-                if hasTitle && isFocusBodyExpanded {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Notes")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        ZStack(alignment: .topLeading) {
-                            if focusBody.isEmpty {
-                                Text("Enter your focus notes…")
-                                    .foregroundStyle(.secondary)
-                                    .padding(.top, 8)
-                                    .padding(.leading, 5)
-                            }
-                            TextEditor(text: $focusBody)
-                                .focused($focusBodyIsFocused)
-                                .frame(minHeight: 120)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                        .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                                )
-                        }
-                    }
-                }
-
-                let hasTypedLetter: Bool = {
-                    let letters = CharacterSet.letters
-                    let t = focusTitle.unicodeScalars.contains { letters.contains($0) }
-                    let b = focusBody.unicodeScalars.contains { letters.contains($0) }
-                    return t || b
-                }()
-
-                HStack(spacing: 12) {
-                    Button {
-                        sharedDefaults?.set(focusTitle, forKey: "focusTitle")
-                        sharedDefaults?.set(focusBody, forKey: "focusBody")
-                        let now = Date()
-                        sharedDefaults?.set(now.timeIntervalSince1970, forKey: "focusSavedAt")
-                        focusSavedAt = now
-
-                        StopwatchActivityController.shared.cancel()
-                        PrayerTimerActivityController.shared.ensureActivityForFocus(
-                            title: focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : focusTitle,
-                            body: focusBody.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : focusBody
-                        )
-                        hasSavedFocus = true
-                        focusTitleIsFocused = false
-                        focusBodyIsFocused = false
-                        withAnimation(.spring()) { showFocusSavedToast = true }
-                    } label: {
-                        Label("Save", systemImage: "square.and.arrow.down")
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .green))
-                    .controlSize(.regular)
-                    .accessibilityLabel("Save Focus")
-                    .accessibilityHint("Saves your daily focus and shows it on the Dynamic Island")
-                    .disabled(!hasTypedLetter)
-
-                    Button {
-                        focusTitle = ""
-                        focusBody = ""
-                        sharedDefaults?.set("", forKey: "focusTitle")
-                        sharedDefaults?.set("", forKey: "focusBody")
-                        sharedDefaults?.removeObject(forKey: "focusSavedAt")
-                        focusSavedAt = nil
-
-                        PrayerTimerActivityController.shared.cancel()
-                        hasSavedFocus = false
-                        focusTitleIsFocused = false
-                        focusBodyIsFocused = false
-                        isFocusBodyExpanded = false
-                    } label: {
-                        Label("Clear", systemImage: "xmark.circle.fill")
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .red))
-                    .controlSize(.regular)
-                    .accessibilityLabel("Clear Focus")
-                    .accessibilityHint("Clears your daily focus and removes it from the Dynamic Island")
-                    .disabled(!hasTitle)
-
-                    if hasTitle {
-                        Button {
-                            withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                                isFocusBodyExpanded = true
-                            }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                focusBodyIsFocused = true
-                            }
-                        } label: {
-                            Image(systemName: "chevron.down.circle")
-                                .font(.title3)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Show Notes")
-                        .accessibilityHint("Opens the focus notes field")
-                    }
-                }
-                .padding(.top, 4)
-                .toolbar { ToolbarItem(placement: .keyboard) { Button("Done") { focusTitleIsFocused = false; focusBodyIsFocused = false } } }
-
-                if hasSavedFocus, let savedAt = focusSavedAt {
-                    let cal = Calendar.current
-                    let isToday = cal.isDateInToday(savedAt)
-                    HStack(spacing: 6) {
-                        Image(systemName: "checkmark.seal")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                        Text(isToday ? "Today’s Focus saved at \(savedAt.formatted(date: .omitted, time: .shortened))"
-                                     : "Focus saved on \(savedAt.formatted(date: .abbreviated, time: .shortened))")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                    }
-                    .padding(.top, 2)
-                }
-
-                if !liveActivitiesEnabled {
-                    HStack(alignment: .center, spacing: 8) {
-                        Image(systemName: "livephoto.slash")
-                            .foregroundStyle(.secondary)
-                        Text("Live Activities are off. Enable in Settings to show your Focus on the Lock Screen and Dynamic Island.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                        Spacer(minLength: 8)
-                        Button("Enable") {
-                            NotificationCenter.default.post(name: .openSettingsTab, object: nil)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.small)
-                        .tint(.purple)
-                    }
-                    .padding(.top, 6)
-                }
-            }
-        }
+    // Helper reused by TitleCardView
+    private func goalMinutesString(_ minutes: Int) -> String {
+        let mins = max(0, minutes)
+        let hrs = mins / 60
+        let rem = mins % 60
+        if hrs == 0 { return "\(rem) min" }
+        if rem == 0 { return "\(hrs) hr" }
+        return "\(hrs) hr \(rem) min"
     }
 
     // Daily goal values (used inside Streaks card)
@@ -788,7 +328,6 @@ struct HomeView: View {
         return min(1.0, Double(used) / Double(dailyGoalSeconds))
     }
     private var remainingSecondsToday: Int {
-        // UPDATED: align with StreakTracker (BibleStatsStore daily totals) to avoid mismatch.
         let todayKey = BibleStatsStore.isoDateString(Date())
         let used = max(0, BibleStatsStore.shared.loadDailyTotals()[todayKey, default: 0])
         return max(0, dailyGoalSeconds - used)
@@ -812,556 +351,16 @@ struct HomeView: View {
         }
     }
 
-    // Friendly formatter for goal minutes (e.g., "30 min", "1 hr", "1 hr 15 min")
-    private func goalMinutesString(_ minutes: Int) -> String {
-        let mins = max(0, minutes)
-        let hrs = mins / 60
-        let rem = mins % 60
-        if hrs == 0 { return "\(rem) min" }
-        if rem == 0 { return "\(hrs) hr" }
-        return "\(hrs) hr \(rem) min"
-    }
-
     @ViewBuilder
-    private var timerCard: some View {
-        Group {
-            if prayerMode == .timer {
-                if isTimerRunning {
-                    HeroCard(
-                        title: "Prayer Timer",
-                        subtitle: nil,
-                        icon: "timer",
-                        tint: timerTintColor,
-                        backgroundColor: isTimerRunning ? timerTintColor.opacity(0.20) : nil,
-                        strokeColor: isTimerRunning ? timerTintColor.opacity(0.35) : nil,
-                        trailingAccessory: {
-                            ModePicker(disabled: isTimerRunning || stopwatchRunning)
-                        }
-                    ) {
-                        HStack(alignment: .center, spacing: 16) {
-                            HStack(spacing: 16) {
-                                Button(action: { togglePause() }) {
-                                    Image(systemName: isPaused ? "play.circle.fill" : "pause.circle.fill")
-                                        .font(.system(size: 44))
-                                        .foregroundStyle(isPaused ? Color.green : timerTintColor)
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel(isPaused ? "Resume" : "Pause")
-
-                                Button(action: { stopTimer() }) {
-                                    Image(systemName: "stop.circle.fill")
-                                        .font(.system(size: 44))
-                                        .foregroundStyle(.red)
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("Stop")
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-
-                            Text(formattedTime(remainingSeconds))
-                                .font(.system(size: 36, weight: .semibold, design: .monospaced))
-                                .foregroundStyle(timerTintColor)
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    let generator = UIImpactFeedbackGenerator(style: .light)
-                                    generator.impactOccurred()
-                                    togglePause()
-                                }
-                                .accessibilityAddTraits(.isButton)
-                                .accessibilityLabel(isPaused ? "Resume timer" : "Pause timer")
-                                .accessibilityHint("Tap the time to \(isPaused ? "resume" : "pause")")
-
-                            HStack(spacing: 16) {
-                                Button(action: { addOneMinute() }) {
-                                    Text("+1")
-                                        .font(.subheadline.weight(.semibold))
-                                        .frame(width: 40, height: 40)
-                                        .foregroundStyle(.white)
-                                        .background(Circle().fill(Color.blue))
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("Add 1 minute")
-
-                                Button(action: { addFiveMinutes() }) {
-                                    Text("+5")
-                                        .font(.subheadline.weight(.semibold))
-                                        .frame(width: 40, height: 40)
-                                        .foregroundStyle(.white)
-                                        .background(Circle().fill(Color.blue))
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("Add 5 minutes")
-                            }
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .center)
-                    }
-                } else {
-                    HeroCard(
-                        title: "Prayer Timer",
-                        subtitle: nil,
-                        icon: "timer",
-                        tint: .blue,
-                        trailingAccessory: {
-                            ModePicker(disabled: isTimerRunning || stopwatchRunning)
-                        }
-                    ) {
-                        VStack(spacing: 12) {
-                            HStack(spacing: 12) {
-                                Button {
-                                    if isHealthKitAvailable && !healthKitPrompted {
-                                        Task { await requestHealthKitIfNeeded() }
-                                    }
-                                    let generator = UIImpactFeedbackGenerator(style: .light)
-                                    generator.impactOccurred()
-                                    showPrayerStudySheet = true
-                                } label: {
-                                    Image(systemName: "slider.horizontal.3")
-                                        .font(.subheadline.weight(.semibold))
-                                        .frame(width: 40, height: 40)
-                                        .foregroundStyle(.primary)
-                                        .background(
-                                            Circle().fill(Color(.secondarySystemBackground))
-                                        )
-                                        .overlay(
-                                            Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                                        )
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("Custom duration")
-
-                                Button { startTimer(minutes: 5) } label: { presetCircle("5") }
-                                .accessibilityLabel("Start 5 minutes")
-
-                                Button { startTimer(minutes: 10) } label: { presetCircle("10") }
-                                .accessibilityLabel("Start 10 minutes")
-
-                                Button { startTimer(minutes: 15) } label: { presetCircle("15") }
-                                .accessibilityLabel("Start 15 minutes")
-
-                                Button { startTimer(minutes: 20) } label: { presetCircle("20") }
-                                .accessibilityLabel("Start 20 minutes")
-
-                                Button { startTimer(minutes: 30) } label: { presetCircle("30") }
-                                .accessibilityLabel("Start 30 minutes")
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.top, 4)
-
-                            Text(formattedTime(remainingSeconds == 0 ? 0 : remainingSeconds))
-                                .font(.system(size: 36, weight: .semibold, design: .monospaced))
-                                .foregroundStyle(.secondary)
-                                .frame(maxWidth: .infinity)
-                                .padding(.top, 2)
-                        }
-                    }
-                }
-            } else if prayerMode == .stopwatch {
-                HeroCard(
-                    title: "Stopwatch",
-                    subtitle: nil,
-                    icon: "stopwatch",
-                    tint: .blue,
-                    trailingAccessory: {
-                        ModePicker(disabled: isTimerRunning || stopwatchRunning)
-                    }
-                ) {
-                    HStack(alignment: .center, spacing: 16) {
-                        Group {
-                            if stopwatchRunning {
-                                Button(action: { pauseStopwatch() }) {
-                                    Image(systemName: "pause.circle.fill")
-                                        .font(.system(size: 44))
-                                        .foregroundStyle(.yellow)
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("Pause")
-                            } else if stopwatchElapsed > 0 {
-                                Button(action: { startStopwatch() }) {
-                                    Image(systemName: "play.circle.fill")
-                                        .font(.system(size: 44))
-                                        .foregroundStyle(.green)
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("Resume")
-                            } else {
-                                Color.clear.frame(width: 44, height: 44)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-
-                        Text(formattedStopwatch(stopwatchElapsed))
-                            .font(.system(size: 36, weight: .semibold, design: .monospaced))
-                            .monospacedDigit()
-                            .foregroundStyle(stopwatchRunning ? .primary : .secondary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.6)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                let gen = UIImpactFeedbackGenerator(style: .light)
-                                gen.impactOccurred()
-                                if stopwatchRunning {
-                                    pauseStopwatch()
-                                } else {
-                                    startStopwatch()
-                                }
-                            }
-                            .accessibilityAddTraits(.isButton)
-                            .accessibilityLabel(stopwatchRunning ? "Pause stopwatch" : (stopwatchElapsed > 0 ? "Resume stopwatch" : "Start stopwatch"))
-                            .accessibilityHint("Tap the time to \(stopwatchRunning ? "pause" : (stopwatchElapsed > 0 ? "resume" : "start"))")
-
-                        HStack(spacing: 16) {
-                            if stopwatchRunning {
-                                Button(action: { stopStopwatch() }) {
-                                    Image(systemName: "stop.circle.fill")
-                                        .font(.system(size: 44))
-                                }
-                                .buttonStyle(.plain)
-                                .foregroundStyle(.red)
-                                .accessibilityLabel("Stop")
-                            } else if stopwatchElapsed > 0 {
-                                Button(action: { stopStopwatch() }) {
-                                    Image(systemName: "stop.circle.fill")
-                                        .font(.system(size: 44))
-                                }
-                                .buttonStyle(.plain)
-                                .foregroundStyle(.red)
-                                .accessibilityLabel("Stop")
-                            } else {
-                                Button(action: { startStopwatch() }) {
-                                    Image(systemName: "play.circle.fill")
-                                        .font(.system(size: 44))
-                                        .foregroundStyle(.green)
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel("Start")
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                    }
-                }
-            }
-        }
+    private var streaksCard: some View {
+        StreaksCard()
     }
-
-    private func presetCircle(_ label: String) -> some View {
-        Text(label)
-            .font(.subheadline.weight(.semibold))
-            .frame(width: 40, height: 40)
-            .foregroundStyle(.primary)
-            .background(Circle().fill(Color(.secondarySystemBackground)))
-            .overlay(Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1))
-            .buttonStyle(.plain)
-    }
-
-    @ViewBuilder
-    private var resumeCard: some View {
-        if let progress = progress,
-           let book = BibleData.books.first(where: { $0.name == progress.bookName }),
-           let chapter = book.chapters.first(where: { $0.number == progress.chapterNumber }) {
-            let verseText = chapter.verses.first(where: { $0.number == progress.verseNumber })?.text
-            Button(action: {
-                NotificationCenter.default.post(
-                    name: .openBibleReference,
-                    object: nil,
-                    userInfo: [
-                        "book": progress.bookName,
-                        "chapter": progress.chapterNumber,
-                        "verse": progress.verseNumber
-                    ]
-                )
-            }) {
-                HeroCard(
-                    title: "",
-                    subtitle: nil,
-                    icon: nil,
-                    tint: .blue
-                ) {
-                    HStack(alignment: .center, spacing: 12) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "bookmark.fill")
-                                .font(.title3)
-                                .foregroundStyle(.blue)
-                            Text("Continue Reading")
-                                .font(.headline)
-                                .bold()
-                        }
-                        Spacer()
-                    }
-
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
-                            .font(.system(size: 17, weight: .semibold))
-                            .foregroundStyle(.primary)
-
-                        if let verseText, !verseText.isEmpty {
-                            Text("“\(verseText)”")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(2)
-                                .truncationMode(.tail)
-                        }
-                    }
-                }
-            }
-            .buttonStyle(.plain)
-        } else {
-            HeroCard(
-                title: "",
-                subtitle: nil,
-                icon: nil,
-                tint: .blue
-            ) {
-                HStack(alignment: .center, spacing: 12) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "bookmark.fill")
-                            .font(.title3)
-                            .foregroundStyle(.blue)
-                        Text("Continue Reading")
-                            .font(.headline)
-                            .bold()
-                    }
-                    Spacer()
-                }
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Start reading from the Bible tab")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-            }
-        }
-    }
-
-    // MARK: - NEW: Games Card (Home) using centralized GameStats
-
-    // Local token to re-render on external sync merges
-    @State private var gameStatsVersion: Int = 0
-
-    private func colorForPercent(_ pct: Double) -> Color {
-        if pct < 60 { return .red }
-        else if pct < 75 { return .orange }
-        else if pct < 90 { return .purple }
-        else { return .green }
-    }
-
-    @ViewBuilder
-    private var gamesCard: some View {
-        // Pull a fresh snapshot; reading version in the view ties it to state updates
-        let _ = gameStatsVersion
-        let snap = GameStats.shared.snapshot()
-        let gamerPct = snap.percentage
-        let gamerColor = colorForPercent(gamerPct)
-        let isEmpty = (snap.totalAnswered == 0)
-
-        HeroCard(
-            title: "Games",
-            subtitle: nil,
-            icon: "gamecontroller",
-            tint: isEmpty ? .secondary : gamerColor,
-            backgroundColor: nil,
-            strokeColor: nil
-        ) {
-            VStack(alignment: .leading, spacing: 12) {
-                // Compact header: Gamer Score
-                HStack(spacing: 10) {
-                    Text("Gamer Score:")
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                    if isEmpty {
-                        Text("Let’s play!")
-                            .font(.system(size: 22, weight: .semibold, design: .rounded))
-                            .foregroundStyle(.secondary)
-                    } else {
-                        Text("\(Int(round(gamerPct)))%")
-                            .font(.system(size: 20, weight: .bold, design: .rounded))
-                            .foregroundStyle(gamerColor)
-                            .accessibilityHidden(true)
-                            .overlay(
-                                Color.clear
-                                    .accessibilityElement(children: .ignore)
-                                    .accessibilityLabel("Gamer Score \(Int(round(gamerPct))) percent.")
-                            )
-                    }
-                }
-
-                // Navigation buttons
-                HStack(spacing: 10) {
-                    Button {
-                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 3])
-                    } label: {
-                        Label("Games", systemImage: "gamecontroller")
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .blue))
-
-                    Button {
-                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 6])
-                    } label: {
-                        Label("Stats", systemImage: "chart.bar")
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .teal))
-                }
-                .padding(.top, 2)
-            }
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            // Light press anywhere on the card navigates to Games tab
-            NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 3])
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
-            // bump local version to trigger recompute/redraw
-            gameStatsVersion &+= 1
-        }
-    }
-
-    // MARK: - NEW: Bible Stats Card (collapsed only; summary mini-pills)
-
-    @StateObject private var bibleVM = HomeBibleStatsViewModel()
-    @AppStorage("bibleStatsExpanded") private var bibleStatsExpanded: Bool = false
-
-    @ViewBuilder
-    private var bibleStatsCard: some View {
-        HeroCard(
-            title: "Bible Stats",
-            subtitle: "At a glance",
-            icon: "chart.bar.fill",
-            tint: .teal
-        ) {
-            // Collapsed/label content only: show summary mini-pills in a horizontal scroller
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    // Today with delta vs yesterday
-                    statMiniPill(title: "Today", value: bibleVM.formatted(bibleVM.todaySeconds), subtitle: bibleVM.todayDeltaOnlyValue, tint: .blue)
-                    // This Week with delta vs last week
-                    statMiniPill(title: "This Week", value: bibleVM.formatted(bibleVM.thisWeekSeconds), subtitle: bibleVM.weekDeltaOnlyValue, tint: .green)
-                    // New: This Month (sessions-only via BibleStatsStore) with delta vs last month
-                    let monthSeconds = BibleStatsStore.shared.totalForMonth(containing: Date())
-                    let lastMonthDate = Calendar.current.date(byAdding: .month, value: -1, to: Date()) ?? Date()
-                    let lastMonthSeconds = BibleStatsStore.shared.totalForMonth(containing: lastMonthDate)
-                    let monthDeltaOnlyValue: String = {
-                        let delta = monthSeconds - lastMonthSeconds
-                        if delta == 0 { return "—" }
-                        let sign = delta > 0 ? "+" : "−"
-                        return "\(sign)\(bibleVM.formatted(abs(delta)))"
-                    }()
-                    statMiniPill(title: "This Month", value: bibleVM.formatted(monthSeconds), subtitle: monthDeltaOnlyValue, tint: .mint)
-                    // New: All-time (sessions-only within retention)
-                    statMiniPill(title: "All-time", value: bibleVM.formatted(bibleVM.totalSeconds), subtitle: nil, tint: .purple)
-                    // Last Read
-                    lastReadMiniPill(title: "Last Read", ref: bibleVM.lastReadBookChapter, relative: bibleVM.lastReadRelativeTime)
-                }
-                .padding(.vertical, 2)
-            }
-            .onAppear {
-                bibleVM.refresh()
-            }
-            .onChange(of: scenePhase) { _, newPhase in
-                if newPhase == .active {
-                    bibleVM.refresh()
-                }
-            }
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            // Navigate to Stats tab (tag 6) when tapping the Bible Stats card
-            NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 6])
-        }
-    }
-
-    private func statMiniPill(title: String, value: String, subtitle: String? = nil, tint: Color) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption).foregroundStyle(.secondary)
-            Text(value)
-                .font(.subheadline.weight(.semibold))
-                .monospacedDigit()
-            // Show subtitle for both Today and This Week when provided
-            if let subtitle, !subtitle.isEmpty {
-                let prefix = (title == "This Week") ? "vs lst wk: " : (title == "Today" ? "vs yday: " : (title == "This Month" ? "vs lst mo: " : ""))
-                if !prefix.isEmpty {
-                    Text("\(prefix)\(subtitle)")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
-                } else {
-                    Text(subtitle)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(12) // was 10; slightly taller to allow 2 lines comfortably
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(tint.opacity(0.08))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(tint.opacity(0.25), lineWidth: 1)
-        )
-    }
-
-    private func lastReadMiniPill(title: String, ref: String, relative: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption).foregroundStyle(.secondary)
-            Text(ref)
-                .font(.subheadline.weight(.semibold))
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
-            Text(relative)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(12) // was 10; slightly taller to allow 2 lines comfortably
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color.orange.opacity(0.08))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(Color.orange.opacity(0.25), lineWidth: 1)
-        )
-    }
-
-    private func otNtMiniBar(ot: Int, nt: Int) -> some View {
-        let total = max(1, ot + nt)
-        let otFrac = CGFloat(ot) / CGFloat(total)
-        let ntFrac = CGFloat(nt) / CGFloat(total)
-        return GeometryReader { geo in
-            HStack(spacing: 0) {
-                Rectangle()
-                    .fill(Color.blue.opacity(0.6))
-                    .frame(width: geo.size.width * otFrac)
-                Rectangle()
-                    .fill(Color.green.opacity(0.6))
-                    .frame(width: geo.size.width * ntFrac)
-            }
-            .clipShape(RoundedRectangle(cornerRadius: 6))
-        }
-        .frame(height: 10)
-    }
-
-    // MARK: - NEW: Streaks Card (now includes Daily Goal progress + expandable calendar)
 
     // Local UI state for expanding the calendar
     @State private var streaksExpanded: Bool = false
     // Track the month being displayed (start with current month)
     @State private var calendarMonthAnchor: Date = Date()
 
-    // Calendar helpers
     private func startOfMonth(for date: Date) -> Date {
         let cal = Calendar.current
         let comps = cal.dateComponents([.year, .month], from: date)
@@ -1371,17 +370,15 @@ struct HomeView: View {
         let cal = Calendar.current
         let start = startOfMonth(for: month)
         guard let range = cal.range(of: .day, in: .month, for: start) else { return [] }
-        let firstWeekday = cal.component(.weekday, from: start) // 1=Sunday ... 7=Saturday (default in US)
+        let firstWeekday = cal.component(.weekday, from: start)
         let daysCount = range.count
 
         var grid: [[Date?]] = []
         var row: [Date?] = []
 
-        // Leading blanks
         let leading = (firstWeekday - cal.firstWeekday + 7) % 7
         for _ in 0..<leading { row.append(nil) }
 
-        // Fill days
         for day in 1...daysCount {
             if let d = cal.date(byAdding: .day, value: day - 1, to: start) {
                 row.append(d)
@@ -1391,7 +388,6 @@ struct HomeView: View {
                 }
             }
         }
-        // Trailing blanks
         if !row.isEmpty {
             while row.count < 7 { row.append(nil) }
             grid.append(row)
@@ -1405,7 +401,6 @@ struct HomeView: View {
         return date > today
     }
 
-    // Extracted small cell view to reduce type-checking depth
     private struct DayCell: View {
         let dayNumber: Int
         let met: Bool
@@ -1418,7 +413,6 @@ struct HomeView: View {
                     .foregroundStyle(future ? .tertiary : .secondary)
                 Image(systemName: met ? "checkmark.circle.fill" : "xmark.circle.fill")
                     .font(.caption)
-                    // Ensure both branches are ShapeStyle to satisfy the generic requirement
                     .foregroundStyle(future ? AnyShapeStyle(.tertiary) : AnyShapeStyle(met ? Color.green : Color.red))
             }
             .frame(maxWidth: .infinity)
@@ -1434,7 +428,6 @@ struct HomeView: View {
         }
     }
 
-    // Extracted week row to further simplify nested ForEach
     private struct WeekRow: View {
         let dates: [Date?]
 
@@ -1461,136 +454,12 @@ struct HomeView: View {
     }
 
     @ViewBuilder
-    private var streaksCard: some View {
-        let current = StreakTracker.currentStreak
-        let best = StreakTracker.bestStreak
-        let last = StreakTracker.lastVisitDate
-
-        // UPDATED: Use authoritative sessions-based "today" total
-        let goalSecs = dailyGoalSeconds
-        let todayTotal = BibleStatsStore.shared.todayTotalSeconds()
-        let progress = min(1.0, Double(todayTotal) / Double(goalSecs))
-        let goalMet = BibleStatsStore.shared.isDailyGoalMet(goalSeconds: goalSecs)
-
-        HeroCard(
-            title: "Daily Bible Streak",
-            subtitle: nil,
-            icon: "flame.fill",
-            tint: current > 0 ? .orange : .secondary
-        ) {
-            VStack(alignment: .leading, spacing: 10) {
-                // Header row: current streak and best
-                HStack(alignment: .firstTextBaseline, spacing: 12) {
-                    Text("\(current)")
-                        .font(.system(size: isPad ? 48 : 40, weight: .black, design: .rounded))
-                        .foregroundStyle(current > 0 ? .orange : .secondary)
-                        .accessibilityLabel("Current streak \(current) days")
-                    Text(current == 1 ? "day" : "days")
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                    if best > 0 {
-                        HStack(spacing: 6) {
-                            Image(systemName: "trophy.fill")
-                                .foregroundStyle(.yellow)
-                            Text("Best \(best)")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                        }
-                        .accessibilityElement(children: .combine)
-                        .accessibilityLabel("Best streak \(best) days")
-                    }
-                }
-
-                // Last read / encouragement
-                if let last {
-                    Text("Last read: \(friendlyDate(last))")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                } else {
-                    Text("Start your first day today.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-
-                // Today's progress toward goal
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack {
-                        Text("Today")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                        // NEW: Show goal minutes from Settings by the progress bar header
-                        Text("Goal: \(goalMinutesString(dailyGoalMinutes_streaks))")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                    }
-                    ProgressView(value: progress)
-                        .tint(goalMet ? .green : .blue)
-                    HStack {
-                        if goalMet {
-                            Label("Great job! You reached your goal today.", systemImage: "checkmark.seal.fill")
-                                .foregroundStyle(.green)
-                                .font(.footnote.weight(.semibold))
-                        } else {
-                            let remaining = max(0, goalSecs - todayTotal)
-                            let m = remaining / 60
-                            let s = remaining % 60
-                            Label("\(m)m \(s)s left", systemImage: "clock")
-                                .foregroundStyle(.secondary)
-                                .font(.footnote)
-                        }
-                        Spacer()
-                    }
-                }
-                .padding(.top, 4)
-                
-                // Expandable calendar
-                DisclosureGroup(isExpanded: $streaksExpanded) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        calendarMonthView(anchor: calendarMonthAnchor)
-                    }
-                    .padding(.top, 4)
-                } label: {
-                    HStack {
-                        Text("Calendar")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                        Text(calendarMonthAnchor.formatted(.dateTime.month().year()))
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .animation(.spring(response: 0.25, dampingFraction: 0.9), value: streaksExpanded)
-            }
-        }
-        .accessibilityElement(children: .contain)
-        .onAppear {
-            // Ensure we’re reading current values (ContentView updates counters)
-            _ = dailyUsageTodayKey // touch to avoid warnings; values are @AppStorage-backed
-        }
-        .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active {
-                // Refresh reads of @AppStorage-backed usage values on return to Home
-                _ = dailyUsageTodayKey
-            }
-        }
-        // Keep the card live when Bible reading stats change (cross-device, sessions, etc.)
-        .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
-            // No-op body; state derives from BibleStatsStore on render.
-            // Trigger a redraw by touching a benign @State if needed in future.
-        }
-    }
-
-    @ViewBuilder
     private func calendarMonthView(anchor: Date) -> some View {
         let cal = Calendar.current
         let grid = daysGrid(for: anchor)
-        let weekdays = cal.shortWeekdaySymbols // localized e.g., ["Sun","Mon",...]
+        let weekdays = cal.shortWeekdaySymbols
 
         VStack(alignment: .leading, spacing: 8) {
-            // Month header with prev/next
             HStack {
                 Button {
                     if let prev = cal.date(byAdding: .month, value: -1, to: anchor) {
@@ -1614,7 +483,6 @@ struct HomeView: View {
             }
             .foregroundStyle(.blue)
 
-            // Weekday header
             HStack {
                 ForEach(weekdays, id: \.self) { w in
                     Text(w.uppercased())
@@ -1624,7 +492,6 @@ struct HomeView: View {
                 }
             }
 
-            // Weeks grid (extracted WeekRow to lower complexity)
             VStack(spacing: 6) {
                 ForEach(0..<grid.count, id: \.self) { r in
                     WeekRow(dates: grid[r])
@@ -1642,24 +509,176 @@ struct HomeView: View {
 
     // MARK: - Dynamic body using saved layout
 
-    // Helper to render a card by ID (avoids duplicating the switch)
     @ViewBuilder
     private func card(for id: HomeCardID) -> some View {
         switch id {
         case .verseOfDay:
-            verseOfDayCard
+            VerseOfDayCard(
+                verseOfDay: $verseOfDay,
+                verseOfDayPaused: $verseOfDayPaused,
+                isBibleStoreReady: bibleStore.isReady,
+                nextRefreshDescription: nextVerseRefreshDescription,
+                onRefresh: { loadRandomVerse() },
+                onCopy: { v in copyVerse(v) },
+                onShareText: { v in shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText) },
+                isFavorited: { v in isFavorited(v) },
+                onToggleFavorite: { v in toggleFavorite(for: v) },
+                onOpenReader: { v in
+                    guard let book = BibleData.books.first(where: { $0.name == v.bookName }),
+                          let chapter = book.chapters.first(where: { $0.number == v.chapterNumber }) else { return }
+                    coordinator.push(.reader(book: book, chapter: chapter, startVerse: v.verseNumber))
+                },
+                onTogglePaused: {
+                    let newValue = !verseOfDayPaused
+                    verseOfDayPaused = newValue
+                    if newValue, let v = verseOfDay {
+                        storedVerseBook = v.bookName
+                        storedVerseChapter = v.chapterNumber
+                        storedVerseNumber = v.verseNumber
+                        storedVerseText = v.verseText
+                    }
+                    mirrorVerseToAppGroup(book: storedVerseBook, chapter: storedVerseChapter, verse: storedVerseNumber, text: storedVerseText)
+                    if verseOfDayPaused {
+                        nextRefreshTimer?.invalidate()
+                        nextRefreshTimer = nil
+                    } else {
+                        scheduleNextVerseRefreshTimer()
+                    }
+                    let generator = UIImpactFeedbackGenerator(style: .medium)
+                    generator.impactOccurred()
+                },
+                title: verseCardTitle,
+                icon: verseCardIcon
+            )
+            .contentShape(Rectangle())
+            .onTapGesture {
+                let generator = UIImpactFeedbackGenerator(style: .heavy)
+                generator.impactOccurred()
+                guard let v = verseOfDay,
+                      let book = BibleData.books.first(where: { $0.name == v.bookName }),
+                      let chapter = book.chapters.first(where: { $0.number == v.chapterNumber }) else { return }
+                coordinator.push(.reader(book: book, chapter: chapter, startVerse: v.verseNumber))
+            }
         case .dailyFocus:
-            dailyFocusCard
+            DailyFocusCard(
+                focusTitle: $focusTitle,
+                focusBody: $focusBody,
+                hasSavedFocus: $hasSavedFocus,
+                focusSavedAt: $focusSavedAt,
+                focusTitleIsFocused: _focusTitleIsFocused.projectedValue,
+                focusBodyIsFocused: _focusBodyIsFocused.projectedValue,
+                isFocusBodyExpanded: $isFocusBodyExpanded,
+                liveActivitiesEnabled: UserDefaults.standard.bool(forKey: "liveActivitiesEnabled"),
+                onSave: {
+                    sharedDefaults?.set(focusTitle, forKey: "focusTitle")
+                    sharedDefaults?.set(focusBody, forKey: "focusBody")
+                    let now = Date()
+                    sharedDefaults?.set(now.timeIntervalSince1970, forKey: "focusSavedAt")
+                    focusSavedAt = now
+
+                    StopwatchActivityController.shared.cancel()
+                    PrayerTimerActivityController.shared.ensureActivityForFocus(
+                        title: focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : focusTitle,
+                        body: focusBody.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : focusBody
+                    )
+                    hasSavedFocus = true
+                    focusTitleIsFocused = false
+                    focusBodyIsFocused = false
+                    withAnimation(.spring()) { showFocusSavedToast = true }
+                },
+                onClear: {
+                    focusTitle = ""
+                    focusBody = ""
+                    sharedDefaults?.set("", forKey: "focusTitle")
+                    sharedDefaults?.set("", forKey: "focusBody")
+                    sharedDefaults?.removeObject(forKey: "focusSavedAt")
+                    focusSavedAt = nil
+
+                    PrayerTimerActivityController.shared.cancel()
+                    hasSavedFocus = false
+                    focusTitleIsFocused = false
+                    focusBodyIsFocused = false
+                    isFocusBodyExpanded = false
+                },
+                onEnableLiveActivities: {
+                    NotificationCenter.default.post(name: .openSettingsTab, object: nil)
+                }
+            )
         case .timer:
-            timerCard
+            if prayerMode == .timer {
+                PrayerTimerCard(
+                    prayerMode: $prayerMode,
+                    isTimerRunning: isTimerRunning,
+                    isPaused: isPaused,
+                    remainingSeconds: remainingSeconds,
+                    timerTintColor: timerTintColor,
+                    formattedTime: { formattedTime($0) },
+                    onOpenSetup: {
+                        if isHealthKitAvailable && !healthKitPrompted {
+                            Task { await requestHealthKitIfNeeded() }
+                        }
+                        let generator = UIImpactFeedbackGenerator(style: .light)
+                        generator.impactOccurred()
+                        showPrayerStudySheet = true
+                    },
+                    onStartPreset: { minutes in
+                        startTimer(minutes: minutes)
+                    },
+                    onTogglePause: { togglePause() },
+                    onAddOne: { addOneMinute() },
+                    onAddFive: { addFiveMinutes() },
+                    onAddTen: { addTenMinutes() },
+                    onStop: { stopTimer() },
+                    stopwatchRunning: stopwatchRunning,
+                    modePicker: { disabled in AnyView(ModePicker(disabled: disabled)) }
+                )
+            } else {
+                StopwatchCard(
+                    prayerMode: $prayerMode,
+                    stopwatchRunning: stopwatchRunning,
+                    stopwatchElapsed: stopwatchElapsed,
+                    formattedStopwatch: { formattedStopwatch($0) },
+                    onStart: { startStopwatch() },
+                    onPause: { pauseStopwatch() },
+                    onStop: { stopStopwatch() },
+                    isTimerRunning: isTimerRunning,
+                    modePicker: { disabled in AnyView(ModePicker(disabled: disabled)) }
+                )
+            }
         case .resumeReading:
-            resumeCard
+            ResumeReadingCard(
+                progress: progress,
+                onOpenReference: { p in
+                    NotificationCenter.default.post(
+                        name: .openBibleReference,
+                        object: nil,
+                        userInfo: [
+                            "book": p.bookName,
+                            "chapter": p.chapterNumber,
+                            "verse": p.verseNumber
+                        ]
+                    )
+                }
+            )
         case .games:
-            gamesCard
+            GamesCard(
+                onOpenGames: {
+                    NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 3])
+                },
+                onOpenStats: {
+                    NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 6])
+                }
+            )
         case .streaks:
             streaksCard
         case .bibleStats:
-            bibleStatsCard
+            BibleStatsCard(
+                bibleVM: bibleVM,
+                scenePhase: scenePhase,
+                onOpenStats: {
+                    NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 6])
+                }
+            )
         }
     }
 
@@ -1669,13 +688,31 @@ struct HomeView: View {
 
         ScrollView {
             if isPad {
-                // iPad: Title card full width, then two independent vertical columns for consistent spacing
-                // Split the cards into two columns (even/odd index keeps overall order visually top-to-bottom)
                 let leftCards = activeCards.enumerated().compactMap { $0.offset % 2 == 0 ? $0.element : nil }
                 let rightCards = activeCards.enumerated().compactMap { $0.offset % 2 == 1 ? $0.element : nil }
 
                 VStack(spacing: 16) {
-                    titleCard
+                    TitleCardView(
+                        isPad: isPad,
+                        goalMinutes: dailyGoalMinutes,
+                        todayReadingSeconds: BibleStatsStore.shared.todayTotalSeconds(),
+                        streak: StreakTracker.currentStreak,
+                        onSearch: {
+                            DispatchQueue.main.async {
+                                NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 5])
+                            }
+                        },
+                        onRead: {
+                            DispatchQueue.main.async {
+                                NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 1])
+                            }
+                        },
+                        onFavorites: {
+                            DispatchQueue.main.async {
+                                NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 4])
+                            }
+                        }
+                    )
 
                     HStack(alignment: .top, spacing: 16) {
                         VStack(spacing: 16) {
@@ -1695,9 +732,28 @@ struct HomeView: View {
                 }
                 .padding(.horizontal, 24)
             } else {
-                // iPhone: original single-column stack
                 VStack(spacing: 16) {
-                    titleCard
+                    TitleCardView(
+                        isPad: isPad,
+                        goalMinutes: dailyGoalMinutes,
+                        todayReadingSeconds: BibleStatsStore.shared.todayTotalSeconds(),
+                        streak: StreakTracker.currentStreak,
+                        onSearch: {
+                            DispatchQueue.main.async {
+                                NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 5])
+                            }
+                        },
+                        onRead: {
+                            DispatchQueue.main.async {
+                                NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 1])
+                            }
+                        },
+                        onFavorites: {
+                            DispatchQueue.main.async {
+                                NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 4])
+                            }
+                        }
+                    )
 
                     ForEach(layoutOrder, id: \.self) { cardID in
                         if !hiddenSet.contains(cardID) {
@@ -1789,17 +845,14 @@ struct HomeView: View {
             bibleVM.refresh()
 
             // Initialize GameStats and bind to its version for immediate refresh
-            gameStatsVersion = GameStats.shared.snapshot().totalAnswered // seed read; any value ok
+            gameStatsVersion = GameStats.shared.snapshot().totalAnswered
         }
-        // Update when AppStorage strings change (e.g., after Settings saves or user toggles)
         .onChange(of: homeCardOrderRaw) { _, _ in decodeHomeLayout() }
         .onChange(of: homeCardHiddenRaw) { _, _ in decodeHomeLayout() }
-        // Also observe explicit notification sent by Settings (extra safety)
         .onReceive(NotificationCenter.default.publisher(for: .init("homeLayoutChanged"))) { _ in
             decodeHomeLayout()
         }
         .onChange(of: progressList) { _, _ in
-            // SwiftData/CloudKit changes will flow here; mirror to widget
             mirrorLastReadToAppGroup()
         }
         .onChange(of: scenePhase) { _, newPhase in
@@ -1824,9 +877,8 @@ struct HomeView: View {
         .onChange(of: votdRefresh1Minute) { _, _ in scheduleNextVerseRefreshTimer() }
         .onChange(of: votdRefresh2Hour) { _, _ in scheduleNextVerseRefreshTimer() }
         .onChange(of: votdRefresh2Minute) { _, _ in scheduleNextVerseRefreshTimer() }
-        // Keep Home view live with Bible stats changes too
         .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
-            // bibleVM already refreshes on appear/active; nothing else required for computed streak card.
+            // bibleVM already refreshes on appear/active
         }
         .sheet(isPresented: $showPrayerStudySheet) {
             PrayerStudyTimerSetupView(onStart: { minutes in
@@ -1843,7 +895,6 @@ struct HomeView: View {
         } message: {
             Text("Your prayer/study timer has completed.")
         }
-        // Reset expanded states whenever leaving Home
         .onDisappear {
             streaksExpanded = false
         }
@@ -2450,6 +1501,12 @@ struct HomeView: View {
         }
         try? modelContext.save()
     }
+
+    // MARK: - NEW: Games Card (Home) using centralized GameStats
+    @State private var gameStatsVersion: Int = 0
+
+    // MARK: - NEW: Bible Stats Card
+    @StateObject private var bibleVM = HomeBibleStatsViewModel()
 }
 
 private let oldTestamentBooks: Set<String> = [
@@ -2466,13 +1523,7 @@ private let oldTestamentBooks: Set<String> = [
     "Haggai","Zechariah","Malachi"
 ]
 
-// Note: HeroCard, button styles, small subviews (DayCell, WeekRow),
+// Note: HeroCard, button styles, DayCell, WeekRow,
 // PrayerStudyTimerSetupView, and DebouncedWidgetReloader have been
 // moved to their own files as part of UI extraction.
 
-private struct HomeVerseRef {
-    let bookName: String
-    let chapterNumber: Int
-    let verseNumber: Int
-    let verseText: String
-}
