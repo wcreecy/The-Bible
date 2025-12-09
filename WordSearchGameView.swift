@@ -28,11 +28,13 @@ struct WordSearchGameView: View {
     enum GameMode: String, CaseIterable, Identifiable {
         case normal
         case blind
+        case favorites
         var id: String { rawValue }
         var displayName: String {
             switch self {
             case .normal: return "Normal"
             case .blind: return "Blind"
+            case .favorites: return "Favorites"
             }
         }
     }
@@ -453,16 +455,29 @@ struct WordSearchGameView: View {
 
         resetState()
 
-        guard let book = BibleData.books.randomElement(),
-              let chapter = book.chapters.randomElement(),
-              let verse = chapter.verses.randomElement()
-        else { return }
-        verseRef = "\(book.name) \(chapter.number):\(verse.number)"
-        verseText = verse.text
+        // Resolve verse depending on mode
+        if gameMode == .favorites, let fav = favorites.randomElement(),
+           let resolved = resolveFavorite(fav) {
+            let (book, chapter, verse) = resolved
+            verseRef = "\(book.name) \(chapter.number):\(verse.number)"
+            verseText = verse.text
 
-        favBookName = book.name
-        favChapterNumber = chapter.number
-        favVerseNumber = verse.number
+            favBookName = book.name
+            favChapterNumber = chapter.number
+            favVerseNumber = verse.number
+        } else {
+            // Fallback/random mode (normal behavior)
+            guard let book = BibleData.books.randomElement(),
+                  let chapter = book.chapters.randomElement(),
+                  let verse = chapter.verses.randomElement()
+            else { return }
+            verseRef = "\(book.name) \(chapter.number):\(verse.number)"
+            verseText = verse.text
+
+            favBookName = book.name
+            favChapterNumber = chapter.number
+            favVerseNumber = verse.number
+        }
 
         let countRange: ClosedRange<Int> = {
             switch difficulty {
@@ -472,7 +487,7 @@ struct WordSearchGameView: View {
             }
         }()
         // Extract, then filter to words that fit in the current grid size
-        let extracted = extractKeywords(from: verse.text, minLen: 3, maxCountRange: countRange)
+        let extracted = extractKeywords(from: verseText, minLen: 3, maxCountRange: countRange)
         let fitting = extracted.filter { $0.count <= size }
         targetWords = Array(fitting.prefix(countRange.upperBound))
 
@@ -512,6 +527,44 @@ struct WordSearchGameView: View {
         grid = bestGrid
 
         fillRandom()
+    }
+
+    // Resolve a Favorite to concrete Book/Chapter/Verse in BibleData
+    private func resolveFavorite(_ fav: Favorite) -> (Book, Chapter, Verse)? {
+        // Normalize book name matching (handle spacing like "1John" vs "1 John")
+        func insertSpaceBetweenLeadingDigitsAndLetters(_ s: String) -> String {
+            guard let first = s.first, first.isNumber else { return s }
+            let digits = String(s.prefix { $0.isNumber })
+            let rest = String(s.drop { $0.isNumber })
+            if rest.first?.isLetter == true { return digits + " " + rest }
+            return s
+        }
+
+        let raw = fav.bookName.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Try direct match
+        if let b = BibleData.books.first(where: { $0.name.compare(raw, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
+            if let c = b.chapters.first(where: { $0.number == fav.chapterNumber }),
+               let v = c.verses.first(where: { $0.number == fav.verseNumber }) {
+                return (b, c, v)
+            }
+        }
+        // Try with inserted space between leading digits and letters
+        let spaced = insertSpaceBetweenLeadingDigitsAndLetters(raw)
+        if let b = BibleData.books.first(where: { $0.name.compare(spaced, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
+            if let c = b.chapters.first(where: { $0.number == fav.chapterNumber }),
+               let v = c.verses.first(where: { $0.number == fav.verseNumber }) {
+                return (b, c, v)
+            }
+        }
+        // Try collapsing spaces for comparison
+        let collapsed = raw.replacingOccurrences(of: " ", with: "")
+        if let b = BibleData.books.first(where: { $0.name.replacingOccurrences(of: " ", with: "").compare(collapsed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
+            if let c = b.chapters.first(where: { $0.number == fav.chapterNumber }),
+               let v = c.verses.first(where: { $0.number == fav.verseNumber }) {
+                return (b, c, v)
+            }
+        }
+        return nil
     }
 
     private func directionVarietyScore(_ words: [PlacedWord]) -> Int {
