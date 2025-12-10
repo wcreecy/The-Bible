@@ -1145,9 +1145,8 @@ struct StatsView: View {
             // Also show labels for last 7 days (small, readable)
             return true
         case .allTime:
-            // For all-time, labels can get crowded depending on aggregation.
-            // We’ll hide them to keep the chart clean.
-            return false
+            // Previously hidden to avoid clutter; now enabled per request.
+            return true
         }
     }
 
