@@ -69,7 +69,7 @@ struct StreaksCard: View {
 
                 // Last read / encouragement
                 if let last {
-                    Text("Last read: \(friendlyDate(last))")
+                    Text("Last completed: \(friendlyDate(last))")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 } else {
