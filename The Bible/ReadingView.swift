@@ -336,6 +336,8 @@ struct ReadingView: View {
                             currentVerse = verse.number
                             // Persist "last read" ONLY on explicit tap
                             saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number)
+                            // Immediately mirror to App Group for the Last Read widget
+                            mirrorLastReadToAppGroup(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number, text: verse.text)
                             // Keep tracker location up to date
                             ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
                             if menuVerse != nil { menuVerse = nil }
@@ -454,8 +456,9 @@ struct ReadingView: View {
                         hasCompletedInitialAppear = true
                     }
 
-                    // Persist progress on chapter change (verse 1 of the new chapter)
-                    saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: 1)
+                    // IMPORTANT: Do not update Continue Reading or Last Read widget on chapter swipe.
+                    // Removed saveProgress(...) and mirrorLastReadToAppGroup(...) here.
+
                     markActivityAndScheduleInactivity()
                 }
                 .onAppear {
@@ -686,8 +689,7 @@ struct ReadingView: View {
             currentChapterIndex += 1
             currentVerse = 1
             topVisibleVerseID = rowID(for: 1)
-            // Persist progress for the new chapter start
-            saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: 1)
+            // NOTE: Do not update Continue Reading or Last Read widget on chapter swipe.
             // Light haptic for in-book chapter change
             playImpact(.light)
             return
@@ -703,7 +705,7 @@ struct ReadingView: View {
         currentVerse = 1
         topVisibleVerseID = rowID(for: 1)
         ReadingTimeTracker.shared.changeBook(to: currentBook.name, chapter: currentChapter.number)
-        saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: 1)
+        // NOTE: Do not update Continue Reading or Last Read widget on chapter swipe.
         // Heavy haptic for book change
         playImpact(.heavy)
     }
@@ -715,7 +717,7 @@ struct ReadingView: View {
             currentChapterIndex -= 1
             currentVerse = 1
             topVisibleVerseID = rowID(for: 1)
-            saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: 1)
+            // NOTE: Do not update Continue Reading or Last Read widget on chapter swipe.
             // Light haptic for in-book chapter change
             playImpact(.light)
             return
@@ -731,7 +733,7 @@ struct ReadingView: View {
         currentVerse = 1
         topVisibleVerseID = rowID(for: 1)
         ReadingTimeTracker.shared.changeBook(to: currentBook.name, chapter: currentChapter.number)
-        saveProgress(bookName: currentBook.name, chapter: currentChapter.number, verse: 1)
+        // NOTE: Do not update Continue Reading or Last Read widget on chapter swipe.
         // Heavy haptic for book change
         playImpact(.heavy)
     }
@@ -774,7 +776,8 @@ struct ReadingView: View {
         }
     }
 
-    private func toggleFavorite(for verse: Verse) {
+    private func toggleFavorite(for: Verse) {
+        let verse = `for`
         if let existing = favorites.first(where: {
             $0.bookName == currentBook.name &&
             $0.chapterNumber == currentChapter.number &&
@@ -908,13 +911,24 @@ private extension ReadingView {
             withAnimation { highlightedVerse = nil }
         }
 
-        // 6) Update trackers and progress
+        // 6) Update trackers only; do NOT save progress until user taps.
         ReadingTimeTracker.shared.changeBook(to: targetBook.name, chapter: targetChapter.number)
         ReadingTimeTracker.shared.setCurrentLocation(bookName: targetBook.name, chapter: targetChapter.number)
-        saveProgress(bookName: targetBook.name, chapter: targetChapter.number, verse: clampedVerse)
 
         // 7) Close sheet
         showSearchSheet = false
     }
 }
 
+// MARK: - Widget mirroring (Last Read)
+
+private extension ReadingView {
+    func mirrorLastReadToAppGroup(bookName: String, chapter: Int, verse: Int, text: String) {
+        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
+        shared.set(bookName, forKey: "lastReadBook")
+        shared.set(chapter, forKey: "lastReadChapter")
+        shared.set(verse, forKey: "lastReadVerse")
+        shared.set(text, forKey: "lastReadText")
+        DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
+    }
+}
