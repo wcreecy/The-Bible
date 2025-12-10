@@ -10,19 +10,20 @@ import HealthKit
 import Foundation
 import WidgetKit
 
-private enum VerseScope: String { case old, new, whole, book }
+// Shared types moved to HomeTypes.swift
+// private enum VerseScope: String { case old, new, whole, book }
 
 // New: identifiers matching SettingsView’s reorderable/hideable cards
-private enum HomeCardID: String, CaseIterable, Identifiable {
-    case verseOfDay
-    case dailyFocus
-    case timer
-    case resumeReading
-    case streaks // Daily Bible Streak (now includes Daily Goal progress)
-    case games   // Games
-    case bibleStats // NEW: Bible Stats (Top 5 by reading time)
-    var id: String { rawValue }
-}
+// private enum HomeCardID: String, CaseIterable, Identifiable {
+//     case verseOfDay
+//     case dailyFocus
+//     case timer
+//     case resumeReading
+//     case streaks // Daily Bible Streak (now includes Daily Goal progress)
+//     case games   // Games
+//     case bibleStats // NEW: Bible Stats (Top 5 by reading time)
+//     var id: String { rawValue }
+// }
 
 struct HomeView: View {
     // Visibility widened so split cards can reference it
@@ -200,7 +201,7 @@ struct HomeView: View {
     @StateObject private var bibleVM = HomeBibleStatsViewModel()
 
     @ViewBuilder
-    private func card(for id: HomeCardID) -> some View {
+    private func card(for id: SettingsView.HomeCardID) -> some View {
         switch id {
         case .verseOfDay:
             VerseOfDayCard(
@@ -338,7 +339,7 @@ struct HomeView: View {
     }
 
     var body: some View {
-        let activeCards: [HomeCardID] = layoutOrder.filter { !hiddenSet.contains($0) }
+        let activeCards: [SettingsView.HomeCardID] = layoutOrder.filter { !hiddenSet.contains($0) }
 
         ScrollView {
             if isPad {
@@ -448,8 +449,8 @@ struct HomeView: View {
             stopwatchController.onAppear()
             _ = stopwatchController.handlePendingActionIfAny()
 
-            // Load saved layout on appear
-            decodeHomeLayout()
+            // Load saved layout on appear (shared store)
+            loadHomeLayoutFromStore()
 
             // Initial load of Bible Stats
             bibleVM.refresh()
@@ -457,10 +458,10 @@ struct HomeView: View {
             // Initialize GameStats and bind to its version for immediate refresh
             gameStatsVersion = GameStats.shared.snapshot().totalAnswered
         }
-        .onChange(of: homeCardOrderRaw) { _, _ in decodeHomeLayout() }
-        .onChange(of: homeCardHiddenRaw) { _, _ in decodeHomeLayout() }
+        .onChange(of: homeCardOrderRaw) { _, _ in loadHomeLayoutFromStore() }
+        .onChange(of: homeCardHiddenRaw) { _, _ in loadHomeLayoutFromStore() }
         .onReceive(NotificationCenter.default.publisher(for: .init("homeLayoutChanged"))) { _ in
-            decodeHomeLayout()
+            loadHomeLayoutFromStore()
         }
         .onChange(of: progressList) { _, _ in
             mirrorLastReadToAppGroup()
@@ -582,26 +583,24 @@ struct HomeView: View {
     @AppStorage("homeCardOrder") private var homeCardOrderRaw: String = ""
     @AppStorage("homeCardHidden") private var homeCardHiddenRaw: String = ""
 
-    @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
-    @State private var hiddenSet: Set<HomeCardID> = []
+    @State private var layoutOrder: [SettingsView.HomeCardID] = SettingsView.HomeCardID.allCases
+    @State private var hiddenSet: Set<SettingsView.HomeCardID> = []
 
-    private func decodeHomeLayout() {
-        // Order
+    private func loadHomeLayoutFromStore() {
+        // Decode order from JSON array of rawValues; append any missing IDs
         if let data = homeCardOrderRaw.data(using: .utf8),
            let ids = try? JSONDecoder().decode([String].self, from: data) {
-            // Filter out any legacy "dailyGoal" id
-            let filtered = ids.filter { $0 != "dailyGoal" }
-            let mapped = filtered.compactMap { HomeCardID(rawValue: $0) }
-            let missing = HomeCardID.allCases.filter { !mapped.contains($0) }
+            let mapped = ids.compactMap { SettingsView.HomeCardID(rawValue: $0) }
+            let missing = SettingsView.HomeCardID.allCases.filter { !mapped.contains($0) }
             layoutOrder = mapped + missing
         } else {
-            layoutOrder = HomeCardID.allCases
+            layoutOrder = SettingsView.HomeCardID.allCases
         }
-        // Hidden
+
+        // Decode hidden set from JSON array; default to baseline if missing
         if let data = homeCardHiddenRaw.data(using: .utf8),
            let ids = try? JSONDecoder().decode([String].self, from: data) {
-            let filtered = ids.filter { $0 != "dailyGoal" } // migrate legacy
-            hiddenSet = Set(filtered.compactMap { HomeCardID(rawValue: $0) })
+            hiddenSet = Set(ids.compactMap { SettingsView.HomeCardID(rawValue: $0) })
         } else {
             hiddenSet = [.games, .streaks, .bibleStats]
         }
