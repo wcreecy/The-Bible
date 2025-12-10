@@ -175,6 +175,35 @@ final class GameStats: ObservableObject {
             maxInt("bookorderAllTimeBestStreak", candidate: currentBestStreak)
         }
 
+        // NEW: Append to per-day maps and stamp last played
+        do {
+            // Local yyyy-MM-dd key
+            let dayKey = Self.localDayKey(for: Date())
+
+            // Update daily answered map
+            var dailyAnswered: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered")
+            dailyAnswered[dayKey, default: 0] = max(0, (dailyAnswered[dayKey] ?? 0) + max(0, addAnswered))
+            saveJSONMap(dailyAnswered, forKey: "gamesDailyAnswered")
+
+            // Update daily correct map
+            var dailyCorrect: [String: Int] = loadJSONMap(forKey: "gamesDailyCorrect")
+            dailyCorrect[dayKey, default: 0] = max(0, (dailyCorrect[dayKey] ?? 0) + max(0, addCorrect))
+            saveJSONMap(dailyCorrect, forKey: "gamesDailyCorrect")
+
+            // Stamp last played time and game name
+            let nowTS = Date().timeIntervalSince1970
+            defaults.set(nowTS, forKey: "gamesLastPlayedAt")
+            defaults.set(Self.gameDisplayName(for: game), forKey: "gamesLastPlayedGameName")
+
+            // Track changed keys for iCloud push
+            changedKeys.append(contentsOf: [
+                "gamesDailyAnswered",
+                "gamesDailyCorrect",
+                "gamesLastPlayedAt",
+                "gamesLastPlayedGameName"
+            ])
+        }
+
         // Push changed keys to iCloud KVS
         let kvs = iCloudSyncCoordinator.shared
         for key in changedKeys {
@@ -263,4 +292,61 @@ final class GameStats: ObservableObject {
         let raw = (Double(correct) / Double(answered)) * 100.0
         return min(100, max(0, raw))
     }
+
+    // MARK: - New daily helpers and last played
+
+    // Local-day key formatter
+    private static func localDayKey(for date: Date, calendar: Calendar = .autoupdatingCurrent) -> String {
+        var cal = calendar
+        cal.timeZone = .autoupdatingCurrent
+        let start = cal.startOfDay(for: date)
+        let comps = cal.dateComponents([.year, .month, .day], from: start)
+        let y = comps.year ?? 1970
+        let m = comps.month ?? 1
+        let d = comps.day ?? 1
+        return String(format: "%04d-%02d-%02d", y, m, d)
+    }
+
+    // Load/save JSON map [String: Int] in UserDefaults
+    private func loadJSONMap(forKey key: String) -> [String: Int] {
+        let defaults = UserDefaults.standard
+        guard let data = defaults.data(forKey: key),
+              let map = try? JSONDecoder().decode([String: Int].self, from: data) else {
+            return [:]
+        }
+        return map
+    }
+
+    private func saveJSONMap(_ map: [String: Int], forKey key: String) {
+        let defaults = UserDefaults.standard
+        if let data = try? JSONEncoder().encode(map) {
+            defaults.set(data, forKey: key)
+        }
+    }
+
+    private static func gameDisplayName(for id: GameID) -> String {
+        switch id {
+        case .quiz: return "Quiz"
+        case .hangman: return "Hangman"
+        case .beatclock: return "Beat the Clock"
+        case .refmatch: return "Verse Match"
+        case .bookorder: return "Book Order"
+        }
+    }
+
+    // Returns today's (answered, correct, pct)
+    func todayStats(now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (answered: Int, correct: Int, pct: Double) {
+        let key = Self.localDayKey(for: now, calendar: calendar)
+        let answeredMap: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered")
+        let correctMap: [String: Int] = loadJSONMap(forKey: "gamesDailyCorrect")
+        let ans = max(0, answeredMap[key] ?? 0)
+        let cor = max(0, correctMap[key] ?? 0)
+        let pct = ans > 0 ? min(100, max(0, (Double(cor) / Double(ans)) * 100.0)) : 0
+        return (ans, cor, pct)
+    }
+
+    var lastPlayedGameName: String? {
+        UserDefaults.standard.string(forKey: "gamesLastPlayedGameName")
+    }
 }
+

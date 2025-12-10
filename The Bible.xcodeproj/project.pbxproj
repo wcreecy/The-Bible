@@ -87,6 +87,7 @@
 		2CE1B9622EDD1FFF001779B1 /* GamesCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE1B9612EDD1FFF001779B1 /* GamesCardView.swift */; };
 		2CE599542ECF403500A24C9F /* SharedJournalViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE599532ECF403500A24C9F /* SharedJournalViews.swift */; };
 		2CE599562ECF4D9600A24C9F /* SmartLinkSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE599552ECF4D9600A24C9F /* SmartLinkSheet.swift */; };
+		2CF043692EE9F3D600DB1283 /* Canon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF043682EE9F3D600DB1283 /* Canon.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -223,6 +224,7 @@
 		2CE599532ECF403500A24C9F /* SharedJournalViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedJournalViews.swift; sourceTree = "<group>"; };
 		2CE599552ECF4D9600A24C9F /* SmartLinkSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartLinkSheet.swift; sourceTree = "<group>"; };
 		2CEA02D52EBE677900039D4B /* The Bible WidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "The Bible WidgetsExtension.entitlements"; sourceTree = "<group>"; };
+		2CF043682EE9F3D600DB1283 /* Canon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canon.swift; sourceTree = "<group>"; };
 		2CF6F1702EB83C2100E59640 /* TimerSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerSound.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -458,6 +460,7 @@
 				2C2765792EE8EABD00A321FE /* StopwatchController.swift */,
 				2C27657B2EE8EB3E00A321FE /* ModePicker.swift */,
 				2C27657D2EE8ECB400A321FE /* StreaksViewModel.swift */,
+				2CF043682EE9F3D600DB1283 /* Canon.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -893,6 +896,7 @@
 				2CE599542ECF403500A24C9F /* SharedJournalViews.swift in Sources */,
 				2C2764EA2EE8C20A00A321FE /* WeekRow.swift in Sources */,
 				2C2764EC2EE8C20D00A321FE /* PrayerStudyTimerSetupView.swift in Sources */,
+				2CF043692EE9F3D600DB1283 /* Canon.swift in Sources */,
 				2C2765722EE8D36A00A321FE /* Streaks.swift in Sources */,
 				2C2765002EE8C91700A321FE /* GamesCard.swift in Sources */,
 				2C2764F62EE8C87C00A321FE /* VerseOfDayCard.swift in Sources */,

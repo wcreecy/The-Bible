@@ -37,6 +37,18 @@ extension View {
                                 .accessibilityLabel("Increase font size")
                             }
                         }
+
+                // Games
+                case .gameQuiz:
+                    QuizView()
+                case .gameBeatTheClock:
+                    BeatTheClockGameView()
+                case .gameReferenceMatch:
+                    ReferenceMatchGameView()
+                case .gameBookOrder:
+                    BookOrderGameView()
+                case .gameHangman:
+                    HangmanGameView()
                 }
             }
     }

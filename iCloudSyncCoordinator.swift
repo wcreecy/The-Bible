@@ -170,6 +170,12 @@ final class iCloudSyncCoordinator {
         "bookorderAllTimeBestStreak"
     ]
 
+    // NEW: Game daily + last played keys
+    private let gamesDailyAnsweredKey = "gamesDailyAnswered"      // JSON [String: Int]
+    private let gamesDailyCorrectKey = "gamesDailyCorrect"        // JSON [String: Int]
+    private let gamesLastPlayedAtKey = "gamesLastPlayedAt"        // Double
+    private let gamesLastPlayedGameNameKey = "gamesLastPlayedGameName" // String
+
     private var bibleStatsKeys: [String] {
         [
             stats_keyTotals,
@@ -186,8 +192,12 @@ final class iCloudSyncCoordinator {
         [sessions_key]
     }
 
+    private var gameDailyAndLastPlayedKeys: [String] {
+        [gamesDailyAnsweredKey, gamesDailyCorrectKey, gamesLastPlayedAtKey, gamesLastPlayedGameNameKey]
+    }
+
     private var allKnownKeys: Set<String> {
-        Set(bibleStatsKeys + sessionKeys + settingsKeys + hangmanKeys + beatClockKeys + refMatchKeys + quizKeys + bookOrderKeys)
+        Set(bibleStatsKeys + sessionKeys + settingsKeys + hangmanKeys + beatClockKeys + refMatchKeys + quizKeys + bookOrderKeys + gameDailyAndLastPlayedKeys)
     }
 
     // MARK: - Bootstrap
@@ -234,7 +244,7 @@ final class iCloudSyncCoordinator {
         var mergedGameKey = false
 
         for key in keysToProcess {
-            if isGameCounterKey(key) { mergedGameKey = true }
+            if isGameCounterKey(key) || gameDailyAndLastPlayedKeys.contains(key) { mergedGameKey = true }
             mergeIncomingKVSValue(forKey: key)
         }
 
@@ -260,6 +270,27 @@ final class iCloudSyncCoordinator {
         if settingsKeys.contains(key) {
             let v = defaults.integer(forKey: key)
             kvs.set(v, forKey: key)
+            return
+        }
+
+        // Game daily maps + last played scalar mirrors
+        if gameDailyAndLastPlayedKeys.contains(key) {
+            switch key {
+            case gamesDailyAnsweredKey, gamesDailyCorrectKey:
+                if let data = defaults.data(forKey: key) {
+                    kvs.set(data, forKey: key)
+                } else {
+                    kvs.removeObject(forKey: key)
+                }
+            case gamesLastPlayedAtKey:
+                let ts = defaults.double(forKey: key)
+                kvs.set(ts, forKey: key)
+            case gamesLastPlayedGameNameKey:
+                let name = defaults.string(forKey: key) ?? ""
+                kvs.set(name, forKey: key)
+            default:
+                break
+            }
             return
         }
 
@@ -294,6 +325,57 @@ final class iCloudSyncCoordinator {
             // Only update if different to avoid churn
             if defaults.integer(forKey: key) != remoteVal {
                 defaults.set(remoteVal, forKey: key)
+            }
+            return
+        }
+
+        // NEW: Game daily maps and last played fields
+        if gameDailyAndLastPlayedKeys.contains(key) {
+            switch key {
+            case gamesDailyAnsweredKey, gamesDailyCorrectKey:
+                guard let remoteData = kvs.object(forKey: key) as? Data else { return }
+                let localData = defaults.data(forKey: key)
+                typealias Map = [String: Int]
+                let merged = mergeIntMapMax(localData: localData, remoteData: remoteData, type: Map.self)
+                if let data = try? JSONEncoder().encode(merged) {
+                    defaults.set(data, forKey: key)
+                }
+            case gamesLastPlayedAtKey:
+                let remote = kvs.double(forKey: key)
+                let local = defaults.double(forKey: key)
+                // Latest timestamp wins
+                if remote > local {
+                    defaults.set(remote, forKey: key)
+                } else if remote < local {
+                    kvs.set(local, forKey: key)
+                }
+            case gamesLastPlayedGameNameKey:
+                let remoteName = kvs.string(forKey: key) ?? ""
+                let localName = defaults.string(forKey: key) ?? ""
+                // Prefer the one with newer gamesLastPlayedAt
+                let remoteAt = kvs.double(forKey: gamesLastPlayedAtKey)
+                let localAt = defaults.double(forKey: gamesLastPlayedAtKey)
+                if remoteAt > localAt {
+                    // Adopt remote name and timestamp pair
+                    defaults.set(remoteName, forKey: key)
+                    defaults.set(remoteAt, forKey: gamesLastPlayedAtKey)
+                } else if remoteAt < localAt {
+                    // Keep local; ensure KVS reflects local pair for propagation
+                    kvs.set(localName, forKey: key)
+                    kvs.set(localAt, forKey: gamesLastPlayedAtKey)
+                } else {
+                    // Timestamps equal or both zero: keep non-empty
+                    if localName.isEmpty && !remoteName.isEmpty {
+                        defaults.set(remoteName, forKey: key)
+                    } else if !localName.isEmpty && remoteName.isEmpty {
+                        kvs.set(localName, forKey: key)
+                    } else if localName != remoteName && !remoteName.isEmpty {
+                        // If both non-empty but different and timestamps equal, prefer remote conservatively
+                        defaults.set(remoteName, forKey: key)
+                    }
+                }
+            default:
+                break
             }
             return
         }
@@ -571,3 +653,4 @@ extension Notification.Name {
     // If you deep link to a passage elsewhere, you already have:
     // static let openBibleReference = Notification.Name("openBibleReference")
 }
+

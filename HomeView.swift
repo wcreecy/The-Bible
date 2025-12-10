@@ -326,6 +326,23 @@ struct HomeView: View {
                 },
                 onOpenStats: {
                     NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 6])
+                },
+                onShufflePlay: {
+                    // Choose one of the five games at random
+                    enum Game: CaseIterable { case quiz, beat, match, order, hangman }
+                    let pick = Game.allCases.randomElement() ?? .quiz
+                    switch pick {
+                    case .quiz:
+                        coordinator.push(.gameQuiz)
+                    case .beat:
+                        coordinator.push(.gameBeatTheClock)
+                    case .match:
+                        coordinator.push(.gameReferenceMatch)
+                    case .order:
+                        coordinator.push(.gameBookOrder)
+                    case .hangman:
+                        coordinator.push(.gameHangman)
+                    }
                 }
             )
         case .streaks:
@@ -643,3 +660,4 @@ private let oldTestamentBooks: Set<String> = [
 // Note: HeroCard, button styles, DayCell, WeekRow,
 // PrayerStudyTimerSetupView, and DebouncedWidgetReloader have been
 // moved to their own files as part of UI extraction.
+
