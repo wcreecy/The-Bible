@@ -13,11 +13,6 @@ final class FocusViewModel: ObservableObject {
     // App Group storage (match existing behavior)
     private var sharedDefaults: UserDefaults? { UserDefaults(suiteName: "group.bible.app") }
 
-    // Live Activities toggle (read-only hint for UI)
-    var liveActivitiesEnabled: Bool {
-        UserDefaults.standard.bool(forKey: "liveActivitiesEnabled")
-    }
-
     // Initialize from storage on demand
     func loadFromStorage() {
         guard let shared = sharedDefaults else {

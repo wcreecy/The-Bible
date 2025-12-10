@@ -200,6 +200,9 @@ struct HomeView: View {
     @StateObject private var focusVM = FocusViewModel()
     @StateObject private var bibleVM = HomeBibleStatsViewModel()
 
+    // NEW: Bind Live Activities setting directly so Home tracks Settings in real time.
+    @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
+
     @ViewBuilder
     private func card(for id: SettingsView.HomeCardID) -> some View {
         switch id {
@@ -243,7 +246,7 @@ struct HomeView: View {
                 focusTitleIsFocused: _focusTitleIsFocused.projectedValue,
                 focusBodyIsFocused: _focusBodyIsFocused.projectedValue,
                 isFocusBodyExpanded: $isFocusBodyExpanded,
-                liveActivitiesEnabled: focusVM.liveActivitiesEnabled,
+                liveActivitiesEnabled: liveActivitiesEnabled,
                 onSave: {
                     focusVM.save()
                     focusTitleIsFocused = false
