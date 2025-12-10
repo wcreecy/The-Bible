@@ -125,40 +125,73 @@ final class BookOrderGameViewModel: ObservableObject {
         
         let length: Int
         switch difficulty {
-        case .easy:
-            length = 5
-        case .normal:
-            length = 10
-        case .hard:
-            length = 15
-        case .all:
-            length = canon.count
+        case .easy:   length = 5
+        case .normal: length = 10
+        case .hard:   length = 15
+        case .all:    length = canon.count
         }
         
+        // Helper: OT/NT split based on full canonical list (uses "Matthew" boundary)
+        let full = BibleCanon.canonicalOrder()
+        let indexMap = Dictionary(uniqueKeysWithValues: full.enumerated().map { ($1, $0) })
+        let matthewIdx = indexMap["Matthew"] ?? Int.max
+        func isOT(_ name: String) -> Bool { (indexMap[name] ?? Int.max) < matthewIdx }
+        func isNT(_ name: String) -> Bool { (indexMap[name] ?? Int.max) >= matthewIdx }
+        
+        // For Source .both and difficulty != .all, switch to non‑contiguous uniform sampling across the whole canon.
+        if source == .both && difficulty != .all {
+            var picks = Array(Set(canon)).shuffled()
+            if picks.count > length { picks = Array(picks.prefix(length)) }
+            
+            // Ensure at least one OT and one NT for variety (if possible)
+            let hasOT = picks.contains(where: isOT)
+            let hasNT = picks.contains(where: isNT)
+            if !(hasOT && hasNT) {
+                // Try to fix by swapping one item if both testaments exist in the full canon
+                let otPool = canon.filter(isOT)
+                let ntPool = canon.filter(isNT)
+                if !otPool.isEmpty, !ntPool.isEmpty, picks.count >= 1 {
+                    if !hasOT, let replacement = otPool.randomElement() {
+                        // Replace a random NT pick
+                        if let idx = picks.firstIndex(where: isNT) { picks[idx] = replacement }
+                    } else if !hasNT, let replacement = ntPool.randomElement() {
+                        // Replace a random OT pick
+                        if let idx = picks.firstIndex(where: isOT) { picks[idx] = replacement }
+                    }
+                }
+            }
+            
+            // Correct order is canonical; UI shows shuffled
+            let orderPos = Dictionary(uniqueKeysWithValues: full.enumerated().map { ($1, $0) })
+            let ordered = picks.sorted { (orderPos[$0] ?? .max) < (orderPos[$1] ?? .max) }
+            correctOrder = ordered
+            currentItems = ordered.shuffled()
+            sliceFirst = ordered.first
+            sliceLast = ordered.last
+            
+            showResult = false
+            wasCorrect = false
+            showingCorrectOrder = false
+            lastSubmittedOrder = nil
+            return
+        }
+        
+        // Existing contiguous-slice behavior for OT/NT scopes, and for "All Books" in any scope.
         let maxStart = max(0, canon.count - length)
         
-        // Helper to check if a slice (by indices in full Bible order) has at least one OT and one NT book.
         func isMixedSlice(_ slice: [String]) -> Bool {
-            // Build an index map from the full canonical list to detect OT vs NT by "Matthew" boundary.
-            // Prefer live BibleData order; fall back to the static fallbackCanon if needed.
-            let full = BibleCanon.canonicalOrder()
-            let indexMap = Dictionary(uniqueKeysWithValues: full.enumerated().map { ($1, $0) })
-            guard let mIdx = indexMap["Matthew"] else {
-                // If Matthew not found (e.g., extremely limited dataset), we cannot judge;
-                // treat as mixed to avoid infinite rerolls.
-                return true
-            }
+            // If Matthew not found (edge case), treat as mixed to avoid infinite rerolls.
+            guard matthewIdx != Int.max else { return true }
             var hasOT = false
             var hasNT = false
             for name in slice {
                 let idx = indexMap[name] ?? Int.max
-                if idx < mIdx { hasOT = true } else { hasNT = true }
+                if idx < matthewIdx { hasOT = true } else { hasNT = true }
                 if hasOT && hasNT { return true }
             }
             return false
         }
         
-        // Choose a slice; if source == .both, try to guarantee a mix (at least one OT and one NT).
         var chosenSlice: [String] = []
         var attempts = 0
         let maxAttempts = 12
@@ -172,7 +205,6 @@ final class BookOrderGameViewModel: ObservableObject {
                     chosenSlice = candidate
                     break
                 } else {
-                    // keep searching for a mixed slice
                     continue
                 }
             } else {
@@ -181,7 +213,6 @@ final class BookOrderGameViewModel: ObservableObject {
             }
         } while attempts < maxAttempts
         
-        // If we failed to find a mixed slice after attempts (edge cases), just use the last candidate
         if chosenSlice.isEmpty {
             let start = (maxStart > 0) ? Int.random(in: 0...maxStart) : 0
             chosenSlice = Array(canon[start..<(start + min(length, canon.count - start))])
@@ -208,8 +239,8 @@ final class BookOrderGameViewModel: ObservableObject {
         let scope: String
         switch source {
         case .both: scope = "(Whole Bible)"
-        case .ot: scope = "(Old Testament)"
-        case .nt: scope = "(New Testament)"
+        case .ot:   scope = "(Old Testament)"
+        case .nt:   scope = "(New Testament)"
         }
         if let a = sliceFirst, let b = sliceLast, difficulty != .all {
             return "\(base) \(scope) — \(a) to \(b)"
@@ -262,14 +293,11 @@ final class BookOrderGameViewModel: ObservableObject {
     }
     
     private func updateAllTime(correct: Int, answered: Int, streak: Int) {
-        // Keep local mirrors for UI (optional), but centralize authoritative write:
         allTimeCorrect += correct
         allTimeAnswered += answered
         if streak > allTimeBestStreak {
             allTimeBestStreak = streak
         }
-
-        // Centralized write to sync + notify
         GameStats.shared.recordRound(
             game: .bookorder,
             difficulty: .none,

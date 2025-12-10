@@ -492,34 +492,42 @@ struct WordSearchGameView: View {
         targetWords = Array(fitting.prefix(countRange.upperBound))
 
         // Multi-attempt placement to improve variety and success rate
-        // Try up to N attempts, keep the best (max placed words, then direction variety)
-        let maxAttempts = 5
+        // Try up to N attempts, keep the best (max placed words, then direction variety, then spread)
+        let maxAttempts = 10
         var bestPlaced: [PlacedWord] = []
         var bestGrid: [[Character]] = grid
-        var bestScore: (count: Int, variety: Int) = (0, 0)
+        var bestScore: (count: Int, variety: Int, spread: Double) = (0, 0, 0)
 
         for _ in 0..<maxAttempts {
             // Reset grid for this attempt
             grid = Array(repeating: Array(repeating: " ", count: size), count: size)
             placed = []
 
-            // Place longer words first for better fit, using improved scattered placement
-            let wordsToPlace = targetWords.sorted(by: { $0.count > $1.count })
+            // Place longer words first but introduce randomness by shuffling within length buckets
+            let wordsToPlace = wordsInterleavedByLength(targetWords)
+
+            // Track direction usage for this attempt to encourage variety
+            var dirUsage: [String: Int] = [:]
+
             for w in wordsToPlace {
-                _ = placeWordScattered(w)
+                _ = placeWordScattered(w, dirUsage: &dirUsage)
             }
 
             // Score attempt
             let count = placed.count
             let variety = directionVarietyScore(placed)
-            if (count > bestScore.count) || (count == bestScore.count && variety > bestScore.variety) {
-                bestScore = (count, variety)
+            let spread = averagePairwiseDistance(of: placed)
+
+            if (count > bestScore.count)
+                || (count == bestScore.count && variety > bestScore.variety)
+                || (count == bestScore.count && variety == bestScore.variety && spread > bestScore.spread) {
+                bestScore = (count, variety, spread)
                 bestPlaced = placed
                 bestGrid = grid
             }
 
             // Early exit if we placed all words with good variety
-            if count == targetWords.count && variety >= 4 { break }
+            if count == targetWords.count && variety >= 5 { break }
         }
 
         // Use best attempt
@@ -578,6 +586,26 @@ struct WordSearchGameView: View {
         return set.count
     }
 
+    private func averagePairwiseDistance(of words: [PlacedWord]) -> Double {
+        guard words.count > 1 else { return 0 }
+        var sum: Double = 0
+        var pairs = 0
+        for i in 0..<(words.count - 1) {
+            for j in (i + 1)..<words.count {
+                let a = words[i]
+                let b = words[j]
+                let ar = Double(a.startRow)
+                let ac = Double(a.startCol)
+                let br = Double(b.startRow)
+                let bc = Double(b.startCol)
+                let d = hypot(ar - br, ac - bc)
+                sum += d
+                pairs += 1
+            }
+        }
+        return pairs > 0 ? sum / Double(pairs) : 0
+    }
+
     private func extractKeywords(from text: String, minLen: Int, maxCountRange: ClosedRange<Int>) -> [String] {
         let letters = text
             .uppercased()
@@ -616,14 +644,22 @@ struct WordSearchGameView: View {
         }
     }
 
-    // For each word, build the direction set to try and shuffle it.
-    private func directionsForPlacement() -> [(dr: Int, dc: Int)] {
+    // For each attempt, we’d like to prefer less-used directions to increase variety.
+    private func directionsForPlacement(biasingWith usage: [String: Int]?) -> [(dr: Int, dc: Int)] {
         var dirs = baseAllowedDirections
-
-        // For hard/expert we already include both forward and backward via the 8 directions.
-        // For easy/medium we intentionally keep forward-only, but still shuffle to avoid bias.
         dirs.shuffle()
-        return dirs
+
+        guard let usage else { return dirs }
+
+        // Sort by ascending usage count (less-used first), then keep random shuffle within ties.
+        return dirs.sorted { lhs, rhs in
+            let lk = "\(lhs.dr),\(lhs.dc)"
+            let rk = "\(rhs.dr),\(rhs.dc)"
+            let lu = usage[lk] ?? 0
+            let ru = usage[rk] ?? 0
+            if lu == ru { return Bool.random() }
+            return lu < ru
+        }
     }
 
     // MARK: - Scattered placement
@@ -635,42 +671,110 @@ struct WordSearchGameView: View {
         let dc: Int
         let overlap: Int
         let adjacency: Int
+        let centerDistance: Double
+        let startReusePenalty: Int
+        let directionUsage: Int
     }
 
-    private func placeWordScattered(_ word: String) -> Bool {
-        // In expert mode, write the reversed form onto the board so all hidden words are reversed.
-        let toPlace = (difficulty == .expert) ? String(word.reversed()) : word
+    // Interleave words by length buckets so we don’t always try strictly longest-first
+    private func wordsInterleavedByLength(_ words: [String]) -> [String] {
+        guard words.count > 1 else { return words }
+        let sorted = words.sorted { $0.count > $1.count }
+        // Make small buckets by length, then interleave taking one from each in random order
+        var buckets: [[String]] = []
+        var currentLen: Int? = nil
+        for w in sorted {
+            if currentLen == nil || w.count != currentLen {
+                buckets.append([w])
+                currentLen = w.count
+            } else {
+                buckets[buckets.count - 1].append(w)
+            }
+        }
+        // Shuffle inside buckets
+        for i in buckets.indices { buckets[i].shuffle() }
+        // Interleave
+        var result: [String] = []
+        while buckets.contains(where: { !$0.isEmpty }) {
+            // Randomize bucket visiting order each round
+            var order = Array(buckets.indices)
+            order.shuffle()
+            for idx in order {
+                if !buckets[idx].isEmpty {
+                    result.append(buckets[idx].removeFirst())
+                }
+            }
+        }
+        return result
+    }
 
-        var candidates = enumerateCandidates(for: toPlace)
+    private func placeWordScattered(_ word: String, dirUsage: inout [String: Int]) -> Bool {
+        // Orientation variation:
+        // - Expert: always reversed (existing behavior)
+        // - Hard: randomly reverse ~35% of words to add variety
+        let toPlace: String = {
+            switch difficulty {
+            case .expert:
+                return String(word.reversed())
+            case .hard:
+                return Bool.random() && Double.random(in: 0...1) < 0.35 ? String(word.reversed()) : word
+            default:
+                return word
+            }
+        }()
+
+        var candidates = enumerateCandidates(for: toPlace, dirUsage: dirUsage)
         guard !candidates.isEmpty else { return false }
 
         // Shuffle for randomness across runs
         candidates.shuffle()
 
-        // Light penalties; add jitter for variety
+        // Scoring: combine overlap (good), adjacency (penalty), centerDistance (encourage spread),
+        // startReusePenalty (discourage reusing same row/col), directionUsage (discourage overuse),
+        // plus a larger jitter for more variety.
         func score(_ c: PlacementCandidate) -> Double {
-            let overlapPenalty = 0.8
-            let adjacencyPenalty = 0.5
-            let jitter = Double.random(in: 0..<0.25)
-            return Double(c.overlap) * overlapPenalty + Double(c.adjacency) * adjacencyPenalty + jitter
+            let overlapWeight = -0.9       // negative because more overlap is good (lower score is better)
+            let adjacencyWeight = 0.6
+            let centerWeight = -0.35       // prefer farther from center (more negative is better)
+            let startReuseWeight = 0.5
+            let directionWeight = 0.4
+            let jitter = Double.random(in: 0..<0.6)
+
+            return overlapWeight * Double(c.overlap)
+                 + adjacencyWeight * Double(c.adjacency)
+                 + centerWeight * c.centerDistance
+                 + startReuseWeight * Double(c.startReusePenalty)
+                 + directionWeight * Double(c.directionUsage)
+                 + jitter
         }
 
         if let best = candidates.min(by: { score($0) < score($1) }) {
             write(toPlace, atRow: best.row, col: best.col, dr: best.dr, dc: best.dc)
             placed.append(PlacedWord(word: toPlace, startRow: best.row, startCol: best.col, dr: best.dr, dc: best.dc))
+            // record usage
+            let key = "\(best.dr),\(best.dc)"
+            dirUsage[key, default: 0] += 1
             return true
         }
         return false
     }
 
-    private func enumerateCandidates(for word: String) -> [PlacementCandidate] {
+    private func enumerateCandidates(for word: String, dirUsage: [String: Int]) -> [PlacementCandidate] {
         // Skip words that cannot possibly fit in the grid
         guard word.count <= size else { return [] }
 
         var list: [PlacementCandidate] = []
 
-        // Per-word shuffled direction order
-        let dirs = directionsForPlacement()
+        // Per-word direction list biased toward less-used directions for variety
+        let dirs = directionsForPlacement(biasingWith: dirUsage)
+
+        // Build a quick index of used start rows/cols to penalize reuse
+        let usedRows = Set(placed.map { $0.startRow })
+        let usedCols = Set(placed.map { $0.startCol })
+
+        // Center point for center-distance calculation
+        let centerR = Double(size - 1) / 2.0
+        let centerC = Double(size - 1) / 2.0
 
         for dir in dirs {
             let dr = dir.dr, dc = dir.dc
@@ -696,11 +800,30 @@ struct WordSearchGameView: View {
             }
             starts.shuffle()
 
+            let dirKey = "\(dr),\(dc)"
+            let usageCount = dirUsage[dirKey] ?? 0
+
             for (r, c) in starts {
                 let probe = canPlaceAt(word: word, row: r, col: c, dr: dr, dc: dc)
                 if probe.fits {
                     let adj = adjacencyCountFor(word: word, row: r, col: c, dr: dr, dc: dc)
-                    list.append(PlacementCandidate(row: r, col: c, dr: dr, dc: dc, overlap: probe.overlap, adjacency: adj))
+                    // Distance from center (bigger is better for spread)
+                    let dist = hypot(Double(r) - centerR, Double(c) - centerC)
+                    // Penalize reusing start row or start col
+                    let reuse = (usedRows.contains(r) ? 1 : 0) + (usedCols.contains(c) ? 1 : 0)
+                    list.append(
+                        PlacementCandidate(
+                            row: r,
+                            col: c,
+                            dr: dr,
+                            dc: dc,
+                            overlap: probe.overlap,
+                            adjacency: adj,
+                            centerDistance: dist,
+                            startReusePenalty: reuse,
+                            directionUsage: usageCount
+                        )
+                    )
                 }
             }
         }
@@ -1206,7 +1329,7 @@ private struct SideWordsColumn: View {
                         let isFound = found.contains(w)
                         let isRevealed = !isFound && revealed.contains(w)
                         Text(w)
-                            .font(.subheadline.weight(.semibold))
+                            .font(.footnote.weight(.semibold)) // smaller font for better single-line fit
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
                             .background(
@@ -1641,7 +1764,7 @@ private struct WrapWordsView: View {
                 let isFound = found.contains(w)
                 let isRevealed = !isFound && revealed.contains(w)
                 Text(w)
-                    .font(.subheadline.weight(.semibold))
+                    .font(.footnote.weight(.semibold)) // smaller font for better single-line fit
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(

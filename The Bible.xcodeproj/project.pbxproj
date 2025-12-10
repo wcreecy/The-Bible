@@ -88,6 +88,10 @@
 		2CE599542ECF403500A24C9F /* SharedJournalViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE599532ECF403500A24C9F /* SharedJournalViews.swift */; };
 		2CE599562ECF4D9600A24C9F /* SmartLinkSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE599552ECF4D9600A24C9F /* SmartLinkSheet.swift */; };
 		2CF043692EE9F3D600DB1283 /* Canon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF043682EE9F3D600DB1283 /* Canon.swift */; };
+		2CF0436B2EE9F4A100DB1283 /* HomeLayoutStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF0436A2EE9F4A100DB1283 /* HomeLayoutStore.swift */; };
+		2CF0436D2EE9F6D800DB1283 /* TimeFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF0436C2EE9F6D800DB1283 /* TimeFormatters.swift */; };
+		2CF0436F2EE9F6DB00DB1283 /* DateFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF0436E2EE9F6DB00DB1283 /* DateFormatters.swift */; };
+		2CF043712EE9F8BE00DB1283 /* VOTDSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF043702EE9F8BE00DB1283 /* VOTDSchedule.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -225,6 +229,10 @@
 		2CE599552ECF4D9600A24C9F /* SmartLinkSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartLinkSheet.swift; sourceTree = "<group>"; };
 		2CEA02D52EBE677900039D4B /* The Bible WidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "The Bible WidgetsExtension.entitlements"; sourceTree = "<group>"; };
 		2CF043682EE9F3D600DB1283 /* Canon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canon.swift; sourceTree = "<group>"; };
+		2CF0436A2EE9F4A100DB1283 /* HomeLayoutStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeLayoutStore.swift; sourceTree = "<group>"; };
+		2CF0436C2EE9F6D800DB1283 /* TimeFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatters.swift; sourceTree = "<group>"; };
+		2CF0436E2EE9F6DB00DB1283 /* DateFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatters.swift; sourceTree = "<group>"; };
+		2CF043702EE9F8BE00DB1283 /* VOTDSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VOTDSchedule.swift; sourceTree = "<group>"; };
 		2CF6F1702EB83C2100E59640 /* TimerSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerSound.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -461,6 +469,10 @@
 				2C27657B2EE8EB3E00A321FE /* ModePicker.swift */,
 				2C27657D2EE8ECB400A321FE /* StreaksViewModel.swift */,
 				2CF043682EE9F3D600DB1283 /* Canon.swift */,
+				2CF0436A2EE9F4A100DB1283 /* HomeLayoutStore.swift */,
+				2CF0436C2EE9F6D800DB1283 /* TimeFormatters.swift */,
+				2CF0436E2EE9F6DB00DB1283 /* DateFormatters.swift */,
+				2CF043702EE9F8BE00DB1283 /* VOTDSchedule.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -868,6 +880,7 @@
 				2C49CF4F2EBE10310006FF79 /* HealthKitManager.swift in Sources */,
 				2C49CF502EBE10310006FF79 /* HangmanGameView.swift in Sources */,
 				2C27657C2EE8EB3E00A321FE /* ModePicker.swift in Sources */,
+				2CF043712EE9F8BE00DB1283 /* VOTDSchedule.swift in Sources */,
 				2C49CF512EBE10310006FF79 /* BookSelectionLink.swift in Sources */,
 				2C4A26AF2EDB3BA30055FD1B /* ReadingSessionsStore.swift in Sources */,
 				2C2765022EE8C91A00A321FE /* BibleStatsCard.swift in Sources */,
@@ -876,6 +889,7 @@
 				2C7EA8BB2EDE7AEA0073F01C /* iCloudSyncCoordinator.swift in Sources */,
 				2CE1B9622EDD1FFF001779B1 /* GamesCardView.swift in Sources */,
 				2C49CF522EBE10310006FF79 /* ShareText.swift in Sources */,
+				2CF0436D2EE9F6D800DB1283 /* TimeFormatters.swift in Sources */,
 				2C49CF872EBE2E9C0006FF79 /* StopwatchActivityController.swift in Sources */,
 				2CD7D8252EC9FF9A00849235 /* LastReadWidget.swift in Sources */,
 				2C49CF822EBE27D40006FF79 /* PrayerTimerActivityController.swift in Sources */,
@@ -903,6 +917,7 @@
 				2C2764FE2EE8C91400A321FE /* ResumeReadingCard.swift in Sources */,
 				2C2764EE2EE8C22A00A321FE /* DebouncedWidgetReloader.swift in Sources */,
 				2C135C3B2EC650D900306AD5 /* GameScoreboardCard.swift in Sources */,
+				2CF0436F2EE9F6DB00DB1283 /* DateFormatters.swift in Sources */,
 				2C2765782EE8E5B800A321FE /* PrayerTimerController.swift in Sources */,
 				2C4F309A2ED91514006C8DFD /* BibleStatsStore.swift in Sources */,
 				2C2764F22EE8C87700A321FE /* HomeVerseRef.swift in Sources */,
@@ -919,6 +934,7 @@
 				2C49CF462EBE10000006FF79 /* HomeView.swift in Sources */,
 				2CBDF1DA2ED09F7E00CEE884 /* WordSearchGameView.swift in Sources */,
 				2C49CF472EBE10070006FF79 /* Toast.swift in Sources */,
+				2CF0436B2EE9F4A100DB1283 /* HomeLayoutStore.swift in Sources */,
 				2CB309D32EC2CE2D0032CB7D /* BibleReferenceLinker.swift in Sources */,
 				2CD7D8292ECA125200849235 /* PinnedVerseIntent.swift in Sources */,
 				2C2764F42EE8C87A00A321FE /* TitleCardView.swift in Sources */,

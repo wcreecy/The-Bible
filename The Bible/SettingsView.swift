@@ -71,111 +71,56 @@ struct SettingsView: View {
         }
     }
 
+    // Favorite layout storage is now managed by HomeLayoutStore; keep raw keys only if needed elsewhere
     @AppStorage("homeCardOrder") private var homeCardOrderRaw: String = ""
     @AppStorage("homeCardHidden") private var homeCardHiddenRaw: String = ""
-
-    // Favorite layout storage
     @AppStorage("homeCardFavoriteOrder") private var homeCardFavoriteOrderRaw: String = ""
     @AppStorage("homeCardFavoriteHidden") private var homeCardFavoriteHiddenRaw: String = ""
 
+    // Local UI state
     @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
     @State private var hiddenSet: Set<HomeCardID> = []
 
     // Track if SwiftData store is CloudKit-backed (set at app startup)
     @AppStorage("swiftdataCloudKitEnabled") private var swiftdataCloudKitEnabled: Bool = false
 
-    private func loadHomeLayout() {
-        if let data = homeCardOrderRaw.data(using: .utf8),
-           let ids = try? JSONDecoder().decode([String].self, from: data) {
-            let mapped = ids.compactMap { HomeCardID(rawValue: $0) }
-            let missing = HomeCardID.allCases.filter { !mapped.contains($0) }
-            layoutOrder = mapped + missing
-        } else {
-            layoutOrder = HomeCardID.allCases
-        }
+    // New centralized layout store
+    private let layoutStore = HomeLayoutStore()
 
-        if let data = homeCardHiddenRaw.data(using: .utf8),
-           let ids = try? JSONDecoder().decode([String].self, from: data) {
-            hiddenSet = Set(ids.compactMap { HomeCardID(rawValue: $0) })
-        } else {
-            hiddenSet = [.games, .streaks, .bibleStats]
-        }
+    private func loadHomeLayout() {
+        let loaded = layoutStore.load()
+        layoutOrder = loaded.order
+        hiddenSet = loaded.hidden
     }
 
     private func saveHomeLayout() {
-        let orderIDs = layoutOrder.map { $0.rawValue }
-        if let data = try? JSONEncoder().encode(orderIDs),
-           let raw = String(data: data, encoding: .utf8) {
-            homeCardOrderRaw = raw
-        }
-        let hiddenIDs = Array(hiddenSet).map { $0.rawValue }
-        if let data = try? JSONEncoder().encode(hiddenIDs),
-           let raw = String(data: data, encoding: .utf8) {
-            homeCardHiddenRaw = raw
-        }
-        NotificationCenter.default.post(name: .init("homeLayoutChanged"), object: nil)
+        layoutStore.save(order: layoutOrder, hidden: hiddenSet)
     }
 
-    // Favorite layout helpers
-    private var hasFavoriteLayout: Bool {
-        // Consider a favorite present if at least order exists
-        !homeCardFavoriteOrderRaw.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
+    // Favorite layout helpers via store
+    private var hasFavoriteLayout: Bool { layoutStore.hasFavorite }
 
     private func saveFavoriteLayout() {
-        let orderIDs = layoutOrder.map { $0.rawValue }
-        if let data = try? JSONEncoder().encode(orderIDs),
-           let raw = String(data: data, encoding: .utf8) {
-            homeCardFavoriteOrderRaw = raw
-        }
-        let hiddenIDs = Array(hiddenSet).map { $0.rawValue }
-        if let data = try? JSONEncoder().encode(hiddenIDs),
-           let raw = String(data: data, encoding: .utf8) {
-            homeCardFavoriteHiddenRaw = raw
-        }
-    }
-
-    private func loadFavoriteLayout() -> (order: [HomeCardID], hidden: Set<HomeCardID>)? {
-        guard let orderData = homeCardFavoriteOrderRaw.data(using: .utf8),
-              let orderIDs = try? JSONDecoder().decode([String].self, from: orderData) else { return nil }
-        let mappedOrder = orderIDs.compactMap { HomeCardID(rawValue: $0) }
-        var order = mappedOrder
-        // Ensure any newly added IDs exist at the end
-        let missing = HomeCardID.allCases.filter { !order.contains($0) }
-        order.append(contentsOf: missing)
-
-        var hidden: Set<HomeCardID> = []
-        if let hiddenData = homeCardFavoriteHiddenRaw.data(using: .utf8),
-           let hiddenIDs = try? JSONDecoder().decode([String].self, from: hiddenData) {
-            hidden = Set(hiddenIDs.compactMap { HomeCardID(rawValue: $0) })
-        }
-        return (order, hidden)
+        layoutStore.saveFavorite(order: layoutOrder, hidden: hiddenSet)
     }
 
     private func applyFavoriteLayout() {
-        guard let fav = loadFavoriteLayout() else { return }
-        layoutOrder = fav.order
-        hiddenSet = fav.hidden
-        saveHomeLayout()
+        layoutStore.applyFavoriteIfAvailable()
+        let loaded = layoutStore.load()
+        layoutOrder = loaded.order
+        hiddenSet = loaded.hidden
     }
+
+    // MARK: - VOTD DatePicker bindings using VOTDSchedule
 
     private var refresh1DateBinding: Binding<Date> {
         Binding<Date>(
             get: {
-                var comps = DateComponents()
-                let cal = Calendar.current
                 let now = Date()
-                let base = cal.dateComponents([.year, .month, .day], from: now)
-                comps.year = base.year
-                comps.month = base.month
-                comps.day = base.day
-                comps.hour = votdRefresh1Hour
-                comps.minute = votdRefresh1Minute
-                comps.second = 0
-                return cal.date(from: comps) ?? now
+                return VOTDSchedule.dateForToday(hour: votdRefresh1Hour, minute: votdRefresh1Minute, from: now) ?? now
             },
             set: { newDate in
-                let cal = Calendar.current
+                let cal = Calendar.autoupdatingCurrent
                 let c = cal.dateComponents([.hour, .minute], from: newDate)
                 votdRefresh1Hour = c.hour ?? 6
                 votdRefresh1Minute = c.minute ?? 0
@@ -186,24 +131,23 @@ struct SettingsView: View {
     private var refresh2DateBinding: Binding<Date> {
         Binding<Date>(
             get: {
-                var comps = DateComponents()
-                let cal = Calendar.current
                 let now = Date()
-                let base = cal.dateComponents([.year, .month, .day], from: now)
-                comps.year = base.year
-                comps.month = base.month
-                comps.day = base.day
-                comps.hour = votdRefresh2Hour
-                comps.minute = votdRefresh2Minute
-                comps.second = 0
-                return cal.date(from: comps) ?? now
+                return VOTDSchedule.dateForToday(hour: votdRefresh2Hour, minute: votdRefresh2Minute, from: now) ?? now
             },
             set: { newDate in
-                let cal = Calendar.current
-                let c: DateComponents = cal.dateComponents([.hour, .minute], from: newDate)
+                let cal = Calendar.autoupdatingCurrent
+                let c = cal.dateComponents([.hour, .minute], from: newDate)
                 votdRefresh2Hour = c.hour ?? 18
                 votdRefresh2Minute = c.minute ?? 0
             }
+        )
+    }
+
+    // Derived “Next auto refresh” text for Settings
+    private var nextVOTDDescription: String {
+        VOTDSchedule.nextAutoRefreshDescription(
+            first: (votdRefresh1Hour, votdRefresh1Minute),
+            second: (votdRefresh2Hour, votdRefresh2Minute)
         )
     }
 
@@ -231,13 +175,6 @@ struct SettingsView: View {
     }
     private var kvsStatusText: String {
         kvsAvailable ? "On" : "Unavailable"
-    }
-    private func formatDateTime(_ date: Date?) -> String {
-        guard let date else { return "—" }
-        let df = DateFormatter()
-        df.dateStyle = .short
-        df.timeStyle = .short
-        return df.string(from: date)
     }
 
     // Debug alerts
@@ -324,58 +261,57 @@ struct SettingsView: View {
 
             gameDataSection
 
-            // MARK: - Debug (hidden in non-DEBUG builds)
+            // MARK: - Debug Utilities (collapsible)
             #if DEBUG
-            Section(header: Text("Debug")) {
-                Button {
-                    let randVerse = Int.random(in: 1...36)
-                    let fav = Favorite(
-                        bookName: "John",
-                        chapterNumber: 3,
-                        verseNumber: randVerse,
-                        verseText: "Test Sync … \(UUID().uuidString)"
-                    )
-                    modelContext.insert(fav)
-                    do {
-                        try modelContext.save()
-                        print("Inserted Favorite -> book: \(fav.bookName), chapter: \(fav.chapterNumber), verse: \(fav.verseNumber), text: \(fav.verseText), createdAt: \(fav.createdAt)")
-                        print("Favorites count after insert: \(favorites.count + 0)")
-                    } catch {
-                        print("Error saving test favorite: \(error)")
-                    }
-                } label: {
-                    Label("Insert Test Favorite (CloudKit Sync)", systemImage: "plus.circle")
-                }
-
-                Button {
-                    let count = favorites.count
-                    if let latest = favorites.first {
-                        print("Favorites count: \(count)")
-                        print("Latest -> book: \(latest.bookName), chapter: \(latest.chapterNumber), verse: \(latest.verseText), text: \(latest.verseText), createdAt: \(latest.createdAt)")
-                    } else {
-                        print("Favorites count: \(count) (no items)")
-                    }
-                } label: {
-                    Label("List Favorite Count", systemImage: "list.number")
-                }
-            }
-            .headerProminence(.increased)
-
-            // MARK: Debug Utilities (collapsible)
             Section {
                 if debugUtilitiesExpanded {
+                    // Moved from the old "Debug" section: SwiftData/CloudKit test buttons
+                    Group {
+                        Button {
+                            let randVerse = Int.random(in: 1...36)
+                            let fav = Favorite(
+                                bookName: "John",
+                                chapterNumber: 3,
+                                verseNumber: randVerse,
+                                verseText: "Test Sync … \(UUID().uuidString)"
+                            )
+                            modelContext.insert(fav)
+                            do {
+                                try modelContext.save()
+                                print("Inserted Favorite -> book: \(fav.bookName), chapter: \(fav.chapterNumber), verse: \(fav.verseNumber), text: \(fav.verseText), createdAt: \(fav.createdAt)")
+                                print("Favorites count after insert: \(favorites.count + 0)")
+                            } catch {
+                                print("Error saving test favorite: \(error)")
+                            }
+                        } label: {
+                            Label("Insert Test Favorite (CloudKit Sync)", systemImage: "plus.circle")
+                        }
+
+                        Button {
+                            let count = favorites.count
+                            if let latest = favorites.first {
+                                print("Favorites count: \(count)")
+                                print("Latest -> book: \(latest.bookName), chapter: \(latest.chapterNumber), verse: \(latest.verseText), text: \(latest.verseText), createdAt: \(latest.createdAt)")
+                            } else {
+                                print("Favorites count: \(count) (no items)")
+                            }
+                        } label: {
+                            Label("List Favorite Count", systemImage: "list.number")
+                        }
+                    }
+
                     // iCloud KVS tools
                     Group {
                         Button {
                             iCloudSyncCoordinator.shared.pushAllNow()
-                            debugShow("iCloud KVS", "Pushed all known keys.\nLast push: \(formatDateTime(iCloudSyncCoordinator.shared.lastPushDate))")
+                            debugShow("iCloud KVS", "Pushed all known keys.\nLast push: \(DateFormatters.shortDateTimeString(iCloudSyncCoordinator.shared.lastPushDate))")
                         } label: {
                             Label("Force KVS Push", systemImage: "icloud.and.arrow.up")
                         }
 
                         Button {
-                            let lastPush = formatDateTime(iCloudSyncCoordinator.shared.lastPushDate)
-                            let lastMerge = formatDateTime(iCloudSyncCoordinator.shared.lastMergeDate)
+                            let lastPush = DateFormatters.shortDateTimeString(iCloudSyncCoordinator.shared.lastPushDate)
+                            let lastMerge = DateFormatters.shortDateTimeString(iCloudSyncCoordinator.shared.lastMergeDate)
                             debugShow("KVS Timestamps", "Last Push: \(lastPush)\nLast Merge: \(lastMerge)")
                         } label: {
                             Label("Show KVS Last Push/Merge", systemImage: "clock")
@@ -490,7 +426,7 @@ struct SettingsView: View {
                     Group {
                         Button {
                             layoutOrder = HomeCardID.allCases
-                            hiddenSet = [.games, .streaks, .bibleStats]
+                            hiddenSet = HomeLayoutStore.baselineHidden
                             saveHomeLayout()
                             debugShow("Home Layout", "Restored default order and hidden set.")
                         } label: {
@@ -499,8 +435,7 @@ struct SettingsView: View {
 
                         Button {
                             // Toggle to baseline hidden set
-                            let baseline: Set<HomeCardID> = [.games, .streaks, .bibleStats]
-                            hiddenSet = baseline
+                            hiddenSet = HomeLayoutStore.baselineHidden
                             saveHomeLayout()
                             debugShow("Home Layout", "Set hidden to baseline: Games, Streaks, Bible Stats.")
                         } label: {
@@ -681,6 +616,12 @@ struct SettingsView: View {
                     DatePicker("Refresh Time 2", selection: refresh2DateBinding, displayedComponents: .hourAndMinute)
                         .datePickerStyle(.compact)
                         .accessibilityIdentifier("votdRefreshTime2")
+
+                    // Live “Next auto refresh” preview
+                    Text(nextVOTDDescription)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("votdNextRefreshDescription")
                 }
                 .padding(.top, 8)
             }
@@ -1212,23 +1153,12 @@ struct SettingsView: View {
         default: scope = .whole
         }
 
-        let oldTestament: Set<String> = [
-            "Genesis","Exodus","Leviticus","Numbers","Deuteronomy",
-            "Joshua","Judges","Ruth","1 Samuel","2 Samuel",
-            "1 Kings","2 Kings","1 Chronicles","2 Chronicles","Ezra",
-            "Nehemiah","Esther","Job","Psalms","Proverbs",
-            "Ecclesiastes","Song of Solomon","Isaiah","Jeremiah","Lamentations",
-            "Ezekiel","Daniel","Hosea","Joel","Amos",
-            "Obadiah","Jonah","Micah","Nahum","Habakkuk",
-            "Zephaniah","Haggai","Zechariah","Malachi"
-        ]
-
         let books: [Book]
         switch scope {
         case .old:
-            books = allBooks.filter { oldTestament.contains($0.name) }
+            books = allBooks.filter { Canon.old.contains($0.name) }
         case .new:
-            books = allBooks.filter { !oldTestament.contains($0.name) }
+            books = allBooks.filter { Canon.new.contains($0.name) }
         case .book:
             if let chosen = allBooks.first(where: { $0.name == specificBook }) {
                 books = [chosen]
@@ -1279,7 +1209,7 @@ private struct HomeLayoutEditorView: View {
 
     private func resetToDefault() {
         order = SettingsView.HomeCardID.allCases
-        hidden = [.games, .streaks, .bibleStats]
+        hidden = HomeLayoutStore.baselineHidden
         onDone() // auto-save
     }
 
@@ -1293,14 +1223,14 @@ private struct HomeLayoutEditorView: View {
     private func footerButton(title: String, systemImage: String, disabled: Bool = false, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Label(title, systemImage: systemImage)
-                .frame(maxWidth: .infinity)
-                .lineLimit(1)
-                .minimumScaleFactor(0.9)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
         }
         .buttonStyle(.bordered)
         .buttonBorderShape(.roundedRectangle(radius: 12))
         .tint(.accentColor)
-        .controlSize(.regular)
+        .controlSize(.large)
         .font(.subheadline)
         .disabled(disabled)
     }
@@ -1332,22 +1262,22 @@ private struct HomeLayoutEditorView: View {
             } header: {
                 Text("Order & Visibility")
             } footer: {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 12) {
-                        footerButton(title: "Reset", systemImage: "arrow.counterclockwise") {
-                            resetToDefault()
-                        }
-                        footerButton(title: "Show All", systemImage: "eye") {
-                            showAll()
-                        }
-                        footerButton(title: "Use Favorite", systemImage: "star", disabled: !hasFavorite) {
-                            onResetToFavorite()
-                        }
+                VStack(alignment: .leading, spacing: 10) {
+                    // Refactored: full-width, vertically stacked buttons for readability
+                    footerButton(title: "Reset Order", systemImage: "arrow.counterclockwise") {
+                        resetToDefault()
                     }
+                    footerButton(title: "Show All Cards", systemImage: "eye") {
+                        showAll()
+                    }
+                    footerButton(title: "Apply Favorite", systemImage: "star", disabled: !hasFavorite) {
+                        onResetToFavorite()
+                    }
+
                     Text("Drag to reorder. Tap the eye to show or hide a card on the Home page.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
-                        .padding(.top, 2)
+                        .padding(.top, 4)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -1392,4 +1322,3 @@ private struct FontFamilyEnvironmentModifier: ViewModifier {
 #Preview {
     NavigationStack { SettingsView() }
 }
-

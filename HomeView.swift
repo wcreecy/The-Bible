@@ -177,18 +177,6 @@ struct HomeView: View {
         return "\(m)m \(s)s left"
     }
 
-    private func formatHMS(_ seconds: Int) -> String {
-        let s = max(0, seconds)
-        let h = s / 3600
-        let m = (s % 3600) / 60
-        let sec = s % 60
-        if h > 0 {
-            return String(format: "%d:%02d:%02d", h, m, sec)
-        } else {
-            return String(format: "%d:%02d", m, sec)
-        }
-    }
-
     @ViewBuilder
     private var streaksCard: some View {
         StreaksCard()
@@ -271,7 +259,7 @@ struct HomeView: View {
                     isPaused: timerController.isPaused,
                     remainingSeconds: timerController.remainingSeconds,
                     timerTintColor: timerTintColor,
-                    formattedTime: { formattedTime($0) },
+                    formattedTime: { TimeFormatters.compactClock($0) },
                     onOpenSetup: {
                         if isHealthKitAvailable && !(UserDefaults.standard.bool(forKey: "healthKitPrompted")) {
                             Task { await requestHealthKitIfNeededForTimer() }
@@ -296,7 +284,7 @@ struct HomeView: View {
                     prayerMode: $prayerMode,
                     stopwatchRunning: stopwatchController.isRunning,
                     stopwatchElapsed: stopwatchController.elapsed,
-                    formattedStopwatch: { formattedStopwatch($0) },
+                    formattedStopwatch: { TimeFormatters.compactStopwatch($0) },
                     onStart: { stopwatchController.start() },
                     onPause: { stopwatchController.pause() },
                     onStop: { stopwatchController.stop() },
@@ -359,7 +347,11 @@ struct HomeView: View {
     }
 
     var body: some View {
-        let activeCards: [SettingsView.HomeCardID] = layoutOrder.filter { !hiddenSet.contains($0) }
+        // Load from centralized layout store
+        let store = HomeLayoutStore()
+        let loaded = store.load()
+        // Keep state for dynamic updates
+        let activeCards: [SettingsView.HomeCardID] = loaded.order.filter { !loaded.hidden.contains($0) }
 
         ScrollView {
             if isPad {
@@ -430,8 +422,8 @@ struct HomeView: View {
                         }
                     )
 
-                    ForEach(layoutOrder, id: \.self) { cardID in
-                        if !hiddenSet.contains(cardID) {
+                    ForEach(loaded.order, id: \.self) { cardID in
+                        if !loaded.hidden.contains(cardID) {
                             card(for: cardID)
                         }
                     }
@@ -469,19 +461,14 @@ struct HomeView: View {
             stopwatchController.onAppear()
             _ = stopwatchController.handlePendingActionIfAny()
 
-            // Load saved layout on appear (shared store)
-            loadHomeLayoutFromStore()
-
             // Initial load of Bible Stats
             bibleVM.refresh()
 
             // Initialize GameStats and bind to its version for immediate refresh
             gameStatsVersion = GameStats.shared.snapshot().totalAnswered
         }
-        .onChange(of: homeCardOrderRaw) { _, _ in loadHomeLayoutFromStore() }
-        .onChange(of: homeCardHiddenRaw) { _, _ in loadHomeLayoutFromStore() }
         .onReceive(NotificationCenter.default.publisher(for: .init("homeLayoutChanged"))) { _ in
-            loadHomeLayoutFromStore()
+            // Trigger a refresh by changing a token state if needed, or rely on recomputation via body
         }
         .onChange(of: progressList) { _, _ in
             mirrorLastReadToAppGroup()
@@ -525,30 +512,6 @@ struct HomeView: View {
             }
         } message: {
             Text("Your prayer/study timer has completed.")
-        }
-    }
-
-    private func formattedTime(_ totalSeconds: Int) -> String {
-        let hours = totalSeconds / 3600
-        let minutes = (totalSeconds % 3600) / 60
-        let seconds = totalSeconds % 60
-        if hours > 0 {
-            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
-        } else {
-            return String(format: "%02d:%02d", minutes, seconds)
-        }
-    }
-
-    // Formatter for Stopwatch elapsed time (H:MM:SS or M:SS)
-    private func formattedStopwatch(_ totalSeconds: Int) -> String {
-        let s = max(0, totalSeconds)
-        let h = s / 3600
-        let m = (s % 3600) / 60
-        let sec = s % 60
-        if h > 0 {
-            return String(format: "%d:%02d:%02d", h, m, sec)
-        } else {
-            return String(format: "%d:%02d", m, sec)
         }
     }
 
@@ -598,34 +561,6 @@ struct HomeView: View {
         try? modelContext.save()
     }
 
-    // MARK: - Home layout state (read from Settings)
-
-    @AppStorage("homeCardOrder") private var homeCardOrderRaw: String = ""
-    @AppStorage("homeCardHidden") private var homeCardHiddenRaw: String = ""
-
-    @State private var layoutOrder: [SettingsView.HomeCardID] = SettingsView.HomeCardID.allCases
-    @State private var hiddenSet: Set<SettingsView.HomeCardID> = []
-
-    private func loadHomeLayoutFromStore() {
-        // Decode order from JSON array of rawValues; append any missing IDs
-        if let data = homeCardOrderRaw.data(using: .utf8),
-           let ids = try? JSONDecoder().decode([String].self, from: data) {
-            let mapped = ids.compactMap { SettingsView.HomeCardID(rawValue: $0) }
-            let missing = SettingsView.HomeCardID.allCases.filter { !mapped.contains($0) }
-            layoutOrder = mapped + missing
-        } else {
-            layoutOrder = SettingsView.HomeCardID.allCases
-        }
-
-        // Decode hidden set from JSON array; default to baseline if missing
-        if let data = homeCardHiddenRaw.data(using: .utf8),
-           let ids = try? JSONDecoder().decode([String].self, from: data) {
-            hiddenSet = Set(ids.compactMap { SettingsView.HomeCardID(rawValue: $0) })
-        } else {
-            hiddenSet = [.games, .streaks, .bibleStats]
-        }
-    }
-
     // MARK: - NEW: Games Card (Home) using centralized GameStats
     @State private var gameStatsVersion: Int = 0
 
@@ -643,21 +578,6 @@ struct HomeView: View {
     }
 }
 
-private let oldTestamentBooks: Set<String> = [
-    "Genesis","Exodus","Leviticus","Numbers","Deuteronomy",
-    "Joshua","Judges","Ruth",
-    "1 Samuel","2 Samuel",
-    "1 Kings","2 Kings",
-    "1 Chronicles","2 Chronicles",
-    "Ezra","Nehemiah","Esther",
-    "Job","Psalms","Proverbs","Ecclesiastes","Song of Solomon",
-    "Isaiah","Jeremiah","Lamentations","Ezekiel","Daniel",
-    "Hosea","Joel","Amos","Obadiah","Jonah",
-    "Micah","Nahum","Habakkuk","Zephaniah",
-    "Haggai","Zechariah","Malachi"
-]
-
 // Note: HeroCard, button styles, DayCell, WeekRow,
 // PrayerStudyTimerSetupView, and DebouncedWidgetReloader have been
 // moved to their own files as part of UI extraction.
-

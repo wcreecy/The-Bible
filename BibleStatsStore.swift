@@ -211,7 +211,6 @@ final class BibleStatsStore {
         // Build name -> index map
         let indexMap: [String: Int] = Dictionary(uniqueKeysWithValues: books.enumerated().map { ($1.name, $0) })
         let matthewIndex: Int? = indexMap["Matthew"]
-        // If we have canonical order with Matthew present, use index comparison
         if let mIdx = matthewIndex {
             var ot = 0
             var nt = 0
@@ -221,24 +220,17 @@ final class BibleStatsStore {
             }
             return (ot, nt)
         } else {
-            // Fallback: hardcoded sets (covers sample data too)
-            let otSet: Set<String> = [
-                "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
-                "Joshua", "Judges", "Ruth",
-                "1 Samuel", "2 Samuel",
-                "1 Kings", "2 Kings",
-                "1 Chronicles", "2 Chronicles",
-                "Ezra", "Nehemiah", "Esther",
-                "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon",
-                "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel",
-                "Hosea", "Joel", "Amos", "Obadiah", "Jonah",
-                "Micah", "Nahum", "Habakkuk", "Zephaniah",
-                "Haggai", "Zechariah", "Malachi"
-            ]
+            // Fallback: use Canon sets
             var ot = 0
             var nt = 0
             for (book, seconds) in totals {
-                if otSet.contains(book) { ot += max(0, seconds) } else { nt += max(0, seconds) }
+                if Canon.old.contains(book) {
+                    ot += max(0, seconds)
+                } else if Canon.new.contains(book) {
+                    nt += max(0, seconds)
+                } else {
+                    // Unknown book name: ignore (or choose a default bucket)
+                }
             }
             return (ot, nt)
         }
@@ -335,7 +327,7 @@ final class BibleStatsStore {
             saveSeenVerses(Array(seen), bookName: bookName, chapter: chapter)
             if totalVerses > 0, seen.count >= totalVerses {
                 markVisited(bookName: bookName, chapterNumber: chapter)
-                setChapterCompletionDateIfNeeded(bookName: bookName, chapter: chapter, date: Date())
+                setChapterCompletionDateIfNeeded(bookName: String(bookName), chapter: chapter, date: Date())
             }
         }
     }
@@ -494,19 +486,15 @@ final class BibleStatsStore {
 
     // MARK: - Sessions-based "Today" helpers (authoritative for daily UI)
 
-    // Sum all reading session seconds that overlap the user's local "today".
-    // Uses ReadingSessionsStore as the source of truth to keep Today and Streak in sync.
     func todayTotalSeconds(now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> Int {
         var cal = calendar
         cal.timeZone = TimeZone.autoupdatingCurrent
         let startOfDay = cal.startOfDay(for: now)
         guard let startOfTomorrow = cal.date(byAdding: .day, value: 1, to: startOfDay) else { return 0 }
 
-        // Fetch sessions for the month containing today, then filter to today's window.
         let monthSessions = ReadingSessionsStore.shared.sessions(inMonthContaining: now, calendar: cal)
         var total = 0
         for s in monthSessions {
-            // Clip session to [startOfDay, startOfTomorrow)
             let start = max(s.start, startOfDay)
             let end = min(s.end, startOfTomorrow)
             if end > start {
@@ -516,11 +504,8 @@ final class BibleStatsStore {
         return max(0, total)
     }
 
-    // Convenience: check if today's total meets the given goal seconds using the same source.
     func isDailyGoalMet(goalSeconds: Int, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> Bool {
         return todayTotalSeconds(now: now, calendar: calendar) >= max(1, goalSeconds)
     }
-
-    // ... rest of file unchanged ...
 }
 

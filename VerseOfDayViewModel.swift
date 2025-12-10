@@ -32,11 +32,7 @@ final class VerseOfDayViewModel: ObservableObject {
     private var sharedDefaults: UserDefaults? { UserDefaults(suiteName: "group.bible.app") }
 
     // External readiness hint for UI
-    var isBibleStoreReady: Bool {
-        // BibleData is static; readiness is about dynamic store. If you have BibleStore.shared, use it here.
-        // Fallback: assume ready since BibleData.books is available.
-        true
-    }
+    var isBibleStoreReady: Bool { true }
 
     init() {
         // Initialize from storage
@@ -62,7 +58,6 @@ final class VerseOfDayViewModel: ObservableObject {
     // MARK: - Public API
 
     func handleAppear() {
-        // If no stored verse and not paused, generate one
         if verse == nil && !paused {
             loadRandomVerse()
         }
@@ -73,7 +68,6 @@ final class VerseOfDayViewModel: ObservableObject {
     func handleScenePhaseChange(_ phase: ScenePhase) {
         switch phase {
         case .active:
-            // Recompute description and ensure timer scheduled
             updateNextDescription()
             scheduleNextVerseRefreshTimer()
         default:
@@ -94,7 +88,6 @@ final class VerseOfDayViewModel: ObservableObject {
         verseOfDayPaused = newValue
 
         if newValue {
-            // Persist current verse snapshot so widgets remain stable
             if let v = verse {
                 storedVerseBook = v.bookName
                 storedVerseChapter = v.chapterNumber
@@ -105,7 +98,6 @@ final class VerseOfDayViewModel: ObservableObject {
             nextRefreshTimer?.invalidate()
             nextRefreshTimer = nil
         } else {
-            // Resume scheduling
             scheduleNextVerseRefreshTimer()
         }
         updateNextDescription()
@@ -162,22 +154,14 @@ final class VerseOfDayViewModel: ObservableObject {
         mirrorVerseToAppGroup(book: ref.bookName, chapter: ref.chapterNumber, verse: ref.verseNumber, text: ref.verseText)
     }
 
-    private func dateForToday(hour: Int, minute: Int, from now: Date = Date()) -> Date? {
-        let cal = Calendar.current
-        let comps = cal.dateComponents([.year, .month, .day], from: now)
-        return cal.date(from: DateComponents(year: comps.year, month: comps.month, day: comps.day, hour: hour, minute: minute, second: 0))
-    }
+    // Centralized schedule helpers
 
     private func nextAutoRefreshDate(from now: Date = Date()) -> Date {
-        let cal = Calendar.current
-        guard let startOfTodayRefresh1 = dateForToday(hour: votdRefresh1Hour, minute: votdRefresh1Minute, from: now),
-              let startOfTodayRefresh2 = dateForToday(hour: votdRefresh2Hour, minute: votdRefresh2Minute, from: now) else {
-            return now
-        }
-        if now < startOfTodayRefresh1 { return startOfTodayRefresh1 }
-        if now < startOfTodayRefresh2 { return startOfTodayRefresh2 }
-        let tomorrow = cal.date(byAdding: .day, value: 1, to: now) ?? now
-        return dateForToday(hour: votdRefresh1Hour, minute: votdRefresh1Minute, from: tomorrow) ?? now
+        VOTDSchedule.nextAutoRefreshDate(
+            first: (votdRefresh1Hour, votdRefresh1Minute),
+            second: (votdRefresh2Hour, votdRefresh2Minute),
+            from: now
+        )
     }
 
     private func updateNextDescription() {
@@ -185,14 +169,10 @@ final class VerseOfDayViewModel: ObservableObject {
             nextRefreshDescription = "Auto refresh is paused."
             return
         }
-        let now = Date()
-        let next = nextAutoRefreshDate(from: now)
-        let cal = Calendar.current
-        let isSameDay = cal.isDate(now, inSameDayAs: next)
-        let isTomorrow = cal.isDate(next, inSameDayAs: cal.date(byAdding: .day, value: 1, to: now) ?? next)
-        let dayString: String = isSameDay ? "Today" : (isTomorrow ? "Tomorrow" : next.formatted(date: .abbreviated, time: .omitted))
-        let timeString = next.formatted(date: .omitted, time: .shortened)
-        nextRefreshDescription = "Next auto refresh: \(dayString) at \(timeString)"
+        nextRefreshDescription = VOTDSchedule.nextAutoRefreshDescription(
+            first: (votdRefresh1Hour, votdRefresh1Minute),
+            second: (votdRefresh2Hour, votdRefresh2Minute)
+        )
     }
 
     private func scheduleNextVerseRefreshTimer() {
