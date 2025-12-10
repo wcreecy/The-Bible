@@ -136,15 +136,63 @@ final class BookOrderGameViewModel: ObservableObject {
         }
         
         let maxStart = max(0, canon.count - length)
-        let start = (maxStart > 0) ? Int.random(in: 0...maxStart) : 0
         
-        let slice = Array(canon[start..<(start + length)])
-        correctOrder = slice
-        sliceFirst = slice.first
-        sliceLast = slice.last
+        // Helper to check if a slice (by indices in full Bible order) has at least one OT and one NT book.
+        func isMixedSlice(_ slice: [String]) -> Bool {
+            // Build an index map from the full canonical list to detect OT vs NT by "Matthew" boundary.
+            // Prefer live BibleData order; fall back to the static fallbackCanon if needed.
+            let full = BibleCanon.canonicalOrder()
+            let indexMap = Dictionary(uniqueKeysWithValues: full.enumerated().map { ($1, $0) })
+            guard let mIdx = indexMap["Matthew"] else {
+                // If Matthew not found (e.g., extremely limited dataset), we cannot judge;
+                // treat as mixed to avoid infinite rerolls.
+                return true
+            }
+            var hasOT = false
+            var hasNT = false
+            for name in slice {
+                let idx = indexMap[name] ?? Int.max
+                if idx < mIdx { hasOT = true } else { hasNT = true }
+                if hasOT && hasNT { return true }
+            }
+            return false
+        }
         
-        var shuffled = slice.shuffled()
-        if shuffled == slice && shuffled.count > 1 {
+        // Choose a slice; if source == .both, try to guarantee a mix (at least one OT and one NT).
+        var chosenSlice: [String] = []
+        var attempts = 0
+        let maxAttempts = 12
+        
+        repeat {
+            attempts += 1
+            let start = (maxStart > 0) ? Int.random(in: 0...maxStart) : 0
+            let candidate = Array(canon[start..<(start + min(length, canon.count - start))])
+            if source == .both {
+                if isMixedSlice(candidate) || length >= canon.count {
+                    chosenSlice = candidate
+                    break
+                } else {
+                    // keep searching for a mixed slice
+                    continue
+                }
+            } else {
+                chosenSlice = candidate
+                break
+            }
+        } while attempts < maxAttempts
+        
+        // If we failed to find a mixed slice after attempts (edge cases), just use the last candidate
+        if chosenSlice.isEmpty {
+            let start = (maxStart > 0) ? Int.random(in: 0...maxStart) : 0
+            chosenSlice = Array(canon[start..<(start + min(length, canon.count - start))])
+        }
+        
+        correctOrder = chosenSlice
+        sliceFirst = chosenSlice.first
+        sliceLast = chosenSlice.last
+        
+        var shuffled = chosenSlice.shuffled()
+        if shuffled == chosenSlice && shuffled.count > 1 {
             shuffled.swapAt(0, 1)
         }
         currentItems = shuffled
