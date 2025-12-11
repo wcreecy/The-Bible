@@ -58,6 +58,14 @@ struct JournalTabView: View {
     // Track when we’re creating a brand-new entry inline (iPad)
     @State private var isCreatingNewEntry: Bool = false
 
+    // Shared right pane mode with the composer/editor
+    private enum RightPaneMode: String, CaseIterable, Identifiable {
+        case smartLinks = "Smart Links"
+        case bible = "Bible"
+        var id: String { rawValue }
+    }
+    @AppStorage("journalRightPaneMode") private var rightPaneMode: RightPaneMode = .smartLinks
+
     private func loadPins() {
         let parts = pinnedIDsRaw.split(separator: ",").map { String($0) }
         pinnedIDs = Set(parts)
@@ -226,7 +234,8 @@ struct JournalTabView: View {
         ToolbarItemGroup(placement: .topBarTrailing) {
             if selectionMode {
                 Button(role: .destructive) {
-                    showBulkDeleteAlert = true
+                    // iPad: delete immediately without confirmation
+                    deleteSelectedEntries()
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
@@ -495,9 +504,43 @@ struct JournalTabView: View {
 
             Divider()
 
-            ScrollView { previewPane(entry: e) }
-                .frame(minWidth: 320, idealWidth: 360, maxWidth: 420, maxHeight: .infinity, alignment: .topLeading)
-                .layoutPriority(0)
+            // New right pane with toggle mirroring the editor
+            VStack(alignment: .leading, spacing: 12) {
+                Picker("Right Pane", selection: $rightPaneMode) {
+                    ForEach(RightPaneMode.allCases) { m in
+                        Text(m.rawValue).tag(m)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+
+                Divider()
+
+                Group {
+                    switch rightPaneMode {
+                    case .smartLinks:
+                        ScrollView { previewPane(entry: e) }
+                    case .bible:
+                        BibleReaderForJournal(
+                            onInsertText: { book, chapter, verse, text in
+                                insertPlainText(text, into: e)
+                            },
+                            onInsertLink: { book, chapter, verse in
+                                let refText = "\(book) \(chapter):\(verse)"
+                                insertSmartLink(refText, into: e)
+                            },
+                            onFavorite: { book, chapter, verse, text in
+                                let fav = Favorite(bookName: book, chapterNumber: chapter, verseNumber: verse, verseText: text)
+                                ctx.insert(fav)
+                                try? ctx.save()
+                            }
+                        )
+                    }
+                }
+            }
+            .frame(minWidth: 320, idealWidth: 360, maxWidth: 420, maxHeight: .infinity, alignment: .topLeading)
+            .layoutPriority(0)
         }
         .zIndex(1)
         .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
@@ -667,6 +710,9 @@ struct JournalTabView: View {
 
         let base = NavigationStack {
             list
+                .navigationDestination(for: JournalEntry.self) { entry in
+                    JournalDetailView(entry: entry)
+                }
         }
 
         let configured = base
@@ -675,9 +721,6 @@ struct JournalTabView: View {
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
             .environment(\.editMode, .constant(selectionMode ? .active : .inactive))
-            .navigationDestination(for: JournalEntry.self) { entry in
-                JournalDetailView(entry: entry)
-            }
 
         return configured
             .safeAreaInset(edge: .top, spacing: 0) {
@@ -727,8 +770,8 @@ struct JournalTabView: View {
             isPinned: { isPinned($0) },
             onTogglePin: { on in togglePin(on) },
             onRequestDelete: { e in
-                pendingDeleteEntry = e
-                showDeleteAlert = true
+                // iPad: delete immediately without confirmation
+                deleteEntry(e)
             },
             onTapEntry: { e in
                 selectedEntry = e
@@ -1031,6 +1074,21 @@ struct JournalTabView: View {
         scheduleInlineLinkify(for: entry.body)
         entry.updatedAt = Date()
         scheduleAutosave()
+    }
+
+    // Insert plain text at the current caret in the editor, updating selection and saving
+    private func insertPlainText(_ text: String, into entry: JournalEntry) {
+        var t = entry.body
+        let loc = min(max(editSelection.location, 0), (t as NSString).length)
+        if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
+            t.insert(contentsOf: text, at: idx)
+            entry.body = t
+            editSelection = NSRange(location: loc + text.utf16.count, length: 0)
+            inlineLinkifySourceID = UUID()
+            scheduleInlineLinkify(for: entry.body)
+            entry.updatedAt = Date()
+            scheduleAutosave()
+        }
     }
 }
 

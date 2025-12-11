@@ -52,6 +52,19 @@ struct JournalEditorView: View {
     // Keyboard inset for iPhone editor
     @State private var bottomEditorInset: CGFloat = 0
 
+    // Right pane toggle (iPad only)
+    private enum RightPaneMode: String, CaseIterable, Identifiable {
+        case smartLinks = "Smart Links"
+        case bible = "Bible"
+        var id: String { rawValue }
+    }
+    // Persist selection across sessions and shared with inline editor
+    @AppStorage("journalRightPaneMode") private var rightPaneModeRaw: String = RightPaneMode.smartLinks.rawValue
+    private var rightPaneMode: RightPaneMode {
+        get { RightPaneMode(rawValue: rightPaneModeRaw) ?? .smartLinks }
+        set { rightPaneModeRaw = newValue.rawValue }
+    }
+
     init(verseRef: VerseRef?, initialBody: String? = nil, showTagColors: Bool = false, editingEntry: JournalEntry? = nil, onClose: (() -> Void)? = nil) {
         self.verseRef = verseRef
         self.showTagColors = showTagColors
@@ -269,7 +282,7 @@ struct JournalEditorView: View {
                     .frame(minWidth: 360, idealWidth: 480, maxWidth: .infinity, alignment: .topLeading)
                     .background(Color(.systemBackground))
                 Divider()
-                previewColumn
+                rightPaneColumn
                     .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 if showTagColors {
                     Divider()
@@ -396,6 +409,39 @@ struct JournalEditorView: View {
                 .padding(.bottom, 12)
             }
             .padding(.vertical, 8)
+        }
+    }
+
+    // New right pane with persisted toggle
+    private var rightPaneColumn: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Toggle (segmented) shown only on iPad/regular width
+            Picker("Right Pane", selection: Binding(
+                get: { rightPaneMode },
+                set: { newValue in
+                    // Write directly to the @AppStorage-backed raw value to avoid mutating self
+                    rightPaneModeRaw = newValue.rawValue
+                }
+            )) {
+                ForEach(RightPaneMode.allCases) { m in
+                    Text(m.rawValue).tag(m)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
+
+            Divider()
+
+            Group {
+                switch rightPaneMode {
+                case .smartLinks:
+                    previewColumn
+                case .bible:
+                    BibleReaderForJournal()
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
     }
 

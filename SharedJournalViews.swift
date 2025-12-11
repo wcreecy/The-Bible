@@ -172,14 +172,14 @@ struct TagChipRow: View {
 
     init(tags: [String], selectedTags: Set<String> = [], showColorPicker: Bool = false, onTap: ((String) -> Void)? = nil, onColorChange: ((String, Color) -> Void)? = nil) {
         self.tags = tags
-               self.selectedTags = selectedTags
+        self.selectedTags = selectedTags
         self.showColorPicker = showColorPicker
         self.onTap = onTap
         self.onColorChange = onColorChange
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        HStack(alignment: .center, spacing: 8) {
             ForEach(tags, id: \.self) { t in
                 HStack(spacing: 8) {
                     let tint = TagColorStore.color(for: t) ?? .accentColor

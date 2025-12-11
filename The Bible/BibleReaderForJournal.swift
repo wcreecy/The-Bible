@@ -1,0 +1,420 @@
+import SwiftUI
+
+struct BibleReaderForJournal: View {
+    @State private var searchText: String = ""
+    @State private var currentBookIndex: Int = 0
+    @State private var currentChapterIndex: Int = 0
+    @State private var targetVerse: Int? = nil
+
+    // Optional callbacks for long-press actions on verses
+    var onInsertText: ((String, Int, Int, String) -> Void)? = nil
+    var onInsertLink: ((String, Int, Int) -> Void)? = nil
+    var onFavorite: ((String, Int, Int, String) -> Void)? = nil
+
+    private var books: [Book] { BibleData.books }
+    private var currentBook: Book { books[safe: currentBookIndex] ?? books.first! }
+    private var currentChapter: Chapter {
+        currentBook.chapters[safe: currentChapterIndex] ?? currentBook.chapters.first!
+    }
+
+    // Scroll positioning
+    @State private var topVisibleVerseID: String? = nil
+    @State private var highlightedVerse: Int? = nil
+
+    // Popover state for pickers
+    @State private var showBookPicker: Bool = false
+    @State private var showChapterPicker: Bool = false
+
+    var body: some View {
+        VStack(spacing: 8) {
+            // Row 1: Search only
+            HStack(spacing: 8) {
+                HStack(spacing: 6) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(.secondary)
+                    TextField("Go to (e.g. Gen 1:7)", text: $searchText)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
+                        .submitLabel(.go)
+                        .onSubmit { goToSearch() }
+                }
+                .padding(10)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(Color(.secondarySystemBackground))
+                )
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
+
+            // Row 2: Smaller Book and Chapter controls (buttons -> popovers)
+            HStack(spacing: 8) {
+                Button {
+                    showBookPicker = true
+                } label: {
+                    SmallMenuLabel(systemImage: "book", text: currentBook.name)
+                }
+                .buttonStyle(.plain)
+                .popover(isPresented: $showBookPicker, arrowEdge: .top) {
+                    BookPickerPopover(
+                        books: books,
+                        currentIndex: currentBookIndex,
+                        onSelect: { idx in
+                            currentBookIndex = idx
+                            currentChapterIndex = 0
+                            targetVerse = nil
+                            showBookPicker = false
+                            scrollToTop()
+                        },
+                        onCancel: { showBookPicker = false }
+                    )
+                }
+
+                Button {
+                    showChapterPicker = true
+                } label: {
+                    SmallMenuLabel(systemImage: "list.number", text: "Ch \(currentChapter.number)")
+                }
+                .buttonStyle(.plain)
+                .popover(isPresented: $showChapterPicker, arrowEdge: .top) {
+                    ChapterPickerPopover(
+                        chapters: currentBook.chapters,
+                        currentIndex: currentChapterIndex,
+                        onSelect: { idx in
+                            currentChapterIndex = idx
+                            targetVerse = nil
+                            showChapterPicker = false
+                            scrollToTop()
+                        },
+                        onCancel: { showChapterPicker = false }
+                    )
+                }
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 16)
+
+            Divider()
+
+            // Reader
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    ForEach(currentChapter.verses) { verse in
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(verse.text)
+                                .font(.body)
+                                .foregroundStyle(.primary)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text("\(currentBook.name) \(currentChapter.number):\(verse.number)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background((highlightedVerse == verse.number) ? Color.yellow.opacity(0.25) : Color.clear)
+                        .id(rowID(for: verse.number))
+                        .contentShape(Rectangle())
+                        .contextMenu {
+                            Button {
+                                onInsertText?(currentBook.name, currentChapter.number, verse.number, verse.text)
+                            } label: {
+                                Label("Text", systemImage: "doc.text")
+                            }
+                            Button {
+                                onInsertLink?(currentBook.name, currentChapter.number, verse.number)
+                            } label: {
+                                Label("Link", systemImage: "link")
+                            }
+                            Button {
+                                onFavorite?(currentBook.name, currentChapter.number, verse.number, verse.text)
+                            } label: {
+                                Label("Favorite", systemImage: "heart")
+                            }
+                        }
+
+                        if verse.number != currentChapter.verses.count {
+                            Divider()
+                        }
+                    }
+                }
+                .padding(.vertical, 8)
+                .scrollTargetLayout()
+            }
+            .scrollPosition(id: $topVisibleVerseID, anchor: .top)
+            .gesture(
+                DragGesture(minimumDistance: 5, coordinateSpace: .local)
+                    .onEnded { value in
+                        let horizontal = value.translation.width
+                        let vertical = value.translation.height
+                        if abs(horizontal) > abs(vertical) && abs(horizontal) > 40 {
+                            if horizontal < 0 {
+                                nextChapter()
+                            } else {
+                                previousChapter()
+                            }
+                        }
+                    }
+            )
+            .onAppear {
+                // default to Genesis 1
+                currentBookIndex = 0
+                currentChapterIndex = 0
+                scrollToTop()
+            }
+        }
+    }
+
+    private func goToSearch() {
+        let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        // Try to parse "Book Chap:Verse" using the linker’s resolution helpers
+        // Strategy: split on ":" to find verse; split left part into book tokens + chapter at end
+        let parts = trimmed.components(separatedBy: ":")
+        let left = parts.first ?? trimmed
+        let right = parts.count > 1 ? parts[1] : nil
+
+        let leftTokens = left.split(separator: " ").map(String.init)
+        guard !leftTokens.isEmpty else { return }
+
+        // Chapter is last number on the left, book is the rest
+        var chapterNum: Int? = nil
+        var bookNameCandidate = ""
+        if let last = leftTokens.last, let chap = Int(last) {
+            chapterNum = chap
+            bookNameCandidate = leftTokens.dropLast().joined(separator: " ")
+        } else {
+            // If no chapter provided, default chapter = 1 and treat all as book
+            chapterNum = 1
+            bookNameCandidate = leftTokens.joined(separator: " ")
+        }
+
+        // Resolve book name via BibleReferenceLinker.resolveBook(named:) analog by using BibleData names directly
+        if let idx = BibleData.books.firstIndex(where: { $0.name.compare(bookNameCandidate, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
+            currentBookIndex = idx
+        } else if let resolved = resolveBookName(bookNameCandidate),
+                  let idx = BibleData.books.firstIndex(where: { $0.name == resolved }) {
+            currentBookIndex = idx
+        } else {
+            return
+        }
+
+        let book = books[currentBookIndex]
+        let clampedChapter = min(max(1, chapterNum ?? 1), book.chapters.count)
+        currentChapterIndex = clampedChapter - 1
+
+        if let r = right, let v = Int(r) {
+            let versesCount = currentChapter.verses.count
+            let clampedVerse = min(max(1, v), versesCount)
+            targetVerse = clampedVerse
+            scrollToVerse(clampedVerse, highlight: true)
+        } else {
+            targetVerse = nil
+            scrollToTop()
+        }
+    }
+
+    private func resolveBookName(_ raw: String) -> String? {
+        // Reuse BibleReferenceLinker’s resolution by invoking a small helper:
+        // Try the exact name first, then a few abbreviation fallbacks similar to BibleReferenceLinker.
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let direct = BibleData.books.first(where: { $0.name.compare(trimmed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
+            return direct.name
+        }
+        // Try collapsing spaces and case-insensitive compare (e.g., "SongofSolomon")
+        let collapsed = trimmed.replacingOccurrences(of: " ", with: "")
+        if let match = BibleData.books.first(where: { $0.name.replacingOccurrences(of: " ", with: "").compare(collapsed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
+            return match.name
+        }
+        // Last resort: use BibleReferenceLinker.resolveBook(named:) via a dummy parse by injecting chapter/verse "1:1"
+        let probe = "\(trimmed) 1:1"
+        let attributed = BibleReferenceLinker.linkify(probe)
+        let refs = ScriptureRefExtractor.refs(in: attributed)
+        return refs.first?.bookName
+    }
+
+    private func nextChapter() {
+        let book = currentBook
+        if currentChapterIndex + 1 < book.chapters.count {
+            currentChapterIndex += 1
+            targetVerse = 1
+            scrollToTop()
+            return
+        }
+        // Move to first chapter of next book
+        if currentBookIndex + 1 < books.count {
+            currentBookIndex += 1
+            currentChapterIndex = 0
+            targetVerse = 1
+            scrollToTop()
+        }
+    }
+
+    private func previousChapter() {
+        if currentChapterIndex - 1 >= 0 {
+            currentChapterIndex -= 1
+            targetVerse = 1
+            scrollToTop()
+            return
+        }
+        // Move to last chapter of previous book
+        if currentBookIndex - 1 >= 0 {
+            currentBookIndex -= 1
+            let newBook = books[currentBookIndex]
+            currentChapterIndex = max(0, newBook.chapters.count - 1)
+            targetVerse = 1
+            scrollToTop()
+        }
+    }
+
+    private func rowID(for verseNumber: Int) -> String {
+        "\(currentBook.name)-\(currentChapter.number)-\(verseNumber)"
+    }
+
+    private func scrollToTop() {
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                topVisibleVerseID = rowID(for: 1)
+            }
+            highlightedVerse = nil
+        }
+    }
+
+    private func scrollToVerse(_ verse: Int, highlight: Bool) {
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut(duration: 0.35)) {
+                topVisibleVerseID = rowID(for: verse)
+            }
+            if highlight {
+                highlightedVerse = verse
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                    withAnimation { highlightedVerse = nil }
+                }
+            }
+        }
+    }
+}
+
+// Compact, professional-looking menu label for Book/Chapter controls
+private struct SmallMenuLabel: View {
+    let systemImage: String
+    let text: String
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Image(systemName: systemImage)
+                .imageScale(.small)
+                .foregroundStyle(.secondary)
+            Text(text)
+                .font(.footnote)
+                .foregroundStyle(.primary)
+            Image(systemName: "chevron.down")
+                .imageScale(.small)
+                .foregroundStyle(.secondary)
+        }
+        .padding(.vertical, 6)
+        .padding(.horizontal, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+        )
+        .contentShape(Rectangle())
+    }
+}
+
+// Popover content for selecting a Book
+private struct BookPickerPopover: View {
+    let books: [Book]
+    let currentIndex: Int
+    let onSelect: (Int) -> Void
+    let onCancel: () -> Void
+
+    @State private var query: String = ""
+
+    private var filteredIndices: [Int] {
+        if query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return Array(books.indices)
+        }
+        let q = query.lowercased()
+        return books.enumerated()
+            .filter { $0.element.name.lowercased().contains(q) }
+            .map { $0.offset }
+    }
+
+    var body: some View {
+        NavigationStack {
+            List(filteredIndices, id: \.self) { idx in
+                Button {
+                    onSelect(idx)
+                } label: {
+                    HStack {
+                        Text(books[idx].name)
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        if idx == currentIndex {
+                            Image(systemName: "checkmark")
+                                .foregroundStyle(.blue)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Book")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { onCancel() }
+                }
+            }
+            .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search books")
+        }
+        .frame(minWidth: 320, idealWidth: 360, maxWidth: 420, minHeight: 380, idealHeight: 440, maxHeight: 520)
+    }
+}
+
+// Popover content for selecting a Chapter
+private struct ChapterPickerPopover: View {
+    let chapters: [Chapter]
+    let currentIndex: Int
+    let onSelect: (Int) -> Void
+    let onCancel: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            List(chapters.indices, id: \.self) { idx in
+                Button {
+                    onSelect(idx)
+                } label: {
+                    HStack {
+                        Text("Chapter \(chapters[idx].number)")
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        if idx == currentIndex {
+                            Image(systemName: "checkmark")
+                                .foregroundStyle(.blue)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Chapter")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { onCancel() }
+                }
+            }
+        }
+        .frame(minWidth: 260, idealWidth: 300, maxWidth: 340, minHeight: 320, idealHeight: 360, maxHeight: 420)
+    }
+}
+
+// Convenience safe index
+private extension Array {
+    subscript(safe idx: Index) -> Element? {
+        indices.contains(idx) ? self[idx] : nil
+    }
+}
