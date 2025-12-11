@@ -12,7 +12,8 @@ struct JournalTabView: View {
     @State private var isEditing: Bool = false
 
     @State private var selectionMode: Bool = false
-    @State private var selectedForDeletion: Set<JournalEntry> = []
+    // Use SwiftData's stable PersistentIdentifier for multi-select
+    @State private var selectedForDeletion: Set<PersistentIdentifier> = []
     @State private var searchText: String = ""
 
     @State private var previewRef: ScriptureRef? = nil
@@ -54,6 +55,9 @@ struct JournalTabView: View {
     @State private var showDeleteAlert: Bool = false
     @State private var showBulkDeleteAlert: Bool = false
 
+    // Track when we’re creating a brand-new entry inline (iPad)
+    @State private var isCreatingNewEntry: Bool = false
+
     private func loadPins() {
         let parts = pinnedIDsRaw.split(separator: ",").map { String($0) }
         pinnedIDs = Set(parts)
@@ -62,11 +66,11 @@ struct JournalTabView: View {
         pinnedIDsRaw = pinnedIDs.joined(separator: ",")
     }
     private func isPinned(_ entry: JournalEntry) -> Bool {
-        guard let key = entry.id?.uuidString else { return false }
+        guard let key = entry.uuid?.uuidString else { return false }
         return pinnedIDs.contains(key)
     }
     private func togglePin(_ entry: JournalEntry) {
-        guard let key = entry.id?.uuidString else { return }
+        guard let key = entry.uuid?.uuidString else { return }
         if pinnedIDs.contains(key) {
             pinnedIDs.remove(key)
             entry.isPinned = false
@@ -123,12 +127,15 @@ struct JournalTabView: View {
     private func deleteEntry(_ entry: JournalEntry) {
         ctx.delete(entry)
         try? ctx.save()
-        if selectedEntry?.id == entry.id { selectedEntry = nil }
+        if selectedEntry?.uuid == entry.uuid { selectedEntry = nil }
         recomputeFilteredEntries()
     }
 
     private func deleteSelectedEntries() {
-        for entry in selectedForDeletion {
+        // Map selected ids (PersistentIdentifier) to entries and delete
+        let ids = selectedForDeletion
+        let toDelete = entries.filter { ids.contains($0.persistentModelID) }
+        for entry in toDelete {
             ctx.delete(entry)
         }
         try? ctx.save()
@@ -165,8 +172,8 @@ struct JournalTabView: View {
             // Preserve the current order using object identity (id is optional)
             let indexMap: [ObjectIdentifier: Int] = Dictionary(uniqueKeysWithValues: currentEntries.enumerated().map { (ObjectIdentifier($1), $0) })
             list.sort { lhs, rhs in
-                let lp = currentPins.contains(lhs.id?.uuidString ?? "")
-                let rp = currentPins.contains(rhs.id?.uuidString ?? "")
+                let lp = currentPins.contains(lhs.uuid?.uuidString ?? "")
+                let rp = currentPins.contains(rhs.uuid?.uuidString ?? "")
                 if lp != rp { return lp && !rp }
                 let li = indexMap[ObjectIdentifier(lhs)] ?? 0
                 let ri = indexMap[ObjectIdentifier(rhs)] ?? 0
@@ -174,6 +181,24 @@ struct JournalTabView: View {
             }
             cachedFilteredEntries = list
         }
+    }
+
+    // MARK: - iPad inline "New" support
+
+    private func startInlineNewEntry(initialBody: String? = nil, verseRef: ScriptureRef? = nil) {
+        let e = JournalEntry()
+        if let body = initialBody { e.body = body }
+        if let ref = verseRef {
+            e.verseRef = VerseRef(book: ref.bookName, chapter: ref.chapter, verse: ref.startVerse, translation: nil)
+        }
+        e.updatedAt = Date()
+        ctx.insert(e)
+        try? ctx.save()
+
+        selectedEntry = e
+        isEditing = true
+        isCreatingNewEntry = true
+        recomputeFilteredEntries()
     }
 
     var body: some View {
@@ -195,6 +220,7 @@ struct JournalTabView: View {
                 } label: {
                     Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle")
                 }
+                .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
             }
         }
         ToolbarItemGroup(placement: .topBarTrailing) {
@@ -202,23 +228,32 @@ struct JournalTabView: View {
                 Button(role: .destructive) {
                     showBulkDeleteAlert = true
                 } label: {
-                    Image(systemName: "trash")
+                    Label("Delete", systemImage: "trash")
                 }
+                .buttonStyle(ToolbarPillButtonStyle(tint: .red))
+
                 Button {
                     selectionMode = false
                     selectedForDeletion.removeAll()
                 } label: {
-                    Image(systemName: "xmark")
+                    Label("Cancel", systemImage: "xmark")
                 }
+                .buttonStyle(ToolbarPillButtonStyle(tint: .gray))
             } else {
-                Button("New") {
-                    journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
+                Button {
+                    // iPad: create inline and start editing in the detail column
+                    startInlineNewEntry()
+                } label: {
+                    Label("New", systemImage: "plus")
                 }
-                .tint(.blue)
+                .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
 
-                Button("Select") {
+                Button {
                     selectionMode = true
+                } label: {
+                    Label("Select", systemImage: "checkmark.circle")
                 }
+                .buttonStyle(ToolbarPillButtonStyle(tint: .blue))
             }
         }
     }
@@ -269,7 +304,7 @@ struct JournalTabView: View {
     private func handleCreatedNotification(_ note: Notification) {
         if let id = note.userInfo?["id"] as? String {
             refreshToken = id
-            if let created = entries.first(where: { $0.id?.uuidString == id }) {
+            if let created = entries.first(where: { $0.uuid?.uuidString == id }) {
                 selectedEntry = created
             }
         } else {
@@ -329,10 +364,8 @@ struct JournalTabView: View {
 
     private func iPadEditingDetail(entry e: JournalEntry) -> some View {
         HStack(spacing: 0) {
-            // Full-column editor (no Form)
             ScrollView {
                 VStack(spacing: 0) {
-                    // Top bar with Save / Cancel
                     HStack {
                         Button("Save") {
                             let tags = editingTagsText
@@ -343,6 +376,7 @@ struct JournalTabView: View {
                             e.updatedAt = Date()
                             try? ctx.save()
                             isEditing = false
+                            isCreatingNewEntry = false
                             recomputeFilteredEntries()
                         }
                         .buttonStyle(.borderedProminent)
@@ -351,6 +385,19 @@ struct JournalTabView: View {
                         Spacer(minLength: 0)
 
                         Button("Cancel") {
+                            // If this was a brand-new entry and still blank, discard it.
+                            if isCreatingNewEntry {
+                                let isBlank = e.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                    && e.body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                    && e.tags.isEmpty
+                                if isBlank {
+                                    ctx.delete(e)
+                                    try? ctx.save()
+                                    selectedEntry = nil
+                                    recomputeFilteredEntries()
+                                }
+                                isCreatingNewEntry = false
+                            }
                             isEditing = false
                         }
                         .buttonStyle(.bordered)
@@ -362,7 +409,6 @@ struct JournalTabView: View {
                     Divider()
 
                     VStack(alignment: .leading, spacing: 12) {
-                        // Title
                         TextField("Title", text: Binding(
                             get: { e.title },
                             set: { new in
@@ -377,7 +423,6 @@ struct JournalTabView: View {
                         .padding(.horizontal, 12)
                         .padding(.top, 8)
 
-                        // Tags
                         TextField("Add tags (comma-separated)", text: $editingTagsText)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled(true)
@@ -400,7 +445,6 @@ struct JournalTabView: View {
                             }
                         }
 
-                        // Body editor
                         ZStack(alignment: .topLeading) {
                             if e.body.isEmpty {
                                 Text("Write your thoughts here…")
@@ -496,8 +540,8 @@ struct JournalTabView: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 let shareTitle: String = e.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled" : e.title
-                let bodyText: String = e.body.trimmingCharacters(in: .whitespacesAndNewlines)
-                let shareText: String = bodyText.isEmpty ? shareTitle : "\(shareTitle)\n\n\(bodyText)"
+                let bodyText = e.body.trimmingCharacters(in: .whitespacesAndNewlines)
+                let shareText = bodyText.isEmpty ? shareTitle : "\(shareTitle)\n\n\(bodyText)"
                 ShareLink(item: shareText) {
                     Image(systemName: "square.and.arrow.up")
                 }
@@ -508,7 +552,6 @@ struct JournalTabView: View {
 
     // MARK: - iPhone layout
 
-    // Extracted toolbar for compact to reduce type-checker work
     @ToolbarContentBuilder
     private var compactToolbar: some ToolbarContent {
         if isFiltered {
@@ -518,6 +561,7 @@ struct JournalTabView: View {
                 } label: {
                     Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle")
                 }
+                .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
             }
         }
         ToolbarItemGroup(placement: .topBarTrailing) {
@@ -525,21 +569,31 @@ struct JournalTabView: View {
                 Button(role: .destructive) {
                     showBulkDeleteAlert = true
                 } label: {
-                    Image(systemName: "trash")
+                    Label("Delete", systemImage: "trash")
                 }
+                .buttonStyle(ToolbarPillButtonStyle(tint: .red))
+
                 Button {
                     selectionMode = false
                     selectedForDeletion.removeAll()
                 } label: {
-                    Image(systemName: "xmark")
+                    Label("Cancel", systemImage: "xmark")
                 }
+                .buttonStyle(ToolbarPillButtonStyle(tint: .gray))
             } else {
-                Button("New") {
+                Button {
                     journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
+                } label: {
+                    Label("New", systemImage: "plus")
                 }
-                Button("Select") {
+                .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
+
+                Button {
                     selectionMode = true
+                } label: {
+                    Label("Select", systemImage: "checkmark.circle")
                 }
+                .buttonStyle(ToolbarPillButtonStyle(tint: .blue))
             }
         }
     }
@@ -548,14 +602,13 @@ struct JournalTabView: View {
     private var compactHeaderActions: some View {
         HStack(spacing: 10) {
             if selectionMode {
-                Button(role: .destructive) {
+                Button {
                     showBulkDeleteAlert = true
                 } label: {
                     Label("Delete", systemImage: "trash")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.red)
+                .buttonStyle(ModernPillButtonStyle(tint: .red))
 
                 Button {
                     selectionMode = false
@@ -564,7 +617,7 @@ struct JournalTabView: View {
                     Label("Cancel", systemImage: "xmark")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(ModernPillButtonStyle(tint: .gray))
             } else {
                 Button {
                     journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
@@ -572,7 +625,7 @@ struct JournalTabView: View {
                     Label("New", systemImage: "plus")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
 
                 Button {
                     selectionMode = true
@@ -580,64 +633,35 @@ struct JournalTabView: View {
                     Label("Select", systemImage: "checkmark.circle")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(ModernPillButtonStyle(tint: .blue))
             }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
+        .background(.regularMaterial, in: Rectangle())
+        .overlay(Divider(), alignment: .bottom)
     }
 
-    // Extracted list content for compact layout
     @ViewBuilder
     private var compactList: some View {
-        List(selection: $selectedForDeletion) {
-            // Header actions visible in compact portrait to ensure access to New/Select
-            Section {
-                compactHeaderActions
-                    .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+        CompactJournalList(
+            entries: cachedFilteredEntries,
+            isFiltered: isFiltered,
+            headerCountText: headerCountText,
+            filteredDescription: filteredDescription,
+            selection: $selectedForDeletion,
+            selectionMode: selectionMode,
+            selectedTags: selectedTags,
+            onTagTapped: { toggleTagFilter($0) }, onClearFilters: clearAllFilters,
+            isPinned: { isPinned($0) },
+            onTogglePin: { on in togglePin(on) },
+            onRequestDelete: { entry in
+                pendingDeleteEntry = entry
+                showDeleteAlert = true
             }
-
-            // Filter banner pinned at top when filtered/searching
-            if isFiltered {
-                Section {
-                    FilterBanner(text: filteredDescription, onClear: clearAllFilters)
-                        .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
-                }
-            }
-
-            Section {
-                ForEach(cachedFilteredEntries) { entry in
-                    NavigationLink(destination: JournalDetailView(entry: entry)) {
-                        listRow(for: entry)
-                    }
-                    .tag(entry)
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button(role: .destructive) {
-                            pendingDeleteEntry = entry
-                            showDeleteAlert = true
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
-                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                        Button {
-                            togglePin(entry)
-                        } label: {
-                            Label(isPinned(entry) ? "Unpin" : "Pin", systemImage: "pin.fill")
-                        }
-                        .tint(.yellow)
-                    }
-                    .listRowInsets(EdgeInsets(top: 2, leading: 12, bottom: 2, trailing: 12))
-                }
-            } header: {
-                Text(headerCountText)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
+        )
     }
 
-    // Smaller NavigationStack built in steps for the compact layout
     private var compactNavigationStack: some View {
         let list = AnyView(compactList)
 
@@ -656,6 +680,11 @@ struct JournalTabView: View {
             }
 
         return configured
+            .safeAreaInset(edge: .top, spacing: 0) {
+                if hSize != .regular {
+                    compactHeaderActions
+                }
+            }
             .onAppear {
                 loadPins()
                 recomputeFilteredEntries()
@@ -688,126 +717,35 @@ struct JournalTabView: View {
 
     @ViewBuilder
     private var sidebarList: some View {
-        List(selection: $selectedForDeletion) {
-            if !selectedTags.isEmpty {
-                Section {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(Array(selectedTags), id: \.self) { t in
-                                HStack(spacing: 6) {
-                                    Text(t)
-                                        .font(.caption)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 4)
-                                        .background(Color.accentColor.opacity(0.15), in: Capsule())
-                                        .overlay(Capsule().stroke(Color.accentColor.opacity(0.35), lineWidth: 1))
-                                    Button(action: { toggleTagFilter(t) }) {
-                                        Image(systemName: "xmark.circle.fill")
-                                    }
-                                    .buttonStyle(.plain)
-                                    .foregroundStyle(.secondary)
-                                }
-                            }
-                            Button("Clear Filters") { selectedTags.removeAll() }
-                                .font(.caption)
-                        }
-                        .padding(.vertical, 4)
-                    }
-                }
+        SidebarJournalList(
+            entries: cachedFilteredEntries,
+            headerCountText: headerCountText,
+            selection: $selectedForDeletion,
+            selectionMode: selectionMode,
+            selectedTags: selectedTags,
+            onToggleTag: { toggleTagFilter($0) },
+            isPinned: { isPinned($0) },
+            onTogglePin: { on in togglePin(on) },
+            onRequestDelete: { e in
+                pendingDeleteEntry = e
+                showDeleteAlert = true
+            },
+            onTapEntry: { e in
+                selectedEntry = e
+                isEditing = false
+            },
+            isEntryCurrentlySelected: { e in
+                (hSize == .regular) && (selectedEntry?.uuid == e.uuid)
             }
-            Section {
-                ForEach(cachedFilteredEntries) { entry in
-                    Button {
-                        selectedEntry = entry
-                        isEditing = false
-                    } label: { listRow(for: entry) }
-                    .tag(entry)
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button(role: .destructive) {
-                            pendingDeleteEntry = entry
-                            showDeleteAlert = true
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
-                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                        Button {
-                            togglePin(entry)
-                        } label: {
-                            Label(isPinned(entry) ? "Unpin" : "Pin", systemImage: "pin.fill")
-                        }
-                        .tint(.yellow)
-                    }
-                    .listRowInsets(EdgeInsets(top: 2, leading: 12, bottom: 2, trailing: 12))
-                }
-            } header: {
-                Text(headerCountText)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .environment(\.editMode, .constant(selectionMode ? .active : .inactive))
+        )
     }
 
-    @ViewBuilder
-    private func listRow(for entry: JournalEntry) -> some View {
-        let isPadSelected = (hSize == .regular) && (selectedEntry?.id == entry.id)
-        VStack(alignment: .leading, spacing: 2) {
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 6) {
-                    if isPinned(entry) {
-                        Image(systemName: "pin.fill")
-                            .foregroundStyle(.yellow)
-                            .imageScale(.small)
-                    }
-                    Text(entry.title.isEmpty ? "Untitled" : entry.title)
-                }
-                .font(.subheadline)
-                if !entry.tags.isEmpty {
-                    HStack(spacing: 3) {
-                        ForEach(entry.tags.prefix(4), id: \.self) { t in
-                            let tint = TagColorStore.color(for: t) ?? .accentColor
-                            TagChip(text: t, tint: tint, isSelected: selectedTags.contains(t.lowercased())) {
-                                toggleTagFilter(t)
-                            }
-                        }
-                    }
-                }
-                if !entry.body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    Text(entry.body)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .multilineTextAlignment(.leading)
-                }
-                if let ref = entry.verseRef {
-                    Text(ref.display)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(.vertical, 3)
-            .padding(.horizontal, 6)
-            .background(
-                isPadSelected ? AnyView(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(Color(.tertiarySystemFill))
-                ) : AnyView(EmptyView())
-            )
-            if hSize == .regular {
-                Divider().padding(.top, 3)
-            }
-        }
-        .padding(.vertical, 1)
-    }
-
-    // Read-only, unchanged except title shown only on compact width
+    // Read-only pane (unchanged)
     @ViewBuilder
     private func readOnlyPane(entry: JournalEntry) -> some View {
         let linkedBody = BibleReferenceLinker.linkify(entry.body)
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                // Show in-content title only on compact; on iPad, the title is in the nav bar
                 if hSize != .regular {
                     Text(entry.title.isEmpty ? "Untitled" : entry.title)
                         .font(.title2).bold()
@@ -856,7 +794,6 @@ struct JournalTabView: View {
         }
     }
 
-    // Debounced save to improve typing performance and power use
     private func scheduleAutosave() {
         autosaveTask?.cancel()
         autosaveTask = Task { @MainActor in
@@ -865,7 +802,6 @@ struct JournalTabView: View {
         }
     }
 
-    // Debounced linkify for inline overlay
     private func scheduleInlineLinkify(for text: String) {
         inlineLinkifyTask?.cancel()
         let sourceID = inlineLinkifySourceID
@@ -1099,13 +1035,13 @@ struct JournalTabView: View {
 }
 
 private extension View {
-    // Small helper to cut generic nesting depth for the type-checker
     func eraseToAnyView() -> AnyView { AnyView(self) }
 }
 
 // MARK: - Filter banner
 
-private struct FilterBanner: View {
+// Made internal (not private) so CompactJournalList/SidebarJournalList can use it
+struct FilterBanner: View {
     let text: String
     let onClear: () -> Void
 

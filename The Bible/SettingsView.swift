@@ -795,7 +795,7 @@ struct SettingsView: View {
             NavigationLink {
                 HomeLayoutEditorView(
                     order: $layoutOrder,
-                    hidden: $hiddenSet,
+                    hiddenSet: $hiddenSet,
                     onDone: { saveHomeLayout() },
                     onSaveFavorite: {
                         saveFavoriteLayout()
@@ -1183,7 +1183,7 @@ struct SettingsView: View {
 
 private struct HomeLayoutEditorView: View {
     @Binding var order: [SettingsView.HomeCardID]
-    @Binding var hidden: Set<SettingsView.HomeCardID>
+    @Binding var hiddenSet: Set<SettingsView.HomeCardID>
     var onDone: () -> Void
 
     // New: favorite handlers & state
@@ -1195,26 +1195,26 @@ private struct HomeLayoutEditorView: View {
     @State private var editMode: EditMode = .active
 
     private func isVisible(_ id: SettingsView.HomeCardID) -> Bool {
-        !hidden.contains(id)
+        !hiddenSet.contains(id)
     }
 
     private func toggleVisibility(_ id: SettingsView.HomeCardID) {
-        if hidden.contains(id) {
-            hidden.remove(id)
+        if hiddenSet.contains(id) {
+            hiddenSet.remove(id)
         } else {
-            hidden.insert(id)
+            hiddenSet.insert(id)
         }
         onDone() // auto-save on toggle
     }
 
     private func resetToDefault() {
         order = SettingsView.HomeCardID.allCases
-        hidden = HomeLayoutStore.baselineHidden
+        hiddenSet = HomeLayoutStore.baselineHidden
         onDone() // auto-save
     }
 
     private func showAll() {
-        hidden.removeAll()
+        hiddenSet.removeAll()
         onDone() // auto-save
     }
 
