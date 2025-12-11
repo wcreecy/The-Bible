@@ -347,6 +347,15 @@ struct JournalTabView: View {
             .onReceive(NotificationCenter.default.publisher(for: JournalNotifications.entryCreated)) { note in
                 handleCreatedNotification(note)
             }
+            // NEW: Handle “start inline new from Bible” routed from ReadingView on iPad
+            .onReceive(NotificationCenter.default.publisher(for: JournalNotifications.startInlineNewFromBible)) { note in
+                let book = note.userInfo?["book"] as? String ?? ""
+                let chapter = note.userInfo?["chapter"] as? Int ?? 0
+                let verse = note.userInfo?["verse"] as? Int ?? 0
+                guard !book.isEmpty, chapter > 0, verse > 0 else { return }
+                let ref = ScriptureRef(bookName: book, chapter: chapter, startVerse: verse, endVerse: nil)
+                startInlineNewEntry(initialBody: nil, verseRef: ref)
+            }
             .onDisappear {
                 filterDebounceTask?.cancel()
                 filterDebounceTask = nil

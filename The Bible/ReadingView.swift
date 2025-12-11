@@ -764,7 +764,27 @@ struct ReadingView: View {
             return
         }
         let ref = VerseRef(book: bookName, chapter: chapterNum, verse: verseNum, translation: "KJV")
-        journalComposer.present(initialBody: nil, verseRef: ref, showTagColors: false)
+
+        // iPad: switch to Journal tab and start inline new entry with the ref pre-inserted
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            // Route to Journal tab
+            NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 2])
+            // Ask JournalTabView to create an inline new entry seeded with the smart link
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                NotificationCenter.default.post(
+                    name: JournalNotifications.startInlineNewFromBible,
+                    object: nil,
+                    userInfo: [
+                        "book": bookName,
+                        "chapter": chapterNum,
+                        "verse": verseNum
+                    ]
+                )
+            }
+        } else {
+            // iPhone: present the full-screen editor with the verseRef and enable tag colors
+            journalComposer.present(initialBody: nil, verseRef: ref, showTagColors: true)
+        }
     }
 
     // MARK: - Favorites (SwiftData)
