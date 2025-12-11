@@ -45,10 +45,6 @@ struct JournalEditorView: View {
     @State private var linkedContent: AttributedString = AttributedString("")
     @State private var linkifyTask: Task<Void, Never>? = nil
 
-    // SmartLink sheet
-    @State private var showSmartLinkSheet: Bool = false
-    @State private var pendingTriggerRange: NSRange? = nil
-
     // Keyboard inset for iPhone editor
     @State private var bottomEditorInset: CGFloat = 0
 
@@ -165,12 +161,6 @@ struct JournalEditorView: View {
             .onDisappear {
                 linkifyTask?.cancel()
             }
-            .sheet(isPresented: $showSmartLinkSheet) {
-                SmartLinkSheet { refText in
-                    insertSmartLink(refText)
-                }
-                .presentationDetents([.medium, .large])
-            }
         }
         // Prevent swipe-to-dismiss if there are unsaved changes
         .interactiveDismissDisabled(isDirty)
@@ -229,7 +219,6 @@ struct JournalEditorView: View {
                             bottomInset: $bottomEditorInset,
                             onChange: { newText in
                                 scheduleLinkify(for: newText)
-                                detectHashTrigger()
                             },
                             linkify: { text in
                                 BibleReferenceLinker.linkify(text)
@@ -389,7 +378,6 @@ struct JournalEditorView: View {
                         bottomInset: .constant(0),
                         onChange: { newText in
                             scheduleLinkify(for: newText)
-                            detectHashTrigger()
                         },
                         linkify: { text in
                             BibleReferenceLinker.linkify(text)
@@ -464,7 +452,6 @@ struct JournalEditorView: View {
                 bottomInset: .constant(0),
                 onChange: { newText in
                     scheduleLinkify(for: newText)
-                    detectHashTrigger()
                 },
                 linkify: { text in
                     BibleReferenceLinker.linkify(text)
@@ -619,79 +606,6 @@ struct JournalEditorView: View {
                 self.linkedContent = result
             }
         }
-    }
-
-    private func detectHashTrigger() {
-        let t = content
-        let caretLoc = textSelectionRange.location
-        let utf16 = t.utf16
-        let clamped = min(max(caretLoc, 0), utf16.count)
-        guard let caretUTF16Index = utf16.index(utf16.startIndex, offsetBy: clamped, limitedBy: utf16.endIndex),
-              let caretIndex = caretUTF16Index.samePosition(in: t) else {
-            return
-        }
-
-        let allowed: CharacterSet = CharacterSet.letters
-            .union(.decimalDigits)
-            .union(CharacterSet(charactersIn: ".:-"))
-        var i = caretIndex
-        var foundHash: String.Index? = nil
-        while i > t.startIndex {
-            i = t.index(before: i)
-            let ch = t[i]
-            if ch == "#" { foundHash = i; break }
-            if ch.isWhitespace || ch == "\n" { break }
-            if let scalar = ch.unicodeScalars.first, !allowed.contains(scalar) { break }
-        }
-        guard let hashIdx = foundHash else { return }
-
-        var endIdx = t.index(after: hashIdx)
-        while endIdx < t.endIndex {
-            let ch = t[endIdx]
-            if ch.isWhitespace || ch == "\n" { break }
-            endIdx = t.index(after: endIdx)
-        }
-
-        let startUTF16 = t.utf16.distance(from: t.utf16.startIndex, to: hashIdx)
-        let endUTF16 = t.utf16.distance(from: t.utf16.startIndex, to: endIdx)
-        let range = NSRange(location: startUTF16, length: endUTF16 - startUTF16)
-        pendingTriggerRange = range
-
-        if !showSmartLinkSheet {
-            showSmartLinkSheet = true
-        }
-    }
-
-    private func insertSmartLink(_ refText: String) {
-        var t = content
-        let insertion = refText
-
-        if let range = pendingTriggerRange {
-            if let strRange = Range(range, in: t) {
-                t.replaceSubrange(strRange, with: insertion)
-                content = t
-                let newLoc = range.location + insertion.utf16.count
-                textSelectionRange = NSRange(location: newLoc, length: 0)
-            } else {
-                let loc = min(max(textSelectionRange.location, 0), (t as NSString).length)
-                if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
-                    t.insert(contentsOf: insertion, at: idx)
-                    content = t
-                    textSelectionRange = NSRange(location: loc + insertion.utf16.count, length: 0)
-                }
-            }
-        } else {
-            let loc = min(max(textSelectionRange.location, 0), (t as NSString).length)
-            if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
-                t.insert(contentsOf: insertion, at: idx)
-                content = t
-                textSelectionRange = NSRange(location: loc + insertion.utf16.count, length: 0)
-            }
-        }
-
-        pendingTriggerRange = nil
-        showSmartLinkSheet = false
-        scheduleLinkify(for: content)
     }
 
     // MARK: - Save

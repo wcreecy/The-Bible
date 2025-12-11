@@ -40,10 +40,6 @@ struct JournalTabView: View {
     @State private var inlineLinkifyTask: Task<Void, Never>? = nil
     @State private var inlineLinkifySourceID: UUID = UUID()
 
-    // Smart link sheet for edit mode
-    @State private var showSmartLinkSheet: Bool = false
-    @State private var pendingTriggerRange: NSRange? = nil
-
     // Caret tracking for edit mode body
     @State private var editSelection: NSRange = NSRange(location: 0, length: 0)
     @State private var editCaretRect: CGRect? = nil
@@ -483,10 +479,7 @@ struct JournalTabView: View {
                                 ),
                                 selection: $editSelection,
                                 caretRect: $editCaretRect,
-                                bottomInset: $editBottomInset,
-                                onChange: { _ in
-                                    detectHashTriggerInEdit(entry: e)
-                                }
+                                bottomInset: $editBottomInset
                             )
                             .frame(minHeight: 400)
                         }
@@ -554,12 +547,6 @@ struct JournalTabView: View {
         .zIndex(1)
         .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
         .toolbar { }
-        .sheet(isPresented: $showSmartLinkSheet) {
-            SmartLinkSheet { refText in
-                insertSmartLink(refText, into: e)
-            }
-            .presentationDetents([.medium, .large])
-        }
         .eraseToAnyView()
     }
 
@@ -920,10 +907,7 @@ struct JournalTabView: View {
                             }
                         ),
                         selection: $editSelection,
-                        caretRect: $editCaretRect, bottomInset: $editBottomInset,
-                        onChange: { _ in
-                            detectHashTriggerInEdit(entry: entry)
-                        }
+                        caretRect: $editCaretRect, bottomInset: $editBottomInset
                     )
                     .frame(minHeight: hSize == .regular ? 360 : 240)
                     .overlay(
@@ -1009,80 +993,20 @@ struct JournalTabView: View {
             .filter { !$0.isEmpty }
     }
 
-    // MARK: - Smart link handling in edit mode
-
-    private func detectHashTriggerInEdit(entry: JournalEntry) {
-        let t = entry.body
-        let caretLoc = editSelection.location
-        let utf16 = t.utf16
-        let clamped = min(max(caretLoc, 0), utf16.count)
-        guard let caretUTF16Index = utf16.index(utf16.startIndex, offsetBy: clamped, limitedBy: utf16.endIndex),
-              let caretIndex = caretUTF16Index.samePosition(in: t) else {
-            return
-        }
-
-        let allowed: CharacterSet = CharacterSet.letters
-            .union(.decimalDigits)
-            .union(CharacterSet(charactersIn: ".:-"))
-        var i = caretIndex
-        var foundHash: String.Index? = nil
-        while i > t.startIndex {
-            i = t.index(before: i)
-            let ch = t[i]
-            if ch == "#" { foundHash = i; break }
-            if ch.isWhitespace || ch == "\n" { break }
-            if let scalar = ch.unicodeScalars.first, !allowed.contains(scalar) { break }
-        }
-        guard let hashIdx = foundHash else { return }
-
-        var endIdx = t.index(after: hashIdx)
-        while endIdx < t.endIndex {
-            let ch = t[endIdx]
-            if ch.isWhitespace || ch == "\n" { break }
-            endIdx = t.index(after: endIdx)
-        }
-
-        let startUTF16 = t.utf16.distance(from: t.utf16.startIndex, to: hashIdx)
-        let endUTF16 = t.utf16.distance(from: t.utf16.startIndex, to: endIdx)
-        let range = NSRange(location: startUTF16, length: endUTF16 - startUTF16)
-        pendingTriggerRange = range
-
-        if !showSmartLinkSheet {
-            showSmartLinkSheet = true
-        }
-    }
+    // MARK: - Smart link insertion (simplified)
 
     private func insertSmartLink(_ refText: String, into entry: JournalEntry) {
         var t = entry.body
-        let insertion = refText
-        if let range = pendingTriggerRange {
-            if let strRange = Range(range, in: t) {
-                t.replaceSubrange(strRange, with: insertion)
-                entry.body = t
-                let newLoc = range.location + insertion.utf16.count
-                editSelection = NSRange(location: newLoc, length: 0)
-            } else {
-                let loc = min(max(editSelection.location, 0), (t as NSString).length)
-                if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
-                    t.insert(contentsOf: insertion, at: idx)
-                    entry.body = t
-                    editSelection = NSRange(location: loc + insertion.utf16.count, length: 0)
-                }
-            }
-        } else {
-            let loc = min(max(editSelection.location, 0), (t as NSString).length)
-            if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
-                t.insert(contentsOf: insertion, at: idx)
-                entry.body = t
-                editSelection = NSRange(location: loc + insertion.utf16.count, length: 0)
-            }
+        let loc = min(max(editSelection.location, 0), (t as NSString).length)
+        if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
+            t.insert(contentsOf: refText, at: idx)
+            entry.body = t
+            editSelection = NSRange(location: loc + refText.utf16.count, length: 0)
+            inlineLinkifySourceID = UUID()
+            scheduleInlineLinkify(for: entry.body)
+            entry.updatedAt = Date()
+            scheduleAutosave()
         }
-        pendingTriggerRange = nil
-        showSmartLinkSheet = false
-        inlineLinkifySourceID = UUID()
-        scheduleInlineLinkify(for: entry.body)
-        entry.updatedAt = Date()
-        scheduleAutosave()
     }
 
     // Insert plain text at the current caret in the editor, updating selection and saving
