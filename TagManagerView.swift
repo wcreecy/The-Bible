@@ -10,9 +10,14 @@ struct TagManagerView: View {
     @State private var items: [TagItem] = []
     @State private var search: String = ""
 
+    // Add-new UI state
+    @State private var showAddRow: Bool = false
+    @State private var newNameText: String = ""   // User-facing name (we’ll normalize this to a key internally)
+    @State private var newColor: Color = .accentColor
+
     struct TagItem: Identifiable, Hashable {
         var id: String { key }            // normalized key (lowercased)
-        var key: String                   // normalized key
+        var key: String                   // normalized key (internal)
         var displayName: String           // preferred display
         var color: Color                  // current color
     }
@@ -50,6 +55,7 @@ struct TagManagerView: View {
         TagDisplayNameStore.setDisplayName(name, for: key)
     }
 
+    // Internal utility remains available if needed programmatically (not exposed in UI)
     private func renameCanonicalKey(oldKey: String, newKeyRaw: String) {
         let newKey = newKeyRaw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard !newKey.isEmpty, newKey != oldKey else { return }
@@ -98,6 +104,60 @@ struct TagManagerView: View {
         loadFromEntries()
     }
 
+    // Add using a single user-facing name (we compute the internal normalized key from it)
+    private func addTag(userFacingName rawName: String, color: Color?) {
+        let trimmed = rawName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let key = trimmed.lowercased()
+        guard !key.isEmpty else { return }
+
+        // If tag already exists, just update display/color and refresh
+        if items.contains(where: { $0.key == key }) {
+            saveDisplayName(for: key, name: trimmed)
+            if let color {
+                saveColor(for: key, color: color)
+            }
+            loadFromEntries()
+            return
+        }
+
+        // Find most recently updated entry, or create a minimal one if none exist.
+        let targetEntry: JournalEntry = {
+            if let newest = entries.sorted(by: { ($0.updatedAt ?? .distantPast) > ($1.updatedAt ?? .distantPast) }).first {
+                return newest
+            } else {
+                let e = JournalEntry()
+                e.title = ""
+                e.body = ""
+                e.tags = []
+                e.updatedAt = Date()
+                ctx.insert(e)
+                return e
+            }
+        }()
+
+        // Attach tag to the target entry, normalizing/deduping
+        var newTags = targetEntry.tags
+        newTags.append(key)
+        let normalized = Array(Set(newTags.map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() })).sorted()
+        targetEntry.tags = normalized
+        targetEntry.updatedAt = Date()
+        try? ctx.save()
+
+        // Save preferred display and optional color
+        saveDisplayName(for: key, name: trimmed)
+        if let color {
+            saveColor(for: key, color: color)
+        }
+
+        // Reset add UI and refresh
+        newNameText = ""
+        newColor = .accentColor
+        withAnimation(.spring()) {
+            showAddRow = false
+        }
+        loadFromEntries()
+    }
+
     private var filteredItems: [TagItem] {
         let q = search.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !q.isEmpty else { return items }
@@ -106,6 +166,42 @@ struct TagManagerView: View {
 
     var body: some View {
         List {
+            // Inline "Add new tag" row
+            if showAddRow {
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Add New Tag")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        HStack(spacing: 8) {
+                            TextField("Tag name", text: $newNameText)
+                                .textInputAutocapitalization(.words)
+                                .autocorrectionDisabled(false)
+
+                            ColorPicker("", selection: $newColor, supportsOpacity: false)
+                                .labelsHidden()
+                        }
+
+                        HStack(spacing: 8) {
+                            Button("Cancel") {
+                                withAnimation(.spring()) { showAddRow = false }
+                            }
+                            .buttonStyle(.bordered)
+
+                            Spacer()
+
+                            Button("Add") {
+                                addTag(userFacingName: newNameText, color: newColor)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .disabled(newNameText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        }
+                    }
+                    .padding(.vertical, 6)
+                }
+            }
+
             if items.isEmpty {
                 ContentUnavailableView("No tags yet", systemImage: "tag")
             } else {
@@ -113,6 +209,7 @@ struct TagManagerView: View {
                     TagRow(
                         item: item,
                         onNameChange: { newName in
+                            // Update preferred display; keep internal key stable
                             saveDisplayName(for: item.key, name: newName)
                             if let idx = items.firstIndex(where: { $0.id == item.id }) {
                                 items[idx].displayName = newName
@@ -124,18 +221,37 @@ struct TagManagerView: View {
                                 items[idx].color = newColor
                             }
                         },
-                        onRenameKey: { newKey in
-                            renameCanonicalKey(oldKey: item.key, newKeyRaw: newKey)
-                        },
                         onDelete: {
                             deleteTagEverywhere(item.key)
                         }
                     )
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            deleteTagEverywhere(item.key)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
                 }
             }
         }
         .navigationTitle("Tag Manager")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    withAnimation(.spring()) {
+                        showAddRow.toggle()
+                        if showAddRow {
+                            newNameText = ""
+                            newColor = .accentColor
+                        }
+                    }
+                } label: {
+                    Label(showAddRow ? "Close" : "Add", systemImage: showAddRow ? "xmark" : "plus")
+                }
+            }
+        }
         .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search tags")
         .onAppear { loadFromEntries() }
     }
@@ -145,25 +261,19 @@ private struct TagRow: View {
     let item: TagManagerView.TagItem
     let onNameChange: (String) -> Void
     let onColorChange: (Color) -> Void
-    let onRenameKey: (String) -> Void
     let onDelete: () -> Void
 
     @State private var name: String
-    @State private var showActions: Bool = false
-    @State private var renameKeyText: String = ""
 
     init(item: TagManagerView.TagItem,
          onNameChange: @escaping (String) -> Void,
          onColorChange: @escaping (Color) -> Void,
-         onRenameKey: @escaping (String) -> Void,
          onDelete: @escaping () -> Void) {
         self.item = item
         self.onNameChange = onNameChange
         self.onColorChange = onColorChange
-        self.onRenameKey = onRenameKey
         self.onDelete = onDelete
         _name = State(initialValue: item.displayName)
-        _renameKeyText = State(initialValue: item.key)
     }
 
     var body: some View {
@@ -179,8 +289,8 @@ private struct TagRow: View {
                     )
 
                 VStack(alignment: .leading, spacing: 4) {
-                    // Display name editor
-                    TextField("Display name", text: Binding(
+                    // Display name editor (single visible field)
+                    TextField("Tag name", text: Binding(
                         get: { name },
                         set: { newVal in
                             name = newVal
@@ -188,11 +298,6 @@ private struct TagRow: View {
                         }
                     ))
                     .font(.headline)
-
-                    // Normalized key (read-only)
-                    Text(item.key)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
                 }
 
                 Spacer(minLength: 8)
@@ -205,32 +310,12 @@ private struct TagRow: View {
                 .labelsHidden()
 
                 Menu {
-                    Button("Rename canonical key…") { showActions = true }
                     Button("Remove from all entries", role: .destructive) { onDelete() }
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .font(.title3)
                 }
                 .buttonStyle(.plain)
-            }
-
-            if showActions {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Rename canonical key")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    HStack(spacing: 8) {
-                        TextField("New key (lowercased)", text: $renameKeyText)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled(true)
-                        Button("Apply") {
-                            onRenameKey(renameKeyText)
-                            showActions = false
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
-                }
-                .transition(.opacity)
             }
         }
         .padding(.vertical, 6)

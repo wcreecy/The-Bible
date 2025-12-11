@@ -195,6 +195,25 @@ struct SettingsView: View {
             liveActivitiesSection
             homeLayoutSection
 
+            // Journal Tags manager
+            Section(header: Text("Journal")) {
+                NavigationLink {
+                    TagManagerView()
+                } label: {
+                    Label("Manage Tags", systemImage: "tag")
+                }
+                .accessibilityIdentifier("tagManagerLink")
+                // Quick status: number of unique tags
+                LabeledContent {
+                    let unique = Set(journalEntries.flatMap { $0.tags.map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }.filter { !$0.isEmpty } })
+                    Text("\(unique.count)")
+                        .foregroundStyle(.secondary)
+                } label: {
+                    Label("Unique Tags", systemImage: "number")
+                }
+            }
+            .headerProminence(.increased)
+
             // iCloud status indicator section (kept; Sync Status removed)
             Section {
                 HStack {

@@ -180,12 +180,27 @@ struct TagChipRow: View {
         self.onColorChange = onColorChange
     }
 
+    private func displayName(for tag: String) -> String {
+        if let preferred = TagDisplayNameStore.displayName(for: tag) {
+            return preferred
+        }
+        // Fallback: Title Case each word for nicer appearance
+        return tag
+            .split(separator: " ")
+            .map { part in
+                let s = String(part)
+                guard let f = s.first else { return s }
+                return String(f).uppercased() + s.dropFirst().lowercased()
+            }
+            .joined(separator: " ")
+    }
+
     var body: some View {
         HStack(alignment: .center, spacing: 8) {
             ForEach(tags, id: \.self) { t in
                 HStack(spacing: 8) {
                     let tint = TagColorStore.color(for: t) ?? .accentColor
-                    TagChip(text: t, tint: tint, isSelected: selectedTags.contains(t.lowercased())) {
+                    TagChip(text: displayName(for: t), tint: tint, isSelected: selectedTags.contains(t.lowercased())) {
                         onTap?(t)
                     }
                     if showColorPicker, let onColorChange {
