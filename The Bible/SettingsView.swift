@@ -18,7 +18,6 @@ struct SettingsView: View {
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
     @AppStorage("quizScope") private var quizScopeRaw: String = "whole"
     @AppStorage("quizDifficulty") private var quizDifficulty: String = "easy"
-    @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
     @State private var showingResetQuizAlert: Bool = false
     @State private var showingResetReadingAlert: Bool = false
 
@@ -29,6 +28,9 @@ struct SettingsView: View {
 
     // Daily Goal (minutes)
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
+
+    // Timer sound selection (shared with PrayerTimerController)
+    @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
 
     // Use an Identifiable token for sheet presentation to avoid boolean re-entrancy races
     private struct SheetToken: Identifiable { let id = UUID() }
@@ -197,20 +199,21 @@ struct SettingsView: View {
 
             // Journal Tags manager
             Section(header: Text("Journal")) {
+                let uniqueCount: Int = {
+                    let unique = Set(
+                        journalEntries
+                            .flatMap { $0.tags.map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() } }
+                            .filter { !$0.isEmpty }
+                    )
+                    return unique.count
+                }()
+
                 NavigationLink {
                     TagManagerView()
                 } label: {
-                    Label("Manage Tags", systemImage: "tag")
+                    Label("Manage Tags (\(uniqueCount))", systemImage: "tag")
                 }
                 .accessibilityIdentifier("tagManagerLink")
-                // Quick status: number of unique tags
-                LabeledContent {
-                    let unique = Set(journalEntries.flatMap { $0.tags.map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }.filter { !$0.isEmpty } })
-                    Text("\(unique.count)")
-                        .foregroundStyle(.secondary)
-                } label: {
-                    Label("Unique Tags", systemImage: "number")
-                }
             }
             .headerProminence(.increased)
 
@@ -310,7 +313,7 @@ struct SettingsView: View {
                             let count = favorites.count
                             if let latest = favorites.first {
                                 print("Favorites count: \(count)")
-                                print("Latest -> book: \(latest.bookName), chapter: \(latest.chapterNumber), verse: \(latest.verseText), text: \(latest.verseText), createdAt: \(latest.createdAt)")
+                                print("Latest -> book: \(latest.bookName), chapter: \(latest.chapterNumber), verse: \(latest.verseNumber), text: \(latest.verseText), createdAt: \(latest.createdAt)")
                             } else {
                                 print("Favorites count: \(count) (no items)")
                             }
