@@ -197,14 +197,18 @@ struct JournalEditorView: View {
                         .padding(.horizontal, 12)
 
                     if !parsedTags.isEmpty {
+                        // Allow color picking when composing with showTagColors OR when editing an entry
+                        let allowColorPick = showTagColors || (editingEntry != nil)
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 6) {
                                 TagChipRow(
                                     tags: parsedTags,
                                     selectedTags: [],
-                                    showColorPicker: false,
+                                    showColorPicker: allowColorPick,
                                     onTap: nil,
-                                    onColorChange: nil
+                                    onColorChange: allowColorPick ? { tag, color in
+                                        TagColorStore.setColor(color, for: tag)
+                                    } : nil
                                 )
                             }
                             .padding(.horizontal, 12)

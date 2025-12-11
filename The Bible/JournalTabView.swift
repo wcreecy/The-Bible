@@ -625,7 +625,7 @@ struct JournalTabView: View {
                 .buttonStyle(ToolbarPillButtonStyle(tint: .gray))
             } else {
                 Button {
-                    journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
+                    journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: true)
                 } label: {
                     Label("New", systemImage: "plus")
                 }
@@ -663,7 +663,7 @@ struct JournalTabView: View {
                 .buttonStyle(ModernPillButtonStyle(tint: .gray))
             } else {
                 Button {
-                    journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
+                    journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: true)
                 } label: {
                     Label("New", systemImage: "plus")
                         .frame(maxWidth: .infinity)
