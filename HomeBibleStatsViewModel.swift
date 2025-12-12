@@ -28,6 +28,9 @@ final class HomeBibleStatsViewModel: ObservableObject {
     private var cancellable: AnyCancellable?
     private var externalUpdateCancellable: AnyCancellable?
 
+    // Cache yesterday’s seconds computed with the same local-day sessions logic as StatsView
+    private var yesterdaySecondsLocal: Int = 0
+
     init() {
         refresh()
         cancellable = ReadingTimeTracker.shared.$lastTotalsVersion
@@ -48,39 +51,48 @@ final class HomeBibleStatsViewModel: ObservableObject {
     func refresh(now: Date = Date()) {
         let store = BibleStatsStore.shared
 
-        // Sessions-only for totals and time windows
-        var gmtCal = Calendar.current
-        gmtCal.timeZone = .gmt
+        // Use local calendar semantics (to match StatsView exactly)
+        let cal = Calendar.current
 
-        // Today: sessions whose end falls on today's GMT date
+        // Today: sessions whose end falls on today's local date
         do {
-            let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: now, calendar: gmtCal)
-            let todayKey = BibleStatsStore.isoDateString(now, calendar: gmtCal)
+            let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: now, calendar: cal)
+            let todayKey = BibleStatsStore.isoDateString(now, calendar: cal)
             todaySeconds = sessions7.reduce(0) { acc, s in
-                let key = BibleStatsStore.isoDateString(s.end, calendar: gmtCal)
+                let key = BibleStatsStore.isoDateString(s.end, calendar: cal)
                 let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
                 return acc + (key == todayKey ? dur : 0)
             }
         }
 
-        // This Week: last 7 days total (GMT)
+        // Compute yesterday (local) using the same windowed approach as StatsView
         do {
-            let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: now, calendar: gmtCal)
+            let startOfToday = cal.startOfDay(for: now)
+            if let startOfYesterday = cal.date(byAdding: .day, value: -1, to: startOfToday),
+               let endOfYesterday = cal.date(byAdding: .second, value: -1, to: startOfToday) {
+                yesterdaySecondsLocal = totalSecondsForDay(from: startOfYesterday, to: endOfYesterday, calendar: cal, now: now)
+            } else {
+                yesterdaySecondsLocal = 0
+            }
+        }
+
+        // This Week: last 7 days total (local)
+        do {
+            let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: now, calendar: cal)
             thisWeekSeconds = sessions7.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
         }
 
-        // Last Week: the 7-day window ending 7 days ago, based on session end times (GMT)
+        // Last Week: window ending 7 days ago (local)
         do {
-            let startOfToday = gmtCal.startOfDay(for: now)
+            let startOfToday = cal.startOfDay(for: now)
             guard
-                let lastWeekEnd = gmtCal.date(byAdding: .day, value: -7, to: startOfToday),
-                let lastWeekStart = gmtCal.date(byAdding: .day, value: -13, to: startOfToday)
+                let lastWeekEnd = cal.date(byAdding: .day, value: -7, to: startOfToday),
+                let lastWeekStart = cal.date(byAdding: .day, value: -13, to: startOfToday)
             else {
                 lastWeekSeconds = 0
                 return
             }
-            // Fetch enough sessions to cover last 14 days
-            let sessions14 = ReadingSessionsStore.shared.sessions(inLastDays: 14, now: now, calendar: gmtCal)
+            let sessions14 = ReadingSessionsStore.shared.sessions(inLastDays: 14, now: now, calendar: cal)
             lastWeekSeconds = sessions14.reduce(0) { acc, s in
                 if s.end >= lastWeekStart && s.end < lastWeekEnd {
                     return acc + Int(max(0, s.end.timeIntervalSince(s.start)))
@@ -90,15 +102,15 @@ final class HomeBibleStatsViewModel: ObservableObject {
             }
         }
 
-        // All Time total (sessions-only, 5-year retention)
+        // All Time total (sessions-only, 5-year retention) — keep using sessions
         do {
-            let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: now, calendar: gmtCal)
+            let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: now, calendar: cal)
             totalSeconds = allSessions.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
         }
 
-        // OT/NT split uses per-book totals; compute from sessions-only for the same 5-year window
+        // OT/NT split from sessions-only for the same 5-year window
         let sessionDerivedAllTime: [String: Int] = groupSessionsByBook(
-            ReadingSessionsStore.shared.sessions(inLastDays: 1825)
+            ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: now, calendar: cal)
         )
         let split = store.splitOTNT(totals: sessionDerivedAllTime)
         otSeconds = split.ot
@@ -147,13 +159,9 @@ final class HomeBibleStatsViewModel: ObservableObject {
         return "\(sign)\(formatted(abs(delta)))"
     }
 
-    // New: Today vs Yesterday delta (e.g., "+3:15" or "−05:20", or "—" when equal)
+    // Today vs Yesterday delta using the same sessions-only, local-day windowing as StatsView
     var todayDeltaOnlyValue: String {
-        // Yesterday = total of last 2 days minus today; keep legacy method for delta only
-        let store = BibleStatsStore.shared
-        let last2 = store.totalForLast(days: 2)
-        let yesterday = max(0, last2 - todaySeconds)
-        let delta = todaySeconds - yesterday
+        let delta = todaySeconds - yesterdaySecondsLocal
         if delta == 0 { return "—" }
         let sign = delta > 0 ? "+" : "−"
         return "\(sign)\(formatted(abs(delta)))"
@@ -174,5 +182,18 @@ final class HomeBibleStatsViewModel: ObservableObject {
             map[s.book, default: 0] += dur
         }
         return map
+    }
+
+    // Sum all sessions whose end falls within [start, end] inclusive window (local day), matching StatsView
+    private func totalSecondsForDay(from start: Date, to end: Date, calendar: Calendar, now: Date) -> Int {
+        // Fetch enough sessions to cover the two-day span (yesterday + today) to be safe
+        let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 2, now: end, calendar: calendar)
+        return sessions.reduce(0) { acc, s in
+            if s.end >= start && s.end <= end {
+                return acc + Int(max(0, s.end.timeIntervalSince(s.start)))
+            } else {
+                return acc
+            }
+        }
     }
 }

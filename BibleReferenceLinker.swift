@@ -23,64 +23,178 @@ enum BibleReferenceLinker {
         return try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
     }()
 
+    // NOTE: Keys must be lowercase. For numbered books, only map the word part (e.g., "cor" -> "Corinthians").
     private static let abbreviations: [String: String] = [
+        // Genesis
         "gen": "Genesis", "ge": "Genesis", "gn": "Genesis",
-        "ex": "Exodus", "exo": "Exodus",
-        "lev": "Leviticus", "lv": "Leviticus",
-        "num": "Numbers", "nm": "Numbers", "nu": "Numbers",
-        "deut": "Deuteronomy", "deu": "Deuteronomy", "dt": "Deuteronomy",
+
+        // Exodus
+        "exo": "Exodus", "ex": "Exodus",
+
+        // Leviticus
+        "lev": "Leviticus", "levi": "Leviticus", "lv": "Leviticus",
+
+        // Numbers
+        "num": "Numbers", "numb": "Numbers", "nm": "Numbers", "nu": "Numbers",
+
+        // Deuteronomy
+        "deu": "Deuteronomy", "deut": "Deuteronomy", "dt": "Deuteronomy",
+
+        // Joshua
         "jos": "Joshua", "josh": "Joshua",
-        "judg": "Judges", "jdg": "Judges",
+
+        // Judges
+        "judg": "Judges", "jdg": "Judges", 
+
+        // Ruth
         "rut": "Ruth", "ru": "Ruth",
-        "sam": "Samuel", "sa": "Samuel",
-        "kgs": "Kings", "kg": "Kings",
-        "chron": "Chronicles", "chr": "Chronicles",
-        "ezr": "Ezra",
-        "neh": "Nehemiah", "ne": "Nehemiah",
+
+        // Samuel (handles 1/2 via leading number)
+        "sam": "Samuel", "samu": "Samuel", "sa": "Samuel",
+
+        // Kings (handles 1/2 via leading number)
+        "kin": "Kings", "king": "Kings", "kgs": "Kings", "kg": "Kings",
+
+        // Chronicles (handles 1/2 via leading number)
+        "chron": "Chronicles", "chroni": "Chronicles", "chr": "Chronicles",
+
+        // Ezra
+        "ezr": "Ezra", "ez": "Ezra",
+
+        // Nehemiah
+        "neh": "Nehemiah", "nehe": "Nehemiah", "ne": "Nehemiah",
+
+        // Esther
         "est": "Esther",
+
+        // Job
         "job": "Job",
+
+        // Psalms
         "ps": "Psalms", "psa": "Psalms", "psalm": "Psalms",
-        "prov": "Proverbs", "pr": "Proverbs",
-        "eccl": "Ecclesiastes", "ecc": "Ecclesiastes",
+
+        // Proverbs
+        "prov": "Proverbs", "proverb": "Proverbs", "pr": "Proverbs",
+
+        // Ecclesiastes
+        "ecc": "Ecclesiastes", "eccl": "Ecclesiastes", "eccle": "Ecclesiastes",
+
+        // Song of Solomon
         "song": "Song of Solomon", "so": "Song of Solomon", "sos": "Song of Solomon",
-        "isa": "Isaiah",
-        "jer": "Jeremiah",
-        "lam": "Lamentations",
-        "eze": "Ezekiel", "ezek": "Ezekiel",
-        "dan": "Daniel",
+
+        // Isaiah
+        "isa": "Isaiah", "isaia": "Isaiah",
+
+        // Jeremiah
+        "jer": "Jeremiah", "jerem": "Jeremiah",
+
+        // Lamentations
+        "lam": "Lamentations", "lamen": "Lamentations",
+
+        // Ezekiel
+        "eze": "Ezekiel", "ezek": "Ezekiel", "zeke": "Ezekiel", "exek": "Ezekiel",
+
+        // Daniel
+        "dan": "Daniel", "dani": "Daniel",
+
+        // Hosea
         "hos": "Hosea",
+
+        // Joel
         "joe": "Joel",
+
+        // Amos
         "amo": "Amos",
-        "oba": "Obadiah",
-        "jon": "Jonah",
+
+        // Obadiah
+        "ob": "Obadiah", "oba": "Obadiah", "obad": "Obadiah",
+
+        // Jonah
+        "jon": "Jonah", "jona": "Jonah",
+
+        // Micah
         "mic": "Micah",
-        "nah": "Nahum",
-        "hab": "Habakkuk",
-        "zep": "Zephaniah",
-        "hag": "Haggai",
-        "zec": "Zechariah",
-        "mal": "Malachi",
-        "mat": "Matthew", "mt": "Matthew",
-        "mk": "Mark", "mrk": "Mark",
-        "lk": "Luke",
-        "jn": "John", "jhn": "John",
+
+        // Nahum
+        "na": "Nahum", "nah": "Nahum",
+
+        // Habakkuk
+        "hab": "Habakkuk", "habak": "Habakkuk", "habakk": "Habakkuk", "habakka": "Habakkuk",
+
+        // Zephaniah
+        "zep": "Zephaniah", "zeph": "Zephaniah",
+
+        // Haggai
+        "hag": "Haggai", "hagg": "Haggai", "hagga": "Haggai",
+
+        // Zechariah
+        "zec": "Zechariah", "zech": "Zechariah", "zecha": "Zechariah",
+
+        // Malachi
+        "mal": "Malachi", "mala": "Malachi", "malac": "Malachi",
+
+        // Matthew
+        "mat": "Matthew", "mt": "Matthew", "matt": "Matthew", "matth": "Matthew",
+
+        // Mark
+        "mk": "Mark", "mrk": "Mark", "mar": "Mark",
+
+        // Luke
+        "lk": "Luke", "luk": "Luke",
+
+        // John (Gospel)
+        "jn": "John", "jhn": "John", 
+
+        // Acts
         "act": "Acts", "acts": "Acts",
-        "rom": "Romans",
-        "cor": "Corinthians",
-        "gal": "Galatians",
-        "eph": "Ephesians",
-        "phil": "Philippians",
-        "col": "Colossians",
-        "thess": "Thessalonians",
-        "tim": "Timothy",
+
+        // Romans
+        "rom": "Romans", "roma": "Romans",
+
+        // Corinthians (handles 1/2 via leading number)
+        "cor": "Corinthians", "corinth": "Corinthians", "corin": "Corinthians",
+
+        // Galatians
+        "gal": "Galatians", "gala": "Galatians", "galat": "Galatians",
+
+        // Ephesians
+        "eph": "Ephesians", "ephe": "Ephesians", "ephes": "Ephesians",
+
+        // Philippians
+        "phil": "Philippians", "phill": "Philippians", "philip": "Philippians",
+
+        // Colossians
+        "col": "Colossians", "colo": "Colossians", "coloss": "Colossians",
+
+        // Thessalonians (handles 1/2 via leading number)
+        "thess": "Thessalonians", "thes": "Thessalonians",
+
+        // Timothy (handles 1/2 via leading number)
+        "tim": "Timothy", "timo": "Timothy",
+
+        // Titus
         "tit": "Titus",
-        "phm": "Philemon",
-        "heb": "Hebrews",
-        "jas": "James",
-        "pet": "Peter", "petr": "Peter",
-        "joh": "John",
+
+        // Philemon
+        "phm": "Philemon", "phile": "Philemon",
+
+        // Hebrews
+        "heb": "Hebrews", "hebr": "Hebrews",
+
+        // James
+        "jas": "James", "jam": "James", "jame": "James",
+
+        // Peter (handles 1/2 via leading number)
+        "pet": "Peter", "pete": "Peter", "petr": "Peter",
+
+        // John (Epistles; handles 1/2/3 via leading number)
+        "jo": "John", "joh": "John",
+
+        // Jude
         "jud": "Jude",
-        "rev": "Revelation"
+
+        // Revelation
+        "rev": "Revelation", "revel": "Revelation", "revelations": "Revelation"
     ]
 
     private static func insertSpaceBetweenLeadingDigitsAndLetters(in s: String) -> String {
@@ -124,20 +238,14 @@ enum BibleReferenceLinker {
         let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }
         if let direct = resolveBook(named: trimmed) {
-            // No skip needed; we used the full raw
-            // Compute skip as difference between raw's leading whitespace and trimmed's
             let skip = raw.distance(from: raw.startIndex, to: trimmed.startIndex)
             return (direct, skip)
         }
-        // Work with original raw to compute byte/utf16 offsets reliably
-        // Tokenize by whitespace on the original raw
         let rawChars = Array(raw)
-        // Build tokens with their start indices in raw
         var tokens: [(text: String, start: Int, end: Int)] = []
         var i = 0
         let n = rawChars.count
         while i < n {
-            // skip spaces
             while i < n, rawChars[i].isWhitespace { i += 1 }
             if i >= n { break }
             let start = i
@@ -149,11 +257,9 @@ enum BibleReferenceLinker {
             }
         }
         guard tokens.count > 1 else { return nil }
-        // Try suffixes tokens[k...]
         for k in 0..<tokens.count {
             let candidate = tokens[k...].map { $0.text }.joined(separator: " ")
             if let resolved = resolveBook(named: candidate) {
-                // leading skip in raw is tokens[k].start
                 let skip = tokens[k].start
                 return (resolved, skip)
             }
@@ -224,9 +330,7 @@ enum BibleReferenceLinker {
                 continue
             }
 
-            // Adjust link start inside the captured book range by innerSkip
             let adjustedBookStart = bookRange.location + innerSkip
-            // Determine last numeric range
             let lastNumericRange: NSRange = (endRange.location != NSNotFound) ? endRange : startRange
             let linkStart = adjustedBookStart
             let linkEndExclusive = lastNumericRange.location + lastNumericRange.length
