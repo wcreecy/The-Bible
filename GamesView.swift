@@ -9,6 +9,7 @@ struct GamesView: View {
         case favoritesFlashcards
         case bookOrder
         case wordSearch
+        case whoAmI // NEW
     }
 
     @State private var selection: GameRoute? = nil
@@ -92,6 +93,18 @@ struct GamesView: View {
                         }
                     }
                 }
+
+                // NEW: Who am I?
+                NavigationLink(value: GameRoute.whoAmI) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "person.text.rectangle")
+                            .foregroundStyle(.brown)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Who am I?").font(.headline)
+                            Text("Match names and descriptions").font(.subheadline).foregroundStyle(.secondary)
+                        }
+                    }
+                }
             }
         }
         .listStyle(.insetGrouped)
@@ -112,6 +125,8 @@ struct GamesView: View {
                 BookOrderGameView()
             case .wordSearch:
                 WordSearchGameView()
+            case .whoAmI:
+                WhoAmIGameView() // NEW
             }
         }
         .onAppear { selection = nil }
@@ -121,3 +136,4 @@ struct GamesView: View {
 #Preview {
     NavigationStack { GamesView() }
 }
+

@@ -12,5 +12,5 @@ enum Route: Hashable {
     case gameReferenceMatch
     case gameBookOrder
     case gameHangman
+    case gameWhoAmI
 }
-

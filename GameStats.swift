@@ -20,6 +20,7 @@ final class GameStats: ObservableObject {
         case beatclock
         case refmatch
         case bookorder
+        case whoami // NEW
     }
 
     // Canonical difficulty for the write API (maps to per-game suffixes)
@@ -84,12 +85,14 @@ final class GameStats: ObservableObject {
         let r = refmatch
         let b = beatclock
         let o = bookorder
+        let w = whoami // NEW
         let entries: [GameBreakdown.Entry] = [
             .init(name: "Quiz", correct: q.correct, answered: q.answered, bestStreak: q.bestStreak),
             .init(name: "Hangman", correct: h.correct, answered: h.answered, bestStreak: h.bestStreak),
             .init(name: "Verse Match", correct: r.correct, answered: r.answered, bestStreak: r.bestStreak),
             .init(name: "Beat the Clock", correct: b.correct, answered: b.answered, bestStreak: b.bestStreak),
-            .init(name: "Book Order", correct: o.correct, answered: o.answered, bestStreak: o.bestStreak)
+            .init(name: "Book Order", correct: o.correct, answered: o.answered, bestStreak: o.bestStreak),
+            .init(name: "Who am I?", correct: w.correct, answered: w.answered, bestStreak: w.bestStreak) // NEW
         ]
         return GameBreakdown(entries: entries)
     }
@@ -138,6 +141,13 @@ final class GameStats: ObservableObject {
                 }
             case .bookorder:
                 return nil // unsuffixed keys
+            case .whoami:
+                switch difficulty {
+                case .easy: return "easy"
+                case .normal: return "normal"
+                case .hard: return "hard"
+                case .medium, .none: return nil
+                }
             }
         }
 
@@ -173,6 +183,12 @@ final class GameStats: ObservableObject {
             incInt("bookorderAllTimeCorrect", by: addCorrect)
             incInt("bookorderAllTimeAnswered", by: addAnswered)
             maxInt("bookorderAllTimeBestStreak", candidate: currentBestStreak)
+
+        case .whoami:
+            guard let s = suf else { return }
+            incInt("whoamiAllTimeCorrect_\(s)", by: addCorrect)
+            incInt("whoamiAllTimeAnswered_\(s)", by: addAnswered)
+            maxInt("whoamiAllTimeBestStreak_\(s)", candidate: currentBestStreak)
         }
 
         // NEW: Append to per-day maps and stamp last played
@@ -280,8 +296,16 @@ final class GameStats: ObservableObject {
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
+    // NEW: aggregate for Who am I? (easy/normal/hard)
+    private var whoami: GameStat {
+        let c = sumAcross(prefix: "whoamiAllTimeCorrect", parts: ["_easy","_normal","_hard"], legacyKey: "whoamiAllTimeCorrect")
+        let a = sumAcross(prefix: "whoamiAllTimeAnswered", parts: ["_easy","_normal","_hard"], legacyKey: "whoamiAllTimeAnswered")
+        let best = maxAcross(prefix: "whoamiAllTimeBestStreak", parts: ["_easy","_normal","_hard"], legacyKey: "whoamiAllTimeBestStreak")
+        return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
+    }
+
     private func aggregateAll() -> (correct: Int, answered: Int) {
-        let stats = [quiz, hangman, refmatch, beatclock, bookorder]
+        let stats = [quiz, hangman, refmatch, beatclock, bookorder, whoami]
         let totalCorrect = stats.reduce(0) { $0 + max(0, $1.correct) }
         let totalAnswered = stats.reduce(0) { $0 + max(0, $1.answered) }
         return (totalCorrect, totalAnswered)
@@ -331,6 +355,7 @@ final class GameStats: ObservableObject {
         case .beatclock: return "Beat the Clock"
         case .refmatch: return "Verse Match"
         case .bookorder: return "Book Order"
+        case .whoami: return "Who am I?"
         }
     }
 

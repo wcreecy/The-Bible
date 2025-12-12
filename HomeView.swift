@@ -316,8 +316,8 @@ struct HomeView: View {
                     NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 6])
                 },
                 onShufflePlay: {
-                    // Choose one of the five games at random
-                    enum Game: CaseIterable { case quiz, beat, match, order, hangman }
+                    // Choose one of the six games at random (includes Who am I?)
+                    enum Game: CaseIterable { case quiz, beat, match, order, hangman, whoami }
                     let pick = Game.allCases.randomElement() ?? .quiz
                     switch pick {
                     case .quiz:
@@ -330,6 +330,8 @@ struct HomeView: View {
                         coordinator.push(.gameBookOrder)
                     case .hangman:
                         coordinator.push(.gameHangman)
+                    case .whoami:
+                        coordinator.push(.gameWhoAmI)
                     }
                 }
             )

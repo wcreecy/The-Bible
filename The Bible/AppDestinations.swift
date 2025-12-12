@@ -49,6 +49,8 @@ extension View {
                     BookOrderGameView()
                 case .gameHangman:
                     HangmanGameView()
+                case .gameWhoAmI:
+                    WhoAmIGameView()
                 }
             }
     }
