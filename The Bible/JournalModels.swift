@@ -44,6 +44,9 @@ final class JournalEntry {
     var isFavorite: Bool = false
     var isArchived: Bool = false
 
+    // NEW: Draft flag so autosaves of new entries don’t look “final” until Save is tapped.
+    var isDraft: Bool = false
+
     // Computed convenience API so the rest of the app still uses [String]
     var tags: [String] {
         get {

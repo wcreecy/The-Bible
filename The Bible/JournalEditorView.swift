@@ -30,16 +30,17 @@ struct JournalEditorView: View {
     @State private var showSavedToast: Bool = false
     @State private var editingEntry: JournalEntry? = nil
 
+    // NEW: in-progress draft (for new entries)
+    @State private var draftEntry: JournalEntry? = nil
+    // Debounced autosave task
+    @State private var autosaveTask: Task<Void, Never>? = nil
+
     // Discard protection
     @State private var showDiscardAlert: Bool = false
 
     // Caret/selection tracking
     @State private var textSelectionRange: NSRange = NSRange(location: 0, length: 0)
     @State private var caretRect: CGRect? = nil
-
-    // Collapsible sections on iPhone (not used in new design, but keep for iPad path)
-    @State private var isTitleExpanded: Bool = true
-    @State private var isTagsExpanded: Bool = true
 
     // Linkify cache
     @State private var linkedContent: AttributedString = AttributedString("")
@@ -48,18 +49,26 @@ struct JournalEditorView: View {
     // Keyboard inset for iPhone editor
     @State private var bottomEditorInset: CGFloat = 0
 
-    // Right pane toggle (iPad only)
+    // Right pane toggle (iPad only) + shared persisted mode
     private enum RightPaneMode: String, CaseIterable, Identifiable {
         case smartLinks = "Smart Links"
         case bible = "Bible"
         var id: String { rawValue }
     }
-    // Persist selection across sessions and shared with inline editor
     @AppStorage("journalRightPaneMode") private var rightPaneModeRaw: String = RightPaneMode.smartLinks.rawValue
     private var rightPaneMode: RightPaneMode {
         get { RightPaneMode(rawValue: rightPaneModeRaw) ?? .smartLinks }
         set { rightPaneModeRaw = newValue.rawValue }
     }
+
+    // Collapsible “Preview & Bible” section (iPhone) no longer used; we switch full-screen
+    @State private var showToolsSection: Bool = true
+
+    // Tag colors UX: single toggle used on both platforms (only shown on iPad)
+    @State private var showTagColorsToggle: Bool = false
+
+    // iPhone: full-screen Bible mode toggle
+    @State private var isShowingBibleReader: Bool = false
 
     init(verseRef: VerseRef?, initialBody: String? = nil, showTagColors: Bool = false, editingEntry: JournalEntry? = nil, onClose: (() -> Void)? = nil) {
         self.verseRef = verseRef
@@ -102,13 +111,25 @@ struct JournalEditorView: View {
         return title != initialTitle || content != initialContent || currentTags != initialTags
     }
 
+    // Share text mirrors JournalDetailView
+    private var shareText: String {
+        let t = title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled" : title
+        let b = content.trimmingCharacters(in: .whitespacesAndNewlines)
+        return b.isEmpty ? t : "\(t)\n\n\(b)"
+    }
+
     var body: some View {
         NavigationStack {
             Group {
                 if hSize == .regular {
                     regularLayoutWithBottomSave
                 } else {
-                    compactFullScreenEditor
+                    // iPhone: toggle between editor and bible reader
+                    if isShowingBibleReader {
+                        bibleReaderFullScreen
+                    } else {
+                        compactFullScreenEditor
+                    }
                 }
             }
             .navigationTitle(
@@ -132,7 +153,23 @@ struct JournalEditorView: View {
                     }
                     .keyboardShortcut("w", modifiers: [.command])
                 }
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    if hSize != .regular {
+                        // iPhone: single toggle button (book <-> notes)
+                        Button {
+                            isShowingBibleReader.toggle()
+                        } label: {
+                            if isShowingBibleReader {
+                                Label("Notes", systemImage: "note.text")
+                            } else {
+                                Label("Bible", systemImage: "book")
+                            }
+                        }
+                        .accessibilityHint(isShowingBibleReader ? "Return to notes editor" : "Open Bible reader full screen")
+                    }
+                    ShareLink(item: shareText) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
                     Button("Save") {
                         save(manual: true)
                     }
@@ -156,17 +193,28 @@ struct JournalEditorView: View {
             .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
             .appToast(isPresented: $showSavedToast, symbol: "Saved", text: "Entry Saved", tint: .green)
             .onAppear {
+                // Preseed linkify and tag-colors toggle from caller (optional)
+                showTagColorsToggle = showTagColors || (editingEntry != nil)
                 scheduleLinkify(for: content)
             }
             .onDisappear {
                 linkifyTask?.cancel()
+                autosaveTask?.cancel()
+                autosaveTask = nil
             }
         }
         // Prevent swipe-to-dismiss if there are unsaved changes
         .interactiveDismissDisabled(isDirty)
+        // Debounced autosave triggers
+        .onChange(of: title) { _, _ in scheduleAutosave() }
+        .onChange(of: content) { _, newValue in
+            scheduleLinkify(for: newValue)
+            scheduleAutosave()
+        }
+        .onChange(of: tagsText) { _, _ in scheduleAutosave() }
     }
 
-    // MARK: - Compact (iPhone) Full-screen Editor
+    // MARK: - Compact (iPhone) Editor
 
     private var compactFullScreenEditor: some View {
         VStack(spacing: 0) {
@@ -179,26 +227,24 @@ struct JournalEditorView: View {
                         .padding(.horizontal, 12)
                         .padding(.top, 8)
 
-                    TextField("Add tags (comma-separated)", text: $tagsText)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled(true)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 12)
+                    VStack(alignment: .leading, spacing: 8) {
+                        TextField("Add tags (comma-separated)", text: $tagsText)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled(true)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 12)
 
                     if !parsedTags.isEmpty {
-                        // Allow color picking when composing with showTagColors OR when editing an entry
-                        let allowColorPick = showTagColors || (editingEntry != nil)
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 6) {
                                 TagChipRow(
                                     tags: parsedTags,
                                     selectedTags: [],
-                                    showColorPicker: allowColorPick,
+                                    showColorPicker: false,
                                     onTap: nil,
-                                    onColorChange: allowColorPick ? { tag, color in
-                                        TagColorStore.setColor(color, for: tag)
-                                    } : nil
+                                    onColorChange: nil
                                 )
                             }
                             .padding(.horizontal, 12)
@@ -234,36 +280,63 @@ struct JournalEditorView: View {
                         .frame(minHeight: 400)
                     }
                     .padding(.bottom, 6)
-
-                    // Inline preview appears when a link is tapped while editing
-                    if hSize != .regular, showPreview, let content = previewContent {
-                        VStack(alignment: .leading, spacing: 8) {
-                            ScripturePreviewCard(
-                                content: content,
-                                refContext: previewRef,
-                                onCopy: {
-                                    let verseLines = content.verses.map { "\($0.number). \($0.text)" }.joined(separator: "\n")
-                                    UIPasteboard.general.string = content.title + "\n" + verseLines
-                                    withAnimation(.spring()) { showCopyToast = true }
-                                },
-                                onClose: {
-                                    withAnimation(.easeOut) { showPreview = false }
-                                }
-                            )
-                        }
-                        .padding(.horizontal, 12)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                    }
                 }
                 .padding(.vertical, 8)
+                // Ensure the overall scroll content avoids being covered by the keyboard
+                .padding(.bottom, bottomEditorInset)
             }
         }
         .ignoresSafeArea(edges: .bottom)
         .background(KeyboardInsetReader(inset: $bottomEditorInset))
     }
 
-    private var linkedHasRefs: Bool {
-        !ScriptureRefExtractor.refs(in: linkedContent).isEmpty
+    // MARK: - Compact (iPhone) Full-screen Bible Reader
+
+    private var bibleReaderFullScreen: some View {
+        VStack(spacing: 0) {
+            BibleReaderForJournal(
+                onInsertText: { book, chapter, verse, text in
+                    insertVerseText(book: book, chapter: chapter, verse: verse, text: text)
+                    isShowingBibleReader = false
+                },
+                onInsertLink: { book, chapter, verse in
+                    insertVerseLink(book: book, chapter: chapter, verse: verse)
+                    isShowingBibleReader = false
+                },
+                onFavorite: { _, _, _, _ in
+                    // No-op here; favorites handled elsewhere
+                }
+            )
+        }
+        // Removed back chevron; the trailing toggle button handles returning to editor
+    }
+
+    // Helpers to insert into editor content at current cursor position
+    private func insertAtCursor(_ insertion: String) {
+        var ns = content as NSString
+        let range = textSelectionRange
+        let safeLoc = max(0, min(range.location, ns.length))
+        let safeLen = max(0, min(range.length, ns.length - safeLoc))
+        let replaceRange = NSRange(location: safeLoc, length: safeLen)
+        ns = ns.replacingCharacters(in: replaceRange, with: insertion) as NSString
+        content = ns as String
+
+        // Move caret to end of inserted text
+        let newLocation = safeLoc + (insertion as NSString).length
+        textSelectionRange = NSRange(location: newLocation, length: 0)
+        scheduleLinkify(for: content)
+        scheduleAutosave()
+    }
+
+    private func insertVerseText(book: String, chapter: Int, verse: Int, text: String) {
+        let insertion = "\(text)\n\(book) \(chapter):\(verse)"
+        insertAtCursor(insertion)
+    }
+
+    private func insertVerseLink(book: String, chapter: Int, verse: Int) {
+        // Use smart link format so linker will detect and render
+        let insertion = "#\(book) \(chapter):\(verse)"
+        insertAtCursor(insertion)
     }
 
     // MARK: - Layouts with bottom Save (iPad/regular width only)
@@ -277,11 +350,6 @@ struct JournalEditorView: View {
                 Divider()
                 rightPaneColumn
                     .frame(minWidth: 420, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                if showTagColors {
-                    Divider()
-                    tagColorsColumn
-                        .frame(minWidth: 280, idealWidth: 300, maxWidth: 340, maxHeight: .infinity, alignment: .topLeading)
-                }
             }
 
             bottomSaveBar
@@ -342,12 +410,20 @@ struct JournalEditorView: View {
                     .padding(.horizontal, 12)
                     .padding(.top, 8)
 
-                TextField("Add tags (comma-separated)", text: $tagsText)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled(true)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 12)
+                VStack(alignment: .leading, spacing: 8) {
+                    TextField("Add tags (comma-separated)", text: $tagsText)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+
+                    Toggle(isOn: $showTagColorsToggle) {
+                        Label("Edit Tag Colors", systemImage: "paintpalette")
+                    }
+                    .font(.footnote)
+                    .tint(.accentColor)
+                }
+                .padding(.horizontal, 12)
 
                 if !parsedTags.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -355,9 +431,11 @@ struct JournalEditorView: View {
                             TagChipRow(
                                 tags: parsedTags,
                                 selectedTags: [],
-                                showColorPicker: false,
+                                showColorPicker: showTagColorsToggle,
                                 onTap: nil,
-                                onColorChange: nil
+                                onColorChange: showTagColorsToggle ? { tag, color in
+                                    TagColorStore.setColor(color, for: tag)
+                                } : nil
                             )
                         }
                         .padding(.horizontal, 12)
@@ -404,16 +482,12 @@ struct JournalEditorView: View {
         }
     }
 
-    // New right pane with persisted toggle
+    // iPad right pane with persisted toggle. Includes Tag Colors subsection under Smart Links.
     private var rightPaneColumn: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Toggle (segmented) shown only on iPad/regular width
             Picker("Right Pane", selection: Binding(
                 get: { rightPaneMode },
-                set: { newValue in
-                    // Write directly to the @AppStorage-backed raw value to avoid mutating self
-                    rightPaneModeRaw = newValue.rawValue
-                }
+                set: { newValue in rightPaneModeRaw = newValue.rawValue }
             )) {
                 ForEach(RightPaneMode.allCases) { m in
                     Text(m.rawValue).tag(m)
@@ -428,7 +502,35 @@ struct JournalEditorView: View {
             Group {
                 switch rightPaneMode {
                 case .smartLinks:
-                    previewColumn
+                    VStack(alignment: .leading, spacing: 12) {
+                        previewColumn
+
+                        if !parsedTags.isEmpty {
+                            Divider()
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    Text("Tag Colors").font(.caption).foregroundStyle(.secondary)
+                                    Spacer()
+                                    Toggle("Edit", isOn: $showTagColorsToggle).labelsHidden()
+                                }
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 6) {
+                                        TagChipRow(
+                                            tags: parsedTags,
+                                            selectedTags: [],
+                                            showColorPicker: showTagColorsToggle,
+                                            onTap: nil,
+                                            onColorChange: showTagColorsToggle ? { tag, color in
+                                                TagColorStore.setColor(color, for: tag)
+                                            } : nil
+                                        )
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 8)
+                        }
+                    }
                 case .bible:
                     BibleReaderForJournal()
                 }
@@ -437,40 +539,7 @@ struct JournalEditorView: View {
         }
     }
 
-    private var textEditorWithSmartLinks: some View {
-        ZStack(alignment: .topLeading) {
-            if content.isEmpty {
-                Text("Write your thoughts here…")
-                    .foregroundStyle(.secondary)
-                    .padding(.top, 8)
-                    .padding(.leading, 5)
-            }
-            CursorTextView(
-                text: $content,
-                selection: $textSelectionRange,
-                caretRect: $caretRect,
-                bottomInset: .constant(0),
-                onChange: { newText in
-                    scheduleLinkify(for: newText)
-                },
-                linkify: { text in
-                    BibleReferenceLinker.linkify(text)
-                },
-                onLinkTap: { ref in
-                    if let content = BibleReferenceLinker.loadVerses(for: ref) {
-                        previewRef = ref
-                        previewContent = content
-                        withAnimation(.spring()) { showPreview = true }
-                    }
-                }
-            )
-            .frame(minHeight: 400)
-            .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-            )
-        }
-    }
+    // MARK: - Smart Links preview building blocks
 
     private var previewColumn: some View {
         ScrollView {
@@ -534,46 +603,7 @@ struct JournalEditorView: View {
         }
     }
 
-    private var tagColorsColumn: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Tag Colors")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                if parsedTags.isEmpty {
-                    Text("No tags yet. Add comma-separated tags above to set colors.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                } else {
-                    TagChipRow(
-                        tags: parsedTags,
-                        selectedTags: [],
-                        showColorPicker: true,
-                        onTap: nil,
-                        onColorChange: { tag, color in TagColorStore.setColor(color, for: tag) }
-                    )
-                    .padding(.vertical, 4)
-                }
-            }
-            .padding(20)
-        }
-    }
-
-    // MARK: - Helpers
-
-    @ViewBuilder
-    private var tagChipsView: some View {
-        if !parsedTags.isEmpty {
-            TagChipRow(
-                tags: parsedTags,
-                selectedTags: [],
-                showColorPicker: true,
-                onTap: nil,
-                onColorChange: { tag, color in TagColorStore.setColor(color, for: tag) }
-            )
-        }
-    }
+    // MARK: - Parsing and linkify
 
     private var parsedTags: [String] {
         tagsText
@@ -608,9 +638,76 @@ struct JournalEditorView: View {
         }
     }
 
-    // MARK: - Save
+    // MARK: - Autosave (debounced)
+
+    private func scheduleAutosave() {
+        autosaveTask?.cancel()
+        autosaveTask = Task { @MainActor in
+            // Debounce 1.2s
+            try? await Task.sleep(nanoseconds: 1_200_000_000)
+            if Task.isCancelled { return }
+            saveDraft()
+        }
+    }
+
+    private func saveDraft() {
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedBody = content // keep body whitespace as typed
+        let tags = normalizedTags(from: parsedTags)
+
+        if let entry = editingEntry {
+            // Update existing entry in place
+            entry.title = trimmedTitle
+            entry.body = trimmedBody
+            entry.tags = tags
+            entry.updatedAt = Date()
+            do {
+                try ctx.save()
+                NotificationCenter.default.post(name: JournalNotifications.entryUpdated, object: nil, userInfo: ["id": entry.uuid?.uuidString ?? ""])
+            } catch {
+                // Silent fail for autosave
+            }
+            return
+        }
+
+        // New entry path: create or reuse a draft row
+        let entry: JournalEntry
+        let isFirstSave: Bool
+        if let existing = draftEntry {
+            entry = existing
+            isFirstSave = false
+        } else {
+            entry = JournalEntry()
+            entry.isDraft = true
+            entry.verseRef = verseRef
+            ctx.insert(entry)
+            draftEntry = entry
+            isFirstSave = true
+        }
+
+        // Use “New Entry” for empty titles to make drafts readable in lists
+        entry.title = trimmedTitle.isEmpty ? "New Entry" : trimmedTitle
+        entry.body = trimmedBody
+        entry.tags = tags
+        entry.updatedAt = Date()
+
+        do {
+            try ctx.save()
+            if isFirstSave {
+                NotificationCenter.default.post(name: JournalNotifications.entryCreated, object: nil, userInfo: ["id": entry.uuid?.uuidString ?? ""])
+            } else {
+                NotificationCenter.default.post(name: JournalNotifications.entryUpdated, object: nil, userInfo: ["id": entry.uuid?.uuidString ?? ""])
+            }
+        } catch {
+            // Silent for autosave
+        }
+    }
+
+    // MARK: - Save (finalize)
 
     private func save(manual: Bool) {
+        autosaveTask?.cancel()
+
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedBody = content.trimmingCharacters(in: .whitespacesAndNewlines)
         let tags = normalizedTags(from: parsedTags)
@@ -638,16 +735,32 @@ struct JournalEditorView: View {
             return
         }
 
-        let entry = JournalEntry()
-        entry.title = trimmedTitle
+        // Finalize the draft (or create if none yet)
+        let entry: JournalEntry
+        let wasDraft: Bool
+        if let existing = draftEntry {
+            entry = existing
+            wasDraft = true
+        } else {
+            entry = JournalEntry()
+            entry.verseRef = verseRef
+            ctx.insert(entry)
+            wasDraft = false
+        }
+
+        entry.title = trimmedTitle.isEmpty ? "New Entry" : trimmedTitle
         entry.body = trimmedBody
         entry.tags = tags
-        entry.verseRef = verseRef
+        entry.isDraft = false
         entry.updatedAt = Date()
-        ctx.insert(entry)
+
         do {
             try ctx.save()
-            NotificationCenter.default.post(name: JournalNotifications.entryCreated, object: nil, userInfo: ["id": entry.uuid?.uuidString ?? ""])
+            NotificationCenter.default.post(
+                name: wasDraft ? JournalNotifications.entryUpdated : JournalNotifications.entryCreated,
+                object: nil,
+                userInfo: ["id": entry.uuid?.uuidString ?? ""]
+            )
             if manual {
                 withAnimation(.spring()) { showSavedToast = true }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
