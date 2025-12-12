@@ -259,6 +259,7 @@
 		2C49CF7D2EBE1A030006FF79 /* Exceptions for "The Bible" folder in "The Bible (iOS)" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				biblenames.json,
 				Info.plist,
 			);
 			target = 2C49CEFF2EBE0F6C0006FF79 /* The Bible (iOS) */;

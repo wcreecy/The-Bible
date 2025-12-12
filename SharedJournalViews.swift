@@ -301,12 +301,13 @@ struct CursorTextView: UIViewRepresentable {
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
 
-        // Text behavior
-        tv.autocorrectionType = .default
+        // Text behavior: disable autocorrect, keep spell checking and predictions; keep smart features and auto-capitalization.
+        tv.autocorrectionType = .no
+        tv.spellCheckingType = .yes
         tv.autocapitalizationType = .sentences
-        tv.smartDashesType = .default
-        tv.smartQuotesType = .default
-        tv.smartInsertDeleteType = .default
+        tv.smartDashesType = .yes
+        tv.smartQuotesType = .yes
+        tv.smartInsertDeleteType = .yes
 
         // Apply app-wide body font (resolves from SwiftUI environment)
         let bodyFont = resolvedUIFont()
