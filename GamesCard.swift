@@ -22,6 +22,8 @@ struct GamesCard: View {
     // UserDefaults keys for optional info/trend baselines
     private let lastPlayedKey = "gamesLastPlayedAt"
     private let lastWeekPctKey = "gamesLastWeekAccuracyPct" // optional baseline if you store it elsewhere
+    // NEW: per-session baseline of all‑time Gamer Score captured on entering Games tab
+    private let sessionBaselineKey = "gamesSessionBaselinePct"
 
     private func colorForPercent(_ pct: Double) -> Color {
         if pct < 60 { return .red }
@@ -32,11 +34,11 @@ struct GamesCard: View {
 
     private func tinyChevron(for delta: Int) -> (name: String, color: Color, a11y: String) {
         if delta > 0 {
-            return ("chevron.up", .green, "Up \(delta) percent since last week")
+            return ("chevron.up", .green, "Up \(delta) percent since session start")
         } else if delta < 0 {
-            return ("chevron.down", .red, "Down \(abs(delta)) percent since last week")
+            return ("chevron.down", .red, "Down \(abs(delta)) percent since session start")
         } else {
-            return ("minus", .gray, "No change since last week")
+            return ("minus", .gray, "No change since session start")
         }
     }
 
@@ -108,13 +110,14 @@ struct GamesCard: View {
             }
         }()
 
-        // Trend chevron: compare to optional stored baseline (fallback to flat)
-        let lastWeekBaseline = UserDefaults.standard.double(forKey: lastWeekPctKey)
+        // NEW: Trend chevron — compare current all‑time Gamer Score vs this session's baseline
+        let sessionBaseline = UserDefaults.standard.double(forKey: sessionBaselineKey)
         let deltaTextAndIcon: (name: String, color: Color, a11y: String) = {
-            if lastWeekBaseline > 0 {
-                let diff = Int(round(gamerPct - lastWeekBaseline))
+            if sessionBaseline > 0 {
+                let diff = Int(round(gamerPct - sessionBaseline))
                 return tinyChevron(for: diff)
             } else {
+                // If no baseline captured yet, show neutral
                 return tinyChevron(for: 0)
             }
         }()
@@ -128,6 +131,7 @@ struct GamesCard: View {
             return shares.max(by: { $0.share < $1.share })?.name
         }()
         let accuracyLastWeek: String? = {
+            let lastWeekBaseline = UserDefaults.standard.double(forKey: lastWeekPctKey)
             if lastWeekBaseline > 0 {
                 return "\(Int(round(lastWeekBaseline)))%"
             } else {
@@ -174,6 +178,8 @@ struct GamesCard: View {
             return nil
         }()
         let scoreDeltaInsight: String? = {
+            // Keep this “last week” insight as-is (uses the old key), separate from caret behavior
+            let lastWeekBaseline = UserDefaults.standard.double(forKey: lastWeekPctKey)
             if lastWeekBaseline > 0 {
                 let diff = Int(round(gamerPct - lastWeekBaseline))
                 if diff == 0 { return "Gamer Score unchanged vs last week" }
@@ -251,7 +257,7 @@ struct GamesCard: View {
                                     .monospacedDigit()
                                     .accessibilityLabel("Gamer Score \(Int(round(gamerPct))) percent")
 
-                                // Trend chevron moved next to the percentage
+                                // Trend chevron moved next to the percentage — now based on session baseline
                                 Image(systemName: deltaTextAndIcon.name)
                                     .font(.footnote.weight(.semibold))
                                     .foregroundStyle(deltaTextAndIcon.color)
@@ -298,17 +304,17 @@ struct GamesCard: View {
                         Button(action: onShufflePlay) {
                             Label("Random", systemImage: "shuffle")
                         }
-                        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                        .buttonStyle(ModernPillButtonStyle(tint: .black))
 
                         Button(action: onOpenGames) {
                             Label("Games", systemImage: "gamecontroller")
                         }
-                        .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                        .buttonStyle(ModernPillButtonStyle(tint: .black))
 
                         Button(action: onOpenStats) {
                             Label("Stats", systemImage: "chart.bar")
                         }
-                        .buttonStyle(ModernPillButtonStyle(tint: .teal))
+                        .buttonStyle(ModernPillButtonStyle(tint: .black))
                     }
                 }
             }
@@ -328,4 +334,3 @@ struct GamesCard: View {
         }
     }
 }
-

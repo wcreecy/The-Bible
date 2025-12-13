@@ -45,7 +45,7 @@ struct HangmanGameView: View {
     }
     enum Difficulty: String, CaseIterable, Identifiable {
         case easy = "Easy"
-        case medium = "Medium"
+        case normal = "Normal"   // was Medium
         case hard = "Hard"
         var id: String { rawValue }
     }
@@ -55,7 +55,7 @@ struct HangmanGameView: View {
     @State private var difficultyExpanded: Bool = false
 
     @State private var theme: Theme = .all
-    @State private var difficulty: Difficulty = .medium
+    @State private var difficulty: Difficulty = .normal
 
     @State private var targetWord: String = ""
     @State private var displayWord: String = ""
@@ -116,16 +116,16 @@ struct HangmanGameView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            VStack(spacing: 12) {
                 if !started {
-                    Spacer(minLength: 32)
+                    Spacer(minLength: 24)
                     Text("Guess the person, place or book from the Bible")
                         .font(.body)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
 
-                    VStack(alignment: .leading, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 8) {
                         GroupBox {
                             DisclosureGroup(isExpanded: $howToExpanded) {
                                 VStack(alignment: .leading, spacing: 6) {
@@ -142,9 +142,9 @@ struct HangmanGameView: View {
                         GroupBox {
                             DisclosureGroup(isExpanded: $difficultyExpanded) {
                                 VStack(alignment: .leading, spacing: 6) {
-                                    Text("• Easy: A scripture reference is shown during the round to help.")
-                                    Text("• Medium: The reference appears after 3 wrong guesses.")
-                                    Text("• Hard: The reference is only shown after the round ends.")
+                                    Text("• Easy: Up to 10 mistakes. A scripture reference is shown right away to help.")
+                                    Text("• Normal: Up to 7 mistakes. The reference appears after 3 wrong guesses.")
+                                    Text("• Hard: Up to 6 mistakes. The reference is shown only after the round ends.")
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             } label: {
@@ -174,9 +174,8 @@ struct HangmanGameView: View {
                         .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                         .controlSize(.large)
                         .frame(maxWidth: 240)
-                    Spacer(minLength: 32)
+                    Spacer(minLength: 24)
                 } else {
-                    // Hidden text field to capture hardware keyboard input on iPad
                     TextField("", text: .constant(""))
                         .textInputAutocapitalization(.characters)
                         .keyboardType(.asciiCapable)
@@ -190,53 +189,50 @@ struct HangmanGameView: View {
                             }
                         }
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack(alignment: .center, spacing: 12) {
-                            Spacer()
-                            HStack(spacing: 8) {
-                                Image(systemName: iconName(for: currentRoundCategory))
-                                Text(currentRoundCategory.rawValue.uppercased())
-                                    .font(.headline)
-                                    .fontWeight(.bold)
+                    HStack(spacing: 8) {
+                        HStack(spacing: 6) {
+                            Image(systemName: iconName(for: currentRoundCategory))
+                            Text(currentRoundCategory.rawValue.uppercased())
+                                .font(.subheadline.weight(.semibold))
+                                .lineLimit(1)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(
+                            categoryTint(for: currentRoundCategory).opacity(0.18),
+                            in: Capsule(style: .continuous)
+                        )
+                        .overlay(
+                            Capsule(style: .continuous)
+                                .strokeBorder(categoryTint(for: currentRoundCategory).opacity(0.45), lineWidth: 1)
+                        )
+                        .foregroundStyle(categoryTint(for: currentRoundCategory))
+
+                        Spacer(minLength: 6)
+
+                        if let ref = firstReferenceForCurrentTarget(), shouldShowReference() {
+                            Button {
+                                if roundOver { openFirstReference(ref) }
+                            } label: {
+                                Text(ref)
+                                    .lineLimit(1)
                             }
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(
-                                .ultraThinMaterial,
-                                in: Capsule(style: .continuous)
-                            )
-                            .overlay(
-                                Capsule(style: .continuous)
-                                    .strokeBorder(.separator.opacity(0.5), lineWidth: 1)
-                            )
-                            .foregroundStyle(.tint)
+                            .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                            .controlSize(.small)
+                            .disabled(!roundOver)
+                            .opacity(roundOver ? 1.0 : 0.55)
                         }
 
-                        HStack(spacing: 8) {
-                            if let ref = firstReferenceForCurrentTarget(), shouldShowReference() {
-                                Button {
-                                    if roundOver { openFirstReference(ref) }
-                                } label: {
-                                    Text(ref)
-                                        .lineLimit(1)
-                                }
-                                .buttonStyle(ModernPillButtonStyle(tint: .blue))
-                                .controlSize(.regular)
-                                .disabled(!roundOver)
-                                .opacity(roundOver ? 1.0 : 0.55)
-                            }
+                        Button("Previous") { showPreviousSheet = true }
+                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                            .controlSize(.small)
+                            .disabled(history.isEmpty)
+                            .opacity(history.isEmpty ? 0.5 : 1.0)
 
-                            Button("Previous") { showPreviousSheet = true }
+                        if roundOver {
+                            Button("Next") { nextRound() }
                                 .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                                .controlSize(.regular)
-                                .disabled(history.isEmpty)
-                                .opacity(history.isEmpty ? 0.5 : 1.0)
-
-                            if roundOver {
-                                Button("Next") { nextRound() }
-                                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                                    .controlSize(.regular)
-                            }
+                                .controlSize(.small)
                         }
                     }
 
@@ -249,10 +245,17 @@ struct HangmanGameView: View {
                         allTimeBestStreak: allTimeBestStreak
                     )
 
+                    HangmanDrawing(
+                        revealedCount: piecesRevealed(),
+                        totalPieces: 10
+                    )
+                    .frame(height: drawingHeight)
+                    .padding(.top, 0)
+
                     Text(spacedDisplayWord())
-                        .font(.system(size: 30, weight: .semibold, design: .monospaced))
+                        .font(.system(size: 28, weight: .semibold, design: .monospaced))
                         .fontDesign(appFontDesign)
-                        .padding(.top, 8)
+                        .padding(.top, 4)
                         .accessibilityLabel("Word to guess")
 
                     Text("Mistakes: \(wrongGuesses)/\(maxWrong)")
@@ -291,17 +294,19 @@ struct HangmanGameView: View {
                             .opacity((guessedLetters.contains(ch) || roundOver) ? 0.5 : 1.0)
                         }
                     }
-                    .padding(.top, 6)
+                    .padding(.top, 4)
 
                     if roundOver {
                         Text(didWin ? "You got it!" : "Out of guesses: \(targetWord.uppercased())")
                             .font(.headline)
                             .foregroundStyle(didWin ? .green : .red)
-                            .padding(.top, 8)
+                            .padding(.top, 6)
                     }
                 }
             }
-            .padding()
+            .padding(.horizontal)
+            .padding(.top, 8)
+            .padding(.bottom, 12)
         }
         .fontDesign(appFontDesign)
         .navigationTitle("Hangman")
@@ -311,6 +316,9 @@ struct HangmanGameView: View {
                 if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadNamesAsync() }
                 if loadedPlaces.isEmpty { loadedPlaces = await GameDataLoaders.loadLocationsAsync() }
             }
+        }
+        .onChange(of: difficulty) { _, newValue in
+            applyMaxWrong(for: newValue)
         }
         .navigationDestination(isPresented: $navigateToReader) {
             if let book = navBook, let chapter = navChapter {
@@ -364,6 +372,7 @@ struct HangmanGameView: View {
                                 .lineLimit(1)
                         }
                         .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                        .controlSize(.small)
                     }
                     Spacer()
                     HStack { Spacer(); Button("Close") { showPreviousSheet = false } }
@@ -377,12 +386,44 @@ struct HangmanGameView: View {
         }
     }
 
+    private var drawingHeight: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 150 : 120
+    }
+
+    private func applyMaxWrong(for d: Difficulty) {
+        switch d {
+        case .easy: maxWrong = 10
+        case .normal: maxWrong = 7
+        case .hard: maxWrong = 6
+        }
+        if wrongGuesses >= maxWrong && started && !roundOver {
+            endRound(win: false)
+        }
+    }
+
+    private func piecesRevealed() -> Int {
+        let clampedMax = max(1, maxWrong)
+        let fraction = Double(min(wrongGuesses, clampedMax)) / Double(clampedMax)
+        let totalPieces = 10
+        let count = Int(round(fraction * Double(totalPieces)))
+        return max(0, min(totalPieces, count))
+    }
+
     private func iconName(for theme: Theme) -> String {
         switch theme {
         case .places: return "house.fill"
         case .people: return "person.fill"
         case .books: return "book.fill"
         case .all: return "tag.fill"
+        }
+    }
+
+    private func categoryTint(for theme: Theme) -> Color {
+        switch theme {
+        case .people: return .orange
+        case .places: return .orange
+        case .books: return .orange
+        case .all: return .orange
         }
     }
 
@@ -398,6 +439,7 @@ struct HangmanGameView: View {
                 currentStreak = 0
                 currentBestStreak = 0
                 started = true
+                applyMaxWrong(for: difficulty)
                 nextRound()
             }
             return
@@ -409,6 +451,7 @@ struct HangmanGameView: View {
         currentStreak = 0
         currentBestStreak = 0
         started = true
+        applyMaxWrong(for: difficulty)
         nextRound()
     }
 
@@ -419,6 +462,7 @@ struct HangmanGameView: View {
         wrongLetters.removeAll()
         roundOver = false
         didWin = false
+        applyMaxWrong(for: difficulty)
         generateRound()
     }
 
@@ -488,7 +532,6 @@ struct HangmanGameView: View {
                 let generator = UINotificationFeedbackGenerator()
                 generator.notificationOccurred(.success)
             }
-            // Centralized write
             GameStats.shared.recordRound(
                 game: .hangman,
                 difficulty: mapDifficulty(difficulty),
@@ -511,7 +554,7 @@ struct HangmanGameView: View {
     private func difficultyKeySuffix() -> String {
         switch difficulty {
         case .easy: return "easy"
-        case .medium: return "medium"
+        case .normal: return "medium"
         case .hard: return "hard"
         }
     }
@@ -519,7 +562,7 @@ struct HangmanGameView: View {
     private func mapDifficulty(_ d: Difficulty) -> GameStats.Difficulty {
         switch d {
         case .easy: return .easy
-        case .medium: return .medium
+        case .normal: return .medium
         case .hard: return .hard
         }
     }
@@ -616,7 +659,7 @@ struct HangmanGameView: View {
         switch difficulty {
         case .easy:
             return started && !targetWord.isEmpty && !displayWord.isEmpty
-        case .medium:
+        case .normal:
             return roundOver || wrongGuesses >= 3
         case .hard:
             return roundOver
@@ -709,3 +752,132 @@ struct HangmanGameView: View {
         return s
     }
 }
+
+// MARK: - Hangman Drawing
+
+private struct HangmanDrawing: View {
+    let revealedCount: Int
+    let totalPieces: Int
+
+    @Environment(\.colorScheme) private var scheme
+
+    private var stroke: Color {
+        scheme == .dark ? Color.white.opacity(0.9) : Color.black.opacity(0.85)
+    }
+
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width
+            let h = geo.size.height
+            let scaleX = w / 100.0
+            let scaleY = h / 140.0
+
+            ZStack {
+                Group {
+                    if revealedCount >= 1 { base(scaleX: scaleX, scaleY: scaleY) }
+                    if revealedCount >= 2 { pole(scaleX: scaleX, scaleY: scaleY) }
+                    if revealedCount >= 3 { beam(scaleX: scaleX, scaleY: scaleY) }
+                    if revealedCount >= 4 { rope(scaleX: scaleX, scaleY: scaleY) }
+                    if revealedCount >= 5 { head(scaleX: scaleX, scaleY: scaleY) }
+                    if revealedCount >= 6 { torso(scaleX: scaleX, scaleY: scaleY) }
+                    if revealedCount >= 7 { leftArm(scaleX: scaleX, scaleY: scaleY) }
+                    if revealedCount >= 8 { rightArm(scaleX: scaleX, scaleY: scaleY) }
+                    if revealedCount >= 9 { leftLeg(scaleX: scaleX, scaleY: scaleY) }
+                    if revealedCount >= 10 { rightLeg(scaleX: scaleX, scaleY: scaleY) }
+                }
+                .animation(.easeInOut(duration: 0.25), value: revealedCount)
+            }
+            .frame(width: w, height: h)
+        }
+    }
+
+    private func base(scaleX: CGFloat, scaleY: CGFloat) -> some View {
+        Path { p in
+            p.move(to: CGPoint(x: 10 * scaleX, y: 130 * scaleY))
+            p.addLine(to: CGPoint(x: 90 * scaleX, y: 130 * scaleY))
+        }
+        .stroke(stroke, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+        .transition(.opacity)
+    }
+
+    private func pole(scaleX: CGFloat, scaleY: CGFloat) -> some View {
+        Path { p in
+            p.move(to: CGPoint(x: 25 * scaleX, y: 130 * scaleY))
+            p.addLine(to: CGPoint(x: 25 * scaleX, y: 20 * scaleY))
+        }
+        .stroke(stroke, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+        .transition(.opacity)
+    }
+
+    private func beam(scaleX: CGFloat, scaleY: CGFloat) -> some View {
+        Path { p in
+            p.move(to: CGPoint(x: 25 * scaleX, y: 20 * scaleY))
+            p.addLine(to: CGPoint(x: 70 * scaleX, y: 20 * scaleY))
+        }
+        .stroke(stroke, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+        .transition(.opacity)
+    }
+
+    private func rope(scaleX: CGFloat, scaleY: CGFloat) -> some View {
+        Path { p in
+            p.move(to: CGPoint(x: 70 * scaleX, y: 20 * scaleY))
+            p.addLine(to: CGPoint(x: 70 * scaleX, y: 35 * scaleY))
+        }
+        .stroke(stroke, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+        .transition(.opacity)
+    }
+
+    private func head(scaleX: CGFloat, scaleY: CGFloat) -> some View {
+        Circle()
+            .stroke(stroke, lineWidth: 3)
+            .frame(width: 18 * scaleX, height: 18 * scaleY)
+            .position(x: 70 * scaleX, y: 45 * scaleY)
+            .transition(.opacity)
+    }
+
+    private func torso(scaleX: CGFloat, scaleY: CGFloat) -> some View {
+        Path { p in
+            p.move(to: CGPoint(x: 70 * scaleX, y: 54 * scaleY))
+            p.addLine(to: CGPoint(x: 70 * scaleX, y: 88 * scaleY))
+        }
+        .stroke(stroke, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+        .transition(.opacity)
+    }
+
+    private func leftArm(scaleX: CGFloat, scaleY: CGFloat) -> some View {
+        Path { p in
+            p.move(to: CGPoint(x: 70 * scaleX, y: 62 * scaleY))
+            p.addLine(to: CGPoint(x: 58 * scaleX, y: 74 * scaleY))
+        }
+        .stroke(stroke, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+        .transition(.opacity)
+    }
+
+    private func rightArm(scaleX: CGFloat, scaleY: CGFloat) -> some View {
+        Path { p in
+            p.move(to: CGPoint(x: 70 * scaleX, y: 62 * scaleY))
+            p.addLine(to: CGPoint(x: 82 * scaleX, y: 74 * scaleY))
+        }
+        .stroke(stroke, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+        .transition(.opacity)
+    }
+
+    private func leftLeg(scaleX: CGFloat, scaleY: CGFloat) -> some View {
+        Path { p in
+            p.move(to: CGPoint(x: 70 * scaleX, y: 88 * scaleY))
+            p.addLine(to: CGPoint(x: 60 * scaleX, y: 106 * scaleY))
+        }
+        .stroke(stroke, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+        .transition(.opacity)
+    }
+
+    private func rightLeg(scaleX: CGFloat, scaleY: CGFloat) -> some View {
+        Path { p in
+            p.move(to: CGPoint(x: 70 * scaleX, y: 88 * scaleY))
+            p.addLine(to: CGPoint(x: 80 * scaleX, y: 106 * scaleY))
+        }
+        .stroke(stroke, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+        .transition(.opacity)
+    }
+}
+

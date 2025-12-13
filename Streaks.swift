@@ -40,8 +40,10 @@ struct StreaksCard: View {
         HeroCard(
             title: "Daily Bible Streak",
             subtitle: nil,
-            icon: "flame.fill",
-            tint: current > 0 ? .orange : .secondary
+            tint: current > 0 ? .orange : .secondary,
+            iconContent: {
+                FillingFlame(progress: progress)
+            }
         ) {
             VStack(alignment: .leading, spacing: 10) {
                 // Header row: current streak and best
@@ -228,6 +230,41 @@ struct StreaksCard: View {
                     )
                 }
             }
+        }
+    }
+
+    // MARK: - Filling flame icon
+
+    private struct FillingFlame: View {
+        var progress: Double // 0...1
+
+        var clamped: CGFloat {
+            CGFloat(min(1.0, max(0.0, progress)))
+        }
+
+        var body: some View {
+            ZStack {
+                // Base outline/background flame
+                Image(systemName: "flame.fill")
+                    .foregroundStyle(.secondary.opacity(0.25))
+
+                // Filled portion, revealed from bottom to top
+                Image(systemName: "flame.fill")
+                    .foregroundStyle(.orange)
+                    .mask(
+                        GeometryReader { geo in
+                            VStack(spacing: 0) {
+                                Spacer(minLength: 0)
+                                Rectangle()
+                                    .frame(height: geo.size.height * clamped)
+                            }
+                            .frame(width: geo.size.width, height: geo.size.height, alignment: .bottom)
+                        }
+                    )
+                    .animation(.easeInOut(duration: 0.35), value: clamped)
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Text("Today's progress \(Int(clamped * 100)) percent"))
         }
     }
 }

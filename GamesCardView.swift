@@ -90,8 +90,6 @@ struct GamesCardView: View {
             let entries = breakdown.entries
 
             // Derived
-            let overallBestStreak = entries.map { $0.bestStreak ?? 0 }.max() ?? 0
-            let varietyCount = entries.filter { $0.answered > 0 }.count
             let shares: [Double] = entries.map { s in
                 totalAnswered > 0 ? (Double(s.answered) / Double(totalAnswered)) * 100.0 : 0
             }
@@ -109,7 +107,7 @@ struct GamesCardView: View {
             let worstStreakIndex = uniqueMinIndex(streaks.map { $0 == 0 ? Int.max : $0 })
 
             VStack(alignment: .leading, spacing: 12) {
-                // HEADER: Progress ring + tier chip + totals
+                // HEADER: Progress ring + tier chip (subtitle removed)
                 HStack(spacing: 12) {
                     if isEmpty {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -165,16 +163,7 @@ struct GamesCardView: View {
                                 .accessibilityLabel("Tier \(t.name)")
                             }
                         }
-                        if isEmpty {
-                            Text("Let’s play! Your game performance will show here.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        } else {
-                            Text("\(totalCorrect) correct out of \(totalAnswered) total")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .monospacedDigit()
-                        }
+                        // Removed the "X correct out of Y total" subtitle
                     }
                     Spacer()
                 }
@@ -185,6 +174,7 @@ struct GamesCardView: View {
                         metricChip(title: "Accuracy", value: "\(Int(round(gamerPct)))%", tint: gamerColor)
                         metricChip(title: "Played", value: "\(totalAnswered)", tint: .blue)
                         metricChip(title: "Correct", value: "\(totalCorrect)", tint: .green)
+                        let overallBestStreak = entries.map { $0.bestStreak ?? 0 }.max() ?? 0
                         metricChip(title: "Best Streak", value: overallBestStreak > 0 ? "\(overallBestStreak)" : "—", tint: .orange)
                     }
                 }
@@ -220,23 +210,7 @@ struct GamesCardView: View {
                     }
                 }
 
-                // Badges / highlights
-                if !isEmpty {
-                    let showSharpshooter = gamerPct >= 90
-                    let showOnARoll = overallBestStreak >= 5
-                    let showVariety = varietyCount >= 4
-                    let showSpecialist = shares.max() ?? 0 > 50
-                    if showSharpshooter || showOnARoll || showVariety || showSpecialist {
-                        HStack(spacing: 8) {
-                            if showSharpshooter { badge("Sharpshooter", systemImage: "scope", tint: .green) }
-                            if showOnARoll { badge("On a roll", systemImage: "flame.fill", tint: .orange) }
-                            if showVariety { badge("Variety", systemImage: "square.grid.2x2.fill", tint: .blue) }
-                            if showSpecialist { badge("Specialist", systemImage: "target", tint: .purple) }
-                        }
-                        .padding(.top, 2)
-                        .accessibilityElement(children: .combine)
-                    }
-                }
+                // Badges / highlights — removed entirely (Sharpshooter, Specialist, etc.)
 
                 // Player Stat Sheet with sorting
                 VStack(alignment: .leading, spacing: 8) {
@@ -402,25 +376,6 @@ struct GamesCardView: View {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(tint.opacity(0.25), lineWidth: 1)
         )
-    }
-
-    private func badge(_ text: String, systemImage: String, tint: Color) -> some View {
-        HStack(spacing: 6) {
-            Image(systemName: systemImage)
-            Text(text).fontWeight(.semibold)
-        }
-        .font(.caption)
-        .padding(.vertical, 6)
-        .padding(.horizontal, 10)
-        .background(
-            Capsule(style: .continuous)
-                .fill(tint.opacity(0.12))
-        )
-        .overlay(
-            Capsule(style: .continuous)
-                .stroke(tint.opacity(0.25), lineWidth: 1)
-        )
-        .foregroundStyle(tint)
     }
 
     private func labeledValue(_ text: String, isBest: Bool, isWorst: Bool) -> some View {

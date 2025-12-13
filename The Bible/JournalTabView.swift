@@ -591,95 +591,7 @@ struct JournalTabView: View {
 
     // MARK: - iPhone layout
 
-    @ToolbarContentBuilder
-    private var compactToolbar: some ToolbarContent {
-        if isFiltered {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    clearAllFilters()
-                } label: {
-                    Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle")
-                }
-                .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
-            }
-        }
-        ToolbarItemGroup(placement: .topBarTrailing) {
-            if selectionMode {
-                Button(role: .destructive) {
-                    showBulkDeleteAlert = true
-                } label: {
-                    Label("Delete", systemImage: "trash")
-                }
-                .buttonStyle(ToolbarPillButtonStyle(tint: .red))
-
-                Button {
-                    selectionMode = false
-                    selectedForDeletion.removeAll()
-                } label: {
-                    Label("Cancel", systemImage: "xmark")
-                }
-                .buttonStyle(ToolbarPillButtonStyle(tint: .gray))
-            } else {
-                Button {
-                    journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: true)
-                } label: {
-                    Label("New", systemImage: "plus")
-                }
-                .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
-
-                Button {
-                    selectionMode = true
-                } label: {
-                    Label("Select", systemImage: "checkmark.circle")
-                }
-                .buttonStyle(ToolbarPillButtonStyle(tint: .blue))
-            }
-        }
-    }
-
-    // Compact header row to guarantee visibility of New/Select in portrait
-    private var compactHeaderActions: some View {
-        HStack(spacing: 10) {
-            if selectionMode {
-                Button {
-                    showBulkDeleteAlert = true
-                } label: {
-                    Label("Delete", systemImage: "trash")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(ModernPillButtonStyle(tint: .red))
-
-                Button {
-                    selectionMode = false
-                    selectedForDeletion.removeAll()
-                } label: {
-                    Label("Cancel", systemImage: "xmark")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(ModernPillButtonStyle(tint: .gray))
-            } else {
-                Button {
-                    journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: true)
-                } label: {
-                    Label("New", systemImage: "plus")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-
-                Button {
-                    selectionMode = true
-                } label: {
-                    Label("Select", systemImage: "checkmark.circle")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(ModernPillButtonStyle(tint: .blue))
-            }
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(.regularMaterial, in: Rectangle())
-        .overlay(Divider(), alignment: .bottom)
-    }
+    // Compact header row removed per request
 
     @ViewBuilder
     private var compactList: some View {
@@ -699,6 +611,8 @@ struct JournalTabView: View {
                 showDeleteAlert = true
             }
         )
+        .navigationTitle(isFiltered ? "Journal\nFiltered" : "Journal")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     private var compactNavigationStack: some View {
@@ -708,22 +622,63 @@ struct JournalTabView: View {
             list
                 .navigationDestination(for: JournalEntry.self) { entry in
                     JournalDetailView(entry: entry)
+                        .navigationTitle(entry.title.isEmpty ? "Entry" : entry.title)
+                        .navigationBarTitleDisplayMode(.inline)
+                }
+                .toolbar {
+                    ToolbarItemGroup(placement: .topBarTrailing) {
+                        if selectionMode {
+                            Button(role: .destructive) {
+                                if selectedForDeletion.isEmpty {
+                                    // No selection yet: show a confirmation anyway
+                                    showBulkDeleteAlert = true
+                                } else {
+                                    showBulkDeleteAlert = true
+                                }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                            .buttonStyle(ToolbarPillButtonStyle(tint: .red))
+
+                            Button {
+                                selectionMode = false
+                                selectedForDeletion.removeAll()
+                            } label: {
+                                Label("Cancel", systemImage: "xmark")
+                            }
+                            .buttonStyle(ToolbarPillButtonStyle(tint: .gray))
+                        } else {
+                            Button {
+                                // New: create entry and present editor via composer
+                                let e = JournalEntry()
+                                e.updatedAt = Date()
+                                ctx.insert(e)
+                                try? ctx.save()
+                                // Navigate to detail first (so user sees it in stack), then present editor
+                                journalComposer.presentForEditing(entry: e)
+                            } label: {
+                                Label("New", systemImage: "plus")
+                            }
+                            .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
+
+                            Button {
+                                selectionMode = true
+                                selectedForDeletion.removeAll()
+                            } label: {
+                                Label("Select", systemImage: "checkmark.circle")
+                            }
+                            .buttonStyle(ToolbarPillButtonStyle(tint: .blue))
+                        }
+                    }
                 }
         }
 
         let configured = base
-            .toolbar { compactToolbar }
-            .navigationTitle(isFiltered ? "Journal\nFiltered" : "Journal")
-            .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
             .environment(\.editMode, .constant(selectionMode ? .active : .inactive))
 
         return configured
-            .safeAreaInset(edge: .top, spacing: 0) {
-                if hSize != .regular {
-                    compactHeaderActions
-                }
-            }
+            // Header bar removed: no safeAreaInset injected
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search entries")
             .onAppear {
                 loadPins()
                 recomputeFilteredEntries()

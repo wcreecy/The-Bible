@@ -13,6 +13,8 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
     let titleFont: Font
     let titleFontWeight: Font.Weight
     let centerHeader: Bool
+    // Optional custom leading icon content (used instead of systemName icon if provided)
+    private let iconContent: (() -> AnyView)?
     @ViewBuilder var content: Content
 
     @Environment(\.colorScheme) private var colorScheme
@@ -40,6 +42,7 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
         self.titleFont = titleFont
         self.titleFontWeight = titleFontWeight
         self.centerHeader = centerHeader
+        self.iconContent = nil
         self.content = content()
     }
 
@@ -67,6 +70,7 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
         self.titleFont = titleFont
         self.titleFontWeight = titleFontWeight
         self.centerHeader = centerHeader
+        self.iconContent = nil
         self.content = content()
     }
 
@@ -94,6 +98,7 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
         self.titleFont = titleFont
         self.titleFontWeight = titleFontWeight
         self.centerHeader = centerHeader
+        self.iconContent = nil
         self.content = content()
     }
 
@@ -122,16 +127,133 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
         self.titleFont = titleFont
         self.titleFontWeight = titleFontWeight
         self.centerHeader = centerHeader
+        self.iconContent = nil
+        self.content = content()
+    }
+
+    // NEW: overloads that accept a custom icon view
+    init(
+        title: String,
+        subtitle: String? = nil,
+        tint: Color = .accentColor,
+        backgroundColor: Color? = nil,
+        strokeColor: Color? = nil,
+        titleFont: Font = .headline,
+        titleFontWeight: Font.Weight = .bold,
+        centerHeader: Bool = false,
+        @ViewBuilder iconContent: @escaping () -> some View,
+        @ViewBuilder content: () -> Content
+    ) where TrailingAccessory == EmptyView, TitleAccessory == EmptyView {
+        self.title = title
+        self.subtitle = subtitle
+        self.icon = nil
+        self.tint = tint
+        self.backgroundColor = backgroundColor
+        self.strokeColor = strokeColor
+        self.trailingAccessory = nil
+        self.titleAccessory = nil
+        self.titleFont = titleFont
+        self.titleFontWeight = titleFontWeight
+        self.centerHeader = centerHeader
+        self.iconContent = { AnyView(iconContent()) }
+        self.content = content()
+    }
+
+    init(
+        title: String,
+        subtitle: String? = nil,
+        tint: Color = .accentColor,
+        backgroundColor: Color? = nil,
+        strokeColor: Color? = nil,
+        trailingAccessory: @escaping () -> TrailingAccessory,
+        titleFont: Font = .headline,
+        titleFontWeight: Font.Weight = .bold,
+        centerHeader: Bool = false,
+        @ViewBuilder iconContent: @escaping () -> some View,
+        @ViewBuilder content: () -> Content
+    ) where TitleAccessory == EmptyView {
+        self.title = title
+        self.subtitle = subtitle
+        self.icon = nil
+        self.tint = tint
+        self.backgroundColor = backgroundColor
+        self.strokeColor = strokeColor
+        self.trailingAccessory = trailingAccessory
+        self.titleAccessory = nil
+        self.titleFont = titleFont
+        self.titleFontWeight = titleFontWeight
+        self.centerHeader = centerHeader
+        self.iconContent = { AnyView(iconContent()) }
+        self.content = content()
+    }
+
+    init(
+        title: String,
+        subtitle: String? = nil,
+        tint: Color = .accentColor,
+        backgroundColor: Color? = nil,
+        strokeColor: Color? = nil,
+        titleFont: Font = .headline,
+        titleFontWeight: Font.Weight = .bold,
+        centerHeader: Bool = false,
+        @ViewBuilder iconContent: @escaping () -> some View,
+        titleAccessory: @escaping () -> TitleAccessory,
+        @ViewBuilder content: () -> Content
+    ) where TrailingAccessory == EmptyView {
+        self.title = title
+        self.subtitle = subtitle
+        self.icon = nil
+        self.tint = tint
+        self.backgroundColor = backgroundColor
+        self.strokeColor = strokeColor
+        self.trailingAccessory = nil
+        self.titleAccessory = titleAccessory
+        self.titleFont = titleFont
+        self.titleFontWeight = titleFontWeight
+        self.centerHeader = centerHeader
+        self.iconContent = { AnyView(iconContent()) }
+        self.content = content()
+    }
+
+    init(
+        title: String,
+        subtitle: String? = nil,
+        tint: Color = .accentColor,
+        backgroundColor: Color? = nil,
+        strokeColor: Color? = nil,
+        trailingAccessory: @escaping () -> TrailingAccessory,
+        titleFont: Font = .headline,
+        titleFontWeight: Font.Weight = .bold,
+        centerHeader: Bool = false,
+        @ViewBuilder iconContent: @escaping () -> some View,
+        titleAccessory: @escaping () -> TitleAccessory,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.title = title
+        self.subtitle = subtitle
+        self.icon = nil
+        self.tint = tint
+        self.backgroundColor = backgroundColor
+        self.strokeColor = strokeColor
+        self.trailingAccessory = trailingAccessory
+        self.titleAccessory = titleAccessory
+        self.titleFont = titleFont
+        self.titleFontWeight = titleFontWeight
+        self.centerHeader = centerHeader
+        self.iconContent = { AnyView(iconContent()) }
         self.content = content()
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            if !(title.isEmpty && subtitle == nil && icon == nil) {
+            if !(title.isEmpty && subtitle == nil && icon == nil && iconContent == nil) {
                 if centerHeader {
                     VStack(alignment: .center, spacing: 6) {
                         HStack(alignment: .firstTextBaseline, spacing: 8) {
-                            if let icon {
+                            if let iconContent {
+                                iconContent()
+                                    .font(titleFont)
+                            } else if let icon {
                                 Image(systemName: icon)
                                     .foregroundStyle(tint)
                                     .font(titleFont)
@@ -158,7 +280,10 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
                     .frame(maxWidth: .infinity, alignment: .center)
                 } else {
                     HStack(alignment: .center, spacing: 10) {
-                        if let icon {
+                        if let iconContent {
+                            iconContent()
+                                .font(titleFont)
+                        } else if let icon {
                             Image(systemName: icon)
                                 .foregroundStyle(tint)
                                 .font(titleFont)
@@ -219,3 +344,4 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
         .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 4)
     }
 }
+

@@ -334,8 +334,8 @@ struct JournalEditorView: View {
     }
 
     private func insertVerseLink(book: String, chapter: Int, verse: Int) {
-        // Use smart link format so linker will detect and render
-        let insertion = "#\(book) \(chapter):\(verse)"
+        // Insert plain reference text without a leading "#"
+        let insertion = "\(book) \(chapter):\(verse)"
         insertAtCursor(insertion)
     }
 

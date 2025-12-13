@@ -17,6 +17,7 @@ struct GamesView: View {
     var body: some View {
         List {
             Section("Available Games") {
+                // 1. Bible Quiz
                 NavigationLink(value: GameRoute.quiz) {
                     HStack(spacing: 12) {
                         Image(systemName: "questionmark.circle")
@@ -28,6 +29,7 @@ struct GamesView: View {
                     }
                 }
                 
+                // 2. Hangman
                 NavigationLink(value: GameRoute.hangman) {
                     HStack(spacing: 12) {
                         Image(systemName: "text.word.spacing")
@@ -39,17 +41,7 @@ struct GamesView: View {
                     }
                 }
                 
-                NavigationLink(value: GameRoute.beatTheClock) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "hourglass")
-                            .foregroundStyle(.indigo)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Beat the Clock").font(.headline)
-                            Text("Name a Bible book before time runs out").font(.subheadline).foregroundStyle(.secondary)
-                        }
-                    }
-                }
-                
+                // 3. Verse Match
                 NavigationLink(value: GameRoute.referenceMatch) {
                     HStack(spacing: 12) {
                         Image(systemName: "text.quote")
@@ -60,18 +52,20 @@ struct GamesView: View {
                         }
                     }
                 }
-                
-                NavigationLink(value: GameRoute.favoritesFlashcards) {
+
+                // 4. Who am I?
+                NavigationLink(value: GameRoute.whoAmI) {
                     HStack(spacing: 12) {
-                        Image(systemName: "rectangle.portrait.on.rectangle.portrait")
-                            .foregroundStyle(.pink)
+                        Image(systemName: "person.text.rectangle")
+                            .foregroundStyle(.brown)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Favorites Flashcards").font(.headline)
-                            Text("Practice your favorited verses with flashcards").font(.subheadline).foregroundStyle(.secondary)
+                            Text("Who am I?").font(.headline)
+                            Text("Match names and descriptions").font(.subheadline).foregroundStyle(.secondary)
                         }
                     }
                 }
                 
+                // 5. Book Order
                 NavigationLink(value: GameRoute.bookOrder) {
                     HStack(spacing: 12) {
                         Image(systemName: "list.number")
@@ -83,6 +77,19 @@ struct GamesView: View {
                     }
                 }
 
+                // 6. Beat the Clock
+                NavigationLink(value: GameRoute.beatTheClock) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "hourglass")
+                            .foregroundStyle(.indigo)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Beat the Clock").font(.headline)
+                            Text("Name a Bible book before time runs out").font(.subheadline).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                
+                // 7. Word Search
                 NavigationLink(value: GameRoute.wordSearch) {
                     HStack(spacing: 12) {
                         Image(systemName: "grid")
@@ -94,14 +101,14 @@ struct GamesView: View {
                     }
                 }
 
-                // NEW: Who am I?
-                NavigationLink(value: GameRoute.whoAmI) {
+                // 8. Favorites Flashcards
+                NavigationLink(value: GameRoute.favoritesFlashcards) {
                     HStack(spacing: 12) {
-                        Image(systemName: "person.text.rectangle")
-                            .foregroundStyle(.brown)
+                        Image(systemName: "rectangle.portrait.on.rectangle.portrait")
+                            .foregroundStyle(.pink)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Who am I?").font(.headline)
-                            Text("Match names and descriptions").font(.subheadline).foregroundStyle(.secondary)
+                            Text("Favorites Flashcards").font(.headline)
+                            Text("Practice your favorited verses with flashcards").font(.subheadline).foregroundStyle(.secondary)
                         }
                     }
                 }
@@ -136,4 +143,3 @@ struct GamesView: View {
 #Preview {
     NavigationStack { GamesView() }
 }
-

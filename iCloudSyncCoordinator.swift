@@ -30,6 +30,12 @@ final class iCloudSyncCoordinator {
         FileManager.default.ubiquityIdentityToken != nil
     }
 
+    // NEW: Debounced push machinery (off-main)
+    private let syncQueue = DispatchQueue(label: "iCloudSyncCoordinator.kvsSync", qos: .utility)
+    private var pendingKeys: Set<String> = []
+    private var scheduledSyncWork: DispatchWorkItem?
+    private let debounceInterval: TimeInterval = 1.0
+
     private init() {
         NotificationCenter.default.addObserver(
             self,
@@ -37,18 +43,21 @@ final class iCloudSyncCoordinator {
             name: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
             object: kvs
         )
+        // Initial sync
         kvs.synchronize()
 
         // Perform one-time bootstrap
         if !defaults.bool(forKey: bootstrapFlagKey) {
             pushAllLocalToKVS()
             defaults.set(true, forKey: bootstrapFlagKey)
-            kvs.synchronize()
+            // Debounced sync will run shortly
+            scheduleDebouncedSynchronize()
             lastPushDate = Date()
         }
 
-        // Opportunistic push at launch to reduce drift
+        // Opportunistic push at launch to reduce drift (debounced)
         pushAllLocalToKVS()
+        scheduleDebouncedSynchronize()
         lastPushDate = Date()
     }
 
@@ -61,22 +70,23 @@ final class iCloudSyncCoordinator {
 
     // Call after local writes if you want to eagerly push a specific key.
     func pushKey(_ key: String) {
-        // Only push keys we know how to merge.
         guard allKnownKeys.contains(key) else { return }
+        // Mirror immediately (cheap), but do not call synchronize here.
         mirrorLocalKeyToKVS(key)
-        kvs.synchronize()
-        lastPushDate = Date()
+        enqueueKeyForSync(key)
     }
 
     // Optional: push all known keys now (useful on app background)
     func pushAllNow() {
-        pushAllLocalToKVS()
-        lastPushDate = Date()
+        // Mirror all keys and then schedule a single synchronize
+        for key in allKnownKeys {
+            mirrorLocalKeyToKVS(key)
+        }
+        enqueueKeysForSync(allKnownKeys)
     }
 
     // NEW: Centralized reset for all game counters (all scoreboard keys).
     func resetAllGameCountersToZero() {
-        // Zero every game key we know, stamp timestamps, and mirror to KVS.
         let gameKeys = Array(hangmanKeys + beatClockKeys + refMatchKeys + quizKeys + bookOrderKeys)
         for key in gameKeys {
             defaults.set(0, forKey: key)
@@ -85,10 +95,9 @@ final class iCloudSyncCoordinator {
             kvs.set(0, forKey: key)
             writeRemoteTimestampNow(for: key)
         }
-        kvs.synchronize()
+        enqueueKeysForSync(Set(gameKeys))
         lastPushDate = Date()
 
-        // Invalidate any in-memory consumers and notify UI to refresh scoreboards.
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
@@ -206,7 +215,8 @@ final class iCloudSyncCoordinator {
         for key in allKnownKeys {
             mirrorLocalKeyToKVS(key)
         }
-        kvs.synchronize()
+        // Debounced sync instead of immediate synchronize
+        enqueueKeysForSync(allKnownKeys)
     }
 
     // MARK: - Timestamp helpers (for LWW game keys)
@@ -316,6 +326,46 @@ final class iCloudSyncCoordinator {
         // Unknown keys are ignored
     }
 
+    // MARK: - Debounced synchronize
+
+    private func enqueueKeyForSync(_ key: String) {
+        enqueueKeysForSync([key])
+    }
+
+    private func enqueueKeysForSync<S: Sequence>(_ keys: S) where S.Element == String {
+        syncQueue.async { [weak self] in
+            guard let self else { return }
+            for k in keys where self.allKnownKeys.contains(k) {
+                self.pendingKeys.insert(k)
+            }
+            self.scheduleDebouncedSynchronize()
+        }
+    }
+
+    private func scheduleDebouncedSynchronize() {
+        // Cancel any pending work
+        scheduledSyncWork?.cancel()
+
+        let work = DispatchWorkItem { [weak self] in
+            guard let self else { return }
+            // Snapshot and clear pending set
+            let keys = self.pendingKeys
+            self.pendingKeys.removeAll()
+
+            // Perform synchronize once for the batch
+            self.kvs.synchronize()
+
+            // Stamp last push time on main actor
+            Task { @MainActor in
+                self.lastPushDate = Date()
+            }
+        }
+
+        scheduledSyncWork = work
+        // Debounce a bit to coalesce bursts (1.0s)
+        syncQueue.asyncAfter(deadline: .now() + debounceInterval, execute: work)
+    }
+
     // MARK: - Merging KVS -> local
 
     private func mergeIncomingKVSValue(forKey key: String) {
@@ -356,21 +406,17 @@ final class iCloudSyncCoordinator {
                 let remoteAt = kvs.double(forKey: gamesLastPlayedAtKey)
                 let localAt = defaults.double(forKey: gamesLastPlayedAtKey)
                 if remoteAt > localAt {
-                    // Adopt remote name and timestamp pair
                     defaults.set(remoteName, forKey: key)
                     defaults.set(remoteAt, forKey: gamesLastPlayedAtKey)
                 } else if remoteAt < localAt {
-                    // Keep local; ensure KVS reflects local pair for propagation
                     kvs.set(localName, forKey: key)
                     kvs.set(localAt, forKey: gamesLastPlayedAtKey)
                 } else {
-                    // Timestamps equal or both zero: keep non-empty
                     if localName.isEmpty && !remoteName.isEmpty {
                         defaults.set(remoteName, forKey: key)
                     } else if !localName.isEmpty && remoteName.isEmpty {
                         kvs.set(localName, forKey: key)
                     } else if localName != remoteName && !remoteName.isEmpty {
-                        // If both non-empty but different and timestamps equal, prefer remote conservatively
                         defaults.set(remoteName, forKey: key)
                     }
                 }
@@ -389,24 +435,21 @@ final class iCloudSyncCoordinator {
             let remoteVal = Int(kvs.longLong(forKey: key))
             let localVal = defaults.integer(forKey: key)
 
-            // Missing timestamps are treated as very old (0)
-            // If remote newer, adopt remote; if local newer or equal, keep local.
             if remoteTS > localTS {
                 defaults.set(max(0, remoteVal), forKey: key)
-                // Update local timestamp to remote's timestamp so both sides agree
                 defaults.set(remoteTS, forKey: tsKey(for: key))
             } else if remoteTS == 0 && localTS == 0 {
-                // Legacy case: fall back to max once, then stamp local as now
                 let merged = max(max(0, localVal), max(0, remoteVal))
                 defaults.set(merged, forKey: key)
                 writeLocalTimestampNow(for: key)
                 kvs.set(merged, forKey: key)
                 writeRemoteTimestampNow(for: key)
+                // Schedule a sync (debounced)
+                enqueueKeyForSync(key)
             } else {
-                // Local is newer or equal; ensure KVS reflects local (helps propagate clears)
                 kvs.set(max(0, localVal), forKey: key)
-                // Also mirror the local timestamp to KVS
                 if localTS > 0 { kvs.set(localTS, forKey: tsKey(for: key)) }
+                enqueueKeyForSync(key)
             }
             return
         }
@@ -417,19 +460,16 @@ final class iCloudSyncCoordinator {
 
             switch key {
             case stats_keyTotals:
-                // CHANGE: per-book totals use max per entry
                 typealias Map = [String: Int]
                 let merged = mergeIntMapMax(localData: localData, remoteData: remoteData, type: Map.self)
                 if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
 
             case stats_keyDailyTotals:
-                // CHANGE: per-day totals use max per entry
                 typealias Map = [String: Int]
                 let merged = mergeIntMapMax(localData: localData, remoteData: remoteData, type: Map.self)
                 if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
 
             case stats_keyDailyTotalsByBook:
-                // CHANGE: nested per-day per-book totals use max per entry
                 typealias Map = [String: [String: Int]]
                 let merged = mergeNestedIntMapMax(localData: localData, remoteData: remoteData, type: Map.self)
                 if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
@@ -461,7 +501,6 @@ final class iCloudSyncCoordinator {
         }
 
         if sessionKeys.contains(key) {
-            // Merge reading sessions by union/dedupe using a stable identity (start, end, book, chapter)
             guard let remoteData = kvs.object(forKey: key) as? Data else { return }
             let localData = defaults.data(forKey: key)
             typealias Arr = [ReadingSessionsStore.Session]
@@ -653,4 +692,3 @@ extension Notification.Name {
     // If you deep link to a passage elsewhere, you already have:
     // static let openBibleReference = Notification.Name("openBibleReference")
 }
-

@@ -2,6 +2,15 @@ import SwiftUI
 
 struct WhoAmIGameView: View {
     @StateObject private var vm = WhoAmIGameViewModel()
+    @State private var maxChoiceHeight: CGFloat = 0
+
+    // Collects the maximum measured height from all choice cells
+    private struct ChoiceHeightKey: PreferenceKey {
+        static var defaultValue: CGFloat = 0
+        static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+            value = max(value, nextValue())
+        }
+    }
 
     var body: some View {
         ScrollView {
@@ -115,10 +124,26 @@ struct WhoAmIGameView: View {
                                 Button {
                                     vm.select(choice)
                                 } label: {
+                                    // Uniform-sized, leading-aligned, multi-line text inside each cell
                                     Text(choice)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .font(.footnote) // smaller to fit more text
+                                        .multilineTextAlignment(.leading)
+                                        .lineLimit(6) // allow one more line
+                                        .fixedSize(horizontal: false, vertical: true)
+                                        .frame(
+                                            maxWidth: .infinity,
+                                            minHeight: max(maxChoiceHeight, 78),
+                                            maxHeight: max(maxChoiceHeight, 78),
+                                            alignment: .leading
+                                        )
                                         .padding()
                                         .foregroundStyle(.primary)
+                                        .background(
+                                            GeometryReader { geo in
+                                                Color.clear
+                                                    .preference(key: ChoiceHeightKey.self, value: geo.size.height)
+                                            }
+                                        )
                                 }
                                 .disabled(vm.roundOver)
                                 .background(
@@ -133,6 +158,10 @@ struct WhoAmIGameView: View {
                                         )
                                 )
                             }
+                        }
+                        .onPreferenceChange(ChoiceHeightKey.self) { value in
+                            // Update max height from measured cells
+                            maxChoiceHeight = value
                         }
                     }
 
@@ -159,6 +188,10 @@ struct WhoAmIGameView: View {
         .navigationTitle("Who am I?")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear { vm.onAppear() }
+        .onChange(of: vm.choices) { _, _ in
+            // Reset measurement when the choices set changes (new question)
+            maxChoiceHeight = 0
+        }
     }
 
     private func backgroundColor(for choice: String) -> Color {
@@ -195,4 +228,3 @@ struct WhoAmIGameView: View {
         WhoAmIGameView()
     }
 }
-

@@ -195,8 +195,9 @@ final class WhoAmIGameViewModel: ObservableObject {
         var universe = Array(Set(entries.map { $0.description })).filter { $0 != correct.description }
         universe.shuffle()
         let wrong = Array(universe.prefix(3))
-        var all = wrong + [correct.description]
-        all.shuffle()
+        var all = wrong
+        let insertIndex = Int.random(in: 0...all.count)
+        all.insert(correct.description, at: insertIndex)
         return all
     }
 
@@ -205,8 +206,9 @@ final class WhoAmIGameViewModel: ObservableObject {
         var universe = Array(Set(entries.map { $0.name })).filter { $0 != correct.name }
         universe.shuffle()
         let wrong = Array(universe.prefix(3))
-        var all = wrong + [correct.name]
-        all.shuffle()
+        var all = wrong
+        let insertIndex = Int.random(in: 0...all.count)
+        all.insert(correct.name, at: insertIndex)
         return all
     }
 

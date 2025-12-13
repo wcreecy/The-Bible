@@ -25,6 +25,10 @@ struct BibleReaderForJournal: View {
     @State private var showBookPicker: Bool = false
     @State private var showChapterPicker: Bool = false
 
+    // Inline menu state (new)
+    @State private var menuVerse: Int? = nil
+    @State private var selectedVerse: Int? = nil
+
     var body: some View {
         VStack(spacing: 8) {
             // Row 1: Search only
@@ -112,25 +116,54 @@ struct BibleReaderForJournal: View {
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background((highlightedVerse == verse.number) ? Color.yellow.opacity(0.25) : Color.clear)
+                        .background((highlightedVerse == verse.number || selectedVerse == verse.number) ? Color.yellow.opacity(0.25) : Color.clear)
                         .id(rowID(for: verse.number))
                         .contentShape(Rectangle())
-                        .contextMenu {
-                            Button {
-                                onInsertText?(currentBook.name, currentChapter.number, verse.number, verse.text)
-                            } label: {
-                                Label("Text", systemImage: "doc.text")
+                        .onLongPressGesture(minimumDuration: 0.5) {
+                            #if canImport(UIKit)
+                            let gen = UIImpactFeedbackGenerator(style: .heavy)
+                            gen.impactOccurred()
+                            #endif
+                            menuVerse = verse.number
+                        }
+                        .onTapGesture {
+                            // Optional selection highlight on tap
+                            selectedVerse = verse.number
+                            // Dismiss inline menu if open
+                            if menuVerse != nil { menuVerse = nil }
+                        }
+
+                        if menuVerse == verse.number {
+                            HStack(spacing: 24) {
+                                Button {
+                                    onInsertText?(currentBook.name, currentChapter.number, verse.number, verse.text)
+                                    withAnimation(.easeInOut) { menuVerse = nil }
+                                } label: {
+                                    Image(systemName: "doc.text")
+                                }
+                                .foregroundStyle(.blue)
+
+                                Button {
+                                    onInsertLink?(currentBook.name, currentChapter.number, verse.number)
+                                    withAnimation(.easeInOut) { menuVerse = nil }
+                                } label: {
+                                    Image(systemName: "link")
+                                }
+                                .foregroundStyle(.purple)
+
+                                Button {
+                                    onFavorite?(currentBook.name, currentChapter.number, verse.number, verse.text)
+                                    withAnimation(.easeInOut) { menuVerse = nil }
+                                } label: {
+                                    Image(systemName: "heart")
+                                }
+                                .foregroundStyle(.red)
                             }
-                            Button {
-                                onInsertLink?(currentBook.name, currentChapter.number, verse.number)
-                            } label: {
-                                Label("Link", systemImage: "link")
-                            }
-                            Button {
-                                onFavorite?(currentBook.name, currentChapter.number, verse.number, verse.text)
-                            } label: {
-                                Label("Favorite", systemImage: "heart")
-                            }
+                            .font(.title3)
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 6)
+                            .transition(.opacity)
                         }
 
                         if verse.number != currentChapter.verses.count {
@@ -140,6 +173,10 @@ struct BibleReaderForJournal: View {
                 }
                 .padding(.vertical, 8)
                 .scrollTargetLayout()
+                .onTapGesture {
+                    // Dismiss inline menu if open
+                    if menuVerse != nil { menuVerse = nil }
+                }
             }
             .scrollPosition(id: $topVisibleVerseID, anchor: .top)
             .gesture(
@@ -278,6 +315,8 @@ struct BibleReaderForJournal: View {
                 topVisibleVerseID = rowID(for: 1)
             }
             highlightedVerse = nil
+            menuVerse = nil
+            selectedVerse = nil
         }
     }
 
@@ -292,6 +331,8 @@ struct BibleReaderForJournal: View {
                     withAnimation { highlightedVerse = nil }
                 }
             }
+            menuVerse = nil
+            selectedVerse = nil
         }
     }
 }

@@ -67,6 +67,9 @@ struct ContentView: View {
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
     private var isLandscape: Bool { rootSize.width > rootSize.height && rootSize != .zero }
     private var baseFontSize: CGFloat { (isPad && isLandscape) ? 21 : 19 }
+
+    // Track previous tab to detect leaving Games
+    @State private var previousTab: Int = 0
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -186,14 +189,34 @@ struct ContentView: View {
                 .sink { _ in
                     checkAndMarkGoalIfMet()
                 }
+
+            // Initialize previousTab at launch
+            previousTab = selectedTab
         }
-        .onChange(of: selectedTab) { _, newValue in
+        .onChange(of: selectedTab) { oldValue, newValue in
+            // When leaving Games tab (3), persist latest session accuracy baseline for the Home games card caret
+            if previousTab == 3 && newValue != 3 {
+                let today = GameStats.shared.todayStats()
+                // Reuse the existing baseline key the GamesCard reads
+                UserDefaults.standard.set(today.pct, forKey: "gamesLastWeekAccuracyPct")
+                // Notify listeners that game stats context changed so Home card can animate if visible
+                NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+            }
+
+            // NEW: When entering Games tab, capture session baseline of all‑time Gamer Score
+            if newValue == 3 {
+                let baselinePct = GameStats.shared.breakdownSnapshot().percentage
+                UserDefaults.standard.set(baselinePct, forKey: "gamesSessionBaselinePct")
+            }
+
             if newValue == 0 {
                 Task { @MainActor in
                     await Task.yield()
                     ensureSavedFocusLiveActivityIfNeeded()
                 }
             }
+            // Update previousTab for next transition detection
+            previousTab = newValue
         }
         .background(
             GeometryReader { proxy in

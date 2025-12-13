@@ -87,7 +87,7 @@ final class GameStats: ObservableObject {
         let o = bookorder
         let w = whoami // NEW
         let entries: [GameBreakdown.Entry] = [
-            .init(name: "Quiz", correct: q.correct, answered: q.answered, bestStreak: q.bestStreak),
+            .init(name: "Bible Quiz", correct: q.correct, answered: q.answered, bestStreak: q.bestStreak),
             .init(name: "Hangman", correct: h.correct, answered: h.answered, bestStreak: h.bestStreak),
             .init(name: "Verse Match", correct: r.correct, answered: r.answered, bestStreak: r.bestStreak),
             .init(name: "Beat the Clock", correct: b.correct, answered: b.answered, bestStreak: b.bestStreak),
@@ -350,7 +350,7 @@ final class GameStats: ObservableObject {
 
     private static func gameDisplayName(for id: GameID) -> String {
         switch id {
-        case .quiz: return "Quiz"
+        case .quiz: return "Bible Quiz"
         case .hangman: return "Hangman"
         case .beatclock: return "Beat the Clock"
         case .refmatch: return "Verse Match"
@@ -374,4 +374,3 @@ final class GameStats: ObservableObject {
         UserDefaults.standard.string(forKey: "gamesLastPlayedGameName")
     }
 }
-
