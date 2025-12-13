@@ -24,12 +24,22 @@ struct GamesCard: View {
     private let lastWeekPctKey = "gamesLastWeekAccuracyPct" // optional baseline if you store it elsewhere
     // NEW: per-session baseline of all‑time Gamer Score captured on entering Games tab
     private let sessionBaselineKey = "gamesSessionBaselinePct"
+    // Stored in GameStats.recordRound
+    private let lastPlayedGameNameKey = "gamesLastPlayedGameName"
 
-    private func colorForPercent(_ pct: Double) -> Color {
-        if pct < 60 { return .red }
-        else if pct < 75 { return .orange }
-        else if pct < 90 { return .purple }
-        else { return .green }
+    // If overall stats have been cleared (no answers at all), wipe any persisted
+    // insight baselines so the Home card shows a clean state.
+    private func clearInsightStateIfStatsCleared() {
+        let breakdown = GameStats.shared.breakdownSnapshot()
+        let isCleared = (breakdown.totalAnswered == 0 && breakdown.totalCorrect == 0)
+        guard isCleared else { return }
+        let defaults = UserDefaults.standard
+        defaults.removeObject(forKey: lastPlayedKey)
+        defaults.removeObject(forKey: lastPlayedGameNameKey)
+        defaults.removeObject(forKey: lastWeekPctKey)
+        defaults.removeObject(forKey: sessionBaselineKey)
+        // Reset local rotating insight state
+        insightIndex = 0
     }
 
     private func tinyChevron(for delta: Int) -> (name: String, color: Color, a11y: String) {
@@ -96,7 +106,7 @@ struct GamesCard: View {
         let totalAnswered = breakdown.totalAnswered
         let totalCorrect = breakdown.totalCorrect
         let gamerPct = breakdown.percentage
-        let gamerColor = colorForPercent(gamerPct)
+        let gamerColor = Color.gamerScoreColor(for: gamerPct)
         let isEmpty = (totalAnswered == 0)
 
         // Optional: last played text
@@ -322,6 +332,7 @@ struct GamesCard: View {
         .contentShape(Rectangle())
         .onTapGesture(perform: onOpenGames)
         .onAppear {
+            clearInsightStateIfStatsCleared()
             startInsightTimer()
         }
         .onDisappear {
@@ -329,8 +340,12 @@ struct GamesCard: View {
         }
         // Tie identity to stats.version and local version to force refreshes without non-view statements
         .id(stats.version &+ version)
+        .onChange(of: stats.version) { _ in
+            clearInsightStateIfStatsCleared()
+        }
         .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
             version &+= 1
+            clearInsightStateIfStatsCleared()
         }
     }
 }

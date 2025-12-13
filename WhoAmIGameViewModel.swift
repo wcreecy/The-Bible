@@ -34,6 +34,9 @@ final class WhoAmIGameViewModel: ObservableObject {
     struct Entry: Hashable {
         let name: String
         let description: String
+        let firstReference: String?
+        // NEW: full comma-separated references line (preferred for Who Am I reference sheet)
+        let referencesLine: String?
     }
 
     // Start screen state
@@ -86,7 +89,14 @@ final class WhoAmIGameViewModel: ObservableObject {
                     let d = n.description?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                     let nm = n.name.trimmingCharacters(in: .whitespacesAndNewlines)
                     guard !nm.isEmpty, !d.isEmpty else { return nil }
-                    return Entry(name: nm, description: d)
+                    let firstRef = n.firstReference?.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let fullRefs = n.referencesLine?.trimmingCharacters(in: .whitespacesAndNewlines)
+                    return Entry(
+                        name: nm,
+                        description: d,
+                        firstReference: (firstRef?.isEmpty == true ? nil : firstRef),
+                        referencesLine: (fullRefs?.isEmpty == true ? nil : fullRefs)
+                    )
                 }
             }
         }
@@ -186,6 +196,22 @@ final class WhoAmIGameViewModel: ObservableObject {
         )
         roundOver = true
         showReveal = true
+    }
+
+    // MARK: - References lookup for sheet
+
+    // Prefer the full comma-separated references line when available; fall back to firstReference.
+    func referenceString(for choice: String) -> String? {
+        switch mode {
+        case .names:
+            // choice is a description
+            guard let entry = entries.first(where: { $0.description == choice }) else { return nil }
+            return entry.referencesLine ?? entry.firstReference
+        case .reverse:
+            // choice is a name
+            guard let entry = entries.first(where: { $0.name == choice }) else { return nil }
+            return entry.referencesLine ?? entry.firstReference
+        }
     }
 
     // MARK: - Choice builders (global random wrong answers)

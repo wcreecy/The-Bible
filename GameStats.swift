@@ -33,6 +33,9 @@ final class GameStats: ObservableObject {
     }
 
     private init() {
+        // One-time: wipe legacy unsuffixed keys to avoid double-counting with suffixed data.
+        migrateLegacyGameKeysIfNeeded()
+
         // Listen for iCloud KVS merges of game counters
         observer = NotificationCenter.default.addObserver(
             forName: .gameStatsExternallyUpdated,
@@ -45,6 +48,51 @@ final class GameStats: ObservableObject {
                 GameStats.shared.version &+= 1
             }
         }
+    }
+
+    // MARK: - One-time migration (wipe legacy unsuffixed keys)
+
+    private static let legacyWipeFlagKey = "didWipeLegacyUnsuffixedGameKeys_v1"
+
+    private func migrateLegacyGameKeysIfNeeded() {
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: Self.legacyWipeFlagKey) else { return }
+
+        // Legacy unsuffixed keys to remove (Book Order intentionally retained as unsuffixed)
+        let legacyKeys: [String] = [
+            // Quiz (old unsuffixed)
+            "quizAllTimeCorrect",
+            "quizAllTimeAnswered",
+            "quizAllTimeBestStreak",
+
+            // Hangman (old unsuffixed)
+            "hangmanAllTimeCorrect",
+            "hangmanAllTimeAnswered",
+            "hangmanAllTimeBestStreak",
+
+            // Beat the Clock (old unsuffixed)
+            "beatclockAllTimeCorrect",
+            "beatclockAllTimeAnswered",
+            "beatclockAllTimeBestStreak",
+
+            // Verse Match (old unsuffixed)
+            "refmatchAllTimeCorrect",
+            "refmatchAllTimeAnswered",
+            "refmatchAllTimeBestStreak"
+
+            // Who am I? shipped only suffixed keys — nothing to wipe here.
+            // Book Order is intentionally unsuffixed — do not wipe.
+        ]
+
+        for key in legacyKeys {
+            defaults.removeObject(forKey: key)
+        }
+
+        // Mark migration complete
+        defaults.set(true, forKey: Self.legacyWipeFlagKey)
+
+        // Nudge listeners that totals may have changed due to cleanup
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
     // MARK: - Public read API
@@ -236,21 +284,29 @@ final class GameStats: ObservableObject {
         UserDefaults.standard.integer(forKey: key)
     }
 
-    // Aggregate across both suffixed parts and legacy key
+    // Prefer suffixed keys; only use legacy if all suffixed are zero.
     private func sumAcross(prefix: String, parts: [String], legacyKey: String?) -> Int {
-        let sumParts = parts.reduce(0) { acc, suffix in
-            acc + readInt("\(prefix)\(suffix)")
+        let partValues = parts.map { readInt("\(prefix)\($0)") }
+        let sumParts = partValues.reduce(0) { $0 + max(0, $1) }
+        let hasAnySuffixed = partValues.contains { $0 > 0 }
+        if hasAnySuffixed {
+            return max(0, sumParts)
+        } else {
+            let legacy = legacyKey.map { readInt($0) } ?? 0
+            return max(0, sumParts + legacy)
         }
-        let legacy = legacyKey.map { readInt($0) } ?? 0
-        return max(0, sumParts + legacy)
     }
 
     private func maxAcross(prefix: String, parts: [String], legacyKey: String?) -> Int {
-        var values: [Int] = parts.map { readInt("\(prefix)\($0)") }
-        if let legacy = legacyKey {
-            values.append(readInt(legacy))
+        let partValues = parts.map { readInt("\(prefix)\($0)") }
+        let hasAnySuffixed = partValues.contains { $0 > 0 }
+        let bestParts = partValues.max() ?? 0
+        if hasAnySuffixed {
+            return max(0, bestParts)
+        } else {
+            let legacy = legacyKey.map { readInt($0) } ?? 0
+            return max(0, max(bestParts, legacy))
         }
-        return max(0, values.max() ?? 0)
     }
 
     private struct GameStat {
@@ -259,7 +315,7 @@ final class GameStats: ObservableObject {
         let bestStreak: Int?
     }
 
-    // Updated: aggregate suffixed + legacy for Quiz
+    // Updated: aggregate suffixed + conditional legacy for Quiz
     private var quiz: GameStat {
         let c = sumAcross(prefix: "quizAllTimeCorrect", parts: ["_easy","_normal","_hard"], legacyKey: "quizAllTimeCorrect")
         let a = sumAcross(prefix: "quizAllTimeAnswered", parts: ["_easy","_normal","_hard"], legacyKey: "quizAllTimeAnswered")
@@ -281,7 +337,7 @@ final class GameStats: ObservableObject {
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
-    // Updated: aggregate suffixed + legacy for Beat the Clock
+    // Updated: aggregate suffixed + conditional legacy for Beat the Clock
     private var beatclock: GameStat {
         let c = sumAcross(prefix: "beatclockAllTimeCorrect", parts: ["_easy","_medium","_hard"], legacyKey: "beatclockAllTimeCorrect")
         let a = sumAcross(prefix: "beatclockAllTimeAnswered", parts: ["_easy","_medium","_hard"], legacyKey: "beatclockAllTimeAnswered")
@@ -296,7 +352,7 @@ final class GameStats: ObservableObject {
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
-    // NEW: aggregate for Who am I? (easy/normal/hard)
+    // NEW: aggregate for Who am I? (easy/normal/hard) — keep consistent helper
     private var whoami: GameStat {
         let c = sumAcross(prefix: "whoamiAllTimeCorrect", parts: ["_easy","_normal","_hard"], legacyKey: "whoamiAllTimeCorrect")
         let a = sumAcross(prefix: "whoamiAllTimeAnswered", parts: ["_easy","_normal","_hard"], legacyKey: "whoamiAllTimeAnswered")

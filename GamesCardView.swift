@@ -18,13 +18,6 @@ struct GamesCardView: View {
     }
     @State private var sort: Sort = .avg
 
-    private func colorForPercent(_ pct: Double) -> Color {
-        if pct < 60 { return .red }
-        else if pct < 75 { return .orange }
-        else if pct < 90 { return .purple }
-        else { return .green }
-    }
-
     private func uniqueMaxIndex<T: Comparable & Equatable>(_ values: [T]) -> Int? {
         guard let maxVal = values.max() else { return nil }
         let indices = values.enumerated().filter { $0.element == maxVal }.map { $0.offset }
@@ -85,7 +78,7 @@ struct GamesCardView: View {
             let totalAnswered = breakdown.totalAnswered
             let totalCorrect = breakdown.totalCorrect
             let gamerPct = breakdown.percentage
-            let gamerColor = colorForPercent(gamerPct)
+            let gamerColor = Color.gamerScoreColor(for: gamerPct)
             let isEmpty = (totalAnswered == 0)
             let entries = breakdown.entries
 
@@ -107,7 +100,7 @@ struct GamesCardView: View {
             let worstStreakIndex = uniqueMinIndex(streaks.map { $0 == 0 ? Int.max : $0 })
 
             VStack(alignment: .leading, spacing: 12) {
-                // HEADER: Progress ring + tier chip (subtitle removed)
+                // HEADER: Progress ring (tier chip removed)
                 HStack(spacing: 12) {
                     if isEmpty {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -141,27 +134,7 @@ struct GamesCardView: View {
                         HStack(spacing: 8) {
                             Text("Gamer Score")
                                 .font(.headline)
-                            if !isEmpty {
-                                let t = tier(for: gamerPct)
-                                HStack(spacing: 6) {
-                                    Image(systemName: t.symbol)
-                                    Text(t.name)
-                                        .fontWeight(.semibold)
-                                }
-                                .font(.caption)
-                                .padding(.vertical, 4)
-                                .padding(.horizontal, 8)
-                                .background(
-                                    Capsule(style: .continuous)
-                                        .fill(t.color.opacity(0.18))
-                                )
-                                .overlay(
-                                    Capsule(style: .continuous)
-                                        .stroke(t.color.opacity(0.35), lineWidth: 1)
-                                )
-                                .accessibilityElement(children: .ignore)
-                                .accessibilityLabel("Tier \(t.name)")
-                            }
+                            // Medal/tier chip removed
                         }
                         // Removed the "X correct out of Y total" subtitle
                     }

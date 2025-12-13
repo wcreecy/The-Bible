@@ -6,17 +6,21 @@ struct BibleName: Decodable, Identifiable, Hashable {
     let firstReference: String?
     // NEW: description parsed from names.json plain-text blocks (lines 4+)
     let description: String?
+    // NEW: full comma-separated references line from names.json (line 2)
+    let referencesLine: String?
 
     enum CodingKeys: String, CodingKey {
         case name
         case firstReference = "first_reference"
         case description
+        case referencesLine = "references" // optional if ever present in a JSON source
     }
 
-    init(name: String, firstReference: String?, description: String? = nil) {
+    init(name: String, firstReference: String?, description: String? = nil, referencesLine: String? = nil) {
         self.name = name
         self.firstReference = firstReference
         self.description = description
+        self.referencesLine = referencesLine
     }
 }
 
@@ -229,12 +233,21 @@ enum GameDataLoaders {
                 guard nonEmpty.count >= 3 else { continue }
 
                 let name = nonEmpty[0]
-                let referencesLine = nonEmpty[1]
+                var referencesLine = nonEmpty[1]
 
                 // Only include non-empty names and skip obvious header lines
                 let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
                 let lowerName = trimmedName.lowercased()
                 guard !trimmedName.isEmpty, !headerBlacklist.contains(lowerName) else { continue }
+
+                // Normalize non-breaking / narrow spaces to regular spaces for the full references string
+                for ch in ["\u{00A0}", "\u{202F}", "\u{2007}"] {
+                    referencesLine = referencesLine.replacingOccurrences(of: ch, with: " ")
+                }
+                let fullRefs: String? = {
+                    let t = referencesLine.trimmingCharacters(in: .whitespacesAndNewlines)
+                    return t.isEmpty ? nil : t
+                }()
 
                 // Parse first reference from comma-separated references (if any)
                 let firstRef: String? = {
@@ -262,7 +275,7 @@ enum GameDataLoaders {
                     return t.isEmpty ? nil : t
                 }()
 
-                out.append(BibleName(name: trimmedName, firstReference: firstRef, description: desc))
+                out.append(BibleName(name: trimmedName, firstReference: firstRef, description: desc, referencesLine: fullRefs))
             }
 
             if out.isEmpty {

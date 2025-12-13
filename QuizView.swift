@@ -359,16 +359,19 @@ struct QuizView: View {
         }
         .navigationTitle("Bible Quiz")
         .toolbar {
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                Button("Previous") { showPrevious() }
-                    .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
-                    .controlSize(.regular)
-                    .disabled(!isPreviousEnabled)
+            // Only show navigation buttons once the round has started
+            if started {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button("Previous") { showPrevious() }
+                        .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
+                        .controlSize(.regular)
+                        .disabled(!isPreviousEnabled)
 
-                Button("Next") { showNext() }
-                    .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
-                    .controlSize(.regular)
-                    .disabled(!isNextEnabled)
+                    Button("Next") { showNext() }
+                        .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
+                        .controlSize(.regular)
+                        .disabled(!isNextEnabled)
+                }
             }
         }
         .onAppear {

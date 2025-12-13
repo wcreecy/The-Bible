@@ -19,7 +19,7 @@ struct StatsView: View {
     }
 
     // Filter for Book Progress grid
-    private enum BookFilter: String, CaseIterable, Identifiable {
+    enum BookFilter: String, CaseIterable, Identifiable {
         case all = "All"
         case ot = "OT"
         case nt = "NT"
@@ -190,51 +190,20 @@ struct StatsView: View {
     }
 
     private var activeBucketCount: Int {
-        totalsDaily.reduce(0) { $0 + ($1.seconds > 0 ? 1 : 0) }
+        let count = totalsDaily.reduce(0) { partial, element in
+            partial + (element.seconds > 0 ? 1 : 0)
+        }
+        return count
     }
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
-                glanceRow
-
-                // Smart Insights
-                smartInsightsCard
-
-                // This Month section
-                thisMonthCard
-
-                // Average Session Length (last 20 sessions)
-                averageSessionCard
-
-                // NEW: Consistency — last 30 days
-                consistencyCard
-
-                // Revamped: Bible Reading Progress
-                bookReadingProgressCard
-
-                // Existing: Total Bible Reading Time + Per-book table (collapsible)
-                totalsSection
-
-                // Moved: OT vs NT chart now appears directly under the Total Bible Reading Time card
-                // so it shares the same scope controls.
-                otNtCard
-
-                // Genre Distribution stays below OT vs NT
-                genreSection
-
-                // NEW: Games card at the bottom (shared with Home)
-                GamesCardView()
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
+            contentVStack
         }
         .navigationTitle("Stats")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            // Start KVS coordinator (safe to call multiple times)
             iCloudSyncCoordinator.shared.start()
-
             refreshAll()
             if cancellable == nil {
                 cancellable = ReadingTimeTracker.shared.$lastTotalsVersion
@@ -243,16 +212,11 @@ struct StatsView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
-            // Refresh when stats changed on another device
             refreshAll()
         }
         .sheet(item: Binding(
-            get: {
-                selectedBookForChapters.map { ChapterDetailKey(bookName: $0) }
-            },
-            set: { newValue in
-                selectedBookForChapters = newValue?.bookName
-            }
+            get: { selectedBookForChapters.map { ChapterDetailKey(bookName: $0) } },
+            set: { selectedBookForChapters = $0?.bookName }
         )) { key in
             NavigationStack {
                 BookChaptersDetailView(bookName: key.bookName)
@@ -263,7 +227,6 @@ struct StatsView: View {
                             Button("Close") { selectedBookForChapters = nil }
                         }
                         ToolbarItem(placement: .confirmationAction) {
-                            // Quick jump: Next unread in this book (if any)
                             if let next = nextUnreadChapter(in: key.bookName) {
                                 Button("Open Next Unread") {
                                     openReader(bookName: key.bookName, chapter: next, verse: 1)
@@ -300,21 +263,17 @@ struct StatsView: View {
                     }
                 }
                 .onAppear {
-                    // Use scoped per-book totals for the selected timeframe
                     let totalsMap = scopedPerBookTotals
                     genreDetailRows = rowsForGenre(genre, totals: totalsMap)
                 }
             }
         }
-        // Close the chapters sheet when switching to the Bible tab
         .onReceive(NotificationCenter.default.publisher(for: Notification.Name("switchToTab"))) { _ in
             selectedBookForChapters = nil
         }
-        // Refresh stats when chapter progress changes
         .onReceive(NotificationCenter.default.publisher(for: .chapterProgressChanged)) { _ in
             refreshAll()
         }
-        // Keep OT/NT and Genre in sync with the selected scope
         .onChange(of: timeScope) {
             recomputeOTNTFromScope()
             recomputeGenresFromScope()
@@ -322,265 +281,142 @@ struct StatsView: View {
         }
     }
 
+    private var contentVStack: some View {
+        VStack(spacing: 16) {
+            glanceRow
+
+            InsightsCardView(
+                tiles: buildInsightTiles(),
+                onRefresh: { computeInsights() }
+            )
+
+            ConsistencyCardView(last30Daily: last30Daily)
+
+            ProgressCardView(
+                booksCompleted: booksCompleted,
+                totalBooks: totalBooks,
+                visitedCount: visitedCount,
+                totalChapters: totalChapters,
+                completedVerses: completedVerses,
+                totalVerses: totalVerses,
+                orderedBookNames: orderedAllBooks,
+                bookProgress: bookProgress,
+                onContinue: {
+                    if let last = lastReadEntry {
+                        openReader(bookName: last.bookName, chapter: last.chapterNumber, verse: 1)
+                    }
+                },
+                onOpenNextUnread: {
+                    if let next = nextUnreadGlobal() {
+                        openReader(bookName: next.book, chapter: next.chapter, verse: 1)
+                    }
+                },
+                hasLastRead: lastReadEntry != nil,
+                isExpanded: $showBookProgressDetails,
+                filter: $bookFilter,
+                search: $bookSearch,
+                selectedBookForChapters: $selectedBookForChapters
+            )
+
+            TotalsCardView(
+                timeScope: Binding(
+                    get: {
+                        switch timeScope {
+                        case .allTime: return .allTime
+                        case .thisMonth: return .thisMonth
+                        case .last7: return .last7
+                        }
+                    },
+                    set: { new in
+                        switch new {
+                        case .allTime: timeScope = .allTime
+                        case .thisMonth: timeScope = .thisMonth
+                        case .last7: timeScope = .last7
+                        }
+                    }
+                ),
+                totalSeconds: scopedTotalSeconds,
+                series: totalsDaily,
+                chartSubtitle: totalsChartSubtitle,
+                currentBarUnit: currentBarUnit,
+                showValueLabels: shouldShowBarValueLabels,
+                xAxis: { AnyAxisContent(chartXAxisMarks) },
+                activeBucketLabel: activeBucketLabel,
+                activeBucketCount: activeBucketCount,
+                avgPerActiveBucketLabel: avgPerActiveBucketLabel,
+                avgSecondsPerActiveBucket: avgSecondsPerActiveBucketInScope,
+                topBook: topBookInScope,
+                isExpanded: $showTotalsSection,
+                sortMode: Binding(
+                    get: {
+                        switch sortMode {
+                        case .canonical: return .canonical
+                        case .mostRead: return .mostRead
+                        }
+                    },
+                    set: { new in
+                        switch new {
+                        case .canonical: sortMode = .canonical
+                        case .mostRead: sortMode = .mostRead
+                        }
+                    }
+                ),
+                rows: scopedRows,
+                formatSeconds: { BibleStatsStore.shared.format($0) }
+            )
+
+            OTNTCardView(
+                timeScope: Binding(
+                    get: { mapScopeToOTNT(timeScope) },
+                    set: { new in timeScope = mapScopeFromOTNT(new) }
+                ),
+                otSeconds: otSeconds,
+                ntSeconds: ntSeconds,
+                formatSeconds: { BibleStatsStore.shared.format($0) }
+            )
+
+            GenreDistributionCardView(
+                timeScope: Binding(
+                    get: { mapScopeToGenre(timeScope) },
+                    set: { new in timeScope = mapScopeFromGenre(new) }
+                ),
+                perGenreTotals: perGenreTotals,
+                selectedGenre: $selectedGenre,
+                onSelectGenre: { g in
+                    genreDetailRows = rowsForGenre(g, totals: scopedPerBookTotals)
+                },
+                genreColor: { genreColor($0) },
+                formatSeconds: { BibleStatsStore.shared.format($0) }
+            )
+
+            AverageSessionCardView(
+                sessionsSeries: sessionsLast7,
+                avgSessionSeconds: avgSessionSecondsLast7,
+                formatSeconds: { BibleStatsStore.shared.format($0) }
+            )
+
+            GamesCardView()
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 8)
+    }
+
     // MARK: - Smart Insights
 
-    private var smartInsightsCard: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text("Smart Insights")
-                        .font(.headline)
-                    Spacer()
-                    Button {
-                        computeInsights()
-                    } label: {
-                        Label("Refresh insights", systemImage: "arrow.clockwise")
-                            .labelStyle(.iconOnly)
-                            .font(.subheadline)
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.secondary)
-                }
-
-                // Build tile models from available insights (short, glanceable)
-                let tiles: [InsightChipModel] = [
-                    insightBestDayText.map { InsightChipModel(icon: "calendar.badge.clock", title: "Best Day", detail: $0, tint: .blue) },
-                    insightNewStreakText.map { InsightChipModel(icon: "flame.fill", title: "Streak", detail: $0, tint: .orange) },
-                    insightSevenDayAvgVsMonthText.map { InsightChipModel(icon: "chart.line.uptrend.xyaxis", title: "7‑day Avg", detail: $0, tint: .green) },
-                    insightGoalHitsLast7Text.map { InsightChipModel(icon: "target", title: $0.contains("7") ? "Goal Hits" : "Goal", detail: $0, tint: .purple) },
-                    insightLongestSessionText.map { InsightChipModel(icon: "timer", title: "Longest Session", detail: $0, tint: .teal) },
-                    insightTopBookThisMonthText.map { InsightChipModel(icon: "book.fill", title: "Top Book", detail: $0, tint: .pink) }
-                ].compactMap { $0 }
-
-                if tiles.isEmpty {
-                    ContentUnavailableView("No insights yet", systemImage: "sparkles")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                } else {
-                    // Two-column adaptive grid with glanceable tiles
-                    let columns = [GridItem(.adaptive(minimum: 260), spacing: 10)]
-                    LazyVGrid(columns: columns, alignment: .leading, spacing: 10) {
-                        ForEach(tiles) { model in
-                            InsightTile(model: model)
-                        }
-                    }
-                    .transition(.opacity)
-                }
-            }
-        }
+    private func buildInsightTiles() -> [InsightChipModel] {
+        [
+            insightBestDayText.map { InsightChipModel(icon: "calendar.badge.clock", title: "Best Day", detail: $0, tint: .blue) },
+            insightNewStreakText.map { InsightChipModel(icon: "flame.fill", title: "Streak", detail: $0, tint: .orange) },
+            insightSevenDayAvgVsMonthText.map { InsightChipModel(icon: "chart.line.uptrend.xyaxis", title: "7‑day Avg", detail: $0, tint: .green) },
+            insightGoalHitsLast7Text.map { InsightChipModel(icon: "target", title: $0.contains("7") ? "Goal Hits" : "Goal", detail: $0, tint: .purple) },
+            insightLongestSessionText.map { InsightChipModel(icon: "timer", title: "Longest Session", detail: $0, tint: .teal) },
+            insightTopBookThisMonthText.map { InsightChipModel(icon: "book.fill", title: "Top Book", detail: $0, tint: .pink) }
+        ].compactMap { $0 }
     }
 
-    // MARK: - Cards
-
-    private var thisMonthCard: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text("Reading Time This Month")
-                        .font(.headline)
-                    Spacer()
-                    Text(BibleStatsStore.shared.format(monthTotalSeconds))
-                        .font(.headline)
-                        .monospacedDigit()
-                        .foregroundStyle(.primary)
-                        .accessibilityHidden(true)
-                        .overlay(
-                            Color.clear
-                                .accessibilityElement(children: .ignore)
-                                .accessibilityLabel("This month total \(BibleStatsStore.shared.format(monthTotalSeconds))")
-                        )
-                }
-
-                HStack(spacing: 12) {
-                    pill("Chapters completed", value: "\(formatInt(monthChaptersCompleted))")
-                    // Show only the single top book by time this month
-                    let topSummary: String = monthTop3Books.first.map { $0.book } ?? "—"
-                    pill("Top book", value: topSummary)
-                }
-
-                if !last7Daily.isEmpty {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Reading Time (last 7 days)")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Chart {
-                            ForEach(last7Daily, id: \.date) { item in
-                                let minutes = Int(round(Double(item.seconds) / 60.0))
-                                BarMark(
-                                    x: .value("Date", item.date, unit: .day),
-                                    y: .value("Minutes", minutes)
-                                )
-                                .foregroundStyle(Color.accentColor)
-                                // Label above each bar for last 7 days chart too (nice consistency)
-                                .annotation(position: .top, alignment: .center) {
-                                    if minutes > 0 {
-                                        Text("\(minutes)")
-                                            .font(.caption2.weight(.semibold))
-                                            .foregroundStyle(.secondary)
-                                            .monospacedDigit()
-                                    }
-                                }
-                            }
-                        }
-                        .chartYAxisLabel("Minutes")
-                        .chartXAxis {
-                            AxisMarks(values: .stride(by: .day, count: 1)) { _ in
-                                AxisGridLine()
-                                AxisTick()
-                                AxisValueLabel(format: .dateTime.day().month(.abbreviated))
-                            }
-                        }
-                        .frame(height: 160)
-                    }
-                }
-            }
-        }
-    }
-
-    private var averageSessionCard: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text("Average Session Length")
-                        .font(.headline)
-                    Spacer()
-                    Text("Avg (last 7 days): \(BibleStatsStore.shared.format(avgSessionSecondsLast7))")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
-                }
-
-                if !sessionsLast7.isEmpty {
-                    Chart {
-                        ForEach(sessionsLast7, id: \.index) { point in
-                            LineMark(
-                                x: .value("Session", point.index),
-                                y: .value("Minutes", point.minutes)
-                            )
-                            .foregroundStyle(.teal)
-                            PointMark(
-                                x: .value("Session", point.index),
-                                y: .value("Minutes", point.minutes)
-                            )
-                            .foregroundStyle(.teal)
-                        }
-                    }
-                    .chartYAxisLabel("Minutes")
-                    .chartXAxisLabel("Sessions")
-                    .frame(height: 180)
-                } else {
-                    ContentUnavailableView("No recent sessions", systemImage: "chart.line.uptrend.xyaxis")
-                }
-            }
-        }
-    }
-
-    // NEW: Consistency — last 30 days
-    private var consistencyCard: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Consistency — last 30 days")
-                    .font(.headline)
-
-                // Row of 30 small squares, horizontally scrollable
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(last30Daily, id: \.date) { item in
-                            consistencySquare(for: item.seconds)
-                        }
-                    }
-                    .padding(.vertical, 4)
-                }
-
-                // Legend
-                HStack(spacing: 16) {
-                    legendItem(color: consistencyColor(for: 0), label: "0")
-                    legendItem(color: consistencyColor(for: 5*60), label: "5m")
-                    legendItem(color: consistencyColor(for: 15*60), label: "15m")
-                    legendItem(color: consistencyColor(for: 30*60), label: "30m")
-                    legendItem(color: consistencyColor(for: 60*60), label: "1h+")
-                }
-            }
-        }
-    }
-
-    private func consistencySquare(for seconds: Int) -> some View {
-        RoundedRectangle(cornerRadius: 6, style: .continuous)
-            .fill(consistencyColor(for: seconds))
-            .frame(width: 20, height: 20)
-            .overlay(
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .stroke(Color.black.opacity(0.08), lineWidth: 1)
-            )
-            .accessibilityHidden(true)
-    }
-
-    private func legendItem(color: Color, label: String) -> some View {
-        HStack(spacing: 6) {
-            RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .fill(color)
-                .frame(width: 18, height: 18)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .stroke(Color.black.opacity(0.08), lineWidth: 1)
-                )
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-    }
-
-    // Threshold-based color mapping (blue, teal, orange, red)
-    private func consistencyColor(for seconds: Int) -> Color {
-        if seconds <= 0 { return Color.gray.opacity(0.28) } // 0
-        if seconds >= 60*60 { return .red }                 // 1h+
-        if seconds >= 30*60 { return .orange }              // 30m–<1h
-        if seconds >= 15*60 { return .teal }                // 15m–<30m
-        return .blue                                        // 0–<15m (non-zero)
-    }
-
-    private func pill(_ title: String, value: String) -> some View {
-        HStack(spacing: 6) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Spacer()
-            Text(value)
-                .font(.footnote.weight(.semibold))
-                .lineLimit(1)
-        }
-        .padding(.vertical, 6)
-        .padding(.horizontal, 10)
-        .background(
-            Capsule(style: .continuous)
-                .fill(Color(.secondarySystemBackground))
-        )
-        .overlay(
-            Capsule(style: .continuous)
-                .stroke(Color.black.opacity(0.08), lineWidth: 1)
-        )
-    }
-
-    // New helper to fix missing symbol
-    private func milestonePill(text: String) -> some View {
-        HStack(spacing: 6) {
-            Text(text)
-                .font(.footnote.weight(.semibold))
-                .lineLimit(1)
-        }
-        .padding(.vertical, 6)
-        .padding(.horizontal, 10)
-        .background(
-            Capsule(style: .continuous)
-                .fill(Color(.secondarySystemBackground))
-        )
-        .overlay(
-            Capsule(style: .continuous)
-                .stroke(Color.black.opacity(0.08), lineWidth: 1)
-        )
-    }
+    // MARK: - Cards and helpers preserved (glance row etc.)
 
     private func weekdayLabel(_ weekday: Int) -> String {
-        // 1=Sunday ... 7=Saturday
         let symbols = Calendar.current.shortWeekdaySymbols
         let idx = max(1, min(7, weekday)) - 1
         return symbols[idx]
@@ -594,8 +430,6 @@ struct StatsView: View {
         let date = Calendar.current.date(from: comps) ?? Date()
         return formatter.string(from: date)
     }
-
-    // MARK: - Top glance row (scrollable mini‑pills matching Home)
 
     private var glanceRow: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -675,516 +509,17 @@ struct StatsView: View {
         )
     }
 
-    private var otNtCard: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("OT vs NT — \(timeScope.rawValue)")
-                        .font(.headline)
-                    Spacer()
-                }
+    // MARK: - Whether to show numeric labels above bars
 
-                // Scope picker for this card (shares the same timeScope state)
-                Picker("Scope", selection: $timeScope) {
-                    ForEach(TimeScope.allCases) { scope in
-                        Text(scope.rawValue).tag(scope)
-                    }
-                }
-                .pickerStyle(.segmented)
-
-                HStack(spacing: 8) {
-                    Text("OT")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                    otNtBar
-                    Text("NT")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
-                HStack {
-                    Text("OT \(BibleStatsStore.shared.format(otSeconds))")
-                        .font(.caption).foregroundStyle(.secondary)
-                    Spacer()
-                    Text("NT \(BibleStatsStore.shared.format(ntSeconds))")
-                        .font(.caption).foregroundStyle(.secondary)
-                }
-            }
-        }
-    }
-
-    private var otNtBar: some View {
-        let total = max(1, otSeconds + ntSeconds)
-        let otFrac = CGFloat(otSeconds) / CGFloat(total)
-        let ntFrac = CGFloat(ntSeconds) / CGFloat(total)
-        return GeometryReader { geo in
-            HStack(spacing: 0) {
-                Rectangle()
-                    .fill(Color.blue.opacity(0.6))
-                    .frame(width: geo.size.width * otFrac)
-                Rectangle()
-                    .fill(Color.green.opacity(0.6))
-                    .frame(width: geo.size.width * ntFrac)
-            }
-            .clipShape(RoundedRectangle(cornerRadius: 6))
-        }
-        .frame(height: 12)
-    }
-
-    private var bookReadingProgressCard: some View {
-        // Compute books completion percent for summary ring
-        let booksPercent: Int = {
-            let denom = max(1, totalBooks)
-            let pct = Int(round((Double(booksCompleted) / Double(denom)) * 100.0))
-            return max(0, min(100, pct))
-        }()
-        // Compute verses completion percent for summary ring
-        let versesPercent: Int = {
-            let denom = max(1, totalVerses)
-            let pct = Int(round((Double(completedVerses) / Double(denom)) * 100.0))
-            return max(0, min(100, pct))
-        }()
-
-        let nextUnread = nextUnreadGlobal()
-
-        return GroupBox {
-            VStack(alignment: .leading, spacing: 10) {
-                // Collapsed header: adaptive by size class
-                if hSizeClass == .compact {
-                    compactProgressHeader(
-                        booksPercent: booksPercent,
-                        chaptersPercent: bibleCompletionPercent,
-                        versesPercent: versesPercent
-                    )
-                } else {
-                    // Regular width (iPad): keep the existing header with inline counts and three labeled rings
-                    HStack(alignment: .center, spacing: 14) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Bible Reading Progress")
-                                .font(.headline)
-                            HStack(spacing: 8) {
-                                Text("\(formatInt(booksCompleted))/\(formatInt(totalBooks)) books")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .monospacedDigit()
-                                Text("• \(formatInt(visitedCount))/\(formatInt(totalChapters)) chapters")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .monospacedDigit()
-                                Text("• \(formatInt(completedVerses))/\(formatInt(totalVerses)) verses")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .monospacedDigit()
-                            }
-                        }
-                        Spacer()
-                        // Reordered and labeled rings: Books • Chapters • Verses
-                        HStack(spacing: 12) {
-                            VStack(spacing: 4) {
-                                Text("Books")
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                ProgressRing(
-                                    progress: Double(booksPercent) / 100.0,
-                                    lineWidth: 7,
-                                    size: 40,
-                                    tint: .green,
-                                    track: Color.primary.opacity(0.12),
-                                    label: {
-                                        Text("\(booksPercent)%")
-                                            .font(.caption2.weight(.semibold))
-                                            .monospacedDigit()
-                                    }
-                                )
-                                .accessibilityLabel(Text("Books \(booksPercent) percent complete"))
-                            }
-                            VStack(spacing: 4) {
-                                Text("Chapters")
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                ProgressRing(
-                                    progress: Double(bibleCompletionPercent) / 100.0,
-                                    lineWidth: 7,
-                                    size: 40,
-                                    tint: .blue,
-                                    track: Color.primary.opacity(0.12),
-                                    label: {
-                                        Text("\(bibleCompletionPercent)%")
-                                            .font(.caption2.weight(.semibold))
-                                            .monospacedDigit()
-                                    }
-                                )
-                                .accessibilityLabel(Text("Chapters \(bibleCompletionPercent) percent complete"))
-                            }
-                            VStack(spacing: 4) {
-                                Text("Verses")
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                ProgressRing(
-                                    progress: Double(versesPercent) / 100.0,
-                                    lineWidth: 7,
-                                    size: 40,
-                                    tint: .accentColor,
-                                    track: Color.primary.opacity(0.12),
-                                    label: {
-                                        Text("\(versesPercent)%")
-                                            .font(.caption2.weight(.semibold))
-                                            .monospacedDigit()
-                                    }
-                                )
-                                .accessibilityLabel(Text("Verses \(versesPercent) percent complete"))
-                            }
-                        }
-                    }
-                }
-
-                // Navigation actions: Continue Reading, Next Unread
-                HStack(spacing: 10) {
-                    Button {
-                        if let last = lastReadEntry {
-                            openReader(bookName: last.bookName, chapter: last.chapterNumber, verse: 1)
-                        }
-                    } label: {
-                        Label("Continue Reading", systemImage: "arrowtriangle.right.fill")
-                            .font(.footnote.weight(.semibold))
-                            .labelStyle(.titleAndIcon)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.accentColor)
-                    .disabled(lastReadEntry == nil)
-
-                Button {
-                        if let t = nextUnread {
-                            openReader(bookName: t.book, chapter: t.chapter, verse: 1)
-                        }
-                    } label: {
-                        Label("Next Unread", systemImage: "sparkles")
-                            .font(.footnote.weight(.semibold))
-                            .labelStyle(.titleAndIcon)
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(.blue)
-                    .disabled(nextUnread == nil)
-                }
-
-                // Expand/collapse
-                Button {
-                    withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                        toggleBookProgress()
-                    }
-                } label: {
-                    HStack {
-                        Text(showBookProgressDetails ? "Hide details" : "Show details")
-                            .font(.footnote.weight(.semibold))
-                        Spacer()
-                        Image(systemName: showBookProgressDetails ? "chevron.up" : "chevron.down")
-                            .font(.footnote.weight(.semibold))
-                    }
-                    .padding(.vertical, 6)
-                }
-                .buttonStyle(.plain)
-
-                if showBookProgressDetails {
-                    // Filter + Search
-                    VStack(alignment: .leading, spacing: 8) {
-                        Picker("Filter", selection: $bookFilter) {
-                            ForEach(BookFilter.allCases) { f in
-                                Text(f.rawValue).tag(f)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-
-                        HStack(spacing: 8) {
-                            Image(systemName: "magnifyingglass")
-                                .foregroundStyle(.secondary)
-                            TextField("Search books", text: $bookSearch)
-                                .textInputAutocapitalization(.words)
-                                .autocorrectionDisabled(true)
-                        }
-                        .padding(8)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .fill(Color(.secondarySystemBackground))
-                        )
-                    }
-
-                    // Book tiles grid
-                    LazyVGrid(columns: bookGridColumns, spacing: 10) {
-                        ForEach(filteredBookNames, id: \.self) { name in
-                            let prog = bookProgress[name] ?? (0, 1, 0.0)
-                            Button {
-                                selectedBookForChapters = name
-                            } label: {
-                                HStack(spacing: 10) {
-                                    ProgressRing(
-                                        progress: prog.fraction,
-                                        lineWidth: 6,
-                                        size: 34,
-                                        tint: .accentColor,
-                                        track: Color.primary.opacity(0.12),
-                                        label: {
-                                            Text("\(Int(round(prog.fraction * 100)))%")
-                                                .font(.caption2.weight(.semibold))
-                                                .monospacedDigit()
-                                        }
-                                    )
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(name)
-                                            .font(.subheadline)
-                                            .lineLimit(1)
-                                        Text("\(formatInt(prog.read))/\(formatInt(prog.total)) chapters")
-                                            .font(.caption2)
-                                            .foregroundStyle(.secondary)
-                                            .monospacedDigit()
-                                    }
-                                    Spacer(minLength: 0)
-                                }
-                                .padding(10)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                        .fill(Color(.secondarySystemBackground))
-                                )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                        .stroke(Color.black.opacity(0.08), lineWidth: 1)
-                                )
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel("\(name) \(prog.read) of \(prog.total) chapters")
-                        }
-                    }
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-                }
-            }
-        }
-    }
-
-    private var genreSection: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text("Genre Distribution — \(timeScope.rawValue)")
-                        .font(.headline)
-                    Spacer()
-                }
-
-                // Scope picker for this card (shares the same timeScope state)
-                Picker("Scope", selection: $timeScope) {
-                    ForEach(TimeScope.allCases) { scope in
-                        Text(scope.rawValue).tag(scope)
-                    }
-                }
-                .pickerStyle(.segmented)
-
-                let maxVal = max(1, perGenreTotals.map { $0.seconds }.max() ?? 1)
-                VStack(spacing: 8) {
-                    ForEach(perGenreTotals, id: \.genre) { item in
-                        Button {
-                            if let g = Genre(rawValue: item.genre) {
-                                selectedGenre = g
-                                // rows should reflect the same scoped timeframe
-                                genreDetailRows = rowsForGenre(g, totals: scopedPerBookTotals)
-                            }
-                        } label: {
-                            HStack(spacing: 8) {
-                                Text(item.genre)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .frame(width: 110, alignment: .leading)
-                                GeometryReader { geo in
-                                    let frac = CGFloat(item.seconds) / CGFloat(maxVal)
-                                    RoundedRectangle(cornerRadius: 6, style: .continuous)
-                                        .fill(genreColor(item.genre).opacity(0.7))
-                                        .frame(width: geo.size.width * frac, height: 10, alignment: .leading)
-                                }
-                                .frame(height: 10)
-                                Text(BibleStatsStore.shared.format(item.seconds))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .monospacedDigit()
-                                    .frame(width: 60, alignment: .trailing)
-                            }
-                            .frame(height: 16)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("\(item.genre) \(BibleStatsStore.shared.format(item.seconds))")
-                    }
-                }
-            }
-        }
-    }
-
-    private var totalsSection: some View {
-        ZStack {
-            GroupBox {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        // Make the scope explicit in the title for clarity
-                        Text("Total Bible Reading Time — \(timeScope.rawValue)")
-                            .font(.headline)
-                        Spacer()
-                        Text(BibleStatsStore.shared.format(scopedTotalSeconds))
-                            .font(.headline)
-                            .monospacedDigit()
-                            .foregroundStyle(.primary)
-                            .accessibilityHidden(true)
-                            .overlay(
-                                Color.clear
-                                    .accessibilityElement(children: .ignore)
-                                    .accessibilityLabel("Total \(BibleStatsStore.shared.format(scopedTotalSeconds))")
-                            )
-                    }
-
-                    // Scope picker (always visible; does not expand/collapse the card)
-                    Picker("Scope", selection: $timeScope) {
-                        ForEach(TimeScope.allCases) { scope in
-                            Text(scope.rawValue).tag(scope)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-
-                    // Quick insights — clean, uniform chips
-                    LazyVGrid(columns: chipGridColumns, spacing: 8) {
-                        metricChip(title: activeBucketLabel, value: "\(formatInt(activeBucketCount))")
-                        metricChip(title: avgPerActiveBucketLabel, value: BibleStatsStore.shared.format(avgSecondsPerActiveBucketInScope))
-                        metricChip(title: "Top book", value: topBookInScope)
-                    }
-
-                    // Daily/Weekly/Monthly/Yearly chart for the selected scope
-                    if !totalsDaily.isEmpty {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(totalsChartSubtitle)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            Chart {
-                                ForEach(totalsDaily, id: \.date) { item in
-                                    let minutes = Int(round(Double(item.seconds) / 60.0))
-                                    BarMark(
-                                        x: .value("Date", item.date, unit: currentBarUnit),
-                                        y: .value("Minutes", minutes)
-                                    )
-                                    // Make the "This Month" daily bars feel smaller/less cramped
-                                    .foregroundStyle(
-                                        (timeScope == .thisMonth ? Color.accentColor.opacity(0.75) : Color.accentColor.opacity(0.85))
-                                    )
-                                    .cornerRadius(3)
-                                    // Show value above each bar when daily bars are displayed.
-                                    .annotation(position: .top, alignment: .center) {
-                                        if minutes > 0, shouldShowBarValueLabels {
-                                            Text("\(minutes)")
-                                                .font(timeScope == .thisMonth ? .system(size: 7, weight: .semibold) : .caption2.weight(.semibold))
-                                                .foregroundStyle(.secondary)
-                                                .monospacedDigit()
-                                        }
-                                    }
-                                }
-                            }
-                            .chartYAxisLabel("Minutes")
-                            .chartXAxis { chartXAxisMarks }
-                            // Add subtle horizontal padding to give daily bars in "This Month" some breathing room
-                            .chartPlotStyle { area in
-                                area
-                                    .padding(.horizontal, timeScope == .thisMonth ? 6 : 0)
-                            }
-                            .frame(height: 160)
-                        }
-                    } else {
-                        ContentUnavailableView("No data in this period", systemImage: "chart.bar.xaxis")
-                    }
-
-                    // Make only this row the tap target to expand/collapse
-                    Button {
-                        withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                            toggleTotals()
-                        }
-                    } label: {
-                        HStack {
-                            Text(showTotalsSection ? "Hide details" : "Show details")
-                                .font(.footnote.weight(.semibold))
-                            Spacer()
-                            Image(systemName: showTotalsSection ? "chevron.up" : "chevron.down")
-                                .font(.footnote.weight(.semibold))
-                        }
-                        .padding(.vertical, 6)
-                    }
-                    .buttonStyle(.plain)
-
-                    if showTotalsSection {
-                        Picker("Sort", selection: $sortMode) {
-                            ForEach(SortMode.allCases) { mode in
-                                Text(mode.rawValue).tag(mode)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-
-                        ForEach(scopedRows, id: \.book) { entry in
-                            HStack {
-                                Text(entry.book)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text(BibleStatsStore.shared.format(entry.seconds))
-                                    .foregroundStyle(.secondary)
-                                    .monospacedDigit()
-                                    .frame(width: 80, alignment: .trailing)
-                            }
-                            .accessibilityElement(children: .combine)
-                            .accessibilityLabel("\(entry.book) \(BibleStatsStore.shared.format(entry.seconds))")
-                        }
-                        .transition(.opacity.combined(with: .move(edge: .top)))
-                    }
-                }
-            }
-        }
-    }
-
-    // Whether to show numeric labels above bars for the current scope/aggregation.
     private var shouldShowBarValueLabels: Bool {
         switch timeScope {
-        case .thisMonth:
-            // Daily bars in month view — show labels
-            return true
-        case .last7:
-            // Also show labels for last 7 days (small, readable)
-            return true
-        case .allTime:
-            // Previously hidden to avoid clutter; now enabled per request.
-            return true
+        case .thisMonth: return true
+        case .last7: return true
+        case .allTime: return true
         }
     }
 
-    // Responsive grid for chips: 2 columns on compact (iPhone), 3 on regular (iPad)
-    private var chipGridColumns: [GridItem] {
-        if hSizeClass == .compact {
-            return [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)]
-        } else {
-            return [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)]
-        }
-    }
-
-    private func metricChip(title: String, value: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-            Text(value)
-                .font(.footnote.weight(.semibold))
-                .monospacedDigit()
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-        }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 12)
-        .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(Color.black.opacity(0.08), lineWidth: 1)
-        )
-    }
-
-    // MARK: - One-open-only toggles
+    // MARK: - One-open-only toggles retained
 
     private func toggleBookProgress() {
         if showBookProgressDetails {
@@ -1204,26 +539,22 @@ struct StatsView: View {
         }
     }
 
-    // MARK: - Data refresh
+    // MARK: - Data refresh (unchanged logic)
 
     private func refreshAll() {
         refreshTotals()
         refreshChartsAndMonth()
-        refreshSessionScopedPerBook() // build session-derived per-book maps
-        // Ensure OT/NT and Genre match the current scope after datasets are refreshed
+        refreshSessionScopedPerBook()
         recomputeOTNTFromScope()
         recomputeGenresFromScope()
-        // Recompute dynamic totals card metrics
         recomputeTotalsCardMetrics()
-        // Smart insights last
         computeInsights()
     }
 
     private func refreshTotals() {
-        // Use sessions (local time) for Today and This Week, to match charts
         let cal = Calendar.current
 
-        // Today: sum durations for sessions that ended today (local)
+        // Today
         do {
             let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: cal)
             let todayKey = BibleStatsStore.isoDateString(Date(), calendar: cal)
@@ -1234,15 +565,14 @@ struct StatsView: View {
             }
         }
 
-        // This week: last 7 days total from sessions (local)
+        // This week (rolling 7 days)
         do {
             let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: cal)
             thisWeekSeconds = sessions7.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
         }
 
-        // Last week: the 7-day window ending 7 days ago (days -8...-14 from today), via sessions (local)
+        // Last week rolling window
         do {
-            // Compute cutoff windows with local start-of-day boundaries
             let startOfToday = cal.startOfDay(for: Date())
             guard
                 let thisWeekStart = cal.date(byAdding: .day, value: -6, to: startOfToday),
@@ -1253,9 +583,7 @@ struct StatsView: View {
                 return
             }
 
-            // Fetch enough sessions to cover last 14 days
             let sessions14 = ReadingSessionsStore.shared.sessions(inLastDays: 14, now: Date(), calendar: cal)
-            // Sum sessions whose end falls within last week's window [lastWeekStart, lastWeekEnd)
             lastWeekSeconds = sessions14.reduce(0) { acc, s in
                 if s.end >= lastWeekStart && s.end < lastWeekEnd {
                     return acc + Int(max(0, s.end.timeIntervalSince(s.start)))
@@ -1269,7 +597,7 @@ struct StatsView: View {
 
         computeCompletionMetricsVerseComplete()
         computePerBookProgressVerseComplete()
-        computeVerseTotalsAndCompleted() // NEW
+        computeVerseTotalsAndCompleted()
 
         if let last = BibleStatsStore.shared.loadLastRead() {
             lastReadEntry = last
@@ -1285,16 +613,15 @@ struct StatsView: View {
     private func refreshChartsAndMonth() {
         let cal = Calendar.current
 
-        // Last 7 days daily bars — aggregated from sessions per local day
+        // Last 7 days daily bars
         do {
             let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: cal)
-            var buckets: [String: Int] = [:] // ISO yyyy-MM-dd -> seconds
+            var buckets: [String: Int] = [:]
             for s in sessions {
                 let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
                 let key = BibleStatsStore.isoDateString(s.end, calendar: cal)
                 buckets[key, default: 0] += dur
             }
-            // Build a contiguous last-7-days sequence (oldest -> newest)
             let days: [(Date, Int)] = (0..<7).compactMap { i -> (Date, Int)? in
                 guard let d = cal.date(byAdding: .day, value: -i, to: Date()) else { return nil }
                 let key = BibleStatsStore.isoDateString(d, calendar: cal)
@@ -1303,57 +630,46 @@ struct StatsView: View {
             last7Daily = days
         }
 
-        // Sessions: last 20 overall (within retention), excluding very short sessions (< minSessionSeconds)
+        // Sessions: last 20 overall (>= minSessionSeconds)
         let sessionsAll = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: Date(), calendar: cal)
             .filter { Int(max(0, $0.end.timeIntervalSince($0.start))) >= minSessionSeconds }
             .sorted { $0.end < $1.end }
         let lastTwenty = Array(sessionsAll.suffix(20))
-        // Average over sessions that occurred in the last 7 days, excluding < minSessionSeconds
         let sessionsIn7Days = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: cal)
             .filter { Int(max(0, $0.end.timeIntervalSince($0.start))) >= minSessionSeconds }
-        avgSessionSecondsLast7 = averageSessionLength(sessions: sessionsIn7Days)
-        // Keep the chart as last 20 sessions overall (filtered)
+        avgSessionSecondsLast7 = StatsSeriesBuilder.averageSessionLength(sessions: sessionsIn7Days, minSessionSeconds: minSessionSeconds)
         sessionsLast7 = lastTwenty.enumerated().map { (idx, s) in
             let durSec = Int(max(0, s.end.timeIntervalSince(s.start)))
             let minutes = Int(round(Double(durSec) / 60.0))
             return (index: idx + 1, minutes: minutes)
         }
 
-        // Consistency (last 30 days) — reuse dailySeries helper
-        last30Daily = dailySeries(lastNDays: 30, now: Date(), calendar: cal)
+        // Consistency
+        last30Daily = StatsSeriesBuilder.dailySeries(lastNDays: 30, now: Date(), calendar: cal)
 
-        // This Month section:
-        // monthChaptersCompleted stays from chapter completion dates (not session-derived).
+        // This Month
         let now = Date()
         let comps = BibleStatsStore.shared.chapterCompletions(inMonth: now)
         monthChaptersCompleted = comps.count
 
-        // monthTotalSeconds is computed from perBookMonthTotals in refreshSessionScopedPerBook(),
-        // ensuring it matches the OT/NT, Genre, and Totals sections.
-        // monthTop3Books is also set in refreshSessionScopedPerBook().
+        // monthTotalSeconds set in refreshSessionScopedPerBook()
     }
 
-    // Build session-derived per-book maps for last7, thisMonth, and all-time (within retention).
     private func refreshSessionScopedPerBook() {
         let cal = Calendar.current
         let now = Date()
 
-        // Last 7 days
         let last7Sessions = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: now, calendar: cal)
-        perBookLast7Totals = groupSessionsByBook(last7Sessions)
+        perBookLast7Totals = StatsSeriesBuilder.groupSessionsByBook(last7Sessions)
 
-        // This month
         let monthSessions = ReadingSessionsStore.shared.sessions(inMonthContaining: now, calendar: cal)
-        perBookMonthTotals = groupSessionsByBook(monthSessions)
-        // Compute month total from the same per-book map used by other sections
+        perBookMonthTotals = StatsSeriesBuilder.groupSessionsByBook(monthSessions)
         monthTotalSeconds = perBookMonthTotals.values.reduce(0, +)
 
-        // All time (within retention window of ReadingSessionsStore; now 5 years)
         let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: now, calendar: cal)
-        perBookAllTimeSessionTotals = groupSessionsByBook(allSessions)
+        perBookAllTimeSessionTotals = StatsSeriesBuilder.groupSessionsByBook(allSessions)
         totalSecondsAllTime = allSessions.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
 
-        // Last month seconds (for delta)
         if let prevMonth = cal.date(byAdding: .month, value: -1, to: now) {
             let lastMonthSessions = ReadingSessionsStore.shared.sessions(inMonthContaining: prevMonth, calendar: cal)
             lastMonthSeconds = lastMonthSessions.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
@@ -1361,7 +677,6 @@ struct StatsView: View {
             lastMonthSeconds = 0
         }
 
-        // Update Top 3 books for month from the session-derived map
         let sortedTop = perBookMonthTotals.sorted { lhs, rhs in
             if lhs.value == rhs.value { return lhs.key < rhs.key }
             return lhs.value > rhs.value
@@ -1370,25 +685,12 @@ struct StatsView: View {
     }
 
     private func averageSessionLength(sessions: [ReadingSessionsStore.Session]) -> Int {
-        // Ignore very short sessions (< minSessionSeconds)
-        let filtered = sessions.filter { Int(max(0, $0.end.timeIntervalSince($0.start))) >= minSessionSeconds }
-        guard !filtered.isEmpty else { return 0 }
-        let total = filtered.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
-        return total / filtered.count
+        // Kept for compatibility where used locally (if any).
+        StatsSeriesBuilder.averageSessionLength(sessions: sessions, minSessionSeconds: minSessionSeconds)
     }
 
-    // Group sessions by book name and sum durations
     private func groupSessionsByBook(_ sessions: [ReadingSessionsStore.Session]) -> [String: Int] {
-        var map: [String: Int] = [:]
-        for s in sessions {
-            let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
-            guard dur > 0 else { continue }
-            // Ignore empty/whitespace-only book names so per-book maps align with UI
-            let name = s.book.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !name.isEmpty else { continue }
-            map[name, default: 0] += dur
-        }
-        return map
+        StatsSeriesBuilder.groupSessionsByBook(sessions)
     }
 
     private func computeCompletionMetricsVerseComplete() {
@@ -1442,7 +744,6 @@ struct StatsView: View {
         bookProgress = progress
     }
 
-    // NEW: Compute total verses and completed verses
     private func computeVerseTotalsAndCompleted() {
         let books = BibleData.books
         var total = 0
@@ -1465,18 +766,13 @@ struct StatsView: View {
 
     private var scopedPerBookTotals: [String: Int] {
         switch timeScope {
-        case .allTime:
-            // Sessions-only for All Time (no fallback)
-            return perBookAllTimeSessionTotals
-        case .thisMonth:
-            return perBookMonthTotals
-        case .last7:
-            return perBookLast7Totals
+        case .allTime: return perBookAllTimeSessionTotals
+        case .thisMonth: return perBookMonthTotals
+        case .last7: return perBookLast7Totals
         }
     }
 
     private var scopedTotalSeconds: Int {
-        // Sum from the same per-book map used elsewhere so all cards align
         scopedPerBookTotals.values.reduce(0, +)
     }
 
@@ -1502,12 +798,11 @@ struct StatsView: View {
         }
     }
 
-    // Compute genre totals from the currently scoped per-book map
     private var scopedPerGenreTotalsComputed: [(genre: String, seconds: Int)] {
-        computeGenreTotals(from: scopedPerBookTotals)
+        StatsSeriesBuilder.computeGenreTotals(from: scopedPerBookTotals).map { ($0.genre, $0.seconds) }
     }
 
-    // MARK: - Helpers
+    // MARK: - Glance helpers
 
     private var weekDeltaOnlyValue: String {
         let delta = thisWeekSeconds - lastWeekSeconds
@@ -1517,7 +812,6 @@ struct StatsView: View {
         return "\(sign)\(BibleStatsStore.shared.format(absVal))"
     }
 
-    // Sessions-only computation for “today vs yesterday”, using local day boundaries to match charts and todaySeconds.
     private var todayDeltaOnlyValue: String {
         let cal = Calendar.current
         let startOfToday = cal.startOfDay(for: Date())
@@ -1533,7 +827,6 @@ struct StatsView: View {
         return "\(sign)\(BibleStatsStore.shared.format(absVal))"
     }
 
-    // New: Month delta vs last month, sessions-only
     private var monthDeltaOnlyValue: String {
         let delta = monthTotalSeconds - lastMonthSeconds
         if delta == 0 { return "—" }
@@ -1542,9 +835,7 @@ struct StatsView: View {
         return "\(sign)\(BibleStatsStore.shared.format(absVal))"
     }
 
-    // Sum all sessions whose end falls within [start, end] inclusive window (local day)
     private func totalSecondsForDay(from start: Date, to end: Date, calendar: Calendar) -> Int {
-        // Fetch enough sessions to cover the two-day span (yesterday + today) to be safe
         let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 2, now: end, calendar: calendar)
         return sessions.reduce(0) { acc, s in
             if s.end >= start && s.end <= end {
@@ -1555,7 +846,6 @@ struct StatsView: View {
         }
     }
 
-    // Navigation helper: open reader via app-wide notification
     private func openReader(bookName: String, chapter: Int, verse: Int = 1) {
         NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
             "book": bookName,
@@ -1564,7 +854,6 @@ struct StatsView: View {
         ])
     }
 
-    // Find first unread chapter globally (canonical order)
     private func nextUnreadGlobal() -> (book: String, chapter: Int)? {
         for b in BibleData.books {
             for c in b.chapters {
@@ -1576,7 +865,6 @@ struct StatsView: View {
         return nil
     }
 
-    // Find first unread chapter in a given book
     private func nextUnreadChapter(in bookName: String) -> Int? {
         guard let b = BibleData.books.first(where: { $0.name == bookName }) else { return nil }
         for c in b.chapters {
@@ -1602,53 +890,21 @@ struct StatsView: View {
     }
 
     private func genreForBook(_ book: String) -> Genre {
-        switch book {
-        case "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy":
-            return .Law
-        case "Joshua", "Judges", "Ruth",
-             "1 Samuel", "2 Samuel",
-             "1 Kings", "2 Kings",
-             "1 Chronicles", "2 Chronicles",
-             "Ezra", "Nehemiah", "Esther":
-            return .History
-        case "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon":
-            return .Poetry
-        case "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel":
-            return .MajorProphets
-        case "Hosea", "Joel", "Amos", "Obadiah", "Jonah",
-             "Micah", "Nahum", "Habakkuk", "Zephaniah",
-             "Haggai", "Zechariah", "Malachi":
-            return .MinorProphets
-        case "Matthew", "Mark", "Luke", "John":
-            return .Gospels
-        case "Acts":
-            return .Acts
-        case "Romans",
-             "1 Corinthians", "2 Corinthians",
-             "Galatians", "Ephesians", "Philippians", "Colossians",
-             "1 Thessalonians", "2 Thessalonians",
-             "1 Timothy", "2 Timothy",
-             "Titus", "Philemon",
-             "Hebrews", "James",
-             "1 Peter", "2 Peter",
-             "1 John", "2 John", "3 John",
-             "Jude":
-            return .Epistles
-        case "Revelation":
-            return .Apocalypse
-        default:
-            return .History
+        switch StatsSeriesBuilder.genreForBook(book) {
+        case .Law: return .Law
+        case .History: return .History
+        case .Poetry: return .Poetry
+        case .MajorProphets: return .MajorProphets
+        case .MinorProphets: return .MinorProphets
+        case .Gospels: return .Gospels
+        case .Acts: return .Acts
+        case .Epistles: return .Epistles
+        case .Apocalypse: return .Apocalypse
         }
     }
 
     private func computeGenreTotals(from perBook: [String: Int]) -> [(genre: String, seconds: Int)] {
-        var buckets: [Genre: Int] = [:]
-        for (book, seconds) in perBook {
-            let g = genreForBook(book)
-            buckets[g, default: 0] += max(0, seconds)
-        }
-        let order: [Genre] = [.Law, .History, .Poetry, .MajorProphets, .MinorProphets, .Gospels, .Acts, .Epistles, .Apocalypse]
-        return order.map { g in (genre: g.rawValue, seconds: buckets[g, default: 0]) }
+        StatsSeriesBuilder.computeGenreTotals(from: perBook).map { ($0.genre, $0.seconds) }
     }
 
     private func rowsForGenre(_ genre: Genre, totals: [String: Int]) -> [(book: String, seconds: Int)] {
@@ -1691,79 +947,18 @@ struct StatsView: View {
 
     private func recomputeGenresFromScope() {
         perGenreTotals = scopedPerGenreTotalsComputed
-        // Update open detail rows if a genre is selected
         if let g = selectedGenre {
             genreDetailRows = rowsForGenre(g, totals: scopedPerBookTotals)
         }
     }
 
-    // MARK: - Compact header helpers
-
-    @ViewBuilder
-    private func compactProgressHeader(booksPercent: Int, chaptersPercent: Int, versesPercent: Int) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Bible Reading Progress")
-                .font(.headline)
-
-            VStack(spacing: 8) {
-                metricRow(
-                    title: "Books",
-                    countText: "\(formatInt(booksCompleted))/\(formatInt(totalBooks))",
-                    percent: booksPercent,
-                    tint: .green
-                )
-                metricRow(
-                    title: "Chapters",
-                    countText: "\(formatInt(visitedCount))/\(formatInt(totalChapters))",
-                    percent: chaptersPercent,
-                    tint: .blue
-                )
-                metricRow(
-                    title: "Verses",
-                    countText: "\(formatInt(completedVerses))/\(formatInt(totalVerses))",
-                    percent: versesPercent,
-                    tint: .accentColor
-                )
-            }
-        }
-    }
-
-    private func metricRow(title: String, countText: String, percent: Int, tint: Color) -> some View {
-        HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text(countText)
-                    .font(.footnote.weight(.semibold))
-                    .monospacedDigit()
-            }
-            Spacer(minLength: 8)
-            ProgressRing(
-                progress: Double(percent) / 100.0,
-                lineWidth: 7,
-                size: 36,
-                tint: tint,
-                track: Color.primary.opacity(0.12),
-                label: {
-                    Text("\(percent)%")
-                        .font(.caption2.weight(.semibold))
-                        .monospacedDigit()
-                }
-            )
-            .accessibilityLabel(Text("\(title) \(percent) percent complete"))
-        }
-        .padding(.vertical, 2)
-    }
-
-    // MARK: - Totals card metrics
+    // MARK: - Totals card metrics and chart config
 
     private var totalsChartSubtitle: String {
         switch timeScope {
         case .last7:
             return "Daily minutes — Last 7 days"
         case .thisMonth:
-            // Bars are daily; ticks are weekly for readability.
             return "Daily minutes — This month"
         case .allTime:
             switch allTimeAggregation {
@@ -1775,7 +970,6 @@ struct StatsView: View {
         }
     }
 
-    // Compute the current aggregation for the X axis outside the result builder
     private var currentXAxisAggregation: Aggregation {
         if timeScope == .allTime {
             return allTimeAggregation
@@ -1786,13 +980,11 @@ struct StatsView: View {
         }
     }
 
-    // The unit used to bucket bars (explicit so bars look right)
     private var currentBarUnit: Calendar.Component {
         switch timeScope {
         case .last7:
             return .day
         case .thisMonth:
-            // Bars are daily, ticks are weekly
             return .day
         case .allTime:
             switch allTimeAggregation {
@@ -1804,7 +996,6 @@ struct StatsView: View {
         }
     }
 
-    // Axis marks adapted to current aggregation
     @AxisContentBuilder
     private var chartXAxisMarks: some AxisContent {
         switch currentXAxisAggregation {
@@ -1836,29 +1027,26 @@ struct StatsView: View {
     }
 
     private func recomputeTotalsCardMetrics() {
-        // Build daily/weekly/monthly/yearly series and quick insights based on the selected scope using sessions (local day boundaries)
         let cal = Calendar.current
         let now = Date()
 
         switch timeScope {
         case .last7:
-            totalsDaily = dailySeries(lastNDays: 7, now: now, calendar: cal)
+            totalsDaily = StatsSeriesBuilder.dailySeries(lastNDays: 7, now: now, calendar: cal)
             allTimeAggregation = .daily
         case .thisMonth:
-            totalsDaily = dailySeriesForMonth(containing: now, calendar: cal)
-            allTimeAggregation = .weekly // axis ticks will show weekly marks
+            totalsDaily = StatsSeriesBuilder.dailySeriesForMonth(containing: now, calendar: cal)
+            allTimeAggregation = .weekly
         case .allTime:
-            let r = allTimeAggregatedSeries(calendar: cal)
+            let r = StatsSeriesBuilder.allTimeAggregatedSeries(calendar: cal)
             totalsDaily = r.series
-            allTimeAggregation = r.aggregation
+            allTimeAggregation = r.aggregation == .monthly ? .monthly : .yearly
         }
 
-        // Quick insights
         activeDaysInScope = totalsDaily.reduce(0) { $0 + ($1.seconds > 0 ? 1 : 0) }
         let totalInSeries = totalsDaily.reduce(0) { $0 + $1.seconds }
         avgSecondsPerActiveBucketInScope = activeDaysInScope > 0 ? totalInSeries / activeDaysInScope : 0
 
-        // Top book (from the same scoped totals map used elsewhere)
         if let top = scopedPerBookTotals.sorted(by: { lhs, rhs in
             if lhs.value == rhs.value { return lhs.key < rhs.key }
             return lhs.value > rhs.value
@@ -1870,150 +1058,28 @@ struct StatsView: View {
     }
 
     private func dailySeries(lastNDays: Int, now: Date, calendar: Calendar) -> [(date: Date, seconds: Int)] {
-        guard lastNDays > 0 else { return [] }
-        let sessions = ReadingSessionsStore.shared.sessions(inLastDays: lastNDays, now: now, calendar: calendar)
-        var buckets: [String: Int] = [:] // yyyy-MM-dd -> seconds
-        for s in sessions {
-            let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
-            let key = BibleStatsStore.isoDateString(s.end, calendar: calendar)
-            buckets[key, default: 0] += dur
-        }
-        // Build contiguous sequence (oldest -> newest)
-        let series: [(Date, Int)] = (0..<lastNDays).compactMap { i -> (Date, Int)? in
-            guard let d = calendar.date(byAdding: .day, value: -(lastNDays - 1 - i), to: calendar.startOfDay(for: now)) else { return nil }
-            let key = BibleStatsStore.isoDateString(d, calendar: calendar)
-            return (d, buckets[key, default: 0])
-        }
-        return series
+        StatsSeriesBuilder.dailySeries(lastNDays: lastNDays, now: now, calendar: calendar)
     }
 
     private func dailySeriesForMonth(containing date: Date, calendar: Calendar) -> [(date: Date, seconds: Int)] {
-        // Use a strictly local, autoupdating calendar for both session bucketing and day iteration
-        var cal = Calendar.autoupdatingCurrent
-        cal.timeZone = TimeZone.autoupdatingCurrent
-
-        // Fetch sessions for the month using the same calendar semantics
-        let sessions = ReadingSessionsStore.shared.sessions(inMonthContaining: date, calendar: cal)
-
-        // Bucket sessions by local-day ISO key
-        var buckets: [String: Int] = [:]
-        for s in sessions {
-            let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
-            let key = BibleStatsStore.isoDateString(s.end, calendar: cal)
-            buckets[key, default: 0] += dur
-        }
-
-        // Compute local start of month and start of next month
-        let comps = cal.dateComponents([.year, .month], from: date)
-        guard
-            let startOfMonth = cal.date(from: comps),
-            let startOfNextMonth = cal.date(byAdding: .month, value: 1, to: startOfMonth)
-        else {
-            return []
-        }
-
-        // Build contiguous daily series from startOfMonth to (but not including) startOfNextMonth
-        var series: [(Date, Int)] = []
-        var cursor = startOfMonth
-        while cursor < startOfNextMonth {
-            let key = BibleStatsStore.isoDateString(cursor, calendar: cal)
-            let seconds = buckets[key, default: 0]
-            series.append((cursor, seconds))
-            // Step exactly one local day
-            guard let next = cal.date(byAdding: .day, value: 1, to: cursor) else { break }
-            cursor = next
-        }
-        return series
+        StatsSeriesBuilder.dailySeriesForMonth(containing: date, calendar: calendar)
     }
 
     private func allTimeAggregatedSeries(calendar: Calendar) -> (series: [(date: Date, seconds: Int)], aggregation: Aggregation) {
-        // Use a long window that matches other “all time” computations in this view
-        let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: Date(), calendar: calendar)
-        guard !sessions.isEmpty else { return ([], .daily) }
-
-        let ends = sessions.map { $0.end }
-        let now = Date()
-        let start = calendar.startOfDay(for: ends.min() ?? now)
-        let end = calendar.startOfDay(for: now)
-
-        // Choose aggregation based on number of months spanned
-        let monthsSpan = calendar.dateComponents([.month], from: start, to: end).month ?? 0
-
-        // Prefer monthly buckets up to a year of data, otherwise yearly
-        let aggregation: Aggregation = (monthsSpan <= 12) ? .monthly : .yearly
-
-        // Helper to find the bucket start date for a given date
-        func bucketStart(for date: Date) -> Date {
-            switch aggregation {
-            case .monthly:
-                let comps = calendar.dateComponents([.year, .month], from: date)
-                return calendar.date(from: comps) ?? calendar.startOfDay(for: date)
-            case .yearly:
-                let comps = calendar.dateComponents([.year], from: date)
-                return calendar.date(from: comps) ?? calendar.startOfDay(for: date)
-            default:
-                // Not used for all-time
-                return calendar.startOfDay(for: date)
-            }
-        }
-
-        // Sum sessions into buckets
-        var buckets: [Date: Int] = [:]
-        for s in sessions {
-            let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
-            let key = bucketStart(for: s.end)
-            buckets[key, default: 0] += dur
-        }
-
-        // Build a contiguous series from start to end at the chosen aggregation
-        var series: [(Date, Int)] = []
-        var cursor: Date = {
-            switch aggregation {
-            case .monthly:
-                let comps = calendar.dateComponents([.year, .month], from: start)
-                return calendar.date(from: comps) ?? start
-            case .yearly:
-                let comps = calendar.dateComponents([.year], from: start)
-                return calendar.date(from: comps) ?? start
-            default:
-                return start
+        let r = StatsSeriesBuilder.allTimeAggregatedSeries(calendar: calendar)
+        // Map utility’s Aggregation to our local Aggregation for this view
+        let mappedAgg: Aggregation = {
+            switch r.aggregation {
+            case .daily: return .daily
+            case .weekly: return .weekly
+            case .monthly: return .monthly
+            case .yearly: return .yearly
             }
         }()
-
-        func step(_ date: Date) -> Date {
-            switch aggregation {
-            case .monthly: return calendar.date(byAdding: .month, value: 1, to: date) ?? date
-            case .yearly: return calendar.date(byAdding: .year, value: 1, to: date) ?? date
-            default: return date
-            }
-        }
-
-        while cursor <= end {
-            let val = buckets[cursor, default: 0]
-            series.append((cursor, val))
-            cursor = step(cursor)
-        }
-
-        // Cap monthly series to last 6 or 12 months to keep axis readable
-        if aggregation == .monthly {
-            let maxMonths = (monthsSpan <= 6) ? 6 : 12
-            if series.count > maxMonths {
-                series = Array(series.suffix(maxMonths))
-            }
-        }
-
-        // Cap yearly series to last 10 years to avoid overly thin bars
-        if aggregation == .yearly {
-            let maxYears = 10
-            if series.count > maxYears {
-                series = Array(series.suffix(maxYears))
-            }
-        }
-
-        return (series, aggregation)
+        return (r.series, mappedAgg)
     }
 
-    // MARK: - Smart insights computation
+    // MARK: - Smart insights computation (unchanged)
 
     private func computeInsights() {
         let cal = Calendar.autoupdatingCurrent
@@ -2030,18 +1096,15 @@ struct StatsView: View {
             }
             if let (bestKey, bestSeconds) = buckets.max(by: { $0.value < $1.value }),
                bestSeconds > 0 {
-                // Format date like "Mar 12"
                 let df = DateFormatter()
                 df.calendar = cal
                 df.timeZone = cal.timeZone
                 df.setLocalizedDateFormatFromTemplate("MMM d")
-                let date = df.date(from: bestKey) ?? cal.startOfDay(for: now) // bestKey is yyyy-MM-dd; parsing with df might fail
-                // Parse yyyy-MM-dd reliably
                 let isoParser = DateFormatter()
                 isoParser.calendar = cal
                 isoParser.timeZone = cal.timeZone
                 isoParser.dateFormat = "yyyy-MM-dd"
-                let bestDate = isoParser.date(from: bestKey) ?? date
+                let bestDate = isoParser.date(from: bestKey) ?? cal.startOfDay(for: now)
                 let pretty = df.string(from: bestDate)
                 let val = BibleStatsStore.shared.format(bestSeconds)
                 insightBestDayText = "Best day in 90 days: \(val) (\(pretty))"
@@ -2053,11 +1116,9 @@ struct StatsView: View {
         // New streak: compare current streak today vs yesterday
         do {
             let current = StreakTracker.currentStreak
-            // Compute yesterday's streak by evaluating with a shifted "today"
             let yesterday: Int = {
                 var count = 0
                 var day = cal.date(byAdding: .day, value: -1, to: now) ?? now
-                // If yesterday not met, allow streak to end the day before yesterday
                 if !StreakTracker.isGoalMet(on: day) {
                     if let prev = cal.date(byAdding: .day, value: -1, to: day) {
                         day = prev
@@ -2077,14 +1138,13 @@ struct StatsView: View {
             }
         }
 
-        // 7‑day average up/down vs last month (use previous calendar month's daily average)
+        // 7‑day average up/down vs last month
         do {
-            let last7 = dailySeries(lastNDays: 7, now: now, calendar: cal)
+            let last7 = StatsSeriesBuilder.dailySeries(lastNDays: 7, now: now, calendar: cal)
             let avg7 = last7.isEmpty ? 0 : last7.reduce(0) { $0 + $1.seconds } / last7.count
 
-            // Previous month average per day
             if let prevMonth = cal.date(byAdding: .month, value: -1, to: now) {
-                let prevMonthSeries = dailySeriesForMonth(containing: prevMonth, calendar: cal)
+                let prevMonthSeries = StatsSeriesBuilder.dailySeriesForMonth(containing: prevMonth, calendar: cal)
                 let prevAvgPerDay = prevMonthSeries.isEmpty ? 0 : prevMonthSeries.reduce(0) { $0 + $1.seconds } / prevMonthSeries.count
                 if prevAvgPerDay > 0 {
                     let change = Double(avg7 - prevAvgPerDay) / Double(prevAvgPerDay) * 100.0
@@ -2130,7 +1190,7 @@ struct StatsView: View {
                     df.timeZone = cal.timeZone
                     df.setLocalizedDateFormatFromTemplate("MMM d")
                     let when = df.string(from: longest.end)
-                    insightLongestSessionText = "Longest session in 30 days: \(BibleStatsStore.shared.format(dur)) (\(when))"
+                    insightLongestSessionText = "(30 days): \(BibleStatsStore.shared.format(dur)) (\(when))"
                 } else {
                     insightLongestSessionText = nil
                 }
@@ -2148,187 +1208,36 @@ struct StatsView: View {
             }
         }
     }
-}
 
-// MARK: - Small Progress Ring
+    // MARK: - Mapping helpers for new card bindings
 
-private struct ProgressRing<Label: View>: View {
-    let progress: Double
-    let lineWidth: CGFloat
-    let size: CGFloat
-    let tint: Color
-    let track: Color
-    let label: Label
-
-    init(progress: Double, lineWidth: CGFloat = 8, size: CGFloat = 56, tint: Color = .accentColor, track: Color = Color.primary.opacity(0.12), @ViewBuilder label: () -> Label) {
-        self.progress = max(0, min(1, progress))
-        self.lineWidth = lineWidth
-        self.size = size
-               self.tint = tint
-        self.track = track
-        self.label = label()
-    }
-
-    var body: some View {
-        ZStack {
-            Circle()
-                .stroke(track, lineWidth: lineWidth)
-            Circle()
-                .trim(from: 0, to: CGFloat(progress))
-                .stroke(tint, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
-                .rotationEffect(.degrees(-90))
-            label
+    private func mapScopeToOTNT(_ s: TimeScope) -> OTNTCardView.TimeScope {
+        switch s {
+        case .allTime: return .allTime
+        case .thisMonth: return .thisMonth
+        case .last7: return .last7
         }
-        .frame(width: size, height: size)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(Text("Completion \(Int(round(progress * 100))) percent"))
     }
-}
-
-// MARK: - Chapter detail support
-
-private struct ChapterDetailKey: Identifiable, Hashable {
-    let bookName: String
-    var id: String { bookName }
-}
-
-private struct BookChaptersDetailView: View {
-    let bookName: String
-
-    @State private var visited: Set<String> = []
-    @State private var selectedChapter: Int? = nil
-    @State private var refreshID: UUID = UUID()
-
-    private var book: Book? {
-        BibleData.books.first(where: { $0.name == bookName })
-    }
-    private var chapterNumbers: [Int] {
-        guard let b = book else { return [] }
-        return b.chapters.map { $0.number }.sorted()
-    }
-
-    var body: some View {
-        Group {
-            if let b = book, !chapterNumbers.isEmpty {
-                List {
-                    Section {
-                        ForEach(chapterNumbers, id: \.self) { chap in
-                            let totalVerses = b.chapters.first(where: { $0.number == chap })?.verses.count ?? 0
-                            let isRead = totalVerses > 0 && BibleStatsStore.shared.isChapterComplete(bookName: b.name, chapter: chap, totalVerses: totalVerses)
-
-                            NavigationLink(destination: VersesChecklistView(bookName: b.name, chapterNumber: chap)) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: isRead ? "checkmark.circle.fill" : "circle")
-                                        .foregroundStyle(isRead ? .green : .secondary)
-                                    Text("Chapter \(chap)")
-                                        .strikethrough(isRead, color: .secondary)
-                                        .foregroundStyle(isRead ? .secondary : .primary)
-                                    Spacer()
-                                    Button("Unread") {
-                                        clearChapter(bookName: b.name, chapterNumber: chap)
-                                    }
-                                    .buttonStyle(.bordered)
-                                    .controlSize(.mini)
-                                    .tint(.red)
-                                    .disabled(!isRead)
-                                    .accessibilityLabel("Mark Chapter \(chap) Unread")
-                                }
-                            }
-                            .accessibilityLabel("Chapter \(chap) \(isRead ? "read" : "unread")")
-                        }
-                    } header: {
-                        Text(b.name)
-                    } footer: {
-                        let readCount = chapterNumbers.reduce(0) { acc, chap in
-                            let total = b.chapters.first(where: { $0.number == chap })?.verses.count ?? 0
-                            let complete = total > 0 && BibleStatsStore.shared.isChapterComplete(bookName: b.name, chapter: chap, totalVerses: total)
-                            return acc + (complete ? 1 : 0)
-                        }
-                        Text("\(readCount.formatted(.number.grouping(.automatic)))/\(chapterNumbers.count.formatted(.number.grouping(.automatic))) chapters read")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .id(refreshID)
-            } else if book != nil {
-                ContentUnavailableView("No chapters found", systemImage: "exclamationmark.triangle")
-            } else {
-                ContentUnavailableView("Book not found", systemImage: "exclamationmark.triangle")
-            }
-        }
-        .onAppear {
-            visited = BibleStatsStore.shared.loadVisitedChapters()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { _ in
-            visited = BibleStatsStore.shared.loadVisitedChapters()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .chapterProgressChanged)) { _ in
-            refreshID = UUID()
-            visited = BibleStatsStore.shared.loadVisitedChapters()
+    private func mapScopeFromOTNT(_ s: OTNTCardView.TimeScope) -> TimeScope {
+        switch s {
+        case .allTime: return .allTime
+        case .thisMonth: return .thisMonth
+        case .last7: return .last7
         }
     }
 
-    private func clearChapter(bookName: String, chapterNumber: Int) {
-        BibleStatsStore.shared.saveSeenVerses([], bookName: bookName, chapter: chapterNumber)
-        var v = BibleStatsStore.shared.loadVisitedChapters()
-        v.remove("\(bookName):\(chapterNumber)")
-        BibleStatsStore.shared.saveVisitedChapters(v)
-        refreshID = UUID()
-        NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
-    }
-}
-
-// MARK: - Smart Insights chip view
-
-private struct InsightChipModel: Identifiable, Hashable {
-    let id = UUID()
-    let icon: String
-    let title: String
-    let detail: String
-    let tint: Color
-}
-
-// New, glanceable tile presentation for insights
-private struct InsightTile: View {
-    let model: InsightChipModel
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            // Leading color bar + icon
-            ZStack {
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(model.tint.opacity(0.12))
-                Image(systemName: model.icon)
-                    .foregroundStyle(model.tint)
-                    .font(.system(size: 18, weight: .semibold))
-            }
-            .frame(width: 44, height: 44)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(model.title)
-                    .font(.subheadline.weight(.semibold))
-                Text(model.detail)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            Spacer(minLength: 0)
+    private func mapScopeToGenre(_ s: TimeScope) -> GenreDistributionCardView.TimeScope {
+        switch s {
+        case .allTime: return .allTime
+        case .thisMonth: return .thisMonth
+        case .last7: return .last7
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 12)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(model.tint.opacity(0.35), lineWidth: 1)
-        )
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(model.title). \(model.detail)")
+    }
+    private func mapScopeFromGenre(_ s: GenreDistributionCardView.TimeScope) -> TimeScope {
+        switch s {
+        case .allTime: return .allTime
+        case .thisMonth: return .thisMonth
+        case .last7: return .last7
+        }
     }
 }
-
-// Retained but no longer used; can be removed if desired.
-// private struct InsightChip: View { ... } // removed usage above
-
