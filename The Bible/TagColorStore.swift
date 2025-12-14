@@ -11,6 +11,22 @@ struct TagColorStore {
         return obj ?? [:]
     }()
 
+    // Register once to observe remote merges and refresh our cache
+    private static var didRegisterObserver: Bool = {
+        NotificationCenter.default.addObserver(
+            forName: .init("TagColorMapDidChange"),
+            object: nil,
+            queue: .main
+        ) { _ in
+            cachedMap = (UserDefaults.standard.dictionary(forKey: defaultsKey) as? [String: [Double]]) ?? [:]
+        }
+        return true
+    }()
+
+    private static func ensureObserver() {
+        _ = didRegisterObserver
+    }
+
     // Normalize tags for consistent keying
     private static func normalized(_ tag: String) -> String {
         tag.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
@@ -18,12 +34,20 @@ struct TagColorStore {
 
     // Save dictionary (and keep cache in sync)
     private static func saveMap(_ map: [String: [Double]]) {
+        ensureObserver()
         cachedMap = map
-        UserDefaults.standard.set(map, forKey: defaultsKey)
+        let defaults = UserDefaults.standard
+        defaults.set(map, forKey: defaultsKey)
+
+        // Mirror to iCloud KVS and request a push via coordinator
+        let kvs = NSUbiquitousKeyValueStore.default
+        kvs.set(map, forKey: defaultsKey)
+        iCloudSyncCoordinator.shared.pushKey(defaultsKey)
     }
 
     // Public API
     static func color(for tag: String) -> Color? {
+        ensureObserver()
         let key = normalized(tag)
         guard let comps = cachedMap[key], comps.count == 4 else { return nil }
         let r = CGFloat(comps[0])
@@ -34,6 +58,7 @@ struct TagColorStore {
     }
 
     static func setColor(_ color: Color?, for tag: String) {
+        ensureObserver()
         let key = normalized(tag)
         var map = cachedMap
         if let color {
@@ -57,4 +82,3 @@ struct TagColorStore {
         setColor(nil, for: tag)
     }
 }
-

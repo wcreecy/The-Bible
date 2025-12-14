@@ -9,20 +9,47 @@ struct TagDisplayNameStore {
         (UserDefaults.standard.dictionary(forKey: defaultsKey) as? [String: String]) ?? [:]
     }()
 
+    // Register once to observe remote merges and refresh our cache
+    private static var didRegisterObserver: Bool = {
+        NotificationCenter.default.addObserver(
+            forName: .init("TagDisplayNameMapDidChange"),
+            object: nil,
+            queue: .main
+        ) { _ in
+            // Refresh in-memory cache from UserDefaults after a KVS merge
+            cached = (UserDefaults.standard.dictionary(forKey: defaultsKey) as? [String: String]) ?? [:]
+        }
+        return true
+    }()
+
+    // Touch the observer registration at least once
+    private static func ensureObserver() {
+        _ = didRegisterObserver
+    }
+
     private static func normalized(_ tag: String) -> String {
         tag.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
     }
 
     private static func save(_ map: [String: String]) {
+        ensureObserver()
         cached = map
-        UserDefaults.standard.set(map, forKey: defaultsKey)
+        let defaults = UserDefaults.standard
+        defaults.set(map, forKey: defaultsKey)
+
+        // Mirror to iCloud KVS and request a push via coordinator
+        let kvs = NSUbiquitousKeyValueStore.default
+        kvs.set(map, forKey: defaultsKey)
+        iCloudSyncCoordinator.shared.pushKey(defaultsKey)
     }
 
     static func displayName(for tag: String) -> String? {
-        cached[normalized(tag)]
+        ensureObserver()
+        return cached[normalized(tag)]
     }
 
     static func setDisplayName(_ name: String?, for tag: String) {
+        ensureObserver()
         var map = cached
         let key = normalized(tag)
         if let name, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -39,6 +66,7 @@ struct TagDisplayNameStore {
 
     // Rename underlying normalized key (used if we change canonical key)
     static func migrateKey(from oldKey: String, to newKey: String) {
+        ensureObserver()
         let oldNorm = normalized(oldKey)
         let newNorm = normalized(newKey)
         guard oldNorm != newNorm else { return }

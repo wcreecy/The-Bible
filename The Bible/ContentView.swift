@@ -294,10 +294,9 @@ struct ContentView: View {
                     let chapter = book.chapters.first(where: { $0.number == chapterNum })
                 else { return }
 
-                // Ensure we’re on the Bible tab before pushing
+                // Ensure we’re on the Bible tab before pushing; reset the stack to avoid stacking multiple readers
                 DispatchQueue.main.async {
-                    // Reset any existing path if you want to start clean
-                    // bibleCoordinator.reset()
+                    bibleCoordinator.reset() // <-- prevent duplicate stacked readers after deep links
                     bibleCoordinator.push(.reader(book: book, chapter: chapter, startVerse: verseNum))
                 }
             }
@@ -446,11 +445,11 @@ struct ContentView: View {
         guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
         let title = shared.string(forKey: "focusTitle")?.trimmingCharacters(in: .whitespacesAndNewlines)
         let body = shared.string(forKey: "focusBody")?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let hasContent = ((title?.isEmpty == false) || (body?.isEmpty == false))
+        let hasContent = (!(title?.isEmpty ?? true) || !(body?.isEmpty ?? true))
         if hasContent {
             PrayerTimerActivityController.shared.ensureFocusIfNone(
-                title: title?.isEmpty == true ? nil : title,
-                body: body?.isEmpty == true ? nil : body
+                title: (title?.isEmpty ?? true) ? nil : title,
+                body: (body?.isEmpty ?? true) ? nil : body
             )
         }
     }

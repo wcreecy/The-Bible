@@ -254,6 +254,13 @@ struct TagManagerView: View {
         }
         .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search tags")
         .onAppear { loadFromEntries() }
+        // Live refresh when KVS merges arrive from other devices
+        .onReceive(NotificationCenter.default.publisher(for: .init("TagDisplayNameMapDidChange"))) { _ in
+            loadFromEntries()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .init("TagColorMapDidChange"))) { _ in
+            loadFromEntries()
+        }
     }
 }
 

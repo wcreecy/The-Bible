@@ -60,6 +60,40 @@ struct BibleReaderForJournal: View {
                 }
                 .buttonStyle(.plain)
                 .popover(isPresented: $showBookPicker, arrowEdge: .top) {
+                    #if os(iOS)
+                    if #available(iOS 17.0, *) {
+                        // Keep popover style in compact instead of adapting to a full sheet
+                        BookPickerPopover(
+                            books: books,
+                            currentIndex: currentBookIndex,
+                            onSelect: { idx in
+                                currentBookIndex = idx
+                                currentChapterIndex = 0
+                                targetVerse = nil
+                                showBookPicker = false
+                                scrollToTop()
+                            },
+                            onCancel: { showBookPicker = false }
+                        )
+                        .presentationCompactAdaptation(.popover)
+                    } else {
+                        // iOS 16 fallback: shorter sheet by default (popover adapts to sheet)
+                        BookPickerPopover(
+                            books: books,
+                            currentIndex: currentBookIndex,
+                            onSelect: { idx in
+                                currentBookIndex = idx
+                                currentChapterIndex = 0
+                                targetVerse = nil
+                                showBookPicker = false
+                                scrollToTop()
+                            },
+                            onCancel: { showBookPicker = false }
+                        )
+                        .presentationDetents([.fraction(0.5), .large])
+                        .presentationDragIndicator(.visible)
+                    }
+                    #else
                     BookPickerPopover(
                         books: books,
                         currentIndex: currentBookIndex,
@@ -72,6 +106,7 @@ struct BibleReaderForJournal: View {
                         },
                         onCancel: { showBookPicker = false }
                     )
+                    #endif
                 }
 
                 Button {
@@ -81,6 +116,36 @@ struct BibleReaderForJournal: View {
                 }
                 .buttonStyle(.plain)
                 .popover(isPresented: $showChapterPicker, arrowEdge: .top) {
+                    #if os(iOS)
+                    if #available(iOS 17.0, *) {
+                        ChapterPickerPopover(
+                            chapters: currentBook.chapters,
+                            currentIndex: currentChapterIndex,
+                            onSelect: { idx in
+                                currentChapterIndex = idx
+                                targetVerse = nil
+                                showChapterPicker = false
+                                scrollToTop()
+                            },
+                            onCancel: { showChapterPicker = false }
+                        )
+                        .presentationCompactAdaptation(.popover)
+                    } else {
+                        ChapterPickerPopover(
+                            chapters: currentBook.chapters,
+                            currentIndex: currentChapterIndex,
+                            onSelect: { idx in
+                                currentChapterIndex = idx
+                                targetVerse = nil
+                                showChapterPicker = false
+                                scrollToTop()
+                            },
+                            onCancel: { showChapterPicker = false }
+                        )
+                        .presentationDetents([.fraction(0.5), .large])
+                        .presentationDragIndicator(.visible)
+                    }
+                    #else
                     ChapterPickerPopover(
                         chapters: currentBook.chapters,
                         currentIndex: currentChapterIndex,
@@ -92,6 +157,7 @@ struct BibleReaderForJournal: View {
                         },
                         onCancel: { showChapterPicker = false }
                     )
+                    #endif
                 }
 
                 Spacer(minLength: 0)
@@ -127,9 +193,7 @@ struct BibleReaderForJournal: View {
                             menuVerse = verse.number
                         }
                         .onTapGesture {
-                            // Optional selection highlight on tap
                             selectedVerse = verse.number
-                            // Dismiss inline menu if open
                             if menuVerse != nil { menuVerse = nil }
                         }
 
@@ -174,7 +238,6 @@ struct BibleReaderForJournal: View {
                 .padding(.vertical, 8)
                 .scrollTargetLayout()
                 .onTapGesture {
-                    // Dismiss inline menu if open
                     if menuVerse != nil { menuVerse = nil }
                 }
             }
@@ -206,8 +269,7 @@ struct BibleReaderForJournal: View {
         let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
 
-        // Try to parse "Book Chap:Verse" using the linker’s resolution helpers
-        // Strategy: split on ":" to find verse; split left part into book tokens + chapter at end
+        // Try to parse "Book Chap:Verse"
         let parts = trimmed.components(separatedBy: ":")
         let left = parts.first ?? trimmed
         let right = parts.count > 1 ? parts[1] : nil
@@ -215,19 +277,16 @@ struct BibleReaderForJournal: View {
         let leftTokens = left.split(separator: " ").map(String.init)
         guard !leftTokens.isEmpty else { return }
 
-        // Chapter is last number on the left, book is the rest
         var chapterNum: Int? = nil
         var bookNameCandidate = ""
         if let last = leftTokens.last, let chap = Int(last) {
             chapterNum = chap
             bookNameCandidate = leftTokens.dropLast().joined(separator: " ")
         } else {
-            // If no chapter provided, default chapter = 1 and treat all as book
             chapterNum = 1
             bookNameCandidate = leftTokens.joined(separator: " ")
         }
 
-        // Resolve book name via BibleReferenceLinker.resolveBook(named:) analog by using BibleData names directly
         if let idx = BibleData.books.firstIndex(where: { $0.name.compare(bookNameCandidate, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
             currentBookIndex = idx
         } else if let resolved = resolveBookName(bookNameCandidate),
@@ -253,18 +312,14 @@ struct BibleReaderForJournal: View {
     }
 
     private func resolveBookName(_ raw: String) -> String? {
-        // Reuse BibleReferenceLinker’s resolution by invoking a small helper:
-        // Try the exact name first, then a few abbreviation fallbacks similar to BibleReferenceLinker.
         let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         if let direct = BibleData.books.first(where: { $0.name.compare(trimmed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
             return direct.name
         }
-        // Try collapsing spaces and case-insensitive compare (e.g., "SongofSolomon")
         let collapsed = trimmed.replacingOccurrences(of: " ", with: "")
         if let match = BibleData.books.first(where: { $0.name.replacingOccurrences(of: " ", with: "").compare(collapsed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
             return match.name
         }
-        // Last resort: use BibleReferenceLinker.resolveBook(named:) via a dummy parse by injecting chapter/verse "1:1"
         let probe = "\(trimmed) 1:1"
         let attributed = BibleReferenceLinker.linkify(probe)
         let refs = ScriptureRefExtractor.refs(in: attributed)
@@ -279,7 +334,6 @@ struct BibleReaderForJournal: View {
             scrollToTop()
             return
         }
-        // Move to first chapter of next book
         if currentBookIndex + 1 < books.count {
             currentBookIndex += 1
             currentChapterIndex = 0
@@ -295,7 +349,6 @@ struct BibleReaderForJournal: View {
             scrollToTop()
             return
         }
-        // Move to last chapter of previous book
         if currentBookIndex - 1 >= 0 {
             currentBookIndex -= 1
             let newBook = books[currentBookIndex]
@@ -368,7 +421,50 @@ private struct SmallMenuLabel: View {
     }
 }
 
-// Popover content for selecting a Book
+// A simple row view to keep the Button label small and type-checkable
+private struct BookRowView: View {
+    let title: String
+    let isSelected: Bool
+
+    var body: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+            }
+            Spacer()
+            if isSelected {
+                HStack(spacing: 6) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(.tint)
+                    Text("Selected")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(
+                    isSelected ? Color.accentColor.opacity(0.4) : Color.gray.opacity(0.18),
+                    lineWidth: isSelected ? 1.5 : 1
+                )
+        )
+        .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
+    }
+}
+
+// Popover content for selecting a Book (modernized styling)
 private struct BookPickerPopover: View {
     let books: [Book]
     let currentIndex: Int
@@ -378,32 +474,42 @@ private struct BookPickerPopover: View {
     @State private var query: String = ""
 
     private var filteredIndices: [Int] {
-        if query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
             return Array(books.indices)
         }
-        let q = query.lowercased()
-        return books.enumerated()
-            .filter { $0.element.name.lowercased().contains(q) }
-            .map { $0.offset }
+        let q = trimmed.lowercased()
+        var result: [Int] = []
+        result.reserveCapacity(books.count)
+        for (idx, book) in books.enumerated() {
+            if book.name.lowercased().contains(q) {
+                result.append(idx)
+            }
+        }
+        return result
     }
 
     var body: some View {
         NavigationStack {
-            List(filteredIndices, id: \.self) { idx in
-                Button {
-                    onSelect(idx)
-                } label: {
-                    HStack {
-                        Text(books[idx].name)
-                            .foregroundStyle(.primary)
-                        Spacer()
-                        if idx == currentIndex {
-                            Image(systemName: "checkmark")
-                                .foregroundStyle(.blue)
+            ScrollView {
+                LazyVStack(spacing: 10) {
+                    ForEach(filteredIndices, id: \.self) { idx in
+                        Button {
+                            onSelect(idx)
+                        } label: {
+                            BookRowView(
+                                title: books[idx].name,
+                                isSelected: idx == currentIndex
+                            )
                         }
+                        .buttonStyle(.plain)
+                        .contentShape(Rectangle())
                     }
                 }
+                .padding(16)
             }
+            // Fill the available height in sheet/popover so content sits at the top cleanly
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .navigationTitle("Book")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -413,34 +519,53 @@ private struct BookPickerPopover: View {
             }
             .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search books")
         }
-        .frame(minWidth: 320, idealWidth: 360, maxWidth: 420, minHeight: 380, idealHeight: 440, maxHeight: 520)
     }
 }
 
-// Popover content for selecting a Chapter
+// Popover content for selecting a Chapter (grid of chips)
 private struct ChapterPickerPopover: View {
     let chapters: [Chapter]
     let currentIndex: Int
     let onSelect: (Int) -> Void
     let onCancel: () -> Void
 
+    // Adaptive grid: more columns on wider popover
+    private var columns: [GridItem] {
+        // Use adaptive sizing to fit nicely across iPhone/iPad popover sizes
+        [GridItem(.adaptive(minimum: 44, maximum: 72), spacing: 10)]
+    }
+
     var body: some View {
         NavigationStack {
-            List(chapters.indices, id: \.self) { idx in
-                Button {
-                    onSelect(idx)
-                } label: {
-                    HStack {
-                        Text("Chapter \(chapters[idx].number)")
-                            .foregroundStyle(.primary)
-                        Spacer()
-                        if idx == currentIndex {
-                            Image(systemName: "checkmark")
-                                .foregroundStyle(.blue)
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 10) {
+                    ForEach(chapters.indices, id: \.self) { idx in
+                        let isSelected = (idx == currentIndex)
+                        Button {
+                            onSelect(idx)
+                        } label: {
+                            Text("\(chapters[idx].number)")
+                                .font(.headline)
+                                .foregroundStyle(isSelected ? .white : .primary)
+                                .frame(width: 56, height: 40)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                        .fill(isSelected ? Color.accentColor : Color(.secondarySystemBackground))
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                        .stroke(isSelected ? Color.accentColor.opacity(0.7) : Color.gray.opacity(0.2), lineWidth: isSelected ? 1.5 : 1)
+                                )
+                                .shadow(color: .black.opacity(isSelected ? 0.08 : 0.04), radius: isSelected ? 6 : 3, x: 0, y: isSelected ? 3 : 2)
                         }
+                        .buttonStyle(.plain)
+                        .contentShape(Rectangle())
                     }
                 }
+                .padding(16)
             }
+            // Fill the available height in sheet/popover so content sits at the top cleanly
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .navigationTitle("Chapter")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -449,7 +574,6 @@ private struct ChapterPickerPopover: View {
                 }
             }
         }
-        .frame(minWidth: 260, idealWidth: 300, maxWidth: 340, minHeight: 320, idealHeight: 360, maxHeight: 420)
     }
 }
 
