@@ -36,6 +36,10 @@ struct HangmanGameView: View {
         }
     }
 
+    // MARK: - Debug/Test: Force Jesus Round toggle (shared across games)
+    @AppStorage("forceJesusTestEnabled") private var forceJesusTestEnabled: Bool = false
+    @State private var showJesusAlert: Bool = false
+
     enum Theme: String, CaseIterable, Identifiable {
         case all = "All"
         case people = "People"
@@ -169,6 +173,11 @@ struct HangmanGameView: View {
                     }
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
+
+                    // Debug/Test toggle
+                    Toggle("Force Jesus Round (Test)", isOn: $forceJesusTestEnabled)
+                        .tint(.orange)
+                        .padding(.horizontal)
 
                     Button("Start") { startGame() }
                         .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
@@ -384,6 +393,9 @@ struct HangmanGameView: View {
                     .padding()
             }
         }
+        .alert("Jesus Saves", isPresented: $showJesusAlert) {
+            Button("OK", role: .cancel) { }
+        }
     }
 
     private var drawingHeight: CGFloat {
@@ -539,6 +551,10 @@ struct HangmanGameView: View {
                 answered: 1,
                 currentBestStreak: currentBestStreak
             )
+            // Jesus bonus popup trigger
+            if isJesusName(targetWord) {
+                showJesusAlert = true
+            }
         } else {
             currentStreak = 0
             GameStats.shared.recordRound(
@@ -568,6 +584,21 @@ struct HangmanGameView: View {
     }
 
     private func generateRound() {
+        // Force Jesus test round if enabled
+        if forceJesusTestEnabled {
+            currentRoundCategory = .people
+            targetWord = "Jesus"
+            displayWord = masked(from: targetWord)
+            // Try to attach a reference if available
+            if loadedPeople.isEmpty { loadedPeople = GameDataLoaders.loadNames() }
+            if let entry = loadedPeople.first(where: { isJesusName($0.name) }) {
+                currentTargetReference = entry.firstReference
+            } else {
+                currentTargetReference = nil
+            }
+            return
+        }
+
         let actualCategory: Theme
         if theme == .all {
             actualCategory = [Theme.people, Theme.places, Theme.books].randomElement()!
@@ -750,6 +781,13 @@ struct HangmanGameView: View {
         let rest = String(s.drop { $0.isNumber })
         if rest.first?.isLetter == true { return digits + " " + rest }
         return s
+    }
+
+    // MARK: - Jesus detection helper
+    private func isJesusName(_ s: String) -> Bool {
+        let trimmed = s.trimmingCharacters(in: .whitespacesAndNewlines)
+        let lower = trimmed.lowercased()
+        return lower == "jesus" || lower == "jesus christ"
     }
 }
 

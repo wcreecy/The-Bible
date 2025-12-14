@@ -236,28 +236,23 @@ struct CursorTextView: UIViewRepresentable {
         let mutable = NSMutableAttributedString(attributedString: attr)
         let fullRange = NSRange(location: 0, length: mutable.length)
 
-        // Remove any explicit black foreground colors; we’ll rely on .label as the default.
+        // Remove explicit black colors; rely on dynamic .label
         mutable.enumerateAttribute(.foregroundColor, in: fullRange, options: []) { value, range, _ in
             if let color = value as? UIColor {
                 var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-                if color.getRed(&r, green: &g, blue: &b, alpha: &a) {
-                    if r == 0 && g == 0 && b == 0 && a > 0 {
-                        mutable.removeAttribute(.foregroundColor, range: range)
-                    }
+                if color.getRed(&r, green: &g, blue: &b, alpha: &a), r == 0, g == 0, b == 0, a > 0 {
+                    mutable.removeAttribute(.foregroundColor, range: range)
                 }
             }
         }
 
-        // Ensure every run has an explicit UIFont. If missing, apply preferred body.
+        // Ensure every run has an explicit UIFont
         let bodyFont = resolvedUIFont()
         mutable.enumerateAttribute(.font, in: fullRange, options: []) { value, range, _ in
             if value == nil {
                 mutable.addAttribute(.font, value: bodyFont, range: range)
-            } else if let f = value as? UIFont {
-                // If the font looks unreasonably small (defensive), enforce body
-                if f.pointSize < bodyFont.pointSize * 0.75 {
-                    mutable.addAttribute(.font, value: bodyFont, range: range)
-                }
+            } else if let f = value as? UIFont, f.pointSize < bodyFont.pointSize * 0.75 {
+                mutable.addAttribute(.font, value: bodyFont, range: range)
             }
         }
 
@@ -278,22 +273,21 @@ struct CursorTextView: UIViewRepresentable {
         tv.backgroundColor = .clear
         tv.delegate = context.coordinator
 
-        // Dynamic, adaptive colors for text and caret/selection
+        // Dynamic colors
         tv.textColor = .label
         tv.tintColor = .tintColor
         tv.typingAttributes[.foregroundColor] = UIColor.label
 
-        // Match keyboard appearance to interface style
+        // Keyboard appearance
         if let style = UIApplication.shared.connectedScenes
             .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
             .first?.traitCollection.userInterfaceStyle {
             tv.keyboardAppearance = (style == .dark) ? .dark : .light
         }
 
-        // Enable editing and selection
         tv.isEditable = true
         tv.isSelectable = true
-        tv.dataDetectorTypes = [] // we apply custom links
+        tv.dataDetectorTypes = []
 
         // Link appearance
         tv.linkTextAttributes = [
@@ -301,7 +295,7 @@ struct CursorTextView: UIViewRepresentable {
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
 
-        // Text behavior: disable autocorrect, keep spell checking and predictions; keep smart features and auto-capitalization.
+        // Text behavior
         tv.autocorrectionType = .no
         tv.spellCheckingType = .yes
         tv.autocapitalizationType = .sentences
@@ -309,7 +303,7 @@ struct CursorTextView: UIViewRepresentable {
         tv.smartQuotesType = .yes
         tv.smartInsertDeleteType = .yes
 
-        // Apply app-wide body font (resolves from SwiftUI environment)
+        // Apply font
         let bodyFont = resolvedUIFont()
         tv.font = bodyFont
         tv.typingAttributes[.font] = bodyFont
@@ -322,7 +316,6 @@ struct CursorTextView: UIViewRepresentable {
             let linked = NSAttributedString(linkify(text))
             let normalized = normalizedAttributedString(linked)
             tv.attributedText = normalized
-            // Reassert dynamic colors and font immediately after setting attributedText
             tv.textColor = .label
             tv.typingAttributes[.foregroundColor] = UIColor.label
             tv.font = bodyFont
@@ -331,7 +324,6 @@ struct CursorTextView: UIViewRepresentable {
             tv.text = text
         }
 
-        // Initial insets
         applyInsets(to: tv, bottom: bottomInset)
         DispatchQueue.main.async {
             context.coordinator.updateCaretRect(tv, deferBindingUpdate: true)
@@ -343,68 +335,74 @@ struct CursorTextView: UIViewRepresentable {
         context.coordinator.isInSwiftUIUpdate = true
         defer { context.coordinator.isInSwiftUIUpdate = false }
 
-        // Keep dynamic colors enforced
-        if uiView.textColor != .label {
-            uiView.textColor = .label
-        }
+        // Keep dynamic colors and font enforced
+        if uiView.textColor != .label { uiView.textColor = .label }
         if (uiView.typingAttributes[.foregroundColor] as? UIColor) != UIColor.label {
             uiView.typingAttributes[.foregroundColor] = UIColor.label
         }
-
-        // Ensure font matches environment (size/family)
         let bodyFont = resolvedUIFont()
-        if uiView.font != bodyFont {
-            uiView.font = bodyFont
-        }
+        if uiView.font != bodyFont { uiView.font = bodyFont }
         if (uiView.typingAttributes[.font] as? UIFont) != bodyFont {
             uiView.typingAttributes[.font] = bodyFont
         }
 
-        // Update text (preserving selection)
-        let currentString = uiView.text ?? ""
+        // Update text (preserving selection) only if needed
         if let linkify {
             if context.coordinator.lastLinkifiedText != text || uiView.attributedText?.string != text {
                 context.coordinator.isProgrammaticUpdate = true
-                let oldRange = uiView.selectedRange
+                // Use current selection at the moment of apply and clamp it
+                let currentRange = uiView.selectedRange
+                let clampedOld = context.coordinator.clampSelection(currentRange, forLength: (uiView.attributedText?.string as NSString?)?.length ?? (uiView.text as NSString?)?.length ?? 0)
                 let linked = NSAttributedString(linkify(text))
                 let normalized = normalizedAttributedString(linked)
                 uiView.attributedText = normalized
-                // Immediately reassert dynamic colors and font after assigning attributedText
+                // Reassert dynamic attributes before restoring selection
                 uiView.textColor = .label
                 uiView.typingAttributes[.foregroundColor] = UIColor.label
                 uiView.font = bodyFont
                 uiView.typingAttributes[.font] = bodyFont
-                uiView.selectedRange = oldRange
+                // Clamp selection to new length and restore
+                let newLen = (uiView.attributedText?.string as NSString?)?.length ?? 0
+                let clampedNew = context.coordinator.clampSelection(clampedOld, forLength: newLen)
+                uiView.selectedRange = clampedNew
                 context.coordinator.lastLinkifiedText = text
                 context.coordinator.isProgrammaticUpdate = false
+                context.coordinator.didProgrammaticallyAdjustSelection = true
             }
         } else {
-            if currentString != text {
+            if (uiView.text ?? "") != text {
                 context.coordinator.isProgrammaticUpdate = true
-                let oldRange = uiView.selectedRange
+                let currentRange = uiView.selectedRange
+                let clampedOld = context.coordinator.clampSelection(currentRange, forLength: (uiView.text as NSString?)?.length ?? 0)
                 uiView.text = text
-                uiView.selectedRange = oldRange
+                let newLen = (uiView.text as NSString).length
+                let clampedNew = context.coordinator.clampSelection(clampedOld, forLength: newLen)
+                uiView.selectedRange = clampedNew
                 context.coordinator.isProgrammaticUpdate = false
+                context.coordinator.didProgrammaticallyAdjustSelection = true
             }
         }
 
-        // Update selection
+        // Update selection only if actually different
         if uiView.selectedRange != selection {
             let maxLoc = max(0, (uiView.text as NSString).length)
-            let newLoc = min(max(selection.location, 0), maxLoc)
-            let maxLen = max(0, maxLoc - newLoc)
-            let newLen = min(max(selection.length, 0), maxLen)
-
-            context.coordinator.isProgrammaticUpdate = true
-            uiView.selectedRange = NSRange(location: newLoc, length: newLen)
-            context.coordinator.isProgrammaticUpdate = false
+            let newRange = context.coordinator.clampSelection(selection, forLength: maxLoc)
+            if uiView.selectedRange != newRange {
+                context.coordinator.isProgrammaticUpdate = true
+                uiView.selectedRange = newRange
+                context.coordinator.isProgrammaticUpdate = false
+                context.coordinator.didProgrammaticallyAdjustSelection = true
+            }
         }
 
         // Apply keyboard-driven bottom inset
         applyInsets(to: uiView, bottom: bottomInset)
 
-        // Keep caret visible after updates
-        context.coordinator.scrollCaretVisible(uiView)
+        // Avoid forcing scroll while the user types; only ensure caret visible after programmatic selection changes.
+        if context.coordinator.didProgrammaticallyAdjustSelection {
+            context.coordinator.didProgrammaticallyAdjustSelection = false
+            context.coordinator.scrollCaretVisible(uiView)
+        }
 
         context.coordinator.updateCaretRect(uiView, deferBindingUpdate: true)
     }
@@ -438,44 +436,100 @@ struct CursorTextView: UIViewRepresentable {
         var parent: CursorTextView
         var isProgrammaticUpdate: Bool = false
         var isInSwiftUIUpdate: Bool = false
+        var didProgrammaticallyAdjustSelection: Bool = false
         private var lastCaretRect: CGRect = .null
 
         // Cache last linkified source to avoid redundant attribute work
         var lastLinkifiedText: String?
 
+        // Debounced relinkify work item to avoid stale selection races
+        private var pendingRelinkify: DispatchWorkItem?
+
         init(parent: CursorTextView) { self.parent = parent }
+
+        // Clamp helper to keep selection within bounds of a given string length
+        func clampSelection(_ range: NSRange, forLength length: Int) -> NSRange {
+            let maxLoc = max(0, length)
+            let loc = min(max(range.location, 0), maxLoc)
+            let maxLen = max(0, maxLoc - loc)
+            let len = min(max(range.length, 0), maxLen)
+            return NSRange(location: loc, length: len)
+        }
 
         func textViewDidChange(_ textView: UITextView) {
             if isProgrammaticUpdate { return }
+
             let newText = textView.text ?? ""
             if parent.text != newText {
                 DispatchQueue.main.async {
                     self.parent.text = newText
                 }
             }
+
             let newRange = textView.selectedRange
             if parent.selection != newRange {
                 DispatchQueue.main.async {
                     self.parent.selection = newRange
                 }
             }
-            updateCaretRect(textView)
-            scrollCaretVisible(textView)
 
-            // Re-apply linkification on change if provided
+            updateCaretRect(textView)
+
+            // Debounced re-linkify to coalesce rapid typing and avoid stale selection
             if let linkify = parent.linkify {
                 lastLinkifiedText = newText
-                let oldRange = textView.selectedRange
-                let linked = NSAttributedString(linkify(newText))
-                let normalized = parent.normalizedAttributedString(linked)
-                textView.attributedText = normalized
-                // Immediately reassert dynamic colors and font after assigning attributedText
-                textView.textColor = .label
-                textView.typingAttributes[.foregroundColor] = UIColor.label
-                let bodyFont = parent.resolvedUIFont()
-                textView.font = bodyFont
-                textView.typingAttributes[.font] = bodyFont
-                textView.selectedRange = oldRange
+                // Cancel any pending work
+                pendingRelinkify?.cancel()
+                let work = DispatchWorkItem { [weak self, weak textView] in
+                    guard let self, let tv = textView else { return }
+                    // If text changed again since we scheduled, recompute now using latest tv.text
+                    let currentString = tv.text ?? ""
+                    let linked = NSAttributedString(linkify(currentString))
+                    let normalized = self.parent.normalizedAttributedString(linked)
+
+                    // Only apply if plain string matches tv.text (avoid fighting IME)
+                    if tv.attributedText?.string != currentString {
+                        // The string content differs; assign and restore selection safely
+                        self.isProgrammaticUpdate = true
+                        // Use the latest selection at apply time and clamp to current/new length
+                        let beforeLen = (tv.attributedText?.string as NSString?)?.length ?? (tv.text as NSString?)?.length ?? 0
+                        let currentSel = self.clampSelection(tv.selectedRange, forLength: beforeLen)
+                        tv.attributedText = normalized
+                        // Reassert dynamic attributes
+                        tv.textColor = .label
+                        tv.typingAttributes[.foregroundColor] = UIColor.label
+                        let bodyFont = self.parent.resolvedUIFont()
+                        tv.font = bodyFont
+                        tv.typingAttributes[.font] = bodyFont
+                        // Clamp selection to new length and restore
+                        let afterLen = (tv.attributedText?.string as NSString?)?.length ?? 0
+                        let clampedSel = self.clampSelection(currentSel, forLength: afterLen)
+                        tv.selectedRange = clampedSel
+                        self.isProgrammaticUpdate = false
+                        self.didProgrammaticallyAdjustSelection = true
+                        self.lastLinkifiedText = currentString
+                    } else {
+                        // Plain string is already current; still ensure attributes are dynamic and selection valid
+                        self.isProgrammaticUpdate = true
+                        let bodyFont = self.parent.resolvedUIFont()
+                        tv.textColor = .label
+                        tv.typingAttributes[.foregroundColor] = UIColor.label
+                        tv.font = bodyFont
+                        tv.typingAttributes[.font] = bodyFont
+                        // Clamp selection to current length
+                        let len = (tv.attributedText?.string as NSString?)?.length ?? (tv.text as NSString?)?.length ?? 0
+                        let clamped = self.clampSelection(tv.selectedRange, forLength: len)
+                        if tv.selectedRange != clamped {
+                            tv.selectedRange = clamped
+                            self.didProgrammaticallyAdjustSelection = true
+                        }
+                        self.isProgrammaticUpdate = false
+                        self.lastLinkifiedText = currentString
+                    }
+                }
+                pendingRelinkify = work
+                // A short debounce to allow IME/typing to settle; keeps UX snappy while preventing races
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: work)
             }
 
             // Ensure typing attributes stay dynamic
@@ -501,7 +555,7 @@ struct CursorTextView: UIViewRepresentable {
                 }
             }
             updateCaretRect(textView)
-            scrollCaretVisible(textView)
+            // Do not force scroll here; let the system keep caret in view during typing.
             DispatchQueue.main.async {
                 self.parent.onChange?(textView.text)
             }

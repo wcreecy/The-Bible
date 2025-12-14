@@ -11,6 +11,9 @@ struct WhoAmIGameView: View {
     @State private var loadedPreview: (title: String, verses: [Verse])? = nil
     @State private var currentRefIndex: Int = 0
 
+    // Debug/Test toggle shared across games
+    @AppStorage("forceJesusTestEnabled") private var forceJesusTestEnabled: Bool = false
+
     // Collects the maximum measured height from all choice cells
     private struct ChoiceHeightKey: PreferenceKey {
         static var defaultValue: CGFloat = 0
@@ -79,6 +82,11 @@ struct WhoAmIGameView: View {
                     }
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
+
+                    // Debug/Test toggle
+                    Toggle("Force Jesus Round (Test)", isOn: $forceJesusTestEnabled)
+                        .tint(.orange)
+                        .padding(.horizontal)
 
                     Button("Start") { vm.startGame() }
                         .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
@@ -276,6 +284,9 @@ struct WhoAmIGameView: View {
                 }
             }
         }
+        .alert("Jesus Saves", isPresented: $vm.showJesusBonusAlert) {
+            Button("OK", role: .cancel) { }
+        }
     }
 
     private func backgroundColor(for choice: String) -> Color {
@@ -392,3 +403,4 @@ struct WhoAmIGameView: View {
         WhoAmIGameView()
     }
 }
+

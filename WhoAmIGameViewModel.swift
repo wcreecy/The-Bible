@@ -79,6 +79,9 @@ final class WhoAmIGameViewModel: ObservableObject {
     @Published var roundOver: Bool = false
     @Published var showReveal: Bool = false
 
+    // NEW: Jesus bonus alert flag (bound in view)
+    @Published var showJesusBonusAlert: Bool = false
+
     // Load data
     func onAppear() {
         Task {
@@ -129,8 +132,15 @@ final class WhoAmIGameViewModel: ObservableObject {
         roundOver = false
         showReveal = false
 
-        // Generate a question
-        let correct = entries.randomElement()!
+        // Generate a question (optionally force Jesus for testing)
+        let forceJesus = UserDefaults.standard.bool(forKey: "forceJesusTestEnabled")
+        let correct: Entry
+        if forceJesus, let jesus = entries.first(where: { isJesusName($0.name) }) {
+            correct = jesus
+        } else {
+            correct = entries.randomElement()!
+        }
+
         switch mode {
         case .names:
             // Prompt is the exact name; choices are descriptions (1 correct + 3 random wrong)
@@ -168,6 +178,13 @@ final class WhoAmIGameViewModel: ObservableObject {
                 answered: 1,
                 currentBestStreak: currentBestStreak
             )
+
+            // Jesus bonus popup trigger:
+            // - Names mode: prompt is the name; check if it's Jesus
+            // - Reverse mode: correctChoice is the name; check if it's Jesus
+            if (mode == .names && isJesusName(promptTitle)) || (mode == .reverse && isJesusName(correctChoice)) {
+                showJesusBonusAlert = true
+            }
         } else {
             currentStreak = 0
             GameStats.shared.recordRound(
@@ -268,4 +285,12 @@ final class WhoAmIGameViewModel: ObservableObject {
         timerCancellable = nil
         pulseOn = false
     }
+
+    // MARK: - Jesus detection helper
+    private func isJesusName(_ s: String) -> Bool {
+        let trimmed = s.trimmingCharacters(in: .whitespacesAndNewlines)
+        let lower = trimmed.lowercased()
+        return lower == "jesus" || lower == "jesus christ"
+    }
 }
+

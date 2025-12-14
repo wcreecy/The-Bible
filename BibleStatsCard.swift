@@ -92,6 +92,9 @@ struct BibleStatsCard: View {
                     }()
                     statMiniPill(title: "This Month", value: bibleVM.formatted(monthSeconds), subtitle: monthDeltaOnlyValue, tint: .mint)
 
+                    // New: Last Session pill
+                    statMiniPill(title: "Last Session", value: bibleVM.lastSessionSeconds > 0 ? bibleVM.formatted(bibleVM.lastSessionSeconds) : "—", tint: .indigo)
+
                     statMiniPill(title: "All-time", value: bibleVM.formatted(bibleVM.totalSeconds), subtitle: nil, tint: .purple)
 
                     lastReadMiniPill(title: "Last Read", ref: bibleVM.lastReadBookChapter, relative: bibleVM.lastReadRelativeTime)
@@ -107,3 +110,4 @@ struct BibleStatsCard: View {
         .onTapGesture(perform: onOpenStats)
     }
 }
+

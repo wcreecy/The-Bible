@@ -12,6 +12,10 @@ struct BeatTheClockGameView: View {
     @State private var difficulty: Difficulty = .medium
     @State private var category: Category = .people
 
+    // Debug/Test toggle shared across games
+    @AppStorage("forceJesusTestEnabled") private var forceJesusTestEnabled: Bool = false
+    @State private var showJesusAlert: Bool = false
+
     // Data
     @State private var loadedPeople: [BibleName] = []
     @State private var loadedPlaces: [BibleLocation] = []
@@ -120,6 +124,11 @@ struct BeatTheClockGameView: View {
                     }
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
+
+                    // Debug/Test toggle
+                    Toggle("Force Jesus Round (Test)", isOn: $forceJesusTestEnabled)
+                        .tint(.orange)
+                        .padding(.horizontal)
 
                     Button("Start") { startGame() }
                         .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
@@ -294,6 +303,9 @@ struct BeatTheClockGameView: View {
                 .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { showAnswers = false } } }
             }
         }
+        .alert("Jesus Saves", isPresented: $showJesusAlert) {
+            Button("OK", role: .cancel) { }
+        }
     }
 
     private var timerColor: Color {
@@ -317,6 +329,23 @@ struct BeatTheClockGameView: View {
         remainingSeconds = roundTime
         acceptableBooks = []
         pulse = false
+
+        // Force Jesus test round if enabled
+        if forceJesusTestEnabled {
+            currentEntryIsPerson = true
+            targetLabel = "Jesus"
+            if loadedPeople.isEmpty { loadedPeople = GameDataLoaders.loadNames() }
+            if let entry = loadedPeople.first(where: { isJesusName(entryName: $0.name) }) {
+                referenceBookName = parseBookName(from: entry.firstReference)
+            } else {
+                referenceBookName = nil
+            }
+            acceptableBooks = booksMentioning(targetLabel)
+            if let ref = referenceBookName { acceptableBooks.insert(ref) }
+            DispatchQueue.main.async { self.searchFieldFocused = true }
+            return
+        }
+
         switch category {
         case .people:
             guard let entry = loadedPeople.randomElement() else { targetLabel = ""; referenceBookName = nil; return }
@@ -383,6 +412,11 @@ struct BeatTheClockGameView: View {
                 currentBestStreak: currentBestStreak
             )
             let generator = UINotificationFeedbackGenerator(); generator.notificationOccurred(.success)
+
+            // Jesus bonus popup trigger
+            if isJesusName(entryName: targetLabel) {
+                showJesusAlert = true
+            }
         } else {
             currentStreak = 0
             GameStats.shared.recordRound(
@@ -411,6 +445,9 @@ struct BeatTheClockGameView: View {
                 answered: 1,
                 currentBestStreak: currentBestStreak
             )
+            if isJesusName(entryName: targetLabel) {
+                showJesusAlert = true
+            }
         } else {
             currentStreak = 0
             GameStats.shared.recordRound(
@@ -470,4 +507,12 @@ struct BeatTheClockGameView: View {
         case .hard: return .hard
         }
     }
+
+    // MARK: - Jesus detection helper
+    private func isJesusName(entryName: String) -> Bool {
+        let trimmed = entryName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let lower = trimmed.lowercased()
+        return lower == "jesus" || lower == "jesus christ"
+    }
 }
+

@@ -118,6 +118,9 @@ struct StatsView: View {
     private enum Aggregation { case daily, weekly, monthly, yearly }
     @State private var allTimeAggregation: Aggregation = .daily
 
+    // New: last session length (seconds)
+    @State private var lastSessionSeconds: Int = 0
+
     private var orderedAllBooks: [String] {
         if !BibleData.books.isEmpty {
             return BibleData.books.map { $0.name }
@@ -279,6 +282,17 @@ struct StatsView: View {
             recomputeGenresFromScope()
             recomputeTotalsCardMetrics()
         }
+        // Ensure only one expandable card is open at a time
+        .onChange(of: showBookProgressDetails) {
+            if showBookProgressDetails {
+                showTotalsSection = false
+            }
+        }
+        .onChange(of: showTotalsSection) {
+            if showTotalsSection {
+                showBookProgressDetails = false
+            }
+        }
     }
 
     private var contentVStack: some View {
@@ -437,6 +451,8 @@ struct StatsView: View {
                 statMiniPill(title: "Today", value: BibleStatsStore.shared.format(todaySeconds), subtitle: todayDeltaOnlyValue, tint: .blue)
                 statMiniPill(title: "This Week", value: BibleStatsStore.shared.format(thisWeekSeconds), subtitle: weekDeltaOnlyValue, tint: .green)
                 statMiniPill(title: "This Month", value: BibleStatsStore.shared.format(monthTotalSeconds), subtitle: monthDeltaOnlyValue, tint: .mint)
+                // New: Last session length
+                statMiniPill(title: "Last Session", value: lastSessionSeconds > 0 ? BibleStatsStore.shared.format(lastSessionSeconds) : "—", tint: .indigo)
                 statMiniPill(title: "All-time", value: BibleStatsStore.shared.format(totalSecondsAllTime), subtitle: nil, tint: .purple)
                 lastReadMiniPill(title: "Last Read", ref: lastReadBookChapter, relative: lastReadTimeText)
             }
@@ -642,6 +658,16 @@ struct StatsView: View {
             let durSec = Int(max(0, s.end.timeIntervalSince(s.start)))
             let minutes = Int(round(Double(durSec) / 60.0))
             return (index: idx + 1, minutes: minutes)
+        }
+
+        // New: compute last session length from all sessions (not filtered by min threshold here)
+        do {
+            let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: Date(), calendar: cal)
+            if let last = allSessions.max(by: { $0.end < $1.end }) {
+                lastSessionSeconds = Int(max(0, last.end.timeIntervalSince(last.start)))
+            } else {
+                lastSessionSeconds = 0
+            }
         }
 
         // Consistency
@@ -1241,3 +1267,4 @@ struct StatsView: View {
         }
     }
 }
+

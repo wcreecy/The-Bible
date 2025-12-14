@@ -25,6 +25,9 @@ final class HomeBibleStatsViewModel: ObservableObject {
     // New: label to indicate timeframe for Top Books (matches Stats tab behavior)
     @Published var topBooksScopeLabel: String = "All Time"
 
+    // New: last session length (seconds)
+    @Published var lastSessionSeconds: Int = 0
+
     private var cancellable: AnyCancellable?
     private var externalUpdateCancellable: AnyCancellable?
 
@@ -106,6 +109,16 @@ final class HomeBibleStatsViewModel: ObservableObject {
         do {
             let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: now, calendar: cal)
             totalSeconds = allSessions.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
+        }
+
+        // New: last session length
+        do {
+            let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: now, calendar: cal)
+            if let last = allSessions.max(by: { $0.end < $1.end }) {
+                lastSessionSeconds = Int(max(0, last.end.timeIntervalSince(last.start)))
+            } else {
+                lastSessionSeconds = 0
+            }
         }
 
         // OT/NT split from sessions-only for the same 5-year window
@@ -197,3 +210,4 @@ final class HomeBibleStatsViewModel: ObservableObject {
         }
     }
 }
+
