@@ -1,9 +1,11 @@
 import Foundation
+#if USE_STOREKIT_DIAGNOSTICS
 import StoreKit
+#endif
 
-// MARK: - Store environment helpers (non-deprecated)
+// MARK: - Store environment helpers
 extension The_Bible__iOS_App {
-    // Synchronous coarse fallback for early logging
+    // Synchronous coarse fallback for early logging (no StoreKit)
     static func buildEnvHintFallback() -> String {
         #if DEBUG
         return "Development (Debug/AdHoc)"
@@ -12,23 +14,23 @@ extension The_Bible__iOS_App {
         #endif
     }
 
-    // Async, preferred detection using StoreKit on iOS 15+
+    // Async, preferred detection using StoreKit (compiled only if enabled)
+    #if USE_STOREKIT_DIAGNOSTICS
     static func computeStoreEnvironmentHint() async -> String? {
         do {
-            // On iOS 15+, AppTransaction.shared returns VerificationResult<AppTransaction>
             let result = try await AppTransaction.shared
-
             switch result {
             case .verified(_):
-                // Verified App Store transaction => Production/TestFlight
                 return "Production (TestFlight/App Store)"
             case .unverified(_, _):
-                // Present but failed verification; treat as development or unknown
                 return "Development (Debug/AdHoc)"
             }
         } catch {
-            // If StoreKit fails, return a conservative hint
             return buildEnvHintFallback()
         }
     }
+    #else
+    // Stub so callers can compile even when diagnostics are disabled.
+    static func computeStoreEnvironmentHint() async -> String? { nil }
+    #endif
 }

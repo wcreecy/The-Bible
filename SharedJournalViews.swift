@@ -433,6 +433,7 @@ struct CursorTextView: UIViewRepresentable {
 
     func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
 
+    @MainActor
     final class Coordinator: NSObject, UITextViewDelegate, UIScrollViewDelegate {
         var parent: CursorTextView
         var isProgrammaticUpdate: Bool = false
@@ -550,7 +551,25 @@ struct CursorTextView: UIViewRepresentable {
             }
         }
 
-        // Intercept link taps inside editable text
+        // MARK: - Link interaction (iOS 17+)
+        @available(iOS 17.0, *)
+        private func textView(_ textView: UITextView,
+                      shouldInteractWith textItem: UITextItem,
+                      in characterRange: NSRange) -> Bool {
+            if case let .link(url) = textItem.content,
+               let ref = BibleReferenceLinker.parse(url: url),
+               let _ = BibleReferenceLinker.loadVerses(for: ref) {
+                DispatchQueue.main.async {
+                    self.parent.onLinkTap?(ref)
+                }
+                // handled
+                return false
+            }
+            return true
+        }
+
+        // MARK: - Link interaction (iOS 16 and earlier)
+        @available(iOS, introduced: 10.0, deprecated: 17.0)
         func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
             if let ref = BibleReferenceLinker.parse(url: URL) {
                 if let _ = BibleReferenceLinker.loadVerses(for: ref) {

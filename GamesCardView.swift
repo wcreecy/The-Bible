@@ -317,7 +317,7 @@ struct GamesCardView: View {
             version &+= 1
         }
         // Drive animation refresh whenever stats.version changes (covers iPad tab caching)
-        .onChange(of: stats.version) { _ in
+        .onChange(of: stats.version) {
             version &+= 1
         }
         // Still listen for explicit notifications

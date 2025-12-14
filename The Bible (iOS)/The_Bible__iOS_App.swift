@@ -11,7 +11,6 @@ import UIKit
 import UserNotifications
 import CloudKit
 import Combine
-import StoreKit
 
 @main
 struct The_Bible__iOS_App: App {
@@ -23,7 +22,7 @@ struct The_Bible__iOS_App: App {
         let bundleID = Bundle.main.bundleIdentifier ?? "<unknown bundle id>"
         let teamID = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String ?? "<unknown team id>"
         let buildCfg = ProcessInfo.processInfo.environment["CONFIGURATION"] ?? "<unknown config>"
-        // Deprecated on iOS 18; moved to async StoreKit-based logger below.
+        // Deprecated on iOS 18; keep a coarse hint without StoreKit.
         let envHint = The_Bible__iOS_App.buildEnvHintFallback()
         print("🔎 SwiftData+CloudKit diagnostics:")
         print("   • Bundle ID: \(bundleID)")
@@ -121,11 +120,7 @@ struct The_Bible__iOS_App: App {
                     // Run the GMT→local daily key migration once before any stats/streaks are read.
                     BibleStatsStore.shared.migrateDailyKeysFromGMTToLocalIfNeeded()
 
-                    // Async, non-deprecated environment hint using StoreKit
-                    let hint = await The_Bible__iOS_App.computeStoreEnvironmentHint()
-                    if let hint {
-                        print("🔎 StoreKit environment hint: \(hint)")
-                    }
+                    // Removed StoreKit environment hint to avoid Simulator auth logs when not using StoreKit.
                 }
                 .onChange(of: scenePhase) { _, newPhase in
                     switch newPhase {

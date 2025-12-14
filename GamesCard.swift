@@ -101,7 +101,7 @@ struct GamesCard: View {
 
     var body: some View {
         // Snapshot once per render pass
-        let snap = GameStats.shared.snapshot()
+        _ = GameStats.shared.snapshot()
         let breakdown = GameStats.shared.breakdownSnapshot()
         let totalAnswered = breakdown.totalAnswered
         let totalCorrect = breakdown.totalCorrect
@@ -242,7 +242,7 @@ struct GamesCard: View {
         let currentInsight = insightLines[insightIndex % insightLines.count]
 
         // Explicit labels select the init with only content (no accessories)
-        HeroCard(
+        return HeroCard(
             title: "Games",
             subtitle: lastPlayedText,
             icon: "gamecontroller",
@@ -340,7 +340,7 @@ struct GamesCard: View {
         }
         // Tie identity to stats.version and local version to force refreshes without non-view statements
         .id(stats.version &+ version)
-        .onChange(of: stats.version) { _ in
+        .onChange(of: stats.version) {
             clearInsightStateIfStatsCleared()
         }
         .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in

@@ -220,8 +220,7 @@ final class iCloudSyncCoordinator {
         // Cancel any pending task
         debounceTask?.cancel()
 
-        // Snapshot and clear pending set now (on MainActor)
-        let _ = pendingKeys
+        // Clear pending set now (on MainActor)
         pendingKeys.removeAll()
 
         let delayNanos = UInt64(debounceInterval * 1_000_000_000)
@@ -229,15 +228,15 @@ final class iCloudSyncCoordinator {
         debounceTask = Task { [weak self] in
             // Debounce
             try? await Task.sleep(nanoseconds: delayNanos)
-            guard let self else { return }
+            guard self != nil else { return }
 
-            // Perform synchronize off-main to avoid any chance of blocking UI
+            // Perform synchronize off-main to avoid any chance of blocking UI.
             await withTaskCancellationHandler {
-                Task.detached { [weak self] in
-                    guard let self else { return }
-                    self.kvs.synchronize()
+                // Do not capture self or self.kvs (both are MainActor-isolated / non-Sendable).
+                let _ = Task.detached {
+                    NSUbiquitousKeyValueStore.default.synchronize()
                     await MainActor.run {
-                        self.lastPushDate = Date()
+                        iCloudSyncCoordinator.shared.lastPushDate = Date()
                     }
                 }
             } onCancel: {

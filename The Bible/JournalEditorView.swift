@@ -775,9 +775,9 @@ struct JournalEditorView: View {
         }
     }
 
-    // Build a smart link string from a VerseRef that BibleReferenceLinker will detect.
+    // Build a plain reference string from a VerseRef that BibleReferenceLinker will detect.
     private static func smartLinkString(from ref: VerseRef) -> String {
-        return "#\(ref.book) \(ref.chapter):\(ref.verse)"
+        return "\(ref.book) \(ref.chapter):\(ref.verse)"
     }
 }
 

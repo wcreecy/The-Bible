@@ -146,15 +146,6 @@ struct HomeView: View {
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
     @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds: Int = 0
 
-    private func goalMinutesString(_ minutes: Int) -> String {
-        let mins = max(0, minutes)
-        let hrs = mins / 60
-        let rem = mins % 60
-        if hrs == 0 { return "\(rem) min" }
-        if rem == 0 { return "\(hrs) hr" }
-        return "\(hrs) hr \(rem) min"
-    }
-
     // Daily goal values (used inside Streaks card)
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes_streaks: Int = 30
     @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds_streaks: Int = 0
@@ -212,6 +203,32 @@ struct HomeView: View {
                 },
                 onTogglePaused: {
                     votdVM.togglePaused()
+                },
+                onOpenJournal: { v in
+                    // Mirror ReadingView.openJournalForReference behavior
+                    let bookName = v.bookName
+                    let chapterNum = v.chapterNumber
+                    let verseNum = v.verseNumber
+
+                    if UIDevice.current.userInterfaceIdiom == .pad {
+                        // iPad: switch to Journal tab and start inline new entry
+                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 2])
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                            NotificationCenter.default.post(
+                                name: JournalNotifications.startInlineNewFromBible,
+                                object: nil,
+                                userInfo: [
+                                    "book": bookName,
+                                    "chapter": chapterNum,
+                                    "verse": verseNum
+                                ]
+                            )
+                        }
+                    } else {
+                        // iPhone: present the composer with the verseRef and tag colors enabled
+                        let ref = VerseRef(book: bookName, chapter: chapterNum, verse: verseNum, translation: "KJV")
+                        journalComposer.present(initialBody: nil, verseRef: ref, showTagColors: true)
+                    }
                 },
                 title: verseCardTitle,
                 icon: verseCardIcon

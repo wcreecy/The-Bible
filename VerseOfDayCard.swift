@@ -15,6 +15,8 @@ struct VerseOfDayCard: View {
     let onToggleFavorite: (HomeVerseRef) -> Void
     let onOpenReader: (HomeVerseRef) -> Void
     let onTogglePaused: () -> Void
+    // NEW: Journal action
+    let onOpenJournal: (HomeVerseRef) -> Void
 
     // Dynamic title/icon based on time of day
     let title: String
@@ -83,19 +85,12 @@ struct VerseOfDayCard: View {
                         .font(.title3)
                         .help("Share")
 
-                        Button(action: {
-                            let refText = "\(v.bookName) \(v.chapterNumber):\(v.verseNumber)"
-                            // Journal open is handled by HomeView via onOpenReader? No; journal open is separate in HomeView.
-                            // Keep icon behavior as "Journal" per original; route through HomeView by separate closure if needed later.
-                            // For now, reuse openReader closure to avoid extra plumbing; if you want a separate onOpenJournal, we can add it.
-                            // But original card used a journal button; better to keep it here and use a dedicated closure.
-                        }) {
+                        Button(action: { onOpenJournal(v) }) {
                             Image(systemName: "book.closed")
                         }
                         .font(.title3)
                         .foregroundStyle(.brown)
                         .help("Journal")
-                        .disabled(true) // Disabled until a dedicated onOpenJournal closure is provided
 
                         Button(action: { onToggleFavorite(v) }) {
                             Image(systemName: isFavorited(v) ? "heart.fill" : "heart")

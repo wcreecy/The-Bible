@@ -244,14 +244,15 @@ struct SettingsDebugUtilitiesView: View {
                             let appIDPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String ?? "<unknown>"
                             let container = "iCloud.creecy.bible"
                             let cloudKitFlag = swiftdataCloudKitEnabled ? "enabled" : "disabled"
-                            let storeHint = await The_Bible__iOS_App.computeStoreEnvironmentHint() ?? The_Bible__iOS_App.buildEnvHintFallback()
+                            // Avoid StoreKit here to prevent Simulator auth logs.
+                            let storeHint = The_Bible__iOS_App.buildEnvHintFallback()
                             let msg = """
                             Build configuration: \(cfg)
                             Bundle ID: \(bundleID)
                             AppIdentifierPrefix: \(appIDPrefix)
                             CloudKit container: \(container)
                             SwiftData CloudKit: \(cloudKitFlag)
-                            StoreKit environment: \(storeHint)
+                            Store environment hint: \(storeHint)
                             """
                             print("DEBUG Build/Env:\n\(msg)")
                             debugShow("Build/Environment", msg)

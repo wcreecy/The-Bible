@@ -181,10 +181,12 @@ final class VerseOfDayViewModel: ObservableObject {
         let next = nextAutoRefreshDate()
         let interval = max(1, next.timeIntervalSinceNow)
         nextRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
-            guard let self else { return }
-            self.loadRandomVerse()
-            self.updateNextDescription()
-            self.scheduleNextVerseRefreshTimer()
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.loadRandomVerse()
+                self.updateNextDescription()
+                self.scheduleNextVerseRefreshTimer()
+            }
         }
         if let t = nextRefreshTimer {
             RunLoop.main.add(t, forMode: .common)
