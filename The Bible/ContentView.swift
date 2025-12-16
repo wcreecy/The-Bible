@@ -298,6 +298,10 @@ struct ContentView: View {
                 DispatchQueue.main.async {
                     bibleCoordinator.reset() // <-- prevent duplicate stacked readers after deep links
                     bibleCoordinator.push(.reader(book: book, chapter: chapter, startVerse: verseNum))
+                    // Safety net: Ensure the reading tracker is running even if the inner view's onAppear is delayed.
+                    ReadingTimeTracker.shared.start(bookName: book.name, chapter: chapter.number)
+                    ReadingTimeTracker.shared.setCurrentLocation(bookName: book.name, chapter: chapter.number)
+                    ReadingTimeTracker.shared.resume()
                 }
             }
         }

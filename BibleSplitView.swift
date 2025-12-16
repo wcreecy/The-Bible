@@ -367,6 +367,15 @@ struct BibleSplitView: View {
                        let chapter = book.chapters.first(where: { $0.number == route.chapterNumber }) {
                         ReadingView(book: book, chapter: chapter, startVerse: route.verseNumber)
                             .id("\(route.bookName)-\(route.chapterNumber)-\(route.verseNumber)")
+                            // Safety net: ensure tracker is active for split-view navigation as well.
+                            .onAppear {
+                                ReadingTimeTracker.shared.start(bookName: book.name, chapter: chapter.number)
+                                ReadingTimeTracker.shared.setCurrentLocation(bookName: book.name, chapter: chapter.number)
+                                ReadingTimeTracker.shared.resume()
+                            }
+                            .onDisappear {
+                                ReadingTimeTracker.shared.stopAndFlush()
+                            }
                             .toolbar {
                                 ToolbarItemGroup(placement: .topBarTrailing) {
                                     Button {
