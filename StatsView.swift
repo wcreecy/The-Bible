@@ -29,8 +29,12 @@ struct StatsView: View {
     // Minimum duration for a session to be counted in averages/series
     private let minSessionSeconds: Int = 45
 
+    // Independent scopes per card (Totals, OT/NT, Genre)
+    @State private var timeScopeTotals: TimeScope = .allTime
+    @State private var timeScopeOTNT: TimeScope = .allTime
+    @State private var timeScopeGenre: TimeScope = .allTime
+
     @State private var sortMode: SortMode = .canonical
-    @State private var timeScope: TimeScope = .allTime
 
     // Session-derived scoped datasets
     @State private var perBookAllTimeSessionTotals: [String: Int] = [:] // sessions within retention
@@ -164,7 +168,7 @@ struct StatsView: View {
     // MARK: - Active bucket label for Totals card
 
     private var activeBucketLabel: String {
-        switch currentBarUnit {
+        switch totalsCurrentBarUnit {
         case .day: return "Active Days"
         case .weekOfYear: return "Active Weeks"
         case .month: return "Active Months"
@@ -174,7 +178,7 @@ struct StatsView: View {
     }
 
     private var avgPerActiveBucketLabel: String {
-        switch currentBarUnit {
+        switch totalsCurrentBarUnit {
         case .day: return "Avg per active day"
         case .weekOfYear: return "Avg per active week"
         case .month: return "Avg per active month"
@@ -257,7 +261,7 @@ struct StatsView: View {
                     }
                 }
                 .onAppear {
-                    let totalsMap = scopedPerBookTotals
+                    let totalsMap = genreScopedPerBookTotals
                     genreDetailRows = rowsForGenre(genre, totals: totalsMap)
                 }
             }
@@ -268,10 +272,15 @@ struct StatsView: View {
         .onReceive(NotificationCenter.default.publisher(for: .chapterProgressChanged)) { _ in
             refreshAll()
         }
-        .onChange(of: timeScope) {
-            recomputeOTNTFromScope()
-            recomputeGenresFromScope()
+        // Independent scope changes per card
+        .onChange(of: timeScopeTotals) { _, _ in
             recomputeTotalsCardMetrics()
+        }
+        .onChange(of: timeScopeOTNT) { _, _ in
+            recomputeOTNTFromScope()
+        }
+        .onChange(of: timeScopeGenre) { _, _ in
+            recomputeGenresFromScope()
         }
         // Ensure only one expandable card is open at a time
         .onChange(of: showBookProgressDetails) {
@@ -365,7 +374,7 @@ struct StatsView: View {
         TotalsCardView(
             timeScope: Binding(
                 get: {
-                    switch timeScope {
+                    switch timeScopeTotals {
                     case .allTime: return .allTime
                     case .thisMonth: return .thisMonth
                     case .last7: return .last7
@@ -373,18 +382,18 @@ struct StatsView: View {
                 },
                 set: { new in
                     switch new {
-                    case .allTime: timeScope = .allTime
-                    case .thisMonth: timeScope = .thisMonth
-                    case .last7: timeScope = .last7
+                    case .allTime: timeScopeTotals = .allTime
+                    case .thisMonth: timeScopeTotals = .thisMonth
+                    case .last7: timeScopeTotals = .last7
                     }
                 }
             ),
-            totalSeconds: scopedTotalSeconds,
+            totalSeconds: totalsScopedTotalSeconds,
             series: totalsDaily,
             chartSubtitle: totalsChartSubtitle,
-            currentBarUnit: currentBarUnit,
-            showValueLabels: shouldShowBarValueLabels,
-            xAxis: { AnyAxisContent(chartXAxisMarks) },
+            currentBarUnit: totalsCurrentBarUnit,
+            showValueLabels: totalsShouldShowBarValueLabels,
+            xAxis: { AnyAxisContent(totalsChartXAxisMarks) },
             activeBucketLabel: activeBucketLabel,
             activeBucketCount: activeBucketCount,
             avgPerActiveBucketLabel: avgPerActiveBucketLabel,
@@ -405,7 +414,7 @@ struct StatsView: View {
                     }
                 }
             ),
-            rows: scopedRows,
+            rows: totalsScopedRows,
             formatSeconds: { BibleStatsStore.shared.format($0) }
         )
         .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
@@ -414,8 +423,8 @@ struct StatsView: View {
     private var otntCard: some View {
         OTNTCardView(
             timeScope: Binding(
-                get: { mapScopeToOTNT(timeScope) },
-                set: { new in timeScope = mapScopeFromOTNT(new) }
+                get: { mapScopeToOTNT(timeScopeOTNT) },
+                set: { new in timeScopeOTNT = mapScopeFromOTNT(new) }
             ),
             otSeconds: otSeconds,
             ntSeconds: ntSeconds,
@@ -427,13 +436,13 @@ struct StatsView: View {
     private var genreCard: some View {
         GenreDistributionCardView(
             timeScope: Binding(
-                get: { mapScopeToGenre(timeScope) },
-                set: { new in timeScope = mapScopeFromGenre(new) }
+                get: { mapScopeToGenre(timeScopeGenre) },
+                set: { new in timeScopeGenre = mapScopeFromGenre(new) }
             ),
             perGenreTotals: perGenreTotals,
             selectedGenre: $selectedGenre,
             onSelectGenre: { g in
-                genreDetailRows = rowsForGenre(g, totals: scopedPerBookTotals)
+                genreDetailRows = rowsForGenre(g, totals: genreScopedPerBookTotals)
             },
             genreColor: { genreColor($0) },
             formatSeconds: { BibleStatsStore.shared.format($0) }
@@ -465,30 +474,32 @@ struct StatsView: View {
                     let maxSeconds = max(1, monthTop3Books.map { $0.seconds }.max() ?? 1)
                     VStack(spacing: 8) {
                         ForEach(Array(monthTop3Books.enumerated()), id: \.offset) { idx, entry in
-                            HStack(spacing: 6) {
+                            HStack(spacing: 4) {
                                 // 1. Book
                                 Text("\(idx + 1). \(entry.book)")
                                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                                // Proportional bar occupies remaining flexible space before time
-                                GeometryReader { geo in
-                                    let frac = CGFloat(entry.seconds) / CGFloat(maxSeconds)
-                                    ZStack(alignment: .leading) {
-                                        RoundedRectangle(cornerRadius: 5, style: .continuous)
-                                            .fill(Color(.secondarySystemBackground))
-                                        RoundedRectangle(cornerRadius: 5, style: .continuous)
-                                            .fill(Color.accentColor.opacity(0.8))
-                                            .frame(width: max(0, geo.size.width * frac))
+                                // Bar area with overlaid time label (so the bar can be longer and closer to the title)
+                                ZStack(alignment: .trailing) {
+                                    GeometryReader { geo in
+                                        let frac = CGFloat(entry.seconds) / CGFloat(maxSeconds)
+                                        ZStack(alignment: .leading) {
+                                            RoundedRectangle(cornerRadius: 5, style: .continuous)
+                                                .fill(Color(.secondarySystemBackground))
+                                            RoundedRectangle(cornerRadius: 5, style: .continuous)
+                                                .fill(Color.accentColor.opacity(0.8))
+                                                .frame(width: max(0, geo.size.width * frac))
+                                        }
                                     }
-                                }
-                                .frame(height: 10)
-                                // Removed maxWidth cap to allow longer bars.
+                                    .frame(height: 10)
 
-                                // Time at the end
-                                Text(BibleStatsStore.shared.format(entry.seconds))
-                                    .foregroundStyle(.secondary)
-                                    .monospacedDigit()
-                                    .frame(width: 72, alignment: .trailing)
+                                    // Time at the trailing edge, overlayed so it doesn't shorten the bar
+                                    Text(BibleStatsStore.shared.format(entry.seconds))
+                                        .foregroundStyle(.secondary)
+                                        .monospacedDigit()
+                                        .padding(.leading, 8)
+                                        .padding(.trailing, 2)
+                                }
                             }
                             .accessibilityElement(children: .combine)
                             .accessibilityLabel("\(idx + 1). \(entry.book) \(BibleStatsStore.shared.format(entry.seconds))")
@@ -506,6 +517,7 @@ struct StatsView: View {
         refreshTotals()
         refreshChartsAndMonth()
         refreshSessionScopedPerBook()
+        // Recompute each card from its own scope
         recomputeOTNTFromScope()
         recomputeGenresFromScope()
         recomputeTotalsCardMetrics()
@@ -732,32 +744,48 @@ struct StatsView: View {
         completedVerses = completed
     }
 
-    // MARK: - Rows
+    // MARK: - Per-card scoped maps
 
-    private var scopedPerBookTotals: [String: Int] {
-        switch timeScope {
+    private var totalsScopedPerBookTotals: [String: Int] {
+        switch timeScopeTotals {
         case .allTime: return perBookAllTimeSessionTotals
         case .thisMonth: return perBookMonthTotals
         case .last7: return perBookLast7Totals
         }
     }
 
-    private var scopedTotalSeconds: Int {
-        scopedPerBookTotals.values.reduce(0, +)
+    private var otntScopedPerBookTotals: [String: Int] {
+        switch timeScopeOTNT {
+        case .allTime: return perBookAllTimeSessionTotals
+        case .thisMonth: return perBookMonthTotals
+        case .last7: return perBookLast7Totals
+        }
     }
 
-    private var scopedRows: [(book: String, seconds: Int)] {
+    private var genreScopedPerBookTotals: [String: Int] {
+        switch timeScopeGenre {
+        case .allTime: return perBookAllTimeSessionTotals
+        case .thisMonth: return perBookMonthTotals
+        case .last7: return perBookLast7Totals
+        }
+    }
+
+    private var totalsScopedTotalSeconds: Int {
+        totalsScopedPerBookTotals.values.reduce(0, +)
+    }
+
+    private var totalsScopedRows: [(book: String, seconds: Int)] {
         let canonical = orderedAllBooks
         let canonicalPos = Dictionary(uniqueKeysWithValues: canonical.enumerated().map { ($1, $0) })
 
         switch sortMode {
         case .canonical:
             return canonical.map { name in
-                (book: name, seconds: scopedPerBookTotals[name, default: 0])
+                (book: name, seconds: totalsScopedPerBookTotals[name, default: 0])
             }
         case .mostRead:
             let all: [(book: String, seconds: Int)] = canonical.map { name in
-                (book: name, seconds: scopedPerBookTotals[name, default: 0])
+                (book: name, seconds: totalsScopedPerBookTotals[name, default: 0])
             }
             return all.sorted { lhs, rhs in
                 if lhs.seconds == rhs.seconds {
@@ -768,8 +796,8 @@ struct StatsView: View {
         }
     }
 
-    private var scopedPerGenreTotalsComputed: [(genre: String, seconds: Int)] {
-        StatsSeriesBuilder.computeGenreTotals(from: scopedPerBookTotals).map { ($0.genre, $0.seconds) }
+    private var genreScopedPerGenreTotalsComputed: [(genre: String, seconds: Int)] {
+        StatsSeriesBuilder.computeGenreTotals(from: genreScopedPerBookTotals).map { ($0.genre, $0.seconds) }
     }
 
     // MARK: - Glance helpers
@@ -868,22 +896,22 @@ struct StatsView: View {
     // MARK: - Scope recompute
 
     private func recomputeOTNTFromScope() {
-        let split = BibleStatsStore.shared.splitOTNT(totals: scopedPerBookTotals)
+        let split = BibleStatsStore.shared.splitOTNT(totals: otntScopedPerBookTotals)
         otSeconds = split.ot
         ntSeconds = split.nt
     }
 
     private func recomputeGenresFromScope() {
-        perGenreTotals = scopedPerGenreTotalsComputed
+        perGenreTotals = genreScopedPerGenreTotalsComputed
         if let g = selectedGenre {
-            genreDetailRows = rowsForGenre(g, totals: scopedPerBookTotals)
+            genreDetailRows = rowsForGenre(g, totals: genreScopedPerBookTotals)
         }
     }
 
-    // MARK: - Totals card metrics and chart config
+    // MARK: - Totals card metrics and chart config (independent scope)
 
     private var totalsChartSubtitle: String {
-        switch timeScope {
+        switch timeScopeTotals {
         case .last7:
             return "Daily minutes — Last 7 days"
         case .thisMonth:
@@ -898,18 +926,18 @@ struct StatsView: View {
         }
     }
 
-    private var currentXAxisAggregation: Aggregation {
-        if timeScope == .allTime {
+    private var totalsCurrentXAxisAggregation: Aggregation {
+        if timeScopeTotals == .allTime {
             return allTimeAggregation
-        } else if timeScope == .thisMonth {
+        } else if timeScopeTotals == .thisMonth {
             return .weekly
         } else {
             return .daily
         }
     }
 
-    private var currentBarUnit: Calendar.Component {
-        switch timeScope {
+    private var totalsCurrentBarUnit: Calendar.Component {
+        switch timeScopeTotals {
         case .last7:
             return .day
         case .thisMonth:
@@ -925,13 +953,13 @@ struct StatsView: View {
     }
 
     // Controls whether to show value labels on bars, based on aggregation, data size, and size class.
-    private var shouldShowBarValueLabels: Bool {
+    private var totalsShouldShowBarValueLabels: Bool {
         // Always show labels for "This Month" as requested
-        if timeScope == .thisMonth { return true }
+        if timeScopeTotals == .thisMonth { return true }
 
         let count = totalsDaily.count
         let isRegular = (hSizeClass == .regular)
-        switch currentXAxisAggregation {
+        switch totalsCurrentXAxisAggregation {
         case .daily:
             return count <= (isRegular ? 24 : 14)
         case .weekly:
@@ -944,8 +972,8 @@ struct StatsView: View {
     }
 
     @AxisContentBuilder
-    private var chartXAxisMarks: some AxisContent {
-        switch currentXAxisAggregation {
+    private var totalsChartXAxisMarks: some AxisContent {
+        switch totalsCurrentXAxisAggregation {
         case .daily:
             AxisMarks(values: .stride(by: .day, count: 1)) { _ in
                 AxisGridLine()
@@ -977,7 +1005,7 @@ struct StatsView: View {
         let cal = Calendar.current
         let now = Date()
 
-        switch timeScope {
+        switch timeScopeTotals {
         case .last7:
             totalsDaily = StatsSeriesBuilder.dailySeries(lastNDays: 7, now: now, calendar: cal)
             allTimeAggregation = .daily
@@ -994,7 +1022,7 @@ struct StatsView: View {
         let totalInSeries = totalsDaily.reduce(0) { $0 + $1.seconds }
         avgSecondsPerActiveBucketInScope = activeDaysInScope > 0 ? totalInSeries / activeDaysInScope : 0
 
-        if let top = scopedPerBookTotals.sorted(by: { lhs, rhs in
+        if let top = totalsScopedPerBookTotals.sorted(by: { lhs, rhs in
             if lhs.value == rhs.value { return lhs.key < rhs.key }
             return lhs.value > rhs.value
         }).first, top.value > 0 {
@@ -1058,3 +1086,4 @@ struct StatsView: View {
         }
     }
 }
+
