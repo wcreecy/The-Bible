@@ -14,8 +14,8 @@ struct ReferenceMatchGameView: View {
         let verseText: String
     }
 
-    enum Difficulty: String, CaseIterable, Identifiable { case easy, medium, hard; var id: String { rawValue } }
-    @State private var difficulty: Difficulty = .medium
+    enum Difficulty: String, CaseIterable, Identifiable { case easy, normal, hard; var id: String { rawValue } }
+    @State private var difficulty: Difficulty = .normal
 
     @State private var howToExpanded: Bool = false
     @State private var difficultyExpanded: Bool = false
@@ -75,7 +75,7 @@ struct ReferenceMatchGameView: View {
                             DisclosureGroup(isExpanded: $difficultyExpanded) {
                                 VStack(alignment: .leading, spacing: 6) {
                                     Text("• Easy: Possible answers can come from any book of the Bible.")
-                                    Text("• Medium: Possible answers are limited to the same testament (Old or New) as the reference.")
+                                    Text("• Normal: Possible answers are limited to the same testament (Old or New) as the reference.")
                                     Text("• Hard: Possible answers all come from the same book as the reference.")
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -319,8 +319,8 @@ struct ReferenceMatchGameView: View {
                     continue // re-roll
                 }
 
-            case .medium:
-                // Medium: distinct books within the same testament as the correct answer
+            case .normal:
+                // Normal: distinct books within the same testament as the correct answer
                 let sameTestamentBooks = booksInSameTestament(as: book)
                 if let built = makeDistinctBookDistractors(
                     from: sameTestamentBooks,
@@ -585,13 +585,13 @@ struct ReferenceMatchGameView: View {
     // MARK: - Stats helpers
 
     private func difficultyKeySuffix() -> String {
-        switch difficulty { case .easy: return "easy"; case .medium: return "medium"; case .hard: return "hard" }
+        switch difficulty { case .easy: return "easy"; case .normal: return "normal"; case .hard: return "hard" }
     }
 
     private func mapDifficulty(_ d: Difficulty) -> GameStats.Difficulty {
         switch d {
         case .easy: return .easy
-        case .medium: return .medium
+        case .normal: return .normal
         case .hard: return .hard
         }
     }

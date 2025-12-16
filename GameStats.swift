@@ -27,7 +27,7 @@ final class GameStats: ObservableObject {
     enum Difficulty {
         case easy
         case normal     // quiz "normal"
-        case medium     // hangman/beatclock/refmatch "medium"
+        case medium     // legacy for hangman/beatclock/refmatch — now maps to "normal"
         case hard
         case none       // bookorder (no per-difficulty keys)
     }
@@ -181,11 +181,13 @@ final class GameStats: ObservableObject {
                 case .medium, .none: return nil
                 }
             case .hangman, .beatclock, .refmatch:
+                // Change: treat both .normal and legacy .medium as "normal" suffix
                 switch difficulty {
                 case .easy: return "easy"
-                case .medium: return "medium"
+                case .normal: return "normal"
+                case .medium: return "normal" // legacy callers now write to "normal"
                 case .hard: return "hard"
-                case .normal, .none: return nil
+                case .none: return nil
                 }
             case .bookorder:
                 // Now per-difficulty (easy/normal/hard/all) — map none->all for "All Books" mode
@@ -264,6 +266,7 @@ final class GameStats: ObservableObject {
 
             // Stamp last played time and game name
             let nowTS = Date().timeIntervalSince1970
+            let defaults = UserDefaults.standard
             defaults.set(nowTS, forKey: "gamesLastPlayedAt")
             defaults.set(Self.gameDisplayName(for: game), forKey: "gamesLastPlayedGameName")
 
@@ -332,24 +335,25 @@ final class GameStats: ObservableObject {
     }
 
     private var hangman: GameStat {
-        let c = sumAcross(prefix: "hangmanAllTimeCorrect", parts: ["_easy","_medium","_hard"], legacyKey: "hangmanAllTimeCorrect")
-        let a = sumAcross(prefix: "hangmanAllTimeAnswered", parts: ["_easy","_medium","_hard"], legacyKey: "hangmanAllTimeAnswered")
-        let best = maxAcross(prefix: "hangmanAllTimeBestStreak", parts: ["_easy","_medium","_hard"], legacyKey: "hangmanAllTimeBestStreak")
+        // Change: read both "_normal" and legacy "_medium"
+        let c = sumAcross(prefix: "hangmanAllTimeCorrect", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "hangmanAllTimeCorrect")
+        let a = sumAcross(prefix: "hangmanAllTimeAnswered", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "hangmanAllTimeAnswered")
+        let best = maxAcross(prefix: "hangmanAllTimeBestStreak", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "hangmanAllTimeBestStreak")
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
     private var refmatch: GameStat {
-        let c = sumAcross(prefix: "refmatchAllTimeCorrect", parts: ["_easy","_medium","_hard"], legacyKey: "refmatchAllTimeCorrect")
-        let a = sumAcross(prefix: "refmatchAllTimeAnswered", parts: ["_easy","_medium","_hard"], legacyKey: "refmatchAllTimeAnswered")
-        let best = maxAcross(prefix: "refmatchAllTimeBestStreak", parts: ["_easy","_medium","_hard"], legacyKey: "refmatchAllTimeBestStreak")
+        let c = sumAcross(prefix: "refmatchAllTimeCorrect", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "refmatchAllTimeCorrect")
+        let a = sumAcross(prefix: "refmatchAllTimeAnswered", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "refmatchAllTimeAnswered")
+        let best = maxAcross(prefix: "refmatchAllTimeBestStreak", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "refmatchAllTimeBestStreak")
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
     // Updated: aggregate suffixed + conditional legacy for Beat the Clock
     private var beatclock: GameStat {
-        let c = sumAcross(prefix: "beatclockAllTimeCorrect", parts: ["_easy","_medium","_hard"], legacyKey: "beatclockAllTimeCorrect")
-        let a = sumAcross(prefix: "beatclockAllTimeAnswered", parts: ["_easy","_medium","_hard"], legacyKey: "beatclockAllTimeAnswered")
-        let best = maxAcross(prefix: "beatclockAllTimeBestStreak", parts: ["_easy","_medium","_hard"], legacyKey: "beatclockAllTimeBestStreak")
+        let c = sumAcross(prefix: "beatclockAllTimeCorrect", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "beatclockAllTimeCorrect")
+        let a = sumAcross(prefix: "beatclockAllTimeAnswered", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "beatclockAllTimeAnswered")
+        let best = maxAcross(prefix: "beatclockAllTimeBestStreak", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "beatclockAllTimeBestStreak")
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 

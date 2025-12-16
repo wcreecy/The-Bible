@@ -22,25 +22,25 @@ extension GameStats {
             recordRound(game: .quiz, difficulty: d, correct: r.correct, answered: r.answered, currentBestStreak: r.bestStreak)
         }
 
-        // Hangman (easy/medium/hard)
+        // Hangman (easy/normal/hard) — was medium, now normal
         for _ in 0..<roundsPerGame {
-            let diffs: [Difficulty] = [.easy, .medium, .hard]
+            let diffs: [Difficulty] = [.easy, .normal, .hard]
             let d = diffs.randomElement() ?? .easy
             let r = rollRound(maxQ: 10)
             recordRound(game: .hangman, difficulty: d, correct: r.correct, answered: r.answered, currentBestStreak: r.bestStreak)
         }
 
-        // Beat the Clock (easy/medium/hard)
+        // Beat the Clock (easy/normal/hard) — was medium, now normal
         for _ in 0..<roundsPerGame {
-            let diffs: [Difficulty] = [.easy, .medium, .hard]
+            let diffs: [Difficulty] = [.easy, .normal, .hard]
             let d = diffs.randomElement() ?? .easy
             let r = rollRound(maxQ: 15)
             recordRound(game: .beatclock, difficulty: d, correct: r.correct, answered: r.answered, currentBestStreak: r.bestStreak)
         }
 
-        // Verse Match (easy/medium/hard)
+        // Verse Match (easy/normal/hard) — was medium, now normal
         for _ in 0..<roundsPerGame {
-            let diffs: [Difficulty] = [.easy, .medium, .hard]
+            let diffs: [Difficulty] = [.easy, .normal, .hard]
             let d = diffs.randomElement() ?? .easy
             let r = rollRound(maxQ: 10)
             recordRound(game: .refmatch, difficulty: d, correct: r.correct, answered: r.answered, currentBestStreak: r.bestStreak)

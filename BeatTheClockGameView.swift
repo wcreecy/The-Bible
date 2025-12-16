@@ -3,13 +3,13 @@ import UIKit
 import Combine
 
 struct BeatTheClockGameView: View {
-    enum Difficulty: String, CaseIterable, Identifiable { case easy, medium, hard; var id: String { rawValue } }
+    enum Difficulty: String, CaseIterable, Identifiable { case easy, normal, hard; var id: String { rawValue } }
     enum Category: String, CaseIterable, Identifiable { case people = "People", places = "Places", both = "Both"; var id: String { rawValue } }
 
     @State private var started: Bool = false
     @State private var howToExpanded: Bool = false
     @State private var difficultyExpanded: Bool = false
-    @State private var difficulty: Difficulty = .medium
+    @State private var difficulty: Difficulty = .normal
     @State private var category: Category = .people
 
     // Debug/Test toggle shared across games
@@ -58,9 +58,9 @@ struct BeatTheClockGameView: View {
 
     private var roundTime: Int {
         switch difficulty {
-        case .easy: return 13
-        case .medium: return 15
-        case .hard: return 10
+        case .easy: return 45
+        case .normal: return 30
+        case .hard: return 15
         }
     }
 
@@ -97,9 +97,9 @@ struct BeatTheClockGameView: View {
                         GroupBox {
                             DisclosureGroup(isExpanded: $difficultyExpanded) {
                                 VStack(alignment: .leading, spacing: 6) {
-                                    Text("• Easy: No timer pressure; focus on accuracy.")
-                                    Text("• Medium: 15 seconds per round.")
-                                    Text("• Hard: 10 seconds per round; wrong options are more similar.")
+                                    Text("• Easy: 45 seconds per round.")
+                                    Text("• Normal: 30 seconds per round.")
+                                    Text("• Hard: 15 seconds per round.")
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             } label: {
@@ -136,7 +136,8 @@ struct BeatTheClockGameView: View {
                         .frame(maxWidth: 240)
                     Spacer(minLength: 32)
                 } else {
-                    VStack(alignment: .leading, spacing: 12) {
+                    // Top row: centered scoreboard with a big timer to the right
+                    HStack(alignment: .center, spacing: 16) {
                         GameScoreboardCard(
                             currentCorrect: score,
                             currentAnswered: answered,
@@ -145,122 +146,130 @@ struct BeatTheClockGameView: View {
                             allTimeAnswered: allTimeAnswered,
                             allTimeBestStreak: allTimeBestStreak
                         )
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
 
-                        HStack {
-                            Text("Score: \(score)")
-                                .font(.headline)
-                            Spacer()
-                            HStack(spacing: 6) {
-                                Image(systemName: "timer")
-                                Text("\(remainingSeconds)s")
-                                    .monospacedDigit()
-                            }
-                            .scaleEffect(pulse ? 1.25 : 1.0)
-                            .animation(.easeOut(duration: 0.18), value: pulse)
-                            .shadow(color: timerColor.opacity(pulse ? 0.7 : 0.35), radius: pulse ? 10 : 4)
-                            .font(.title3)
-                            .foregroundStyle(timerColor)
+                        // Prominent timer on the right
+                        VStack(spacing: 8) {
+                            Image(systemName: "timer")
+                                .font(.system(size: 24, weight: .semibold))
+                                .foregroundStyle(timerColor)
+                            Text("\(remainingSeconds)s")
+                                .font(.system(size: 34, weight: .bold, design: .rounded))
+                                .monospacedDigit()
+                                .foregroundStyle(timerColor)
+                                .scaleEffect(pulse ? 1.15 : 1.0)
+                                .animation(.easeOut(duration: 0.18), value: pulse)
+                                .shadow(color: timerColor.opacity(pulse ? 0.7 : 0.35), radius: pulse ? 10 : 4)
                         }
+                        .frame(minWidth: 90) // keep a stable width
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
 
-                        GroupBox {
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(currentEntryIsPerson ? "Person" : "Place")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                Text(targetLabel)
-                                    .font(.title2)
-                                    .fontWeight(.semibold)
-                                    .lineLimit(2)
-                                    .minimumScaleFactor(0.75)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                    // Clue
+                    GroupBox {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(currentEntryIsPerson ? "Person" : "Place")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text(targetLabel)
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.75)
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
 
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Type a Bible book")
-                                .font(.headline)
-                            HStack(spacing: 8) {
-                                TextField("Start typing…", text: $searchText)
-                                    .textInputAutocapitalization(.words)
-                                    .disableAutocorrection(true)
-                                    .textFieldStyle(.roundedBorder)
-                                    .onSubmit { submitCurrentEntry() }
-                                    .focused($searchFieldFocused)
-                                    .disabled(selectionLocked)
-
-                                Button(action: {
-                                    let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-                                    guard !trimmed.isEmpty else { return }
-                                    searchText = ""
-                                    searchFieldFocused = true
-                                }) {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .font(.title3)
-                                }
-                                .buttonStyle(.plain)
-                                .foregroundStyle(searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || selectionLocked ? Color.secondary : Color.red)
-                                .disabled(searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || selectionLocked)
-                                .accessibilityLabel("Clear input")
-                            }
-
-                            if !filteredBooks.isEmpty {
-                                VStack(spacing: 6) {
-                                    ForEach(filteredBooks.prefix(8), id: \.self) { name in
-                                        Button(action: {
-                                            searchText = name
-                                            submit(bookName: name)
-                                            searchFieldFocused = false
-                                        }) {
-                                            HStack {
-                                                Text(name)
-                                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                            }
-                                            .padding(.vertical, 8)
-                                            .padding(.horizontal, 12)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                                    .fill(Color(.secondarySystemBackground))
-                                            )
-                                        }
-                                        .buttonStyle(.plain)
-                                        .disabled(selectionLocked)
-                                    }
-                                }
-                            }
-                        }
-
-                        HStack(spacing: 12) {
-                            Button("Skip") { endRound(correct: false) }
-                                .buttonStyle(ModernPillButtonStyle(tint: .orange))
+                    // Input
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Type a Bible book")
+                            .font(.headline)
+                        HStack(spacing: 8) {
+                            TextField("Start typing…", text: $searchText)
+                                .textInputAutocapitalization(.words)
+                                .disableAutocorrection(true)
+                                .textFieldStyle(.roundedBorder)
+                                .onSubmit { submitCurrentEntry() }
+                                .focused($searchFieldFocused)
                                 .disabled(selectionLocked)
-                            Button("Next") { nextRound() }
-                                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                                .disabled(!selectionLocked)
-                            Button(action: { submitCurrentEntry() }) {
-                                Image(systemName: "paperplane.circle.fill")
-                                    .font(.system(size: 34, weight: .bold))
+
+                            Button(action: {
+                                let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+                                guard !trimmed.isEmpty else { return }
+                                searchText = ""
+                                searchFieldFocused = true
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.title3)
                             }
                             .buttonStyle(.plain)
-                            .foregroundStyle(canSubmit ? Color.green : Color.secondary)
-                            .disabled(!canSubmit)
-                            .accessibilityLabel("Submit answer")
+                            .foregroundStyle(searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || selectionLocked ? Color.secondary : Color.red)
+                            .disabled(searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || selectionLocked)
+                            .accessibilityLabel("Clear input")
                         }
-                        if selectionLocked {
-                            Button("Show answers (\(acceptableBooks.count))") { showAnswers = true }
-                                .buttonStyle(ModernPillButtonStyle(tint: .blue))
+
+                        if !filteredBooks.isEmpty {
+                            VStack(spacing: 6) {
+                                ForEach(filteredBooks.prefix(8), id: \.self) { name in
+                                    Button(action: {
+                                        searchText = name
+                                        submit(bookName: name)
+                                        searchFieldFocused = false
+                                    }) {
+                                        HStack {
+                                            Text(name)
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                        }
+                                        .padding(.vertical, 8)
+                                        .padding(.horizontal, 12)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                .fill(Color(.secondarySystemBackground))
+                                        )
+                                    }
+                                    .buttonStyle(.plain)
+                                    .disabled(selectionLocked)
+                                }
+                            }
                         }
                     }
-                    .padding(.vertical)
+
+                    HStack(spacing: 12) {
+                        Button("Skip") { endRound(correct: false) }
+                            .buttonStyle(ModernPillButtonStyle(tint: .orange))
+                            .disabled(selectionLocked)
+                        Button("Next") { nextRound() }
+                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                            .disabled(!selectionLocked)
+                        Button(action: { submitCurrentEntry() }) {
+                            Image(systemName: "paperplane.circle.fill")
+                                .font(.system(size: 34, weight: .bold))
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(canSubmit ? Color.green : Color.secondary)
+                        .disabled(!canSubmit)
+                        .accessibilityLabel("Submit answer")
+                    }
+                    if selectionLocked {
+                        Button("Show answers (\(acceptableBooks.count))") { showAnswers = true }
+                            .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                    }
                 }
             }
             .padding()
         }
         .navigationTitle("Beat the Clock")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            Task {
-                if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadNamesAsync() }
-                if loadedPlaces.isEmpty { loadedPlaces = await GameDataLoaders.loadLocationsAsync() }
+        .task {
+            // Ensure state updates happen on the main actor
+            if loadedPeople.isEmpty {
+                let people = await GameDataLoaders.loadNamesAsync()
+                loadedPeople = people
+            }
+            if loadedPlaces.isEmpty {
+                let places = await GameDataLoaders.loadLocationsAsync()
+                loadedPlaces = places
             }
         }
         .onReceive(timer) { _ in
@@ -497,13 +506,13 @@ struct BeatTheClockGameView: View {
     }
 
     private func difficultyKeySuffix() -> String {
-        switch difficulty { case .easy: return "easy"; case .medium: return "medium"; case .hard: return "hard" }
+        switch difficulty { case .easy: return "easy"; case .normal: return "normal"; case .hard: return "hard" }
     }
 
     private func mapDifficulty(_ d: Difficulty) -> GameStats.Difficulty {
         switch d {
         case .easy: return .easy
-        case .medium: return .medium
+        case .normal: return .normal
         case .hard: return .hard
         }
     }
@@ -515,4 +524,3 @@ struct BeatTheClockGameView: View {
         return lower == "jesus" || lower == "jesus christ"
     }
 }
-

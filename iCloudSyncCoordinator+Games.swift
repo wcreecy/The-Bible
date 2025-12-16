@@ -18,7 +18,8 @@ extension iCloudSyncCoordinator {
 
     // Game keys: Beat the Clock
     static let beatClockKeys: [String] = {
-        let diffs = ["easy", "medium", "hard"]
+        // Include both legacy "medium" and new "normal"
+        let diffs = ["easy", "normal", "medium", "hard"]
         var keys: [String] = []
         for d in diffs {
             keys.append("beatclockAllTimeCorrect_\(d)")
@@ -30,7 +31,8 @@ extension iCloudSyncCoordinator {
 
     // Game keys: Reference Match
     static let refMatchKeys: [String] = {
-        let diffs = ["easy", "medium", "hard"]
+        // Include both legacy "medium" and new "normal"
+        let diffs = ["easy", "normal", "medium", "hard"]
         var keys: [String] = []
         for d in diffs {
             keys.append("refmatchAllTimeCorrect_\(d)")
@@ -288,11 +290,11 @@ extension iCloudSyncCoordinator {
         repairSuffixed(prefix: "hangman", diffs: ["easy","medium","hard"])
         repairPair(correctKey: "hangmanAllTimeCorrect", answeredKey: "hangmanAllTimeAnswered")
 
-        // Beat the Clock
-        repairSuffixed(prefix: "beatclock", diffs: ["easy","medium","hard"])
+        // Beat the Clock — include both normal and medium
+        repairSuffixed(prefix: "beatclock", diffs: ["easy","normal","medium","hard"])
 
-        // Verse Match + legacy
-        repairSuffixed(prefix: "refmatch", diffs: ["easy","medium","hard"])
+        // Verse Match + legacy — include both normal and medium
+        repairSuffixed(prefix: "refmatch", diffs: ["easy","normal","medium","hard"])
         repairPair(correctKey: "refmatchAllTimeCorrect", answeredKey: "refmatchAllTimeAnswered")
 
         // Quiz (easy/normal/hard)
