@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import Combine
 
+@MainActor
 final class JournalComposer: ObservableObject {
     @Published var isPresented: Bool = false
     @Published var initialBody: String? = nil

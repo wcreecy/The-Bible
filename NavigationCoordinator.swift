@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 
+@MainActor
 final class NavigationCoordinator: ObservableObject {
     @Published var path: [Route] = []
 
@@ -16,4 +17,3 @@ final class NavigationCoordinator: ObservableObject {
         path.removeAll()
     }
 }
-
