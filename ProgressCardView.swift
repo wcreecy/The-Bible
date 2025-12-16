@@ -120,6 +120,15 @@ struct ProgressCardView: View {
                 }
             }
         }
+        // Make the entire card area tappable to toggle expand/collapse,
+        // while inner controls (buttons, text field, picker) keep their behavior.
+        .contentShape(Rectangle())
+        .onTapGesture {
+            withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+                isExpanded.toggle()
+            }
+        }
+        .accessibilityAddTraits(.isButton)
     }
 
     private var compactHeader: some View {
