@@ -1,5 +1,3 @@
-// the entire code of the file with your changes goes here.
-// Do not skip over anything.
 import SwiftUI
 import SwiftData
 import Combine
@@ -183,7 +181,7 @@ struct HomeView: View {
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
 
     @ViewBuilder
-    private func card(for id: SettingsView.HomeCardID) -> some View {
+    private func card(for id: HomeCardID) -> some View {
         switch id {
         case .verseOfDay:
             VerseOfDayCard(
@@ -370,7 +368,7 @@ struct HomeView: View {
         let store = HomeLayoutStore()
         let loaded = store.load()
         // Keep state for dynamic updates
-        let activeCards: [SettingsView.HomeCardID] = loaded.order.filter { !loaded.hidden.contains($0) }
+        let activeCards: [HomeCardID] = loaded.order.filter { !loaded.hidden.contains($0) }
 
         ScrollView {
             if isPad {
@@ -486,7 +484,7 @@ struct HomeView: View {
             // Initialize GameStats and bind to its version for immediate refresh
             gameStatsVersion = GameStats.shared.snapshot().totalAnswered
         }
-        .onReceive(NotificationCenter.default.publisher(for: .init("homeLayoutChanged"))) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: .homeLayoutChanged)) { _ in
             // Trigger a refresh by changing a token state if needed, or rely on recomputation via body
         }
         .onChange(of: progressList) { _, _ in

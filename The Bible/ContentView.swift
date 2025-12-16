@@ -8,13 +8,6 @@
 import SwiftUI
 import Combine
 
-extension Notification.Name {
-    static let openBibleReference = Notification.Name("OpenBibleReference")
-    static let openSettingsTab = Notification.Name("OpenSettingsTab")
-    // Use the centralized definition of `switchToTab` in iCloudSyncCoordinator.swift
-    static let resetBibleNavigation = Notification.Name("ResetBibleNavigation")
-}
-
 struct ContentView: View {
     // Separate coordinators per tab to avoid path leakage/corruption
     @StateObject private var homeCoordinator = NavigationCoordinator()

@@ -18,31 +18,31 @@ struct HomeLayoutStore {
     @AppStorage(Self.keyFavHidden) private var favHiddenRaw: String = ""
 
     // Baseline hidden set used when no hidden config exists
-    static let baselineHidden: Set<SettingsView.HomeCardID> = [.games, .streaks, .bibleStats]
+    static let baselineHidden: Set<HomeCardID> = [.games, .streaks, .bibleStats]
 
     init() {}
 
     // MARK: - Core load/save
 
-    func load() -> (order: [SettingsView.HomeCardID], hidden: Set<SettingsView.HomeCardID>) {
+    func load() -> (order: [HomeCardID], hidden: Set<HomeCardID>) {
         // Decode order
-        let order: [SettingsView.HomeCardID] = {
+        let order: [HomeCardID] = {
             if let data = orderRaw.data(using: .utf8),
                let ids = try? JSONDecoder().decode([String].self, from: data) {
-                let mapped = ids.compactMap { SettingsView.HomeCardID(rawValue: $0) }
+                let mapped = ids.compactMap { HomeCardID(rawValue: $0) }
                 // Append any newly added IDs to the end
-                let missing = SettingsView.HomeCardID.allCases.filter { !mapped.contains($0) }
+                let missing = HomeCardID.allCases.filter { !mapped.contains($0) }
                 return mapped + missing
             } else {
-                return SettingsView.HomeCardID.allCases
+                return HomeCardID.allCases
             }
         }()
 
         // Decode hidden
-        let hidden: Set<SettingsView.HomeCardID> = {
+        let hidden: Set<HomeCardID> = {
             if let data = hiddenRaw.data(using: .utf8),
                let ids = try? JSONDecoder().decode([String].self, from: data) {
-                return Set(ids.compactMap { SettingsView.HomeCardID(rawValue: $0) })
+                return Set(ids.compactMap { HomeCardID(rawValue: $0) })
             } else {
                 return Self.baselineHidden
             }
@@ -51,7 +51,7 @@ struct HomeLayoutStore {
         return (order, hidden)
     }
 
-    func save(order: [SettingsView.HomeCardID], hidden: Set<SettingsView.HomeCardID>) {
+    func save(order: [HomeCardID], hidden: Set<HomeCardID>) {
         // Encode order
         do {
             let rawIDs = order.map { $0.rawValue }
@@ -79,7 +79,7 @@ struct HomeLayoutStore {
         !favOrderRaw.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    func saveFavorite(order: [SettingsView.HomeCardID], hidden: Set<SettingsView.HomeCardID>) {
+    func saveFavorite(order: [HomeCardID], hidden: Set<HomeCardID>) {
         // Encode order
         do {
             let rawIDs = order.map { $0.rawValue }
@@ -99,20 +99,20 @@ struct HomeLayoutStore {
         }
     }
 
-    func loadFavorite() -> (order: [SettingsView.HomeCardID], hidden: Set<SettingsView.HomeCardID>)? {
+    func loadFavorite() -> (order: [HomeCardID], hidden: Set<HomeCardID>)? {
         guard let orderData = favOrderRaw.data(using: .utf8),
               let orderIDs = try? JSONDecoder().decode([String].self, from: orderData) else {
             return nil
         }
-        var order = orderIDs.compactMap { SettingsView.HomeCardID(rawValue: $0) }
+        var order = orderIDs.compactMap { HomeCardID(rawValue: $0) }
         // Ensure newly-added IDs are appended
-        let missing = SettingsView.HomeCardID.allCases.filter { !order.contains($0) }
+        let missing = HomeCardID.allCases.filter { !order.contains($0) }
         order.append(contentsOf: missing)
 
-        var hidden: Set<SettingsView.HomeCardID> = []
+        var hidden: Set<HomeCardID> = []
         if let hiddenData = favHiddenRaw.data(using: .utf8),
            let hiddenIDs = try? JSONDecoder().decode([String].self, from: hiddenData) {
-            hidden = Set(hiddenIDs.compactMap { SettingsView.HomeCardID(rawValue: $0) })
+            hidden = Set(hiddenIDs.compactMap { HomeCardID(rawValue: $0) })
         }
         return (order, hidden)
     }

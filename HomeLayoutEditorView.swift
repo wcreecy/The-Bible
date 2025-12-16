@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct HomeLayoutEditorView: View {
-    @Binding var order: [SettingsView.HomeCardID]
-    @Binding var hiddenSet: Set<SettingsView.HomeCardID>
+    @Binding var order: [HomeCardID]
+    @Binding var hiddenSet: Set<HomeCardID>
     var onDone: () -> Void
 
     var onSaveFavorite: () -> Void
@@ -11,11 +11,11 @@ struct HomeLayoutEditorView: View {
 
     @State private var editMode: EditMode = .active
 
-    private func isVisible(_ id: SettingsView.HomeCardID) -> Bool {
+    private func isVisible(_ id: HomeCardID) -> Bool {
         !hiddenSet.contains(id)
     }
 
-    private func toggleVisibility(_ id: SettingsView.HomeCardID) {
+    private func toggleVisibility(_ id: HomeCardID) {
         if hiddenSet.contains(id) {
             hiddenSet.remove(id)
         } else {
@@ -25,7 +25,7 @@ struct HomeLayoutEditorView: View {
     }
 
     private func resetToDefault() {
-        order = SettingsView.HomeCardID.allCases
+        order = HomeCardID.allCases
         hiddenSet = HomeLayoutStore.baselineHidden
         onDone()
     }

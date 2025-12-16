@@ -2,8 +2,8 @@ import SwiftUI
 
 struct SettingsHomeLayoutSection: View {
     // Local UI state
-    @State private var layoutOrder: [SettingsView.HomeCardID] = SettingsView.HomeCardID.allCases
-    @State private var hiddenSet: Set<SettingsView.HomeCardID> = []
+    @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
+    @State private var hiddenSet: Set<HomeCardID> = []
 
     private let layoutStore = HomeLayoutStore()
 

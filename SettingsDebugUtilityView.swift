@@ -204,7 +204,7 @@ struct SettingsDebugUtilitiesView: View {
                 Group {
                     Button {
                         let store = HomeLayoutStore()
-                        let order = SettingsView.HomeCardID.allCases
+                        let order = HomeCardID.allCases
                         let hidden = HomeLayoutStore.baselineHidden
                         store.save(order: order, hidden: hidden)
                         debugShow("Home Layout", "Restored default order and hidden set.")
