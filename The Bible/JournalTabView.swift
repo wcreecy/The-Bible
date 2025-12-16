@@ -954,9 +954,11 @@ struct JournalTabView: View {
         var t = entry.body
         let loc = min(max(editSelection.location, 0), (t as NSString).length)
         if let idx = t.utf16.index(t.utf16.startIndex, offsetBy: loc, limitedBy: t.utf16.endIndex)?.samePosition(in: t) {
-            t.insert(contentsOf: refText, at: idx)
+            // Append a trailing space so typing continues outside the link
+            let insertion = refText + " "
+            t.insert(contentsOf: insertion, at: idx)
             entry.body = t
-            editSelection = NSRange(location: loc + refText.utf16.count, length: 0)
+            editSelection = NSRange(location: loc + insertion.utf16.count, length: 0)
             inlineLinkifySourceID = UUID()
             scheduleInlineLinkify(for: entry.body)
             entry.updatedAt = Date()

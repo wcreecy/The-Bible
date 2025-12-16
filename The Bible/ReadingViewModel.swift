@@ -50,7 +50,9 @@ final class ReadingViewModel: ObservableObject {
 
         self.suppressInitialMarking = (startVerse > 1)
         loadOrderedBookNames()
-        pinnedStore.load()
+        Task { @MainActor in
+            await pinnedStore.load()
+        }
     }
 
     var currentChapter: Chapter {
@@ -153,30 +155,12 @@ final class ReadingViewModel: ObservableObject {
     // MARK: - Verse interactions
 
     func handleVerseTap(context: ModelContext, verse: Verse) {
+        // Tap should only select/highlight the verse (no bookmarking)
         selectedVerse = verse.number
         currentVerse = verse.number
 
-        // Persist Continue Reading
-        ReadingProgressStore.save(in: context, bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number)
-
-        // Mirror Last Read for widget
-        mirrorLastReadToAppGroup(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number, text: verse.text)
-
         // Update tracker location
         ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
-
-        // Pin flash animation
-        withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
-            pinVerse = verse.number
-        }
-        Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
-            withAnimation(.easeOut) {
-                if self.pinVerse == verse.number {
-                    self.pinVerse = nil
-                }
-            }
-        }
 
         // Activity
         markActivity()
@@ -191,18 +175,37 @@ final class ReadingViewModel: ObservableObject {
         if menuVerse != nil { menuVerse = nil }
     }
 
+    // MARK: - Bookmark (Continue Reading / Last Read)
+
+    func bookmarkVerse(context: ModelContext, verse: Verse) {
+        // Persist Continue Reading
+        ReadingProgressStore.save(in: context, bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number)
+
+        // Mirror Last Read for widget (App Group + iCloud KVS)
+        mirrorLastReadToAppGroup(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number, text: verse.text)
+
+        // Also persist Stats "Last Read" (cross‑device, used by StatsView)
+        BibleStatsStore.shared.saveLastRead(bookName: currentBook.name, chapterNumber: currentChapter.number, date: Date())
+
+        // Update tracker location
+        ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
+
+        // Activity
+        markActivity()
+    }
+
     // MARK: - Pinned verse
 
     func isPinned(_ verseNumber: Int) -> Bool {
         pinnedStore.isPinned(bookName: currentBook.name, chapter: currentChapter.number, verse: verseNumber)
     }
 
-    func togglePin(verseNumber: Int, verseText: String) -> Bool {
+    func togglePin(verseNumber: Int, verseText: String) async -> Bool {
         if isPinned(verseNumber) {
-            pinnedStore.clear()
+            await pinnedStore.clear()
             return false
         } else {
-            pinnedStore.set(bookName: currentBook.name, chapter: currentChapter.number, verse: verseNumber, text: verseText)
+            await pinnedStore.set(bookName: currentBook.name, chapter: currentChapter.number, verse: verseNumber, text: verseText)
             return true
         }
     }
@@ -403,11 +406,23 @@ final class ReadingViewModel: ObservableObject {
     // MARK: - Widget mirroring (Last Read)
 
     private func mirrorLastReadToAppGroup(bookName: String, chapter: Int, verse: Int, text: String) {
-        guard let shared = UserDefaults(suiteName: "group.bible.app") else { return }
-        shared.set(bookName, forKey: "lastReadBook")
-        shared.set(chapter, forKey: "lastReadChapter")
-        shared.set(verse, forKey: "lastReadVerse")
-        shared.set(text, forKey: "lastReadText")
+        // Local device: App Group (for widgets on this device)
+        if let shared = UserDefaults(suiteName: "group.bible.app") {
+            shared.set(bookName, forKey: "lastReadBook")
+            shared.set(chapter, forKey: "lastReadChapter")
+            shared.set(verse, forKey: "lastReadVerse")
+            shared.set(text, forKey: "lastReadText")
+        }
+
+        // Cross-device: iCloud KVS (so other devices’ widgets can read without launching the app)
+        let kvs = NSUbiquitousKeyValueStore.default
+        kvs.set(bookName, forKey: "lastReadBook")
+        kvs.set(Int64(chapter), forKey: "lastReadChapter")
+        kvs.set(Int64(verse), forKey: "lastReadVerse")
+        kvs.set(text, forKey: "lastReadText")
+        kvs.synchronize()
+
+        // Nudge widgets locally
         DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
     }
 

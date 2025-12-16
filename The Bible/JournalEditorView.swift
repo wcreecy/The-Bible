@@ -41,6 +41,8 @@ struct JournalEditorView: View {
     // Caret/selection tracking
     @State private var textSelectionRange: NSRange = NSRange(location: 0, length: 0)
     @State private var caretRect: CGRect? = nil
+    // Ensure we only set the initial caret once
+    @State private var didSetInitialSelection: Bool = false
 
     // Linkify cache
     @State private var linkedContent: AttributedString = AttributedString("")
@@ -93,7 +95,8 @@ struct JournalEditorView: View {
                 if let initialBody, !initialBody.isEmpty {
                     startContent = smart + "\n" + initialBody
                 } else {
-                    startContent = smart
+                    // IMPORTANT: add a trailing space so the caret (at end) is outside the link range
+                    startContent = smart + " "
                 }
             }
             self._title = State(initialValue: "")
@@ -196,6 +199,12 @@ struct JournalEditorView: View {
                 // Preseed linkify and tag-colors toggle from caller (optional)
                 showTagColorsToggle = showTagColors || (editingEntry != nil)
                 scheduleLinkify(for: content)
+                // Ensure caret starts after the trailing space/newline we added for new entries
+                if !didSetInitialSelection && editingEntry == nil {
+                    didSetInitialSelection = true
+                    let end = (content as NSString).length
+                    textSelectionRange = NSRange(location: end, length: 0)
+                }
             }
             .onDisappear {
                 linkifyTask?.cancel()
@@ -329,13 +338,14 @@ struct JournalEditorView: View {
     }
 
     private func insertVerseText(book: String, chapter: Int, verse: Int, text: String) {
-        let insertion = "\(text)\n\(book) \(chapter):\(verse)"
+        // Add newline after the reference so typing continues outside the link
+        let insertion = "\(text)\n\(book) \(chapter):\(verse)\n"
         insertAtCursor(insertion)
     }
 
     private func insertVerseLink(book: String, chapter: Int, verse: Int) {
-        // Insert plain reference text without a leading "#"
-        let insertion = "\(book) \(chapter):\(verse)"
+        // Add a trailing space so the caret is outside the link range
+        let insertion = "\(book) \(chapter):\(verse) "
         insertAtCursor(insertion)
     }
 

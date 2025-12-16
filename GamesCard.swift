@@ -27,6 +27,8 @@ struct GamesCard: View {
     // Stored in GameStats.recordRound
     private let lastPlayedGameNameKey = "gamesLastPlayedGameName"
 
+    @Environment(\.scenePhase) private var scenePhase
+
     // If overall stats have been cleared (no answers at all), wipe any persisted
     // insight baselines so the Home card shows a clean state.
     private func clearInsightStateIfStatsCleared() {
@@ -86,7 +88,7 @@ struct GamesCard: View {
                     fadeIn = false
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                    insightIndex += 1
+                    insightIndex &+= 1
                     withAnimation(.easeInOut(duration: 0.25)) {
                         fadeIn = true
                     }
@@ -346,6 +348,23 @@ struct GamesCard: View {
         .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
             version &+= 1
             clearInsightStateIfStatsCleared()
+        }
+        // Robustness: restart insights when app becomes active, stop when backgrounded
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .active:
+                startInsightTimer()
+            case .inactive, .background:
+                stopInsightTimer()
+            @unknown default:
+                break
+            }
+        }
+        // Robustness: if the insight pool size changes (due to stats updates), restart the timer to avoid stale state
+        .onChange(of: insightLines.count) { _, _ in
+            // Reset index to keep modulo safe and restart the timer
+            insightIndex = 0
+            startInsightTimer()
         }
     }
 }

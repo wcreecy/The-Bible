@@ -76,4 +76,10 @@ struct TagDisplayNameStore {
         }
         save(map)
     }
+
+    // New: expose all normalized keys currently known in the synced display-name map
+    static func allKeys() -> [String] {
+        ensureObserver()
+        return Array(cached.keys)
+    }
 }

@@ -21,6 +21,11 @@ struct ReadingView: View {
     // Reader-specific font size (independent from global app UI font)
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
 
+    // Observe app-group "last read" to render bookmark icon state live
+    @AppStorage("lastReadBook", store: UserDefaults(suiteName: "group.bible.app")!) private var lastReadBook: String = ""
+    @AppStorage("lastReadChapter", store: UserDefaults(suiteName: "group.bible.app")!) private var lastReadChapter: Int = 0
+    @AppStorage("lastReadVerse", store: UserDefaults(suiteName: "group.bible.app")!) private var lastReadVerse: Int = 0
+
     // Toast state
     @State private var showFavoriteToast: Bool = false
     @State private var favoriteToastText: String = "Added to Favorites"
@@ -90,6 +95,13 @@ struct ReadingView: View {
             }
             .onChange(of: scenePhase) { _, newPhase in
                 viewModel.onScenePhaseChanged(newPhase)
+
+                // Fallback nudge on app activation (device B):
+                // Ensure latest KVS values are pulled locally, then reload the Last Read widget timeline.
+                if newPhase == .active {
+                    NSUbiquitousKeyValueStore.default.synchronize()
+                    DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
+                }
             }
             .onReceive(NotificationCenter.default.publisher(for: .init("switchToTab"))) { (note: Notification) in
                 if let tab = note.userInfo?["tab"] as? Int {
@@ -117,7 +129,8 @@ struct ReadingView: View {
                             chapterNumber: chapterNumber,
                             isHighlighted: viewModel.highlightedVerse == verse.number,
                             isSelected: viewModel.selectedVerse == verse.number,
-                            isPinned: viewModel.pinVerse == verse.number || viewModel.isPinned(verse.number),
+                            // Do not show any icon next to the verse when pinned
+                            isPinned: false,
                             readerFontSize: readerFontSize,
                             onAppear: { number in
                                 viewModel.markVerseSeenIfAllowed(verse: number, totalVerses: currentChapter.verses.count)
@@ -126,6 +139,7 @@ struct ReadingView: View {
                                 let generator = UISelectionFeedbackGenerator()
                                 generator.selectionChanged()
                                 viewModel.clearMenuIfNeeded()
+                                // Tap now only highlights/selects (no bookmarking)
                                 viewModel.handleVerseTap(context: modelContext, verse: v)
                             },
                             onLongPress: { number in
@@ -224,13 +238,17 @@ struct ReadingView: View {
 
             Button(action: {
                 if viewModel.isPinned(verse.number) {
-                    viewModel.pinnedStore.clear()
+                    Task { @MainActor in
+                        await viewModel.pinnedStore.clear()
+                    }
                     let gen = UINotificationFeedbackGenerator(); gen.notificationOccurred(.success)
                     favoriteToastSymbol = "pin"
                     favoriteToastTint = .red
                     favoriteToastText = "Unpinned from Widget"
                 } else {
-                    _ = viewModel.togglePin(verseNumber: verse.number, verseText: verse.text)
+                    Task { @MainActor in
+                        _ = await viewModel.togglePin(verseNumber: verse.number, verseText: verse.text)
+                    }
                     let gen = UINotificationFeedbackGenerator(); gen.notificationOccurred(.success)
                     favoriteToastSymbol = "pin.fill"
                     favoriteToastTint = .red
@@ -250,6 +268,22 @@ struct ReadingView: View {
                 viewModel.markActivity()
             }) { Image(systemName: isFavorited(verse) ? "heart.fill" : "heart") }
             .foregroundStyle(.red)
+
+            // Bookmark (Continue Reading / Last Read)
+            let isBookmarked = (lastReadBook == bookName && lastReadChapter == chapterNumber && lastReadVerse == verse.number)
+            Button(action: {
+                viewModel.bookmarkVerse(context: modelContext, verse: verse)
+                let gen = UINotificationFeedbackGenerator(); gen.notificationOccurred(.success)
+                favoriteToastSymbol = "bookmark.fill"
+                favoriteToastTint = .blue
+                favoriteToastText = "Set as Continue Reading"
+                withAnimation(.spring()) { showFavoriteToast = true }
+                withAnimation(.easeInOut) { viewModel.menuVerse = nil }
+                viewModel.markActivity()
+            }) {
+                Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
+            }
+            .foregroundStyle(.blue)
         }
         .font(.title3)
         .frame(maxWidth: .infinity)

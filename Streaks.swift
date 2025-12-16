@@ -1,22 +1,30 @@
 import SwiftUI
 
 struct StreaksCard: View {
+    // Match TitleCard: use current @AppStorage minutes (not history-aware here)
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
 
     @StateObject private var vm = StreaksViewModel()
 
-    private var goalSeconds: Int { max(1, dailyGoalMinutes) * 60 }
+    // Goal seconds computed exactly like TitleCard
+    private var goalSeconds: Int {
+        max(1, dailyGoalMinutes) * 60
+    }
 
+    // Today total from sessions (same source as Stats tab and Home Today summary)
     private var todayTotal: Int {
-        BibleStatsStore.shared.todayTotalSeconds()
+        BibleStatsStore.shared.todayTotalSeconds(now: Date(), calendar: .autoupdatingCurrent)
     }
 
+    // Progress fraction identical to TitleCard’s formula, now sessions-based
     private var progress: Double {
-        min(1.0, Double(todayTotal) / Double(goalSeconds))
+        let g = max(1, goalSeconds)
+        return min(1.0, Double(todayTotal) / Double(g))
     }
 
+    // Whether goal met today using the same sessions-based source
     private var goalMet: Bool {
-        BibleStatsStore.shared.isDailyGoalMet(goalSeconds: goalSeconds)
+        BibleStatsStore.shared.isDailyGoalMet(goalSeconds: goalSeconds, now: Date(), calendar: .autoupdatingCurrent)
     }
 
     private func goalMinutesString(_ minutes: Int) -> String {
@@ -33,6 +41,7 @@ struct StreaksCard: View {
     }
 
     var body: some View {
+        // Streak values (these remain computed via StreakTracker)
         let current = StreakTracker.currentStreak
         let best = StreakTracker.bestStreak
         let last = StreakTracker.lastVisitDate
@@ -42,6 +51,7 @@ struct StreaksCard: View {
             subtitle: nil,
             tint: current > 0 ? .orange : .secondary,
             iconContent: {
+                // Progress flame uses the same fraction as TitleCard (sessions-based)
                 FillingFlame(progress: progress)
             }
         ) {
@@ -80,13 +90,14 @@ struct StreaksCard: View {
                         .foregroundStyle(.secondary)
                 }
 
-                // Today's progress toward goal
+                // Today's progress toward goal (matching TitleCard formula and sessions source)
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
                         Text("Today")
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.secondary)
                         Spacer()
+                        // Show the current goal minutes (current setting)
                         Text("Goal: \(goalMinutesString(dailyGoalMinutes))")
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(.secondary)
@@ -133,7 +144,7 @@ struct StreaksCard: View {
         }
         .accessibilityElement(children: .contain)
         .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
-            // No-op; vm listens and nudges objectWillChange
+            // No explicit state change needed; StreaksViewModel nudges objectWillChange on updates.
         }
     }
 
@@ -225,7 +236,8 @@ struct StreaksCard: View {
                 ForEach(0..<grid.count, id: \.self) { r in
                     WeekRow(
                         dates: grid[r],
-                        met: { vm.goalMet(for: $0) },
+                        // Calendar check remains based on StreakTracker (totals-based for history)
+                        met: { StreakTracker.isGoalMet(on: $0) },
                         future: { vm.isFuture($0) }
                     )
                 }
@@ -244,11 +256,8 @@ struct StreaksCard: View {
 
         var body: some View {
             ZStack {
-                // Base outline/background flame
                 Image(systemName: "flame.fill")
                     .foregroundStyle(.secondary.opacity(0.25))
-
-                // Filled portion, revealed from bottom to top
                 Image(systemName: "flame.fill")
                     .foregroundStyle(.orange)
                     .mask(

@@ -31,7 +31,7 @@ struct TagManagerView: View {
     }
 
     private func loadFromEntries() {
-        // Aggregate unique normalized tags
+        // Aggregate unique normalized tags from local entries
         var set: Set<String> = []
         for e in entries {
             for raw in e.tags {
@@ -39,6 +39,14 @@ struct TagManagerView: View {
                 if !key.isEmpty { set.insert(key) }
             }
         }
+
+        // Union with keys present in synced settings maps so tags appear even before entries sync locally
+        let nameKeys = Set(TagDisplayNameStore.allKeys())
+        let colorKeys = Set(TagColorStore.allKeys())
+        set.formUnion(nameKeys)
+        set.formUnion(colorKeys)
+
+        // Build items from the union
         let sorted = Array(set).sorted()
         items = sorted.map { key in
             let display = TagDisplayNameStore.displayName(for: key) ?? titleCase(key)

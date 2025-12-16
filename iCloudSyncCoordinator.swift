@@ -129,7 +129,7 @@ final class iCloudSyncCoordinator {
 
         let changedKeys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String] ?? []
         // Filter to known data keys; ignore our timestamp companion keys (handled inside domain helpers)
-        let keysToProcess = changedKeys.filter { allKnownKeys.contains($0) }
+        let keysToProcess = changedKeys.filter { allKnownKeys.contains($0) || Self.lastReadWidgetKeys.contains($0) }
 
         guard !keysToProcess.isEmpty else { return }
 
@@ -137,7 +137,10 @@ final class iCloudSyncCoordinator {
 
         for key in keysToProcess {
             if isGameCounterKey(key) || Self.gameDailyAndLastPlayedKeys.contains(key) { mergedGameKey = true }
-            mergeIncomingKVSValue(forKey: key)
+            // Merge only for domains we own in coordinator
+            if allKnownKeys.contains(key) {
+                mergeIncomingKVSValue(forKey: key)
+            }
         }
 
         // Invalidate caches so subsequent reads reflect merged values
@@ -161,6 +164,42 @@ final class iCloudSyncCoordinator {
 
         // Record last merge time
         lastMergeDate = Date()
+
+        // Special-case: Last Read widget keys are not in allKnownKeys (they live as raw KVS/app-group values for widgets).
+        // If any of these arrived from the server, pull latest, mirror into the App Group store (for the widget),
+        // and trigger a widget reload so device B shows the current bookmark.
+        if keysToProcess.contains(where: { Self.lastReadWidgetKeys.contains($0) }) {
+            // Ensure latest values are pulled to local KVS store
+            kvs.synchronize()
+
+            // Mirror KVS -> App Group UserDefaults read by the widget
+            if let shared = UserDefaults(suiteName: "group.bible.app") {
+                if let book = kvs.string(forKey: "lastReadBook") {
+                    shared.set(book, forKey: "lastReadBook")
+                }
+                // Use NSNumber/object to detect presence; fall back to typed getters if needed
+                if let chapObj = kvs.object(forKey: "lastReadChapter") as? NSNumber {
+                    shared.set(chapObj.intValue, forKey: "lastReadChapter")
+                } else {
+                    let chap = Int(kvs.longLong(forKey: "lastReadChapter"))
+                    if chap != 0 { shared.set(chap, forKey: "lastReadChapter") }
+                }
+                if let verseObj = kvs.object(forKey: "lastReadVerse") as? NSNumber {
+                    shared.set(verseObj.intValue, forKey: "lastReadVerse")
+                } else {
+                    let verse = Int(kvs.longLong(forKey: "lastReadVerse"))
+                    if verse != 0 { shared.set(verse, forKey: "lastReadVerse") }
+                }
+                if let text = kvs.string(forKey: "lastReadText") {
+                    shared.set(text, forKey: "lastReadText")
+                }
+                // Force a sync to disk so the widget sees the updated values promptly
+                shared.synchronize()
+            }
+
+            // Debounced reload of only the Last Read widget
+            DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
+        }
     }
 
     @objc
@@ -305,4 +344,14 @@ final class iCloudSyncCoordinator {
         guard let d = data else { return nil }
         return try? JSONDecoder().decode(T.self, from: d)
     }
+}
+
+// MARK: - Last Read widget keys (KVS/App Group)
+private extension iCloudSyncCoordinator {
+    static let lastReadWidgetKeys: Set<String> = [
+        "lastReadBook",
+        "lastReadChapter",
+        "lastReadVerse",
+        "lastReadText"
+    ]
 }

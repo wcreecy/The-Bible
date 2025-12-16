@@ -54,12 +54,17 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // Game keys: Book Order — enabled for KVS sync
-    static let bookOrderKeys: [String] = [
-        "bookorderAllTimeCorrect",
-        "bookorderAllTimeAnswered",
-        "bookorderAllTimeBestStreak"
-    ]
+    // Game keys: Book Order — now per-difficulty (easy/normal/hard/all)
+    static let bookOrderKeys: [String] = {
+        let diffs = ["easy", "normal", "hard", "all"]
+        var keys: [String] = []
+        for d in diffs {
+            keys.append("bookorderAllTimeCorrect_\(d)")
+            keys.append("bookorderAllTimeAnswered_\(d)")
+            keys.append("bookorderAllTimeBestStreak_\(d)")
+        }
+        return keys
+    }()
 
     // Game keys: Who am I? (easy/normal/hard) — only suffixed; no legacy unsuffixed shipped
     static let whoAmIKeys: [String] = {
@@ -296,8 +301,8 @@ extension iCloudSyncCoordinator {
         // Who am I? (easy/normal/hard)
         repairSuffixed(prefix: "whoami", diffs: ["easy","normal","hard"])
 
-        // Book Order (unsuffixed)
-        repairPair(correctKey: "bookorderAllTimeCorrect", answeredKey: "bookorderAllTimeAnswered")
+        // Book Order (easy/normal/hard/all)
+        repairSuffixed(prefix: "bookorder", diffs: ["easy","normal","hard","all"])
 
         return changed
     }

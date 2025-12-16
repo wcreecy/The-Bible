@@ -64,23 +64,31 @@ final class BookOrderGameViewModel: ObservableObject {
     private var sliceFirst: String? = nil
     private var sliceLast: String? = nil
     
-    private let keyAllTimeCorrect = "bookorderAllTimeCorrect"
-    private let keyAllTimeAnswered = "bookorderAllTimeAnswered"
-    private let keyAllTimeBestStreak = "bookorderAllTimeBestStreak"
+    // Per-difficulty keys (suffixed)
+    private var keySuffix: String {
+        switch difficulty {
+        case .easy: return "easy"
+        case .normal: return "normal"
+        case .hard: return "hard"
+        case .all: return "all"
+        }
+    }
+    private var keyAllTimeCorrect: String { "bookorderAllTimeCorrect_\(keySuffix)" }
+    private var keyAllTimeAnswered: String { "bookorderAllTimeAnswered_\(keySuffix)" }
+    private var keyAllTimeBestStreak: String { "bookorderAllTimeBestStreak_\(keySuffix)" }
     
+    // Read-only accessors for displaying per-difficulty all-time stats.
+    // Writing is centralized through GameStats to avoid double-counting.
     var allTimeCorrect: Int {
-        get { UserDefaults.standard.integer(forKey: keyAllTimeCorrect) }
-        set { UserDefaults.standard.set(newValue, forKey: keyAllTimeCorrect) }
+        UserDefaults.standard.integer(forKey: keyAllTimeCorrect)
     }
     
     var allTimeAnswered: Int {
-        get { UserDefaults.standard.integer(forKey: keyAllTimeAnswered) }
-        set { UserDefaults.standard.set(newValue, forKey: keyAllTimeAnswered) }
+        UserDefaults.standard.integer(forKey: keyAllTimeAnswered)
     }
     
     var allTimeBestStreak: Int {
-        get { UserDefaults.standard.integer(forKey: keyAllTimeBestStreak) }
-        set { UserDefaults.standard.set(newValue, forKey: keyAllTimeBestStreak) }
+        UserDefaults.standard.integer(forKey: keyAllTimeBestStreak)
     }
     
     func startGame() {
@@ -292,15 +300,20 @@ final class BookOrderGameViewModel: ObservableObject {
         showResult = true
     }
     
+    // Single source of truth: delegate all writes to GameStats to avoid double-counting.
     private func updateAllTime(correct: Int, answered: Int, streak: Int) {
-        allTimeCorrect += correct
-        allTimeAnswered += answered
-        if streak > allTimeBestStreak {
-            allTimeBestStreak = streak
-        }
+        // Map BookOrderDifficulty to GameStats.Difficulty
+        let statsDifficulty: GameStats.Difficulty = {
+            switch difficulty {
+            case .easy: return .easy
+            case .normal: return .normal
+            case .hard: return .hard
+            case .all: return .none // treated as "all" by GameStats suffix mapping
+            }
+        }()
         GameStats.shared.recordRound(
             game: .bookorder,
-            difficulty: .none,
+            difficulty: statsDifficulty,
             correct: correct,
             answered: answered,
             currentBestStreak: max(streak, allTimeBestStreak)

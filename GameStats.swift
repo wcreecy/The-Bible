@@ -188,7 +188,14 @@ final class GameStats: ObservableObject {
                 case .normal, .none: return nil
                 }
             case .bookorder:
-                return nil // unsuffixed keys
+                // Now per-difficulty (easy/normal/hard/all) — map none->all for "All Books" mode
+                switch difficulty {
+                case .easy: return "easy"
+                case .normal: return "normal"
+                case .hard: return "hard"
+                case .medium: return nil
+                case .none: return "all"
+                }
             case .whoami:
                 switch difficulty {
                 case .easy: return "easy"
@@ -228,9 +235,10 @@ final class GameStats: ObservableObject {
             maxInt("refmatchAllTimeBestStreak_\(s)", candidate: currentBestStreak)
 
         case .bookorder:
-            incInt("bookorderAllTimeCorrect", by: addCorrect)
-            incInt("bookorderAllTimeAnswered", by: addAnswered)
-            maxInt("bookorderAllTimeBestStreak", candidate: currentBestStreak)
+            guard let s = suf else { return }
+            incInt("bookorderAllTimeCorrect_\(s)", by: addCorrect)
+            incInt("bookorderAllTimeAnswered_\(s)", by: addAnswered)
+            maxInt("bookorderAllTimeBestStreak_\(s)", candidate: currentBestStreak)
 
         case .whoami:
             guard let s = suf else { return }
@@ -346,9 +354,10 @@ final class GameStats: ObservableObject {
     }
 
     private var bookorder: GameStat {
-        let c = readInt("bookorderAllTimeCorrect")
-        let a = readInt("bookorderAllTimeAnswered")
-        let best = readInt("bookorderAllTimeBestStreak")
+        // New per-difficulty suffixes: easy/normal/hard/all
+        let c = sumAcross(prefix: "bookorderAllTimeCorrect", parts: ["_easy","_normal","_hard","_all"], legacyKey: "bookorderAllTimeCorrect")
+        let a = sumAcross(prefix: "bookorderAllTimeAnswered", parts: ["_easy","_normal","_hard","_all"], legacyKey: "bookorderAllTimeAnswered")
+        let best = maxAcross(prefix: "bookorderAllTimeBestStreak", parts: ["_easy","_normal","_hard","_all"], legacyKey: "bookorderAllTimeBestStreak")
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 

@@ -128,6 +128,23 @@ struct SettingsDebugUtilitiesView: View {
                     }
                 }
 
+                // Games
+                Group {
+                    Button {
+                        GameStats.shared.seedRandomStatsAllGames()
+                        debugShow("Games", "Seeded random stats across all games and difficulties.")
+                    } label: {
+                        Label("Seed Random Game Stats", systemImage: "gamecontroller")
+                    }
+
+                    Button(role: .destructive) {
+                        iCloudSyncCoordinator.shared.resetAllGameCountersToZero()
+                        debugShow("Games", "Reset all game counters to zero.")
+                    } label: {
+                        Label("Reset All Game Counters", systemImage: "trash")
+                    }
+                }
+
                 // Chapter/verse progress
                 Group {
                     Button {

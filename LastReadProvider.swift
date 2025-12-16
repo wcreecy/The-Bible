@@ -30,6 +30,18 @@ struct LastReadProvider: TimelineProvider {
     }
 
     private func loadEntry() -> Entry {
+        // Prefer iCloud KVS so other devices’ widgets can see updates without launching the app
+        let kvs = NSUbiquitousKeyValueStore.default
+        let bookKVS = kvs.string(forKey: "lastReadBook") ?? ""
+        let chapterKVS = Int(kvs.longLong(forKey: "lastReadChapter"))
+        let verseKVS = Int(kvs.longLong(forKey: "lastReadVerse"))
+        let textKVS = kvs.string(forKey: "lastReadText") ?? ""
+
+        if !bookKVS.isEmpty, chapterKVS > 0, verseKVS > 0, !textKVS.isEmpty {
+            return Entry(date: Date(), text: textKVS, book: bookKVS, chapter: chapterKVS, verse: verseKVS)
+        }
+
+        // Fallback to App Group (local device)
         let shared = UserDefaults(suiteName: "group.bible.app")
         let book = shared?.string(forKey: "lastReadBook") ?? ""
         let chapter = shared?.integer(forKey: "lastReadChapter") ?? 0

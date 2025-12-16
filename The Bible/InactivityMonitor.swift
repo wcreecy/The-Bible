@@ -27,7 +27,7 @@ final class InactivityMonitor {
                 try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
             }
             if Task.isCancelled { return }
-            await onInactive()
+            onInactive()
         }
     }
 
@@ -37,4 +37,3 @@ final class InactivityMonitor {
         task = nil
     }
 }
-

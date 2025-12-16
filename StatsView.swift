@@ -156,13 +156,7 @@ struct StatsView: View {
     }
 
     // MARK: - Smart Insights state
-
-    @State private var insightBestDayText: String? = nil
-    @State private var insightNewStreakText: String? = nil
-    @State private var insightSevenDayAvgVsMonthText: String? = nil
-    @State private var insightGoalHitsLast7Text: String? = nil
-    @State private var insightLongestSessionText: String? = nil
-    @State private var insightTopBookThisMonthText: String? = nil
+    // Removed: Summary/Insights cards from Stats tab
 
     // MARK: - Integer formatting
 
@@ -297,14 +291,10 @@ struct StatsView: View {
 
     private var contentVStack: some View {
         VStack(spacing: 16) {
-            glanceRow
+            // Removed: glanceRow (summary cards duplicated on Home)
 
-            InsightsCardView(
-                tiles: buildInsightTiles(),
-                onRefresh: { computeInsights() }
-            )
-
-            ConsistencyCardView(last30Daily: last30Daily)
+            // Removed: InsightsCardView (summary-style)
+            // Removed: ConsistencyCardView (summary-style)
 
             ProgressCardView(
                 booksCompleted: booksCompleted,
@@ -416,114 +406,10 @@ struct StatsView: View {
     }
 
     // MARK: - Smart Insights
-
-    private func buildInsightTiles() -> [InsightChipModel] {
-        [
-            insightBestDayText.map { InsightChipModel(icon: "calendar.badge.clock", title: "Best Day", detail: $0, tint: .blue) },
-            insightNewStreakText.map { InsightChipModel(icon: "flame.fill", title: "Streak", detail: $0, tint: .orange) },
-            insightSevenDayAvgVsMonthText.map { InsightChipModel(icon: "chart.line.uptrend.xyaxis", title: "7‑day Avg", detail: $0, tint: .green) },
-            insightGoalHitsLast7Text.map { InsightChipModel(icon: "target", title: $0.contains("7") ? "Goal Hits" : "Goal", detail: $0, tint: .purple) },
-            insightLongestSessionText.map { InsightChipModel(icon: "timer", title: "Longest Session", detail: $0, tint: .teal) },
-            insightTopBookThisMonthText.map { InsightChipModel(icon: "book.fill", title: "Top Book", detail: $0, tint: .pink) }
-        ].compactMap { $0 }
-    }
+    // Removed computeInsights and related state since summary cards are removed
 
     // MARK: - Cards and helpers preserved (glance row etc.)
-
-    private func weekdayLabel(_ weekday: Int) -> String {
-        let symbols = Calendar.current.shortWeekdaySymbols
-        let idx = max(1, min(7, weekday)) - 1
-        return symbols[idx]
-    }
-
-    private func hourLabel(_ hour: Int) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "ha"
-        var comps = DateComponents()
-        comps.hour = hour
-        let date = Calendar.current.date(from: comps) ?? Date()
-        return formatter.string(from: date)
-    }
-
-    private var glanceRow: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
-                statMiniPill(title: "Today", value: BibleStatsStore.shared.format(todaySeconds), subtitle: todayDeltaOnlyValue, tint: .blue)
-                statMiniPill(title: "This Week", value: BibleStatsStore.shared.format(thisWeekSeconds), subtitle: weekDeltaOnlyValue, tint: .green)
-                statMiniPill(title: "This Month", value: BibleStatsStore.shared.format(monthTotalSeconds), subtitle: monthDeltaOnlyValue, tint: .mint)
-                // New: Last session length
-                statMiniPill(title: "Last Session", value: lastSessionSeconds > 0 ? BibleStatsStore.shared.format(lastSessionSeconds) : "—", tint: .indigo)
-                statMiniPill(title: "All-time", value: BibleStatsStore.shared.format(totalSecondsAllTime), subtitle: nil, tint: .purple)
-                lastReadMiniPill(title: "Last Read", ref: lastReadBookChapter, relative: lastReadTimeText)
-            }
-            .padding(.vertical, 2)
-        }
-    }
-
-    private func statMiniPill(title: String, value: String, subtitle: String? = nil, tint: Color) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption).foregroundStyle(.secondary)
-            Text(value)
-                .font(.subheadline.weight(.semibold))
-                .monospacedDigit()
-                .lineLimit(1)
-            if let subtitle, !subtitle.isEmpty, subtitle != "—" {
-                let prefix = (title == "This Week") ? "vs lst wk: " : (title == "Today" ? "vs yday: " : (title == "This Month" ? "vs lst mo: " : ""))
-                if !prefix.isEmpty {
-                    Text("\(prefix)\(subtitle)")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
-                } else {
-                    Text(subtitle)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(tint.opacity(0.08))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(tint.opacity(0.25), lineWidth: 1)
-        )
-    }
-
-    private func lastReadMiniPill(title: String, ref: String, relative: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption).foregroundStyle(.secondary)
-            Text(ref)
-                .font(.subheadline.weight(.semibold))
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
-            Text(relative)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color.orange.opacity(0.08))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(Color.orange.opacity(0.25), lineWidth: 1)
-        )
-    }
+    // Removed glanceRow and helpers that only served summary pills
 
     // MARK: - Whether to show numeric labels above bars
 
@@ -564,7 +450,7 @@ struct StatsView: View {
         recomputeOTNTFromScope()
         recomputeGenresFromScope()
         recomputeTotalsCardMetrics()
-        computeInsights()
+        // Removed: computeInsights()
     }
 
     private func refreshTotals() {
@@ -829,48 +715,7 @@ struct StatsView: View {
     }
 
     // MARK: - Glance helpers
-
-    private var weekDeltaOnlyValue: String {
-        let delta = thisWeekSeconds - lastWeekSeconds
-        if delta == 0 { return "—" }
-        let sign = delta > 0 ? "+" : "−"
-        let absVal = abs(delta)
-        return "\(sign)\(BibleStatsStore.shared.format(absVal))"
-    }
-
-    private var todayDeltaOnlyValue: String {
-        let cal = Calendar.current
-        let startOfToday = cal.startOfDay(for: Date())
-        guard let startOfYesterday = cal.date(byAdding: .day, value: -1, to: startOfToday),
-              let endOfYesterday = cal.date(byAdding: .second, value: -1, to: startOfToday)
-        else { return "—" }
-
-        let yesterdaySeconds = totalSecondsForDay(from: startOfYesterday, to: endOfYesterday, calendar: cal)
-        let delta = todaySeconds - yesterdaySeconds
-        if delta == 0 { return "—" }
-        let sign = delta > 0 ? "+" : "−"
-        let absVal = abs(delta)
-        return "\(sign)\(BibleStatsStore.shared.format(absVal))"
-    }
-
-    private var monthDeltaOnlyValue: String {
-        let delta = monthTotalSeconds - lastMonthSeconds
-        if delta == 0 { return "—" }
-        let sign = delta > 0 ? "+" : "−"
-        let absVal = abs(delta)
-        return "\(sign)\(BibleStatsStore.shared.format(absVal))"
-    }
-
-    private func totalSecondsForDay(from start: Date, to end: Date, calendar: Calendar) -> Int {
-        let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 2, now: end, calendar: calendar)
-        return sessions.reduce(0) { acc, s in
-            if s.end >= start && s.end <= end {
-                return acc + Int(max(0, s.end.timeIntervalSince(s.start)))
-            } else {
-                return acc
-            }
-        }
-    }
+    // Removed: summary pill helpers (week/today/month deltas) since glance row is removed
 
     private func openReader(bookName: String, chapter: Int, verse: Int = 1) {
         NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
@@ -1105,135 +950,8 @@ struct StatsView: View {
         return (r.series, mappedAgg)
     }
 
-    // MARK: - Smart insights computation (unchanged)
-
-    private func computeInsights() {
-        let cal = Calendar.autoupdatingCurrent
-        let now = Date()
-
-        // Best day in last 90 days
-        do {
-            let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 90, now: now, calendar: cal)
-            var buckets: [String: Int] = [:]
-            for s in sessions {
-                let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
-                let key = BibleStatsStore.isoDateString(s.end, calendar: cal)
-                buckets[key, default: 0] += dur
-            }
-            if let (bestKey, bestSeconds) = buckets.max(by: { $0.value < $1.value }),
-               bestSeconds > 0 {
-                let df = DateFormatter()
-                df.calendar = cal
-                df.timeZone = cal.timeZone
-                df.setLocalizedDateFormatFromTemplate("MMM d")
-                let isoParser = DateFormatter()
-                isoParser.calendar = cal
-                isoParser.timeZone = cal.timeZone
-                isoParser.dateFormat = "yyyy-MM-dd"
-                let bestDate = isoParser.date(from: bestKey) ?? cal.startOfDay(for: now)
-                let pretty = df.string(from: bestDate)
-                let val = BibleStatsStore.shared.format(bestSeconds)
-                insightBestDayText = "Best day in 90 days: \(val) (\(pretty))"
-            } else {
-                insightBestDayText = nil
-            }
-        }
-
-        // New streak: compare current streak today vs yesterday
-        do {
-            let current = StreakTracker.currentStreak
-            let yesterday: Int = {
-                var count = 0
-                var day = cal.date(byAdding: .day, value: -1, to: now) ?? now
-                if !StreakTracker.isGoalMet(on: day) {
-                    if let prev = cal.date(byAdding: .day, value: -1, to: day) {
-                        day = prev
-                    }
-                }
-                while StreakTracker.isGoalMet(on: day) {
-                    count += 1
-                    guard let prev = cal.date(byAdding: .day, value: -1, to: day) else { break }
-                    day = prev
-                }
-                return count
-            }()
-            if current > 0, current > yesterday {
-                insightNewStreakText = "New streak: \(current) day\(current == 1 ? "" : "s") in a row"
-            } else {
-                insightNewStreakText = nil
-            }
-        }
-
-        // 7‑day average up/down vs last month
-        do {
-            let last7 = StatsSeriesBuilder.dailySeries(lastNDays: 7, now: now, calendar: cal)
-            let avg7 = last7.isEmpty ? 0 : last7.reduce(0) { $0 + $1.seconds } / last7.count
-
-            if let prevMonth = cal.date(byAdding: .month, value: -1, to: now) {
-                let prevMonthSeries = StatsSeriesBuilder.dailySeriesForMonth(containing: prevMonth, calendar: cal)
-                let prevAvgPerDay = prevMonthSeries.isEmpty ? 0 : prevMonthSeries.reduce(0) { $0 + $1.seconds } / prevMonthSeries.count
-                if prevAvgPerDay > 0 {
-                    let change = Double(avg7 - prevAvgPerDay) / Double(prevAvgPerDay) * 100.0
-                    let pct = Int(round(abs(change)))
-                    if pct >= 1 {
-                        insightSevenDayAvgVsMonthText = change >= 0
-                        ? "7‑day average up \(pct)% vs last month"
-                        : "7‑day average down \(pct)% vs last month"
-                    } else {
-                        insightSevenDayAvgVsMonthText = nil
-                    }
-                } else {
-                    insightSevenDayAvgVsMonthText = nil
-                }
-            } else {
-                insightSevenDayAvgVsMonthText = nil
-            }
-        }
-
-        // Goal hits in last 7 days
-        do {
-            var hits = 0
-            for i in 0..<7 {
-                if let day = cal.date(byAdding: .day, value: -i, to: cal.startOfDay(for: now)) {
-                    if StreakTracker.isGoalMet(on: day) { hits += 1 }
-                }
-            }
-            if hits > 0 {
-                insightGoalHitsLast7Text = "You hit your goal \(hits) of the last 7 days"
-            } else {
-                insightGoalHitsLast7Text = nil
-            }
-        }
-
-        // Longest session in last 30 days
-        do {
-            let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 30, now: now, calendar: cal)
-            if let longest = sessions.max(by: { ($0.end.timeIntervalSince($0.start)) < ($1.end.timeIntervalSince($1.start)) }) {
-                let dur = Int(max(0, longest.end.timeIntervalSince(longest.start)))
-                if dur >= minSessionSeconds {
-                    let df = DateFormatter()
-                    df.calendar = cal
-                    df.timeZone = cal.timeZone
-                    df.setLocalizedDateFormatFromTemplate("MMM d")
-                    let when = df.string(from: longest.end)
-                    insightLongestSessionText = "(30 days): \(BibleStatsStore.shared.format(dur)) (\(when))"
-                } else {
-                    insightLongestSessionText = nil
-                }
-            } else {
-                insightLongestSessionText = nil
-            }
-        }
-
-        // Most-read book this month
-        do {
-            if let top = monthTop3Books.first, top.seconds > 0 {
-                insightTopBookThisMonthText = "Most‑read book this month: \(top.book)"
-            } else {
-                insightTopBookThisMonthText = nil
-            }
-        }
-    }
+    // MARK: - Smart insights computation (removed)
+    // computeInsights removed as summary cards are removed
 
     // MARK: - Mapping helpers for new card bindings
 
@@ -1267,4 +985,3 @@ struct StatsView: View {
         }
     }
 }
-

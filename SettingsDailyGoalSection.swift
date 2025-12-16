@@ -55,6 +55,9 @@ struct SettingsDailyGoalSection: View {
                         ToolbarItem(placement: .confirmationAction) {
                             Button("Done") {
                                 dailyGoalMinutes = localDailyGoalMinutes
+                                // Record a change effective today so past days keep their prior goal
+                                DailyGoalHistoryStore.shared.recordChange(minutes: localDailyGoalMinutes, at: Date())
+                                // Also push the simple key for legacy consumers and other devices
                                 iCloudSyncCoordinator.shared.pushKey("dailyGoalMinutes")
                                 isDailyGoalSheetPresented = false
                             }
@@ -65,5 +68,10 @@ struct SettingsDailyGoalSection: View {
             }
         }
         .headerProminence(.increased)
+        .onAppear {
+            // Ensure there is a baseline history so older days evaluate consistently
+            DailyGoalHistoryStore.shared.ensureSeededIfNeeded()
+        }
     }
 }
+

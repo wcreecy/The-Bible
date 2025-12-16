@@ -81,4 +81,10 @@ struct TagColorStore {
     static func removeColor(for tag: String) {
         setColor(nil, for: tag)
     }
+
+    // New: expose all normalized keys currently known in the synced color map
+    static func allKeys() -> [String] {
+        ensureObserver()
+        return Array(cachedMap.keys)
+    }
 }
