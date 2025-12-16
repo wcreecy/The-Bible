@@ -39,6 +39,8 @@ struct TotalsCardView: View {
     // Formatting helper (seconds -> H:MM:SS or M:SS)
     let formatSeconds: (Int) -> String
 
+    @Environment(\.horizontalSizeClass) private var hSizeClass
+
     var body: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 10) {
@@ -89,10 +91,18 @@ struct TotalsCardView: View {
                                 .cornerRadius(3)
                                 .annotation(position: .top, alignment: .center) {
                                     if minutes > 0, showValueLabels {
-                                        Text("\(minutes)")
-                                            .font(.caption2.weight(.semibold))
-                                            .foregroundStyle(.secondary)
-                                            .monospacedDigit()
+                                        // Smaller font on iPhone (compact) for legibility with many bars
+                                        if hSizeClass == .compact {
+                                            Text("\(minutes)")
+                                                .font(.system(size: 9, weight: .semibold))
+                                                .foregroundStyle(.secondary)
+                                                .monospacedDigit()
+                                        } else {
+                                            Text("\(minutes)")
+                                                .font(.caption2.weight(.semibold))
+                                                .foregroundStyle(.secondary)
+                                                .monospacedDigit()
+                                        }
                                     }
                                 }
                             }

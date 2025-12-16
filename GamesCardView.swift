@@ -90,6 +90,8 @@ struct GamesCardView: View {
                 s.answered > 0 ? (Double(s.correct) / Double(s.answered)) * 100.0 : 0
             }
             let streaks: [Int] = entries.map { s in s.bestStreak ?? 0 }
+            // New: raw counts for the mini chart (number of games played per game)
+            let counts: [Int] = entries.map { s in s.answered }
 
             let bestShareIndex = uniqueMaxIndex(shares)
             let bestAvgIndex = uniqueMaxIndex(avgs)
@@ -163,17 +165,20 @@ struct GamesCardView: View {
                             ForEach(Array(entries.enumerated()), id: \.offset) { pair in
                                 let idx = pair.offset
                                 let entry = pair.element
-                                let share = shares[idx]
+                                let count = counts[idx]
                                 BarMark(
                                     x: .value("Game", entry.name),
-                                    y: .value("Share", Int(round(share)))
+                                    y: .value("Played", count)
                                 )
                                 .foregroundStyle(Color.accentColor.opacity(0.85))
                                 .cornerRadius(4)
                                 .annotation(position: .top, alignment: .center) {
-                                    Text("\(Int(round(share)))%")
-                                        .font(.caption2)
-                                        .foregroundStyle(.secondary)
+                                    if count > 0 {
+                                        Text("\(count)")
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                            .monospacedDigit()
+                                    }
                                 }
                             }
                         }

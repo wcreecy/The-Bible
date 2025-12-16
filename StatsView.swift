@@ -155,9 +155,6 @@ struct StatsView: View {
         [GridItem(.adaptive(minimum: 150), spacing: 10)]
     }
 
-    // MARK: - Smart Insights state
-    // Removed: Summary/Insights cards from Stats tab
-
     // MARK: - Integer formatting
 
     private func formatInt(_ value: Int) -> String {
@@ -195,7 +192,7 @@ struct StatsView: View {
 
     var body: some View {
         ScrollView {
-            contentVStack
+            contentBody
         }
         .navigationTitle("Stats")
         .navigationBarTitleDisplayMode(.inline)
@@ -289,159 +286,221 @@ struct StatsView: View {
         }
     }
 
-    private var contentVStack: some View {
-        VStack(spacing: 16) {
-            // Removed: glanceRow (summary cards duplicated on Home)
+    // MARK: - Layout
 
-            // Removed: InsightsCardView (summary-style)
-            // Removed: ConsistencyCardView (summary-style)
+    private var contentBody: some View {
+        Group {
+            if hSizeClass == .regular {
+                // Two-column layout on iPad
+                HStack(alignment: .top, spacing: 16) {
+                    // Column 1
+                    VStack(spacing: 16) {
+                        progressCard
+                        topBooksThisMonthCard
+                        GamesCardView()
+                            .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+                    }
+                    .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
 
-            ProgressCardView(
-                booksCompleted: booksCompleted,
-                totalBooks: totalBooks,
-                visitedCount: visitedCount,
-                totalChapters: totalChapters,
-                completedVerses: completedVerses,
-                totalVerses: totalVerses,
-                orderedBookNames: orderedAllBooks,
-                bookProgress: bookProgress,
-                onContinue: {
-                    if let last = lastReadEntry {
-                        openReader(bookName: last.bookName, chapter: last.chapterNumber, verse: 1)
+                    // Column 2
+                    VStack(spacing: 16) {
+                        totalsCard
+                        otntCard
+                        genreCard
+                        avgSessionCard
+                    }
+                    .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+            } else {
+                // Single-column layout on iPhone
+                VStack(spacing: 16) {
+                    progressCard
+                    totalsCard
+                    otntCard
+                    genreCard
+                    avgSessionCard
+                    topBooksThisMonthCard
+                    GamesCardView()
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+            }
+        }
+    }
+
+    // Extracted card views for reuse in both layouts
+
+    private var progressCard: some View {
+        ProgressCardView(
+            booksCompleted: booksCompleted,
+            totalBooks: totalBooks,
+            visitedCount: visitedCount,
+            totalChapters: totalChapters,
+            completedVerses: completedVerses,
+            totalVerses: totalVerses,
+            orderedBookNames: orderedAllBooks,
+            bookProgress: bookProgress,
+            onContinue: {
+                if let last = lastReadEntry {
+                    openReader(bookName: last.bookName, chapter: last.chapterNumber, verse: 1)
+                }
+            },
+            onOpenNextUnread: {
+                if let next = nextUnreadGlobal() {
+                    openReader(bookName: next.book, chapter: next.chapter, verse: 1)
+                }
+            },
+            hasLastRead: lastReadEntry != nil,
+            isExpanded: $showBookProgressDetails,
+            filter: $bookFilter,
+            search: $bookSearch,
+            selectedBookForChapters: $selectedBookForChapters
+        )
+        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+    }
+
+    private var totalsCard: some View {
+        TotalsCardView(
+            timeScope: Binding(
+                get: {
+                    switch timeScope {
+                    case .allTime: return .allTime
+                    case .thisMonth: return .thisMonth
+                    case .last7: return .last7
                     }
                 },
-                onOpenNextUnread: {
-                    if let next = nextUnreadGlobal() {
-                        openReader(bookName: next.book, chapter: next.chapter, verse: 1)
+                set: { new in
+                    switch new {
+                    case .allTime: timeScope = .allTime
+                    case .thisMonth: timeScope = .thisMonth
+                    case .last7: timeScope = .last7
+                    }
+                }
+            ),
+            totalSeconds: scopedTotalSeconds,
+            series: totalsDaily,
+            chartSubtitle: totalsChartSubtitle,
+            currentBarUnit: currentBarUnit,
+            showValueLabels: shouldShowBarValueLabels,
+            xAxis: { AnyAxisContent(chartXAxisMarks) },
+            activeBucketLabel: activeBucketLabel,
+            activeBucketCount: activeBucketCount,
+            avgPerActiveBucketLabel: avgPerActiveBucketLabel,
+            avgSecondsPerActiveBucket: avgSecondsPerActiveBucketInScope,
+            topBook: topBookInScope,
+            isExpanded: $showTotalsSection,
+            sortMode: Binding(
+                get: {
+                    switch sortMode {
+                    case .canonical: return .canonical
+                    case .mostRead: return .mostRead
                     }
                 },
-                hasLastRead: lastReadEntry != nil,
-                isExpanded: $showBookProgressDetails,
-                filter: $bookFilter,
-                search: $bookSearch,
-                selectedBookForChapters: $selectedBookForChapters
-            )
+                set: { new in
+                    switch new {
+                    case .canonical: sortMode = .canonical
+                    case .mostRead: sortMode = .mostRead
+                    }
+                }
+            ),
+            rows: scopedRows,
+            formatSeconds: { BibleStatsStore.shared.format($0) }
+        )
+        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+    }
 
-            TotalsCardView(
-                timeScope: Binding(
-                    get: {
-                        switch timeScope {
-                        case .allTime: return .allTime
-                        case .thisMonth: return .thisMonth
-                        case .last7: return .last7
-                        }
-                    },
-                    set: { new in
-                        switch new {
-                        case .allTime: timeScope = .allTime
-                        case .thisMonth: timeScope = .thisMonth
-                        case .last7: timeScope = .last7
+    private var otntCard: some View {
+        OTNTCardView(
+            timeScope: Binding(
+                get: { mapScopeToOTNT(timeScope) },
+                set: { new in timeScope = mapScopeFromOTNT(new) }
+            ),
+            otSeconds: otSeconds,
+            ntSeconds: ntSeconds,
+            formatSeconds: { BibleStatsStore.shared.format($0) }
+        )
+        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+    }
+
+    private var genreCard: some View {
+        GenreDistributionCardView(
+            timeScope: Binding(
+                get: { mapScopeToGenre(timeScope) },
+                set: { new in timeScope = mapScopeFromGenre(new) }
+            ),
+            perGenreTotals: perGenreTotals,
+            selectedGenre: $selectedGenre,
+            onSelectGenre: { g in
+                genreDetailRows = rowsForGenre(g, totals: scopedPerBookTotals)
+            },
+            genreColor: { genreColor($0) },
+            formatSeconds: { BibleStatsStore.shared.format($0) }
+        )
+        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+    }
+
+    private var avgSessionCard: some View {
+        AverageSessionCardView(
+            sessionsSeries: sessionsLast7,
+            avgSessionSeconds: avgSessionSecondsLast7,
+            formatSeconds: { BibleStatsStore.shared.format($0) }
+        )
+        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+    }
+
+    private var topBooksThisMonthCard: some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("Top Books This Month")
+                        .font(.headline)
+                    Spacer()
+                }
+                if monthTop3Books.isEmpty {
+                    ContentUnavailableView("No reading yet this month", systemImage: "books.vertical")
+                        .frame(maxWidth: .infinity, alignment: .center)
+                } else {
+                    let maxSeconds = max(1, monthTop3Books.map { $0.seconds }.max() ?? 1)
+                    VStack(spacing: 8) {
+                        ForEach(Array(monthTop3Books.enumerated()), id: \.offset) { idx, entry in
+                            HStack(spacing: 6) {
+                                // 1. Book
+                                Text("\(idx + 1). \(entry.book)")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                                // Proportional bar occupies remaining flexible space before time
+                                GeometryReader { geo in
+                                    let frac = CGFloat(entry.seconds) / CGFloat(maxSeconds)
+                                    ZStack(alignment: .leading) {
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                                            .fill(Color(.secondarySystemBackground))
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                                            .fill(Color.accentColor.opacity(0.8))
+                                            .frame(width: max(0, geo.size.width * frac))
+                                    }
+                                }
+                                .frame(height: 10)
+                                // Removed maxWidth cap to allow longer bars.
+
+                                // Time at the end
+                                Text(BibleStatsStore.shared.format(entry.seconds))
+                                    .foregroundStyle(.secondary)
+                                    .monospacedDigit()
+                                    .frame(width: 72, alignment: .trailing)
+                            }
+                            .accessibilityElement(children: .combine)
+                            .accessibilityLabel("\(idx + 1). \(entry.book) \(BibleStatsStore.shared.format(entry.seconds))")
                         }
                     }
-                ),
-                totalSeconds: scopedTotalSeconds,
-                series: totalsDaily,
-                chartSubtitle: totalsChartSubtitle,
-                currentBarUnit: currentBarUnit,
-                showValueLabels: shouldShowBarValueLabels,
-                xAxis: { AnyAxisContent(chartXAxisMarks) },
-                activeBucketLabel: activeBucketLabel,
-                activeBucketCount: activeBucketCount,
-                avgPerActiveBucketLabel: avgPerActiveBucketLabel,
-                avgSecondsPerActiveBucket: avgSecondsPerActiveBucketInScope,
-                topBook: topBookInScope,
-                isExpanded: $showTotalsSection,
-                sortMode: Binding(
-                    get: {
-                        switch sortMode {
-                        case .canonical: return .canonical
-                        case .mostRead: return .mostRead
-                        }
-                    },
-                    set: { new in
-                        switch new {
-                        case .canonical: sortMode = .canonical
-                        case .mostRead: sortMode = .mostRead
-                        }
-                    }
-                ),
-                rows: scopedRows,
-                formatSeconds: { BibleStatsStore.shared.format($0) }
-            )
-
-            OTNTCardView(
-                timeScope: Binding(
-                    get: { mapScopeToOTNT(timeScope) },
-                    set: { new in timeScope = mapScopeFromOTNT(new) }
-                ),
-                otSeconds: otSeconds,
-                ntSeconds: ntSeconds,
-                formatSeconds: { BibleStatsStore.shared.format($0) }
-            )
-
-            GenreDistributionCardView(
-                timeScope: Binding(
-                    get: { mapScopeToGenre(timeScope) },
-                    set: { new in timeScope = mapScopeFromGenre(new) }
-                ),
-                perGenreTotals: perGenreTotals,
-                selectedGenre: $selectedGenre,
-                onSelectGenre: { g in
-                    genreDetailRows = rowsForGenre(g, totals: scopedPerBookTotals)
-                },
-                genreColor: { genreColor($0) },
-                formatSeconds: { BibleStatsStore.shared.format($0) }
-            )
-
-            AverageSessionCardView(
-                sessionsSeries: sessionsLast7,
-                avgSessionSeconds: avgSessionSecondsLast7,
-                formatSeconds: { BibleStatsStore.shared.format($0) }
-            )
-
-            GamesCardView()
+                }
+            }
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
+        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
     }
 
-    // MARK: - Smart Insights
-    // Removed computeInsights and related state since summary cards are removed
-
-    // MARK: - Cards and helpers preserved (glance row etc.)
-    // Removed glanceRow and helpers that only served summary pills
-
-    // MARK: - Whether to show numeric labels above bars
-
-    private var shouldShowBarValueLabels: Bool {
-        switch timeScope {
-        case .thisMonth: return true
-        case .last7: return true
-        case .allTime: return true
-        }
-    }
-
-    // MARK: - One-open-only toggles retained
-
-    private func toggleBookProgress() {
-        if showBookProgressDetails {
-            showBookProgressDetails = false
-        } else {
-            showTotalsSection = false
-            showBookProgressDetails = true
-        }
-    }
-
-    private func toggleTotals() {
-        if showTotalsSection {
-            showTotalsSection = false
-        } else {
-            showBookProgressDetails = false
-            showTotalsSection = true
-        }
-    }
-
-    // MARK: - Data refresh (unchanged logic)
+    // MARK: - Data refresh
 
     private func refreshAll() {
         refreshTotals()
@@ -450,7 +509,6 @@ struct StatsView: View {
         recomputeOTNTFromScope()
         recomputeGenresFromScope()
         recomputeTotalsCardMetrics()
-        // Removed: computeInsights()
     }
 
     private func refreshTotals() {
@@ -715,7 +773,6 @@ struct StatsView: View {
     }
 
     // MARK: - Glance helpers
-    // Removed: summary pill helpers (week/today/month deltas) since glance row is removed
 
     private func openReader(bookName: String, chapter: Int, verse: Int = 1) {
         NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
@@ -867,6 +924,25 @@ struct StatsView: View {
         }
     }
 
+    // Controls whether to show value labels on bars, based on aggregation, data size, and size class.
+    private var shouldShowBarValueLabels: Bool {
+        // Always show labels for "This Month" as requested
+        if timeScope == .thisMonth { return true }
+
+        let count = totalsDaily.count
+        let isRegular = (hSizeClass == .regular)
+        switch currentXAxisAggregation {
+        case .daily:
+            return count <= (isRegular ? 24 : 14)
+        case .weekly:
+            return count <= (isRegular ? 26 : 12)
+        case .monthly:
+            return count <= (isRegular ? 24 : 12)
+        case .yearly:
+            return count <= (isRegular ? 20 : 10)
+        }
+    }
+
     @AxisContentBuilder
     private var chartXAxisMarks: some AxisContent {
         switch currentXAxisAggregation {
@@ -949,9 +1025,6 @@ struct StatsView: View {
         }()
         return (r.series, mappedAgg)
     }
-
-    // MARK: - Smart insights computation (removed)
-    // computeInsights removed as summary cards are removed
 
     // MARK: - Mapping helpers for new card bindings
 
