@@ -72,12 +72,18 @@ struct ProgressCardView: View {
     var body: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 10) {
-                if hSizeClass == .compact {
-                    compactHeader
+                // Collapsed vs expanded header
+                if isExpanded {
+                    if hSizeClass == .compact {
+                        compactHeader
+                    } else {
+                        regularHeader
+                    }
                 } else {
-                    regularHeader
+                    collapsedHeader
                 }
 
+                // Actions (kept)
                 HStack(spacing: 10) {
                     Button(action: onContinue) {
                         Label("Continue Reading", systemImage: "arrowtriangle.right.fill")
@@ -130,6 +136,111 @@ struct ProgressCardView: View {
         }
         .accessibilityAddTraits(.isButton)
     }
+
+    // MARK: - Collapsed header (polished summary)
+
+    private var collapsedHeader: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Bible Reading Progress")
+                .font(.headline)
+
+            if hSizeClass == .regular {
+                HStack(spacing: 12) {
+                    summaryTile(
+                        title: "Books",
+                        countText: "\(formatInt(booksCompleted))/\(formatInt(totalBooks))",
+                        percent: booksPercent,
+                        tint: .green
+                    )
+                    summaryTile(
+                        title: "Chapters",
+                        countText: "\(formatInt(visitedCount))/\(formatInt(totalChapters))",
+                        percent: chaptersPercent,
+                        tint: .blue
+                    )
+                    summaryTile(
+                        title: "Verses",
+                        countText: "\(formatInt(completedVerses))/\(formatInt(totalVerses))",
+                        percent: versesPercent,
+                        tint: .accentColor
+                    )
+                }
+            } else {
+                VStack(spacing: 8) {
+                    summaryTile(
+                        title: "Books",
+                        countText: "\(formatInt(booksCompleted))/\(formatInt(totalBooks))",
+                        percent: booksPercent,
+                        tint: .green
+                    )
+                    summaryTile(
+                        title: "Chapters",
+                        countText: "\(formatInt(visitedCount))/\(formatInt(totalChapters))",
+                        percent: chaptersPercent,
+                        tint: .blue
+                    )
+                    summaryTile(
+                        title: "Verses",
+                        countText: "\(formatInt(completedVerses))/\(formatInt(totalVerses))",
+                        percent: versesPercent,
+                        tint: .accentColor
+                    )
+                }
+            }
+        }
+    }
+
+    private func summaryTile(title: String, countText: String, percent: Int, tint: Color) -> some View {
+        HStack(spacing: 12) {
+            ProgressRing(
+                progress: Double(percent) / 100.0,
+                lineWidth: 7,
+                size: 40,
+                tint: tint,
+                track: Color.primary.opacity(0.12),
+                label: {
+                    Text("\(percent)%")
+                        .font(.caption2.weight(.semibold))
+                        .monospacedDigit()
+                }
+            )
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Text(title)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    // Small accent chip for percent
+                    Text("\(percent)%")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(tint)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(
+                            Capsule(style: .continuous)
+                                .fill(tint.opacity(0.12))
+                        )
+                        .accessibilityHidden(true)
+                }
+                Text(countText + " " + title.lowercased())
+                    .font(.footnote.weight(.semibold))
+                    .monospacedDigit()
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.black.opacity(0.06), lineWidth: 1)
+        )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title) \(countText), \(percent) percent complete")
+    }
+
+    // MARK: - Original headers (kept for expanded view)
 
     private var compactHeader: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -221,6 +332,8 @@ struct ProgressCardView: View {
         }
         .padding(.vertical, 2)
     }
+
+    // MARK: - Expanded content (kept)
 
     private var filtersAndSearch: some View {
         VStack(alignment: .leading, spacing: 8) {
