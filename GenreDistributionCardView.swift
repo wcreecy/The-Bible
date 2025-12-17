@@ -70,6 +70,13 @@ struct GenreDistributionCardView: View {
                         .accessibilityLabel("\(item.genre) \(formatSeconds(item.seconds))")
                     }
                 }
+
+                // Small tip to indicate interactivity
+                Text("Tip: Tap a genre to see the books in it.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 6)
+                    .accessibilityHint("Opens a list of books for the selected genre.")
             }
         }
     }

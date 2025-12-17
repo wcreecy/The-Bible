@@ -155,6 +155,17 @@ struct TotalsCardView: View {
                 }
             }
         }
+        // Make the entire card clickable to expand/collapse
+        .contentShape(Rectangle())
+        .highPriorityGesture(
+            TapGesture().onEnded {
+                withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+                    isExpanded.toggle()
+                }
+            }
+        )
+        .accessibilityAddTraits(.isButton)
+        .accessibilityLabel(Text(isExpanded ? "Hide details" : "Show details"))
     }
 
     // Responsive chip grid (simple heuristic)
