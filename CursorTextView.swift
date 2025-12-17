@@ -27,7 +27,7 @@ struct CursorTextView: UIViewRepresentable {
         mutable.enumerateAttribute(.foregroundColor, in: fullRange, options: []) { value, range, _ in
             if let color = value as? UIColor {
                 var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-                if color.getRed(&r, green: &g, blue: &b, alpha: &a), r == 0, g == 0, b == 0, a > 0 {
+                if color.getRed(&r, green: &g, blue:&b, alpha:&a), r == 0, g == 0, b == 0, a > 0 {
                     mutable.removeAttribute(.foregroundColor, range: range)
                 }
             }
@@ -118,6 +118,10 @@ struct CursorTextView: UIViewRepresentable {
         DispatchQueue.main.async {
             context.coordinator.updateCaretRect(tv, deferBindingUpdate: true)
         }
+
+        // Start keyboard tracking to avoid mutating during animations
+        context.coordinator.startKeyboardTracking()
+
         return tv
     }
 
@@ -139,46 +143,72 @@ struct CursorTextView: UIViewRepresentable {
         // Update text (preserving selection) only if needed
         if let linkify {
             if context.coordinator.lastLinkifiedText != text || uiView.attributedText?.string != text {
-                context.coordinator.isProgrammaticUpdate = true
-                // Use current selection at the moment of apply and clamp it
-                let currentRange = uiView.selectedRange
-                let clampedOld = context.coordinator.clampSelection(currentRange, forLength: (uiView.attributedText?.string as NSString?)?.length ?? (uiView.text as NSString?)?.length ?? 0)
-                let linked = NSAttributedString(linkify(text))
-                let normalized = normalizedAttributedString(linked)
-                uiView.attributedText = normalized
-                // Reassert dynamic attributes before restoring selection
-                uiView.textColor = .label
-                uiView.typingAttributes[.foregroundColor] = UIColor.label
-                uiView.font = bodyFont
-                uiView.typingAttributes[.font] = bodyFont
-                // Avoid inheriting link attribute at caret
-                uiView.typingAttributes[.link] = nil
-                // Clamp selection to new length and restore
-                let newLen = (uiView.attributedText?.string as NSString?)?.length ?? 0
-                let clampedNew = context.coordinator.clampSelection(clampedOld, forLength: newLen)
-                uiView.selectedRange = clampedNew
-                context.coordinator.lastLinkifiedText = text
-                context.coordinator.isProgrammaticUpdate = false
-                context.coordinator.didProgrammaticallyAdjustSelection = true
+                // If the keyboard is animating, defer this whole relinkify to avoid UIKit warnings/jumps
+                if context.coordinator.isKeyboardAnimating {
+                    context.coordinator.deferSwiftUIUpdate { [weak uiView] in
+                        guard let tv = uiView else { return }
+                        self.updateUIView(tv, context: context)
+                    }
+                } else {
+                    context.coordinator.isProgrammaticUpdate = true
+                    context.coordinator.isRelinkifying = true
+                    // Use current selection at the moment of apply and clamp it
+                    let currentRange = uiView.selectedRange
+                    let clampedOld = context.coordinator.clampSelection(currentRange, forLength: (uiView.attributedText?.string as NSString?)?.length ?? (uiView.text as NSString?)?.length ?? 0)
+                    let linked = NSAttributedString(linkify(text))
+                    let normalized = normalizedAttributedString(linked)
+
+                    // Skip assignment if link ranges are unchanged to avoid layout churn
+                    if !context.coordinator.linkRangesChanged(between: uiView.attributedText, and: normalized) {
+                        uiView.textColor = .label
+                        uiView.typingAttributes[.foregroundColor] = UIColor.label
+                        uiView.font = bodyFont
+                        uiView.typingAttributes[.font] = bodyFont
+                        uiView.typingAttributes[.link] = nil
+                    } else {
+                        uiView.attributedText = normalized
+                        uiView.textColor = .label
+                        uiView.typingAttributes[.foregroundColor] = UIColor.label
+                        uiView.font = bodyFont
+                        uiView.typingAttributes[.font] = bodyFont
+                        uiView.typingAttributes[.link] = nil
+                    }
+
+                    // Clamp selection to new length and restore
+                    let newLen = (uiView.attributedText?.string as NSString?)?.length ?? 0
+                    let clampedNew = context.coordinator.clampSelection(clampedOld, forLength: newLen)
+                    uiView.selectedRange = clampedNew
+                    context.coordinator.lastLinkifiedText = text
+                    context.coordinator.isProgrammaticUpdate = false
+                    context.coordinator.didProgrammaticallyAdjustSelection = true
+                    context.coordinator.isRelinkifying = false
+                }
             }
         } else {
             if (uiView.text ?? "") != text {
-                context.coordinator.isProgrammaticUpdate = true
-                let currentRange = uiView.selectedRange
-                let clampedOld = context.coordinator.clampSelection(currentRange, forLength: (uiView.text as NSString?)?.length ?? 0)
-                uiView.text = text
-                // Ensure no lingering link typing attribute
-                uiView.typingAttributes[.link] = nil
-                let newLen = (uiView.text as NSString).length
-                let clampedNew = context.coordinator.clampSelection(clampedOld, forLength: newLen)
-                uiView.selectedRange = clampedNew
-                context.coordinator.isProgrammaticUpdate = false
-                context.coordinator.didProgrammaticallyAdjustSelection = true
+                if context.coordinator.isKeyboardAnimating {
+                    context.coordinator.deferSwiftUIUpdate { [weak uiView] in
+                        guard let tv = uiView else { return }
+                        self.updateUIView(tv, context: context)
+                    }
+                } else {
+                    context.coordinator.isProgrammaticUpdate = true
+                    let currentRange = uiView.selectedRange
+                    let clampedOld = context.coordinator.clampSelection(currentRange, forLength: (uiView.text as NSString?)?.length ?? 0)
+                    uiView.text = text
+                    // Ensure no lingering link typing attribute
+                    uiView.typingAttributes[.link] = nil
+                    let newLen = (uiView.text as NSString).length
+                    let clampedNew = context.coordinator.clampSelection(clampedOld, forLength: newLen)
+                    uiView.selectedRange = clampedNew
+                    context.coordinator.isProgrammaticUpdate = false
+                    context.coordinator.didProgrammaticallyAdjustSelection = true
+                }
             }
         }
 
         // Update selection only if actually different
-        if uiView.selectedRange != selection {
+        if uiView.selectedRange != selection && !context.coordinator.isKeyboardAnimating {
             let maxLoc = max(0, (uiView.text as NSString).length)
             let newRange = context.coordinator.clampSelection(selection, forLength: maxLoc)
             if uiView.selectedRange != newRange {
@@ -195,7 +225,10 @@ struct CursorTextView: UIViewRepresentable {
         // Avoid forcing scroll while the user types; only ensure caret visible after programmatic selection changes.
         if context.coordinator.didProgrammaticallyAdjustSelection {
             context.coordinator.didProgrammaticallyAdjustSelection = false
-            context.coordinator.scrollCaretVisible(uiView)
+            // Suppress scroll nudges originating from relinkify or during keyboard animation
+            if !context.coordinator.isRelinkifying && !context.coordinator.isKeyboardAnimating {
+                context.coordinator.scrollCaretVisible(uiView)
+            }
         }
 
         // Always keep link out of typing attributes during updates
@@ -244,7 +277,71 @@ struct CursorTextView: UIViewRepresentable {
         // Debounced relinkify work item to avoid stale selection races
         private var pendingRelinkify: DispatchWorkItem?
 
+        // Track when we are actively relinkifying to suppress scroll nudges
+        var isRelinkifying: Bool = false
+
+        // Throttle caretRect publishing
+        private var caretPublishWork: DispatchWorkItem?
+        private var pendingCaretRect: CGRect?
+
+        // Keyboard animation tracking
+        private(set) var isKeyboardAnimating: Bool = false
+        private var keyboardObs: [NSObjectProtocol] = []
+        private var deferredSwiftUIUpdates: [() -> Void] = []
+
         init(parent: CursorTextView) { self.parent = parent }
+
+        func startKeyboardTracking() {
+            let nc = NotificationCenter.default
+            let willChange = nc.addObserver(forName: UIResponder.keyboardWillChangeFrameNotification, object: nil, queue: .main) { [weak self] notification in
+                guard let self else { return }
+                DispatchQueue.main.async {
+                    self.handleKeyboard(note: notification, starting: true)
+                }
+            }
+            let didChange = nc.addObserver(forName: UIResponder.keyboardDidChangeFrameNotification, object: nil, queue: .main) { [weak self] notification in
+                guard let self else { return }
+                DispatchQueue.main.async {
+                    self.handleKeyboard(note: notification, starting: false)
+                }
+            }
+            let willHide = nc.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { [weak self] notification in
+                guard let self else { return }
+                DispatchQueue.main.async {
+                    self.handleKeyboard(note: notification, starting: true)
+                }
+            }
+            let didHide = nc.addObserver(forName: UIResponder.keyboardDidHideNotification, object: nil, queue: .main) { [weak self] notification in
+                guard let self else { return }
+                DispatchQueue.main.async {
+                    self.handleKeyboard(note: notification, starting: false)
+                }
+            }
+            keyboardObs = [willChange, didChange, willHide, didHide]
+        }
+
+        deinit {
+            keyboardObs.forEach { NotificationCenter.default.removeObserver($0) }
+        }
+
+        private func handleKeyboard(note: Notification, starting: Bool) {
+            if starting {
+                isKeyboardAnimating = true
+            } else {
+                // Delay clearing by one runloop to let UIKit finish internal tracking
+                DispatchQueue.main.async {
+                    self.isKeyboardAnimating = false
+                    // Run any deferred SwiftUI-driven updates now
+                    let jobs = self.deferredSwiftUIUpdates
+                    self.deferredSwiftUIUpdates.removeAll()
+                    for job in jobs { job() }
+                }
+            }
+        }
+
+        func deferSwiftUIUpdate(_ block: @escaping () -> Void) {
+            deferredSwiftUIUpdates.append(block)
+        }
 
         // Clamp helper to keep selection within bounds of a given string length
         func clampSelection(_ range: NSRange, forLength length: Int) -> NSRange {
@@ -279,47 +376,82 @@ struct CursorTextView: UIViewRepresentable {
                 lastLinkifiedText = newText
                 // Cancel any pending work
                 pendingRelinkify?.cancel()
+
+                // Skip relinkify during marked text (IME/composition) or keyboard animation to avoid caret jumps
+                if textView.markedTextRange != nil || isKeyboardAnimating {
+                    ensureDynamicTypingAttributes(on: textView)
+                    DispatchQueue.main.async {
+                        self.parent.onChange?(textView.text)
+                    }
+                    return
+                }
+
+                // If caret is currently inside a link range, delay relinkify to avoid attribute churn under caret
+                if isCaretInsideLink(textView) {
+                    ensureDynamicTypingAttributes(on: textView)
+                    DispatchQueue.main.async {
+                        self.parent.onChange?(textView.text)
+                    }
+                    return
+                }
+
                 let work = DispatchWorkItem { [weak self, weak textView] in
                     guard let self, let tv = textView else { return }
-                    // If text changed again since we scheduled, recompute now using latest tv.text
+
+                    if tv.markedTextRange != nil || self.isKeyboardAnimating { return }
+                    if self.isCaretInsideLink(tv) { return }
+
                     let currentString = tv.text ?? ""
                     let linked = NSAttributedString(linkify(currentString))
                     let normalized = self.parent.normalizedAttributedString(linked)
 
-                    // Only apply if plain string matches tv.text (avoid fighting IME)
-                    if tv.attributedText?.string != currentString {
-                        // The string content differs; assign and restore selection safely
+                    if !self.linkRangesChanged(between: tv.attributedText, and: normalized) {
                         self.isProgrammaticUpdate = true
-                        // Use the latest selection at apply time and clamp to current/new length
+                        let bodyFont = self.parent.resolvedUIFont()
+                        tv.textColor = .label
+                        tv.typingAttributes[.foregroundColor] = UIColor.label
+                        tv.font = bodyFont
+                        tv.typingAttributes[.font] = bodyFont
+                        tv.typingAttributes[.link] = nil
+                        let len = (tv.attributedText?.string as NSString?)?.length ?? (tv.text as NSString?)?.length ?? 0
+                        let clamped = self.clampSelection(tv.selectedRange, forLength: len)
+                        if tv.selectedRange != clamped {
+                            tv.selectedRange = clamped
+                            self.didProgrammaticallyAdjustSelection = true
+                        }
+                        self.isProgrammaticUpdate = false
+                        self.lastLinkifiedText = currentString
+                        return
+                    }
+
+                    if tv.attributedText?.string != currentString {
+                        if self.isKeyboardAnimating { return }
+                        self.isProgrammaticUpdate = true
+                        self.isRelinkifying = true
                         let beforeLen = (tv.attributedText?.string as NSString?)?.length ?? (tv.text as NSString?)?.length ?? 0
                         let currentSel = self.clampSelection(tv.selectedRange, forLength: beforeLen)
                         tv.attributedText = normalized
-                        // Reassert dynamic attributes
                         tv.textColor = .label
                         tv.typingAttributes[.foregroundColor] = UIColor.label
                         let bodyFont = self.parent.resolvedUIFont()
                         tv.font = bodyFont
                         tv.typingAttributes[.font] = bodyFont
-                        // Avoid inheriting link attribute at caret
                         tv.typingAttributes[.link] = nil
-                        // Clamp selection to new length and restore
                         let afterLen = (tv.attributedText?.string as NSString?)?.length ?? 0
                         let clampedSel = self.clampSelection(currentSel, forLength: afterLen)
                         tv.selectedRange = clampedSel
                         self.isProgrammaticUpdate = false
                         self.didProgrammaticallyAdjustSelection = true
+                        self.isRelinkifying = false
                         self.lastLinkifiedText = currentString
                     } else {
-                        // Plain string is already current; still ensure attributes are dynamic and selection valid
                         self.isProgrammaticUpdate = true
                         let bodyFont = self.parent.resolvedUIFont()
                         tv.textColor = .label
                         tv.typingAttributes[.foregroundColor] = UIColor.label
                         tv.font = bodyFont
                         tv.typingAttributes[.font] = bodyFont
-                        // Also strip any inherited link attribute for future typing
                         tv.typingAttributes[.link] = nil
-                        // Clamp selection to current length
                         let len = (tv.attributedText?.string as NSString?)?.length ?? (tv.text as NSString?)?.length ?? 0
                         let clamped = self.clampSelection(tv.selectedRange, forLength: len)
                         if tv.selectedRange != clamped {
@@ -331,21 +463,11 @@ struct CursorTextView: UIViewRepresentable {
                     }
                 }
                 pendingRelinkify = work
-                // A short debounce to allow IME/typing to settle; keeps UX snappy while preventing races
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: work)
             }
 
             // Ensure typing attributes stay dynamic and never carry a link
-            if (textView.typingAttributes[.foregroundColor] as? UIColor) != UIColor.label {
-                textView.typingAttributes[.foregroundColor] = UIColor.label
-            }
-            let bodyFont = parent.resolvedUIFont()
-            if (textView.typingAttributes[.font] as? UIFont) != bodyFont {
-                textView.typingAttributes[.font] = bodyFont
-            }
-            if textView.typingAttributes[.link] != nil {
-                textView.typingAttributes[.link] = nil
-            }
+            ensureDynamicTypingAttributes(on: textView)
 
             DispatchQueue.main.async {
                 self.parent.onChange?(textView.text)
@@ -360,12 +482,10 @@ struct CursorTextView: UIViewRepresentable {
                     self.parent.selection = newRange
                 }
             }
-            // Ensure typing attributes won't inherit link at new caret position
             if textView.typingAttributes[.link] != nil {
                 textView.typingAttributes[.link] = nil
             }
             updateCaretRect(textView)
-            // Do not force scroll here; let the system keep caret in view during typing.
             DispatchQueue.main.async {
                 self.parent.onChange?(textView.text)
             }
@@ -400,19 +520,90 @@ struct CursorTextView: UIViewRepresentable {
             guard needsUpdate else { return }
 
             self.lastCaretRect = rect
-            if shouldDefer { return }
-
-            let apply: () -> Void = {
-                self.parent.caretRect = rect
+            if shouldDefer || isKeyboardAnimating {
+                pendingCaretRect = rect
+                return
             }
-            DispatchQueue.main.async { apply() }
+
+            pendingCaretRect = rect
+            caretPublishWork?.cancel()
+            let work = DispatchWorkItem { [weak self] in
+                guard let self else { return }
+                let toSend = self.pendingCaretRect
+                self.pendingCaretRect = nil
+                let apply: () -> Void = {
+                    self.parent.caretRect = toSend
+                }
+                DispatchQueue.main.async { apply() }
+            }
+            caretPublishWork = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.02, execute: work)
         }
 
         func scrollCaretVisible(_ textView: UITextView) {
+            guard !isKeyboardAnimating else { return }
             let range = textView.selectedRange
             if range.location != NSNotFound {
                 textView.scrollRangeToVisible(range)
             }
+        }
+
+        // MARK: - Helpers
+
+        private func ensureDynamicTypingAttributes(on textView: UITextView) {
+            if (textView.typingAttributes[.foregroundColor] as? UIColor) != UIColor.label {
+                textView.typingAttributes[.foregroundColor] = UIColor.label
+            }
+            let bodyFont = parent.resolvedUIFont()
+            if (textView.typingAttributes[.font] as? UIFont) != bodyFont {
+                textView.typingAttributes[.font] = bodyFont
+            }
+            if textView.typingAttributes[.link] != nil {
+                textView.typingAttributes[.link] = nil
+            }
+        }
+
+        private func isCaretInsideLink(_ textView: UITextView) -> Bool {
+            let sel = textView.selectedRange
+            guard sel.length == 0, sel.location != NSNotFound else { return false }
+            let loc = max(0, min(sel.location, (textView.attributedText?.length ?? 0)))
+            guard loc > 0, let attr = textView.attributedText else { return false }
+            var effectiveRange = NSRange(location: 0, length: 0)
+            let value = attr.attribute(.link, at: loc - 1, effectiveRange: &effectiveRange)
+            if value != nil {
+                return NSLocationInRange(loc, NSRange(location: effectiveRange.location, length: effectiveRange.length + 1))
+            }
+            return false
+        }
+
+        // Compare link ranges between two attributed strings; return true if they differ
+        func linkRangesChanged(between a: NSAttributedString?, and b: NSAttributedString?) -> Bool {
+            let ra = linkRanges(in: a)
+            let rb = linkRanges(in: b)
+            guard ra.count == rb.count else { return true }
+            for (la, lb) in zip(ra, rb) {
+                if la.0 != lb.0 { return true }
+                if la.1.location != lb.1.location || la.1.length != lb.1.length { return true }
+            }
+            return false
+        }
+
+        private func linkRanges(in s: NSAttributedString?) -> [(AnyHashable, NSRange)] {
+            guard let s else { return [] }
+            var result: [(AnyHashable, NSRange)] = []
+            s.enumerateAttribute(.link, in: NSRange(location: 0, length: s.length), options: []) { value, range, _ in
+                if let v = value {
+                    if let url = v as? URL {
+                        result.append((AnyHashable(url.absoluteString), range))
+                    } else if let str = v as? String {
+                        result.append((AnyHashable(str), range))
+                    } else {
+                        result.append((AnyHashable("\(v)"), range))
+                    }
+                }
+            }
+            result.sort { $0.1.location < $1.1.location || ($0.1.location == $1.1.location && $0.1.length < $1.1.length) }
+            return result
         }
 
         // MARK: - Link interaction (iOS 17+)
@@ -426,7 +617,6 @@ struct CursorTextView: UIViewRepresentable {
                 DispatchQueue.main.async {
                     self.parent.onLinkTap?(ref)
                 }
-                // handled
                 return false
             }
             return true
@@ -440,11 +630,9 @@ struct CursorTextView: UIViewRepresentable {
                     DispatchQueue.main.async {
                         self.parent.onLinkTap?(ref)
                     }
-                    // We handled it; don't perform default action
                     return false
                 }
             }
-            // Not our custom scheme; allow system
             return true
         }
     }
