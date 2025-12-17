@@ -16,8 +16,8 @@ struct GenreDistributionCardView: View {
 
     @Binding var timeScope: TimeScope
     let perGenreTotals: [(genre: String, seconds: Int)]
-    @Binding var selectedGenre: StatsView.Genre?
-    let onSelectGenre: (StatsView.Genre) -> Void
+    @Binding var selectedGenre: StatsSeriesBuilder.Genre?
+    let onSelectGenre: (StatsSeriesBuilder.Genre) -> Void
     let genreColor: (String) -> Color
     let formatSeconds: (Int) -> String
 
@@ -41,7 +41,7 @@ struct GenreDistributionCardView: View {
                 VStack(spacing: 8) {
                     ForEach(perGenreTotals, id: \.genre) { item in
                         Button {
-                            if let g = StatsView.Genre(rawValue: item.genre) {
+                            if let g = StatsSeriesBuilder.Genre(rawValue: item.genre) {
                                 selectedGenre = g
                                 onSelectGenre(g)
                             }

@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		2C135C3B2EC650D900306AD5 /* GameScoreboardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */; };
+		2C1400F82EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1400F72EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift */; };
+		2C1400FA2EF2BB2900A93CA9 /* StatsTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1400F92EF2BB2900A93CA9 /* StatsTypes.swift */; };
+		2C1400FC2EF2BFA200A93CA9 /* StatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1400FB2EF2BFA200A93CA9 /* StatsViewModel.swift */; };
+		2C1400FE2EF2C0D400A93CA9 /* StatsChartConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1400FD2EF2C0D400A93CA9 /* StatsChartConfig.swift */; };
 		2C18C9AC2EEB721600443477 /* TagDisplayNameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C18C9AB2EEB721600443477 /* TagDisplayNameStore.swift */; };
 		2C18C9AE2EEB721C00443477 /* TagManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C18C9AD2EEB721C00443477 /* TagManagerView.swift */; };
 		2C275BC02EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 2C275BBF2EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf */; };
@@ -210,6 +214,10 @@
 
 /* Begin PBXFileReference section */
 		2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScoreboardCard.swift; sourceTree = "<group>"; };
+		2C1400F72EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBooksThisMonthCardView.swift; sourceTree = "<group>"; };
+		2C1400F92EF2BB2900A93CA9 /* StatsTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsTypes.swift; sourceTree = "<group>"; };
+		2C1400FB2EF2BFA200A93CA9 /* StatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsViewModel.swift; sourceTree = "<group>"; };
+		2C1400FD2EF2C0D400A93CA9 /* StatsChartConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsChartConfig.swift; sourceTree = "<group>"; };
 		2C18C9AB2EEB721600443477 /* TagDisplayNameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDisplayNameStore.swift; sourceTree = "<group>"; };
 		2C18C9AD2EEB721C00443477 /* TagManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagManagerView.swift; sourceTree = "<group>"; };
 		2C275BBF2EC0B9350015B5E1 /* TheBibleApp-UserGuide.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = "TheBibleApp-UserGuide.rtf"; sourceTree = "<group>"; };
@@ -661,6 +669,10 @@
 				2C6BB6582EF1FF880010D769 /* BibleStatsStore+LastRead.swift */,
 				2C6BB65A2EF20A400010D769 /* HomeCardID.swift */,
 				2C6BB65C2EF20A460010D769 /* FontFamilyEnvironmentModifier.swift */,
+				2C1400F72EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift */,
+				2C1400F92EF2BB2900A93CA9 /* StatsTypes.swift */,
+				2C1400FB2EF2BFA200A93CA9 /* StatsViewModel.swift */,
+				2C1400FD2EF2C0D400A93CA9 /* StatsChartConfig.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1092,8 +1104,11 @@
 				2C2765762EE8E30D00A321FE /* FocusViewModel.swift in Sources */,
 				2C3F38102EC4042D002CA795 /* Styles.swift in Sources */,
 				2C7EA8BB2EDE7AEA0073F01C /* iCloudSyncCoordinator.swift in Sources */,
+				2C1400FC2EF2BFA200A93CA9 /* StatsViewModel.swift in Sources */,
 				2C2A45002EEE343800FE8C2F /* SettingsLiveActivitiesSection.swift in Sources */,
+				2C1400FE2EF2C0D400A93CA9 /* StatsChartConfig.swift in Sources */,
 				2CE1B9622EDD1FFF001779B1 /* GamesCardView.swift in Sources */,
+				2C1400F82EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift in Sources */,
 				2C6BB6592EF1FF880010D769 /* BibleStatsStore+LastRead.swift in Sources */,
 				2C49CF522EBE10310006FF79 /* ShareText.swift in Sources */,
 				2CF0436D2EE9F6D800DB1283 /* TimeFormatters.swift in Sources */,
@@ -1136,6 +1151,7 @@
 				2C2A45082EEE351E00FE8C2F /* SettingsResetDataSection.swift in Sources */,
 				2C2A44E62EEE154500FE8C2F /* WrapWordsView.swift in Sources */,
 				2C2A44EC2EEE261400FE8C2F /* iCloudSyncCoordinator+BibleStats.swift in Sources */,
+				2C1400FA2EF2BB2900A93CA9 /* StatsTypes.swift in Sources */,
 				2C2A44EE2EEE261A00FE8C2F /* iCloudSyncCoordinator+Sessions.swift in Sources */,
 				2C2A44F82EEE333E00FE8C2F /* SettingsVOTDSection.swift in Sources */,
 				2C4AAFBB2EF0D40C002EB4F0 /* GameStats+Debug.swift in Sources */,

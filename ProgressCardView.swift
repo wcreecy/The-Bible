@@ -22,7 +22,7 @@ struct ProgressCardView: View {
 
     // UI state bindings
     @Binding var isExpanded: Bool
-    @Binding var filter: StatsView.BookFilter
+    @Binding var filter: BookFilter
     @Binding var search: String
     @Binding var selectedBookForChapters: String?
 
@@ -338,7 +338,7 @@ struct ProgressCardView: View {
     private var filtersAndSearch: some View {
         VStack(alignment: .leading, spacing: 8) {
             Picker("Filter", selection: $filter) {
-                ForEach(StatsView.BookFilter.allCases) { f in
+                ForEach(BookFilter.allCases) { f in
                     Text(f.rawValue).tag(f)
                 }
             }
