@@ -81,15 +81,26 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // Game keys: Wordle — now split by type (daily/free) and keep legacy "all"
+    // Game keys: Wordle — split by type (daily/free) and keep legacy "all"
     static let wordleKeys: [String] = {
-        let diffs = ["daily", "free", "all"] // include legacy "all" for back-compat
         var keys: [String] = []
+
+        // Core per-type counters
+        let diffs = ["daily", "free", "all"] // include legacy "all" for back-compat
         for d in diffs {
             keys.append("wordleAllTimeCorrect_\(d)")
             keys.append("wordleAllTimeAnswered_\(d)")
             keys.append("wordleAllTimeBestStreak_\(d)")
         }
+
+        // NEW: Per-type win-guess stats (no legacy "_all" variants)
+        for d in ["daily", "free"] {
+            keys.append("wordleWinsGuessSum_\(d)")
+            for i in 1...6 {
+                keys.append("wordleWinsOnGuess\(i)_\(d)")
+            }
+        }
+
         return keys
     }()
 
@@ -332,3 +343,4 @@ extension iCloudSyncCoordinator {
         return merged
     }
 }
+

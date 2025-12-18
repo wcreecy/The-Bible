@@ -355,6 +355,41 @@ final class GameStats: ObservableObject {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
+    // NEW: Wordle result writer with guesses + histogram tracking
+    func recordWordleResult(type: WordleType, won: Bool, guesses: Int, currentBestStreak: Int) {
+        // First, update the standard per-type counters (correct/answered/streak)
+        recordWordleRound(
+            type: type,
+            correct: won ? 1 : 0,
+            answered: 1,
+            currentBestStreak: currentBestStreak
+        )
+
+        // Only track guess distribution and average on wins
+        guard won else { return }
+
+        let defaults = UserDefaults.standard
+        let suf = (type == .daily) ? "daily" : "free"
+        let clamped = max(1, min(6, guesses))
+
+        func setInt(_ key: String, _ value: Int) {
+            defaults.set(max(0, value), forKey: key)
+            iCloudSyncCoordinator.shared.pushKey(key)
+        }
+        func incInt(_ key: String, by delta: Int) {
+            let old = defaults.integer(forKey: key)
+            setInt(key, old + delta)
+        }
+
+        // Sum of guesses across wins (for average = sum / totalWins)
+        incInt("wordleWinsGuessSum_\(suf)", by: clamped)
+
+        // Histogram bucket for this guess number
+        incInt("wordleWinsOnGuess\(clamped)_\(suf)", by: 1)
+
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
     // MARK: - Aggregation (reads)
 
     private func readInt(_ key: String) -> Int {
@@ -454,6 +489,34 @@ final class GameStats: ObservableObject {
         return GameStat(correct: max(0, c), answered: max(0, a), bestStreak: (best == 0 ? nil : best))
     }
 
+    // NEW: Wordle win-guess stats readers
+    func wordleWinGuessStats(type: WordleType) -> (averageGuessesOnWins: Double, winsByGuess: [Int]) {
+        let suf = (type == .daily) ? "daily" : "free"
+        let totalWins = max(0, readInt("wordleAllTimeCorrect_\(suf)"))
+        let sumGuesses = max(0, readInt("wordleWinsGuessSum_\(suf)"))
+        let dist = (1...6).map { idx in max(0, readInt("wordleWinsOnGuess\(idx)_\(suf)")) }
+        let avg: Double = totalWins > 0 ? Double(sumGuesses) / Double(totalWins) : 0
+        return (avg, dist)
+    }
+
+    func wordleWinGuessStatsCombined() -> (averageGuessesOnWins: Double, winsByGuess: [Int]) {
+        // Combine daily + free (ignore legacy "_all" for these new stats)
+        let (avgDaily, distDaily) = wordleWinGuessStats(type: .daily)
+        let (avgFree, distFree) = wordleWinGuessStats(type: .free)
+
+        // Average needs to be recomputed from totals to be correct:
+        let winsDaily = max(0, readInt("wordleAllTimeCorrect_daily"))
+        let winsFree = max(0, readInt("wordleAllTimeCorrect_free"))
+        let sumDaily = max(0, readInt("wordleWinsGuessSum_daily"))
+        let sumFree = max(0, readInt("wordleWinsGuessSum_free"))
+        let totalWins = winsDaily + winsFree
+        let totalSum = sumDaily + sumFree
+        let avg = totalWins > 0 ? Double(totalSum) / Double(totalWins) : 0
+
+        let dist = zip(distDaily, distFree).map(+)
+        return (avg, dist)
+    }
+
     private func aggregateAll() -> (correct: Int, answered: Int) {
         let stats = [quiz, hangman, refmatch, beatclock, bookorder, whoami]
         let wordleCombined = GameStat(
@@ -530,3 +593,4 @@ final class GameStats: ObservableObject {
         UserDefaults.standard.string(forKey: "gamesLastPlayedGameName")
     }
 }
+

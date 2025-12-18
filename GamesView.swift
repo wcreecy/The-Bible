@@ -14,6 +14,35 @@ struct GamesView: View {
     }
 
     @State private var selection: GameRoute? = nil
+    @State private var pulse: Bool = false
+
+    // NEW: Debug flag to allow Daily Wordle replay
+    @AppStorage("wordleAllowDailyReplay") private var wordleAllowDailyReplay: Bool = false
+
+    // Local-day key helper (yyyy-MM-dd in the user’s current time zone)
+    private func localDayKey(for date: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> String {
+        var cal = calendar
+        cal.timeZone = .autoupdatingCurrent
+        let start = cal.startOfDay(for: date)
+        let comps = cal.dateComponents([.year, .month, .day], from: start)
+        let y = comps.year ?? 1970
+        let m = comps.month ?? 1
+        let d = comps.day ?? 1
+        return String(format: "%04d-%02d-%02d", y, m, d)
+    }
+
+    private var hasPlayedDailyWordleTodayRaw: Bool {
+        let today = localDayKey()
+        let stored = UserDefaults.standard.string(forKey: "wordleDailyCompletedDay")
+        return stored == today
+    }
+
+    // Glow whenever Daily Wordle is available:
+    // - Not played today (normal availability), OR
+    // - Debug flag allows replay (forced availability)
+    private var shouldGlowWordle: Bool {
+        return !hasPlayedDailyWordleTodayRaw || wordleAllowDailyReplay
+    }
 
     var body: some View {
         List {
@@ -66,14 +95,41 @@ struct GamesView: View {
                     }
                 }
 
-                // 5. Wordle (Bible) — NEW
+                // 5. Wordle (Bible) — soft green glow when Daily is available
                 NavigationLink(value: GameRoute.wordle) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "square.grid.3x3")
-                            .foregroundStyle(.mint)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Wordle (Bible)").font(.headline)
-                            Text("Guess the 5‑letter word in 6 tries").font(.subheadline).foregroundStyle(.secondary)
+                    ZStack {
+                        if shouldGlowWordle {
+                            // Layered blurred glows for a soft aura effect
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(Color.green.opacity(0.28))
+                                .blur(radius: pulse ? 18 : 12)
+                                .scaleEffect(pulse ? 1.02 : 1.0)
+                                .animation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: pulse)
+
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(Color.green.opacity(0.18))
+                                .blur(radius: pulse ? 30 : 22)
+                                .scaleEffect(pulse ? 1.03 : 1.0)
+                                .animation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: pulse)
+                        }
+
+                        HStack(spacing: 12) {
+                            Image(systemName: "square.grid.3x3")
+                                .foregroundStyle(.mint)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Wordle (Bible)").font(.headline)
+                                Text("Guess the 5‑letter word in 6 tries").font(.subheadline).foregroundStyle(.secondary)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 6)
+                        .contentShape(Rectangle())
+                    }
+                    .onAppear {
+                        if shouldGlowWordle {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                pulse = true
+                            }
                         }
                     }
                 }

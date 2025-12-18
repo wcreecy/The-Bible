@@ -62,12 +62,16 @@ extension GameStats {
             recordRound(game: .whoami, difficulty: d, correct: r.correct, answered: r.answered, currentBestStreak: r.bestStreak)
         }
 
-        // Wordle (single "all" bucket) — 1 answered per round, correct 0/1
+        // Wordle (daily/free): simulate wins/losses and guesses 1...6 on wins
         for _ in 0..<roundsPerGame {
-            let correct = Int.random(in: 0...1)
+            let types: [WordleType] = [.daily, .free]
+            let t = types.randomElement() ?? .free
+            let won = Bool.random()
+            let guesses = won ? Int.random(in: 1...6) : 6
             let bestStreak = Int.random(in: 0...roundsPerGame)
-            recordRound(game: .wordle, difficulty: .none, correct: correct, answered: 1, currentBestStreak: bestStreak)
+            recordWordleResult(type: t, won: won, guesses: guesses, currentBestStreak: bestStreak)
         }
     }
 }
 #endif
+

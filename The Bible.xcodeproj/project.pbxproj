@@ -65,7 +65,6 @@
 		2C2A45042EEE34B100FE8C2F /* SettingsHomeLayoutSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A45032EEE34B100FE8C2F /* SettingsHomeLayoutSection.swift */; };
 		2C2A45062EEE34F200FE8C2F /* SettingsiCloudSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A45052EEE34F200FE8C2F /* SettingsiCloudSection.swift */; };
 		2C2A45082EEE351E00FE8C2F /* SettingsResetDataSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A45072EEE351E00FE8C2F /* SettingsResetDataSection.swift */; };
-		2C2A450A2EEE356200FE8C2F /* SettingsDebugUtilityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A45092EEE356200FE8C2F /* SettingsDebugUtilityView.swift */; };
 		2C33952B2EED9D8B00E8CA41 /* Color+GamerScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33952A2EED9D8B00E8CA41 /* Color+GamerScore.swift */; };
 		2C33952D2EEDCB3D00E8CA41 /* ProgressRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33952C2EEDCB3D00E8CA41 /* ProgressRing.swift */; };
 		2C33952F2EEDCB4000E8CA41 /* InsightsComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33952E2EEDCB4000E8CA41 /* InsightsComponents.swift */; };
@@ -1116,7 +1115,6 @@
 				2C49CF522EBE10310006FF79 /* ShareText.swift in Sources */,
 				2CF0436D2EE9F6D800DB1283 /* TimeFormatters.swift in Sources */,
 				2C49CF872EBE2E9C0006FF79 /* StopwatchActivityController.swift in Sources */,
-				2C2A450A2EEE356200FE8C2F /* SettingsDebugUtilityView.swift in Sources */,
 				2CD7D8252EC9FF9A00849235 /* LastReadWidget.swift in Sources */,
 				2C49CF822EBE27D40006FF79 /* PrayerTimerActivityController.swift in Sources */,
 				2C2765742EE8D61600A321FE /* VerseOfDayViewModel.swift in Sources */,

@@ -6,8 +6,8 @@ import UIKit
 struct WordleView: View {
     // MARK: - Mode
     enum Mode: String, CaseIterable, Identifiable {
-        case freePlay = "Free Play"
         case daily = "Daily"
+        case freePlay = "Free Play"
         var id: String { rawValue }
     }
 
@@ -52,6 +52,9 @@ struct WordleView: View {
     @State private var answered: Int = 0
     @State private var currentStreak: Int = 0
     @State private var currentBestStreak: Int = 0
+
+    // NEW: Debug flag to allow replaying Daily Wordle (matches Settings/Games)
+    @AppStorage("wordleAllowDailyReplay") private var wordleAllowDailyReplay: Bool = false
 
     // All-time (per mode)
     private var allTimeSuffix: String { mode == .daily ? "daily" : "free" }
@@ -185,11 +188,11 @@ struct WordleView: View {
                         .padding(.horizontal)
                 }
 
-                // On-screen keyboard (always visible)
+                // On-screen keyboard
                 keyboardView()
                     .padding(.horizontal)
 
-                // New: dedicated Enter row under the keyboard
+                // Dedicated Enter row
                 HStack {
                     Button(action: {
                         submitGuess()
@@ -303,6 +306,7 @@ struct WordleView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
 
+            // Plain segmented Picker (glow removed)
             Picker("Mode", selection: $mode) {
                 ForEach(Mode.allCases) { m in
                     Text(m.rawValue).tag(m)
@@ -311,7 +315,7 @@ struct WordleView: View {
             .pickerStyle(.segmented)
             .padding(.horizontal)
 
-            if mode == .daily && dailyCompletedToday {
+            if mode == .daily && dailyCompletedToday && !wordleAllowDailyReplay {
                 Text("You’ve completed today’s daily. Come back tomorrow.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
@@ -325,7 +329,7 @@ struct WordleView: View {
             .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
             .controlSize(.large)
             .frame(maxWidth: 240)
-            .disabled(mode == .daily && dailyCompletedToday)
+            .disabled(mode == .daily && dailyCompletedToday && !wordleAllowDailyReplay)
 
             Spacer(minLength: 24)
         }
@@ -591,19 +595,21 @@ struct WordleView: View {
                 currentBestStreak = currentStreak
             }
             message = (mode == .daily) ? "You got it! See you tomorrow." : "You got it!"
-            GameStats.shared.recordWordleRound(
+            // NEW: record with guesses + histogram
+            GameStats.shared.recordWordleResult(
                 type: (mode == .daily ? .daily : .free),
-                correct: 1,
-                answered: 1,
+                won: true,
+                guesses: rowIndex, // number of guesses used (already incremented)
                 currentBestStreak: currentBestStreak
             )
         } else {
             currentStreak = 0
             message = "The word was \(target)."
-            GameStats.shared.recordWordleRound(
+            // NEW: record loss through the same API (won: false). Guesses ignored for loss.
+            GameStats.shared.recordWordleResult(
                 type: (mode == .daily ? .daily : .free),
-                correct: 0,
-                answered: 1,
+                won: false,
+                guesses: rowIndex,
                 currentBestStreak: currentBestStreak
             )
         }
@@ -751,3 +757,4 @@ private struct FilledGameKeyButtonStyle: ButtonStyle {
             .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
     }
 }
+
