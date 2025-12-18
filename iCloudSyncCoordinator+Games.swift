@@ -57,7 +57,7 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // Game keys: Book Order — now per-difficulty (easy/normal/hard/all)
+    // Game keys: Book Order — now per-difficulty (easy/normal/hard/all) + legacy unsuffixed for reset/back-compat
     static let bookOrderKeys: [String] = {
         let diffs = ["easy", "normal", "hard", "all"]
         var keys: [String] = []
@@ -66,6 +66,8 @@ extension iCloudSyncCoordinator {
             keys.append("bookorderAllTimeAnswered_\(d)")
             keys.append("bookorderAllTimeBestStreak_\(d)")
         }
+        // Include legacy unsuffixed keys so reset clears older installs too
+        keys.append(contentsOf: ["bookorderAllTimeCorrect", "bookorderAllTimeAnswered", "bookorderAllTimeBestStreak"])
         return keys
     }()
 
@@ -318,8 +320,9 @@ extension iCloudSyncCoordinator {
         // Who am I? (easy/normal/hard)
         repairSuffixed(prefix: "whoami", diffs: ["easy","normal","hard"])
 
-        // Book Order (easy/normal/hard/all)
+        // Book Order (easy/normal/hard/all) + legacy unsuffixed
         repairSuffixed(prefix: "bookorder", diffs: ["easy","normal","hard","all"])
+        repairPair(correctKey: "bookorderAllTimeCorrect", answeredKey: "bookorderAllTimeAnswered")
 
         // Wordle (daily/free/all)
         repairSuffixed(prefix: "wordle", diffs: ["daily","free","all"])
@@ -343,4 +346,3 @@ extension iCloudSyncCoordinator {
         return merged
     }
 }
-
