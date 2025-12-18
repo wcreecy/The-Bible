@@ -81,9 +81,9 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // Game keys: Wordle (single "all" suffix)
+    // Game keys: Wordle — now split by type (daily/free) and keep legacy "all"
     static let wordleKeys: [String] = {
-        let diffs = ["all"]
+        let diffs = ["daily", "free", "all"] // include legacy "all" for back-compat
         var keys: [String] = []
         for d in diffs {
             keys.append("wordleAllTimeCorrect_\(d)")
@@ -128,7 +128,7 @@ extension iCloudSyncCoordinator {
         Self.quizKeys.contains(key) ||
         Self.bookOrderKeys.contains(key) ||
         Self.whoAmIKeys.contains(key) ||
-        Self.wordleKeys.contains(key) // NEW
+        Self.wordleKeys.contains(key)
     }
 
     // Local -> KVS for games
@@ -168,10 +168,8 @@ extension iCloudSyncCoordinator {
             let localVal = defaults.integer(forKey: key)
             let remoteObj = kvs.object(forKey: key) as? NSNumber
             let remoteVal = remoteObj?.intValue
-            // Only write if the value actually differs or doesn't exist remotely
             if remoteVal == nil || remoteVal != localVal {
                 kvs.set(localVal, forKey: key)
-                // Update and mirror timestamp for LWW only when value changed
                 writeLocalTimestampNow(for: key)
                 writeRemoteTimestampNow(for: key)
             }
@@ -194,7 +192,6 @@ extension iCloudSyncCoordinator {
             case "gamesLastPlayedAt":
                 let remote = kvs.double(forKey: key)
                 let local = defaults.double(forKey: key)
-                // Latest timestamp wins
                 if remote > local {
                     defaults.set(remote, forKey: key)
                 } else if remote < local {
@@ -203,7 +200,6 @@ extension iCloudSyncCoordinator {
             case "gamesLastPlayedGameName":
                 let remoteName = kvs.string(forKey: key) ?? ""
                 let localName = defaults.string(forKey: key) ?? ""
-                // Prefer the one with newer gamesLastPlayedAt
                 let remoteAt = kvs.double(forKey: "gamesLastPlayedAt")
                 let localAt = defaults.double(forKey: "gamesLastPlayedAt")
                 if remoteAt > localAt {
@@ -232,7 +228,6 @@ extension iCloudSyncCoordinator {
             let remoteTS = readRemoteTimestamp(for: key)
             let localTS = readLocalTimestamp(for: key)
 
-            // Read values
             let remoteVal = Int(kvs.longLong(forKey: key))
             let localVal = defaults.integer(forKey: key)
 
@@ -245,7 +240,6 @@ extension iCloudSyncCoordinator {
                 writeLocalTimestampNow(for: key)
                 kvs.set(merged, forKey: key)
                 writeRemoteTimestampNow(for: key)
-                // Schedule a sync (debounced)
                 enqueueKeyForSync(key)
             } else {
                 kvs.set(max(0, localVal), forKey: key)
@@ -261,7 +255,6 @@ extension iCloudSyncCoordinator {
         let gameKeys = Array(Self.hangmanKeys + Self.beatClockKeys + Self.refMatchKeys + Self.quizKeys + Self.bookOrderKeys + Self.whoAmIKeys + Self.wordleKeys)
         for key in gameKeys {
             defaults.set(0, forKey: key)
-            // Update per-key timestamp so the zero wins in LWW merges.
             writeLocalTimestampNow(for: key)
             kvs.set(0, forKey: key)
             writeRemoteTimestampNow(for: key)
@@ -281,17 +274,14 @@ extension iCloudSyncCoordinator {
             let c = max(0, defaults.integer(forKey: correctKey))
             let a = max(0, defaults.integer(forKey: answeredKey))
             if a < c {
-                // Update local
                 defaults.set(c, forKey: answeredKey)
                 writeLocalTimestampNow(for: answeredKey)
-                // Update remote
                 kvs.set(c, forKey: answeredKey)
                 writeRemoteTimestampNow(for: answeredKey)
                 changed.insert(answeredKey)
             }
         }
 
-        // Helper to iterate suffixed difficulties
         func repairSuffixed(prefix: String, diffs: [String]) {
             for d in diffs {
                 let cKey = "\(prefix)AllTimeCorrect_\(d)"
@@ -320,8 +310,8 @@ extension iCloudSyncCoordinator {
         // Book Order (easy/normal/hard/all)
         repairSuffixed(prefix: "bookorder", diffs: ["easy","normal","hard","all"])
 
-        // Wordle (all)
-        repairSuffixed(prefix: "wordle", diffs: ["all"])
+        // Wordle (daily/free/all)
+        repairSuffixed(prefix: "wordle", diffs: ["daily","free","all"])
 
         return changed
     }

@@ -33,6 +33,12 @@ final class GameStats: ObservableObject {
         case none       // bookorder (no per-difficulty keys), wordle (no difficulty)
     }
 
+    // Wordle type (split Daily vs Free Play)
+    enum WordleType {
+        case daily
+        case free
+    }
+
     private init() {
         // One-time: wipe legacy unsuffixed keys to avoid double-counting with suffixed data.
         migrateLegacyGameKeysIfNeeded()
@@ -43,8 +49,6 @@ final class GameStats: ObservableObject {
             object: nil,
             queue: .main
         ) { _ in
-            // Hop to the main actor before mutating an @MainActor-isolated property,
-            // and avoid capturing `self` in the @Sendable closure.
             Task { @MainActor in
                 GameStats.shared.version &+= 1
             }
@@ -83,7 +87,7 @@ final class GameStats: ObservableObject {
 
             // Who am I? shipped only suffixed keys — nothing to wipe here.
             // Book Order is intentionally unsuffixed — do not wipe.
-            // Wordle is new — no legacy keys.
+            // Wordle is new — no legacy unsuffixed keys here.
         ]
 
         for key in legacyKeys {
@@ -136,7 +140,17 @@ final class GameStats: ObservableObject {
         let b = beatclock
         let o = bookorder
         let w = whoami // NEW
-        let wd = wordle // NEW
+
+        // Wordle: include both types + legacy "_all" for overall breakdown
+        let wdDaily = wordle(type: .daily)
+        let wdFree = wordle(type: .free)
+        let wdLegacyAll = wordleLegacyAll
+        let wdCombined = GameStat(
+            correct: wdDaily.correct + wdFree.correct + wdLegacyAll.correct,
+            answered: wdDaily.answered + wdFree.answered + wdLegacyAll.answered,
+            bestStreak: max((wdDaily.bestStreak ?? 0), (wdFree.bestStreak ?? 0), (wdLegacyAll.bestStreak ?? 0))
+        )
+
         let entries: [GameBreakdown.Entry] = [
             .init(name: "Bible Quiz", correct: q.correct, answered: q.answered, bestStreak: q.bestStreak),
             .init(name: "Hangman", correct: h.correct, answered: h.answered, bestStreak: h.bestStreak),
@@ -144,7 +158,7 @@ final class GameStats: ObservableObject {
             .init(name: "Beat the Clock", correct: b.correct, answered: b.answered, bestStreak: b.bestStreak),
             .init(name: "Book Order", correct: o.correct, answered: o.answered, bestStreak: o.bestStreak),
             .init(name: "Who am I?", correct: w.correct, answered: w.answered, bestStreak: w.bestStreak),
-            .init(name: "Wordle (Bible)", correct: wd.correct, answered: wd.answered, bestStreak: wd.bestStreak)
+            .init(name: "Wordle (Bible)", correct: wdCombined.correct, answered: wdCombined.answered, bestStreak: wdCombined.bestStreak)
         ]
         return GameBreakdown(entries: entries)
     }
@@ -210,10 +224,10 @@ final class GameStats: ObservableObject {
                 case .medium, .none: return nil
                 }
             case .wordle:
-                // No difficulty — use a single "all" suffix for consistency
+                // Legacy generic writer — keep writing to "_all" for back-compat (deprecated)
                 switch difficulty {
                 case .none: return "all"
-                case .easy, .normal, .medium, .hard: return "all"
+                default: return "all"
                 }
             }
         }
@@ -259,6 +273,7 @@ final class GameStats: ObservableObject {
             maxInt("whoamiAllTimeBestStreak_\(s)", candidate: currentBestStreak)
 
         case .wordle:
+            // Deprecated: generic recordRound for Wordle writes to legacy "_all"
             guard let s = suf else { return }
             incInt("wordleAllTimeCorrect_\(s)", by: addCorrect)
             incInt("wordleAllTimeAnswered_\(s)", by: addAnswered)
@@ -285,14 +300,6 @@ final class GameStats: ObservableObject {
             let defaults = UserDefaults.standard
             defaults.set(nowTS, forKey: "gamesLastPlayedAt")
             defaults.set(Self.gameDisplayName(for: game), forKey: "gamesLastPlayedGameName")
-
-            // Track changed keys for iCloud push
-            changedKeys.append(contentsOf: [
-                "gamesDailyAnswered",
-                "gamesDailyCorrect",
-                "gamesLastPlayedAt",
-                "gamesLastPlayedGameName"
-            ])
         }
 
         // Push changed keys to iCloud KVS
@@ -302,6 +309,49 @@ final class GameStats: ObservableObject {
         }
 
         // Notify UI (Home games card, Stats) to refresh gamer score
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
+    // New: Wordle type-aware writer
+    func recordWordleRound(type: WordleType, correct addCorrect: Int, answered addAnswered: Int, currentBestStreak: Int) {
+        let defaults = UserDefaults.standard
+        let suf = (type == .daily) ? "daily" : "free"
+        func setInt(_ key: String, _ value: Int) {
+            defaults.set(max(0, value), forKey: key)
+            iCloudSyncCoordinator.shared.pushKey(key)
+        }
+        func incInt(_ key: String, by delta: Int) {
+            let old = defaults.integer(forKey: key)
+            setInt(key, old + delta)
+        }
+        func maxInt(_ key: String, candidate: Int) {
+            let old = defaults.integer(forKey: key)
+            if candidate > old { setInt(key, candidate) }
+        }
+
+        incInt("wordleAllTimeCorrect_\(suf)", by: addCorrect)
+        incInt("wordleAllTimeAnswered_\(suf)", by: addAnswered)
+        maxInt("wordleAllTimeBestStreak_\(suf)", candidate: currentBestStreak)
+
+        // Keep legacy “_all” untouched for back-compat. Do not auto-aggregate to "_all".
+
+        // Daily progress maps + last played metadata (same as generic path)
+        do {
+            let dayKey = Self.localDayKey(for: Date())
+            var dailyAnswered: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered")
+            dailyAnswered[dayKey, default: 0] = max(0, (dailyAnswered[dayKey] ?? 0) + max(0, addAnswered))
+            saveJSONMap(dailyAnswered, forKey: "gamesDailyAnswered")
+
+            var dailyCorrect: [String: Int] = loadJSONMap(forKey: "gamesDailyCorrect")
+            dailyCorrect[dayKey, default: 0] = max(0, (dailyCorrect[dayKey] ?? 0) + max(0, addCorrect))
+            saveJSONMap(dailyCorrect, forKey: "gamesDailyCorrect")
+
+            let nowTS = Date().timeIntervalSince1970
+            let defaults = UserDefaults.standard
+            defaults.set(nowTS, forKey: "gamesLastPlayedAt")
+            defaults.set(Self.gameDisplayName(for: .wordle), forKey: "gamesLastPlayedGameName")
+        }
+
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
@@ -389,18 +439,30 @@ final class GameStats: ObservableObject {
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
-    // NEW: aggregate for Wordle (single "all" suffix)
-    private var wordle: GameStat {
-        let c = sumAcross(prefix: "wordleAllTimeCorrect", parts: ["_all"], legacyKey: "wordleAllTimeCorrect")
-        let a = sumAcross(prefix: "wordleAllTimeAnswered", parts: ["_all"], legacyKey: "wordleAllTimeAnswered")
-        let best = maxAcross(prefix: "wordleAllTimeBestStreak", parts: ["_all"], legacyKey: "wordleAllTimeBestStreak")
-        return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
+    // NEW: Wordle per-type readers + legacy
+    private func wordle(type: WordleType) -> GameStat {
+        let suf = (type == .daily) ? "_daily" : "_free"
+        let c = readInt("wordleAllTimeCorrect\(suf)")
+        let a = readInt("wordleAllTimeAnswered\(suf)")
+        let best = readInt("wordleAllTimeBestStreak\(suf)")
+        return GameStat(correct: max(0, c), answered: max(0, a), bestStreak: (best == 0 ? nil : best))
+    }
+    private var wordleLegacyAll: GameStat {
+        let c = readInt("wordleAllTimeCorrect_all")
+        let a = readInt("wordleAllTimeAnswered_all")
+        let best = readInt("wordleAllTimeBestStreak_all")
+        return GameStat(correct: max(0, c), answered: max(0, a), bestStreak: (best == 0 ? nil : best))
     }
 
     private func aggregateAll() -> (correct: Int, answered: Int) {
-        let stats = [quiz, hangman, refmatch, beatclock, bookorder, whoami, wordle]
-        let totalCorrect = stats.reduce(0) { $0 + max(0, $1.correct) }
-        let totalAnswered = stats.reduce(0) { $0 + max(0, $1.answered) }
+        let stats = [quiz, hangman, refmatch, beatclock, bookorder, whoami]
+        let wordleCombined = GameStat(
+            correct: wordle(type: .daily).correct + wordle(type: .free).correct + wordleLegacyAll.correct,
+            answered: wordle(type: .daily).answered + wordle(type: .free).answered + wordleLegacyAll.answered,
+            bestStreak: nil
+        )
+        let totalCorrect = stats.reduce(0) { $0 + max(0, $1.correct) } + wordleCombined.correct
+        let totalAnswered = stats.reduce(0) { $0 + max(0, $1.answered) } + wordleCombined.answered
         return (totalCorrect, totalAnswered)
     }
 

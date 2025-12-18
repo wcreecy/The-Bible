@@ -53,10 +53,11 @@ struct WordleView: View {
     @State private var currentStreak: Int = 0
     @State private var currentBestStreak: Int = 0
 
-    // All-time (read-only; GameStats writes these keys)
-    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeCorrect_all") }
-    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeAnswered_all") }
-    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeBestStreak_all") }
+    // All-time (per mode)
+    private var allTimeSuffix: String { mode == .daily ? "daily" : "free" }
+    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeCorrect_\(allTimeSuffix)") }
+    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeAnswered_\(allTimeSuffix)") }
+    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeBestStreak_\(allTimeSuffix)") }
 
     // Daily
     private var todayKey: String { Self.localDayKey(for: Date()) }
@@ -65,7 +66,6 @@ struct WordleView: View {
     }
 
     // MARK: - Answer pool from KJV (5-letter A–Z words)
-    // Built once on first access from BibleData (kjv.json). Uppercase, A–Z only, exactly 5 letters.
     private static let kjvAnswerWords: [String] = {
         var set = Set<String>()
         for book in BibleData.books {
@@ -147,7 +147,6 @@ struct WordleView: View {
             if !started {
                 startScreen()
             } else {
-                // Capture external keyboard input without showing the system keyboard
                 #if canImport(UIKit)
                 KeyCaptureRepresentable(
                     onKey: { ch in tapLetter(ch) },
@@ -190,6 +189,23 @@ struct WordleView: View {
                 keyboardView()
                     .padding(.horizontal)
 
+                // New: dedicated Enter row under the keyboard
+                HStack {
+                    Button(action: {
+                        submitGuess()
+                    }) {
+                        Label("Enter", systemImage: "return")
+                            .labelStyle(.titleAndIcon)
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
+                    .disabled(roundOver || currentInput.count != 5)
+                    .accessibilityLabel("Enter")
+                }
+                .padding(.horizontal)
+                .padding(.top, 4)
+
                 // Reference button (after round)
                 if roundOver, let ref = roundRef {
                     Button {
@@ -230,7 +246,6 @@ struct WordleView: View {
         }
         .navigationTitle("Wordle (Bible)")
         .navigationBarTitleDisplayMode(.inline)
-        // Smart link style scripture preview sheet
         .sheet(isPresented: $showRefSheet, onDismiss: {
             selectedRef = nil
             loadedPreview = nil
@@ -263,7 +278,6 @@ struct WordleView: View {
                 }
                 .presentationDetents([.medium, .large])
             }
-            // Lazily load when a new ref is selected, ensuring the sheet presents on first tap
             .task(id: selectedRef) {
                 guard let sr = selectedRef else { return }
                 loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
@@ -577,9 +591,8 @@ struct WordleView: View {
                 currentBestStreak = currentStreak
             }
             message = (mode == .daily) ? "You got it! See you tomorrow." : "You got it!"
-            GameStats.shared.recordRound(
-                game: .wordle,
-                difficulty: .none,
+            GameStats.shared.recordWordleRound(
+                type: (mode == .daily ? .daily : .free),
                 correct: 1,
                 answered: 1,
                 currentBestStreak: currentBestStreak
@@ -587,9 +600,8 @@ struct WordleView: View {
         } else {
             currentStreak = 0
             message = "The word was \(target)."
-            GameStats.shared.recordRound(
-                game: .wordle,
-                difficulty: .none,
+            GameStats.shared.recordWordleRound(
+                type: (mode == .daily ? .daily : .free),
                 correct: 0,
                 answered: 1,
                 currentBestStreak: currentBestStreak
@@ -738,8 +750,4 @@ private struct FilledGameKeyButtonStyle: ButtonStyle {
             .scaleEffect(pressed ? 0.98 : 1.0)
             .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
     }
-}
-
-#Preview {
-    NavigationStack { WordleView() }
 }
