@@ -98,6 +98,9 @@ struct HangmanGameView: View {
     @State private var selectedRef: ScriptureRef? = nil
     @State private var loadedPreview: (title: String, verses: [Verse])? = nil
 
+    // Keyboard layout toggle: false = QWERTY, true = A-Z
+    @State private var useAlphabeticalLayout: Bool = false
+
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
@@ -281,9 +284,9 @@ struct HangmanGameView: View {
             .font(.subheadline)
             .foregroundStyle(wrongGuesses >= maxWrong - 1 ? .red : .secondary)
 
-        // On-screen keyboard (QWERTY, like Wordle)
+        // On-screen keyboard (QWERTY, like Wordle) with larger keys and layout toggle
         keyboardView()
-            .padding(.top, 6)
+            .padding(.top, 8)
 
         if roundOver {
             Text(didWin ? "You got it!" : "Out of guesses: \(targetWord.uppercased())")
@@ -751,32 +754,90 @@ struct HangmanGameView: View {
     // MARK: - On-screen keyboard
 
     private func keyboardView() -> some View {
-        let rows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
-        return VStack(spacing: 8) {
-            ForEach(rows, id: \.self) { row in
-                HStack(spacing: 8) {
-                    ForEach(Array(row), id: \.self) { ch in
+        // Larger key metrics
+        let keyFontSize: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 22 : 18
+        let keyMinWidth: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 44 : 36
+        let keyMinHeight: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 48 : 42
+        let keySpacing: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 10 : 9
+        let rowSpacing: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 12 : 10
+
+        // Build rows depending on layout
+        let qwertyRows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
+        let alphaRows = ["ABCDEFG", "HIJKLMN", "OPQRSTU", "VWXYZ"]
+
+        let rows: [[Character]] = {
+            if useAlphabeticalLayout {
+                return alphaRows.map { Array($0) }
+            } else {
+                return qwertyRows.map { Array($0) }
+            }
+        }()
+
+        return VStack(spacing: rowSpacing) {
+            // Iterate rows; we will inject the toggle button at the desired spot
+            ForEach(rows.indices, id: \.self) { rowIndex in
+                let rowChars = rows[rowIndex]
+                HStack(spacing: keySpacing) {
+                    ForEach(rowChars, id: \.self) { ch in
                         let upper = Character(String(ch).uppercased())
                         let isGuessed = guessedLetters.contains(upper)
                         let tint: Color = {
                             if correctLetters.contains(upper) { return .green }
-                            if wrongLetters.contains(upper) { return .gray }
+                            if wrongLetters.contains(upper) { return .red }
                             return .accentColor
                         }()
 
                         Button(action: { guess(upper) }) {
                             Text(String(ch))
-                                .font(.system(size: 16, weight: .semibold))
-                                .frame(minWidth: 28, minHeight: 36)
+                                .font(.system(size: keyFontSize, weight: .semibold))
+                                .frame(minWidth: keyMinWidth, minHeight: keyMinHeight)
                                 .accessibilityLabel("Letter \(String(ch))")
                         }
                         .buttonStyle(SolidKeyButtonStyle(tint: tint))
                         .disabled(isGuessed || roundOver)
                         .opacity(roundOver ? 0.6 : 1.0)
+
+                        // Insert the layout toggle button next to the "M" in QWERTY, or after "Z" in A-Z
+                        if !useAlphabeticalLayout {
+                            // QWERTY: add after 'M' which is the last char in bottom row
+                            if rowIndex == rows.count - 1, ch == "M" {
+                                layoutToggleButton(
+                                    title: "A-Z",
+                                    keyFontSize: keyFontSize,
+                                    keyMinWidth: keyMinWidth,
+                                    keyMinHeight: keyMinHeight
+                                )
+                            }
+                        }
+                    }
+
+                    if useAlphabeticalLayout {
+                        // A-Z: add at end of last row (after Z)
+                        if rowIndex == rows.count - 1 {
+                            layoutToggleButton(
+                                title: "QWERTY",
+                                keyFontSize: keyFontSize,
+                                keyMinWidth: keyMinWidth,
+                                keyMinHeight: keyMinHeight
+                            )
+                        }
                     }
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private func layoutToggleButton(title: String, keyFontSize: CGFloat, keyMinWidth: CGFloat, keyMinHeight: CGFloat) -> some View {
+        Button(action: { useAlphabeticalLayout.toggle() }) {
+            Text(title)
+                .font(.system(size: keyFontSize - 2, weight: .semibold))
+                .frame(minWidth: keyMinWidth + 6, minHeight: keyMinHeight)
+                .accessibilityLabel("Toggle keyboard layout")
+        }
+        .buttonStyle(SolidKeyButtonStyle(tint: .secondary))
+        .disabled(roundOver)
+        .opacity(roundOver ? 0.6 : 1.0)
     }
 }
 
