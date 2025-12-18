@@ -291,11 +291,12 @@ struct JournalEditorView: View {
                     .padding(.bottom, 6)
                 }
                 .padding(.vertical, 8)
-                // Ensure the overall scroll content avoids being covered by the keyboard
-                .padding(.bottom, bottomEditorInset)
             }
         }
-        .ignoresSafeArea(edges: .bottom)
+        // Use safeAreaInset instead of ignoresSafeArea + padding to cooperate with keyboard
+        .safeAreaInset(edge: .bottom) {
+            Color.clear.frame(height: bottomEditorInset)
+        }
         .background(KeyboardInsetReader(inset: $bottomEditorInset))
     }
 
@@ -833,6 +834,7 @@ private struct KeyboardInsetReader: UIViewRepresentable {
     final class Coordinator {
         @Binding var inset: CGFloat
         private var observers: [NSObjectProtocol] = []
+        private var lastInset: CGFloat = 0
 
         init(inset: Binding<CGFloat>) {
             _inset = inset
@@ -862,7 +864,13 @@ private struct KeyboardInsetReader: UIViewRepresentable {
             let endFrame = window.convert(endFrameScreen, from: nil)
             let overlap = max(0, window.bounds.maxY - endFrame.minY)
             let extra: CGFloat = 6
-            inset = overlap > 0 ? (overlap + extra) : 0
+            let newInset = overlap > 0 ? (overlap + extra) : 0
+
+            // 1pt threshold debounce to avoid churn during animation
+            if abs(newInset - lastInset) > 1.0 {
+                lastInset = newInset
+                inset = newInset
+            }
         }
     }
 }

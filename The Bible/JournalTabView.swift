@@ -729,7 +729,9 @@ struct JournalTabView: View {
                 isEditing = false
             },
             isEntryCurrentlySelected: { e in
-                (hSize == .regular) && (selectedEntry?.uuid == e.uuid)
+                // Use SwiftData’s stable identity to avoid duplicate highlights
+                guard hSize == .regular, let sel = selectedEntry else { return false }
+                return sel.persistentModelID == e.persistentModelID
             }
         )
     }

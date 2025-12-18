@@ -34,42 +34,60 @@ struct SidebarJournalList: View {
     private var listSectionSpacing: CGFloat { 6 }
     private var rowSpacing: CGFloat { 8 }
 
-    var body: some View {
-        List(selection: $selection) {
-            // Compact filter chips row
-            if !selectedTags.isEmpty {
-                Section {
-                    FilterChipsRow(
-                        selectedTags: Array(selectedTags).sorted(),
-                        onToggleTag: onToggleTag
-                    )
-                }
-                .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 4, trailing: 12))
-                .listRowSeparator(.hidden)
-            }
-
+    @ViewBuilder
+    private func listContent() -> some View {
+        // Compact filter chips row
+        if !selectedTags.isEmpty {
             Section {
-                ForEach(entries) { entry in
-                    EntryRow(
-                        entry: entry,
-                        selectionMode: selectionMode,
-                        selectedTags: selectedTags,
-                        isPinned: isPinned(entry),
-                        onToggleTag: onToggleTag,
-                        onTapEntry: onTapEntry,
-                        onTogglePin: onTogglePin,
-                        onRequestDelete: onRequestDelete,
-                        isEntryCurrentlySelected: isEntryCurrentlySelected(entry),
-                        rowBackground: { selected in
-                            rowCardBackground(selected: selected)
-                        }
-                    )
-                    .tag(entry.persistentModelID)
+                FilterChipsRow(
+                    selectedTags: Array(selectedTags).sorted(),
+                    onToggleTag: onToggleTag
+                )
+            }
+            .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 4, trailing: 12))
+            .listRowSeparator(.hidden)
+        }
+
+        Section {
+            ForEach(entries) { entry in
+                EntryRow(
+                    entry: entry,
+                    selectionMode: selectionMode,
+                    selectedTags: selectedTags,
+                    isPinned: isPinned(entry),
+                    onToggleTag: onToggleTag,
+                    onTapEntry: onTapEntry,
+                    onTogglePin: onTogglePin,
+                    onRequestDelete: onRequestDelete,
+                    isEntryCurrentlySelected: isEntryCurrentlySelected(entry),
+                    rowBackground: { selected in
+                        rowCardBackground(selected: selected)
+                    }
+                )
+                // Only tag rows when the List is actually in selection mode.
+                .conditionalTag(selectionMode ? entry.persistentModelID : nil)
+                // Disable any system selection highlight when not selecting.
+                .listRowSelectionDisabledCompat(!selectionMode)
+            }
+        } header: {
+            Text(headerCountText)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    var body: some View {
+        Group {
+            if selectionMode {
+                // Use system selection visuals only while in selection mode
+                List(selection: $selection) {
+                    listContent()
                 }
-            } header: {
-                Text(headerCountText)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+            } else {
+                // No system selection when not selecting; rely on our custom highlight
+                List {
+                    listContent()
+                }
             }
         }
         // Make it match iPhone styling
@@ -156,24 +174,21 @@ private struct EntryRow<RowBackground: View>: View {
                     onTagTapped: onToggleTag,
                     showPadSelectionBackground: false
                 )
+                .frame(maxWidth: .infinity, alignment: .leading) // fill width for consistent hit area
                 .contentShape(Rectangle())
             } else {
-                // Build the row content and overlay a full-size tap target
-                ZStack(alignment: .topLeading) {
-                    // The visible row
-                    JournalListRow(
-                        entry: entry,
-                        selectedTags: selectedTags,
-                        isPinned: isPinned,
-                        onTagTapped: onToggleTag,
-                        showPadSelectionBackground: false
-                    )
-                    // Full-size, transparent tap target so tapping anywhere selects the entry
-                    Color.clear
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            onTapEntry(entry)
-                        }
+                // Make the entire row tappable while preserving TagChip buttons.
+                JournalListRow(
+                    entry: entry,
+                    selectedTags: selectedTags,
+                    isPinned: isPinned,
+                    onTagTapped: onToggleTag,
+                    showPadSelectionBackground: false
+                )
+                .frame(maxWidth: .infinity, alignment: .leading) // fill width so the whole row is tappable
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    onTapEntry(entry)
                 }
                 // Prevent default button/list selection tint from altering text colors
                 .tintCompat(nil)
@@ -262,6 +277,13 @@ private extension View {
         #endif
     }
 
+    // Compatibility wrapper for listRowSelectionDisabled to avoid missing member on older SDKs.
+    // Make it a no-op to compile on SDKs where the API doesn't exist.
+    @ViewBuilder
+    func listRowSelectionDisabledCompat(_ disabled: Bool) -> some View {
+        self
+    }
+
     // Compatibility wrapper for tint to avoid EnvironmentValues.tint access issues.
     @ViewBuilder
     func tintCompat(_ style: Color?) -> some View {
@@ -278,5 +300,15 @@ private extension View {
         #else
         self
         #endif
+    }
+
+    // Helper to conditionally apply a tag only when needed.
+    @ViewBuilder
+    func conditionalTag<T: Hashable>(_ tag: T?) -> some View {
+        if let tag {
+            self.tag(tag)
+        } else {
+            self
+        }
     }
 }

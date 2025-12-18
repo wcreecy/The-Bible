@@ -114,6 +114,7 @@ struct CursorTextView: UIViewRepresentable {
             tv.typingAttributes[.link] = nil
         }
 
+        // Initial inset apply (safe; not animating yet)
         applyInsets(to: tv, bottom: bottomInset)
         DispatchQueue.main.async {
             context.coordinator.updateCaretRect(tv, deferBindingUpdate: true)
@@ -219,8 +220,10 @@ struct CursorTextView: UIViewRepresentable {
             }
         }
 
-        // Apply keyboard-driven bottom inset
-        applyInsets(to: uiView, bottom: bottomInset)
+        // Apply keyboard-driven bottom inset only when not animating
+        if !context.coordinator.isKeyboardAnimating {
+            applyInsets(to: uiView, bottom: bottomInset)
+        }
 
         // Avoid forcing scroll while the user types; only ensure caret visible after programmatic selection changes.
         if context.coordinator.didProgrammaticallyAdjustSelection {
@@ -328,8 +331,9 @@ struct CursorTextView: UIViewRepresentable {
             if starting {
                 isKeyboardAnimating = true
             } else {
-                // Delay clearing by one runloop to let UIKit finish internal tracking
-                DispatchQueue.main.async {
+                // Add a small delay so UIKit finishes internal constraint passes before we resume updates.
+                let delay: DispatchTimeInterval = .milliseconds(50)
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                     self.isKeyboardAnimating = false
                     // Run any deferred SwiftUI-driven updates now
                     let jobs = self.deferredSwiftUIUpdates
