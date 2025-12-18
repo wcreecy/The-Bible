@@ -84,12 +84,12 @@ final class HomeBibleStatsViewModel: ObservableObject {
         }
         lastWeekSeconds = prevWeekTotal
 
-        // All-time totals and per-book totals from BibleStatsStore (synced)
-        let perBookAllTime = store.loadTotals()
-        totalSeconds = perBookAllTime.values.reduce(0, +)
+        // All-time: align with Today/Week source — sum the synced daily totals map
+        totalSeconds = dailyMap.values.reduce(0) { $0 + max(0, $1) }
 
         // OT/NT split and top books from synced per-book totals
         do {
+            let perBookAllTime = store.loadTotals()
             let split = store.splitOTNT(totals: perBookAllTime)
             otSeconds = split.ot
             ntSeconds = split.nt
@@ -134,8 +134,23 @@ final class HomeBibleStatsViewModel: ObservableObject {
         completionPercent = max(0, min(100, pct))
     }
 
+    // Compact formatter for Home Bible Stats card:
+    // - H:MM:SS if hours > 0
+    // - MM:SS if minutes > 0 and hours == 0
+    // - :SS if only seconds
     func formatted(_ seconds: Int) -> String {
-        BibleStatsStore.shared.format(seconds)
+        let s = max(0, seconds)
+        let h = s / 3600
+        let m = (s % 3600) / 60
+        let sec = s % 60
+
+        if h > 0 {
+            return String(format: "%d:%02d:%02d", h, m, sec)
+        } else if m > 0 {
+            return String(format: "%02d:%02d", m, sec)
+        } else {
+            return String(format: ":%02d", sec)
+        }
     }
 
     var weekDeltaOnlyValue: String {
