@@ -5,6 +5,16 @@ extension iCloudSyncCoordinator {
     // Reading sessions key(s)
     static let sessionKeys: [String] = ["readingSessions"]
 
+    // Keep this in sync with ReadingSessionsStore’s retention window (currently ~5 years)
+    private static let sessionRetentionDays: Int = 1825
+
+    // Cached formatter for stable session identity
+    private static let isoFormatter: ISO8601DateFormatter = {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return f
+    }()
+
     // Local -> KVS
     func mirrorSessionsKeyToKVS(_ key: String) {
         guard Self.sessionKeys.contains(key) else { return }
@@ -25,7 +35,14 @@ extension iCloudSyncCoordinator {
         guard let remoteData = kvs.object(forKey: key) as? Data else { return }
         let localData = defaults.data(forKey: key)
         typealias Arr = [ReadingSessionsStore.Session]
-        let merged = mergeSessions(localData: localData, remoteData: remoteData, type: Arr.self)
+        var merged = mergeSessions(localData: localData, remoteData: remoteData, type: Arr.self)
+
+        // Prune to retention window to avoid unbounded growth from remote merges
+        var cal = Calendar.autoupdatingCurrent
+        cal.timeZone = TimeZone.autoupdatingCurrent
+        let cutoff = cal.date(byAdding: .day, value: -Self.sessionRetentionDays, to: Date()) ?? .distantPast
+        merged = merged.filter { $0.end >= cutoff }
+
         if let data = try? JSONEncoder().encode(merged) {
             defaults.set(data, forKey: key)
         }
@@ -46,18 +63,15 @@ extension iCloudSyncCoordinator {
                 merged.append(s)
             }
         }
-        // Let ReadingSessionsStore own retention; do not prune here.
         // Sort ascending by end date to keep consistent order; StatsView does its own ordering later
         merged.sort { $0.end < $1.end }
         return merged
     }
 
     private func sessionIdentity(_ s: ReadingSessionsStore.Session) -> String {
-        // Use ISO8601 + fields to avoid collisions
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        let startStr = formatter.string(from: s.start)
-        let endStr = formatter.string(from: s.end)
+        // Use ISO8601 + fields to avoid collisions (cached formatter)
+        let startStr = Self.isoFormatter.string(from: s.start)
+        let endStr = Self.isoFormatter.string(from: s.end)
         let chapStr = s.chapter.map { String($0) } ?? "_"
         return "\(startStr)|\(endStr)|\(s.book)|\(chapStr)"
     }

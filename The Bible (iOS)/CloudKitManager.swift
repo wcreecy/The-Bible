@@ -31,6 +31,12 @@ public final class CloudKitManager: ObservableObject {
     private let sharedDB: CKDatabase
     private let publicDB: CKDatabase
 
+    // Throttling/coalescing
+    private var lastRefreshAt: Date?
+    private let minRefreshInterval: TimeInterval = 60 // seconds
+    private var refreshTask: Task<Void, Never>?
+    private var accountChangedObserver: NSObjectProtocol?
+
     public init(containerIdentifier: String) {
         self.container = CKContainer(identifier: containerIdentifier)
         self.privateDB = container.privateCloudDatabase
@@ -45,17 +51,60 @@ public final class CloudKitManager: ObservableObject {
         print("   • Container: \(containerIdentifier)")
         print("   • Bundle ID: \(bundleID)")
         print("   • Environment hint: \(envHint)")
+
+        // Refresh reactively when the account changes (sign in/out, switch accounts)
+        accountChangedObserver = NotificationCenter.default.addObserver(
+            forName: .CKAccountChanged,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            // Hop onto the main actor explicitly before touching main-actor isolated state.
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                // Invalidate throttling so we fetch immediately
+                self.lastRefreshAt = nil
+                await self.refresh(force: true)
+            }
+        }
+    }
+
+    deinit {
+        if let obs = accountChangedObserver {
+            NotificationCenter.default.removeObserver(obs)
+        }
     }
 
     public func prepare() async {
-        await refreshAccountStatus()
-        await fetchUserRecordIDIfAvailable()
+        await refresh(force: true)
     }
 
     public func refresh() async {
-        print("ℹ️ CloudKitManager.refresh() called")
-        await refreshAccountStatus()
-        await fetchUserRecordIDIfAvailable()
+        await refresh(force: false)
+    }
+
+    // MARK: - Throttled/forced refresh
+
+    private func refresh(force: Bool) async {
+        // Coalesce if a refresh is already running
+        if let task = refreshTask {
+            await task.value
+            return
+        }
+
+        // Throttle unless forced
+        if !force, let last = lastRefreshAt, Date().timeIntervalSince(last) < minRefreshInterval {
+            return
+        }
+
+        let task = Task { [weak self] in
+            guard let self else { return }
+            await self.refreshAccountStatus()
+            await self.fetchUserRecordIDIfAvailable()
+            self.lastRefreshAt = Date()
+        }
+        refreshTask = task
+        await task.value
+        refreshTask = nil
     }
 
     public func flushPending() async {

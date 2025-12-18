@@ -24,32 +24,15 @@ struct SidebarJournalList: View {
     // For iPad selected highlight
     let isEntryCurrentlySelected: (JournalEntry) -> Bool
 
-    // Use a Color (not ShapeStyle) for separator tint to satisfy older listRowSeparatorTint signatures.
-    private var separatorTint: Color {
-        #if os(iOS) || os(tvOS) || os(visionOS)
-        return Color(.quaternaryLabel)
-        #elseif os(macOS)
-        return Color(NSColor.quaternaryLabelColor)
-        #else
-        return .gray.opacity(0.35)
-        #endif
-    }
-
     // Card-like background used inside each row for a more polished look
     @ViewBuilder
     private func rowCardBackground(selected: Bool) -> some View {
-        let base = RoundedRectangle(cornerRadius: 12, style: .continuous)
-        // Use very light selection fill to keep text readable in light mode
-        let fillColor: Color = selected ? Color.accentColor.opacity(0.08) : Color(.secondarySystemBackground)
-        let strokeColor: Color = selected ? Color.accentColor.opacity(0.35) : Color.black.opacity(0.06)
-        base
-            .fill(fillColor)
-            .overlay(base.stroke(strokeColor, lineWidth: 1))
-            .shadow(color: .black.opacity(selected ? 0.05 : 0.04), radius: selected ? 5 : 3, x: 0, y: selected ? 3 : 2)
+        CardBackground(selected: selected)
     }
 
     // Reduce default section spacing so the top separator isn’t visually jarring
-    private var listSectionSpacing: CGFloat { 4 }
+    private var listSectionSpacing: CGFloat { 6 }
+    private var rowSpacing: CGFloat { 8 }
 
     var body: some View {
         List(selection: $selection) {
@@ -89,9 +72,13 @@ struct SidebarJournalList: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .listStyle(.insetGrouped)
+        // Make it match iPhone styling
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(Color(.systemGroupedBackground))
         .environment(\.editMode, .constant(selectionMode ? .active : .inactive))
         .listSectionSpacingCompat(listSectionSpacing)
+        .listRowSpacingCompat(rowSpacing)
         .tint(.accentColor)
     }
 }
@@ -218,6 +205,27 @@ private struct EntryRow<RowBackground: View>: View {
     }
 }
 
+// A small, adaptive card background tuned for both light and dark mode.
+private struct CardBackground: View {
+    @Environment(\.colorScheme) private var scheme
+    let selected: Bool
+
+    var body: some View {
+        let base = RoundedRectangle(cornerRadius: 12, style: .continuous)
+        // In dark mode, use a subtle translucent fill to avoid heavy gray blocks.
+        let normalFill: Color = (scheme == .dark) ? Color.white.opacity(0.06) : Color(.secondarySystemBackground)
+        let fillColor: Color = selected ? Color.accentColor.opacity(0.08) : normalFill
+        let strokeColor: Color = selected
+            ? Color.accentColor.opacity(0.35)
+            : (scheme == .dark ? Color.white.opacity(0.10) : Color.black.opacity(0.06))
+
+        base
+            .fill(fillColor)
+            .overlay(base.stroke(strokeColor, lineWidth: 1))
+            .shadow(color: .black.opacity(selected ? 0.06 : 0.04), radius: selected ? 5 : 3, x: 0, y: selected ? 3 : 2)
+    }
+}
+
 // Helper to consistently disable system list-row selection visuals on iOS versions
 private extension View {
     @ViewBuilder
@@ -240,11 +248,23 @@ private extension View {
         #endif
     }
 
+    // Safely apply listRowSpacing only when available.
+    @ViewBuilder
+    func listRowSpacingCompat(_ spacing: CGFloat) -> some View {
+        #if swift(>=5.9)
+        if #available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *) {
+            self.listRowSpacing(spacing)
+        } else {
+            self
+        }
+        #else
+        self
+        #endif
+    }
+
     // Compatibility wrapper for tint to avoid EnvironmentValues.tint access issues.
     @ViewBuilder
     func tintCompat(_ style: Color?) -> some View {
-        // When style is nil, we want to effectively "clear" the tint influence.
-        // On modern SDKs, .tint(nil) removes the emphasis; otherwise, no-op.
         #if swift(>=5.8)
         if #available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *) {
             if let style {

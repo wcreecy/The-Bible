@@ -180,6 +180,18 @@ struct HomeView: View {
     // NEW: Bind Live Activities setting directly so Home tracks Settings in real time.
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
 
+    // Helper to switch tabs via enum (with backward-compatible Int payload)
+    private func switchTo(_ tab: AppTab) {
+        NotificationCenter.default.post(
+            name: .switchToTab,
+            object: nil,
+            userInfo: [
+                "tab": tab.rawValue,    // legacy Int listeners
+                "tabName": tab.name     // new enum-aware listeners
+            ]
+        )
+    }
+
     @ViewBuilder
     private func card(for id: HomeCardID) -> some View {
         switch id {
@@ -210,7 +222,7 @@ struct HomeView: View {
 
                     if UIDevice.current.userInterfaceIdiom == .pad {
                         // iPad: switch to Journal tab and start inline new entry
-                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 2])
+                        switchTo(.journal)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                             NotificationCenter.default.post(
                                 name: JournalNotifications.startInlineNewFromBible,
@@ -325,14 +337,14 @@ struct HomeView: View {
         case .games:
             GamesCard(
                 onOpenGames: {
-                    NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 3])
+                    switchTo(.games)
                 },
                 onOpenStats: {
-                    NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 6])
+                    switchTo(.stats)
                 },
                 onShufflePlay: {
-                    // Choose one of the six games at random (includes Who am I?)
-                    enum Game: CaseIterable { case quiz, beat, match, order, hangman, whoami }
+                    // Choose one of the seven games at random (includes Who am I? and Wordle)
+                    enum Game: CaseIterable { case quiz, beat, match, order, hangman, whoami, wordle }
                     let pick = Game.allCases.randomElement() ?? .quiz
                     switch pick {
                     case .quiz:
@@ -347,6 +359,8 @@ struct HomeView: View {
                         coordinator.push(.gameHangman)
                     case .whoami:
                         coordinator.push(.gameWhoAmI)
+                    case .wordle:
+                        coordinator.push(.gameWordle)
                     }
                 }
             )
@@ -357,7 +371,7 @@ struct HomeView: View {
                 bibleVM: bibleVM,
                 scenePhase: scenePhase,
                 onOpenStats: {
-                    NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 6])
+                    switchTo(.stats)
                 }
             )
         }
@@ -382,19 +396,13 @@ struct HomeView: View {
                         todayReadingSeconds: bibleVM.todaySeconds,
                         streak: StreakTracker.currentStreak,
                         onSearch: {
-                            DispatchQueue.main.async {
-                                NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 5])
-                            }
+                            DispatchQueue.main.async { switchTo(.search) }
                         },
                         onRead: {
-                            DispatchQueue.main.async {
-                                NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 1])
-                            }
+                            DispatchQueue.main.async { switchTo(.bible) }
                         },
                         onFavorites: {
-                            DispatchQueue.main.async {
-                                NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 4])
-                            }
+                            DispatchQueue.main.async { switchTo(.favorites) }
                         }
                     )
 
@@ -423,19 +431,13 @@ struct HomeView: View {
                         todayReadingSeconds: bibleVM.todaySeconds,
                         streak: StreakTracker.currentStreak,
                         onSearch: {
-                            DispatchQueue.main.async {
-                                NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 5])
-                            }
+                            DispatchQueue.main.async { switchTo(.search) }
                         },
                         onRead: {
-                            DispatchQueue.main.async {
-                                NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 1])
-                            }
+                            DispatchQueue.main.async { switchTo(.bible) }
                         },
                         onFavorites: {
-                            DispatchQueue.main.async {
-                                NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 4])
-                            }
+                            DispatchQueue.main.async { switchTo(.favorites) }
                         }
                     )
 

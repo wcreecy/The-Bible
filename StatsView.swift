@@ -550,20 +550,120 @@ struct StatsView: View {
     // MARK: - Totals card metrics and chart config (independent scope)
 
     private func recomputeTotalsCardMetrics() {
-        let cal = Calendar.current
+        var cal = Calendar.autoupdatingCurrent
+        cal.timeZone = TimeZone.autoupdatingCurrent
         let now = Date()
+        let startOfToday = cal.startOfDay(for: now)
+        let dailyMap = BibleStatsStore.shared.loadDailyTotals()
 
         switch timeScopeTotals {
         case .last7:
-            totalsDaily = StatsSeriesBuilder.dailySeries(lastNDays: 7, now: now, calendar: cal)
+            var series: [(Date, Int)] = []
+            for i in stride(from: 6, through: 0, by: -1) {
+                if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                    let key = BibleStatsStore.isoDateString(d, calendar: cal)
+                    series.append((d, max(0, dailyMap[key, default: 0])))
+                }
+            }
+            totalsDaily = series
             allTimeAggregation = .daily
+
         case .thisMonth:
-            totalsDaily = StatsSeriesBuilder.dailySeriesForMonth(containing: now, calendar: cal)
+            var series: [(Date, Int)] = []
+            // Enumerate all days in this month using isoKeysForMonth for consistency
+            let keys = BibleStatsStore.isoKeysForMonth(containing: now, calendar: cal)
+            for key in keys {
+                // Rebuild Date from key using calendar startOfDay
+                let comps = key.split(separator: "-").compactMap { Int($0) }
+                if comps.count == 3, let date = cal.date(from: DateComponents(year: comps[0], month: comps[1], day: comps[2])) {
+                    series.append((date, max(0, dailyMap[key, default: 0])))
+                }
+            }
+            totalsDaily = series
             allTimeAggregation = .weekly
+
         case .allTime:
-            let r = StatsSeriesBuilder.allTimeAggregatedSeries(calendar: cal)
-            totalsDaily = r.series
-            allTimeAggregation = r.aggregation == .monthly ? .monthly : .yearly
+            // Aggregate daily totals into monthly or yearly buckets based on span, similar to StatsSeriesBuilder
+            // Build a [Date: Int] map of all known daily entries as Dates
+            var entries: [(date: Date, seconds: Int)] = []
+            for (key, seconds) in dailyMap {
+                let parts = key.split(separator: "-").compactMap { Int($0) }
+                if parts.count == 3, let date = cal.date(from: DateComponents(year: parts[0], month: parts[1], day: parts[2])) {
+                    entries.append((cal.startOfDay(for: date), max(0, seconds)))
+                }
+            }
+            guard !entries.isEmpty else {
+                totalsDaily = []
+                allTimeAggregation = .daily
+                break
+            }
+            let start = entries.map { $0.date }.min() ?? startOfToday
+            let end = startOfToday
+            let monthsSpan = cal.dateComponents([.month], from: start, to: end).month ?? 0
+            let aggregation: StatsSeriesBuilder.Aggregation = (monthsSpan <= 12) ? .monthly : .yearly
+
+            func bucketStart(for date: Date) -> Date {
+                switch aggregation {
+                case .monthly:
+                    let comps = cal.dateComponents([.year, .month], from: date)
+                    return cal.date(from: comps) ?? cal.startOfDay(for: date)
+                case .yearly:
+                    let comps = cal.dateComponents([.year], from: date)
+                    return cal.date(from: comps) ?? cal.startOfDay(for: date)
+                default:
+                    return cal.startOfDay(for: date)
+                }
+            }
+
+            var buckets: [Date: Int] = [:]
+            for e in entries {
+                let key = bucketStart(for: e.date)
+                buckets[key, default: 0] += e.seconds
+            }
+
+            var series: [(Date, Int)] = []
+            var cursor: Date = {
+                switch aggregation {
+                case .monthly:
+                    let comps = cal.dateComponents([.year, .month], from: start)
+                    return cal.date(from: comps) ?? start
+                case .yearly:
+                    let comps = cal.dateComponents([.year], from: start)
+                    return cal.date(from: comps) ?? start
+                default:
+                    return start
+                }
+            }()
+
+            func step(_ date: Date) -> Date {
+                switch aggregation {
+                case .monthly: return cal.date(byAdding: .month, value: 1, to: date) ?? date
+                case .yearly: return cal.date(byAdding: .year, value: 1, to: date) ?? date
+                default: return date
+                }
+            }
+
+            while cursor <= end {
+                let val = buckets[cursor, default: 0]
+                series.append((cursor, val))
+                cursor = step(cursor)
+            }
+
+            if aggregation == .monthly {
+                let maxMonths = (monthsSpan <= 6) ? 6 : 12
+                if series.count > maxMonths {
+                    series = Array(series.suffix(maxMonths))
+                }
+                allTimeAggregation = .monthly
+            } else {
+                let maxYears = 10
+                if series.count > maxYears {
+                    series = Array(series.suffix(maxYears))
+                }
+                allTimeAggregation = .yearly
+            }
+
+            totalsDaily = series
         }
 
         activeDaysInScope = totalsDaily.reduce(0) { $0 + ($1.seconds > 0 ? 1 : 0) }

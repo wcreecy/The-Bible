@@ -75,7 +75,7 @@ final class iCloudSyncCoordinator {
         // Pull -> merge -> normalize -> push repairs (debounced)
         reconcileAllKeysFromKVS()
 
-        // One-time bootstrap: push local differences (no timestamp churn) after initial pull/merge
+        // One-time bootstrap: push local differences (no blind timestamp bumps) after initial pull/merge
         if !defaults.bool(forKey: bootstrapFlagKey) {
             pushLocalDifferencesToKVS()
             defaults.set(true, forKey: bootstrapFlagKey)
@@ -85,7 +85,10 @@ final class iCloudSyncCoordinator {
         let repaired = normalizeGameCountersInvariant()
         if !repaired.isEmpty {
             enqueueKeysForSync(repaired)
-            NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+            // Post asynchronously to avoid interfering with any active keyboard session
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+            }
         }
     }
 
@@ -108,7 +111,19 @@ final class iCloudSyncCoordinator {
     // MARK: - Key sets (union)
 
     var allKnownKeys: Set<String> {
-        Set(Self.bibleStatsKeys + Self.sessionKeys + Self.settingsKeys + Self.hangmanKeys + Self.beatClockKeys + Self.refMatchKeys + Self.quizKeys + Self.bookOrderKeys + Self.whoAmIKeys + Self.gameDailyAndLastPlayedKeys)
+        Set(
+            Self.bibleStatsKeys
+            + Self.sessionKeys
+            + Self.settingsKeys
+            + Self.hangmanKeys
+            + Self.beatClockKeys
+            + Self.refMatchKeys
+            + Self.quizKeys
+            + Self.bookOrderKeys
+            + Self.whoAmIKeys
+            + Self.wordleKeys            // FIX: include Wordle keys so they mirror/merge
+            + Self.gameDailyAndLastPlayedKeys
+        )
     }
 
     // MARK: - Bootstrap helpers
@@ -125,6 +140,14 @@ final class iCloudSyncCoordinator {
 
     @objc
     func handleKVSExternalChange(_ note: Notification) {
+        // This notification can arrive on a background thread; ensure we run on main.
+        if !Thread.isMainThread {
+            DispatchQueue.main.async { [weak self] in
+                self?.handleKVSExternalChange(note)
+            }
+            return
+        }
+
         guard let userInfo = note.userInfo else { return }
 
         let changedKeys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String] ?? []
@@ -155,11 +178,15 @@ final class iCloudSyncCoordinator {
         }
 
         // Notify UI that stats may have changed (StatsView can refresh)
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        }
 
         // If any game keys merged or we repaired, notify interested views (scoreboard) as well
         if mergedGameKey {
-            NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+            }
         }
 
         // Record last merge time
@@ -204,6 +231,14 @@ final class iCloudSyncCoordinator {
 
     @objc
     func handleUbiquityIdentityChange() {
+        // This notification can arrive on a background thread; ensure we run on main.
+        if !Thread.isMainThread {
+            DispatchQueue.main.async { [weak self] in
+                self?.handleUbiquityIdentityChange()
+            }
+            return
+        }
+
         // Account changed: pull, merge, and repair. Do not blindly push local values first.
         kvs.synchronize()
         reconcileAllKeysFromKVS()
@@ -331,9 +366,13 @@ final class iCloudSyncCoordinator {
                 if !repaired.isEmpty {
                     enqueueKeysForSync(repaired)
                 }
-                NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+                }
             }
-            NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+            }
             lastMergeDate = Date()
         }
     }

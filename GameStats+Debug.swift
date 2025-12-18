@@ -61,6 +61,13 @@ extension GameStats {
             let r = rollRound(maxQ: 10)
             recordRound(game: .whoami, difficulty: d, correct: r.correct, answered: r.answered, currentBestStreak: r.bestStreak)
         }
+
+        // Wordle (single "all" bucket) — 1 answered per round, correct 0/1
+        for _ in 0..<roundsPerGame {
+            let correct = Int.random(in: 0...1)
+            let bestStreak = Int.random(in: 0...roundsPerGame)
+            recordRound(game: .wordle, difficulty: .none, correct: correct, answered: 1, currentBestStreak: bestStreak)
+        }
     }
 }
 #endif

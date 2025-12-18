@@ -10,6 +10,7 @@ struct GamesView: View {
         case bookOrder
         case wordSearch
         case whoAmI // NEW
+        case wordle  // NEW
     }
 
     @State private var selection: GameRoute? = nil
@@ -64,8 +65,20 @@ struct GamesView: View {
                         }
                     }
                 }
+
+                // 5. Wordle (Bible) — NEW
+                NavigationLink(value: GameRoute.wordle) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "square.grid.3x3")
+                            .foregroundStyle(.mint)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Wordle (Bible)").font(.headline)
+                            Text("Guess the 5‑letter word in 6 tries").font(.subheadline).foregroundStyle(.secondary)
+                        }
+                    }
+                }
                 
-                // 5. Book Order
+                // 6. Book Order
                 NavigationLink(value: GameRoute.bookOrder) {
                     HStack(spacing: 12) {
                         Image(systemName: "list.number")
@@ -77,7 +90,7 @@ struct GamesView: View {
                     }
                 }
 
-                // 6. Beat the Clock
+                // 7. Beat the Clock
                 NavigationLink(value: GameRoute.beatTheClock) {
                     HStack(spacing: 12) {
                         Image(systemName: "hourglass")
@@ -89,7 +102,7 @@ struct GamesView: View {
                     }
                 }
                 
-                // 7. Word Search
+                // 8. Word Search
                 NavigationLink(value: GameRoute.wordSearch) {
                     HStack(spacing: 12) {
                         Image(systemName: "grid")
@@ -101,7 +114,7 @@ struct GamesView: View {
                     }
                 }
 
-                // 8. Favorites Flashcards
+                // 9. Favorites Flashcards
                 NavigationLink(value: GameRoute.favoritesFlashcards) {
                     HStack(spacing: 12) {
                         Image(systemName: "rectangle.portrait.on.rectangle.portrait")
@@ -134,6 +147,8 @@ struct GamesView: View {
                 WordSearchGameView()
             case .whoAmI:
                 WhoAmIGameView() // NEW
+            case .wordle:
+                WordleView() // NEW
             }
         }
         .onAppear { selection = nil }

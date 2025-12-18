@@ -16,7 +16,7 @@ struct ContentView: View {
 
     // FIX: Instantiate the ObservableObject
     @StateObject private var journalComposer = JournalComposer()
-    @State private var selectedTab: Int = 0
+    @State private var selectedTab: AppTab = .home
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
     
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
@@ -62,7 +62,7 @@ struct ContentView: View {
     private var baseFontSize: CGFloat { (isPad && isLandscape) ? 21 : 19 }
 
     // Track previous tab to detect leaving Games
-    @State private var previousTab: Int = 0
+    @State private var previousTab: AppTab = .home
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -73,13 +73,13 @@ struct ContentView: View {
             }
             .environmentObject(homeCoordinator)
             .tabItem { Label("Home", systemImage: "house") }
-            .tag(0)
+            .tag(AppTab.home)
             
             // Bible tab
             if isPad {
                 BibleSplitView()
                     .tabItem { Label("Bible", systemImage: "book") }
-                    .tag(1)
+                    .tag(AppTab.bible)
             } else {
                 NavigationStack(path: $bibleCoordinator.path) {
                     BooksView(books: BibleData.books)
@@ -87,20 +87,27 @@ struct ContentView: View {
                 }
                 .environmentObject(bibleCoordinator)
                 .tabItem { Label("Bible", systemImage: "book") }
-                .tag(1)
+                .tag(AppTab.bible)
             }
             
             // Journal tab manages its own navigation
             JournalTabView()
                 .tabItem { Label("Journal", systemImage: "book.closed") }
-                .tag(2)
+                .tag(AppTab.journal)
             
             // Games tab: no shared path
             NavigationStack {
                 GamesView()
             }
             .tabItem { Label("Games", systemImage: "gamecontroller") }
-            .tag(3)
+            .tag(AppTab.games)
+
+            // Stats tab
+            NavigationStack {
+                StatsView()
+            }
+            .tabItem { Label("Stats", systemImage: "chart.bar") }
+            .tag(AppTab.stats)
             
             // Favorites tab: uses direct NavigationLinks; no shared path
             NavigationStack {
@@ -108,7 +115,7 @@ struct ContentView: View {
                     .appDestinations(readerFontSize: $readerFontSize, isPad: isPad)
             }
             .tabItem { Label("Favorites", systemImage: "heart") }
-            .tag(4)
+            .tag(AppTab.favorites)
             
             // Search tab: uses direct NavigationLinks; no shared path
             NavigationStack {
@@ -116,14 +123,7 @@ struct ContentView: View {
                     .appDestinations(readerFontSize: $readerFontSize, isPad: isPad)
             }
             .tabItem { Label("Search", systemImage: "magnifyingglass") }
-            .tag(5)
-
-            // NEW: Stats tab (placeholder)
-            NavigationStack {
-                StatsView()
-            }
-            .tabItem { Label("Stats", systemImage: "chart.bar") }
-            .tag(6)
+            .tag(AppTab.search)
             
             // Settings tab
             NavigationStack {
@@ -133,17 +133,18 @@ struct ContentView: View {
             }
             .transaction { tx in tx.disablesAnimations = true }
             .tabItem { Label("Settings", systemImage: "gear") }
-            .tag(7)
+            .tag(AppTab.settings)
         }
         .environmentObject(journalComposer)
-        .preferredColorScheme(selectedTab == 7 ? nil : preferredScheme)
-        .dynamicTypeSize(selectedTab == 7 ? .large : (preferredDynamicType ?? .large))
+        // Apply your preferred color scheme even on the Settings tab so it updates in place.
+        .preferredColorScheme(preferredScheme)
+        .dynamicTypeSize(selectedTab == .settings ? .large : (preferredDynamicType ?? .large))
         .font(
-            selectedTab == 7
+            selectedTab == .settings
             ? .system(size: baseFontSize)
             : (preferredCustomFontName != nil ? .custom(preferredCustomFontName!, size: baseFontSize) : .system(size: baseFontSize))
         )
-        .fontDesign(selectedTab == 7 ? .default : (preferredFontDesign ?? .default))
+        .fontDesign(selectedTab == .settings ? .default : (preferredFontDesign ?? .default))
         .onAppear {
             // Start iCloud Key-Value sync coordinator globally (ensures cross-device merges are observed)
             iCloudSyncCoordinator.shared.start()
@@ -167,7 +168,7 @@ struct ContentView: View {
 
             Task { @MainActor in
                 await Task.yield()
-                if selectedTab == 0 {
+                if selectedTab == .home {
                     ensureSavedFocusLiveActivityIfNeeded()
                 }
             }
@@ -187,8 +188,8 @@ struct ContentView: View {
             previousTab = selectedTab
         }
         .onChange(of: selectedTab) { oldValue, newValue in
-            // When leaving Games tab (3), persist latest session accuracy baseline for the Home games card caret
-            if previousTab == 3 && newValue != 3 {
+            // When leaving Games tab, persist latest session accuracy baseline for the Home games card caret
+            if previousTab == .games && newValue != .games {
                 let today = GameStats.shared.todayStats()
                 // Reuse the existing baseline key the GamesCard reads
                 UserDefaults.standard.set(today.pct, forKey: "gamesLastWeekAccuracyPct")
@@ -196,13 +197,13 @@ struct ContentView: View {
                 NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
             }
 
-            // NEW: When entering Games tab, capture session baseline of all‑time Gamer Score
-            if newValue == 3 {
+            // When entering Games tab, capture session baseline of all‑time Gamer Score
+            if newValue == .games {
                 let baselinePct = GameStats.shared.breakdownSnapshot().percentage
                 UserDefaults.standard.set(baselinePct, forKey: "gamesSessionBaselinePct")
             }
 
-            if newValue == 0 {
+            if newValue == .home {
                 Task { @MainActor in
                     await Task.yield()
                     ensureSavedFocusLiveActivityIfNeeded()
@@ -236,7 +237,7 @@ struct ContentView: View {
 
             // NEW: thebible://home -> switch to Home tab
             if host == "home" {
-                selectedTab = 0
+                selectedTab = .home
                 return
             }
 
@@ -271,7 +272,7 @@ struct ContentView: View {
             else { return }
 
             // Switch to Bible tab first
-            selectedTab = 1
+            selectedTab = .bible
 
             if isPad {
                 // Re-post once with a "relayed" flag so ContentView ignores it, but BibleSplitView can handle it.
@@ -299,16 +300,19 @@ struct ContentView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .switchToTab)) { note in
-            if let tab = note.userInfo?["tab"] as? Int {
-                selectedTab = tab
+            // Backward compatibility: accept either Int index or a tab name
+            if let tabIndex = note.userInfo?["tab"] as? Int, let t = AppTab(rawValue: tabIndex) {
+                selectedTab = t
+            } else if let name = note.userInfo?["tabName"] as? String, let t = AppTab.from(name: name) {
+                selectedTab = t
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .openSettingsTab)) { _ in
-            selectedTab = 7
+            selectedTab = .settings
         }
         .onReceive(NotificationCenter.default.publisher(for: .resetBibleNavigation)) { _ in
             // Ensure Bible tab is visible, then reset the Bible nav stack to Books list
-            selectedTab = 1
+            selectedTab = .bible
             DispatchQueue.main.async {
                 bibleCoordinator.reset()
             }

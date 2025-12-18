@@ -21,6 +21,7 @@ final class GameStats: ObservableObject {
         case refmatch
         case bookorder
         case whoami // NEW
+        case wordle // NEW
     }
 
     // Canonical difficulty for the write API (maps to per-game suffixes)
@@ -29,7 +30,7 @@ final class GameStats: ObservableObject {
         case normal     // quiz "normal"
         case medium     // legacy for hangman/beatclock/refmatch — now maps to "normal"
         case hard
-        case none       // bookorder (no per-difficulty keys)
+        case none       // bookorder (no per-difficulty keys), wordle (no difficulty)
     }
 
     private init() {
@@ -82,6 +83,7 @@ final class GameStats: ObservableObject {
 
             // Who am I? shipped only suffixed keys — nothing to wipe here.
             // Book Order is intentionally unsuffixed — do not wipe.
+            // Wordle is new — no legacy keys.
         ]
 
         for key in legacyKeys {
@@ -134,13 +136,15 @@ final class GameStats: ObservableObject {
         let b = beatclock
         let o = bookorder
         let w = whoami // NEW
+        let wd = wordle // NEW
         let entries: [GameBreakdown.Entry] = [
             .init(name: "Bible Quiz", correct: q.correct, answered: q.answered, bestStreak: q.bestStreak),
             .init(name: "Hangman", correct: h.correct, answered: h.answered, bestStreak: h.bestStreak),
             .init(name: "Verse Match", correct: r.correct, answered: r.answered, bestStreak: r.bestStreak),
             .init(name: "Beat the Clock", correct: b.correct, answered: b.answered, bestStreak: b.bestStreak),
             .init(name: "Book Order", correct: o.correct, answered: o.answered, bestStreak: o.bestStreak),
-            .init(name: "Who am I?", correct: w.correct, answered: w.answered, bestStreak: w.bestStreak) // NEW
+            .init(name: "Who am I?", correct: w.correct, answered: w.answered, bestStreak: w.bestStreak),
+            .init(name: "Wordle (Bible)", correct: wd.correct, answered: wd.answered, bestStreak: wd.bestStreak)
         ]
         return GameBreakdown(entries: entries)
     }
@@ -205,6 +209,12 @@ final class GameStats: ObservableObject {
                 case .hard: return "hard"
                 case .medium, .none: return nil
                 }
+            case .wordle:
+                // No difficulty — use a single "all" suffix for consistency
+                switch difficulty {
+                case .none: return "all"
+                case .easy, .normal, .medium, .hard: return "all"
+                }
             }
         }
 
@@ -247,6 +257,12 @@ final class GameStats: ObservableObject {
             incInt("whoamiAllTimeCorrect_\(s)", by: addCorrect)
             incInt("whoamiAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("whoamiAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+
+        case .wordle:
+            guard let s = suf else { return }
+            incInt("wordleAllTimeCorrect_\(s)", by: addCorrect)
+            incInt("wordleAllTimeAnswered_\(s)", by: addAnswered)
+            maxInt("wordleAllTimeBestStreak_\(s)", candidate: currentBestStreak)
         }
 
         // NEW: Append to per-day maps and stamp last played
@@ -373,8 +389,16 @@ final class GameStats: ObservableObject {
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
+    // NEW: aggregate for Wordle (single "all" suffix)
+    private var wordle: GameStat {
+        let c = sumAcross(prefix: "wordleAllTimeCorrect", parts: ["_all"], legacyKey: "wordleAllTimeCorrect")
+        let a = sumAcross(prefix: "wordleAllTimeAnswered", parts: ["_all"], legacyKey: "wordleAllTimeAnswered")
+        let best = maxAcross(prefix: "wordleAllTimeBestStreak", parts: ["_all"], legacyKey: "wordleAllTimeBestStreak")
+        return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
+    }
+
     private func aggregateAll() -> (correct: Int, answered: Int) {
-        let stats = [quiz, hangman, refmatch, beatclock, bookorder, whoami]
+        let stats = [quiz, hangman, refmatch, beatclock, bookorder, whoami, wordle]
         let totalCorrect = stats.reduce(0) { $0 + max(0, $1.correct) }
         let totalAnswered = stats.reduce(0) { $0 + max(0, $1.answered) }
         return (totalCorrect, totalAnswered)
@@ -425,6 +449,7 @@ final class GameStats: ObservableObject {
         case .refmatch: return "Verse Match"
         case .bookorder: return "Book Order"
         case .whoami: return "Who am I?"
+        case .wordle: return "Wordle (Bible)"
         }
     }
 

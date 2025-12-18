@@ -11,20 +11,22 @@ struct StreaksCard: View {
         max(1, dailyGoalMinutes) * 60
     }
 
-    // Today total from sessions (same source as Stats tab and Home Today summary)
+    // Today total from BibleStatsStore's synced daily totals (local-day)
     private var todayTotal: Int {
-        BibleStatsStore.shared.todayTotalSeconds(now: Date(), calendar: .autoupdatingCurrent)
+        let key = BibleStatsStore.isoDateString(Date(), calendar: .autoupdatingCurrent)
+        let map = BibleStatsStore.shared.loadDailyTotals()
+        return max(0, map[key, default: 0])
     }
 
-    // Progress fraction identical to TitleCard’s formula, now sessions-based
+    // Progress fraction identical to TitleCard’s formula, totals-based
     private var progress: Double {
         let g = max(1, goalSeconds)
         return min(1.0, Double(todayTotal) / Double(g))
     }
 
-    // Whether goal met today using the same sessions-based source
+    // Whether goal met today using the same synced source (and history-aware goal)
     private var goalMet: Bool {
-        BibleStatsStore.shared.isDailyGoalMet(goalSeconds: goalSeconds, now: Date(), calendar: .autoupdatingCurrent)
+        StreakTracker.isGoalMet(on: Date())
     }
 
     private func goalMinutesString(_ minutes: Int) -> String {
@@ -41,7 +43,7 @@ struct StreaksCard: View {
     }
 
     var body: some View {
-        // Streak values (these remain computed via StreakTracker)
+        // Streak values (computed via StreakTracker from synced totals)
         let current = StreakTracker.currentStreak
         let best = StreakTracker.bestStreak
         let last = StreakTracker.lastVisitDate
@@ -51,7 +53,7 @@ struct StreaksCard: View {
             subtitle: nil,
             tint: current > 0 ? .orange : .secondary,
             iconContent: {
-                // Progress flame uses the same fraction as TitleCard (sessions-based)
+                // Progress flame uses the same fraction as TitleCard (totals-based)
                 FillingFlame(progress: progress)
             }
         ) {
@@ -90,7 +92,7 @@ struct StreaksCard: View {
                         .foregroundStyle(.secondary)
                 }
 
-                // Today's progress toward goal (matching TitleCard formula and sessions source)
+                // Today's progress toward goal (matching TitleCard formula and synced totals)
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
                         Text("Today")

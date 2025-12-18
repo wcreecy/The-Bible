@@ -13,4 +13,5 @@ enum Route: Hashable {
     case gameBookOrder
     case gameHangman
     case gameWhoAmI
+    case gameWordle // NEW
 }

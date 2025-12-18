@@ -47,6 +47,8 @@ struct AverageSessionCardView: View {
                             .foregroundStyle(.teal)
                         }
                     }
+                    // Ensure a non-zero y-domain even when all points are zero
+                    .chartYScale(domain: 0...max(1, maxMinutes))
                     .chartYAxisLabel("Minutes")
                     .chartXAxisLabel("Sessions")
                     .frame(height: 180)
@@ -55,5 +57,10 @@ struct AverageSessionCardView: View {
                 }
             }
         }
+    }
+
+    private var maxMinutes: Int {
+        guard !sessionsSeries.isEmpty else { return 0 }
+        return sessionsSeries.map { max(0, $0.minutes) }.max() ?? 0
     }
 }

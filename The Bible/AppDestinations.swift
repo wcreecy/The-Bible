@@ -51,6 +51,8 @@ extension View {
                     HangmanGameView()
                 case .gameWhoAmI:
                     WhoAmIGameView()
+                case .gameWordle:
+                    WordleView() // NEW
                 }
             }
     }

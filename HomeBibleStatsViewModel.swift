@@ -44,31 +44,53 @@ final class HomeBibleStatsViewModel: ObservableObject {
     }
 
     func refresh(now: Date = Date()) {
-        let cal = Calendar.autoupdatingCurrent
+        // Use BibleStatsStore’s synced daily totals (local-day yyyy-MM-dd keys) for Home metrics
+        var cal = Calendar.autoupdatingCurrent
+        cal.timeZone = TimeZone.autoupdatingCurrent
+        let startOfToday = cal.startOfDay(for: now)
 
-        // Sessions-based daily buckets to match Stats tab charts
-        let todaySeries = StatsSeriesBuilder.dailySeries(lastNDays: 1, now: now, calendar: cal)
-        todaySeconds = todaySeries.last?.seconds ?? 0
+        let store = BibleStatsStore.shared
+        let dailyMap: [String: Int] = store.loadDailyTotals()
 
-        let last2 = StatsSeriesBuilder.dailySeries(lastNDays: 2, now: now, calendar: cal)
-        // last2 = [yesterday, today] in ascending order
-        yesterdaySecondsLocal = last2.first?.seconds ?? 0
+        func key(for date: Date) -> String {
+            BibleStatsStore.isoDateString(date, calendar: cal)
+        }
 
-        let weekSeries = StatsSeriesBuilder.dailySeries(lastNDays: 7, now: now, calendar: cal)
-        thisWeekSeconds = weekSeries.reduce(0) { $0 + $1.seconds }
+        // Today
+        todaySeconds = max(0, dailyMap[key(for: startOfToday), default: 0])
 
-        let last14 = StatsSeriesBuilder.dailySeries(lastNDays: 14, now: now, calendar: cal)
-        // last14 is ascending; first 7 entries are the previous rolling week
-        lastWeekSeconds = last14.prefix(7).reduce(0) { $0 + $1.seconds }
+        // Yesterday (for delta)
+        if let y = cal.date(byAdding: .day, value: -1, to: startOfToday) {
+            yesterdaySecondsLocal = max(0, dailyMap[key(for: y), default: 0])
+        } else {
+            yesterdaySecondsLocal = 0
+        }
 
-        // All-time (sessions within retention window ~5 years)
-        let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: now, calendar: cal)
-        totalSeconds = allSessions.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
+        // This week (rolling last 7 local days including today)
+        var weekTotal = 0
+        for i in 0..<7 {
+            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                weekTotal += max(0, dailyMap[key(for: d), default: 0])
+            }
+        }
+        thisWeekSeconds = weekTotal
 
-        // Optional: compute OT/NT split and top books from sessions (kept for future use)
+        // Last week rolling window (the 7 days immediately before the current rolling week)
+        var prevWeekTotal = 0
+        for i in 7..<14 {
+            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                prevWeekTotal += max(0, dailyMap[key(for: d), default: 0])
+            }
+        }
+        lastWeekSeconds = prevWeekTotal
+
+        // All-time totals and per-book totals from BibleStatsStore (synced)
+        let perBookAllTime = store.loadTotals()
+        totalSeconds = perBookAllTime.values.reduce(0, +)
+
+        // OT/NT split and top books from synced per-book totals
         do {
-            let perBookAllTime = StatsSeriesBuilder.groupSessionsByBook(allSessions)
-            let split = BibleStatsStore.shared.splitOTNT(totals: perBookAllTime)
+            let split = store.splitOTNT(totals: perBookAllTime)
             otSeconds = split.ot
             ntSeconds = split.nt
 
@@ -82,7 +104,6 @@ final class HomeBibleStatsViewModel: ObservableObject {
         }
 
         // Visited and completion (progress still from BibleStatsStore)
-        let store = BibleStatsStore.shared
         let visited = store.loadVisitedChapters()
         visitedCount = visited.count
         computeCompletionMetrics(visitedChapters: visited)
@@ -96,7 +117,8 @@ final class HomeBibleStatsViewModel: ObservableObject {
             lastReadRelativeTime = "—"
         }
 
-        // Last session length (seconds)
+        // Last session length (seconds) — this is still sessions-based and can be device-local
+        let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: now, calendar: cal)
         if let last = allSessions.max(by: { $0.end < $1.end }) {
             lastSessionSeconds = Int(max(0, last.end.timeIntervalSince(last.start)))
         } else {
@@ -123,7 +145,7 @@ final class HomeBibleStatsViewModel: ObservableObject {
         return "\(sign)\(formatted(abs(delta)))"
     }
 
-    // Today vs Yesterday delta (sessions-based)
+    // Today vs Yesterday delta (totals-based)
     var todayDeltaOnlyValue: String {
         let delta = todaySeconds - yesterdaySecondsLocal
         if delta == 0 { return "—" }

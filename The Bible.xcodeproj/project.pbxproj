@@ -116,6 +116,7 @@
 		2C4F309A2ED91514006C8DFD /* BibleStatsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4F30992ED91514006C8DFD /* BibleStatsStore.swift */; };
 		2C4F309C2ED9BF4D006C8DFD /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4F309B2ED9BF4D006C8DFD /* StatsView.swift */; };
 		2C4F309E2EDA1DFE006C8DFD /* HomeBibleStatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4F309D2EDA1DFE006C8DFD /* HomeBibleStatsViewModel.swift */; };
+		2C556D422EF3620E0044426E /* AppTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C556D412EF3620E0044426E /* AppTab.swift */; };
 		2C6BB64B2EF1FF2A0010D769 /* BibleStatsStore+Totals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6BB64A2EF1FF2A0010D769 /* BibleStatsStore+Totals.swift */; };
 		2C6BB64D2EF1FF300010D769 /* BibleStatsStore+DailyTotals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6BB64C2EF1FF300010D769 /* BibleStatsStore+DailyTotals.swift */; };
 		2C6BB64F2EF1FF340010D769 /* BibleStatsStore+PerBookTotals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6BB64E2EF1FF340010D769 /* BibleStatsStore+PerBookTotals.swift */; };
@@ -312,6 +313,7 @@
 		2C4F30992ED91514006C8DFD /* BibleStatsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleStatsStore.swift; sourceTree = "<group>"; };
 		2C4F309B2ED9BF4D006C8DFD /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		2C4F309D2EDA1DFE006C8DFD /* HomeBibleStatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeBibleStatsViewModel.swift; sourceTree = "<group>"; };
+		2C556D412EF3620E0044426E /* AppTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTab.swift; sourceTree = "<group>"; };
 		2C6BB64A2EF1FF2A0010D769 /* BibleStatsStore+Totals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BibleStatsStore+Totals.swift"; sourceTree = "<group>"; };
 		2C6BB64C2EF1FF300010D769 /* BibleStatsStore+DailyTotals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BibleStatsStore+DailyTotals.swift"; sourceTree = "<group>"; };
 		2C6BB64E2EF1FF340010D769 /* BibleStatsStore+PerBookTotals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BibleStatsStore+PerBookTotals.swift"; sourceTree = "<group>"; };
@@ -673,6 +675,7 @@
 				2C1400F92EF2BB2900A93CA9 /* StatsTypes.swift */,
 				2C1400FB2EF2BFA200A93CA9 /* StatsViewModel.swift */,
 				2C1400FD2EF2C0D400A93CA9 /* StatsChartConfig.swift */,
+				2C556D412EF3620E0044426E /* AppTab.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1204,6 +1207,7 @@
 				2C18C9AE2EEB721C00443477 /* TagManagerView.swift in Sources */,
 				2CD7D8292ECA125200849235 /* PinnedVerseIntent.swift in Sources */,
 				2C2764F42EE8C87A00A321FE /* TitleCardView.swift in Sources */,
+				2C556D422EF3620E0044426E /* AppTab.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

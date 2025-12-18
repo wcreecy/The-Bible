@@ -102,44 +102,38 @@ final class StatsViewModel: ObservableObject {
     // MARK: - Data refresh internals
 
     private func refreshTotals() {
-        let cal = Calendar.current
+        var cal = Calendar.autoupdatingCurrent
+        cal.timeZone = TimeZone.autoupdatingCurrent
 
-        // Today
-        do {
-            let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: cal)
-            let todayKey = BibleStatsStore.isoDateString(Date(), calendar: cal)
-            todaySeconds = sessions7.reduce(0) { acc, s in
-                let key = BibleStatsStore.isoDateString(s.end, calendar: cal)
-                let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
-                return acc + (key == todayKey ? dur : 0)
-            }
-        }
+        // Today from synced totals
+        todaySeconds = BibleStatsStore.shared.totalForLast(days: 1)
 
-        // This week (rolling 7 days)
+        // This week (rolling 7 local days including today) from synced daily totals
         do {
-            let sessions7 = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: cal)
-            thisWeekSeconds = sessions7.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
-        }
-
-        // Last week rolling window
-        do {
+            let map = BibleStatsStore.shared.loadDailyTotals()
             let startOfToday = cal.startOfDay(for: Date())
-            guard
-                let lastWeekEnd = cal.date(byAdding: .day, value: -7, to: startOfToday),
-                let lastWeekStart = cal.date(byAdding: .day, value: -13, to: startOfToday)
-            else {
-                lastWeekSeconds = 0
-                return
-            }
-
-            let sessions14 = ReadingSessionsStore.shared.sessions(inLastDays: 14, now: Date(), calendar: cal)
-            lastWeekSeconds = sessions14.reduce(0) { acc, s in
-                if s.end >= lastWeekStart && s.end < lastWeekEnd {
-                    return acc + Int(max(0, s.end.timeIntervalSince(s.start)))
-                } else {
-                    return acc
+            var total = 0
+            for i in 0..<7 {
+                if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                    let key = BibleStatsStore.isoDateString(d, calendar: cal)
+                    total += max(0, map[key, default: 0])
                 }
             }
+            thisWeekSeconds = total
+        }
+
+        // Last week rolling window (7 days immediately prior)
+        do {
+            let map = BibleStatsStore.shared.loadDailyTotals()
+            let startOfToday = cal.startOfDay(for: Date())
+            var total = 0
+            for i in 7..<14 {
+                if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                    let key = BibleStatsStore.isoDateString(d, calendar: cal)
+                    total += max(0, map[key, default: 0])
+                }
+            }
+            lastWeekSeconds = total
         }
 
         if let last = BibleStatsStore.shared.loadLastRead() {
@@ -159,26 +153,24 @@ final class StatsViewModel: ObservableObject {
     }
 
     private func refreshChartsAndMonth() {
-        let cal = Calendar.current
+        var cal = Calendar.autoupdatingCurrent
+        cal.timeZone = TimeZone.autoupdatingCurrent
 
-        // Last 7 days daily bars
+        // Last 7 days daily bars from synced daily totals
         do {
-            let sessions = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: cal)
-            var buckets: [String: Int] = [:]
-            for s in sessions {
-                let dur = Int(max(0, s.end.timeIntervalSince(s.start)))
-                let key = BibleStatsStore.isoDateString(s.end, calendar: cal)
-                buckets[key, default: 0] += dur
+            let map = BibleStatsStore.shared.loadDailyTotals()
+            let startOfToday = cal.startOfDay(for: Date())
+            var days: [(Date, Int)] = []
+            for i in stride(from: 6, through: 0, by: -1) {
+                if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                    let key = BibleStatsStore.isoDateString(d, calendar: cal)
+                    days.append((d, max(0, map[key, default: 0])))
+                }
             }
-            let days: [(Date, Int)] = (0..<7).compactMap { i -> (Date, Int)? in
-                guard let d = cal.date(byAdding: .day, value: -i, to: Date()) else { return nil }
-                let key = BibleStatsStore.isoDateString(d, calendar: cal)
-                return (d, buckets[key, default: 0])
-            }.sorted { $0.0 < $1.0 }
             last7Daily = days
         }
 
-        // Sessions: last 20 overall (>= minSessionSeconds)
+        // Sessions-based cards (keep as session analytics)
         let sessionsAll = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: Date(), calendar: cal)
             .filter { Int(max(0, $0.end.timeIntervalSince($0.start))) >= minSessionSeconds }
             .sorted { $0.end < $1.end }
@@ -202,14 +194,25 @@ final class StatsViewModel: ObservableObject {
             }
         }
 
-        // Consistency
-        last30Daily = StatsSeriesBuilder.dailySeries(lastNDays: 30, now: Date(), calendar: cal)
+        // Consistency: last 30 from synced daily totals
+        do {
+            let map = BibleStatsStore.shared.loadDailyTotals()
+            let startOfToday = cal.startOfDay(for: Date())
+            var days: [(Date, Int)] = []
+            for i in stride(from: 29, through: 0, by: -1) {
+                if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                    let key = BibleStatsStore.isoDateString(d, calendar: cal)
+                    days.append((d, max(0, map[key, default: 0])))
+                }
+            }
+            last30Daily = days
+        }
 
-        // This Month
+        // This Month (totals and chapters from BibleStatsStore)
         let now = Date()
         let comps = BibleStatsStore.shared.chapterCompletions(inMonth: now)
         monthChaptersCompleted = comps.count
-        // monthTotalSeconds set in refreshSessionScopedPerBook()
+        monthTotalSeconds = BibleStatsStore.shared.totalForMonth(containing: now)
     }
 
     private func refreshSessionScopedPerBook() {
@@ -221,18 +224,10 @@ final class StatsViewModel: ObservableObject {
 
         let monthSessions = ReadingSessionsStore.shared.sessions(inMonthContaining: now, calendar: cal)
         perBookMonthTotals = StatsSeriesBuilder.groupSessionsByBook(monthSessions)
-        monthTotalSeconds = perBookMonthTotals.values.reduce(0, +)
 
         let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: now, calendar: cal)
         perBookAllTimeSessionTotals = StatsSeriesBuilder.groupSessionsByBook(allSessions)
         totalSecondsAllTime = allSessions.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
-
-        if let prevMonth = cal.date(byAdding: .month, value: -1, to: now) {
-            let lastMonthSessions = ReadingSessionsStore.shared.sessions(inMonthContaining: prevMonth, calendar: cal)
-            lastMonthSeconds = lastMonthSessions.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
-        } else {
-            lastMonthSeconds = 0
-        }
 
         let sortedTop = perBookMonthTotals.sorted { lhs, rhs in
             if lhs.value == rhs.value { return lhs.key < rhs.key }

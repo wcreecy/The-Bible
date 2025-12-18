@@ -4,7 +4,8 @@ import Foundation
 extension iCloudSyncCoordinator {
     // Game keys: Hangman
     static let hangmanKeys: [String] = {
-        let diffs = ["easy", "medium", "hard"]
+        // Include both legacy "medium" and new "normal"
+        let diffs = ["easy", "normal", "medium", "hard"]
         var keys: [String] = []
         for d in diffs {
             keys.append("hangmanAllTimeCorrect_\(d)")
@@ -80,6 +81,18 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
+    // Game keys: Wordle (single "all" suffix)
+    static let wordleKeys: [String] = {
+        let diffs = ["all"]
+        var keys: [String] = []
+        for d in diffs {
+            keys.append("wordleAllTimeCorrect_\(d)")
+            keys.append("wordleAllTimeAnswered_\(d)")
+            keys.append("wordleAllTimeBestStreak_\(d)")
+        }
+        return keys
+    }()
+
     // Game daily + last played keys
     static let gameDailyAndLastPlayedKeys: [String] = [
         "gamesDailyAnswered",      // JSON [String: Int]
@@ -114,7 +127,8 @@ extension iCloudSyncCoordinator {
         Self.refMatchKeys.contains(key) ||
         Self.quizKeys.contains(key) ||
         Self.bookOrderKeys.contains(key) ||
-        Self.whoAmIKeys.contains(key)
+        Self.whoAmIKeys.contains(key) ||
+        Self.wordleKeys.contains(key) // NEW
     }
 
     // Local -> KVS for games
@@ -244,7 +258,7 @@ extension iCloudSyncCoordinator {
 
     // Centralized reset for all game counters (all scoreboard keys).
     func resetAllGameCountersToZero() {
-        let gameKeys = Array(Self.hangmanKeys + Self.beatClockKeys + Self.refMatchKeys + Self.quizKeys + Self.bookOrderKeys + Self.whoAmIKeys)
+        let gameKeys = Array(Self.hangmanKeys + Self.beatClockKeys + Self.refMatchKeys + Self.quizKeys + Self.bookOrderKeys + Self.whoAmIKeys + Self.wordleKeys)
         for key in gameKeys {
             defaults.set(0, forKey: key)
             // Update per-key timestamp so the zero wins in LWW merges.
@@ -286,8 +300,8 @@ extension iCloudSyncCoordinator {
             }
         }
 
-        // Hangman (easy/medium/hard) + legacy unsuffixed
-        repairSuffixed(prefix: "hangman", diffs: ["easy","medium","hard"])
+        // Hangman (easy/normal/medium/hard) + legacy unsuffixed
+        repairSuffixed(prefix: "hangman", diffs: ["easy","normal","medium","hard"])
         repairPair(correctKey: "hangmanAllTimeCorrect", answeredKey: "hangmanAllTimeAnswered")
 
         // Beat the Clock — include both normal and medium
@@ -305,6 +319,9 @@ extension iCloudSyncCoordinator {
 
         // Book Order (easy/normal/hard/all)
         repairSuffixed(prefix: "bookorder", diffs: ["easy","normal","hard","all"])
+
+        // Wordle (all)
+        repairSuffixed(prefix: "wordle", diffs: ["all"])
 
         return changed
     }

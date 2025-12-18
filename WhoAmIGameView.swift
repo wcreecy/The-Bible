@@ -10,6 +10,8 @@ struct WhoAmIGameView: View {
     @State private var selectedRef: ScriptureRef? = nil
     @State private var loadedPreview: (title: String, verses: [Verse])? = nil
     @State private var currentRefIndex: Int = 0
+    // Nonce to force lazy loader to run even if selectedRef compares equal
+    @State private var selectionNonce: UUID = UUID()
 
     // Debug/Test toggle shared across games
     @AppStorage("forceJesusTestEnabled") private var forceJesusTestEnabled: Bool = false
@@ -138,7 +140,11 @@ struct WhoAmIGameView: View {
                             ForEach(vm.choices, id: \.self) { choice in
                                 let hasRef = vm.roundOver && hasReference(for: choice)
                                 Button {
-                                    vm.select(choice)
+                                    if vm.roundOver {
+                                        presentReferences(for: choice)
+                                    } else {
+                                        vm.select(choice)
+                                    }
                                 } label: {
                                     // Uniform-sized, leading-aligned, multi-line text inside each cell
                                     Text(choice)
@@ -162,11 +168,7 @@ struct WhoAmIGameView: View {
                                             }
                                         )
                                 }
-                                .disabled(vm.roundOver)
-                                .simultaneousGesture(TapGesture().onEnded {
-                                    guard vm.roundOver else { return }
-                                    presentReferences(for: choice)
-                                })
+                                // Do not disable; route behavior via action above
                                 .background(
                                     RoundedRectangle(cornerRadius: 12, style: .continuous)
                                         .fill(backgroundColor(for: choice))
@@ -193,6 +195,13 @@ struct WhoAmIGameView: View {
                             .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                             .disabled(!vm.roundOver)
                     }
+
+                    if vm.roundOver {
+                        Text("Tap answer to see references")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
                 }
             }
             .padding()
@@ -209,7 +218,8 @@ struct WhoAmIGameView: View {
             refChoices = []
             currentRefIndex = 0
         }) {
-            NavigationStack {
+            // Sheet content
+            let content = NavigationStack {
                 VStack(alignment: .leading, spacing: 12) {
                     if refChoices.isEmpty {
                         ContentUnavailableView("No reference available", systemImage: "book")
@@ -232,10 +242,11 @@ struct WhoAmIGameView: View {
 
                         ScriptureLinksList(refs: refChoices, onTap: { ref in
                             if let idx = refChoices.firstIndex(where: { $0 == ref }) {
+                                // Update selection/index; lazy loader will fire via nonce
                                 setCurrentRefIndex(idx)
                             } else {
                                 selectedRef = ref
-                                loadedPreview = BibleReferenceLinker.loadVerses(for: ref)
+                                selectionNonce = UUID()
                             }
                         }, onCopy: { ref in
                             let s: String
@@ -278,11 +289,35 @@ struct WhoAmIGameView: View {
                 }
                 .presentationDetents([.medium, .large])
                 .onAppear {
-                    if !refChoices.isEmpty {
-                        setCurrentRefIndex(currentRefIndex)
+                    // Ensure we have a selected ref; if not, select first
+                    if !refChoices.isEmpty, selectedRef == nil {
+                        currentRefIndex = max(0, min(currentRefIndex, refChoices.count - 1))
+                        selectedRef = refChoices[currentRefIndex]
+                        selectionNonce = UUID()
+                    }
+                    // Eager safety: if we already have a selection but no preview, load now
+                    if let sr = selectedRef, loadedPreview == nil {
+                        loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
                     }
                 }
             }
+
+            // Attach the lazy loaders at the same scope as Hangman, keyed by nonce
+            content
+                // Lazy loader: runs on first appearance and whenever selectionNonce changes
+                .task(id: selectionNonce) {
+                    if let sr = selectedRef {
+                        loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
+                    } else {
+                        loadedPreview = nil
+                    }
+                }
+                // Safety net: when the sheet is presented, if we already have a selection but no preview, load it now.
+                .task(id: showRefSheet) {
+                    if showRefSheet, let sr = selectedRef, loadedPreview == nil {
+                        loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
+                    }
+                }
         }
         .alert("Jesus Saves", isPresented: $vm.showJesusBonusAlert) {
             Button("OK", role: .cancel) { }
@@ -366,14 +401,10 @@ struct WhoAmIGameView: View {
         refChoices = all
         currentRefIndex = 0
 
-        if let first = all.first {
-            selectedRef = first
-            loadedPreview = BibleReferenceLinker.loadVerses(for: first)
-        } else {
-            selectedRef = nil
-            loadedPreview = nil
-        }
-
+        // Select first ref (if any) and present; bump nonce so lazy loader fires
+        selectedRef = all.first
+        selectionNonce = UUID()
+        loadedPreview = nil
         showRefSheet = true
     }
 
@@ -387,7 +418,9 @@ struct WhoAmIGameView: View {
         currentRefIndex = clamped
         let ref = refChoices[clamped]
         selectedRef = ref
-        loadedPreview = BibleReferenceLinker.loadVerses(for: ref)
+        selectionNonce = UUID()
+        // Do not load verses here; the .task keyed by nonce will handle it
+        loadedPreview = nil
     }
 
     private func moveRefIndex(_ delta: Int) {
@@ -403,4 +436,3 @@ struct WhoAmIGameView: View {
         WhoAmIGameView()
     }
 }
-

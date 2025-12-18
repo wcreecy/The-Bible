@@ -107,6 +107,8 @@ struct TotalsCardView: View {
                                 }
                             }
                         }
+                        // Ensure a non-zero y-domain even when all values are zero
+                        .chartYScale(domain: 0...max(1, maxMinutesInSeries))
                         .chartYAxisLabel("Minutes")
                         .chartXAxis { xAxis() }
                         .frame(height: 160)
@@ -166,6 +168,13 @@ struct TotalsCardView: View {
         )
         .accessibilityAddTraits(.isButton)
         .accessibilityLabel(Text(isExpanded ? "Hide details" : "Show details"))
+    }
+
+    // Max minutes helper for a safe y-domain
+    private var maxMinutesInSeries: Int {
+        guard !series.isEmpty else { return 0 }
+        let maxSeconds = series.map { max(0, $0.seconds) }.max() ?? 0
+        return Int(round(Double(maxSeconds) / 60.0))
     }
 
     // Responsive chip grid (simple heuristic)

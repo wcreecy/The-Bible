@@ -2,29 +2,6 @@ import SwiftUI
 import UIKit
 
 struct HangmanGameView: View {
-    // MARK: - Consistent modern button styles for games
-    private struct GameKeyButtonStyle: ButtonStyle {
-        var tint: Color
-        func makeBody(configuration: Configuration) -> some View {
-            configuration.label
-                .font(.headline)
-                .foregroundStyle(tint)
-                .padding(.vertical, 7)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(tint.opacity(configuration.isPressed ? 0.22 : 0.15))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(tint.opacity(0.35), lineWidth: configuration.isPressed ? 2 : 1)
-                )
-                .shadow(color: .black.opacity(0.05), radius: configuration.isPressed ? 1 : 2, x: 0, y: configuration.isPressed ? 0 : 1)
-                .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-                .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
-        }
-    }
-
     // MARK: - Font design mapping based on Settings
     @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = "system"
     private var appFontDesign: Font.Design? {
@@ -100,8 +77,8 @@ struct HangmanGameView: View {
     @State private var navChapter: Chapter? = nil
     @State private var navStartVerse: Int = 1
 
-    @State private var currentRoundCategory: Theme = .books
-    @State private var tappedKey: Character? = nil
+    // Current round metadata used by UI and snapshot
+    @State private var currentRoundCategory: Theme = .all
     @State private var currentTargetReference: String? = nil
 
     private struct HangmanSnapshot: Identifiable {
@@ -116,201 +93,18 @@ struct HangmanGameView: View {
     @State private var history: [HangmanSnapshot] = []
     @State private var showPreviousSheet: Bool = false
 
-    private let alphabet: [Character] = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    // Smart link style preview state (mirror Wordle)
+    @State private var showRefSheet: Bool = false
+    @State private var selectedRef: ScriptureRef? = nil
+    @State private var loadedPreview: (title: String, verses: [Verse])? = nil
 
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
                 if !started {
-                    Spacer(minLength: 24)
-                    Text("Guess the person, place or book from the Bible")
-                        .font(.body)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        GroupBox {
-                            DisclosureGroup(isExpanded: $howToExpanded) {
-                                VStack(alignment: .leading, spacing: 6) {
-                                    Text("• Pick a theme and difficulty, then tap Start.")
-                                    Text("• Guess letters using the on-screen keyboard (hardware keyboard is supported on iPad).")
-                                    Text("• You have a limited number of mistakes. Reveal the word before you run out!")
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            } label: {
-                                Text("How to Play").font(.headline)
-                            }
-                        }
-
-                        GroupBox {
-                            DisclosureGroup(isExpanded: $difficultyExpanded) {
-                                VStack(alignment: .leading, spacing: 6) {
-                                    Text("• Easy: Up to 10 mistakes. A scripture reference is shown right away to help.")
-                                    Text("• Normal: Up to 7 mistakes. The reference appears after 3 wrong guesses.")
-                                    Text("• Hard: Up to 6 mistakes. The reference is shown only after the round ends.")
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            } label: {
-                                Text("Difficulty Levels").font(.headline)
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
-
-                    Picker("Theme", selection: $theme) {
-                        ForEach(Theme.allCases) { t in
-                            Text(t.rawValue).tag(t)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal)
-
-                    Picker("Difficulty", selection: $difficulty) {
-                        ForEach(Difficulty.allCases) { d in
-                            Text(d.rawValue).tag(d)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal)
-
-                    // Debug/Test toggle
-                    Toggle("Force Jesus Round (Test)", isOn: $forceJesusTestEnabled)
-                        .tint(.orange)
-                        .padding(.horizontal)
-
-                    Button("Start") { startGame() }
-                        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                        .controlSize(.large)
-                        .frame(maxWidth: 240)
-                    Spacer(minLength: 24)
+                    startSection
                 } else {
-                    TextField("", text: .constant(""))
-                        .textInputAutocapitalization(.characters)
-                        .keyboardType(.asciiCapable)
-                        .opacity(0.001)
-                        .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidChangeNotification)) { note in
-                            if let tf = note.object as? UITextField, let text = tf.text, let ch = text.last {
-                                tf.text = ""
-                                if ch.isLetter {
-                                    guess(ch)
-                                }
-                            }
-                        }
-
-                    HStack(spacing: 8) {
-                        HStack(spacing: 6) {
-                            Image(systemName: iconName(for: currentRoundCategory))
-                            Text(currentRoundCategory.rawValue.uppercased())
-                                .font(.subheadline.weight(.semibold))
-                                .lineLimit(1)
-                        }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(
-                            categoryTint(for: currentRoundCategory).opacity(0.18),
-                            in: Capsule(style: .continuous)
-                        )
-                        .overlay(
-                            Capsule(style: .continuous)
-                                .strokeBorder(categoryTint(for: currentRoundCategory).opacity(0.45), lineWidth: 1)
-                        )
-                        .foregroundStyle(categoryTint(for: currentRoundCategory))
-
-                        Spacer(minLength: 6)
-
-                        if let ref = firstReferenceForCurrentTarget(), shouldShowReference() {
-                            Button {
-                                if roundOver { openFirstReference(ref) }
-                            } label: {
-                                Text(ref)
-                                    .lineLimit(1)
-                            }
-                            .buttonStyle(ModernPillButtonStyle(tint: .blue))
-                            .controlSize(.small)
-                            .disabled(!roundOver)
-                            .opacity(roundOver ? 1.0 : 0.55)
-                        }
-
-                        Button("Previous") { showPreviousSheet = true }
-                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                            .controlSize(.small)
-                            .disabled(history.isEmpty)
-                            .opacity(history.isEmpty ? 0.5 : 1.0)
-
-                        if roundOver {
-                            Button("Next") { nextRound() }
-                                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                                .controlSize(.small)
-                        }
-                    }
-
-                    GameScoreboardCard(
-                        currentCorrect: score,
-                        currentAnswered: answered,
-                        currentStreak: currentStreak,
-                        allTimeCorrect: allTimeCorrect,
-                        allTimeAnswered: allTimeAnswered,
-                        allTimeBestStreak: allTimeBestStreak
-                    )
-
-                    HangmanDrawing(
-                        revealedCount: piecesRevealed(),
-                        totalPieces: 10
-                    )
-                    .frame(height: drawingHeight)
-                    .padding(.top, 0)
-
-                    Text(spacedDisplayWord())
-                        .font(.system(size: 28, weight: .semibold, design: .monospaced))
-                        .fontDesign(appFontDesign)
-                        .padding(.top, 4)
-                        .accessibilityLabel("Word to guess")
-
-                    Text("Mistakes: \(wrongGuesses)/\(maxWrong)")
-                        .font(.subheadline)
-                        .foregroundStyle(wrongGuesses >= maxWrong - 1 ? .red : .secondary)
-
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 7), spacing: 6) {
-                        ForEach(alphabet, id: \.self) { ch in
-                            Button(action: {
-                                withAnimation(.spring(response: 0.18, dampingFraction: 0.65)) {
-                                    tappedKey = ch
-                                }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.16) {
-                                    withAnimation(.spring(response: 0.22, dampingFraction: 0.8)) {
-                                        tappedKey = nil
-                                    }
-                                }
-                                guess(ch)
-                            }) {
-                                Text(String(ch))
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 6)
-                            }
-                            .disabled(guessedLetters.contains(ch) || roundOver)
-                            .scaleEffect(tappedKey == ch ? 1.08 : 1.0)
-                            .animation(.spring(response: 0.22, dampingFraction: 0.75), value: tappedKey)
-                            .buttonStyle(
-                                GameKeyButtonStyle(
-                                    tint: (
-                                        correctLetters.contains(ch) ? .green : (
-                                            wrongLetters.contains(ch) ? .red : .blue
-                                        )
-                                    )
-                                )
-                            )
-                            .opacity((guessedLetters.contains(ch) || roundOver) ? 0.5 : 1.0)
-                        }
-                    }
-                    .padding(.top, 4)
-
-                    if roundOver {
-                        Text(didWin ? "You got it!" : "Out of guesses: \(targetWord.uppercased())")
-                            .font(.headline)
-                            .foregroundStyle(didWin ? .green : .red)
-                            .padding(.top, 6)
-                    }
+                    inGameSection
                 }
             }
             .padding(.horizontal)
@@ -337,64 +131,273 @@ struct HangmanGameView: View {
         }
         .toolbar { }
         .sheet(isPresented: $showPreviousSheet) {
-            if let last = history.last {
+            previousRoundSheet()
+        }
+        // Smart link style scripture preview sheet (like Wordle)
+        .sheet(isPresented: $showRefSheet, onDismiss: {
+            selectedRef = nil
+            loadedPreview = nil
+        }) {
+            NavigationStack {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Previous Round")
-                        .font(.title3)
-                        .bold()
-                    HStack(spacing: 8) {
-                        Text("Category:")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Text(last.category.rawValue)
-                            .font(.subheadline)
+                    if let preview = loadedPreview {
+                        ScripturePreviewCard(
+                            content: preview,
+                            refContext: selectedRef,
+                            onCopy: {
+                                let verseLines = preview.verses.map { $0.text }.joined(separator: " ")
+                                UIPasteboard.general.string = "\(preview.title) — \(verseLines)"
+                            },
+                            onClose: {
+                                showRefSheet = false
+                            }
+                        )
+                    } else {
+                        ContentUnavailableView("No reference available", systemImage: "book")
                     }
-                    HStack(spacing: 8) {
-                        Text("Result:")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Text(last.didWin ? "Correct" : "Out of guesses")
-                            .font(.subheadline)
-                            .foregroundStyle(last.didWin ? .green : .red)
-                    }
-                    HStack(spacing: 8) {
-                        Text("Answer:")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Text(last.targetWord)
-                            .font(.headline)
-                    }
-                    HStack(spacing: 8) {
-                        Text("Mistakes:")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Text("\(last.wrongGuesses)/\(last.maxWrong)")
-                            .font(.subheadline)
-                    }
-                    if let ref = last.reference {
-                        Divider()
-                        Button {
-                            openFirstReference(ref)
-                            showPreviousSheet = false
-                        } label: {
-                            Text(ref)
-                                .lineLimit(1)
-                        }
-                        .buttonStyle(ModernPillButtonStyle(tint: .blue))
-                        .controlSize(.small)
-                    }
-                    Spacer()
-                    HStack { Spacer(); Button("Close") { showPreviousSheet = false } }
                 }
                 .padding()
-                .presentationDetents([.medium])
-            } else {
-                Text("No previous rounds")
-                    .padding()
+                .navigationTitle("Reference")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Close") { showRefSheet = false }
+                    }
+                }
+                .presentationDetents([.medium, .large])
+            }
+            // Lazily load when a new ref is selected, ensuring the sheet presents on first tap
+            .task(id: selectedRef) {
+                guard let sr = selectedRef else { return }
+                loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
             }
         }
         .alert("Jesus Saves", isPresented: $showJesusAlert) {
             Button("OK", role: .cancel) { }
+        }
+    }
+
+    // MARK: - Sections extracted to reduce type-checking complexity
+
+    @ViewBuilder
+    private var startSection: some View {
+        Spacer(minLength: 24)
+        Text("Guess the person, place or book from the Bible")
+            .font(.body)
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal)
+
+        VStack(alignment: .leading, spacing: 8) {
+            GroupBox {
+                DisclosureGroup(isExpanded: $howToExpanded) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("• Pick a theme and difficulty, then tap Start.")
+                        Text("• Tap letters on the on‑screen keyboard to guess.")
+                        Text("• You have a limited number of mistakes. Reveal the word before you run out!")
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                } label: {
+                    Text("How to Play").font(.headline)
+                }
+            }
+
+            GroupBox {
+                DisclosureGroup(isExpanded: $difficultyExpanded) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("• Easy: Up to 10 mistakes. A scripture reference is shown right away to help.")
+                        Text("• Normal: Up to 7 mistakes. The reference appears after 3 wrong guesses.")
+                        Text("• Hard: Up to 6 mistakes. The reference is shown only after the round ends.")
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                } label: {
+                    Text("Difficulty Levels").font(.headline)
+                }
+            }
+        }
+        .padding(.horizontal)
+
+        Picker("Theme", selection: $theme) {
+            ForEach(Theme.allCases) { t in
+                Text(t.rawValue).tag(t)
+            }
+        }
+        .pickerStyle(.segmented)
+        .padding(.horizontal)
+
+        Picker("Difficulty", selection: $difficulty) {
+            ForEach(Difficulty.allCases) { d in
+                Text(d.rawValue).tag(d)
+            }
+        }
+        .pickerStyle(.segmented)
+        .padding(.horizontal)
+
+        // Debug/Test toggle
+        Toggle("Force Jesus Round (Test)", isOn: $forceJesusTestEnabled)
+            .tint(.orange)
+            .padding(.horizontal)
+
+        Button("Start") { startGame() }
+            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+            .controlSize(.large)
+            .frame(maxWidth: 240)
+        Spacer(minLength: 24)
+    }
+
+    @ViewBuilder
+    private var inGameSection: some View {
+        roundHeader
+
+        GameScoreboardCard(
+            currentCorrect: score,
+            currentAnswered: answered,
+            currentStreak: currentStreak,
+            allTimeCorrect: allTimeCorrect,
+            allTimeAnswered: allTimeAnswered,
+            allTimeBestStreak: allTimeBestStreak
+        )
+
+        HangmanDrawing(
+            revealedCount: piecesRevealed(),
+            totalPieces: 10
+        )
+        .frame(height: drawingHeight)
+        .padding(.top, 0)
+
+        Text(spacedDisplayWord())
+            .font(.system(size: 28, weight: .semibold, design: .monospaced))
+            .fontDesign(appFontDesign)
+            .padding(.top, 4)
+            .accessibilityLabel("Word to guess")
+
+        // Small hint under the word
+        Text("Tap the letters to guess")
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            .padding(.top, 2)
+
+        Text("Mistakes: \(wrongGuesses)/\(maxWrong)")
+            .font(.subheadline)
+            .foregroundStyle(wrongGuesses >= maxWrong - 1 ? .red : .secondary)
+
+        // On-screen keyboard (QWERTY, like Wordle)
+        keyboardView()
+            .padding(.top, 6)
+
+        if roundOver {
+            Text(didWin ? "You got it!" : "Out of guesses: \(targetWord.uppercased())")
+                .font(.headline)
+                .foregroundStyle(didWin ? .green : .red)
+                .padding(.top, 6)
+        }
+    }
+
+    @ViewBuilder
+    private var roundHeader: some View {
+        HStack(spacing: 8) {
+            HStack(spacing: 6) {
+                Image(systemName: iconName(for: currentRoundCategory))
+                Text(currentRoundCategory.rawValue.uppercased())
+                    .font(.subheadline.weight(.semibold))
+                    .lineLimit(1)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(
+                categoryTint(for: currentRoundCategory).opacity(0.18),
+                in: Capsule(style: .continuous)
+            )
+            .overlay(
+                Capsule(style: .continuous)
+                    .strokeBorder(categoryTint(for: currentRoundCategory).opacity(0.45), lineWidth: 1)
+            )
+            .foregroundStyle(categoryTint(for: currentRoundCategory))
+
+            Spacer(minLength: 6)
+
+            // Reference chip: show like Wordle (after round ends), present smart preview
+            if let ref = firstReferenceForCurrentTarget(), roundOver {
+                Button {
+                    presentReferencePreview(from: ref)
+                } label: {
+                    Text(ref)
+                        .lineLimit(1)
+                }
+                .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                .controlSize(.small)
+            }
+
+            Button("Previous") { showPreviousSheet = true }
+                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                .controlSize(.small)
+                .disabled(history.isEmpty)
+                .opacity(history.isEmpty ? 0.5 : 1.0)
+
+            if roundOver {
+                Button("Next") { nextRound() }
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                    .controlSize(.small)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func previousRoundSheet() -> some View {
+        if let last = history.last {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Previous Round")
+                    .font(.title3)
+                    .bold()
+                HStack(spacing: 8) {
+                    Text("Category:")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Text(last.category.rawValue)
+                        .font(.subheadline)
+                }
+                HStack(spacing: 8) {
+                    Text("Result:")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Text(last.didWin ? "Correct" : "Out of guesses")
+                        .font(.subheadline)
+                        .foregroundStyle(last.didWin ? .green : .red)
+                }
+                HStack(spacing: 8) {
+                    Text("Answer:")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Text(last.targetWord)
+                        .font(.headline)
+                }
+                HStack(spacing: 8) {
+                    Text("Mistakes:")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Text("\(last.wrongGuesses)/\(last.maxWrong)")
+                        .font(.subheadline)
+                }
+                if let ref = last.reference {
+                    Divider()
+                    Button {
+                        presentReferencePreview(from: ref)
+                        showPreviousSheet = false
+                    } label: {
+                        Text(ref)
+                            .lineLimit(1)
+                    }
+                    .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                    .controlSize(.small)
+                }
+                Spacer()
+                HStack { Spacer(); Button("Close") { showPreviousSheet = false } }
+            }
+            .padding()
+            .presentationDetents([.medium])
+        } else {
+            Text("No previous rounds")
+                .padding()
         }
     }
 
@@ -485,6 +488,7 @@ struct HangmanGameView: View {
     private func guess(_ ch: Character) {
         guard !roundOver else { return }
         let upper = Character(String(ch).uppercased())
+        guard upper.isLetter else { return }
         guard !guessedLetters.contains(upper) else { return }
         guessedLetters.insert(upper)
 
@@ -551,7 +555,6 @@ struct HangmanGameView: View {
                 answered: 1,
                 currentBestStreak: currentBestStreak
             )
-            // Jesus bonus popup trigger
             if isJesusName(targetWord) {
                 showJesusAlert = true
             }
@@ -584,12 +587,10 @@ struct HangmanGameView: View {
     }
 
     private func generateRound() {
-        // Force Jesus test round if enabled
         if forceJesusTestEnabled {
             currentRoundCategory = .people
             targetWord = "Jesus"
             displayWord = masked(from: targetWord)
-            // Try to attach a reference if available
             if loadedPeople.isEmpty { loadedPeople = GameDataLoaders.loadNames() }
             if let entry = loadedPeople.first(where: { isJesusName($0.name) }) {
                 currentTargetReference = entry.firstReference
@@ -663,23 +664,6 @@ struct HangmanGameView: View {
         }.joined())
     }
 
-    @ViewBuilder
-    private func statPill(title: String, value: String, tint: Color) -> some View {
-        VStack(spacing: 2) {
-            Text(title)
-                .font(.caption2)
-                .foregroundColor(.secondary)
-            Text(value)
-                .font(.headline)
-                .foregroundColor(tint)
-        }
-        .padding(8)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(tint.opacity(0.12))
-        )
-    }
-
     private func percentString(correct: Int, answered: Int) -> String {
         guard answered > 0 else { return "0%" }
         let pct = Int(round((Double(correct) / Double(answered)) * 100.0))
@@ -701,86 +685,60 @@ struct HangmanGameView: View {
         return currentTargetReference
     }
 
-    private func openFirstReference(_ ref: String) {
+    // Present immediately; load lazily inside the sheet
+    private func presentReferencePreview(from refString: String) {
+        selectedRef = parseScriptureRef(from: refString)
+        loadedPreview = nil
+        showRefSheet = true
+    }
+
+    private func parseScriptureRef(from ref: String) -> ScriptureRef? {
+        // Preferred path: use the robust linker (handles abbreviations, spacing, hyphens)
+        let attributed = BibleReferenceLinker.linkify(ref)
+        for run in attributed.runs {
+            if let url = run.attributes.link, let parsed = BibleReferenceLinker.parse(url: url) {
+                return parsed
+            }
+        }
+
+        // Fallback: simple manual parse with best-effort book resolution
         let trimmed = ref.trimmingCharacters(in: .whitespacesAndNewlines)
         let parts = trimmed.split { $0.isWhitespace }
-        guard let lastPart = parts.last else { return }
+        guard let lastPart = parts.last else { return nil }
         var last = String(lastPart)
         last = last.replacingOccurrences(of: "\u{2013}", with: "-")
         last = last.replacingOccurrences(of: "\u{2014}", with: "-")
         last = last.trimmingCharacters(in: CharacterSet(charactersIn: ",;.)]”’\""))
-        guard let colonIndex = last.firstIndex(of: ":") else { return }
+        guard let colonIndex = last.firstIndex(of: ":") else { return nil }
         let chapterSlice = last[..<colonIndex]
         let verseSlice = last[last.index(after: colonIndex)...]
         let chapterDigits = chapterSlice.prefix { $0.isNumber }
         let verseDigits = verseSlice.prefix { $0.isNumber }
-        guard let chapterNum = Int(chapterDigits), let verseNum = Int(verseDigits) else { return }
+        guard let chapterNum = Int(chapterDigits), let verseNum = Int(verseDigits) else { return nil }
         let bookRaw = parts.dropLast().joined(separator: " ")
-        guard let book = resolveBook(named: bookRaw) else { return }
-        guard let chapter = book.chapters.first(where: { $0.number == chapterNum }) else { return }
-        navBook = book
-        navChapter = chapter
-        navStartVerse = verseNum
-        navigateToReader = true
-    }
 
-    private func resolveBook(named raw: String) -> Book? {
-        if let direct = BibleData.books.first(where: { $0.name.caseInsensitiveCompare(raw) == .orderedSame }) {
-            return direct
+        // Try exact book match
+        if let book = BibleData.books.first(where: { $0.name.compare(bookRaw, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
+            return ScriptureRef(bookName: book.name, chapter: chapterNum, startVerse: verseNum, endVerse: nil)
         }
-        let spaced = insertSpaceBetweenLeadingDigitsAndLetters(in: raw)
-        let normalized = normalizeBookName(spaced)
-        if let match = BibleData.books.first(where: { $0.name.compare(normalized, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
-            return match
+        // Try collapsed spaces match
+        let collapsed = bookRaw.replacingOccurrences(of: " ", with: "")
+        if let book = BibleData.books.first(where: { $0.name.replacingOccurrences(of: " ", with: "").compare(collapsed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
+            return ScriptureRef(bookName: book.name, chapter: chapterNum, startVerse: verseNum, endVerse: nil)
         }
-        let collapsed = normalized.replacingOccurrences(of: " ", with: "")
-        if let match = BibleData.books.first(where: { $0.name.replacingOccurrences(of: " ", with: "").compare(collapsed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
-            return match
+        // Try inserting a space between leading digits and letters ("1John" -> "1 John")
+        let spacedLeading: String
+        if let first = bookRaw.first, first.isNumber {
+            let digits = String(bookRaw.prefix { $0.isNumber })
+            let rest = String(bookRaw.drop { $0.isNumber })
+            spacedLeading = digits + " " + rest
+        } else {
+            spacedLeading = bookRaw
+        }
+        if let book = BibleData.books.first(where: { $0.name.compare(spacedLeading, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
+            return ScriptureRef(bookName: book.name, chapter: chapterNum, startVerse: verseNum, endVerse: nil)
         }
         return nil
-    }
-
-    private func normalizeBookName(_ s: String) -> String {
-        let abbrev: [String: String] = [
-            "gen": "Genesis", "ex": "Exodus", "lev": "Leviticus", "num": "Numbers", "deut": "Deuteronomy",
-            "jos": "Joshua", "judg": "Judges", "rut": "Ruth",
-            "sam": "Samuel", "kgs": "Kings", "kg": "Kings", "chron": "Chronicles", "chr": "Chronicles",
-            "ezr": "Ezra", "neh": "Nehemiah", "est": "Esther", "job": "Job", "ps": "Psalms", "psa": "Psalms",
-            "prov": "Proverbs", "eccl": "Ecclesiastes", "song": "Song of Solomon", "so": "Song of Solomon",
-            "isa": "Isaiah", "jer": "Jeremiah", "lam": "Lamentations", "eze": "Ezekiel", "dan": "Daniel",
-            "hos": "Hosea", "joe": "Joel", "amo": "Amos", "oba": "Obadiah", "jon": "Jonah", "mic": "Micah",
-            "nah": "Nahum", "hab": "Habakkuk", "zep": "Zephaniah", "hag": "Haggai", "zec": "Zechariah", "mal": "Malachi",
-            "mat": "Matthew", "mk": "Mark", "mrk": "Mark", "lk": "Luke", "jn": "John", "jhn": "John",
-            "act": "Acts", "rom": "Romans", "cor": "Corinthians", "gal": "Galatians", "eph": "Ephesians",
-            "phil": "Philippians", "col": "Colossians", "thess": "Thessalonians", "tim": "Timothy", "tit": "Titus",
-            "phm": "Philemon", "heb": "Hebrews", "jas": "James", "pet": "Peter", "petr": "Peter",
-            "joh": "John", "jud": "Jude", "rev": "Revelation"
-        ]
-        let cleaned = s.replacingOccurrences(of: ".", with: " ")
-            .replacingOccurrences(of: "_", with: " ")
-            .replacingOccurrences(of: "-", with: " ")
-        var tokens = cleaned.split{ $0.isWhitespace }.map { String($0) }
-        if let first = tokens.first, first.first?.isNumber == true, first.drop(while: { $0.isNumber }).first?.isLetter == true {
-            let digits = String(first.prefix { $0.isNumber })
-            let rest = String(first.drop { $0.isNumber })
-            tokens[0] = digits
-            if rest.isEmpty == false { tokens.insert(rest, at: 1) }
-        }
-        let mapped = tokens.enumerated().map { (idx, t) -> String in
-            let lower = t.lowercased()
-            if let exp = abbrev[lower] { return exp }
-            if Int(lower) != nil { return t }
-            return t.prefix(1).uppercased() + t.dropFirst().lowercased()
-        }
-        return mapped.joined(separator: " ")
-    }
-
-    private func insertSpaceBetweenLeadingDigitsAndLetters(in s: String) -> String {
-        guard let first = s.first, first.isNumber else { return s }
-        let digits = String(s.prefix { $0.isNumber })
-        let rest = String(s.drop { $0.isNumber })
-        if rest.first?.isLetter == true { return digits + " " + rest }
-        return s
     }
 
     // MARK: - Jesus detection helper
@@ -788,6 +746,59 @@ struct HangmanGameView: View {
         let trimmed = s.trimmingCharacters(in: .whitespacesAndNewlines)
         let lower = trimmed.lowercased()
         return lower == "jesus" || lower == "jesus christ"
+    }
+
+    // MARK: - On-screen keyboard
+
+    private func keyboardView() -> some View {
+        let rows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
+        return VStack(spacing: 8) {
+            ForEach(rows, id: \.self) { row in
+                HStack(spacing: 8) {
+                    ForEach(Array(row), id: \.self) { ch in
+                        let upper = Character(String(ch).uppercased())
+                        let isGuessed = guessedLetters.contains(upper)
+                        let tint: Color = {
+                            if correctLetters.contains(upper) { return .green }
+                            if wrongLetters.contains(upper) { return .gray }
+                            return .accentColor
+                        }()
+
+                        Button(action: { guess(upper) }) {
+                            Text(String(ch))
+                                .font(.system(size: 16, weight: .semibold))
+                                .frame(minWidth: 28, minHeight: 36)
+                                .accessibilityLabel("Letter \(String(ch))")
+                        }
+                        .buttonStyle(SolidKeyButtonStyle(tint: tint))
+                        .disabled(isGuessed || roundOver)
+                        .opacity(roundOver ? 0.6 : 1.0)
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Solid key style for Hangman (filled color keys)
+private struct SolidKeyButtonStyle: ButtonStyle {
+    var tint: Color
+
+    func makeBody(configuration: Configuration) -> some View {
+        let pressed = configuration.isPressed
+        configuration.label
+            .foregroundStyle(.white)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(tint)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(.white.opacity(0.12), lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(pressed ? 0.06 : 0.12), radius: pressed ? 1 : 2, x: 0, y: pressed ? 0 : 1)
+            .scaleEffect(pressed ? 0.98 : 1.0)
+            .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
     }
 }
 
@@ -918,4 +929,3 @@ private struct HangmanDrawing: View {
         .transition(.opacity)
     }
 }
-
