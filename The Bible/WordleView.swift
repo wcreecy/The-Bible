@@ -315,12 +315,33 @@ struct WordleView: View {
             .pickerStyle(.segmented)
             .padding(.horizontal)
 
+            // NEW: Warning banner when Daily already completed (and replay not allowed)
             if mode == .daily && dailyCompletedToday && !wordleAllowDailyReplay {
-                Text("You’ve completed today’s daily. Come back tomorrow.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.yellow)
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Daily completed")
+                            .font(.subheadline.weight(.semibold))
+                        Text("You’ve completed today’s daily. Come back tomorrow.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .padding(12)
+                .background(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(Color.yellow.opacity(0.15))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(Color.yellow.opacity(0.35), lineWidth: 1)
+                )
+                .padding(.horizontal)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Daily completed. You’ve completed today’s daily. Come back tomorrow.")
             }
 
             Button("Start") {
@@ -757,4 +778,3 @@ private struct FilledGameKeyButtonStyle: ButtonStyle {
             .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
     }
 }
-

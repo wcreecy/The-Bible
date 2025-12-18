@@ -158,6 +158,7 @@
 		2CF0436D2EE9F6D800DB1283 /* TimeFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF0436C2EE9F6D800DB1283 /* TimeFormatters.swift */; };
 		2CF0436F2EE9F6DB00DB1283 /* DateFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF0436E2EE9F6DB00DB1283 /* DateFormatters.swift */; };
 		2CF043712EE9F8BE00DB1283 /* VOTDSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF043702EE9F8BE00DB1283 /* VOTDSchedule.swift */; };
+		2CFEACC62EF4A50B00064270 /* WordleStatsCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CFEACC52EF4A50B00064270 /* WordleStatsCardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -368,6 +369,7 @@
 		2CF0436E2EE9F6DB00DB1283 /* DateFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatters.swift; sourceTree = "<group>"; };
 		2CF043702EE9F8BE00DB1283 /* VOTDSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VOTDSchedule.swift; sourceTree = "<group>"; };
 		2CF6F1702EB83C2100E59640 /* TimerSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerSound.swift; sourceTree = "<group>"; };
+		2CFEACC52EF4A50B00064270 /* WordleStatsCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordleStatsCardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -675,6 +677,7 @@
 				2C1400FB2EF2BFA200A93CA9 /* StatsViewModel.swift */,
 				2C1400FD2EF2C0D400A93CA9 /* StatsChartConfig.swift */,
 				2C556D412EF3620E0044426E /* AppTab.swift */,
+				2CFEACC52EF4A50B00064270 /* WordleStatsCardView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1174,6 +1177,7 @@
 				2C33952B2EED9D8B00E8CA41 /* Color+GamerScore.swift in Sources */,
 				2C2765782EE8E5B800A321FE /* PrayerTimerController.swift in Sources */,
 				2C4F309A2ED91514006C8DFD /* BibleStatsStore.swift in Sources */,
+				2CFEACC62EF4A50B00064270 /* WordleStatsCardView.swift in Sources */,
 				2C2A44FE2EEE340000FE8C2F /* SettingsDailyGoalSection.swift in Sources */,
 				2C2764F22EE8C87700A321FE /* HomeVerseRef.swift in Sources */,
 				2C9CD7852EE2FFB90073622F /* GameStats.swift in Sources */,

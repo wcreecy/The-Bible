@@ -183,6 +183,8 @@ struct StatsView: View {
                         topBooksThisMonthCard
                         GamesCardView()
                             .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+                        WordleStatsCardView()
+                            .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
                     }
                     .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
 
@@ -207,6 +209,7 @@ struct StatsView: View {
                     avgSessionCard
                     topBooksThisMonthCard
                     GamesCardView()
+                    WordleStatsCardView()
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
