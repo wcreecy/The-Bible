@@ -71,6 +71,11 @@ struct WordleView: View {
     // Toggle for keyboard layout
     @State private var useABCLayout: Bool = false
 
+    // NEW: timing for each round
+    @State private var roundStartAt: Date? = nil
+    // NEW: store elapsed seconds for the last round to show in the bottom chip
+    @State private var lastRoundElapsedSeconds: Int? = nil
+
     // MARK: - Answer pool from KJV (5-letter A–Z words, filtered by spell checker when available)
     private static let kjvAnswerWords: [String] = {
         var set = Set<String>() // uppercase tokens
@@ -126,7 +131,7 @@ struct WordleView: View {
         #endif
     }()
 
-    // MARK: - Verse index (first occurrence for each 5-letter word)
+    // MARK: - Verse index (random occurrence for each 5-letter word)
     private struct VerseRefInfo {
         let bookName: String
         let chapter: Int
@@ -136,7 +141,9 @@ struct WordleView: View {
     }
 
     private static let verseIndex: [String: VerseRefInfo] = {
+        // Reservoir sample exactly one random occurrence per word across the entire Bible.
         var map: [String: VerseRefInfo] = [:]
+        var counts: [String: Int] = [:] // occurrence count per word for sampling
         let allowed = Set(kjvAnswerWords) // uppercase
         for book in BibleData.books {
             for chapter in book.chapters {
@@ -145,8 +152,13 @@ struct WordleView: View {
                     let upper = verse.text.uppercased()
                     var word = ""
                     func flush() {
-                        guard word.count == 5, allowed.contains(word), map[word] == nil else { word = ""; return }
-                        map[word] = VerseRefInfo(bookName: book.name, chapter: chapter.number, verse: verse.number, text: verse.text)
+                        guard word.count == 5, allowed.contains(word) else { word = ""; return }
+                        // Reservoir sampling: replace current pick with probability 1/k
+                        counts[word, default: 0] += 1
+                        let k = counts[word]!
+                        if Int.random(in: 1...k) == 1 {
+                            map[word] = VerseRefInfo(bookName: book.name, chapter: chapter.number, verse: verse.number, text: verse.text)
+                        }
                         word = ""
                     }
                     for ch in upper {
@@ -612,6 +624,11 @@ struct WordleView: View {
         keyboardStates.removeAll()
         roundRef = nil
 
+        // Start timing
+        roundStartAt = Date()
+        // NEW: reset last round elapsed time
+        lastRoundElapsedSeconds = nil
+
         if freePlay {
             target = Self.kjvAnswerWords.randomElement() ?? "JESUS"
         } else {
@@ -625,6 +642,16 @@ struct WordleView: View {
         roundOver = true
         // Clear current input to avoid duplicate rendering on the next row
         currentInput = ""
+
+        // Compute elapsed seconds for this round
+        let elapsedSeconds: Int = {
+            let start = roundStartAt ?? Date()
+            let raw = Int(Date().timeIntervalSince(start))
+            return max(0, raw)
+        }()
+
+        // NEW: keep for UI chip
+        lastRoundElapsedSeconds = elapsedSeconds
 
         answered += 1
         if win {
@@ -653,7 +680,14 @@ struct WordleView: View {
             )
         }
 
-        // Resolve a Bible reference for the target (first occurrence)
+        // NEW: record timing stats
+        GameStats.shared.recordWordleTime(
+            type: (mode == .daily ? .daily : .free),
+            won: win,
+            elapsedSeconds: elapsedSeconds
+        )
+
+        // Resolve a Bible reference for the target (random occurrence)
         roundRef = Self.verseIndex[target]
 
         if mode == .daily {
@@ -748,7 +782,7 @@ struct WordleView: View {
     @ViewBuilder
     private func endOfRoundActionArea() -> some View {
         HStack(spacing: 10) {
-            // 1) Reference chip (or placeholder to keep row width)
+            // 1) Reference chip (expanded)
             if let ref = roundRef {
                 Button {
                     presentReferencePreview(ref)
@@ -761,10 +795,8 @@ struct WordleView: View {
                 .buttonStyle(ModernPillButtonStyle(tint: .blue))
                 .controlSize(.large)
             } else {
-                // Disabled placeholder to keep three columns aligned
-                Button {
-                    // no-op
-                } label: {
+                // Disabled placeholder (expanded) to keep row aligned
+                Button { } label: {
                     Text("Reference")
                         .font(.headline)
                         .lineLimit(1)
@@ -777,34 +809,64 @@ struct WordleView: View {
                 .accessibilityHidden(true)
             }
 
-            // 2) Next / Play Daily (or compact disabled chip for completed daily)
+            // 2) Time chip (expanded, no icon)
+            if let secs = lastRoundElapsedSeconds {
+                Button(action: { }) {
+                    Text(formatElapsed(secs))
+                        .font(.headline)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(ModernPillButtonStyle(tint: .purple))
+                .controlSize(.large)
+                .disabled(true)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Time \(formatElapsed(secs))")
+            } else {
+                Button(action: { }) {
+                    Text("--:--")
+                        .font(.headline)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(ModernPillButtonStyle(tint: .purple))
+                .controlSize(.large)
+                .disabled(true)
+                .opacity(0.6)
+                .accessibilityHidden(true)
+            }
+
+            // 3) Next / Play Daily (keep intrinsic width so the other two grow larger)
             if mode == .freePlay {
                 Button("Next") { startNewRound(freePlay: true) }
                     .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                     .controlSize(.large)
-                    .frame(maxWidth: .infinity)
             } else {
                 if dailyCompletedToday && !wordleAllowDailyReplay {
-                    // Compact chip to keep row height, communicates state without large message
                     Button("Daily") { }
                         .buttonStyle(ModernPillButtonStyle(tint: .gray))
                         .controlSize(.large)
-                        .frame(maxWidth: .infinity)
                         .disabled(true)
                         .accessibilityLabel("Daily completed. Come back tomorrow.")
                 } else {
                     Button("Play Daily") { startNewRound(freePlay: false) }
                         .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                         .controlSize(.large)
-                        .frame(maxWidth: .infinity)
                 }
             }
+        }
+    }
 
-            // 3) Change Mode
-            Button("Change Mode") { started = false }
-                .buttonStyle(ModernPillButtonStyle(tint: .orange))
-                .controlSize(.large)
-                .frame(maxWidth: .infinity)
+    // NEW: formatter for elapsed seconds (h:mm:ss or m:ss)
+    private func formatElapsed(_ s: Int) -> String {
+        let seconds = max(0, s)
+        let h = seconds / 3600
+        let m = (seconds % 3600) / 60
+        let sec = seconds % 60
+        if h > 0 {
+            return String(format: "%d:%02d:%02d", h, m, sec)
+        } else {
+            return String(format: "%d:%02d", m, sec)
         }
     }
 }

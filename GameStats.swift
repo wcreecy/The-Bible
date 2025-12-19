@@ -390,6 +390,30 @@ final class GameStats: ObservableObject {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
+    // NEW: Wordle timing writer (total, wins, losses)
+    func recordWordleTime(type: WordleType, won: Bool, elapsedSeconds: Int) {
+        let defaults = UserDefaults.standard
+        let suf = (type == .daily) ? "daily" : "free"
+
+        func setInt(_ key: String, _ value: Int) {
+            defaults.set(max(0, value), forKey: key)
+            iCloudSyncCoordinator.shared.pushKey(key)
+        }
+        func incInt(_ key: String, by delta: Int) {
+            let old = defaults.integer(forKey: key)
+            setInt(key, old + max(0, delta))
+        }
+
+        incInt("wordleTimeTotal_seconds_\(suf)", by: elapsedSeconds)
+        if won {
+            incInt("wordleTimeWins_seconds_\(suf)", by: elapsedSeconds)
+        } else {
+            incInt("wordleTimeLosses_seconds_\(suf)", by: elapsedSeconds)
+        }
+
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
     // MARK: - Aggregation (reads)
 
     private func readInt(_ key: String) -> Int {
@@ -515,6 +539,21 @@ final class GameStats: ObservableObject {
 
         let dist = zip(distDaily, distFree).map(+)
         return (avg, dist)
+    }
+
+    // NEW: Wordle timing readers
+    func wordleTimeStats(type: WordleType) -> (total: Int, wins: Int, losses: Int) {
+        let suf = (type == .daily) ? "daily" : "free"
+        let total = max(0, readInt("wordleTimeTotal_seconds_\(suf)"))
+        let wins = max(0, readInt("wordleTimeWins_seconds_\(suf)"))
+        let losses = max(0, readInt("wordleTimeLosses_seconds_\(suf)"))
+        return (total, wins, losses)
+    }
+
+    func wordleTimeStatsCombined() -> (total: Int, wins: Int, losses: Int) {
+        let d = wordleTimeStats(type: .daily)
+        let f = wordleTimeStats(type: .free)
+        return (d.total + f.total, d.wins + f.wins, d.losses + f.losses)
     }
 
     private func aggregateAll() -> (correct: Int, answered: Int) {
