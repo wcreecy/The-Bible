@@ -30,7 +30,7 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // Game keys: Reference Match
+    // Game keys: Reference Match (legacy)
     static let refMatchKeys: [String] = {
         // Include both legacy "medium" and new "normal"
         let diffs = ["easy", "normal", "medium", "hard"]
@@ -42,6 +42,19 @@ extension iCloudSyncCoordinator {
         }
         // Include legacy unsuffixed keys for backward compatibility
         keys.append(contentsOf: ["refmatchAllTimeCorrect", "refmatchAllTimeAnswered", "refmatchAllTimeBestStreak"])
+        return keys
+    }()
+
+    // Game keys: Verse Match (new)
+    static let verseMatchKeys: [String] = {
+        // Include both "normal" and legacy "medium" to be safe during transition
+        let diffs = ["easy", "normal", "medium", "hard"]
+        var keys: [String] = []
+        for d in diffs {
+            keys.append("versematchAllTimeCorrect_\(d)")
+            keys.append("versematchAllTimeAnswered_\(d)")
+            keys.append("versematchAllTimeBestStreak_\(d)")
+        }
         return keys
     }()
 
@@ -145,6 +158,7 @@ extension iCloudSyncCoordinator {
         Self.hangmanKeys.contains(key) ||
         Self.beatClockKeys.contains(key) ||
         Self.refMatchKeys.contains(key) ||
+        Self.verseMatchKeys.contains(key) ||
         Self.quizKeys.contains(key) ||
         Self.bookOrderKeys.contains(key) ||
         Self.whoAmIKeys.contains(key) ||
@@ -272,7 +286,16 @@ extension iCloudSyncCoordinator {
 
     // Centralized reset for all game counters (all scoreboard keys).
     func resetAllGameCountersToZero() {
-        let gameKeys = Array(Self.hangmanKeys + Self.beatClockKeys + Self.refMatchKeys + Self.quizKeys + Self.bookOrderKeys + Self.whoAmIKeys + Self.wordleKeys)
+        let gameKeys = Array(
+            Self.hangmanKeys
+            + Self.beatClockKeys
+            + Self.refMatchKeys
+            + Self.verseMatchKeys
+            + Self.quizKeys
+            + Self.bookOrderKeys
+            + Self.whoAmIKeys
+            + Self.wordleKeys
+        )
         for key in gameKeys {
             defaults.set(0, forKey: key)
             writeLocalTimestampNow(for: key)
@@ -330,7 +353,8 @@ extension iCloudSyncCoordinator {
         // Beat the Clock — include both normal and medium
         repairSuffixed(prefix: "beatclock", diffs: ["easy","normal","medium","hard"])
 
-        // Verse Match + legacy — include both normal and medium
+        // Verse Match (new) + Reference Match (legacy)
+        repairSuffixed(prefix: "versematch", diffs: ["easy","normal","medium","hard"])
         repairSuffixed(prefix: "refmatch", diffs: ["easy","normal","medium","hard"])
         repairPair(correctKey: "refmatchAllTimeCorrect", answeredKey: "refmatchAllTimeAnswered")
 
@@ -347,6 +371,54 @@ extension iCloudSyncCoordinator {
         // Wordle (daily/free/all)
         repairSuffixed(prefix: "wordle", diffs: ["daily","free","all"])
 
+        return changed
+    }
+
+    // One-time migration: copy legacy refmatch* values into new versematch* if the latter are zero.
+    // Returns set of versematch keys that were written (for debounced sync).
+    @discardableResult
+    func migrateRefMatchToVerseMatchIfNeeded() -> Set<String> {
+        var changed: Set<String> = []
+        let diffs = ["easy","normal","medium","hard"]
+
+        func copyIfNeeded(suffix: String) {
+            let srcC = "refmatchAllTimeCorrect_\(suffix)"
+            let srcA = "refmatchAllTimeAnswered_\(suffix)"
+            let srcB = "refmatchAllTimeBestStreak_\(suffix)"
+
+            let dstC = "versematchAllTimeCorrect_\(suffix)"
+            let dstA = "versematchAllTimeAnswered_\(suffix)"
+            let dstB = "versematchAllTimeBestStreak_\(suffix)"
+
+            let srcCv = max(0, defaults.integer(forKey: srcC))
+            let srcAv = max(0, defaults.integer(forKey: srcA))
+            let srcBv = max(0, defaults.integer(forKey: srcB))
+
+            let dstCv = max(0, defaults.integer(forKey: dstC))
+            let dstAv = max(0, defaults.integer(forKey: dstA))
+            let dstBv = max(0, defaults.integer(forKey: dstB))
+
+            let hasSrc = (srcCv + srcAv + srcBv) > 0
+            let hasDst = (dstCv + dstAv + dstBv) > 0
+
+            guard hasSrc, !hasDst else { return }
+
+            // Copy source into destination
+            defaults.set(srcCv, forKey: dstC)
+            defaults.set(srcAv, forKey: dstA)
+            defaults.set(srcBv, forKey: dstB)
+            writeLocalTimestampNow(for: dstC); writeRemoteTimestampNow(for: dstC)
+            writeLocalTimestampNow(for: dstA); writeRemoteTimestampNow(for: dstA)
+            writeLocalTimestampNow(for: dstB); writeRemoteTimestampNow(for: dstB)
+
+            kvs.set(srcCv, forKey: dstC)
+            kvs.set(srcAv, forKey: dstA)
+            kvs.set(srcBv, forKey: dstB)
+
+            changed.formUnion([dstC, dstA, dstB])
+        }
+
+        for d in diffs { copyIfNeeded(suffix: d) }
         return changed
     }
 

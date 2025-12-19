@@ -79,32 +79,6 @@ struct The_Bible__iOS_App: App {
             }
         }
 
-        // DEBUG-only proactive cleanup of App Group SwiftData store files
-        #if DEBUG
-        do {
-            let fm = FileManager.default
-            let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.bible.app")
-            let supportURL = groupURL?.appendingPathComponent("Library").appendingPathComponent("Application Support")
-            print("🧹 DEBUG cleanup: App Group URL: \(groupURL?.path ?? "<nil>")")
-            print("🧹 DEBUG cleanup: Support path: \(supportURL?.path ?? "<nil>")")
-            if let support = supportURL {
-                let targets = ["default.store", "default.store-wal", "default.store-shm"].map { support.appendingPathComponent($0) }
-                for url in targets {
-                    if fm.fileExists(atPath: url.path) {
-                        do {
-                            try fm.removeItem(at: url)
-                            print("🧹 DEBUG cleanup: Deleted \(url.path)")
-                        } catch {
-                            print("🧹 DEBUG cleanup: Failed to delete \(url.path): \(error)")
-                        }
-                    } else {
-                        print("🧹 DEBUG cleanup: Not found \(url.path)")
-                    }
-                }
-            }
-        }
-        #endif
-
         print("🔎 Probing likely store locations (before ModelContainer init)…")
         logLikelyStoreLocations()
 

@@ -146,9 +146,6 @@ struct ContentView: View {
         )
         .fontDesign(selectedTab == .settings ? .default : (preferredFontDesign ?? .default))
         .onAppear {
-            // Start iCloud Key-Value sync coordinator globally (ensures cross-device merges are observed)
-            iCloudSyncCoordinator.shared.start()
-
             // One-time cleanup of deprecated keys
             if !didCleanupAppTimeKeys {
                 UserDefaults.standard.removeObject(forKey: "appTotalActiveSeconds")
@@ -317,8 +314,8 @@ struct ContentView: View {
                 bibleCoordinator.reset()
             }
         }
-        .onChange(of: scenePhase) { _, newPhase in
-            switch newPhase {
+        .onChange(of: scenePhase) { _, newValue in
+            switch newValue {
             case .active:
                 // Account for any background elapsed time while timer/stopwatch was running
                 applyBackgroundElapsedIfAny()

@@ -90,6 +90,15 @@ final class iCloudSyncCoordinator {
                 NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
             }
         }
+
+        // NEW: Migrate legacy Reference Match -> Verse Match keys once if needed.
+        let migrated = migrateRefMatchToVerseMatchIfNeeded()
+        if !migrated.isEmpty {
+            enqueueKeysForSync(migrated)
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+            }
+        }
     }
 
     // Call after local writes if you want to eagerly push a specific key.
@@ -118,6 +127,7 @@ final class iCloudSyncCoordinator {
             + Self.hangmanKeys
             + Self.beatClockKeys
             + Self.refMatchKeys
+            + Self.verseMatchKeys
             + Self.quizKeys
             + Self.bookOrderKeys
             + Self.whoAmIKeys

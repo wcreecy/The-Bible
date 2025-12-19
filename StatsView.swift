@@ -84,7 +84,6 @@ struct StatsView: View {
         .navigationTitle("Stats")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            iCloudSyncCoordinator.shared.start()
             model.start()
             recomputeOTNTFromScope()
             recomputeGenresFromScope()

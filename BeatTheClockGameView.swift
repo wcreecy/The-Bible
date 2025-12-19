@@ -69,6 +69,15 @@ struct BeatTheClockGameView: View {
         return !selectionLocked && !trimmed.isEmpty
     }
 
+    // Size class to choose compact (iPhone) vs regular (iPad) layout
+    @Environment(\.horizontalSizeClass) private var hSizeClass
+    private var isCompact: Bool { hSizeClass == .compact }
+
+    // Timer sizing
+    private var timerIconSize: CGFloat { isCompact ? 14 : 24 }
+    private var timerTextSize: CGFloat { isCompact ? 22 : 34 }
+    private var timerWidth: CGFloat { isCompact ? 64 : 90 }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -136,35 +145,46 @@ struct BeatTheClockGameView: View {
                         .frame(maxWidth: 240)
                     Spacer(minLength: 32)
                 } else {
-                    // Top row: centered scoreboard with a big timer to the right
-                    HStack(alignment: .center, spacing: 16) {
-                        GameScoreboardCard(
-                            currentCorrect: score,
-                            currentAnswered: answered,
-                            currentStreak: currentStreak,
-                            allTimeCorrect: allTimeCorrect,
-                            allTimeAnswered: allTimeAnswered,
-                            allTimeBestStreak: allTimeBestStreak
-                        )
-                        .frame(maxWidth: .infinity)
-                        .multilineTextAlignment(.center)
+                    if isCompact {
+                        // iPhone: full-width scoreboard with a compact timer overlaid top-right
+                        ZStack(alignment: .topTrailing) {
+                            GameScoreboardCard(
+                                currentCorrect: score,
+                                currentAnswered: answered,
+                                currentStreak: currentStreak,
+                                allTimeCorrect: allTimeCorrect,
+                                allTimeAnswered: allTimeAnswered,
+                                allTimeBestStreak: allTimeBestStreak
+                            )
+                            .frame(maxWidth: .infinity)
+                            .multilineTextAlignment(.center)
+                            .padding(.trailing, timerWidth + 12) // keep text away from timer badge
 
-                        // Prominent timer on the right
-                        VStack(spacing: 8) {
-                            Image(systemName: "timer")
-                                .font(.system(size: 24, weight: .semibold))
-                                .foregroundStyle(timerColor)
-                            Text("\(remainingSeconds)s")
-                                .font(.system(size: 34, weight: .bold, design: .rounded))
-                                .monospacedDigit()
-                                .foregroundStyle(timerColor)
-                                .scaleEffect(pulse ? 1.15 : 1.0)
-                                .animation(.easeOut(duration: 0.18), value: pulse)
-                                .shadow(color: timerColor.opacity(pulse ? 0.7 : 0.35), radius: pulse ? 10 : 4)
+                            timerView
+                                .frame(width: timerWidth)
+                                .padding(.top, 4)
                         }
-                        .frame(minWidth: 90) // keep a stable width
+                    } else {
+                        // iPad: side-by-side layout with larger timer
+                        HStack(alignment: .center, spacing: 16) {
+                            GameScoreboardCard(
+                                currentCorrect: score,
+                                currentAnswered: answered,
+                                currentStreak: currentStreak,
+                                allTimeCorrect: allTimeCorrect,
+                                allTimeAnswered: allTimeAnswered,
+                                allTimeBestStreak: allTimeBestStreak
+                            )
+                            .frame(maxWidth: .infinity)
+                            .multilineTextAlignment(.center)
+                            .layoutPriority(1)
+
+                            timerView
+                                .frame(width: timerWidth)
+                                .layoutPriority(0)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .center)
                     }
-                    .frame(maxWidth: .infinity, alignment: .center)
 
                     // Clue
                     GroupBox {
@@ -321,6 +341,30 @@ struct BeatTheClockGameView: View {
         if remainingSeconds <= 5 { return .red }
         if remainingSeconds <= 10 { return .yellow }
         return .green
+    }
+
+    // Extracted timer view so we can reuse with different layouts
+    private var timerView: some View {
+        VStack(spacing: 6) {
+            Image(systemName: "timer")
+                .font(.system(size: timerIconSize, weight: .semibold))
+                .foregroundStyle(timerColor)
+            Text("\(remainingSeconds)s")
+                .font(.system(size: timerTextSize, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(timerColor)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .scaleEffect(pulse ? 1.15 : 1.0)
+                .animation(.easeOut(duration: 0.18), value: pulse)
+                .shadow(color: timerColor.opacity(pulse ? 0.7 : 0.35), radius: pulse ? 10 : 4)
+        }
+        .padding(.vertical, isCompact ? 6 : 8)
+        .padding(.horizontal, isCompact ? 8 : 10)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
     }
 
     private func startGame() {
