@@ -16,9 +16,14 @@ struct ProgressRing<Label: View>: View {
         track: Color = Color.primary.opacity(0.12),
         @ViewBuilder label: () -> Label
     ) {
-        self.progress = max(0, min(1, progress))
-        self.lineWidth = lineWidth
-        self.size = size
+        // Clamp to safe finite values
+        let clampedProgress = progress.isFinite ? max(0, min(1, progress)) : 0
+        let clampedLineWidth = lineWidth.isFinite ? max(0, lineWidth) : 0
+        let clampedSize = size.isFinite ? max(0, size) : 0
+
+        self.progress = clampedProgress
+        self.lineWidth = clampedLineWidth
+        self.size = clampedSize
         self.tint = tint
         self.track = track
         self.label = label()

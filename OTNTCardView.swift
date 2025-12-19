@@ -39,10 +39,10 @@ struct OTNTCardView: View {
                         .foregroundStyle(.secondary)
                 }
                 HStack {
-                    Text("OT \(formatSeconds(otSeconds))")
+                    Text("OT \(formatSeconds(max(0, otSeconds)))")
                         .font(.caption).foregroundStyle(.secondary)
                     Spacer()
-                    Text("NT \(formatSeconds(ntSeconds))")
+                    Text("NT \(formatSeconds(max(0, ntSeconds)))")
                         .font(.caption).foregroundStyle(.secondary)
                 }
             }
@@ -50,17 +50,25 @@ struct OTNTCardView: View {
     }
 
     private var bar: some View {
-        let total = max(1, otSeconds + ntSeconds)
-        let otFrac = CGFloat(otSeconds) / CGFloat(total)
-        let ntFrac = CGFloat(ntSeconds) / CGFloat(total)
+        // Clamp inputs to avoid negative or non-finite widths
+        let otSafe = max(0, otSeconds)
+        let ntSafe = max(0, ntSeconds)
+        let total = max(1, otSafe + ntSafe)
+
+        let otRaw = CGFloat(otSafe) / CGFloat(total)
+        let ntRaw = CGFloat(ntSafe) / CGFloat(total)
+
+        let otFrac = otRaw.isFinite ? min(max(0, otRaw), 1) : 0
+        let ntFrac = ntRaw.isFinite ? min(max(0, ntRaw), 1) : 0
+
         return GeometryReader { geo in
             HStack(spacing: 0) {
                 Rectangle()
                     .fill(Color.blue.opacity(0.6))
-                    .frame(width: geo.size.width * otFrac)
+                    .frame(width: max(0, geo.size.width * otFrac))
                 Rectangle()
                     .fill(Color.green.opacity(0.6))
-                    .frame(width: geo.size.width * ntFrac)
+                    .frame(width: max(0, geo.size.width * ntFrac))
             }
             .clipShape(RoundedRectangle(cornerRadius: 6))
         }

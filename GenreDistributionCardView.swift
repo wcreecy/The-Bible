@@ -37,9 +37,12 @@ struct GenreDistributionCardView: View {
                 }
                 .pickerStyle(.segmented)
 
-                let maxVal = max(1, perGenreTotals.map { $0.seconds }.max() ?? 1)
+                let maxValRaw = perGenreTotals.map { max(0, $0.seconds) }.max() ?? 0
+                let maxVal = max(1, maxValRaw)
+
                 VStack(spacing: 8) {
                     ForEach(perGenreTotals, id: \.genre) { item in
+                        let safeSeconds = max(0, item.seconds)
                         Button {
                             if let g = StatsSeriesBuilder.Genre(rawValue: item.genre) {
                                 selectedGenre = g
@@ -52,13 +55,14 @@ struct GenreDistributionCardView: View {
                                     .foregroundStyle(.secondary)
                                     .frame(width: 110, alignment: .leading)
                                 GeometryReader { geo in
-                                    let frac = CGFloat(item.seconds) / CGFloat(maxVal)
+                                    let raw = CGFloat(safeSeconds) / CGFloat(maxVal)
+                                    let frac = raw.isFinite ? min(max(0, raw), 1) : 0
                                     RoundedRectangle(cornerRadius: 6, style: .continuous)
                                         .fill(genreColor(item.genre).opacity(0.7))
-                                        .frame(width: geo.size.width * frac, height: 10, alignment: .leading)
+                                        .frame(width: max(0, geo.size.width * frac), height: 10, alignment: .leading)
                                 }
                                 .frame(height: 10)
-                                Text(formatSeconds(item.seconds))
+                                Text(formatSeconds(safeSeconds))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                     .monospacedDigit()
@@ -67,7 +71,7 @@ struct GenreDistributionCardView: View {
                             .frame(height: 16)
                         }
                         .buttonStyle(.plain)
-                        .accessibilityLabel("\(item.genre) \(formatSeconds(item.seconds))")
+                        .accessibilityLabel("\(item.genre) \(formatSeconds(safeSeconds))")
                     }
                 }
 

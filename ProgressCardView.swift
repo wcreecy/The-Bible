@@ -76,11 +76,17 @@ struct ProgressCardView: View {
                 if isExpanded {
                     if hSizeClass == .compact {
                         compactHeader
+                            .contentShape(Rectangle())
+                            .onTapGesture { toggleExpanded() }
                     } else {
                         regularHeader
+                            .contentShape(Rectangle())
+                            .onTapGesture { toggleExpanded() }
                     }
                 } else {
                     collapsedHeader
+                        .contentShape(Rectangle())
+                        .onTapGesture { toggleExpanded() }
                 }
 
                 // Actions (kept)
@@ -104,9 +110,7 @@ struct ProgressCardView: View {
                 }
 
                 Button {
-                    withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                        isExpanded.toggle()
-                    }
+                    toggleExpanded()
                 } label: {
                     HStack {
                         Text(isExpanded ? "Hide details" : "Show details")
@@ -126,15 +130,14 @@ struct ProgressCardView: View {
                 }
             }
         }
-        // Make the entire card area tappable to toggle expand/collapse,
-        // while inner controls (buttons, text field, picker) keep their behavior.
-        .contentShape(Rectangle())
-        .onTapGesture {
-            withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                isExpanded.toggle()
-            }
+        // IMPORTANT: Do NOT attach a tap gesture to the entire card.
+        // It conflicts with inner TextField/Picker gestures and can cause UIKit recognizers to hang.
+    }
+
+    private func toggleExpanded() {
+        withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+            isExpanded.toggle()
         }
-        .accessibilityAddTraits(.isButton)
     }
 
     // MARK: - Collapsed header (polished summary)
