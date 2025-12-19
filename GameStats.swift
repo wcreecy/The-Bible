@@ -501,8 +501,8 @@ final class GameStats: ObservableObject {
 
     func wordleWinGuessStatsCombined() -> (averageGuessesOnWins: Double, winsByGuess: [Int]) {
         // Combine daily + free (ignore legacy "_all" for these new stats)
-        let (avgDaily, distDaily) = wordleWinGuessStats(type: .daily)
-        let (avgFree, distFree) = wordleWinGuessStats(type: .free)
+        let (_, distDaily) = wordleWinGuessStats(type: .daily)
+        let (_, distFree) = wordleWinGuessStats(type: .free)
 
         // Average needs to be recomputed from totals to be correct:
         let winsDaily = max(0, readInt("wordleAllTimeCorrect_daily"))

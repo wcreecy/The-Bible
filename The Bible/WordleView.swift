@@ -68,9 +68,12 @@ struct WordleView: View {
         UserDefaults.standard.string(forKey: "wordleDailyCompletedDay") == todayKey
     }
 
-    // MARK: - Answer pool from KJV (5-letter A–Z words)
+    // Toggle for keyboard layout
+    @State private var useABCLayout: Bool = false
+
+    // MARK: - Answer pool from KJV (5-letter A–Z words, filtered by spell checker when available)
     private static let kjvAnswerWords: [String] = {
-        var set = Set<String>()
+        var set = Set<String>() // uppercase tokens
         for book in BibleData.books {
             for chapter in book.chapters {
                 for verse in chapter.verses {
@@ -95,8 +98,32 @@ struct WordleView: View {
                 }
             }
         }
+
+        // Prefer words that pass the system spell checker (English) when UIKit is available.
+        // This filters out many proper nouns and uncommon tokens.
+        #if canImport(UIKit)
+        let lang = UITextChecker.availableLanguages.first(where: { $0.hasPrefix("en") }) ?? "en_US"
+        let checker = UITextChecker()
+        func passesSpellCheck(_ upper: String) -> Bool {
+            let lower = upper.lowercased()
+            let range = NSRange(location: 0, length: lower.utf16.count)
+            let miss = checker.rangeOfMisspelledWord(in: lower, range: range, startingAt: 0, wrap: false, language: lang)
+            return miss.location == NSNotFound
+        }
+        let filtered = set.filter { passesSpellCheck($0) }
+        let sortedFiltered = filtered.sorted()
+        if !sortedFiltered.isEmpty {
+            return sortedFiltered
+        } else {
+            // Fallback list (also try to filter; if that empties, keep original fallback to guarantee a pool)
+            let fallback = ["JESUS","GRACE","FAITH","ANGEL","CROSS","ABRAM","SARAH","JONAH","MOSES","DAVID","SALEM","TITUS","JAMES","PETER","JUDAH"]
+            let fbFiltered = fallback.filter { passesSpellCheck($0) }
+            return fbFiltered.isEmpty ? fallback : fbFiltered
+        }
+        #else
         let sorted = set.sorted()
         return sorted.isEmpty ? ["JESUS","GRACE","FAITH","ANGEL","CROSS","ABRAM","SARAH","JONAH","MOSES","DAVID","SALEM","TITUS","JAMES","PETER","JUDAH"] : sorted
+        #endif
     }()
 
     // MARK: - Verse index (first occurrence for each 5-letter word)
@@ -146,106 +173,92 @@ struct WordleView: View {
     @State private var loadedPreview: (title: String, verses: [Verse])? = nil
 
     var body: some View {
-        VStack(spacing: 12) {
-            if !started {
-                startScreen()
-            } else {
-                #if canImport(UIKit)
-                KeyCaptureRepresentable(
-                    onKey: { ch in tapLetter(ch) },
-                    onBackspace: { deleteLetter() },
-                    onEnter: {
-                        if !roundOver, currentInput.count == 5 {
-                            submitGuess()
-                        }
-                    }
-                )
-                .frame(width: 0, height: 0)
-                .accessibilityHidden(true)
-                #endif
-
-                // Scoreboard
-                GameScoreboardCard(
-                    currentCorrect: score,
-                    currentAnswered: answered,
-                    currentStreak: currentStreak,
-                    allTimeCorrect: allTimeCorrect,
-                    allTimeAnswered: allTimeAnswered,
-                    allTimeBestStreak: allTimeBestStreak
-                )
-                .padding(.horizontal)
-
-                // Board
-                boardView()
-                    .padding(.horizontal)
-
-                if let msg = message {
-                    Text(msg)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .padding(.top, 4)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                }
-
-                // On-screen keyboard
-                keyboardView()
-                    .padding(.horizontal)
-
-                // Dedicated Enter row
-                HStack {
-                    Button(action: {
-                        submitGuess()
-                    }) {
-                        Label("Enter", systemImage: "return")
-                            .labelStyle(.titleAndIcon)
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
-                    .disabled(roundOver || currentInput.count != 5)
-                    .accessibilityLabel("Enter")
-                }
-                .padding(.horizontal)
-                .padding(.top, 4)
-
-                // Reference button (after round)
-                if roundOver, let ref = roundRef {
-                    Button {
-                        presentReferencePreview(ref)
-                    } label: {
-                        Text(ref.display)
-                            .lineLimit(1)
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .blue))
-                    .controlSize(.small)
-                    .padding(.top, 2)
-                }
-
-                // Bottom actions
-                if roundOver {
-                    HStack(spacing: 12) {
-                        if mode == .freePlay {
-                            Button("Next") { startNewRound(freePlay: true) }
-                                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                        } else {
-                            if dailyCompletedToday {
-                                Text("Come back tomorrow for a new daily word.")
-                                    .font(.footnote)
-                                    .foregroundStyle(.secondary)
-                                    .frame(maxWidth: .infinity)
-                            } else {
-                                Button("Play Daily") { startNewRound(freePlay: false) }
-                                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+        ScrollView(.vertical) {
+            VStack(spacing: 12) {
+                if !started {
+                    startScreen()
+                } else {
+                    #if canImport(UIKit)
+                    KeyCaptureRepresentable(
+                        onKey: { ch in tapLetter(ch) },
+                        onBackspace: { deleteLetter() },
+                        onEnter: {
+                            if !roundOver, currentInput.count == 5 {
+                                submitGuess()
                             }
                         }
-                        Button("Change Mode") { started = false }
-                            .buttonStyle(ModernPillButtonStyle(tint: .orange))
-                    }
+                    )
+                    .frame(width: 0, height: 0)
+                    .accessibilityHidden(true)
+                    #endif
+
+                    // Scoreboard
+                    GameScoreboardCard(
+                        currentCorrect: score,
+                        currentAnswered: answered,
+                        currentStreak: currentStreak,
+                        allTimeCorrect: allTimeCorrect,
+                        allTimeAnswered: allTimeAnswered,
+                        allTimeBestStreak: allTimeBestStreak
+                    )
                     .padding(.horizontal)
-                    .padding(.bottom, 4)
+
+                    // Board
+                    boardView()
+                        .padding(.horizontal)
+
+                    // Keep validation feedback during play, but hide it after the round ends
+                    if !roundOver, let msg = message {
+                        Text(msg)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .padding(.top, 4)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                    }
+
+                    // Prominent answer highlight after the round ends
+                    if roundOver {
+                        answerHighlightView()
+                            .padding(.horizontal)
+                            .padding(.top, 4)
+                    }
+
+                    if roundOver {
+                        // End-of-round actions replace the keyboard
+                        endOfRoundActionArea()
+                            .padding(.horizontal)
+                            .padding(.top, 6)
+                    } else {
+                        // On-screen keyboard during play
+                        keyboardView()
+                            .padding(.horizontal)
+
+                        // Dedicated Enter row
+                        HStack {
+                            Button(action: {
+                                submitGuess()
+                            }) {
+                                Label("Enter", systemImage: "return")
+                                    .labelStyle(.titleAndIcon)
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
+                            .disabled(roundOver || currentInput.count != 5)
+                            .accessibilityLabel("Enter")
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 4)
+                    }
                 }
             }
+            .padding(.top, 8)
+            .padding(.bottom, 16) // extra bottom space so content can breathe
+        }
+        .safeAreaInset(edge: .bottom) {
+            // small spacer to keep content above the home indicator
+            Color.clear.frame(height: 6)
         }
         .navigationTitle("Wordle (Bible)")
         .navigationBarTitleDisplayMode(.inline)
@@ -411,9 +424,10 @@ struct WordleView: View {
     // MARK: - On-screen keyboard
     @ViewBuilder
     private func keyboardView() -> some View {
-        let row1 = Array("QWERTYUIOP")
-        let row2 = Array("ASDFGHJKL")
-        let row3 = Array("ZXCVBNM")
+        // Choose layout
+        let row1 = Array(useABCLayout ? "ABCDEFGHIJ" : "QWERTYUIOP")
+        let row2 = Array(useABCLayout ? "KLMNOPQRS" : "ASDFGHJKL")
+        let row3 = Array(useABCLayout ? "TUVWXYZ" : "ZXCVBNM")
 
         VStack(spacing: 8) {
             HStack(spacing: 6) {
@@ -429,17 +443,21 @@ struct WordleView: View {
                 }
             }
             HStack(spacing: 6) {
-                // Enter (icon)
-                Button(action: {
-                    submitGuess()
-                }) {
-                    Image(systemName: "return")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
+                // Layout toggle button (replaces the small return icon)
+                Button(action: { useABCLayout.toggle() }) {
+                    if useABCLayout {
+                        Image(systemName: "arrow.uturn.backward.circle")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                    } else {
+                        Text("ABC")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                    }
                 }
                 .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
-                .disabled(roundOver || currentInput.count != 5)
-                .accessibilityLabel("Enter")
+                .disabled(roundOver)
+                .accessibilityLabel(useABCLayout ? "Switch to QWERTY layout" : "Switch to ABC layout")
 
                 ForEach(row3, id: \.self) { ch in
                     keyButton(for: ch)
@@ -466,41 +484,41 @@ struct WordleView: View {
         let state = keyboardStates[ch] ?? .unknown
 
         switch state {
-        case .unknown:
-            // Keep default look for untouched keys
-            Button(action: { tapLetter(ch) }) {
-                Text(String(ch))
-                    .font(.headline.weight(.semibold))
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(GameKeyButtonStyle(tint: state.tint))
+            case .unknown:
+                // Keep default look for untouched keys
+                Button(action: { tapLetter(ch) }) {
+                    Text(String(ch))
+                        .font(.headline.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(GameKeyButtonStyle(tint: state.tint))
 
-        case .absent:
-            // Fill entire key gray to match board
-            Button(action: { tapLetter(ch) }) {
-                Text(String(ch))
-                    .font(.headline.weight(.semibold))
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(FilledGameKeyButtonStyle(fill: .gray, foreground: .white))
+            case .absent:
+                // Fill entire key gray to match board
+                Button(action: { tapLetter(ch) }) {
+                    Text(String(ch))
+                        .font(.headline.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(FilledGameKeyButtonStyle(fill: .gray, foreground: .white))
 
-        case .present:
-            // Fill entire key yellow (use dark text for contrast)
-            Button(action: { tapLetter(ch) }) {
-                Text(String(ch))
-                    .font(.headline.weight(.semibold))
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(FilledGameKeyButtonStyle(fill: .yellow, foreground: .black))
+            case .present:
+                // Fill entire key yellow (use dark text for contrast)
+                Button(action: { tapLetter(ch) }) {
+                    Text(String(ch))
+                        .font(.headline.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(FilledGameKeyButtonStyle(fill: .yellow, foreground: .black))
 
-        case .correct:
-            // Fill entire key green
-            Button(action: { tapLetter(ch) }) {
-                Text(String(ch))
-                    .font(.headline.weight(.semibold))
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(FilledGameKeyButtonStyle(fill: .green, foreground: .white))
+            case .correct:
+                // Fill entire key green
+                Button(action: { tapLetter(ch) }) {
+                    Text(String(ch))
+                        .font(.headline.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(FilledGameKeyButtonStyle(fill: .green, foreground: .white))
         }
     }
 
@@ -695,6 +713,99 @@ struct WordleView: View {
         selectedRef = sr
         loadedPreview = nil
         showRefSheet = true
+    }
+
+    // MARK: - Answer highlight
+    @ViewBuilder
+    private func answerHighlightView() -> some View {
+        let bg = (didWin ? Color.green : Color.red).opacity(0.15)
+        let border = (didWin ? Color.green : Color.red).opacity(0.45)
+        VStack(spacing: 6) {
+            Text("Answer")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(target.uppercased())
+                .font(.system(size: 28, weight: .heavy, design: .monospaced))
+                .foregroundStyle(.primary)
+                .minimumScaleFactor(0.6)
+                .lineLimit(1)
+                .accessibilityLabel("Answer: \(target)")
+        }
+        .frame(maxWidth: .infinity)
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(bg)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(border, lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+    }
+
+    // MARK: - End-of-round action area (replaces keyboard)
+    @ViewBuilder
+    private func endOfRoundActionArea() -> some View {
+        HStack(spacing: 10) {
+            // 1) Reference chip (or placeholder to keep row width)
+            if let ref = roundRef {
+                Button {
+                    presentReferencePreview(ref)
+                } label: {
+                    Text(ref.display)
+                        .font(.headline)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                .controlSize(.large)
+            } else {
+                // Disabled placeholder to keep three columns aligned
+                Button {
+                    // no-op
+                } label: {
+                    Text("Reference")
+                        .font(.headline)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                .controlSize(.large)
+                .disabled(true)
+                .opacity(0.6)
+                .accessibilityHidden(true)
+            }
+
+            // 2) Next / Play Daily (or compact disabled chip for completed daily)
+            if mode == .freePlay {
+                Button("Next") { startNewRound(freePlay: true) }
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                    .controlSize(.large)
+                    .frame(maxWidth: .infinity)
+            } else {
+                if dailyCompletedToday && !wordleAllowDailyReplay {
+                    // Compact chip to keep row height, communicates state without large message
+                    Button("Daily") { }
+                        .buttonStyle(ModernPillButtonStyle(tint: .gray))
+                        .controlSize(.large)
+                        .frame(maxWidth: .infinity)
+                        .disabled(true)
+                        .accessibilityLabel("Daily completed. Come back tomorrow.")
+                } else {
+                    Button("Play Daily") { startNewRound(freePlay: false) }
+                        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                        .controlSize(.large)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+
+            // 3) Change Mode
+            Button("Change Mode") { started = false }
+                .buttonStyle(ModernPillButtonStyle(tint: .orange))
+                .controlSize(.large)
+                .frame(maxWidth: .infinity)
+        }
     }
 }
 
