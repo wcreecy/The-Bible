@@ -220,6 +220,20 @@ struct SettingsDebugUtilitiesView: View {
                     }
                 }
 
+                // NEW: SwiftData cleanup (App Group)
+                Group {
+                    Button(role: .destructive) {
+                        let deleted = deleteAppGroupSwiftDataStoreFiles()
+                        let lines = deleted.isEmpty ? "No files found." : deleted.joined(separator: "\n")
+                        debugShow("SwiftData Store (App Group)", "Deleted files:\n\(lines)")
+                    } label: {
+                        Label("Delete App Group SwiftData Store Files", systemImage: "trash.circle")
+                    }
+                    Text("Deletes default.store, -wal, -shm in group.bible.app/Library/Application Support. Use if you hit SQLite 256 errors.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+
                 // Home layout
                 Group {
                     Button {
@@ -413,6 +427,30 @@ struct SettingsDebugUtilitiesView: View {
             return ("", 0, 0, "")
         }
         return (book.name, chapter.number, verse.number, verse.text)
+    }
+
+    // NEW: Delete App Group SwiftData store files
+    private func deleteAppGroupSwiftDataStoreFiles() -> [String] {
+        var deleted: [String] = []
+        let fm = FileManager.default
+        guard let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.bible.app") else {
+            print("DEBUG: App Group container not found.")
+            return deleted
+        }
+        let support = groupURL.appendingPathComponent("Library").appendingPathComponent("Application Support")
+        let targets = ["default.store", "default.store-wal", "default.store-shm"].map { support.appendingPathComponent($0) }
+        for url in targets {
+            if fm.fileExists(atPath: url.path) {
+                do {
+                    try fm.removeItem(at: url)
+                    deleted.append(url.path)
+                    print("DEBUG: Deleted \(url.path)")
+                } catch {
+                    print("DEBUG: Failed to delete \(url.path): \(error)")
+                }
+            }
+        }
+        return deleted
     }
 }
 #endif

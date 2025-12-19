@@ -59,7 +59,7 @@ struct SettingsDebugUtilitiesView: View {
                 Group {
                     Button {
                         iCloudSyncCoordinator.shared.pushAllNow()
-                        debugShow("iCloud KVS", "Pushed all known keys.\nLast push: \(DateFormatters.shortDateTimeString(iCloudSyncCoordinator.shared.lastPushDate))")
+                        asyncDebugShow("iCloud KVS", "Pushed all known keys.\nLast push: \(DateFormatters.shortDateTimeString(iCloudSyncCoordinator.shared.lastPushDate))")
                     } label: {
                         Label("Force KVS Push", systemImage: "icloud.and.arrow.up")
                     }
@@ -67,7 +67,7 @@ struct SettingsDebugUtilitiesView: View {
                     Button {
                         let lastPush = DateFormatters.shortDateTimeString(iCloudSyncCoordinator.shared.lastPushDate)
                         let lastMerge = DateFormatters.shortDateTimeString(iCloudSyncCoordinator.shared.lastMergeDate)
-                        debugShow("KVS Timestamps", "Last Push: \(lastPush)\nLast Merge: \(lastMerge)")
+                        asyncDebugShow("KVS Timestamps", "Last Push: \(lastPush)\nLast Merge: \(lastMerge)")
                     } label: {
                         Label("Show KVS Last Push/Merge", systemImage: "clock")
                     }
@@ -85,7 +85,7 @@ struct SettingsDebugUtilitiesView: View {
                                 NSUbiquitousKeyValueStoreChangeReasonKey: NSUbiquitousKeyValueStoreServerChange
                             ]
                         )
-                        debugShow("KVS Simulation", "Posted didChangeExternallyNotification for key:\n\(tempKey)")
+                        asyncDebugShow("KVS Simulation", "Posted didChangeExternallyNotification for key:\n\(tempKey)")
                     } label: {
                         Label("Simulate External KVS Change", systemImage: "wave.3.right")
                     }
@@ -95,14 +95,14 @@ struct SettingsDebugUtilitiesView: View {
                 Group {
                     Button {
                         ReadingSessionsStore.shared.seedSampleSessionsLast7Days()
-                        debugShow("Seeded Sessions", "Inserted random sessions for the last 7 days.")
+                        asyncDebugShow("Seeded Sessions", "Inserted random sessions for the last 7 days.")
                     } label: {
                         Label("Seed Reading Sessions (Last 7 Days)", systemImage: "clock.badge.plus")
                     }
 
                     Button(role: .destructive) {
                         ReadingSessionsStore.shared.clearAll()
-                        debugShow("Reading Sessions", "Cleared all reading sessions.")
+                        asyncDebugShow("Reading Sessions", "Cleared all reading sessions.")
                     } label: {
                         Label("Clear Reading Sessions Only", systemImage: "trash")
                     }
@@ -112,17 +112,19 @@ struct SettingsDebugUtilitiesView: View {
                         let last30 = BibleStatsStore.shared.totalForLast(days: 30)
                         let thisMonth = BibleStatsStore.shared.totalForMonth(containing: Date())
                         print("DEBUG Totals -> last7: \(last7)s, last30: \(last30)s, thisMonth: \(thisMonth)s")
-                        debugShow("Reading Totals",
-                                  "Last 7 Days: \(BibleStatsStore.shared.format(last7))\n" +
-                                  "Last 30 Days: \(BibleStatsStore.shared.format(last30))\n" +
-                                  "This Month: \(BibleStatsStore.shared.format(thisMonth))")
+                        asyncDebugShow(
+                            "Reading Totals",
+                            "Last 7 Days: \(BibleStatsStore.shared.format(last7))\n" +
+                            "Last 30 Days: \(BibleStatsStore.shared.format(last30))\n" +
+                            "This Month: \(BibleStatsStore.shared.format(thisMonth))"
+                        )
                     } label: {
                         Label("Dump Reading Totals", systemImage: "text.justify.left")
                     }
 
                     Button {
                         BibleStatsStore.shared.seedRandomReadingStatsPast31Days()
-                        debugShow("Seed Stats", "Seeded random reading stats for the past 31 days.")
+                        asyncDebugShow("Seed Stats", "Seeded random reading stats for the past 31 days.")
                     } label: {
                         Label("Seed Random Reading Stats (31 Days)", systemImage: "sparkles")
                     }
@@ -132,14 +134,14 @@ struct SettingsDebugUtilitiesView: View {
                 Group {
                     Button {
                         GameStats.shared.seedRandomStatsAllGames()
-                        debugShow("Games", "Seeded random stats across all games and difficulties.")
+                        asyncDebugShow("Games", "Seeded random stats across all games and difficulties.")
                     } label: {
                         Label("Seed Random Game Stats", systemImage: "gamecontroller")
                     }
 
                     Button(role: .destructive) {
                         iCloudSyncCoordinator.shared.resetAllGameCountersToZero()
-                        debugShow("Games", "Reset all game counters to zero.")
+                        asyncDebugShow("Games", "Reset all game counters to zero.")
                     } label: {
                         Label("Reset All Game Counters", systemImage: "trash")
                     }
@@ -149,14 +151,14 @@ struct SettingsDebugUtilitiesView: View {
                 Group {
                     Button {
                         BibleStatsStore.shared.markFirstThreeChaptersCompleteDefaultBook()
-                        debugShow("Chapters", "Marked first 3 chapters complete for default book.")
+                        asyncDebugShow("Chapters", "Marked first 3 chapters complete for default book.")
                     } label: {
                         Label("Mark First 3 Chapters as Read (Book)", systemImage: "checkmark.circle")
                     }
 
                     Button(role: .destructive) {
                         BibleStatsStore.shared.clearChapterOneForDefaultBook()
-                        debugShow("Chapters", "Cleared Chapter 1 seen verses for default book.")
+                        asyncDebugShow("Chapters", "Cleared Chapter 1 seen verses for default book.")
                     } label: {
                         Label("Clear Chapter 1 Seen Verses (Book)", systemImage: "xmark.circle")
                     }
@@ -164,7 +166,7 @@ struct SettingsDebugUtilitiesView: View {
                     Button {
                         let summary = BibleStatsStore.shared.verseCoverageSummaryForDefaultBook(firstNChapters: 5)
                         print("DEBUG Coverage:\n\(summary)")
-                        debugShow("Coverage (Default Book)", summary.isEmpty ? "—" : summary)
+                        asyncDebugShow("Coverage (Default Book)", summary.isEmpty ? "—" : summary)
                     } label: {
                         Label("Log Verse Coverage (Book)", systemImage: "chart.bar.doc.horizontal")
                     }
@@ -184,8 +186,10 @@ struct SettingsDebugUtilitiesView: View {
                         for e in journalEntries.prefix(5) {
                             print("• \(e.title)")
                         }
-                        debugShow("Counts",
-                                  "Favorites: \(favorites.count)\nJournal entries: \(journalEntries.count)")
+                        asyncDebugShow(
+                            "Counts",
+                            "Favorites: \(favorites.count)\nJournal entries: \(journalEntries.count)"
+                        )
                     } label: {
                         Label("Count Favorites & Journal", systemImage: "number")
                     }
@@ -193,11 +197,33 @@ struct SettingsDebugUtilitiesView: View {
                     Button {
                         Task {
                             await cloudKitManager.refresh()
-                            debugShow("CloudKit", "Refreshed CloudKit status.")
+                            asyncDebugShow("CloudKit", "Refreshed CloudKit status.")
                         }
                     } label: {
                         Label("Refresh CloudKit Status", systemImage: "arrow.clockwise")
                     }
+                }
+
+                // NEW: SwiftData cleanup (App Group)
+                Group {
+                    Button(role: .destructive) {
+                        let (groupURL, supportURL, deleted) = deleteAppGroupSwiftDataStoreFiles()
+                        let header =
+"""
+Resolved App Group:
+\(groupURL?.path ?? "<nil>")
+
+Support path:
+\(supportURL?.path ?? "<nil>")
+"""
+                        let lines = deleted.isEmpty ? "No files found." : deleted.joined(separator: "\n")
+                        asyncDebugShow("SwiftData Store (App Group)", "\(header)\n\nDeleted files:\n\(lines)\n\nQuit and relaunch the app.")
+                    } label: {
+                        Label("Delete App Group SwiftData Store Files", systemImage: "trash.circle")
+                    }
+                    Text("Deletes default.store, -wal, -shm in group.bible.app/Library/Application Support. Use if you hit SQLite 256/‘no such table’ errors. After deleting, quit and relaunch the app.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
 
                 // Home layout
@@ -207,7 +233,7 @@ struct SettingsDebugUtilitiesView: View {
                         let order = HomeCardID.allCases
                         let hidden = HomeLayoutStore.baselineHidden
                         store.save(order: order, hidden: hidden)
-                        debugShow("Home Layout", "Restored default order and hidden set.")
+                        asyncDebugShow("Home Layout", "Restored default order and hidden set.")
                     } label: {
                         Label("Reset Home Layout to Defaults", systemImage: "arrow.counterclockwise")
                     }
@@ -217,7 +243,7 @@ struct SettingsDebugUtilitiesView: View {
                         let hidden = HomeLayoutStore.baselineHidden
                         let loaded = store.load()
                         store.save(order: loaded.order, hidden: hidden)
-                        debugShow("Home Layout", "Set hidden to baseline: Games, Streaks, Bible Stats.")
+                        asyncDebugShow("Home Layout", "Set hidden to baseline: Games, Streaks, Bible Stats.")
                     } label: {
                         Label("Apply Hidden Baseline", systemImage: "eye.slash")
                     }
@@ -237,7 +263,7 @@ struct SettingsDebugUtilitiesView: View {
                         for e in journalEntries.prefix(10) {
                             print("• \(e.title)")
                         }
-                        debugShow("Journal", "Entries count: \(count)")
+                        asyncDebugShow("Journal", "Entries count: \(count)")
                     } label: {
                         Label("Count Journal Entries", systemImage: "list.bullet.rectangle")
                     }
@@ -261,7 +287,6 @@ struct SettingsDebugUtilitiesView: View {
                             let appIDPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String ?? "<unknown>"
                             let container = "iCloud.creecy.bible"
                             let cloudKitFlag = swiftdataCloudKitEnabled ? "enabled" : "disabled"
-                            // Avoid StoreKit here to prevent Simulator auth logs.
                             let storeHint = The_Bible__iOS_App.buildEnvHintFallback()
                             let msg = """
                             Build configuration: \(cfg)
@@ -272,7 +297,7 @@ struct SettingsDebugUtilitiesView: View {
                             Store environment hint: \(storeHint)
                             """
                             print("DEBUG Build/Env:\n\(msg)")
-                            debugShow("Build/Environment", msg)
+                            asyncDebugShow("Build/Environment", msg)
                         }
                     } label: {
                         Label("Show Build/Environment Diagnostics", systemImage: "info.circle")
@@ -304,10 +329,12 @@ struct SettingsDebugUtilitiesView: View {
 
     // MARK: - Local helpers
 
-    private func debugShow(_ title: String, _ message: String) {
-        debugAlertTitle = title
-        debugAlertMessage = message
-        showDebugAlert = true
+    private func asyncDebugShow(_ title: String, _ message: String) {
+        DispatchQueue.main.async {
+            self.debugAlertTitle = title
+            self.debugAlertMessage = message
+            self.showDebugAlert = true
+        }
     }
 
     private func deleteAllFavorites() {
@@ -316,9 +343,9 @@ struct SettingsDebugUtilitiesView: View {
                 modelContext.delete(f)
             }
             try modelContext.save()
-            debugShow("Favorites", "Deleted all favorites.")
+            asyncDebugShow("Favorites", "Deleted all favorites.")
         } catch {
-            debugShow("Favorites", "Error deleting: \(error.localizedDescription)")
+            asyncDebugShow("Favorites", "Error deleting: \(error.localizedDescription)")
         }
     }
 
@@ -331,9 +358,9 @@ struct SettingsDebugUtilitiesView: View {
         modelContext.insert(entry)
         do {
             try modelContext.save()
-            debugShow("Journal", "Inserted a sample entry.")
+            asyncDebugShow("Journal", "Inserted a sample entry.")
         } catch {
-            debugShow("Journal", "Save failed: \(error.localizedDescription)")
+            asyncDebugShow("Journal", "Save failed: \(error.localizedDescription)")
         }
     }
 
@@ -355,7 +382,7 @@ struct SettingsDebugUtilitiesView: View {
             shared.set(text, forKey: "verseOfDayText")
         }
 
-        debugShow("Verse of the Day", "Wrote a test VOTD to defaults and app group.")
+        asyncDebugShow("Verse of the Day", "Wrote a test VOTD to defaults and app group.")
     }
 
     private func pickRandomVerse(scopeRaw: String, specificBook: String) -> (book: String, chapter: Int, verse: Int, text: String) {
@@ -393,6 +420,37 @@ struct SettingsDebugUtilitiesView: View {
             return ("", 0, 0, "")
         }
         return (book.name, chapter.number, verse.number, verse.text)
+    }
+
+    // NEW: Delete App Group SwiftData store files (logs resolved paths and deletes)
+    private func deleteAppGroupSwiftDataStoreFiles() -> (groupURL: URL?, supportURL: URL?, deleted: [String]) {
+        var deleted: [String] = []
+        let fm = FileManager.default
+        let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.bible.app")
+        let supportURL = groupURL?.appendingPathComponent("Library").appendingPathComponent("Application Support")
+
+        print("DEBUG: Resolved App Group URL: \(groupURL?.path ?? "<nil>")")
+        print("DEBUG: Support path: \(supportURL?.path ?? "<nil>")")
+
+        guard let support = supportURL else {
+            print("DEBUG: App Group support path not available.")
+            return (groupURL, supportURL, deleted)
+        }
+        let targets = ["default.store", "default.store-wal", "default.store-shm"].map { support.appendingPathComponent($0) }
+        for url in targets {
+            if fm.fileExists(atPath: url.path) {
+                do {
+                    try fm.removeItem(at: url)
+                    deleted.append(url.path)
+                    print("DEBUG: Deleted \(url.path)")
+                } catch {
+                    print("DEBUG: Failed to delete \(url.path): \(error)")
+                }
+            } else {
+                print("DEBUG: Not found \(url.path)")
+            }
+        }
+        return (groupURL, supportURL, deleted)
     }
 }
 #endif

@@ -42,8 +42,75 @@ struct The_Bible__iOS_App: App {
             }
         }
 
+        // Extra diagnostics: probe common locations for stale/default stores
+        func logLikelyStoreLocations() {
+            // App documents and application support
+            let fm = FileManager.default
+            let urls: [URL?] = [
+                fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first,
+                fm.urls(for: .documentDirectory, in: .userDomainMask).first
+            ]
+            for u in urls.compactMap({ $0 }) {
+                print("   • App path: \(u.path)")
+                let defaultStore = u.appendingPathComponent("default.store")
+                if fm.fileExists(atPath: defaultStore.path) {
+                    print("     ↳ Found app default.store at: \(defaultStore.path)")
+                }
+                let wal = u.appendingPathComponent("default.store-wal")
+                let shm = u.appendingPathComponent("default.store-shm")
+                if fm.fileExists(atPath: wal.path) { print("     ↳ Found app default.store-wal at: \(wal.path)") }
+                if fm.fileExists(atPath: shm.path) { print("     ↳ Found app default.store-shm at: \(shm.path)") }
+            }
+
+            // App Group container (used elsewhere in the app for widgets, etc.)
+            if let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.bible.app") {
+                let support = groupURL.appendingPathComponent("Library").appendingPathComponent("Application Support")
+                print("   • App Group path: \(support.path)")
+                let defaultStore = support.appendingPathComponent("default.store")
+                if fm.fileExists(atPath: defaultStore.path) {
+                    print("     ↳ Found group default.store at: \(defaultStore.path)")
+                }
+                let wal = support.appendingPathComponent("default.store-wal")
+                let shm = support.appendingPathComponent("default.store-shm")
+                if fm.fileExists(atPath: wal.path) { print("     ↳ Found group default.store-wal at: \(wal.path)") }
+                if fm.fileExists(atPath: shm.path) { print("     ↳ Found group default.store-shm at: \(shm.path)") }
+            } else {
+                print("   • App Group path: <nil> (group.bible.app not available for this run/build?)")
+            }
+        }
+
+        // DEBUG-only proactive cleanup of App Group SwiftData store files
+        #if DEBUG
+        do {
+            let fm = FileManager.default
+            let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.bible.app")
+            let supportURL = groupURL?.appendingPathComponent("Library").appendingPathComponent("Application Support")
+            print("🧹 DEBUG cleanup: App Group URL: \(groupURL?.path ?? "<nil>")")
+            print("🧹 DEBUG cleanup: Support path: \(supportURL?.path ?? "<nil>")")
+            if let support = supportURL {
+                let targets = ["default.store", "default.store-wal", "default.store-shm"].map { support.appendingPathComponent($0) }
+                for url in targets {
+                    if fm.fileExists(atPath: url.path) {
+                        do {
+                            try fm.removeItem(at: url)
+                            print("🧹 DEBUG cleanup: Deleted \(url.path)")
+                        } catch {
+                            print("🧹 DEBUG cleanup: Failed to delete \(url.path): \(error)")
+                        }
+                    } else {
+                        print("🧹 DEBUG cleanup: Not found \(url.path)")
+                    }
+                }
+            }
+        }
+        #endif
+
+        print("🔎 Probing likely store locations (before ModelContainer init)…")
+        logLikelyStoreLocations()
+
         // Primary: CloudKit-backed configuration
         do {
+            print("➡️ Creating CloudKit-backed ModelContainer…")
             let cloudKitConfig = ModelConfiguration(
                 // Use your iCloud container identifier
                 cloudKitDatabase: .private(containerID)
@@ -60,6 +127,9 @@ struct The_Bible__iOS_App: App {
             print("✅ CloudKit-backed ModelContainer initialized successfully.")
             // Flag for Settings "Sync Status" UI
             UserDefaults.standard.set(true, forKey: "swiftdataCloudKitEnabled")
+
+            // Attempt to log the underlying store location(s) if available
+            print("🔎 CloudKit ModelContainer ready. (Local cache path is managed by the system.)")
             return container
         } catch {
             logError("Failed to create CloudKit-backed ModelContainer", error: error)
@@ -69,6 +139,7 @@ struct The_Bible__iOS_App: App {
 
         // Fallback: default local store (on-disk)
         do {
+            print("➡️ Creating local on-disk ModelContainer (default location)…")
             let localContainer = try ModelContainer(
                 for: ReaderSettings.self,
                     ReadingProgress.self,
@@ -79,6 +150,10 @@ struct The_Bible__iOS_App: App {
             )
             print("ℹ️ Using local on-disk SwiftData store (no CloudKit). Data will NOT sync between devices.")
             UserDefaults.standard.set(false, forKey: "swiftdataCloudKitEnabled")
+
+            print("🔎 Probing likely store locations (after local container init)…")
+            logLikelyStoreLocations()
+
             return localContainer
         } catch {
             logError("Failed to create local on-disk ModelContainer", error: error)
@@ -88,6 +163,7 @@ struct The_Bible__iOS_App: App {
 
         // Final fallback: in-memory so the app can still run
         do {
+            print("➡️ Creating in-memory ModelContainer…")
             let memoryConfig = ModelConfiguration(isStoredInMemoryOnly: true)
             let container = try ModelContainer(
                 for: ReaderSettings.self,

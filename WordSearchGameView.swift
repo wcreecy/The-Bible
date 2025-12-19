@@ -8,17 +8,26 @@ struct WordSearchGameView: View {
     @StateObject private var vm: WordSearchViewModel
     @State private var didBindVM = false
 
+    // Reuse a single in-memory placeholder container across instances to avoid store churn.
+    private static let placeholderContainer: ModelContainer = {
+        try! ModelContainer(
+            for: Favorite.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+    }()
+
     init() {
-        // Defer creating VM until we have a modelContext at runtime; use a placeholder and rebind later
-        _vm = StateObject(wrappedValue: WordSearchViewModel(modelContext: ModelContext(try! ModelContainer(for: Favorite.self)), favoritesFetch: { [] }))
+        _vm = StateObject(
+            wrappedValue: WordSearchViewModel(
+                modelContext: ModelContext(Self.placeholderContainer),
+                favoritesFetch: { [] }
+            )
+        )
     }
 
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
     var body: some View {
-        // Rebind VM with actual context and fetcher (only once)
-        let _ = updateVMIfNeeded()
-
         ScrollViewReader { _ in
             ScrollView {
                 VStack(spacing: 16) {
@@ -82,56 +91,7 @@ struct WordSearchGameView: View {
                                 roundOver: vm.roundOver
                             )
                         } else {
-                            ZStack(alignment: .trailing) {
-                                Color.clear
-                                GridBoard(
-                                    size: vm.size,
-                                    grid: vm.grid,
-                                    selectionStart: vm.selectionStart,
-                                    selectionEnd: vm.selectionEnd,
-                                    foundCells: vm.foundCells,
-                                    revealedWords: vm.revealedWords,
-                                    placed: vm.placed,
-                                    backgroundColorForCell: backgroundColorForCell,
-                                    onTapCell: { r, c in vm.handleTap(row: r, col: c) },
-                                    onDragChanged: { cell in vm.dragChanged(to: cell) },
-                                    onDragEnded: { vm.dragEnded() },
-                                    dynamicGridHeight: dynamicGridHeightForHeightDrivenLayout()
-                                )
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.top, 4)
-
-                            GroupBox {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    if vm.gameMode == .blind && !vm.showBlindWordList {
-                                        let foundCount = vm.targetWords.filter { vm.foundWords.contains($0) }.count
-                                        HStack {
-                                            Text("Words to find: \(vm.targetWords.count)").font(.headline)
-                                            Spacer(minLength: 8)
-                                            Text("Found: \(foundCount)").font(.headline).foregroundStyle(.secondary)
-                                        }
-                                    } else {
-                                        Text("Find these words:").font(.headline)
-                                        if vm.targetWords.isEmpty {
-                                            Text("No words").foregroundStyle(.secondary)
-                                        } else {
-                                            WrapWordsView(words: vm.targetWords, found: vm.foundWords, revealed: vm.revealedWords)
-                                        }
-                                    }
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-
-                            WordSearchControlsBar(
-                                onNewPuzzle: { vm.newPuzzle() },
-                                onReveal: { vm.reveal() },
-                                onChangeDifficultyOrMode: { vm.changeSettings() },
-                                gameMode: vm.gameMode,
-                                onToggleHealed: { vm.showBlindWordList.toggle() },
-                                healedOn: vm.showBlindWordList,
-                                roundOver: vm.roundOver
-                            )
+                            ZstackPhoneLayout
                         }
                     }
                 }
@@ -141,22 +101,77 @@ struct WordSearchGameView: View {
             .navigationBarTitleDisplayMode(.inline)
             .onDisappear { vm.stopTimer() }
         }
+        // Rebind the VM to the real environment context/fetcher once the view is active.
+        .task {
+            if !didBindVM {
+                vm.rebind(modelContext: modelContext, favoritesFetch: { favorites })
+                didBindVM = true
+            }
+        }
+    }
+
+    // MARK: - Extracted phone layout block to keep body smaller
+
+    private var ZstackPhoneLayout: some View {
+        ZStack(alignment: .trailing) {
+            Color.clear
+            GridBoard(
+                size: vm.size,
+                grid: vm.grid,
+                selectionStart: vm.selectionStart,
+                selectionEnd: vm.selectionEnd,
+                foundCells: vm.foundCells,
+                revealedWords: vm.revealedWords,
+                placed: vm.placed,
+                backgroundColorForCell: backgroundColorForCell,
+                onTapCell: { r, c in vm.handleTap(row: r, col: c) },
+                onDragChanged: { cell in vm.dragChanged(to: cell) },
+                onDragEnded: { vm.dragEnded() },
+                dynamicGridHeight: dynamicGridHeightForHeightDrivenLayout()
+            )
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 4)
+        .overlay(wordListAndControlsPhone, alignment: .bottom)
+    }
+
+    private var wordListAndControlsPhone: some View {
+        VStack(spacing: 12) {
+            GroupBox {
+                VStack(alignment: .leading, spacing: 8) {
+                    if vm.gameMode == .blind && !vm.showBlindWordList {
+                        let foundCount = vm.targetWords.filter { vm.foundWords.contains($0) }.count
+                        HStack {
+                            Text("Words to find: \(vm.targetWords.count)").font(.headline)
+                            Spacer(minLength: 8)
+                            Text("Found: \(foundCount)").font(.headline).foregroundStyle(.secondary)
+                        }
+                    } else {
+                        Text("Find these words:").font(.headline)
+                        if vm.targetWords.isEmpty {
+                            Text("No words").foregroundStyle(.secondary)
+                        } else {
+                            WrapWordsView(words: vm.targetWords, found: vm.foundWords, revealed: vm.revealedWords)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            WordSearchControlsBar(
+                onNewPuzzle: { vm.newPuzzle() },
+                onReveal: { vm.reveal() },
+                onChangeDifficultyOrMode: { vm.changeSettings() },
+                gameMode: vm.gameMode,
+                onToggleHealed: { vm.showBlindWordList.toggle() },
+                healedOn: vm.showBlindWordList,
+                roundOver: vm.roundOver
+            )
+        }
+        .padding(.top, 8)
     }
 
     // MARK: - Helpers
-
-    private func updateVMIfNeeded() -> Bool {
-        // Rebind the placeholder VM with the actual context and fetcher once
-        guard !didBindVM else { return false }
-        vm.rebind(modelContext: modelContext, favoritesFetch: { favorites })
-        didBindVM = true
-        return true
-    }
-
-    private var vmIsPlaceholder: Bool {
-        // One-time rebind guard
-        return !didBindVM
-    }
 
     private func dynamicGridHeightForHeightDrivenLayout() -> CGFloat {
         let isPad = UIDevice.current.userInterfaceIdiom == .pad
@@ -183,4 +198,8 @@ struct WordSearchGameView: View {
         }
         return Color(.secondarySystemBackground)
     }
+}
+
+#Preview {
+    NavigationStack { VerseMatchGameView() }
 }
