@@ -876,5 +876,5 @@ private struct KeyboardInsetReader: UIViewRepresentable {
 }
 
 #Preview {
-    NavigationStack { ReferenceMatchGameView() }
+    NavigationStack { VerseMatchGameView() }
 }

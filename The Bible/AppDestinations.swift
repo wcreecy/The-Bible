@@ -43,8 +43,8 @@ extension View {
                     QuizView()
                 case .gameBeatTheClock:
                     BeatTheClockGameView()
-                case .gameReferenceMatch:
-                    ReferenceMatchGameView()
+                case .gameVerseMatch:
+                    VerseMatchGameView()
                 case .gameBookOrder:
                     BookOrderGameView()
                 case .gameHangman:

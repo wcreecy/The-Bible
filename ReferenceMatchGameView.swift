@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-struct ReferenceMatchGameView: View {
+struct VerseMatchGameView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
 
@@ -21,7 +21,7 @@ struct ReferenceMatchGameView: View {
     @State private var difficultyExpanded: Bool = false
 
     @State private var started = false
-    @AppStorage("refmatchScope") private var verseScopeRaw: String = "whole"
+    @AppStorage("versematchScope") private var verseScopeRaw: String = "whole"
 
     @State private var questionNumber: Int = 0
     @State private var score: Int = 0
@@ -34,9 +34,9 @@ struct ReferenceMatchGameView: View {
     @State private var history: [(book: Book, chapter: Chapter, verse: Verse, options: [AnswerOption], correctIndex: Int, selectedIndex: Int?)] = []
     @State private var currentIndex: Int = -1
 
-    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "refmatchAllTimeCorrect_\(difficultyKeySuffix())") }
-    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "refmatchAllTimeAnswered_\(difficultyKeySuffix())") }
-    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "refmatchAllTimeBestStreak_\(difficultyKeySuffix())") }
+    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "versematchAllTimeCorrect_\(difficultyKeySuffix())") }
+    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "versematchAllTimeAnswered_\(difficultyKeySuffix())") }
+    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "versematchAllTimeBestStreak_\(difficultyKeySuffix())") }
 
     @State private var refBook: Book? = nil
     @State private var refChapter: Chapter? = nil
@@ -262,7 +262,7 @@ struct ReferenceMatchGameView: View {
                 generator.notificationOccurred(.success)
             }
             GameStats.shared.recordRound(
-                game: .refmatch,
+                game: .versematch,
                 difficulty: mapDifficulty(difficulty),
                 correct: 1,
                 answered: 1,
@@ -271,7 +271,7 @@ struct ReferenceMatchGameView: View {
         } else {
             currentStreak = 0
             GameStats.shared.recordRound(
-                game: .refmatch,
+                game: .versematch,
                 difficulty: mapDifficulty(difficulty),
                 correct: 0,
                 answered: 1,
@@ -596,3 +596,4 @@ struct ReferenceMatchGameView: View {
         }
     }
 }
+

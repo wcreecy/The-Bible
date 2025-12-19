@@ -18,7 +18,7 @@ final class GameStats: ObservableObject {
         case quiz
         case hangman
         case beatclock
-        case refmatch
+        case versematch
         case bookorder
         case whoami // NEW
         case wordle // NEW
@@ -136,7 +136,7 @@ final class GameStats: ObservableObject {
     func breakdownSnapshot() -> GameBreakdown {
         let q = quiz
         let h = hangman
-        let r = refmatch
+        let r = versematch
         let b = beatclock
         let o = bookorder
         let w = whoami // NEW
@@ -198,7 +198,7 @@ final class GameStats: ObservableObject {
                 case .hard: return "hard"
                 case .medium, .none: return nil
                 }
-            case .hangman, .beatclock, .refmatch:
+            case .hangman, .beatclock, .versematch:
                 // Change: treat both .normal and legacy .medium as "normal" suffix
                 switch difficulty {
                 case .easy: return "easy"
@@ -254,11 +254,11 @@ final class GameStats: ObservableObject {
             incInt("beatclockAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("beatclockAllTimeBestStreak_\(s)", candidate: currentBestStreak)
 
-        case .refmatch:
+        case .versematch:
             guard let s = suf else { return }
-            incInt("refmatchAllTimeCorrect_\(s)", by: addCorrect)
-            incInt("refmatchAllTimeAnswered_\(s)", by: addAnswered)
-            maxInt("refmatchAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            incInt("versematchAllTimeCorrect_\(s)", by: addCorrect)
+            incInt("versematchAllTimeAnswered_\(s)", by: addAnswered)
+            maxInt("versematchAllTimeBestStreak_\(s)", candidate: currentBestStreak)
 
         case .bookorder:
             guard let s = suf else { return }
@@ -467,11 +467,23 @@ final class GameStats: ObservableObject {
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
-    private var refmatch: GameStat {
-        let c = sumAcross(prefix: "refmatchAllTimeCorrect", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "refmatchAllTimeCorrect")
-        let a = sumAcross(prefix: "refmatchAllTimeAnswered", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "refmatchAllTimeAnswered")
-        let best = maxAcross(prefix: "refmatchAllTimeBestStreak", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "refmatchAllTimeBestStreak")
-        return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
+    // New: Verse Match reader (prefers versematch*, falls back to refmatch* legacy if needed)
+    private var versematch: GameStat {
+        // Prefer new versematch keys
+        let cNew = sumAcross(prefix: "versematchAllTimeCorrect", parts: ["_easy","_normal","_hard","_medium"], legacyKey: nil)
+        let aNew = sumAcross(prefix: "versematchAllTimeAnswered", parts: ["_easy","_normal","_hard","_medium"], legacyKey: nil)
+        let bestNew = maxAcross(prefix: "versematchAllTimeBestStreak", parts: ["_easy","_normal","_hard","_medium"], legacyKey: nil)
+
+        // If all new are zero, include legacy refmatch
+        let hasNew = (cNew + aNew + (bestNew)) > 0
+        if hasNew {
+            return GameStat(correct: cNew, answered: aNew, bestStreak: bestNew == 0 ? nil : bestNew)
+        } else {
+            let cLegacy = sumAcross(prefix: "refmatchAllTimeCorrect", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "refmatchAllTimeCorrect")
+            let aLegacy = sumAcross(prefix: "refmatchAllTimeAnswered", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "refmatchAllTimeAnswered")
+            let bestLegacy = maxAcross(prefix: "refmatchAllTimeBestStreak", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "refmatchAllTimeBestStreak")
+            return GameStat(correct: cLegacy, answered: aLegacy, bestStreak: bestLegacy == 0 ? nil : bestLegacy)
+        }
     }
 
     // Updated: aggregate suffixed + conditional legacy for Beat the Clock
@@ -557,7 +569,7 @@ final class GameStats: ObservableObject {
     }
 
     private func aggregateAll() -> (correct: Int, answered: Int) {
-        let stats = [quiz, hangman, refmatch, beatclock, bookorder, whoami]
+        let stats = [quiz, hangman, versematch, beatclock, bookorder, whoami]
         let wordleCombined = GameStat(
             correct: wordle(type: .daily).correct + wordle(type: .free).correct + wordleLegacyAll.correct,
             answered: wordle(type: .daily).answered + wordle(type: .free).answered + wordleLegacyAll.answered,
@@ -610,7 +622,7 @@ final class GameStats: ObservableObject {
         case .quiz: return "Bible Quiz"
         case .hangman: return "Hangman"
         case .beatclock: return "Beat the Clock"
-        case .refmatch: return "Verse Match"
+        case .versematch: return "Verse Match"
         case .bookorder: return "Book Order"
         case .whoami: return "Who am I?"
         case .wordle: return "Wordle (Bible)"

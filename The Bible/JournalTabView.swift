@@ -1027,5 +1027,5 @@ struct FilterBanner: View {
 }
 
 #Preview {
-    NavigationStack { ReferenceMatchGameView() }
+    NavigationStack { VerseMatchGameView() }
 }

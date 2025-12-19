@@ -47,6 +47,19 @@ struct BibleReaderForJournal: View {
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .fill(Color(.secondarySystemBackground))
                 )
+                .overlay(alignment: .trailing) {
+                    if !searchText.isEmpty {
+                        Button {
+                            searchText = ""
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.secondary)
+                                .padding(.trailing, 8)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Clear search")
+                    }
+                }
             }
             .padding(.horizontal, 16)
             .padding(.top, 8)

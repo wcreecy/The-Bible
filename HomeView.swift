@@ -352,7 +352,7 @@ struct HomeView: View {
                     case .beat:
                         coordinator.push(.gameBeatTheClock)
                     case .match:
-                        coordinator.push(.gameReferenceMatch)
+                        coordinator.push(.gameVerseMatch)
                     case .order:
                         coordinator.push(.gameBookOrder)
                     case .hangman:
@@ -600,3 +600,4 @@ struct HomeView: View {
 // Note: HeroCard, button styles, DayCell, WeekRow,
 // PrayerStudyTimerSetupView, and DebouncedWidgetReloader have been
 // moved to their own files as part of UI extraction.
+

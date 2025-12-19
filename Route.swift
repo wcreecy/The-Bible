@@ -9,9 +9,10 @@ enum Route: Hashable {
     // Games
     case gameQuiz
     case gameBeatTheClock
-    case gameReferenceMatch
+    case gameVerseMatch
     case gameBookOrder
     case gameHangman
     case gameWhoAmI
     case gameWordle // NEW
 }
+

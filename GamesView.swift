@@ -5,7 +5,7 @@ struct GamesView: View {
         case quiz
         case hangman
         case beatTheClock
-        case referenceMatch
+        case verseMatch
         case favoritesFlashcards
         case bookOrder
         case wordSearch
@@ -72,7 +72,7 @@ struct GamesView: View {
                 }
                 
                 // 3. Verse Match
-                NavigationLink(value: GameRoute.referenceMatch) {
+                NavigationLink(value: GameRoute.verseMatch) {
                     HStack(spacing: 12) {
                         Image(systemName: "text.quote")
                             .foregroundStyle(.orange)
@@ -193,8 +193,8 @@ struct GamesView: View {
                 HangmanGameView()
             case .beatTheClock:
                 BeatTheClockGameView()
-            case .referenceMatch:
-                ReferenceMatchGameView()
+            case .verseMatch:
+                VerseMatchGameView()
             case .favoritesFlashcards:
                 FavoritesFlashcardsGameView()
             case .bookOrder:
@@ -214,3 +214,4 @@ struct GamesView: View {
 #Preview {
     NavigationStack { GamesView() }
 }
+

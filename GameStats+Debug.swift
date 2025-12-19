@@ -43,7 +43,7 @@ extension GameStats {
             let diffs: [Difficulty] = [.easy, .normal, .hard]
             let d = diffs.randomElement() ?? .easy
             let r = rollRound(maxQ: 10)
-            recordRound(game: .refmatch, difficulty: d, correct: r.correct, answered: r.answered, currentBestStreak: r.bestStreak)
+            recordRound(game: .versematch, difficulty: d, correct: r.correct, answered: r.answered, currentBestStreak: r.bestStreak)
         }
 
         // Book Order (easy/normal/hard/all)
