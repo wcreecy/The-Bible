@@ -103,6 +103,13 @@ extension iCloudSyncCoordinator {
             }
         }
 
+        // NEW: Per-type timing keys (total, wins, losses) so they mirror/reset via KVS
+        for d in ["daily", "free"] {
+            keys.append("wordleTimeTotal_seconds_\(d)")
+            keys.append("wordleTimeWins_seconds_\(d)")
+            keys.append("wordleTimeLosses_seconds_\(d)")
+        }
+
         return keys
     }()
 
@@ -274,6 +281,19 @@ extension iCloudSyncCoordinator {
         }
         enqueueKeysForSync(Set(gameKeys))
 
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
+    // NEW: Reset only Wordle counters (including timing + histogram) to zero.
+    func resetWordleCountersToZero() {
+        let keys = Set(Self.wordleKeys)
+        for key in keys {
+            defaults.set(0, forKey: key)
+            writeLocalTimestampNow(for: key)
+            kvs.set(0, forKey: key)
+            writeRemoteTimestampNow(for: key)
+        }
+        enqueueKeysForSync(keys)
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 

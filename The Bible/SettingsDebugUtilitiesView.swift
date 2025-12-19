@@ -149,6 +149,14 @@ struct SettingsDebugUtilitiesView: View {
                         Label("Seed Random Game Stats", systemImage: "gamecontroller")
                     }
 
+                    // NEW: Clear Wordle only
+                    Button(role: .destructive) {
+                        iCloudSyncCoordinator.shared.resetWordleCountersToZero()
+                        debugShow("Games", "Cleared Wordle stats only.")
+                    } label: {
+                        Label("Clear Wordle Stats Only", systemImage: "trash")
+                    }
+
                     Button(role: .destructive) {
                         iCloudSyncCoordinator.shared.resetAllGameCountersToZero()
                         debugShow("Games", "Reset all game counters to zero.")
@@ -176,7 +184,7 @@ struct SettingsDebugUtilitiesView: View {
                     Button {
                         let summary = BibleStatsStore.shared.verseCoverageSummaryForDefaultBook(firstNChapters: 5)
                         print("DEBUG Coverage:\n\(summary)")
-                        debugShow("Coverage (Default Book)", summary.isEmpty ? "—" : summary)
+                        debugShow("Chapters", summary.isEmpty ? "—" : summary)
                     } label: {
                         Label("Log Verse Coverage (Book)", systemImage: "chart.bar.doc.horizontal")
                     }

@@ -76,6 +76,31 @@ struct WordleView: View {
     // NEW: store elapsed seconds for the last round to show in the bottom chip
     @State private var lastRoundElapsedSeconds: Int? = nil
 
+    // MARK: - Helpers for tokenization
+    private static func sanitizeLetters(_ s: String) -> String {
+        // Keep only A–Z letters; replace everything else with spaces
+        String(s.map { ch -> Character in
+            if let u = ch.unicodeScalars.first, ch.unicodeScalars.count == 1, u.value >= 65 && u.value <= 90 {
+                return ch
+            } else {
+                return " "
+            }
+        })
+    }
+
+    private static func tokens5(from uppercasedVerse: String) -> [String] {
+        let sanitized = sanitizeLetters(uppercasedVerse)
+        return sanitized.split(separator: " ").compactMap { tok in
+            tok.count == 5 ? String(tok) : nil
+        }
+    }
+
+    private static func verseContainsWord(_ verseText: String, word: String) -> Bool {
+        let upper = word.uppercased()
+        let toks = tokens5(from: verseText.uppercased())
+        return toks.contains(upper)
+    }
+
     // MARK: - Answer pool from KJV (5-letter A–Z words, filtered by spell checker when available)
     private static let kjvAnswerWords: [String] = {
         var set = Set<String>() // uppercase tokens
@@ -83,22 +108,8 @@ struct WordleView: View {
             for chapter in book.chapters {
                 for verse in chapter.verses {
                     let upper = verse.text.uppercased()
-                    let sanitized = String(upper.map { ch -> Character in
-                        if let s = ch.unicodeScalars.first, ch.unicodeScalars.count == 1, s.value >= 65 && s.value <= 90 {
-                            return ch
-                        } else {
-                            return " "
-                        }
-                    })
-                    for token in sanitized.split(separator: " ") {
-                        if token.count == 5 && token.allSatisfy({ c in
-                            if let s = c.unicodeScalars.first, c.unicodeScalars.count == 1 {
-                                return s.value >= 65 && s.value <= 90
-                            }
-                            return false
-                        }) {
-                            set.insert(String(token))
-                        }
+                    for token in tokens5(from: upper) {
+                        set.insert(token)
                     }
                 }
             }
@@ -131,7 +142,7 @@ struct WordleView: View {
         #endif
     }()
 
-    // MARK: - Verse index (random occurrence for each 5-letter word)
+    // MARK: - Verse index (random occurrence for each 5-letter word) — exact tokens only
     private struct VerseRefInfo {
         let bookName: String
         let chapter: Int
@@ -148,33 +159,44 @@ struct WordleView: View {
         for book in BibleData.books {
             for chapter in book.chapters {
                 for verse in chapter.verses {
-                    // Tokenize by A–Z only
                     let upper = verse.text.uppercased()
-                    var word = ""
-                    func flush() {
-                        guard word.count == 5, allowed.contains(word) else { word = ""; return }
+                    for token in tokens5(from: upper) {
+                        guard allowed.contains(token) else { continue }
                         // Reservoir sampling: replace current pick with probability 1/k
-                        counts[word, default: 0] += 1
-                        let k = counts[word]!
+                        counts[token, default: 0] += 1
+                        let k = counts[token]!
                         if Int.random(in: 1...k) == 1 {
-                            map[word] = VerseRefInfo(bookName: book.name, chapter: chapter.number, verse: verse.number, text: verse.text)
-                        }
-                        word = ""
-                    }
-                    for ch in upper {
-                        if let s = ch.unicodeScalars.first, ch.unicodeScalars.count == 1, s.value >= 65 && s.value <= 90 {
-                            word.append(ch)
-                            if word.count > 5 { word = String(word.suffix(5)) }
-                        } else {
-                            flush()
+                            map[token] = VerseRefInfo(bookName: book.name, chapter: chapter.number, verse: verse.number, text: verse.text)
                         }
                     }
-                    flush()
                 }
             }
         }
         return map
     }()
+
+    // Filtered pool: only words that have an attached reference in verseIndex
+    private static let filteredAnswerWords: [String] = {
+        let pool = kjvAnswerWords
+        let filtered = pool.filter { verseIndex[$0] != nil }
+        // If something goes wrong (e.g., sample data), keep original pool so game still works.
+        return filtered.isEmpty ? pool : filtered
+    }()
+
+    // Fallback: first exact occurrence search (exact 5‑letter token)
+    private static func findExactOccurrence(for word: String) -> VerseRefInfo? {
+        let target = word.uppercased()
+        for book in BibleData.books {
+            for chapter in book.chapters {
+                for verse in chapter.verses {
+                    if tokens5(from: verse.text.uppercased()).contains(target) {
+                        return VerseRefInfo(bookName: book.name, chapter: chapter.number, verse: verse.number, text: verse.text)
+                    }
+                }
+            }
+        }
+        return nil
+    }
 
     // State for showing reference button and navigating
     @State private var roundRef: VerseRefInfo? = nil
@@ -223,7 +245,7 @@ struct WordleView: View {
                     if !roundOver, let msg = message {
                         Text(msg)
                             .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(msg == "Not in word list" ? .red : .secondary)
                             .padding(.top, 4)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
@@ -630,7 +652,7 @@ struct WordleView: View {
         lastRoundElapsedSeconds = nil
 
         if freePlay {
-            target = Self.kjvAnswerWords.randomElement() ?? "JESUS"
+            target = Self.filteredAnswerWords.randomElement() ?? "JESUS"
         } else {
             target = wordOfDay()
         }
@@ -687,8 +709,16 @@ struct WordleView: View {
             elapsedSeconds: elapsedSeconds
         )
 
-        // Resolve a Bible reference for the target (random occurrence)
-        roundRef = Self.verseIndex[target]
+        // Resolve a Bible reference for the target (random occurrence) — ensure it actually contains the token.
+        if let ref = Self.verseIndex[target], Self.verseContainsWord(ref.text, word: target) {
+            roundRef = ref
+        } else {
+            roundRef = Self.findExactOccurrence(for: target)
+            if roundRef == nil {
+                // Log for diagnostics; UI will show a disabled chip as a last resort.
+                print("Wordle: No exact verse reference found for \(target)")
+            }
+        }
 
         if mode == .daily {
             UserDefaults.standard.set(todayKey, forKey: "wordleDailyCompletedDay")
@@ -713,9 +743,9 @@ struct WordleView: View {
         #endif
     }
 
-    // MARK: - Word of day (from KJV-derived pool)
+    // MARK: - Word of day (from filtered pool with references)
     private func wordOfDay(date: Date = Date()) -> String {
-        let pool = Self.kjvAnswerWords
+        let pool = Self.filteredAnswerWords
         let idx = Self.dayIndex(for: date) % max(1, pool.count)
         return pool[idx]
     }
