@@ -112,9 +112,13 @@ struct WordSearchGameView: View {
 
     // MARK: - Extracted phone layout block to keep body smaller
 
+    // Tighter spacing for non-Easy modes so the word list sits closer to the grid.
+    private var phoneInterSectionSpacing: CGFloat {
+        vm.difficulty == .easy ? 6 : 0
+    }
+
     private var ZstackPhoneLayout: some View {
-        ZStack(alignment: .trailing) {
-            Color.clear
+        VStack(spacing: phoneInterSectionSpacing) {
             GridBoard(
                 size: vm.size,
                 grid: vm.grid,
@@ -129,16 +133,19 @@ struct WordSearchGameView: View {
                 onDragEnded: { vm.dragEnded() },
                 dynamicGridHeight: dynamicGridHeightForHeightDrivenLayout()
             )
+            .frame(maxWidth: .infinity)
+            .padding(.top, vm.difficulty == .easy ? 2 : 0)
+
+            // Word list + controls sit under the grid
+            wordListAndControlsPhone
         }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 4)
-        .overlay(wordListAndControlsPhone, alignment: .bottom)
+        .frame(maxWidth: .infinity, alignment: .center)
     }
 
     private var wordListAndControlsPhone: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: vm.difficulty == .easy ? 8 : 6) {
             GroupBox {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 6) {
                     if vm.gameMode == .blind && !vm.showBlindWordList {
                         let foundCount = vm.targetWords.filter { vm.foundWords.contains($0) }.count
                         HStack {
@@ -168,7 +175,8 @@ struct WordSearchGameView: View {
                 roundOver: vm.roundOver
             )
         }
-        .padding(.top, 8)
+        // Pull the word list closer under the grid for non‑easy modes
+        .padding(.top, vm.difficulty == .easy ? 2 : -6)
     }
 
     // MARK: - Helpers

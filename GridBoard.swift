@@ -85,9 +85,13 @@ struct GridBoard: View {
             .position(x: geo.size.width / 2, y: min(totalSize / 2, geo.size.height / 2))
             .contentShape(Rectangle())
             .gesture(
-                DragGesture(minimumDistance: 0)
+                DragGesture(minimumDistance: 0, coordinateSpace: .local)
                     .onChanged { value in
-                        if let cell = hitCell(from: value.location, container: geo.size, gridSize: totalSize, cellSize: cellSize, spacing: spacing) {
+                        // Use the exact touch-down point for the very first update,
+                        // then track with the current location.
+                        let isStarting = (selectionStart == nil)
+                        let p = isStarting ? value.startLocation : value.location
+                        if let cell = hitCellSnapping(from: p, cellSize: cellSize, spacing: spacing) {
                             onDragChanged(cell)
                         }
                     }
@@ -97,22 +101,41 @@ struct GridBoard: View {
         .frame(height: dynamicGridHeight)
     }
 
-    private func hitCell(from point: CGPoint, container: CGSize, gridSize: CGFloat, cellSize: CGFloat, spacing: CGFloat) -> (row: Int, col: Int)? {
-        let originX = (container.width - gridSize) / 2.0
-        let originY: CGFloat = max(0, (container.height - gridSize) / 2.0)
-
-        let localX = point.x - originX
-        let localY = point.y - originY
-        if localX < 0 || localY < 0 || localX > gridSize || localY > gridSize { return nil }
+    // Map a point in the grid view’s LOCAL coordinates (top-left origin) to a cell,
+    // snapping touches in the inter-cell spacing (gutters) to the nearest cell.
+    private func hitCellSnapping(from point: CGPoint, cellSize: CGFloat, spacing: CGFloat) -> (row: Int, col: Int)? {
+        guard point.x >= 0, point.y >= 0 else { return nil }
 
         let step = cellSize + spacing
-        let col = Int(localX / step)
-        let row = Int(localY / step)
-        guard row >= 0, row < size, col >= 0, col < size else { return nil }
+        let maxCoord = CGFloat(size) * step - spacing // totalSize
 
-        let xInStep = localX - CGFloat(col) * step
-        let yInStep = localY - CGFloat(row) * step
-        guard xInStep <= cellSize, yInStep <= cellSize else { return nil }
+        guard point.x <= maxCoord, point.y <= maxCoord else { return nil }
+
+        var col = Int(point.x / step)
+        var row = Int(point.y / step)
+        col = min(max(col, 0), size - 1)
+        row = min(max(row, 0), size - 1)
+
+        let xInStep = point.x - CGFloat(col) * step
+        let yInStep = point.y - CGFloat(row) * step
+
+        // Snap horizontally if the touch is in the gutter
+        if xInStep > cellSize {
+            let distIntoGutterX = xInStep - cellSize
+            if distIntoGutterX >= spacing / 2 {
+                if col + 1 < size { col += 1 }
+            }
+            // else: closer to the left cell; keep col
+        }
+
+        // Snap vertically if the touch is in the gutter
+        if yInStep > cellSize {
+            let distIntoGutterY = yInStep - cellSize
+            if distIntoGutterY >= spacing / 2 {
+                if row + 1 < size { row += 1 }
+            }
+            // else: closer to the upper cell; keep row
+        }
 
         return (row, col)
     }
