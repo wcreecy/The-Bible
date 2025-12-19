@@ -107,6 +107,28 @@ struct HangmanGameView: View {
                 if !started {
                     startSection
                 } else {
+                    // Capture connected keyboard input (A–Z, Enter) when playing
+                    #if canImport(UIKit)
+                    KeyCaptureRepresentable(
+                        onKey: { ch in
+                            if !roundOver {
+                                guess(ch)
+                            }
+                        },
+                        onBackspace: {
+                            // No-op for Hangman
+                        },
+                        onEnter: {
+                            // Allow Enter to advance when round is over
+                            if roundOver {
+                                nextRound()
+                            }
+                        }
+                    )
+                    .frame(width: 0, height: 0)
+                    .accessibilityHidden(true)
+                    #endif
+
                     inGameSection
                 }
             }
@@ -319,8 +341,8 @@ struct HangmanGameView: View {
 
             Spacer(minLength: 6)
 
-            // Reference chip: show like Wordle (after round ends), present smart preview
-            if let ref = firstReferenceForCurrentTarget(), roundOver {
+            // Reference chip: show depending on difficulty rules
+            if let ref = firstReferenceForCurrentTarget(), shouldShowReference() {
                 Button {
                     presentReferencePreview(from: ref)
                 } label: {
@@ -576,7 +598,7 @@ struct HangmanGameView: View {
     private func difficultyKeySuffix() -> String {
         switch difficulty {
         case .easy: return "easy"
-        case .normal: return "medium"
+        case .normal: return "normal" // changed from "medium" to "normal"
         case .hard: return "hard"
         }
     }
@@ -990,3 +1012,58 @@ private struct HangmanDrawing: View {
         .transition(.opacity)
     }
 }
+
+#if canImport(UIKit)
+private struct KeyCaptureRepresentable: UIViewRepresentable {
+    var onKey: (Character) -> Void
+    var onBackspace: () -> Void
+    var onEnter: () -> Void
+
+    final class KeyView: UIView {
+        var onKey: ((Character) -> Void)?
+        var onBackspace: (() -> Void)?
+        var onEnter: (() -> Void)?
+
+        override var canBecomeFirstResponder: Bool { true }
+
+        override var keyCommands: [UIKeyCommand]? {
+            var cmds: [UIKeyCommand] = []
+            let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            for ch in letters {
+                cmds.append(UIKeyCommand(input: String(ch), modifierFlags: [], action: #selector(handleKey(_:))))
+                cmds.append(UIKeyCommand(input: String(ch.lowercased()), modifierFlags: [], action: #selector(handleKey(_:))))
+            }
+            cmds.append(UIKeyCommand(input: UIKeyCommand.inputDelete, modifierFlags: [], action: #selector(handleDelete)))
+            cmds.append(UIKeyCommand(input: "\r", modifierFlags: [], action: #selector(handleEnter)))
+            cmds.append(UIKeyCommand(input: "\n", modifierFlags: [], action: #selector(handleEnter)))
+            return cmds
+        }
+
+        @objc private func handleKey(_ sender: UIKeyCommand) {
+            guard let s = sender.input, let first = s.uppercased().first, first.isLetter else { return }
+            onKey?(first)
+        }
+
+        @objc private func handleDelete() { onBackspace?() }
+        @objc private func handleEnter() { onEnter?() }
+    }
+
+    func makeUIView(context: Context) -> KeyView {
+        let v = KeyView()
+        v.isUserInteractionEnabled = false
+        v.onKey = onKey
+        v.onBackspace = onBackspace
+        v.onEnter = onEnter
+        DispatchQueue.main.async { v.becomeFirstResponder() }
+        return v
+    }
+
+    func updateUIView(_ uiView: KeyView, context: Context) {
+        uiView.onKey = onKey
+        uiView.onBackspace = onBackspace
+        uiView.onEnter = onEnter
+        DispatchQueue.main.async { uiView.becomeFirstResponder() }
+    }
+}
+#endif
+
