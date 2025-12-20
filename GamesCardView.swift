@@ -577,7 +577,7 @@ struct GamesOverviewCardView: View {
             Label("Games", systemImage: "gamecontroller")
         }
         .onAppear { version &+= 1 }
-        .onChange(of: stats.version) { _ in
+        .onChange(of: stats.version) { _, _ in
             version &+= 1
             // Ensure selection remains valid after a stats refresh
             let names = Array(Set(GameStats.shared.breakdownSnapshot().entries.map { $0.name }))
@@ -819,7 +819,7 @@ struct PlayerStatSheetCardView: View {
             Label("Player Stat Sheet", systemImage: "tablecells")
         }
         .onAppear { version &+= 1 }
-        .onChange(of: stats.version) { _ in version &+= 1 }
+        .onChange(of: stats.version) { _, _ in version &+= 1 }
     }
 
     private func labeledValue(_ text: String, isBest: Bool, isWorst: Bool) -> some View {

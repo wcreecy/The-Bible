@@ -18,6 +18,19 @@ struct StatsView: View {
         var id: String { rawValue }
     }
 
+    private enum StatsMode: String, CaseIterable, Identifiable {
+        case bible = "Bible Stats"
+        case games = "Game Stats"
+        var id: String { rawValue }
+    }
+
+    // Persist the selected mode so the user’s choice sticks
+    @AppStorage("statsSelectedMode") private var statsSelectedModeRaw: String = StatsMode.bible.rawValue
+    private var statsSelectedMode: StatsMode {
+        get { StatsMode(rawValue: statsSelectedModeRaw) ?? .bible }
+        set { statsSelectedModeRaw = newValue.rawValue }
+    }
+
     // View model
     @StateObject private var model = StatsViewModel()
 
@@ -71,15 +84,47 @@ struct StatsView: View {
     }
 
     private var activeBucketCount: Int {
-        let count = totalsDaily.reduce(0) { partial, element in
-            partial + (element.seconds > 0 ? 1 : 0)
-        }
-        return count
+        // Use the already-computed state to keep type-checking simple and fast.
+        activeDaysInScope
+    }
+
+    // Explicit typed bindings to help the type-checker
+    private var statsModeBinding: Binding<StatsMode> {
+        $statsSelectedModeRaw.derived(
+            get: { StatsMode(rawValue: $0) ?? .bible },
+            set: { $0.rawValue }
+        )
+    }
+
+    private var chapterDetailItemBinding: Binding<ChapterDetailKey?> {
+        $selectedBookForChapters.derived(
+            get: { $0.map { ChapterDetailKey(bookName: $0) } },
+            set: { $0?.bookName }
+        )
     }
 
     var body: some View {
         ScrollView {
-            contentBody
+            VStack(spacing: 12) {
+                // Top toggle: Bible Stats vs Game Stats
+                HStack {
+                    Picker("Mode", selection: statsModeBinding) {
+                        ForEach(StatsMode.allCases) { mode in
+                            Text(mode.rawValue).tag(mode as StatsMode)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+
+                // Mode-specific content
+                if statsSelectedMode == .bible {
+                    bibleContent
+                } else {
+                    gameContent
+                }
+            }
         }
         .navigationTitle("Stats")
         .navigationBarTitleDisplayMode(.inline)
@@ -89,10 +134,7 @@ struct StatsView: View {
             recomputeGenresFromScope()
             recomputeTotalsCardMetrics()
         }
-        .sheet(item: Binding(
-            get: { selectedBookForChapters.map { ChapterDetailKey(bookName: $0) } },
-            set: { selectedBookForChapters = $0?.bookName }
-        )) { key in
+        .sheet(item: chapterDetailItemBinding) { key in
             NavigationStack {
                 BookChaptersDetailView(bookName: key.bookName)
                     .navigationTitle(key.bookName)
@@ -169,23 +211,17 @@ struct StatsView: View {
         }
     }
 
-    // MARK: - Layout
+    // MARK: - Mode-specific content
 
-    private var contentBody: some View {
+    private var bibleContent: some View {
         Group {
             if hSizeClass == .regular {
-                // Two-column layout on iPad
+                // Two-column layout on iPad (Bible-only)
                 HStack(alignment: .top, spacing: 16) {
                     // Column 1
                     VStack(spacing: 16) {
                         progressCard
                         topBooksThisMonthCard
-                        GamesOverviewCardView()
-                            .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
-                        PlayerStatSheetCardView()
-                            .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
-                        WordleStatsCardView()
-                            .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
                     }
                     .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
 
@@ -201,7 +237,7 @@ struct StatsView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
             } else {
-                // Single-column layout on iPhone
+                // Single-column layout on iPhone (Bible-only)
                 VStack(spacing: 16) {
                     progressCard
                     totalsCard
@@ -209,6 +245,30 @@ struct StatsView: View {
                     genreCard
                     avgSessionCard
                     topBooksThisMonthCard
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+            }
+        }
+    }
+
+    private var gameContent: some View {
+        Group {
+            if hSizeClass == .regular {
+                // iPad: stack game stats vertically, full width
+                VStack(spacing: 16) {
+                    GamesOverviewCardView()
+                        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+                    PlayerStatSheetCardView()
+                        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+                    WordleStatsCardView()
+                        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+            } else {
+                // iPhone: single-column stack of game stats
+                VStack(spacing: 16) {
                     GamesOverviewCardView()
                     PlayerStatSheetCardView()
                     WordleStatsCardView()
@@ -686,3 +746,13 @@ struct StatsView: View {
     }
 }
 
+// MARK: - Binding helper
+
+private extension Binding {
+    func derived<T>(get: @escaping (Value) -> T, set: @escaping (T) -> Value) -> Binding<T> {
+        Binding<T>(
+            get: { get(self.wrappedValue) },
+            set: { self.wrappedValue = set($0) }
+        )
+    }
+}
