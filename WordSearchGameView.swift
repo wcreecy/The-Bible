@@ -70,7 +70,8 @@ struct WordSearchGameView: View {
                                 onTapCell: { r, c in vm.handleTap(row: r, col: c) },
                                 onDragChanged: { cell in vm.dragChanged(to: cell) },
                                 onDragEnded: { vm.dragEnded() },
-                                dynamicGridHeight: dynamicGridHeightForHeightDrivenLayout(),
+                                // iPad keeps the previous height-driven fallback (words are beside, not below)
+                                dynamicGridHeight: dynamicGridHeightForLayout(availableWidth: nil),
 
                                 words: vm.targetWords,
                                 foundWords: vm.foundWords,
@@ -112,34 +113,40 @@ struct WordSearchGameView: View {
 
     // MARK: - Extracted phone layout block to keep body smaller
 
-    // Tighter spacing for non-Easy modes so the word list sits closer to the grid.
+    // Consistent small spacing between the grid and word list on all difficulties (matches the "easy" feel).
     private var phoneInterSectionSpacing: CGFloat {
-        vm.difficulty == .easy ? 6 : 0
+        6
     }
 
     private var ZstackPhoneLayout: some View {
-        VStack(spacing: phoneInterSectionSpacing) {
-            GridBoard(
-                size: vm.size,
-                grid: vm.grid,
-                selectionStart: vm.selectionStart,
-                selectionEnd: vm.selectionEnd,
-                foundCells: vm.foundCells,
-                revealedWords: vm.revealedWords,
-                placed: vm.placed,
-                backgroundColorForCell: backgroundColorForCell,
-                onTapCell: { r, c in vm.handleTap(row: r, col: c) },
-                onDragChanged: { cell in vm.dragChanged(to: cell) },
-                onDragEnded: { vm.dragEnded() },
-                dynamicGridHeight: dynamicGridHeightForHeightDrivenLayout()
-            )
-            .frame(maxWidth: .infinity)
-            .padding(.top, vm.difficulty == .easy ? 2 : 0)
+        // Use GeometryReader to get the actual content width (after outer padding).
+        GeometryReader { geo in
+            let gridHeight = dynamicGridHeightForLayout(availableWidth: geo.size.width)
+            VStack(spacing: phoneInterSectionSpacing) {
+                GridBoard(
+                    size: vm.size,
+                    grid: vm.grid,
+                    selectionStart: vm.selectionStart,
+                    selectionEnd: vm.selectionEnd,
+                    foundCells: vm.foundCells,
+                    revealedWords: vm.revealedWords,
+                    placed: vm.placed,
+                    backgroundColorForCell: backgroundColorForCell,
+                    onTapCell: { r, c in vm.handleTap(row: r, col: c) },
+                    onDragChanged: { cell in vm.dragChanged(to: cell) },
+                    onDragEnded: { vm.dragEnded() },
+                    dynamicGridHeight: gridHeight
+                )
+                .frame(maxWidth: .infinity)
+                .padding(.top, vm.difficulty == .easy ? 2 : 0)
 
-            // Word list + controls sit under the grid
-            wordListAndControlsPhone
+                // Word list + controls sit under the grid
+                wordListAndControlsPhone
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
         }
-        .frame(maxWidth: .infinity, alignment: .center)
+        // Keep the geometry container as small as needed vertically; ScrollView will handle scrolling.
+        .frame(minHeight: 0)
     }
 
     private var wordListAndControlsPhone: some View {
@@ -175,17 +182,30 @@ struct WordSearchGameView: View {
                 roundOver: vm.roundOver
             )
         }
-        // Pull the word list closer under the grid for non‑easy modes
-        .padding(.top, vm.difficulty == .easy ? 2 : -6)
+        // Small positive top padding to ensure a tiny, consistent gap (no overlap) on all difficulties.
+        .padding(.top, 2)
     }
 
     // MARK: - Helpers
 
-    private func dynamicGridHeightForHeightDrivenLayout() -> CGFloat {
+    // Height that matches the grid’s actual size for the given container width (phone).
+    // If availableWidth is nil (iPad side layout), we fall back to the previous “target cell” approach.
+    private func dynamicGridHeightForLayout(availableWidth: CGFloat?) -> CGFloat {
         let isPad = UIDevice.current.userInterfaceIdiom == .pad
         let spacing: CGFloat = isPad ? 6 : 4
-        let targetCell: CGFloat = isPad ? 54 : 34
-        return CGFloat(vm.size) * targetCell + CGFloat(vm.size - 1) * spacing
+        let minCell: CGFloat = isPad ? 36 : 26
+        let maxCell: CGFloat = isPad ? 58 : 36
+
+        if let w = availableWidth {
+            // Width available here already accounts for the outer padding in this ScrollView section.
+            let cellSizeFromWidth = (w - CGFloat(vm.size - 1) * spacing) / CGFloat(vm.size)
+            let cellSize = min(max(cellSizeFromWidth, minCell), maxCell)
+            return CGFloat(vm.size) * cellSize + CGFloat(vm.size - 1) * spacing
+        } else {
+            // iPad fallback (unchanged): reserve a comfortable target height.
+            let targetCell: CGFloat = isPad ? 54 : 34
+            return CGFloat(vm.size) * targetCell + CGFloat(vm.size - 1) * spacing
+        }
     }
 
     private func backgroundColorForCell(row: Int, col: Int) -> Color {

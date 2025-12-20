@@ -23,7 +23,13 @@ struct The_Bible__iOS_App: App {
         let teamID = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String ?? "<unknown team id>"
         let buildCfg = ProcessInfo.processInfo.environment["CONFIGURATION"] ?? "<unknown config>"
         // Deprecated on iOS 18; keep a coarse hint without StoreKit.
-        let envHint = The_Bible__iOS_App.buildEnvHintFallback()
+        let envHint: String = {
+            #if DEBUG
+            return "Development (Debug/AdHoc)"
+            #else
+            return "Production (TestFlight/App Store)"
+            #endif
+        }()
         print("🔎 SwiftData+CloudKit diagnostics:")
         print("   • Bundle ID: \(bundleID)")
         print("   • Team/AppIdentifierPrefix: \(teamID)")

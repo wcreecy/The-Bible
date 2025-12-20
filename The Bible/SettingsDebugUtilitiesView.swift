@@ -296,7 +296,13 @@ struct SettingsDebugUtilitiesView: View {
                             let container = "iCloud.creecy.bible"
                             let cloudKitFlag = swiftdataCloudKitEnabled ? "enabled" : "disabled"
                             // Avoid StoreKit here to prevent Simulator auth logs.
-                            let storeHint = The_Bible__iOS_App.buildEnvHintFallback()
+                            let storeHint: String = {
+                                #if DEBUG
+                                return "Development (Debug/AdHoc)"
+                                #else
+                                return "Production (TestFlight/App Store)"
+                                #endif
+                            }()
                             let msg = """
                             Build configuration: \(cfg)
                             Bundle ID: \(bundleID)

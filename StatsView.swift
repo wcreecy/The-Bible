@@ -143,7 +143,7 @@ struct StatsView: View {
                 }
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("switchToTab"))) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: .switchToTab)) { _ in
             selectedBookForChapters = nil
         }
         // Independent scope changes per card
