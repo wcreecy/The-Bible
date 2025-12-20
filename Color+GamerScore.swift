@@ -6,16 +6,16 @@ public extension Color {
     static func gamerScoreColor(for percentage: Double) -> Color {
         let p = max(0.0, min(100.0, percentage))
         switch p {
-        case ..<10:  return Color(hex: 0xC6011F) // red
-        case ..<20:  return Color(hex: 0xD64521) // red‑orange
-        case ..<30:  return Color(hex: 0xFB4F14) // orange
-        case ..<40:  return Color(hex: 0xFDB927) // gold
-        case ..<50:  return Color(hex: 0x708238) // yellow‑green (olive)
-        case ..<60:  return Color(hex: 0x9CD67A) // light green
-        case ..<70:  return Color(hex: 0x2E7D32) // true green
-        case ..<80:  return Color(hex: 0x2ECC71) // emerald
-        case ..<90:  return Color(hex: 0x009688) // teal‑green
-        default:     return Color(hex: 0x026937) // green (90–100)
+        case ..<10:  return Color(hex: 0x000000) // black
+        case ..<20:  return Color(hex: 0x808080) // gray
+        case ..<30:  return Color(hex: 0xFF0000) // red
+        case ..<40:  return Color(hex: 0xFFA500) // orange
+        case ..<50:  return Color(hex: 0xFFFF00) // yellow
+        case ..<60:  return Color(hex: 0x008000) // green
+        case ..<70:  return Color(hex: 0xCD7F32) // bronze
+        case ..<80:  return Color(hex: 0xC0C0C0) // silver
+        case ..<90:  return Color(hex: 0xFFD700) // gold (fixed from teal to true gold)
+        default:     return Color(hex: 0xD6D6D6) // platinum (slightly darker for readability)
         }
     }
 

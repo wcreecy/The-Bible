@@ -180,7 +180,9 @@ struct StatsView: View {
                     VStack(spacing: 16) {
                         progressCard
                         topBooksThisMonthCard
-                        GamesCardView()
+                        GamesOverviewCardView()
+                            .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+                        PlayerStatSheetCardView()
                             .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
                         WordleStatsCardView()
                             .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
@@ -207,7 +209,8 @@ struct StatsView: View {
                     genreCard
                     avgSessionCard
                     topBooksThisMonthCard
-                    GamesCardView()
+                    GamesOverviewCardView()
+                    PlayerStatSheetCardView()
                     WordleStatsCardView()
                 }
                 .padding(.horizontal, 16)
@@ -682,3 +685,4 @@ struct StatsView: View {
         }
     }
 }
+
