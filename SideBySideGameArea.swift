@@ -68,7 +68,7 @@ struct SideBySideGameArea: View {
                             .buttonStyle(ModernPillButtonStyle(tint: .blue))
 
                         if gameMode == .blind {
-                            Button(healedOn ? "I'm Healed" : "Be Healed") { onToggleHealed() }
+                            Button(healedOn ? "Hide" : "Word List") { onToggleHealed() }
                                 .buttonStyle(ModernPillButtonStyle(tint: healedOn ? .green : .red))
                         }
                     } else {
