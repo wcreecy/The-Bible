@@ -10,7 +10,7 @@ public extension Color {
         case ..<20:  return Color(hex: 0x808080) // gray
         case ..<30:  return Color(hex: 0xFF0000) // red
         case ..<40:  return Color(hex: 0xFFA500) // orange
-        case ..<50:  return Color(hex: 0xFFFF00) // yellow
+        case ..<50:  return Color(hex: 0xFFCE1B) // yellow
         case ..<60:  return Color(hex: 0x008000) // green
         case ..<70:  return Color(hex: 0xCD7F32) // bronze
         case ..<80:  return Color(hex: 0xC0C0C0) // silver

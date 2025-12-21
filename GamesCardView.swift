@@ -138,7 +138,6 @@ struct GamesCardView: View {
                                 .font(.headline)
                             // Medal/tier chip removed
                         }
-                        // Removed the "X correct out of Y total" subtitle
                     }
                     Spacer()
                 }
@@ -151,6 +150,112 @@ struct GamesCardView: View {
                         metricChip(title: "Correct", value: "\(totalCorrect)", tint: .green)
                         let overallBestStreak = entries.map { $0.bestStreak ?? 0 }.max() ?? 0
                         metricChip(title: "Best Streak", value: overallBestStreak > 0 ? "\(overallBestStreak)" : "—", tint: .orange)
+                    }
+                }
+
+                // NEW: Activity & Trend (last 30 days + 7D accuracy delta)
+                if !isEmpty {
+                    let series30 = GameStats.shared.dailySeriesLast(days: 30)
+                    let activeDays30 = series30.filter { $0.answered > 0 }.count
+                    let totalPlayed30 = series30.reduce(0) { $0 + max(0, $1.answered) }
+                    let avgPerActive = activeDays30 > 0 ? totalPlayed30 / activeDays30 : 0
+                    let streaksInfo = GameStats.shared.activityStreaks()
+                    let trend7 = GameStats.shared.accuracy7DayTrend()
+                    let trendTint: Color = trend7.deltaVsPrev >= 0 ? .green : .red
+                    let trendArrow: String = trend7.deltaVsPrev >= 0 ? "arrow.up.right" : "arrow.down.right"
+                    let hasRecentActivity30 = series30.contains { $0.answered > 0 }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        // Make this KPI row horizontally scrollable
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                metricChip(title: "Active Days (30D)", value: "\(activeDays30)", tint: .purple)
+                                metricChip(title: "Qs/Day", value: "\(avgPerActive)", tint: .teal)
+                                metricChip(title: "Current Streak", value: streaksInfo.current > 0 ? "\(streaksInfo.current)" : "—", tint: .orange)
+                                metricChip(title: "Longest Streak", value: streaksInfo.longest > 0 ? "\(streaksInfo.longest)" : "—", tint: .orange)
+                                // 7D accuracy with delta (keep normal size)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("7D Accuracy")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    HStack(spacing: 6) {
+                                        Text("\(Int(round(trend7.currentPct)))%")
+                                            .font(.footnote.weight(.semibold))
+                                            .monospacedDigit()
+                                        Image(systemName: trendArrow)
+                                            .foregroundStyle(trendTint)
+                                        Text("\(Int(round(abs(trend7.deltaVsPrev))))%")
+                                            .font(.caption.weight(.semibold))
+                                            .monospacedDigit()
+                                            .foregroundStyle(trendTint)
+                                    }
+                                }
+                                .padding(.vertical, 10)
+                                .padding(.horizontal, 12)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .fill(trendTint.opacity(0.08))
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .stroke(trendTint.opacity(0.25), lineWidth: 1)
+                                )
+                            }
+                            .padding(.horizontal, 2)
+                        }
+
+                        if !hasRecentActivity30 {
+                            Text("No recent activity")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .padding(.top, 2)
+                        }
+
+                        // 30-day sparkline of Played (answered)
+                        Chart {
+                            ForEach(series30, id: \.date) { point in
+                                LineMark(
+                                    x: .value("Date", point.date),
+                                    y: .value("Played", point.answered)
+                                )
+                                .interpolationMethod(.monotone)
+                                .foregroundStyle(Color.accentColor.opacity(hasRecentActivity30 ? 0.9 : 0.35))
+                                AreaMark(
+                                    x: .value("Date", point.date),
+                                    y: .value("Played", point.answered)
+                                )
+                                .interpolationMethod(.monotone)
+                                .foregroundStyle(Color.accentColor.opacity(hasRecentActivity30 ? 0.18 : 0.08))
+                            }
+                        }
+                        .chartXAxis(.hidden)
+                        .chartYAxis(.hidden)
+                        .frame(height: 56)
+                        .accessibilityLabel("Played per day in the last 30 days")
+                        .animation(.easeInOut(duration: 0.35), value: version)
+
+                        // Caption clarifying the sparkline
+                        Text("Played per day (last 30 days)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        // 7D accuracy with delta (kept below for accessibility summary)
+                        HStack(spacing: 6) {
+                            Text("7D Accuracy")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text("\(Int(round(trend7.currentPct)))%")
+                                .font(.footnote.weight(.semibold))
+                                .monospacedDigit()
+                            Image(systemName: trendArrow)
+                                .foregroundStyle(trendTint)
+                            Text("\(Int(round(abs(trend7.deltaVsPrev))))%")
+                                .font(.caption.weight(.semibold))
+                                .monospacedDigit()
+                                .foregroundStyle(trendTint)
+                        }
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("7 day accuracy \(Int(round(trend7.currentPct))) percent, \(trend7.deltaVsPrev >= 0 ? "up" : "down") \(Int(round(abs(trend7.deltaVsPrev)))) percent from prior 7 days")
                     }
                 }
 
@@ -187,8 +292,6 @@ struct GamesCardView: View {
                         .animation(.easeInOut(duration: 0.35), value: version)
                     }
                 }
-
-                // Badges / highlights — removed entirely (Sharpshooter, Specialist, etc.)
 
                 // Player Stat Sheet with sorting
                 VStack(alignment: .leading, spacing: 8) {
@@ -423,8 +526,11 @@ struct GamesOverviewCardView: View {
     @ObservedObject private var stats = GameStats.shared
     @State private var version: Int = 0
 
-    // Selected game (default = "All Games")
-    @State private var selectedGame: String = "All Games"
+    // Size class to adapt header layout on iPhone
+    @Environment(\.horizontalSizeClass) private var hSizeClass
+
+    // Persist the selected game across launches
+    @AppStorage("statsSelectedGame") private var selectedGame: String = "All Games"
 
     // Sleek icon for each game
     private func gameIcon(for name: String) -> String {
@@ -435,8 +541,8 @@ struct GamesOverviewCardView: View {
         case "Verse Match":  return "text.badge.checkmark"
         case "Beat the Clock": return "timer"
         case "Book Order":   return "books.vertical"
-        case "Who Am I":     return "person.crop.circle.badge.questionmark"
-        case "Wordle":       return "square.grid.3x3"
+        case "Who am I?":    return "person.crop.circle.badge.questionmark"
+        case "WORD":         return "square.grid.3x3"
         default:             return "gamecontroller"
         }
     }
@@ -452,8 +558,8 @@ struct GamesOverviewCardView: View {
             let overallPct = breakdown.percentage
             let isEmpty = (totalAnswered == 0)
 
-            // Picker options in a sensible order
-            let desiredOrder = ["Bible Quiz", "Hangman", "Verse Match", "Beat the Clock", "Book Order", "Who Am I", "Wordle"]
+            // Picker options in a sensible order (names must match breakdown)
+            let desiredOrder = ["Bible Quiz", "Hangman", "Verse Match", "Beat the Clock", "Book Order", "Who am I?", "WORD"]
             let availableNames = Array(Set(entries.map { $0.name }))
             let orderedDesired = desiredOrder.filter { availableNames.contains($0) }
             let extras = availableNames.filter { !desiredOrder.contains($0) }.sorted()
@@ -485,29 +591,30 @@ struct GamesOverviewCardView: View {
             let displayPct: Double = (selectedGame == "All Games") ? overallPct : kpiAccuracyPct
             let displayTint: Color = Color.gamerScoreColor(for: displayPct)
 
-            VStack(alignment: .leading, spacing: 12) {
-                // Header with progress ring (now reflects selected game)
-                HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 10) {
+                // Single-row header with picker (compact tweaks)
+                HStack(spacing: hSizeClass == .compact ? 10 : 12) {
                     if isEmpty {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .fill(Color.accentColor.opacity(0.08))
-                            .frame(width: 64, height: 64)
+                            .frame(width: hSizeClass == .compact ? 52 : 64,
+                                   height: hSizeClass == .compact ? 52 : 64)
                             .overlay(
                                 Image(systemName: "gamecontroller")
-                                    .font(.title2)
+                                    .font(hSizeClass == .compact ? .title3 : .title2)
                                     .foregroundStyle(.secondary)
                             )
                             .accessibilityHidden(true)
                     } else {
                         GamesProgressRing(
                             progress: Double(displayPct) / 100.0,
-                            lineWidth: 7,
-                            size: 64,
+                            lineWidth: hSizeClass == .compact ? 6 : 7,
+                            size: hSizeClass == .compact ? 52 : 64,
                             tint: displayTint,
                             track: Color.primary.opacity(0.12)
                         ) {
                             Text("\(Int(round(displayPct)))%")
-                                .font(.footnote.weight(.semibold))
+                                .font(hSizeClass == .compact ? .caption2.weight(.semibold) : .footnote.weight(.semibold))
                                 .monospacedDigit()
                                 .foregroundStyle(displayTint)
                         }
@@ -515,18 +622,16 @@ struct GamesOverviewCardView: View {
                         .animation(.spring(response: 0.6, dampingFraction: 0.85), value: displayPct)
                     }
 
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Gamer Score")
-                            .font(.headline)
-                    }
+                    Text("Gamer Score")
+                        .font(.headline)
+                        .lineLimit(1)
 
-                    Spacer()
+                    Spacer(minLength: 8)
 
-                    // Sleeker dropdown (menu-style Picker with smaller pill label)
                     Picker(selection: $selectedGame) {
                         ForEach(pickerOptions, id: \.self) { name in
                             Label(name, systemImage: gameIcon(for: name))
-                                .font(.caption2) // smaller in the menu
+                                .font(.caption2)
                                 .tag(name)
                         }
                     } label: {
@@ -534,11 +639,13 @@ struct GamesOverviewCardView: View {
                             Image(systemName: gameIcon(for: selectedGame))
                             Text(selectedGame)
                                 .lineLimit(1)
+                                .minimumScaleFactor(hSizeClass == .compact ? 0.6 : 0.7)
+                                .allowsTightening(true)
                             Image(systemName: "chevron.down")
                                 .foregroundStyle(.secondary)
                         }
-                        .font(.caption2.weight(.semibold)) // smaller label font
-                        .padding(.vertical, 2)
+                        .font(.caption2.weight(.semibold))
+                        .padding(.vertical, hSizeClass == .compact ? 1 : 2)
                         .padding(.horizontal, 6)
                         .background(
                             Capsule(style: .continuous)
@@ -554,9 +661,12 @@ struct GamesOverviewCardView: View {
                         .accessibilityValue(selectedGame)
                     }
                     .pickerStyle(.menu)
-                    .controlSize(.mini) // smaller control size
+                    .controlSize(.mini)
                     .animation(.easeInOut(duration: 0.2), value: selectedGame)
                 }
+
+                // Keep a horizontal line between the header and stats
+                Divider()
 
                 if !isEmpty {
                     // KPIs reflect selected game
@@ -566,6 +676,96 @@ struct GamesOverviewCardView: View {
                         metricChip(title: "Correct", value: "\(kpiCorrect)", tint: .green)
                         metricChip(title: "Best Streak", value: (kpiBestStreak > 0 ? "\(kpiBestStreak)" : "—"), tint: .orange)
                     }
+
+                    // NEW: Activity & Trend row for Overview — scoped to selectedGame
+                    let series30 = (selectedGame == "All Games")
+                        ? GameStats.shared.dailySeriesLast(days: 30)
+                        : GameStats.shared.dailySeriesLast(days: 30, forDisplayName: selectedGame)
+                    let activeDays30 = series30.filter { $0.answered > 0 }.count
+                    let totalPlayed30 = series30.reduce(0) { $0 + max(0, $1.answered) }
+                    let avgPerActive = activeDays30 > 0 ? totalPlayed30 / activeDays30 : 0
+                    let streaksInfo = (selectedGame == "All Games")
+                        ? GameStats.shared.activityStreaks()
+                        : GameStats.shared.activityStreaks(forDisplayName: selectedGame)
+                    let trend7 = (selectedGame == "All Games")
+                        ? GameStats.shared.accuracy7DayTrend()
+                        : GameStats.shared.accuracy7DayTrend(forDisplayName: selectedGame)
+                    let trendTint: Color = trend7.deltaVsPrev >= 0 ? .green : .red
+                    let trendArrow: String = trend7.deltaVsPrev >= 0 ? "arrow.up.right" : "arrow.down.right"
+                    let hasRecentActivity30 = series30.contains { $0.answered > 0 }
+
+                    // Make this KPI row horizontally scrollable so 7D chip has normal size
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            metricChip(title: "Active Days (30D)", value: "\(activeDays30)", tint: .purple)
+                            metricChip(title: "Qs/Day", value: "\(avgPerActive)", tint: .teal)
+                            metricChip(title: "Current Streak", value: streaksInfo.current > 0 ? "\(streaksInfo.current)" : "—", tint: .orange)
+                            metricChip(title: "Longest Streak", value: streaksInfo.longest > 0 ? "\(streaksInfo.longest)" : "—", tint: .orange)
+                            // 7D Accuracy with delta (normal size chip)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("7D Accuracy")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                HStack(spacing: 4) {
+                                    Text("\(Int(round(trend7.currentPct)))%")
+                                        .font(.footnote.weight(.semibold))
+                                        .monospacedDigit()
+                                    Image(systemName: trendArrow)
+                                        .foregroundStyle(trendTint)
+                                    Text("\(Int(round(abs(trend7.deltaVsPrev))))%")
+                                        .font(.caption.weight(.semibold))
+                                        .monospacedDigit()
+                                        .foregroundStyle(trendTint)
+                                }
+                            }
+                            .padding(.vertical, 10)
+                            .padding(.horizontal, 12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .fill(trendTint.opacity(0.08))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .stroke(trendTint.opacity(0.25), lineWidth: 1)
+                            )
+                        }
+                        .padding(.horizontal, 2)
+                    }
+
+                    if !hasRecentActivity30 {
+                        Text("No recent activity")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .padding(.top, 2)
+                    }
+
+                    // 30-day sparkline — scoped to selected game
+                    Chart {
+                        ForEach(series30, id: \.date) { point in
+                            LineMark(
+                                x: .value("Date", point.date),
+                                y: .value("Played", point.answered)
+                            )
+                            .interpolationMethod(.monotone)
+                            .foregroundStyle(Color.accentColor.opacity(hasRecentActivity30 ? 0.9 : 0.35))
+                            AreaMark(
+                                x: .value("Date", point.date),
+                                y: .value("Played", point.answered)
+                            )
+                            .interpolationMethod(.monotone)
+                            .foregroundStyle(Color.accentColor.opacity(hasRecentActivity30 ? 0.18 : 0.08))
+                        }
+                    }
+                    .chartXAxis(.hidden)
+                    .chartYAxis(.hidden)
+                    .frame(height: 56)
+                    .accessibilityLabel("Played per day in the last 30 days")
+                    .animation(.easeInOut(duration: 0.35), value: version)
+
+                    // Caption clarifying the sparkline
+                    Text("Played per day (last 30 days)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 } else {
                     Text("Play any game to build your Gamer Score.")
                         .font(.subheadline)

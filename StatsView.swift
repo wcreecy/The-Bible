@@ -222,6 +222,8 @@ struct StatsView: View {
                     VStack(spacing: 16) {
                         progressCard
                         topBooksThisMonthCard
+                        // Moved Genre Distribution under Top Books This Month in the first column
+                        genreCard
                     }
                     .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
 
@@ -229,7 +231,7 @@ struct StatsView: View {
                     VStack(spacing: 16) {
                         totalsCard
                         otntCard
-                        genreCard
+                        // Removed genreCard from column 2
                         avgSessionCard
                     }
                     .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)

@@ -160,7 +160,7 @@ struct WordleStatsCardView: View {
             }
             .padding(.top, 2)
         } label: {
-            Text("Wordle")
+            Text("WORD")
         }
         // Still listen for explicit notifications (belt-and-suspenders)
         .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in

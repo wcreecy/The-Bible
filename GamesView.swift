@@ -95,7 +95,7 @@ struct GamesView: View {
                     }
                 }
 
-                // 5. Wordle (Bible) — soft green glow when Daily is available
+                // 5. WORD — soft green glow when Daily is available
                 NavigationLink(value: GameRoute.wordle) {
                     ZStack {
                         if shouldGlowWordle {
@@ -117,7 +117,7 @@ struct GamesView: View {
                             Image(systemName: "square.grid.3x3")
                                 .foregroundStyle(.mint)
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("Wordle (Bible)").font(.headline)
+                                Text("WORD").font(.headline)
                                 Text("Guess the 5‑letter word in 6 tries").font(.subheadline).foregroundStyle(.secondary)
                             }
                         }
@@ -214,4 +214,3 @@ struct GamesView: View {
 #Preview {
     NavigationStack { GamesView() }
 }
-

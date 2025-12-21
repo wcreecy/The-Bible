@@ -294,7 +294,7 @@ struct WordleView: View {
             // small spacer to keep content above the home indicator
             Color.clear.frame(height: 6)
         }
-        .navigationTitle("Wordle (Bible)")
+        .navigationTitle("WORD")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showRefSheet, onDismiss: {
             selectedRef = nil
@@ -344,7 +344,7 @@ struct WordleView: View {
                 .font(.largeTitle)
                 .foregroundStyle(.mint)
 
-            Text("Wordle (Bible)")
+            Text("WORD")
                 .font(.title2.bold())
 
             Text("Guess the 5‑letter word in 6 tries.\nUse the on‑screen keyboard or a connected keyboard.")
@@ -477,17 +477,11 @@ struct WordleView: View {
                 }
             }
             HStack(spacing: 6) {
-                // Layout toggle button (replaces the small return icon)
+                // Layout toggle button: always use the reverse circle icon (less text, consistent look)
                 Button(action: { useABCLayout.toggle() }) {
-                    if useABCLayout {
-                        Image(systemName: "arrow.uturn.backward.circle")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                    } else {
-                        Text("ABC")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                    }
+                    Image(systemName: "arrow.uturn.backward.circle")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
                 .disabled(roundOver)
@@ -716,7 +710,7 @@ struct WordleView: View {
             roundRef = Self.findExactOccurrence(for: target)
             if roundRef == nil {
                 // Log for diagnostics; UI will show a disabled chip as a last resort.
-                print("Wordle: No exact verse reference found for \(target)")
+                print("WORD: No exact verse reference found for \(target)")
             }
         }
 

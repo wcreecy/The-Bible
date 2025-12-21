@@ -25,9 +25,9 @@ struct SettingsDebugUtilitiesView: View {
             if debugUtilitiesExpanded {
                 // NEW: Wordle debug toggle
                 Group {
-                    Toggle("Allow Daily Wordle Replay (Debug)", isOn: $wordleAllowDailyReplay)
+                    Toggle("Allow Daily WORD Replay (Debug)", isOn: $wordleAllowDailyReplay)
                         .tint(.green)
-                    Text("When enabled, the Daily Wordle can be played again even after completing it today.")
+                    Text("When enabled, the Daily WORD can be played again even after completing it today.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
@@ -143,18 +143,18 @@ struct SettingsDebugUtilitiesView: View {
                 // Games
                 Group {
                     Button {
-                        GameStats.shared.seedRandomStatsAllGames()
-                        debugShow("Games", "Seeded random stats across all games and difficulties.")
+                        GameStats.shared.seedRandomStatsAllGamesLastNDays(days: 31)
+                        debugShow("Games", "Seeded random stats across all games for the last 31 days (including WORD win/loss times).")
                     } label: {
-                        Label("Seed Random Game Stats", systemImage: "gamecontroller")
+                        Label("Seed Random Game Stats (31 Days)", systemImage: "gamecontroller")
                     }
 
                     // NEW: Clear Wordle only
                     Button(role: .destructive) {
                         iCloudSyncCoordinator.shared.resetWordleCountersToZero()
-                        debugShow("Games", "Cleared Wordle stats only.")
+                        debugShow("Games", "Cleared WORD stats only.")
                     } label: {
-                        Label("Clear Wordle Stats Only", systemImage: "trash")
+                        Label("Clear WORD Stats Only", systemImage: "trash")
                     }
 
                     Button(role: .destructive) {
@@ -460,3 +460,4 @@ struct SettingsDebugUtilitiesView: View {
     }
 }
 #endif
+

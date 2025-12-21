@@ -158,12 +158,63 @@ final class GameStats: ObservableObject {
             .init(name: "Beat the Clock", correct: b.correct, answered: b.answered, bestStreak: b.bestStreak),
             .init(name: "Book Order", correct: o.correct, answered: o.answered, bestStreak: o.bestStreak),
             .init(name: "Who am I?", correct: w.correct, answered: w.answered, bestStreak: w.bestStreak),
-            .init(name: "Wordle (Bible)", correct: wdCombined.correct, answered: wdCombined.answered, bestStreak: wdCombined.bestStreak)
+            .init(name: "WORD", correct: wdCombined.correct, answered: wdCombined.answered, bestStreak: wdCombined.bestStreak)
         ]
         return GameBreakdown(entries: entries)
     }
 
     // MARK: - Public write API
+
+    // Helper: short storage key per game (for per-game daily maps)
+    private static func storageKey(for game: GameID) -> String {
+        switch game {
+        case .quiz: return "quiz"
+        case .hangman: return "hangman"
+        case .beatclock: return "beatclock"
+        case .versematch: return "versematch"
+        case .bookorder: return "bookorder"
+        case .whoami: return "whoami"
+        case .wordle: return "word" // combined/overall Wordle
+        }
+    }
+
+    // Reverse mapping from display name to storage key
+    private static func storageKey(forDisplayName name: String) -> String? {
+        switch name {
+        case "Bible Quiz": return "quiz"
+        case "Hangman": return "hangman"
+        case "Verse Match": return "versematch"
+        case "Beat the Clock": return "beatclock"
+        case "Book Order": return "bookorder"
+        case "Who am I?": return "whoami"
+        case "WORD": return "word"
+        default: return nil
+        }
+    }
+
+    // Update both overall and per-game daily maps
+    private func updateDailyMaps(addAnswered: Int, addCorrect: Int, forGameKey key: String) {
+        // Local yyyy-MM-dd key
+        let dayKey = Self.localDayKey(for: Date())
+
+        // Overall maps
+        var dailyAnswered: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered")
+        dailyAnswered[dayKey, default: 0] = max(0, (dailyAnswered[dayKey] ?? 0) + max(0, addAnswered))
+        saveJSONMap(dailyAnswered, forKey: "gamesDailyAnswered")
+
+        var dailyCorrect: [String: Int] = loadJSONMap(forKey: "gamesDailyCorrect")
+        dailyCorrect[dayKey, default: 0] = max(0, (dailyCorrect[dayKey] ?? 0) + max(0, addCorrect))
+        saveJSONMap(dailyCorrect, forKey: "gamesDailyCorrect")
+
+        // Per-game maps
+        var perAnswered: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered_\(key)")
+        perAnswered[dayKey, default: 0] = max(0, (perAnswered[dayKey] ?? 0) + max(0, addAnswered))
+        saveJSONMap(perAnswered, forKey: "gamesDailyAnswered_\(key)")
+
+        var perCorrect: [String: Int] = loadJSONMap(forKey: "gamesDailyCorrect_\(key)")
+        perCorrect[dayKey, default: 0] = max(0, (perCorrect[dayKey] ?? 0) + max(0, addCorrect))
+        saveJSONMap(perCorrect, forKey: "gamesDailyCorrect_\(key)")
+    }
 
     // Call this when a round/question ends to update all-time stats and sync.
     func recordRound(game: GameID, difficulty: Difficulty, correct addCorrect: Int, answered addAnswered: Int, currentBestStreak: Int) {
@@ -282,18 +333,9 @@ final class GameStats: ObservableObject {
 
         // NEW: Append to per-day maps and stamp last played
         do {
-            // Local yyyy-MM-dd key
-            let dayKey = Self.localDayKey(for: Date())
-
-            // Update daily answered map
-            var dailyAnswered: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered")
-            dailyAnswered[dayKey, default: 0] = max(0, (dailyAnswered[dayKey] ?? 0) + max(0, addAnswered))
-            saveJSONMap(dailyAnswered, forKey: "gamesDailyAnswered")
-
-            // Update daily correct map
-            var dailyCorrect: [String: Int] = loadJSONMap(forKey: "gamesDailyCorrect")
-            dailyCorrect[dayKey, default: 0] = max(0, (dailyCorrect[dayKey] ?? 0) + max(0, addCorrect))
-            saveJSONMap(dailyCorrect, forKey: "gamesDailyCorrect")
+            // Update overall + per-game daily maps
+            let key = Self.storageKey(for: game)
+            updateDailyMaps(addAnswered: addAnswered, addCorrect: addCorrect, forGameKey: key)
 
             // Stamp last played time and game name
             let nowTS = Date().timeIntervalSince1970
@@ -337,14 +379,8 @@ final class GameStats: ObservableObject {
 
         // Daily progress maps + last played metadata (same as generic path)
         do {
-            let dayKey = Self.localDayKey(for: Date())
-            var dailyAnswered: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered")
-            dailyAnswered[dayKey, default: 0] = max(0, (dailyAnswered[dayKey] ?? 0) + max(0, addAnswered))
-            saveJSONMap(dailyAnswered, forKey: "gamesDailyAnswered")
-
-            var dailyCorrect: [String: Int] = loadJSONMap(forKey: "gamesDailyCorrect")
-            dailyCorrect[dayKey, default: 0] = max(0, (dailyCorrect[dayKey] ?? 0) + max(0, addCorrect))
-            saveJSONMap(dailyCorrect, forKey: "gamesDailyCorrect")
+            // Update overall + per-game (combined "word") daily maps
+            updateDailyMaps(addAnswered: addAnswered, addCorrect: addCorrect, forGameKey: "word")
 
             let nowTS = Date().timeIntervalSince1970
             let defaults = UserDefaults.standard
@@ -625,7 +661,7 @@ final class GameStats: ObservableObject {
         case .versematch: return "Verse Match"
         case .bookorder: return "Book Order"
         case .whoami: return "Who am I?"
-        case .wordle: return "Wordle (Bible)"
+        case .wordle: return "WORD"
         }
     }
 
@@ -641,7 +677,162 @@ final class GameStats: ObservableObject {
     }
 
     var lastPlayedGameName: String? {
-        UserDefaults.standard.string(forKey: "gamesLastPlayedGameName")
+        // Back-compat: if the stored value is the old name, present the new name.
+        if let raw = UserDefaults.standard.string(forKey: "gamesLastPlayedGameName") {
+            if raw == "Wordle (Bible)" { return "WORD" }
+            return raw
+        }
+        return nil
+    }
+
+    // MARK: - NEW: Public helpers for Overview card (activity/trend/last played)
+
+    func dailySeriesLast(days: Int, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> [(date: Date, answered: Int, correct: Int)] {
+        var cal = calendar
+        cal.timeZone = .autoupdatingCurrent
+        let startOfToday = cal.startOfDay(for: now)
+
+        let answeredMap: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered")
+        let correctMap: [String: Int] = loadJSONMap(forKey: "gamesDailyCorrect")
+
+        var series: [(Date, Int, Int)] = []
+        for i in stride(from: days - 1, through: 0, by: -1) {
+            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                let key = Self.localDayKey(for: d, calendar: cal)
+                let a = max(0, answeredMap[key] ?? 0)
+                let c = max(0, correctMap[key] ?? 0)
+                series.append((d, a, c))
+            }
+        }
+        return series
+    }
+
+    // Per-game series (by display name)
+    func dailySeriesLast(days: Int, forDisplayName name: String, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> [(date: Date, answered: Int, correct: Int)] {
+        if name == "All Games" { return dailySeriesLast(days: days, now: now, calendar: calendar) }
+        guard let gameKey = Self.storageKey(forDisplayName: name) else {
+            return dailySeriesLast(days: days, now: now, calendar: calendar)
+        }
+
+        var cal = calendar
+        cal.timeZone = .autoupdatingCurrent
+        let startOfToday = cal.startOfDay(for: now)
+
+        let answeredMap: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered_\(gameKey)")
+        let correctMap: [String: Int] = loadJSONMap(forKey: "gamesDailyCorrect_\(gameKey)")
+
+        var series: [(Date, Int, Int)] = []
+        for i in stride(from: days - 1, through: 0, by: -1) {
+            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                let key = Self.localDayKey(for: d, calendar: cal)
+                let a = max(0, answeredMap[key] ?? 0)
+                let c = max(0, correctMap[key] ?? 0)
+                series.append((d, a, c))
+            }
+        }
+        return series
+    }
+
+    func activityStreaks(now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (current: Int, longest: Int) {
+        var cal = calendar
+        cal.timeZone = .autoupdatingCurrent
+
+        let series = dailySeriesLast(days: 1825, now: now, calendar: cal)
+        // Longest streak: max contiguous days with answered > 0
+        var longest = 0
+        var currentRun = 0
+        for (_, a, _) in series {
+            if a > 0 {
+                currentRun += 1
+                longest = max(longest, currentRun)
+            } else {
+                currentRun = 0
+            }
+        }
+
+        // Current streak ends today if today > 0, else yesterday if yesterday > 0
+        var current = 0
+        // Walk backward from the end while answered > 0
+        for (_, a, _) in series.reversed() {
+            if a > 0 { current += 1 } else { break }
+        }
+
+        return (current, longest)
+    }
+
+    // Per-game streaks (by display name)
+    func activityStreaks(forDisplayName name: String, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (current: Int, longest: Int) {
+        if name == "All Games" { return activityStreaks(now: now, calendar: calendar) }
+
+        var cal = calendar
+        cal.timeZone = .autoupdatingCurrent
+        let series = dailySeriesLast(days: 1825, forDisplayName: name, now: now, calendar: cal)
+
+        var longest = 0
+        var currentRun = 0
+        for (_, a, _) in series {
+            if a > 0 {
+                currentRun += 1
+                longest = max(longest, currentRun)
+            } else {
+                currentRun = 0
+            }
+        }
+
+        var current = 0
+        for (_, a, _) in series.reversed() {
+            if a > 0 { current += 1 } else { break }
+        }
+
+        return (current, longest)
+    }
+
+    func accuracy7DayTrend(now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (currentPct: Double, deltaVsPrev: Double) {
+        let s14 = dailySeriesLast(days: 14, now: now, calendar: calendar)
+        let last7 = s14.suffix(7)
+        let prev7 = s14.prefix(max(0, s14.count - 7))
+
+        func pct(for slice: ArraySlice<(date: Date, answered: Int, correct: Int)>) -> Double {
+            let a = slice.reduce(0) { $0 + max(0, $1.answered) }
+            let c = slice.reduce(0) { $0 + max(0, $1.correct) }
+            guard a > 0 else { return 0 }
+            return min(100, max(0, (Double(c) / Double(a)) * 100.0))
+        }
+
+        let cur = pct(for: last7)
+        let prev = pct(for: prev7)
+        return (cur, cur - prev)
+    }
+
+    // Per-game 7-day trend (by display name)
+    func accuracy7DayTrend(forDisplayName name: String, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (currentPct: Double, deltaVsPrev: Double) {
+        if name == "All Games" { return accuracy7DayTrend(now: now, calendar: calendar) }
+
+        let s14 = dailySeriesLast(days: 14, forDisplayName: name, now: now, calendar: calendar)
+        let last7 = s14.suffix(7)
+        let prev7 = s14.prefix(max(0, s14.count - 7))
+
+        func pct(for slice: ArraySlice<(date: Date, answered: Int, correct: Int)>) -> Double {
+            let a = slice.reduce(0) { $0 + max(0, $1.answered) }
+            let c = slice.reduce(0) { $0 + max(0, $1.correct) }
+            guard a > 0 else { return 0 }
+            return min(100, max(0, (Double(c) / Double(a)) * 100.0))
+        }
+
+        let cur = pct(for: last7)
+        let prev = pct(for: prev7)
+        return (cur, cur - prev)
+    }
+
+    func lastPlayedSummary(now: Date = Date()) -> (name: String?, relative: String?) {
+        let defaults = UserDefaults.standard
+        let name = lastPlayedGameName
+        let ts = defaults.double(forKey: "gamesLastPlayedAt")
+        guard ts > 0 else { return (name, nil) }
+        let date = Date(timeIntervalSince1970: ts)
+        let f = RelativeDateTimeFormatter()
+        f.unitsStyle = .short
+        return (name, f.localizedString(for: date, relativeTo: now))
     }
 }
 
