@@ -9,15 +9,16 @@ struct SettingsResetDataSection: View {
             Button(role: .destructive) {
                 showingResetQuizAlert = true
             } label: {
-                Label("Reset All-time Game Stats", systemImage: "trash")
+                Label("Reset All Game Stats", systemImage: "trash")
             }
-            .alert("Reset All-time Stats?", isPresented: $showingResetQuizAlert) {
+            .alert("Reset All Game Stats?", isPresented: $showingResetQuizAlert) {
                 Button("Cancel", role: .cancel) {}
                 Button("Reset", role: .destructive) {
-                    iCloudSyncCoordinator.shared.resetAllGameCountersToZero()
+                    // Full wipe: counters, daily maps (overall + per-game), last played
+                    iCloudSyncCoordinator.shared.resetAllGameDataToZero()
                 }
             } message: {
-                Text("Your all-time game scores will be reset. Would you like to continue?")
+                Text("This will remove all game-related data: all-time counters, daily activity, streaks, accuracy trends, per-game charts, and last played. This cannot be undone. Continue?")
             }
 
             Button(role: .destructive) {
@@ -49,3 +50,4 @@ struct SettingsResetDataSection: View {
         .headerProminence(.increased)
     }
 }
+

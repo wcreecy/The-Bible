@@ -320,6 +320,37 @@ extension iCloudSyncCoordinator {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
+    // NEW: Full wipe of all game-related data: counters, daily maps (overall + per-game), and last played.
+    func resetAllGameDataToZero() {
+        // 1) Reset all-time counters (includes WORD extras)
+        resetAllGameCountersToZero()
+
+        // 2) Clear overall daily maps (JSON [String:Int]) and last played metadata
+        let overallMapKeys = ["gamesDailyAnswered", "gamesDailyCorrect"]
+        for key in overallMapKeys {
+            defaults.removeObject(forKey: key)
+            // Mirror removal to KVS
+            kvs.removeObject(forKey: key)
+        }
+        defaults.removeObject(forKey: "gamesLastPlayedAt")
+        defaults.removeObject(forKey: "gamesLastPlayedGameName")
+        kvs.removeObject(forKey: "gamesLastPlayedAt")
+        kvs.removeObject(forKey: "gamesLastPlayedGameName")
+
+        // Enqueue these for sync (they are in allKnownKeys)
+        enqueueKeysForSync(overallMapKeys + ["gamesLastPlayedAt", "gamesLastPlayedGameName"])
+
+        // 3) Clear per-game daily maps (local-only keys; not mirrored to KVS)
+        let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","word"]
+        for g in perGameKeys {
+            defaults.removeObject(forKey: "gamesDailyAnswered_\(g)")
+            defaults.removeObject(forKey: "gamesDailyCorrect_\(g)")
+        }
+
+        // 4) Notify UI to recompute all derived metrics to zero (streaks, Qs/day, 7D accuracy, per-game charts, insights)
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
     // Invariant repair: answered >= correct for all games
     // Returns set of keys that were changed (for debounced sync)
     @discardableResult
@@ -438,3 +469,4 @@ extension iCloudSyncCoordinator {
         return merged
     }
 }
+
