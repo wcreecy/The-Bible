@@ -56,6 +56,9 @@ struct WordleView: View {
     // NEW: Debug flag to allow replaying Daily Wordle (matches Settings/Games)
     @AppStorage("wordleAllowDailyReplay") private var wordleAllowDailyReplay: Bool = false
 
+    // NEW: Hard Mode toggle (persisted locally; stats still aggregate with normal mode)
+    @AppStorage("wordleHardModeEnabled") private var hardModeEnabled: Bool = false
+
     // All-time (per mode)
     private var allTimeSuffix: String { mode == .daily ? "daily" : "free" }
     private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeCorrect_\(allTimeSuffix)") }
@@ -362,6 +365,20 @@ struct WordleView: View {
             .pickerStyle(.segmented)
             .padding(.horizontal)
 
+            // NEW: Hard Mode toggle (works for both Daily and Free Play)
+            Toggle(isOn: $hardModeEnabled) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Hard Mode")
+                        .font(.headline)
+                    Text("Must keep green letters fixed and include yellow letters in later guesses.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .tint(.orange)
+            .padding(.horizontal)
+
             // NEW: Warning banner when Daily already completed (and replay not allowed)
             if mode == .daily && dailyCompletedToday && !wordleAllowDailyReplay {
                 HStack(alignment: .top, spacing: 8) {
@@ -575,6 +592,14 @@ struct WordleView: View {
             return
         }
 
+        // NEW: Hard Mode validation (must keep greens; must use yellows elsewhere)
+        if hardModeEnabled, rowIndex > 0 {
+            if let violation = hardModeViolation(for: guess) {
+                message = violation
+                return
+            }
+        }
+
         // Evaluate
         let eval = evaluate(guess: guess, against: target)
         evaluations[rowIndex] = eval
@@ -626,6 +651,88 @@ struct WordleView: View {
             }
         }
         return result
+    }
+
+    // MARK: - Hard Mode constraints
+
+    // Builds constraints from all previous guesses/evaluations:
+    // - greens: fixed positions i -> letter
+    // - minCount: for each letter, the maximum number of times it appeared as present/correct in any single prior guess
+    // - disallowedPositions: for each letter, any indices where it was marked present (yellow) in prior guesses
+    private func buildHardModeConstraints() -> (greens: [Int: Character], minCount: [Character: Int], disallowedPositions: [Character: Set<Int>]) {
+        var greens: [Int: Character] = [:]
+        var minCount: [Character: Int] = [:]
+        var disallowed: [Character: Set<Int>] = [:]
+
+        // Walk each prior row
+        for r in 0..<rowIndex {
+            let g = guesses[r]
+            guard g.count == 5 else { continue }
+            let eval = evaluations[r]
+            var perRowCounts: [Character: Int] = [:]
+
+            for i in 0..<5 {
+                let ch = Array(g)[i]
+                switch eval[i] {
+                case .correct:
+                    greens[i] = ch
+                    perRowCounts[ch, default: 0] += 1
+                case .present:
+                    disallowed[ch, default: []].insert(i) // cannot put this letter back in the same index
+                    perRowCounts[ch, default: 0] += 1
+                case .absent, .unknown:
+                    break
+                }
+            }
+
+            // Update global minCount with the maximum seen in any single row
+            for (ch, c) in perRowCounts {
+                if let old = minCount[ch] {
+                    if c > old { minCount[ch] = c }
+                } else {
+                    minCount[ch] = c
+                }
+            }
+        }
+
+        return (greens, minCount, disallowed)
+    }
+
+    // Returns a human-friendly violation message if the guess violates Hard Mode, else nil.
+    private func hardModeViolation(for guess: String) -> String? {
+        let (greens, minCount, disallowed) = buildHardModeConstraints()
+        let guessChars = Array(guess)
+
+        // 1) All known greens must be fixed
+        for (idx, ch) in greens {
+            if guessChars[idx] != ch {
+                return "Hard Mode: must keep \(ch) at position \(idx + 1)"
+            }
+        }
+
+        // 2) Must include minimum counts for letters revealed as present/correct
+        // Use maximum per single row, not sum across rows (avoids over-constraining repeats)
+        var guessCounts: [Character: Int] = [:]
+        for ch in guessChars {
+            guessCounts[ch, default: 0] += 1
+        }
+        for (ch, required) in minCount {
+            let have = guessCounts[ch] ?? 0
+            if have < required {
+                return "Hard Mode: must include \(required) \(ch)\(required > 1 ? "s" : "")"
+            }
+        }
+
+        // 3) Yellow letters cannot be placed back into the same index they were yellow before
+        for (ch, badPositions) in disallowed {
+            for idx in badPositions {
+                if guessChars[idx] == ch {
+                    return "Hard Mode: \(ch) cannot be at position \(idx + 1)"
+                }
+            }
+        }
+
+        return nil
     }
 
     // MARK: - Rounds
