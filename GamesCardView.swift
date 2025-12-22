@@ -235,7 +235,7 @@ struct GamesCardView: View {
                         .animation(.easeInOut(duration: 0.35), value: version)
 
                         // Caption clarifying the sparkline
-                        Text("Played per day (last 30 days)")
+                        Text("Questions per day (last 30 days)")
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
@@ -595,8 +595,42 @@ struct GamesOverviewCardView: View {
             // Resolve selected entry (if any)
             let selectedEntry = entries.first(where: { $0.name == selectedGame })
 
-            // KPIs per selection
+            // WORD-scoped KPIs and ring values when selected
+            let wordScoped: (accPct: Double, played: Int, correct: Int, bestStreak: Int)? = {
+                guard selectedGame == "WORD" else { return nil }
+
+                // Per-mode counts
+                let n = GameStats.shared.wordleCounts(mode: .normal)
+                let h = GameStats.shared.wordleCounts(mode: .hard)
+
+                // Best streaks from persisted keys (include legacy _all for combined)
+                let bestN = UserDefaults.standard.integer(forKey: "wordleAllTimeBestStreak_normal")
+                let bestH = UserDefaults.standard.integer(forKey: "wordleAllTimeBestStreak_hard")
+                let bestAll = UserDefaults.standard.integer(forKey: "wordleAllTimeBestStreak_all")
+
+                switch wordScope {
+                case 0: // Normal
+                    let a = n.answered
+                    let w = n.wins
+                    let pct = a > 0 ? min(100, max(0, (Double(w) / Double(a)) * 100.0)) : 0
+                    return (pct, a, w, bestN)
+                case 1: // Hard
+                    let a = h.answered
+                    let w = h.wins
+                    let pct = a > 0 ? min(100, max(0, (Double(w) / Double(a)) * 100.0)) : 0
+                    return (pct, a, w, bestH)
+                default: // Combined
+                    let a = n.answered + h.answered
+                    let w = n.wins + h.wins
+                    let pct = a > 0 ? min(100, max(0, (Double(w) / Double(a)) * 100.0)) : 0
+                    let best = max(bestN, bestH, bestAll)
+                    return (pct, a, w, best)
+                }
+            }()
+
+            // KPIs per selection (falls back to generic for non-WORD)
             let kpiAccuracyPct: Double = {
+                if selectedGame == "WORD", let scoped = wordScoped { return scoped.accPct }
                 if selectedGame == "All Games" { return overallPct }
                 let ans = selectedEntry?.answered ?? 0
                 guard ans > 0 else { return 0 }
@@ -604,9 +638,18 @@ struct GamesOverviewCardView: View {
             }()
             let kpiAccuracyTint = Color.gamerScoreColor(for: kpiAccuracyPct)
 
-            let kpiPlayed: Int = (selectedGame == "All Games") ? totalAnswered : (selectedEntry?.answered ?? 0)
-            let kpiCorrect: Int = (selectedGame == "All Games") ? totalCorrect : (selectedEntry?.correct ?? 0)
+            let kpiPlayed: Int = {
+                if selectedGame == "WORD", let scoped = wordScoped { return scoped.played }
+                return (selectedGame == "All Games") ? totalAnswered : (selectedEntry?.answered ?? 0)
+            }()
+
+            let kpiCorrect: Int = {
+                if selectedGame == "WORD", let scoped = wordScoped { return scoped.correct }
+                return (selectedGame == "All Games") ? totalCorrect : (selectedEntry?.correct ?? 0)
+            }()
+
             let kpiBestStreak: Int = {
+                if selectedGame == "WORD", let scoped = wordScoped { return scoped.bestStreak }
                 if selectedGame == "All Games" {
                     return entries.map { $0.bestStreak ?? 0 }.max() ?? 0
                 } else {
@@ -614,8 +657,11 @@ struct GamesOverviewCardView: View {
                 }
             }()
 
-            // Displayed gamer score in the ring (overall vs per-game)
-            let displayPct: Double = (selectedGame == "All Games") ? overallPct : kpiAccuracyPct
+            // Displayed gamer score in the ring (overall vs per-game or WORD-scoped)
+            let displayPct: Double = {
+                if selectedGame == "WORD", let scoped = wordScoped { return scoped.accPct }
+                return (selectedGame == "All Games") ? overallPct : kpiAccuracyPct
+            }()
             let displayTint: Color = Color.gamerScoreColor(for: displayPct)
 
             VStack(alignment: .leading, spacing: 10) {
@@ -696,7 +742,7 @@ struct GamesOverviewCardView: View {
                 Divider()
 
                 if !isEmpty {
-                    // KPIs reflect selected game
+                    // KPIs reflect selected game (and WORD scope when applicable)
                     HStack(spacing: 8) {
                         metricChip(title: "Accuracy", value: "\(Int(round(kpiAccuracyPct)))%", tint: kpiAccuracyTint)
                         metricChip(title: "Played", value: "\(kpiPlayed)", tint: .blue)
@@ -790,7 +836,7 @@ struct GamesOverviewCardView: View {
                     .animation(.easeInOut(duration: 0.35), value: version)
 
                     // Caption clarifying the sparkline
-                    Text("Played per day (last 30 days)")
+                    Text("Questions per day (last 30 days)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
 
@@ -925,11 +971,11 @@ struct GamesOverviewCardView: View {
 
                     // WORD-only section: move WordleStatsCardView content here when selected
                     if selectedGame == "WORD" {
-                        // Segmented picker scope (Normal/Hard/Combined)
+                        // Segmented picker scope (Combined/Normal/Hard) — Combined default (tag 2)
                         Picker("Scope", selection: $wordScope) {
+                            Text("Combined").tag(2)
                             Text("Normal").tag(0)
                             Text("Hard").tag(1)
-                            Text("Combined").tag(2)
                         }
                         .pickerStyle(.segmented)
 

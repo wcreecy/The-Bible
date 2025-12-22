@@ -251,7 +251,7 @@ struct WordleView: View {
                     if !roundOver, let msg = message {
                         Text(msg)
                             .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(msg == "Not in word list" ? .red : .secondary)
+                            .foregroundStyle(.red)
                             .padding(.top, 4)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
