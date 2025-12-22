@@ -263,8 +263,6 @@ struct StatsView: View {
                         .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
                     PlayerStatSheetCardView()
                         .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
-                    WordleStatsCardView()
-                        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
@@ -273,7 +271,6 @@ struct StatsView: View {
                 VStack(spacing: 16) {
                     GamesOverviewCardView()
                     PlayerStatSheetCardView()
-                    WordleStatsCardView()
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 8)

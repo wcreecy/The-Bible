@@ -547,6 +547,31 @@ struct GamesOverviewCardView: View {
         }
     }
 
+    // Custom sort key: treat "WORD" as "Who am I?" for ordering.
+    private func sortKey(for name: String) -> String {
+        let key = (name == "WORD") ? "Who am I?" : name
+        return key.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .autoupdatingCurrent)
+    }
+
+    // Stable comparator that forces "Who am I?" above "WORD" when keys tie.
+    private func gameNameComparator(_ lhs: String, _ rhs: String) -> Bool {
+        let l = sortKey(for: lhs)
+        let r = sortKey(for: rhs)
+        if l == r {
+            // Explicit priority: Who am I? first, then WORD, then deterministic fallback
+            let priority: [String: Int] = ["Who am I?": 0, "WORD": 1]
+            let pl = priority[lhs] ?? 2
+            let pr = priority[rhs] ?? 2
+            if pl != pr { return pl < pr }
+            // Deterministic fallback to avoid instability
+            return lhs.localizedCaseInsensitiveCompare(rhs) == .orderedAscending
+        }
+        return l.localizedCompare(r) == .orderedAscending
+    }
+
+    // WORD scope picker state (0=Daily, 1=Free, 2=Combined)
+    @State private var wordScope: Int = 2
+
     var body: some View {
         GroupBox {
             let _ = stats.version
@@ -558,12 +583,10 @@ struct GamesOverviewCardView: View {
             let overallPct = breakdown.percentage
             let isEmpty = (totalAnswered == 0)
 
-            // Picker options in a sensible order (names must match breakdown)
-            let desiredOrder = ["Bible Quiz", "Hangman", "Verse Match", "Beat the Clock", "Book Order", "Who am I?", "WORD"]
+            // Alphabetical picker options, case/diacritic-insensitive, with a stable tiebreaker:
+            // "Who am I?" must always appear above "WORD".
             let availableNames = Array(Set(entries.map { $0.name }))
-            let orderedDesired = desiredOrder.filter { availableNames.contains($0) }
-            let extras = availableNames.filter { !desiredOrder.contains($0) }.sorted()
-            let pickerOptions = ["All Games"] + orderedDesired + extras
+            let pickerOptions = ["All Games"] + availableNames.sorted(by: gameNameComparator)
 
             // Resolve selected entry (if any)
             let selectedEntry = entries.first(where: { $0.name == selectedGame })
@@ -766,6 +789,125 @@ struct GamesOverviewCardView: View {
                     Text("Played per day (last 30 days)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+
+                    // WORD-only section: move WordleStatsCardView content here when selected
+                    if selectedGame == "WORD" {
+                        // Segmented picker scope
+                        Picker("Scope", selection: $wordScope) {
+                            Text("Daily").tag(0)
+                            Text("Free").tag(1)
+                            Text("Combined").tag(2)
+                        }
+                        .pickerStyle(.segmented)
+
+                        // Average guesses + distribution
+                        let averageAndDist: (avg: Double, dist: [Int]) = {
+                            switch wordScope {
+                            case 0:
+                                let (avg, dist) = GameStats.shared.wordleWinGuessStats(type: .daily)
+                                return (avg, dist)
+                            case 1:
+                                let (avg, dist) = GameStats.shared.wordleWinGuessStats(type: .free)
+                                return (avg, dist)
+                            default:
+                                let (avg, dist) = GameStats.shared.wordleWinGuessStatsCombined()
+                                return (avg, dist)
+                            }
+                        }()
+
+                        Text(String(format: "Average guesses per win: %.1f", averageAndDist.avg))
+                            .font(.headline)
+                            .monospacedDigit()
+
+                        Chart {
+                            ForEach(Array(zip(1...6, averageAndDist.dist)), id: \.0) { guess, count in
+                                BarMark(
+                                    x: .value("Guesses", guess),
+                                    y: .value("Wins", count)
+                                )
+                                .foregroundStyle(Color.accentColor.opacity(0.85))
+                                .cornerRadius(4)
+                                .annotation(position: .top, alignment: .center) {
+                                    if count > 0 {
+                                        Text("\(count)")
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                            .monospacedDigit()
+                                    }
+                                }
+                            }
+                        }
+                        .chartXScale(domain: 0.5...6.5)
+                        .chartPlotStyle { plot in
+                            plot.padding(.horizontal, 6)
+                        }
+                        .chartXAxis {
+                            AxisMarks(values: Array(1...6)) { value in
+                                AxisGridLine()
+                                AxisTick()
+                                AxisValueLabel {
+                                    if let g = value.as(Int.self) {
+                                        Text("\(g)").font(.caption2)
+                                    }
+                                }
+                            }
+                        }
+                        .chartXAxisLabel("Guesses", alignment: .center)
+                        .chartYAxis {
+                            AxisMarks(position: .leading)
+                        }
+                        .chartYAxisLabel(position: .leading, alignment: .center) {
+                            Text("Wins").rotationEffect(.degrees(180))
+                        }
+                        .frame(height: 180)
+
+                        // Timing stats (per scope)
+                        let timeStats: (total: Int, wins: Int, losses: Int) = {
+                            switch wordScope {
+                            case 0: return GameStats.shared.wordleTimeStats(type: .daily)
+                            case 1: return GameStats.shared.wordleTimeStats(type: .free)
+                            default: return GameStats.shared.wordleTimeStatsCombined()
+                            }
+                        }()
+
+                        // Counts for denominators
+                        let counts: (answered: Int, wins: Int, losses: Int) = {
+                            let defaults = UserDefaults.standard
+                            switch wordScope {
+                            case 0:
+                                let wins = max(0, defaults.integer(forKey: "wordleAllTimeCorrect_daily"))
+                                let answered = max(0, defaults.integer(forKey: "wordleAllTimeAnswered_daily"))
+                                let losses = max(0, answered - wins)
+                                return (answered, wins, losses)
+                            case 1:
+                                let wins = max(0, defaults.integer(forKey: "wordleAllTimeCorrect_free"))
+                                let answered = max(0, defaults.integer(forKey: "wordleAllTimeAnswered_free"))
+                                let losses = max(0, answered - wins)
+                                return (answered, wins, losses)
+                            default:
+                                let wins = max(0, defaults.integer(forKey: "wordleAllTimeCorrect_daily")) + max(0, defaults.integer(forKey: "wordleAllTimeCorrect_free"))
+                                let answered = max(0, defaults.integer(forKey: "wordleAllTimeAnswered_daily")) + max(0, defaults.integer(forKey: "wordleAllTimeAnswered_free"))
+                                let losses = max(0, answered - wins)
+                                return (answered, wins, losses)
+                            }
+                        }()
+
+                        let avgPerWinSeconds = (counts.wins > 0) ? max(0, timeStats.wins / max(1, counts.wins)) : 0
+                        let avgPerLossSeconds = (counts.losses > 0) ? max(0, timeStats.losses / max(1, counts.losses)) : 0
+                        let avgPerPuzzleSeconds = (counts.answered > 0) ? max(0, timeStats.total / max(1, counts.answered)) : 0
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Average Time Spent")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            HStack(spacing: 8) {
+                                timingPill(title: "Per Win", value: formatSeconds(avgPerWinSeconds), tint: .green)
+                                timingPill(title: "Per Loss", value: formatSeconds(avgPerLossSeconds), tint: .red)
+                                timingPill(title: "Per Puzzle", value: formatSeconds(avgPerPuzzleSeconds), tint: .purple)
+                            }
+                        }
+                        .padding(.top, 2)
+                    }
                 } else {
                     Text("Play any game to build your Gamer Score.")
                         .font(.subheadline)
@@ -811,6 +953,55 @@ struct GamesOverviewCardView: View {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(tint.opacity(0.25), lineWidth: 1)
         )
+    }
+
+    private func labeledValue(_ text: String, isBest: Bool, isWorst: Bool) -> some View {
+        HStack(spacing: 4) {
+            if isBest {
+                Image(systemName: "arrow.up.right")
+                    .foregroundStyle(.green)
+            } else if isWorst {
+                Image(systemName: "arrow.down.right")
+                    .foregroundStyle(.red)
+            }
+            Text(text)
+                .font(.footnote)
+                .monospacedDigit()
+                .foregroundStyle(isBest ? .green : (isWorst ? .red : .primary))
+        }
+    }
+
+    private func timingPill(title: String, value: String, tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(title)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.footnote.weight(.semibold))
+                .monospacedDigit()
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(tint.opacity(0.08))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(tint.opacity(0.25), lineWidth: 1)
+        )
+    }
+
+    private func formatSeconds(_ s: Int) -> String {
+        let seconds = max(0, s)
+        let h = seconds / 3600
+        let m = (seconds % 3600) / 60
+        let sec = seconds % 60
+        if h > 0 {
+            return String(format: "%d:%02d:%02d", h, m, sec)
+        } else {
+            return String(format: "%d:%02d", m, sec)
+        }
     }
 }
 
