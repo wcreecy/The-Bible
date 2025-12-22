@@ -216,22 +216,48 @@ final class GameStats: ObservableObject {
         saveJSONMap(perCorrect, forKey: "gamesDailyCorrect_\(key)")
     }
 
-    // NEW: Bible Quiz per-book maps write API
+    // NEW: Bible Quiz per-book maps write API (all-time + daily nested maps)
     func recordQuizPerBook(bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
         guard !bookName.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
-        // Answered map
+        let defaults = UserDefaults.standard
+
+        // Answered map (all-time)
         var answeredMap: [String: Int] = loadJSONMap(forKey: "quizPerBookAnsweredMap")
         if addAnswered != 0 {
             answeredMap[bookName, default: 0] = max(0, (answeredMap[bookName] ?? 0) + max(0, addAnswered))
             saveJSONMap(answeredMap, forKey: "quizPerBookAnsweredMap")
             iCloudSyncCoordinator.shared.pushKey("quizPerBookAnsweredMap")
         }
-        // Correct map
+
+        // Correct map (all-time)
         var correctMap: [String: Int] = loadJSONMap(forKey: "quizPerBookCorrectMap")
         if addCorrect != 0 {
             correctMap[bookName, default: 0] = max(0, (correctMap[bookName] ?? 0) + max(0, addCorrect))
             saveJSONMap(correctMap, forKey: "quizPerBookCorrectMap")
             iCloudSyncCoordinator.shared.pushKey("quizPerBookCorrectMap")
+        }
+
+        // NEW: Daily nested maps for last N days analytics
+        let dayKey = Self.localDayKey(for: Date())
+
+        // Daily Answered: [dayKey: [book: Int]]
+        var dailyAnsweredNested: [String: [String: Int]] = loadNestedJSONMap(forKey: "quizPerBookDailyAnswered")
+        var dayAnswered = dailyAnsweredNested[dayKey] ?? [:]
+        if addAnswered != 0 {
+            dayAnswered[bookName, default: 0] = max(0, (dayAnswered[bookName] ?? 0) + max(0, addAnswered))
+            dailyAnsweredNested[dayKey] = dayAnswered
+            saveNestedJSONMap(dailyAnsweredNested, forKey: "quizPerBookDailyAnswered")
+            iCloudSyncCoordinator.shared.pushKey("quizPerBookDailyAnswered")
+        }
+
+        // Daily Correct: [dayKey: [book: Int]]
+        var dailyCorrectNested: [String: [String: Int]] = loadNestedJSONMap(forKey: "quizPerBookDailyCorrect")
+        var dayCorrect = dailyCorrectNested[dayKey] ?? [:]
+        if addCorrect != 0 {
+            dayCorrect[bookName, default: 0] = max(0, (dayCorrect[bookName] ?? 0) + max(0, addCorrect))
+            dailyCorrectNested[dayKey] = dayCorrect
+            saveNestedJSONMap(dailyCorrectNested, forKey: "quizPerBookDailyCorrect")
+            iCloudSyncCoordinator.shared.pushKey("quizPerBookDailyCorrect")
         }
 
         // Nudge listeners
@@ -675,6 +701,23 @@ final class GameStats: ObservableObject {
         }
     }
 
+    // Load/save nested JSON map [String: [String: Int]]
+    private func loadNestedJSONMap(forKey key: String) -> [String: [String: Int]] {
+        let defaults = UserDefaults.standard
+        guard let data = defaults.data(forKey: key),
+              let map = try? JSONDecoder().decode([String: [String: Int]].self, from: data) else {
+            return [:]
+        }
+        return map
+    }
+
+    private func saveNestedJSONMap(_ map: [String: [String: Int]], forKey key: String) {
+        let defaults = UserDefaults.standard
+        if let data = try? JSONEncoder().encode(map) {
+            defaults.set(data, forKey: key)
+        }
+    }
+
     private static func gameDisplayName(for id: GameID) -> String {
         switch id {
         case .quiz: return "Bible Quiz"
@@ -865,6 +908,12 @@ final class GameStats: ObservableObject {
         return (a, c)
     }
 
+    private func loadQuizPerBookDailyMaps() -> (answered: [String: [String: Int]], correct: [String: [String: Int]]) {
+        let a: [String: [String: Int]] = loadNestedJSONMap(forKey: "quizPerBookDailyAnswered")
+        let c: [String: [String: Int]] = loadNestedJSONMap(forKey: "quizPerBookDailyCorrect")
+        return (a, c)
+    }
+
     // Matthew boundary splitter using BibleData.books; fallback to simple sets if Matthew missing.
     private func isOT(bookName: String) -> Bool? {
         let books = BibleData.books
@@ -900,6 +949,81 @@ final class GameStats: ObservableObject {
         let otPct = otA > 0 ? min(100, max(0, (Double(otC) / Double(otA)) * 100.0)) : 0
         let ntPct = ntA > 0 ? min(100, max(0, (Double(ntC) / Double(ntA)) * 100.0)) : 0
         return (otA, otC, ntA, ntC, otPct, ntPct)
+    }
+
+    // NEW: Accuracy by Genre (all-time per-book maps)
+    func quizAccuracyByGenre() -> [(genre: String, answered: Int, correct: Int, pct: Double)] {
+        let (answeredMap, correctMap) = loadQuizPerBookMaps()
+        var buckets: [StatsSeriesBuilder.Genre: (a: Int, c: Int)] = [:]
+
+        let allBooks = Set(answeredMap.keys).union(correctMap.keys)
+        for b in allBooks {
+            let a = max(0, answeredMap[b] ?? 0)
+            let c = max(0, correctMap[b] ?? 0)
+            guard a > 0 else { continue }
+            let g = StatsSeriesBuilder.genreForBook(b)
+            var cur = buckets[g] ?? (0, 0)
+            cur.a += a
+            cur.c += c
+            buckets[g] = cur
+        }
+
+        let order: [StatsSeriesBuilder.Genre] = [.Law, .History, .Poetry, .MajorProphets, .MinorProphets, .Gospels, .Acts, .Epistles, .Apocalypse]
+        return order.map { g in
+            let vals = buckets[g] ?? (0, 0)
+            let pct = vals.a > 0 ? min(100, max(0, (Double(vals.c) / Double(vals.a)) * 100.0)) : 0
+            return (g.rawValue, vals.a, vals.c, pct)
+        }
+    }
+
+    // NEW: Weak books over last N days with min attempts threshold
+    func quizWeakBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        let (dailyA, dailyC) = loadQuizPerBookDailyMaps()
+
+        // Build a list of day keys for the last N days in local time
+        var cal = Calendar.autoupdatingCurrent
+        cal.timeZone = .autoupdatingCurrent
+        let startOfToday = cal.startOfDay(for: Date())
+        var keys: [String] = []
+        for i in stride(from: lastNDays - 1, through: 0, by: -1) {
+            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                keys.append(Self.localDayKey(for: d, calendar: cal))
+            }
+        }
+
+        // Aggregate per book across selected day keys
+        var bookA: [String: Int] = [:]
+        var bookC: [String: Int] = [:]
+        for k in keys {
+            if let perBookA = dailyA[k] {
+                for (book, val) in perBookA {
+                    bookA[book, default: 0] += max(0, val)
+                }
+            }
+            if let perBookC = dailyC[k] {
+                for (book, val) in perBookC {
+                    bookC[book, default: 0] += max(0, val)
+                }
+            }
+        }
+
+        // Compute list with threshold filter and accuracy
+        var rows: [(String, Int, Int, Double)] = []
+        let allBooks = Set(bookA.keys).union(bookC.keys)
+        for b in allBooks {
+            let a = max(0, bookA[b] ?? 0)
+            let c = max(0, bookC[b] ?? 0)
+            guard a >= minAttempts else { continue }
+            let pct = a > 0 ? min(100, max(0, (Double(c) / Double(a)) * 100.0)) : 0
+            rows.append((b, a, c, pct))
+        }
+
+        // Sort ascending by pct, then by name for stability
+        rows.sort { lhs, rhs in
+            if lhs.3 == rhs.3 { return lhs.0 < rhs.0 }
+            return lhs.3 < rhs.3
+        }
+        return rows
     }
 }
 

@@ -572,6 +572,10 @@ struct GamesOverviewCardView: View {
     // WORD scope picker state (0=Daily, 1=Free, 2=Combined)
     @State private var wordScope: Int = 2
 
+    // Bible Quiz: weak books controls
+    @State private var weakBooksScope: Int = 0 // 0=30 days, 1=60 days
+    @State private var weakBooksMinAttempts: Int = 5
+
     var body: some View {
         GroupBox {
             let _ = stats.version
@@ -810,6 +814,113 @@ struct GamesOverviewCardView: View {
                                 )
                             }
                         }
+                    }
+
+                    // NEW: Bible Quiz specific — Accuracy by Genre (summary chips with horizontal scroll)
+                    if selectedGame == "Bible Quiz" {
+                        let rows = GameStats.shared.quizAccuracyByGenre()
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Accuracy by Genre")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 8) {
+                                    ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                                        // Choose a gentle tint per genre (fixed palette)
+                                        let tint: Color = {
+                                            switch row.genre {
+                                            case "Law": return .blue
+                                            case "History": return .teal
+                                            case "Poetry": return .purple
+                                            case "Major Prophets": return .orange
+                                            case "Minor Prophets": return .pink
+                                            case "Gospels": return .green
+                                            case "Acts": return .indigo
+                                            case "Epistles": return .cyan
+                                            case "Apocalypse": return .red
+                                            default: return .gray
+                                            }
+                                        }()
+                                        metricChip(
+                                            title: row.genre,
+                                            value: "\(Int(round(row.pct)))% (\(row.correct)/\(row.answered))",
+                                            tint: tint
+                                        )
+                                    }
+                                }
+                                .padding(.horizontal, 2)
+                            }
+                        }
+                    }
+
+                    // NEW: Bible Quiz specific — Top weak books (last 30/60 days)
+                    if selectedGame == "Bible Quiz" {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("Top Weak Books")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                Spacer()
+                                Picker("Scope", selection: $weakBooksScope) {
+                                    Text("30D").tag(0)
+                                    Text("60D").tag(1)
+                                }
+                                .pickerStyle(.segmented)
+                                .frame(maxWidth: 140)
+                            }
+
+                            // Min attempts threshold control
+                            HStack(spacing: 10) {
+                                Text("Min attempts")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Stepper(value: $weakBooksMinAttempts, in: 1...50) {
+                                    Text("\(weakBooksMinAttempts)")
+                                        .font(.footnote.weight(.semibold))
+                                        .monospacedDigit()
+                                }
+                                .frame(maxWidth: 180, alignment: .leading)
+                                Spacer()
+                            }
+
+                            let days = (weakBooksScope == 0) ? 30 : 60
+                            let allRows = GameStats.shared.quizWeakBooks(lastNDays: days, minAttempts: weakBooksMinAttempts)
+                            let rows = Array(allRows.prefix(5)) // top 5 weakest
+
+                            if rows.isEmpty {
+                                Text("Not enough recent Bible Quiz activity.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                                    HStack {
+                                        Text(row.book)
+                                            .font(.subheadline.weight(.semibold))
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        Text("\(Int(round(row.pct)))%")
+                                            .font(.footnote.weight(.semibold))
+                                            .monospacedDigit()
+                                            .foregroundStyle(.red)
+                                            .frame(width: 56, alignment: .trailing)
+                                        Text("(\(row.correct)/\(row.answered))")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                            .frame(width: 88, alignment: .trailing)
+                                    }
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 10)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .fill(Color(.secondarySystemBackground))
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .stroke(Color.black.opacity(0.06), lineWidth: 1)
+                                    )
+                                }
+                            }
+                        }
+                        .padding(.top, 4)
                     }
 
                     // WORD-only section: move WordleStatsCardView content here when selected
@@ -1251,4 +1362,3 @@ struct PlayerStatSheetCardView: View {
         }
     }
 }
-
