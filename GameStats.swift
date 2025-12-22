@@ -39,6 +39,12 @@ final class GameStats: ObservableObject {
         case free
     }
 
+    // NEW: Wordle mode (Normal vs Hard) — aggregates across daily+free
+    enum WordMode {
+        case normal
+        case hard
+    }
+
     private init() {
         // One-time: wipe legacy unsuffixed keys to avoid double-counting with suffixed data.
         migrateLegacyGameKeysIfNeeded()
@@ -402,7 +408,7 @@ final class GameStats: ObservableObject {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // New: Wordle type-aware writer
+    // New: Wordle type-aware writer (per-type)
     func recordWordleRound(type: WordleType, correct addCorrect: Int, answered addAnswered: Int, currentBestStreak: Int) {
         let defaults = UserDefaults.standard
         let suf = (type == .daily) ? "daily" : "free"
@@ -439,8 +445,8 @@ final class GameStats: ObservableObject {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // NEW: Wordle result writer with guesses + histogram tracking
-    func recordWordleResult(type: WordleType, won: Bool, guesses: Int, currentBestStreak: Int) {
+    // NEW: Wordle result writer with guesses + histogram tracking — now per-type and per-mode
+    func recordWordleResult(type: WordleType, mode: WordMode, won: Bool, guesses: Int, currentBestStreak: Int) {
         // First, update the standard per-type counters (correct/answered/streak)
         recordWordleRound(
             type: type,
@@ -449,11 +455,9 @@ final class GameStats: ObservableObject {
             currentBestStreak: currentBestStreak
         )
 
-        // Only track guess distribution and average on wins
-        guard won else { return }
-
         let defaults = UserDefaults.standard
-        let suf = (type == .daily) ? "daily" : "free"
+        let typeSuf = (type == .daily) ? "daily" : "free"
+        let modeSuf = (mode == .normal) ? "normal" : "hard"
         let clamped = max(1, min(6, guesses))
 
         func setInt(_ key: String, _ value: Int) {
@@ -464,20 +468,40 @@ final class GameStats: ObservableObject {
             let old = defaults.integer(forKey: key)
             setInt(key, old + delta)
         }
+        func maxInt(_ key: String, candidate: Int) {
+            let old = defaults.integer(forKey: key)
+            if candidate > old { setInt(key, candidate) }
+        }
 
-        // Sum of guesses across wins (for average = sum / totalWins)
-        incInt("wordleWinsGuessSum_\(suf)", by: clamped)
+        // Per-mode aggregates (Normal/Hard) — counts and streak
+        incInt("wordleAllTimeCorrect_\(modeSuf)", by: won ? 1 : 0)
+        incInt("wordleAllTimeAnswered_\(modeSuf)", by: 1)
+        maxInt("wordleAllTimeBestStreak_\(modeSuf)", candidate: currentBestStreak)
 
-        // Histogram bucket for this guess number
-        incInt("wordleWinsOnGuess\(clamped)_\(suf)", by: 1)
+        // Only track guess distribution and average on wins
+        if won {
+            // Per-type
+            incInt("wordleWinsGuessSum_\(typeSuf)", by: clamped)
+            incInt("wordleWinsOnGuess\(clamped)_\(typeSuf)", by: 1)
+
+            // Per-mode
+            incInt("wordleWinsGuessSum_\(modeSuf)", by: clamped)
+            incInt("wordleWinsOnGuess\(clamped)_\(modeSuf)", by: 1)
+        }
 
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // NEW: Wordle timing writer (total, wins, losses)
-    func recordWordleTime(type: WordleType, won: Bool, elapsedSeconds: Int) {
+    // Overload retained for back-compat (assumes Normal mode)
+    func recordWordleResult(type: WordleType, won: Bool, guesses: Int, currentBestStreak: Int) {
+        recordWordleResult(type: type, mode: .normal, won: won, guesses: guesses, currentBestStreak: currentBestStreak)
+    }
+
+    // NEW: Wordle timing writer (total, wins, losses) — now also per-mode
+    func recordWordleTime(type: WordleType, mode: WordMode, won: Bool, elapsedSeconds: Int) {
         let defaults = UserDefaults.standard
-        let suf = (type == .daily) ? "daily" : "free"
+        let typeSuf = (type == .daily) ? "daily" : "free"
+        let modeSuf = (mode == .normal) ? "normal" : "hard"
 
         func setInt(_ key: String, _ value: Int) {
             defaults.set(max(0, value), forKey: key)
@@ -488,14 +512,28 @@ final class GameStats: ObservableObject {
             setInt(key, old + max(0, delta))
         }
 
-        incInt("wordleTimeTotal_seconds_\(suf)", by: elapsedSeconds)
+        // Per-type timing
+        incInt("wordleTimeTotal_seconds_\(typeSuf)", by: elapsedSeconds)
         if won {
-            incInt("wordleTimeWins_seconds_\(suf)", by: elapsedSeconds)
+            incInt("wordleTimeWins_seconds_\(typeSuf)", by: elapsedSeconds)
         } else {
-            incInt("wordleTimeLosses_seconds_\(suf)", by: elapsedSeconds)
+            incInt("wordleTimeLosses_seconds_\(typeSuf)", by: elapsedSeconds)
+        }
+
+        // Per-mode timing
+        incInt("wordleTimeTotal_seconds_\(modeSuf)", by: elapsedSeconds)
+        if won {
+            incInt("wordleTimeWins_seconds_\(modeSuf)", by: elapsedSeconds)
+        } else {
+            incInt("wordleTimeLosses_seconds_\(modeSuf)", by: elapsedSeconds)
         }
 
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
+    // Overload retained for back-compat (assumes Normal mode)
+    func recordWordleTime(type: WordleType, won: Bool, elapsedSeconds: Int) {
+        recordWordleTime(type: type, mode: .normal, won: won, elapsedSeconds: elapsedSeconds)
     }
 
     // MARK: - Aggregation (reads)
@@ -609,7 +647,7 @@ final class GameStats: ObservableObject {
         return GameStat(correct: max(0, c), answered: max(0, a), bestStreak: (best == 0 ? nil : best))
     }
 
-    // NEW: Wordle win-guess stats readers
+    // NEW: Wordle win-guess stats readers (per-type and per-mode)
     func wordleWinGuessStats(type: WordleType) -> (averageGuessesOnWins: Double, winsByGuess: [Int]) {
         let suf = (type == .daily) ? "daily" : "free"
         let totalWins = max(0, readInt("wordleAllTimeCorrect_\(suf)"))
@@ -637,7 +675,34 @@ final class GameStats: ObservableObject {
         return (avg, dist)
     }
 
-    // NEW: Wordle timing readers
+    // NEW: per-mode win-guess stats (normal/hard)
+    func wordleWinGuessStats(mode: WordMode) -> (averageGuessesOnWins: Double, winsByGuess: [Int]) {
+        let suf = (mode == .normal) ? "normal" : "hard"
+        let totalWins = max(0, readInt("wordleAllTimeCorrect_\(suf)"))
+        let sumGuesses = max(0, readInt("wordleWinsGuessSum_\(suf)"))
+        let dist = (1...6).map { idx in max(0, readInt("wordleWinsOnGuess\(idx)_\(suf)")) }
+        let avg: Double = totalWins > 0 ? Double(sumGuesses) / Double(totalWins) : 0
+        return (avg, dist)
+    }
+
+    func wordleWinGuessStatsModesCombined() -> (averageGuessesOnWins: Double, winsByGuess: [Int]) {
+        let (avgN, distN) = wordleWinGuessStats(mode: .normal)
+        let (avgH, distH) = wordleWinGuessStats(mode: .hard)
+
+        // Weighted average by number of wins
+        let winsN = max(0, readInt("wordleAllTimeCorrect_normal"))
+        let winsH = max(0, readInt("wordleAllTimeCorrect_hard"))
+        let sumN = max(0, readInt("wordleWinsGuessSum_normal"))
+        let sumH = max(0, readInt("wordleWinsGuessSum_hard"))
+        let totalWins = winsN + winsH
+        let totalSum = sumN + sumH
+        let avg = totalWins > 0 ? Double(totalSum) / Double(totalWins) : max(avgN, avgH) // fallback
+
+        let dist = zip(distN, distH).map(+)
+        return (avg, dist)
+    }
+
+    // NEW: Wordle timing readers (per-type and per-mode)
     func wordleTimeStats(type: WordleType) -> (total: Int, wins: Int, losses: Int) {
         let suf = (type == .daily) ? "daily" : "free"
         let total = max(0, readInt("wordleTimeTotal_seconds_\(suf)"))
@@ -650,6 +715,29 @@ final class GameStats: ObservableObject {
         let d = wordleTimeStats(type: .daily)
         let f = wordleTimeStats(type: .free)
         return (d.total + f.total, d.wins + f.wins, d.losses + f.losses)
+    }
+
+    // NEW: per-mode timing readers
+    func wordleTimeStats(mode: WordMode) -> (total: Int, wins: Int, losses: Int) {
+        let suf = (mode == .normal) ? "normal" : "hard"
+        let total = max(0, readInt("wordleTimeTotal_seconds_\(suf)"))
+        let wins = max(0, readInt("wordleTimeWins_seconds_\(suf)"))
+        let losses = max(0, readInt("wordleTimeLosses_seconds_\(suf)"))
+        return (total, wins, losses)
+    }
+
+    func wordleTimeStatsModesCombined() -> (total: Int, wins: Int, losses: Int) {
+        let n = wordleTimeStats(mode: .normal)
+        let h = wordleTimeStats(mode: .hard)
+        return (n.total + h.total, n.wins + h.wins, n.losses + h.losses)
+    }
+
+    // NEW: counts for denominators (per-mode)
+    func wordleCounts(mode: WordMode) -> (answered: Int, wins: Int) {
+        let suf = (mode == .normal) ? "normal" : "hard"
+        let wins = max(0, readInt("wordleAllTimeCorrect_\(suf)"))
+        let answered = max(0, readInt("wordleAllTimeAnswered_\(suf)"))
+        return (answered, wins)
     }
 
     private func aggregateAll() -> (correct: Int, answered: Int) {

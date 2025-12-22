@@ -107,8 +107,8 @@ extension iCloudSyncCoordinator {
         var keys: [String] = []
 
         // Core per-type counters
-        let diffs = ["daily", "free", "all"] // include legacy "all" for back-compat
-        for d in diffs {
+        let typeDiffs = ["daily", "free", "all"] // include legacy "all" for back-compat
+        for d in typeDiffs {
             keys.append("wordleAllTimeCorrect_\(d)")
             keys.append("wordleAllTimeAnswered_\(d)")
             keys.append("wordleAllTimeBestStreak_\(d)")
@@ -127,6 +127,25 @@ extension iCloudSyncCoordinator {
             keys.append("wordleTimeTotal_seconds_\(d)")
             keys.append("wordleTimeWins_seconds_\(d)")
             keys.append("wordleTimeLosses_seconds_\(d)")
+        }
+
+        // NEW: Per-mode aggregates (normal/hard)
+        for m in ["normal", "hard"] {
+            // Counts + best streak
+            keys.append("wordleAllTimeCorrect_\(m)")
+            keys.append("wordleAllTimeAnswered_\(m)")
+            keys.append("wordleAllTimeBestStreak_\(m)")
+
+            // Win-guess stats
+            keys.append("wordleWinsGuessSum_\(m)")
+            for i in 1...6 {
+                keys.append("wordleWinsOnGuess\(i)_\(m)")
+            }
+
+            // Timing totals
+            keys.append("wordleTimeTotal_seconds_\(m)")
+            keys.append("wordleTimeWins_seconds_\(m)")
+            keys.append("wordleTimeLosses_seconds_\(m)")
         }
 
         return keys
@@ -407,8 +426,8 @@ extension iCloudSyncCoordinator {
         repairSuffixed(prefix: "bookorder", diffs: ["easy","normal","hard","all"])
         repairPair(correctKey: "bookorderAllTimeCorrect", answeredKey: "bookorderAllTimeAnswered")
 
-        // Wordle (daily/free/all)
-        repairSuffixed(prefix: "wordle", diffs: ["daily","free","all"])
+        // Wordle (daily/free/all + normal/hard)
+        repairSuffixed(prefix: "wordle", diffs: ["daily","free","all","normal","hard"])
 
         return changed
     }

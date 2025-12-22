@@ -5,19 +5,19 @@ struct WordleStatsCardView: View {
     // Re-render when GameStats publishes changes (iCloud merges, writes, etc.)
     @ObservedObject private var stats = GameStats.shared
 
-    // 0 = Daily, 1 = Free, 2 = Combined
+    // 0 = Normal, 1 = Hard, 2 = Combined
     @State private var selection: Int = 2
 
     private var averageAndDist: (avg: Double, dist: [Int]) {
         switch selection {
         case 0:
-            let (avg, dist) = GameStats.shared.wordleWinGuessStats(type: .daily)
+            let (avg, dist) = GameStats.shared.wordleWinGuessStats(mode: .normal)
             return (avg, dist)
         case 1:
-            let (avg, dist) = GameStats.shared.wordleWinGuessStats(type: .free)
+            let (avg, dist) = GameStats.shared.wordleWinGuessStats(mode: .hard)
             return (avg, dist)
         default:
-            let (avg, dist) = GameStats.shared.wordleWinGuessStatsCombined()
+            let (avg, dist) = GameStats.shared.wordleWinGuessStatsModesCombined()
             return (avg, dist)
         }
     }
@@ -25,31 +25,28 @@ struct WordleStatsCardView: View {
     private var timeStats: (total: Int, wins: Int, losses: Int) {
         switch selection {
         case 0:
-            return GameStats.shared.wordleTimeStats(type: .daily)
+            return GameStats.shared.wordleTimeStats(mode: .normal)
         case 1:
-            return GameStats.shared.wordleTimeStats(type: .free)
+            return GameStats.shared.wordleTimeStats(mode: .hard)
         default:
-            return GameStats.shared.wordleTimeStatsCombined()
+            return GameStats.shared.wordleTimeStatsModesCombined()
         }
     }
 
-    // Counts for denominators used by averages (wins, losses, answered)
+    // Counts for denominators used by averages (wins, losses, answered) — per mode
     private var counts: (answered: Int, wins: Int, losses: Int) {
-        let defaults = UserDefaults.standard
         switch selection {
-        case 0: // Daily
-            let wins = max(0, defaults.integer(forKey: "wordleAllTimeCorrect_daily"))
-            let answered = max(0, defaults.integer(forKey: "wordleAllTimeAnswered_daily"))
-            let losses = max(0, answered - wins)
-            return (answered, wins, losses)
-        case 1: // Free
-            let wins = max(0, defaults.integer(forKey: "wordleAllTimeCorrect_free"))
-            let answered = max(0, defaults.integer(forKey: "wordleAllTimeAnswered_free"))
-            let losses = max(0, answered - wins)
-            return (answered, wins, losses)
-        default: // Combined (daily + free)
-            let wins = max(0, defaults.integer(forKey: "wordleAllTimeCorrect_daily")) + max(0, defaults.integer(forKey: "wordleAllTimeCorrect_free"))
-            let answered = max(0, defaults.integer(forKey: "wordleAllTimeAnswered_daily")) + max(0, defaults.integer(forKey: "wordleAllTimeAnswered_free"))
+        case 0: // Normal
+            let c = GameStats.shared.wordleCounts(mode: .normal)
+            return (c.answered, c.wins, max(0, c.answered - c.wins))
+        case 1: // Hard
+            let c = GameStats.shared.wordleCounts(mode: .hard)
+            return (c.answered, c.wins, max(0, c.answered - c.wins))
+        default: // Combined (normal + hard)
+            let n = GameStats.shared.wordleCounts(mode: .normal)
+            let h = GameStats.shared.wordleCounts(mode: .hard)
+            let answered = n.answered + h.answered
+            let wins = n.wins + h.wins
             let losses = max(0, answered - wins)
             return (answered, wins, losses)
         }
@@ -73,10 +70,10 @@ struct WordleStatsCardView: View {
             let _ = stats.version
 
             VStack(alignment: .leading, spacing: 12) {
-                // Scope picker
+                // Scope picker (Normal/Hard/Combined)
                 Picker("Scope", selection: $selection) {
-                    Text("Daily").tag(0)
-                    Text("Free").tag(1)
+                    Text("Normal").tag(0)
+                    Text("Hard").tag(1)
                     Text("Combined").tag(2)
                 }
                 .pickerStyle(.segmented)

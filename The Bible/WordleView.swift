@@ -59,7 +59,7 @@ struct WordleView: View {
     // NEW: Hard Mode toggle (persisted locally; stats still aggregate with normal mode)
     @AppStorage("wordleHardModeEnabled") private var hardModeEnabled: Bool = false
 
-    // All-time (per mode)
+    // All-time (per mode) — unchanged: still per-type for the scoreboard
     private var allTimeSuffix: String { mode == .daily ? "daily" : "free" }
     private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeCorrect_\(allTimeSuffix)") }
     private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeAnswered_\(allTimeSuffix)") }
@@ -78,6 +78,9 @@ struct WordleView: View {
     @State private var roundStartAt: Date? = nil
     // NEW: store elapsed seconds for the last round to show in the bottom chip
     @State private var lastRoundElapsedSeconds: Int? = nil
+
+    // NEW: confirmation for reveal
+    @State private var confirmReveal: Bool = false
 
     // MARK: - Helpers for tokenization
     private static func sanitizeLetters(_ s: String) -> String {
@@ -287,6 +290,24 @@ struct WordleView: View {
                         }
                         .padding(.horizontal)
                         .padding(.top, 4)
+
+                        // Reveal Word (counts as a loss) — with confirmation
+                        HStack {
+                            Button(role: .destructive, action: {
+                                guard !roundOver else { return }
+                                confirmReveal = true
+                            }) {
+                                Label("Reveal Word", systemImage: "eye")
+                                    .labelStyle(.titleAndIcon)
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(GameKeyButtonStyle(tint: .red))
+                            .disabled(roundOver)
+                            .accessibilityLabel("Reveal Word. Counts as a loss.")
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 2)
                     }
                 }
             }
@@ -335,6 +356,21 @@ struct WordleView: View {
                 guard let sr = selectedRef else { return }
                 loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
             }
+        }
+        // Confirmation dialog for revealing the word (loss)
+        .confirmationDialog(
+            "Reveal the word?",
+            isPresented: $confirmReveal,
+            titleVisibility: .visible
+        ) {
+            Button("Reveal", role: .destructive) {
+                guard !roundOver else { return }
+                didWin = false
+                endRound(win: false)
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("This will reveal the answer and count this round as a loss.")
         }
     }
 
@@ -784,9 +820,10 @@ struct WordleView: View {
                 currentBestStreak = currentStreak
             }
             message = (mode == .daily) ? "You got it! See you tomorrow." : "You got it!"
-            // NEW: record with guesses + histogram
+            // NEW: record with guesses + histogram (per-type and per-mode)
             GameStats.shared.recordWordleResult(
                 type: (mode == .daily ? .daily : .free),
+                mode: (hardModeEnabled ? .hard : .normal),
                 won: true,
                 guesses: rowIndex, // number of guesses used (already incremented)
                 currentBestStreak: currentBestStreak
@@ -797,15 +834,17 @@ struct WordleView: View {
             // NEW: record loss through the same API (won: false). Guesses ignored for loss.
             GameStats.shared.recordWordleResult(
                 type: (mode == .daily ? .daily : .free),
+                mode: (hardModeEnabled ? .hard : .normal),
                 won: false,
                 guesses: rowIndex,
                 currentBestStreak: currentBestStreak
             )
         }
 
-        // NEW: record timing stats
+        // NEW: record timing stats (per-type and per-mode)
         GameStats.shared.recordWordleTime(
             type: (mode == .daily ? .daily : .free),
+            mode: (hardModeEnabled ? .hard : .normal),
             won: win,
             elapsedSeconds: elapsedSeconds
         )

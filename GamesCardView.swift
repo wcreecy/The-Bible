@@ -569,7 +569,7 @@ struct GamesOverviewCardView: View {
         return l.localizedCompare(r) == .orderedAscending
     }
 
-    // WORD scope picker state (0=Daily, 1=Free, 2=Combined)
+    // WORD scope picker state (0=Normal, 1=Hard, 2=Combined)
     @State private var wordScope: Int = 2
 
     // Bible Quiz: weak books controls
@@ -925,25 +925,25 @@ struct GamesOverviewCardView: View {
 
                     // WORD-only section: move WordleStatsCardView content here when selected
                     if selectedGame == "WORD" {
-                        // Segmented picker scope
+                        // Segmented picker scope (Normal/Hard/Combined)
                         Picker("Scope", selection: $wordScope) {
-                            Text("Daily").tag(0)
-                            Text("Free").tag(1)
+                            Text("Normal").tag(0)
+                            Text("Hard").tag(1)
                             Text("Combined").tag(2)
                         }
                         .pickerStyle(.segmented)
 
-                        // Average guesses + distribution
+                        // Average guesses + distribution (per mode)
                         let averageAndDist: (avg: Double, dist: [Int]) = {
                             switch wordScope {
                             case 0:
-                                let (avg, dist) = GameStats.shared.wordleWinGuessStats(type: .daily)
+                                let (avg, dist) = GameStats.shared.wordleWinGuessStats(mode: .normal)
                                 return (avg, dist)
                             case 1:
-                                let (avg, dist) = GameStats.shared.wordleWinGuessStats(type: .free)
+                                let (avg, dist) = GameStats.shared.wordleWinGuessStats(mode: .hard)
                                 return (avg, dist)
                             default:
-                                let (avg, dist) = GameStats.shared.wordleWinGuessStatsCombined()
+                                let (avg, dist) = GameStats.shared.wordleWinGuessStatsModesCombined()
                                 return (avg, dist)
                             }
                         }()
@@ -994,32 +994,29 @@ struct GamesOverviewCardView: View {
                         }
                         .frame(height: 180)
 
-                        // Timing stats (per scope)
+                        // Timing stats (per mode)
                         let timeStats: (total: Int, wins: Int, losses: Int) = {
                             switch wordScope {
-                            case 0: return GameStats.shared.wordleTimeStats(type: .daily)
-                            case 1: return GameStats.shared.wordleTimeStats(type: .free)
-                            default: return GameStats.shared.wordleTimeStatsCombined()
+                            case 0: return GameStats.shared.wordleTimeStats(mode: .normal)
+                            case 1: return GameStats.shared.wordleTimeStats(mode: .hard)
+                            default: return GameStats.shared.wordleTimeStatsModesCombined()
                             }
                         }()
 
-                        // Counts for denominators
+                        // Counts for denominators (per mode)
                         let counts: (answered: Int, wins: Int, losses: Int) = {
-                            let defaults = UserDefaults.standard
                             switch wordScope {
                             case 0:
-                                let wins = max(0, defaults.integer(forKey: "wordleAllTimeCorrect_daily"))
-                                let answered = max(0, defaults.integer(forKey: "wordleAllTimeAnswered_daily"))
-                                let losses = max(0, answered - wins)
-                                return (answered, wins, losses)
+                                let c = GameStats.shared.wordleCounts(mode: .normal)
+                                return (c.answered, c.wins, max(0, c.answered - c.wins))
                             case 1:
-                                let wins = max(0, defaults.integer(forKey: "wordleAllTimeCorrect_free"))
-                                let answered = max(0, defaults.integer(forKey: "wordleAllTimeAnswered_free"))
-                                let losses = max(0, answered - wins)
-                                return (answered, wins, losses)
+                                let c = GameStats.shared.wordleCounts(mode: .hard)
+                                return (c.answered, c.wins, max(0, c.answered - c.wins))
                             default:
-                                let wins = max(0, defaults.integer(forKey: "wordleAllTimeCorrect_daily")) + max(0, defaults.integer(forKey: "wordleAllTimeCorrect_free"))
-                                let answered = max(0, defaults.integer(forKey: "wordleAllTimeAnswered_daily")) + max(0, defaults.integer(forKey: "wordleAllTimeAnswered_free"))
+                                let n = GameStats.shared.wordleCounts(mode: .normal)
+                                let h = GameStats.shared.wordleCounts(mode: .hard)
+                                let answered = n.answered + h.answered
+                                let wins = n.wins + h.wins
                                 let losses = max(0, answered - wins)
                                 return (answered, wins, losses)
                             }
