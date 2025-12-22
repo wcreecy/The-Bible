@@ -47,6 +47,11 @@ struct WordleView: View {
     @State private var message: String? = nil
     @State private var keyboardStates: [Character: KeyState] = [:]
 
+    // NEW: selected tile (row, col) for pinning — active row only
+    @State private var selectedCell: (row: Int, col: Int)? = nil
+    // NEW: pinned letters (locked) per row/col; non-nil means locked until cleared via 'x'
+    @State private var pinned: [[Character?]] = Array(repeating: Array(repeating: nil, count: 5), count: 6)
+
     // Session stats (for the scoreboard’s Current section)
     @State private var score: Int = 0
     @State private var answered: Int = 0
@@ -121,8 +126,6 @@ struct WordleView: View {
             }
         }
 
-        // Prefer words that pass the system spell checker (English) when UIKit is available.
-        // This filters out many proper nouns and uncommon tokens.
         #if canImport(UIKit)
         let lang = UITextChecker.availableLanguages.first(where: { $0.hasPrefix("en") }) ?? "en_US"
         let checker = UITextChecker()
@@ -137,7 +140,6 @@ struct WordleView: View {
         if !sortedFiltered.isEmpty {
             return sortedFiltered
         } else {
-            // Fallback list (also try to filter; if that empties, keep original fallback to guarantee a pool)
             let fallback = ["JESUS","GRACE","FAITH","ANGEL","CROSS","ABRAM","SARAH","JONAH","MOSES","DAVID","SALEM","TITUS","JAMES","PETER","JUDAH"]
             let fbFiltered = fallback.filter { passesSpellCheck($0) }
             return fbFiltered.isEmpty ? fallback : fbFiltered
@@ -158,17 +160,15 @@ struct WordleView: View {
     }
 
     private static let verseIndex: [String: VerseRefInfo] = {
-        // Reservoir sample exactly one random occurrence per word across the entire Bible.
         var map: [String: VerseRefInfo] = [:]
-        var counts: [String: Int] = [:] // occurrence count per word for sampling
-        let allowed = Set(kjvAnswerWords) // uppercase
+        var counts: [String: Int] = [:]
+        let allowed = Set(kjvAnswerWords)
         for book in BibleData.books {
             for chapter in book.chapters {
                 for verse in chapter.verses {
                     let upper = verse.text.uppercased()
                     for token in tokens5(from: upper) {
                         guard allowed.contains(token) else { continue }
-                        // Reservoir sampling: replace current pick with probability 1/k
                         counts[token, default: 0] += 1
                         let k = counts[token]!
                         if Int.random(in: 1...k) == 1 {
@@ -181,15 +181,12 @@ struct WordleView: View {
         return map
     }()
 
-    // Filtered pool: only words that have an attached reference in verseIndex
     private static let filteredAnswerWords: [String] = {
         let pool = kjvAnswerWords
         let filtered = pool.filter { verseIndex[$0] != nil }
-        // If something goes wrong (e.g., sample data), keep original pool so game still works.
         return filtered.isEmpty ? pool : filtered
     }()
 
-    // Fallback: first exact occurrence search (exact 5‑letter token)
     private static func findExactOccurrence(for word: String) -> VerseRefInfo? {
         let target = word.uppercased()
         for book in BibleData.books {
@@ -223,7 +220,7 @@ struct WordleView: View {
                         onKey: { ch in tapLetter(ch) },
                         onBackspace: { deleteLetter() },
                         onEnter: {
-                            if !roundOver, currentInput.count == 5 {
+                            if !roundOver, isCurrentRowFull() {
                                 submitGuess()
                             }
                         }
@@ -232,7 +229,6 @@ struct WordleView: View {
                     .accessibilityHidden(true)
                     #endif
 
-                    // Scoreboard
                     GameScoreboardCard(
                         currentCorrect: score,
                         currentAnswered: answered,
@@ -243,11 +239,9 @@ struct WordleView: View {
                     )
                     .padding(.horizontal)
 
-                    // Board
                     boardView()
                         .padding(.horizontal)
 
-                    // Keep validation feedback during play, but hide it after the round ends
                     if !roundOver, let msg = message {
                         Text(msg)
                             .font(.subheadline.weight(.semibold))
@@ -257,7 +251,6 @@ struct WordleView: View {
                             .padding(.horizontal)
                     }
 
-                    // Prominent answer highlight after the round ends
                     if roundOver {
                         answerHighlightView()
                             .padding(.horizontal)
@@ -265,16 +258,13 @@ struct WordleView: View {
                     }
 
                     if roundOver {
-                        // End-of-round actions replace the keyboard
                         endOfRoundActionArea()
                             .padding(.horizontal)
                             .padding(.top, 6)
                     } else {
-                        // On-screen keyboard during play
                         keyboardView()
                             .padding(.horizontal)
 
-                        // Dedicated Enter row
                         HStack {
                             Button(action: {
                                 submitGuess()
@@ -285,13 +275,12 @@ struct WordleView: View {
                                     .frame(maxWidth: .infinity)
                             }
                             .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
-                            .disabled(roundOver || currentInput.count != 5)
+                            .disabled(roundOver || !isCurrentRowFull())
                             .accessibilityLabel("Enter")
                         }
                         .padding(.horizontal)
                         .padding(.top, 4)
 
-                        // Reveal Word (counts as a loss) — with confirmation
                         HStack {
                             Button(role: .destructive, action: {
                                 guard !roundOver else { return }
@@ -312,10 +301,9 @@ struct WordleView: View {
                 }
             }
             .padding(.top, 8)
-            .padding(.bottom, 16) // extra bottom space so content can breathe
+            .padding(.bottom, 16)
         }
         .safeAreaInset(edge: .bottom) {
-            // small spacer to keep content above the home indicator
             Color.clear.frame(height: 6)
         }
         .navigationTitle("WORD")
@@ -357,7 +345,6 @@ struct WordleView: View {
                 loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
             }
         }
-        // Confirmation dialog for revealing the word (loss)
         .confirmationDialog(
             "Reveal the word?",
             isPresented: $confirmReveal,
@@ -392,7 +379,6 @@ struct WordleView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
 
-            // Plain segmented Picker (glow removed)
             Picker("Mode", selection: $mode) {
                 ForEach(Mode.allCases) { m in
                     Text(m.rawValue).tag(m)
@@ -401,7 +387,6 @@ struct WordleView: View {
             .pickerStyle(.segmented)
             .padding(.horizontal)
 
-            // NEW: Hard Mode toggle (works for both Daily and Free Play)
             Toggle(isOn: $hardModeEnabled) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Hard Mode")
@@ -415,7 +400,6 @@ struct WordleView: View {
             .tint(.orange)
             .padding(.horizontal)
 
-            // NEW: Warning banner when Daily already completed (and replay not allowed)
             if mode == .daily && dailyCompletedToday && !wordleAllowDailyReplay {
                 HStack(alignment: .top, spacing: 8) {
                     Image(systemName: "exclamationmark.triangle.fill")
@@ -457,6 +441,70 @@ struct WordleView: View {
         .padding()
     }
 
+    // MARK: - Board helpers (composition with pinned letters)
+
+    // Compose the current row’s 5 letters by merging pinned letters at fixed indices
+    // with the typed letters (currentInput) in the remaining slots, left-to-right.
+    private func composedCurrentRow() -> [Character?] {
+        var result: [Character?] = Array(repeating: nil, count: 5)
+        let pins = pinned[rowIndex]
+        for c in 0..<5 {
+            result[c] = pins[c]
+        }
+        var typed = Array(currentInput)
+        for c in 0..<5 {
+            if result[c] == nil, !typed.isEmpty {
+                result[c] = typed.removeFirst()
+            }
+        }
+        return result
+    }
+
+    private func isCurrentRowFull() -> Bool {
+        guard !roundOver else { return false }
+        let row = composedCurrentRow()
+        return row.allSatisfy { $0 != nil }
+    }
+
+    // Find next empty non-pinned column (left to right) for typing when nothing is selected
+    private func nextAvailableColumn() -> Int? {
+        let row = composedCurrentRow()
+        for c in 0..<5 {
+            if pinned[rowIndex][c] == nil && row[c] == nil {
+                return c
+            }
+        }
+        return nil
+    }
+
+    // Remove the last non-pinned typed letter (right to left)
+    private func removeLastNonPinnedTypedLetter() {
+        // Build which indices are filled by typed letters (not pinned)
+        let pins = pinned[rowIndex]
+        var typedIndices: [Int] = []
+        var typed = Array(currentInput)
+        // Walk columns left to right; when not pinned and slot is empty -> will be filled by next typed char
+        // To reverse-map which columns are typed, we reconstruct composition and track where typed landed.
+        var result: [Character?] = Array(repeating: nil, count: 5)
+        for c in 0..<5 {
+            if let p = pins[c] {
+                result[c] = p
+            } else if !typed.isEmpty {
+                result[c] = typed.removeFirst()
+                typedIndices.append(c)
+            }
+        }
+        guard let lastTypedCol = typedIndices.last else { return }
+        // Remove the last typed char from currentInput (popLast)
+        if !currentInput.isEmpty {
+            _ = currentInput.popLast()
+        }
+        // If the selection is on a pinned cell, keep it; otherwise update selection to the removed cell for clarity
+        if selectedCell?.row == rowIndex, let sel = selectedCell, pinned[rowIndex][sel.col] == nil {
+            selectedCell = (rowIndex, lastTypedCol)
+        }
+    }
+
     // MARK: - Board
     @ViewBuilder
     private func boardView() -> some View {
@@ -469,20 +517,47 @@ struct WordleView: View {
                                 let g = guesses[r]
                                 return c < g.count ? String(g[g.index(g.startIndex, offsetBy: c)]) : ""
                             } else if r == rowIndex && !roundOver {
-                                return c < currentInput.count ? String(currentInput[currentInput.index(currentInput.startIndex, offsetBy: c)]) : ""
+                                let row = composedCurrentRow()
+                                if let letter = row[c] {
+                                    return String(letter)
+                                } else {
+                                    return ""
+                                }
                             } else {
                                 return ""
                             }
                         }()
                         let state: KeyState = (r < rowIndex) ? evaluations[r][c] : .unknown
-                        tile(letter: ch, state: state)
+                        tile(letter: ch, state: state, row: r, col: c)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                guard !roundOver, r == rowIndex else { return }
+
+                                // NEW: Toggle off if tapping the already-selected cell
+                                if let sel = selectedCell, sel.row == r, sel.col == c {
+                                    selectedCell = nil
+                                    return
+                                }
+
+                                // NEW: If any selection exists and the tapped cell is blank, exit locked mode
+                                if selectedCell != nil, ch.isEmpty {
+                                    selectedCell = nil
+                                    return
+                                }
+
+                                // Default behavior: select this cell
+                                selectedCell = (row: r, col: c)
+                            }
                     }
                 }
             }
         }
     }
 
-    private func tile(letter: String, state: KeyState) -> some View {
+    private func tile(letter: String, state: KeyState, row: Int, col: Int) -> some View {
+        let isPinnedHere: Bool = (row < pinned.count && col < pinned[row].count) ? (pinned[row][col] != nil) : false
+        let isSelected: Bool = (selectedCell?.row == row && selectedCell?.col == col)
+
         let bg: Color = {
             switch state {
             case .unknown: return Color(.secondarySystemBackground)
@@ -492,6 +567,9 @@ struct WordleView: View {
             }
         }()
         let border: Color = {
+            if row == rowIndex && !roundOver && isSelected {
+                return Color.accentColor.opacity(0.9)
+            }
             switch state {
             case .unknown: return Color.primary.opacity(0.08)
             case .absent:  return .gray.opacity(0.55)
@@ -499,19 +577,37 @@ struct WordleView: View {
             case .correct: return .green.opacity(0.65)
             }
         }()
-        return Text(letter)
-            .font(.title2.weight(.bold))
-            .frame(width: 48, height: 48)
-            .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(bg))
-            .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).stroke(border, lineWidth: 1))
-            .foregroundStyle(.primary)
-            .monospaced()
+
+        return ZStack(alignment: .topTrailing) {
+            Text(letter)
+                .font(.title2.weight(.bold))
+                .frame(width: 48, height: 48)
+                .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(bg))
+                .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).stroke(border, lineWidth: isSelected ? 2 : 1))
+
+            // Show small 'x' to clear only for pinned cells in the active row during play
+            if row == rowIndex, !roundOver, isPinnedHere {
+                Button(action: {
+                    pinned[row][col] = nil
+                    // Keep selection on this cell to make it easy to type a replacement
+                    selectedCell = (row, col)
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(.secondary)
+                        .padding(4)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Clear pinned letter")
+            }
+        }
+        .foregroundStyle(.primary)
+        .monospaced()
     }
 
     // MARK: - On-screen keyboard
     @ViewBuilder
     private func keyboardView() -> some View {
-        // Choose layout
         let row1 = Array(useABCLayout ? "ABCDEFGHIJ" : "QWERTYUIOP")
         let row2 = Array(useABCLayout ? "KLMNOPQRS" : "ASDFGHJKL")
         let row3 = Array(useABCLayout ? "TUVWXYZ" : "ZXCVBNM")
@@ -520,17 +616,16 @@ struct WordleView: View {
             HStack(spacing: 6) {
                 ForEach(row1, id: \.self) { ch in
                     keyButton(for: ch)
-                        .disabled(roundOver || currentInput.count >= 5)
+                        .disabled(roundOver || isCurrentRowFull())
                 }
             }
             HStack(spacing: 6) {
                 ForEach(row2, id: \.self) { ch in
                     keyButton(for: ch)
-                        .disabled(roundOver || currentInput.count >= 5)
+                        .disabled(roundOver || isCurrentRowFull())
                 }
             }
             HStack(spacing: 6) {
-                // Layout toggle button: always use the reverse circle icon (less text, consistent look)
                 Button(action: { useABCLayout.toggle() }) {
                     Image(systemName: "arrow.uturn.backward.circle")
                         .font(.headline)
@@ -542,22 +637,26 @@ struct WordleView: View {
 
                 ForEach(row3, id: \.self) { ch in
                     keyButton(for: ch)
-                        .disabled(roundOver || currentInput.count >= 5)
+                        .disabled(roundOver || isCurrentRowFull())
                 }
 
-                // Backspace
                 Button(action: { deleteLetter() }) {
                     Image(systemName: "delete.left")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
-                .disabled(roundOver || currentInput.isEmpty)
+                .disabled(roundOver || currentInput.isEmpty && !hasAnyTypedInCurrentRow())
                 .accessibilityLabel("Backspace")
             }
         }
         .accessibilityElement(children: .contain)
         .padding(.top, 6)
+    }
+
+    private func hasAnyTypedInCurrentRow() -> Bool {
+        // True if any non-pinned slot is filled by typed letters (currentInput not empty after considering pins)
+        return !currentInput.isEmpty
     }
 
     @ViewBuilder
@@ -566,7 +665,6 @@ struct WordleView: View {
 
         switch state {
             case .unknown:
-                // Keep default look for untouched keys
                 Button(action: { tapLetter(ch) }) {
                     Text(String(ch))
                         .font(.headline.weight(.semibold))
@@ -575,7 +673,6 @@ struct WordleView: View {
                 .buttonStyle(GameKeyButtonStyle(tint: state.tint))
 
             case .absent:
-                // Fill entire key gray to match board
                 Button(action: { tapLetter(ch) }) {
                     Text(String(ch))
                         .font(.headline.weight(.semibold))
@@ -584,7 +681,6 @@ struct WordleView: View {
                 .buttonStyle(FilledGameKeyButtonStyle(fill: .gray, foreground: .white))
 
             case .present:
-                // Fill entire key yellow (use dark text for contrast)
                 Button(action: { tapLetter(ch) }) {
                     Text(String(ch))
                         .font(.headline.weight(.semibold))
@@ -593,7 +689,6 @@ struct WordleView: View {
                 .buttonStyle(FilledGameKeyButtonStyle(fill: .yellow, foreground: .black))
 
             case .correct:
-                // Fill entire key green
                 Button(action: { tapLetter(ch) }) {
                     Text(String(ch))
                         .font(.headline.weight(.semibold))
@@ -603,24 +698,56 @@ struct WordleView: View {
         }
     }
 
-    // MARK: - Input helpers
+    // MARK: - Input helpers (respect pinned/selection)
+
     private func tapLetter(_ ch: Character) {
         guard !roundOver else { return }
-        guard currentInput.count < 5 else { return }
         let up = Character(String(ch).uppercased())
         guard up.isLetter else { return }
-        currentInput.append(up)
-        message = nil
+
+        // If a cell is selected in the active row, handle pinning without staying in "pin mode"
+        if let sel = selectedCell, sel.row == rowIndex {
+            let isPinnedAtSel = pinned[rowIndex][sel.col] != nil
+            if !isPinnedAtSel {
+                // Pin here, then EXIT pin mode (clear selection) so subsequent typing is normal
+                pinned[rowIndex][sel.col] = up
+                message = nil
+                selectedCell = nil
+                return
+            } else {
+                // Already pinned: do NOT overwrite. Exit pin mode, then type normally into next free slot
+                selectedCell = nil
+                if let _ = nextAvailableColumn() {
+                    currentInput.append(up)
+                    message = nil
+                }
+                return
+            }
+        }
+
+        // No active selection: fill the next available non-pinned empty slot left-to-right
+        if let _ = nextAvailableColumn() {
+            currentInput.append(up)
+            message = nil
+        }
     }
 
     private func deleteLetter() {
-        guard !roundOver, !currentInput.isEmpty else { return }
-        _ = currentInput.popLast()
+        guard !roundOver else { return }
+        // Remove last non-pinned typed letter only; do not clear pinned letters
+        if currentInput.isEmpty {
+            // Nothing typed to remove (all filled might be pinned); do nothing
+            return
+        }
+        removeLastNonPinnedTypedLetter()
     }
 
     private func submitGuess() {
-        guard !roundOver, currentInput.count == 5 else { return }
-        let guess = currentInput.uppercased()
+        guard !roundOver else { return }
+        // Compose guess from pins + typed
+        let row = composedCurrentRow()
+        guard row.count == 5, row.allSatisfy({ $0 != nil }) else { return }
+        let guess = String(row.compactMap { $0 }).uppercased()
 
         // Accept the target or any correctly spelled 5-letter English word
         guard guess == target || isValidWord(guess) else {
@@ -659,8 +786,13 @@ struct WordleView: View {
             endRound(win: false)
             return
         }
-        // Prepare next row input
+        // Prepare next row input and clear selection/pins for next row only
         currentInput = ""
+        selectedCell = nil
+        // Do not clear previous row pins; they’re irrelevant now. Ensure next row pins are empty.
+        if rowIndex < pinned.count {
+            pinned[rowIndex] = Array(repeating: nil, count: 5)
+        }
         message = nil
     }
 
@@ -689,18 +821,13 @@ struct WordleView: View {
         return result
     }
 
-    // MARK: - Hard Mode constraints
+    // MARK: - Hard Mode constraints (unchanged)
 
-    // Builds constraints from all previous guesses/evaluations:
-    // - greens: fixed positions i -> letter
-    // - minCount: for each letter, the maximum number of times it appeared as present/correct in any single prior guess
-    // - disallowedPositions: for each letter, any indices where it was marked present (yellow) in prior guesses
     private func buildHardModeConstraints() -> (greens: [Int: Character], minCount: [Character: Int], disallowedPositions: [Character: Set<Int>]) {
         var greens: [Int: Character] = [:]
         var minCount: [Character: Int] = [:]
         var disallowed: [Character: Set<Int>] = [:]
 
-        // Walk each prior row
         for r in 0..<rowIndex {
             let g = guesses[r]
             guard g.count == 5 else { continue }
@@ -714,14 +841,13 @@ struct WordleView: View {
                     greens[i] = ch
                     perRowCounts[ch, default: 0] += 1
                 case .present:
-                    disallowed[ch, default: []].insert(i) // cannot put this letter back in the same index
+                    disallowed[ch, default: []].insert(i)
                     perRowCounts[ch, default: 0] += 1
                 case .absent, .unknown:
                     break
                 }
             }
 
-            // Update global minCount with the maximum seen in any single row
             for (ch, c) in perRowCounts {
                 if let old = minCount[ch] {
                     if c > old { minCount[ch] = c }
@@ -734,20 +860,16 @@ struct WordleView: View {
         return (greens, minCount, disallowed)
     }
 
-    // Returns a human-friendly violation message if the guess violates Hard Mode, else nil.
     private func hardModeViolation(for guess: String) -> String? {
         let (greens, minCount, disallowed) = buildHardModeConstraints()
         let guessChars = Array(guess)
 
-        // 1) All known greens must be fixed
         for (idx, ch) in greens {
             if guessChars[idx] != ch {
                 return "Hard Mode: must keep \(ch) at position \(idx + 1)"
             }
         }
 
-        // 2) Must include minimum counts for letters revealed as present/correct
-        // Use maximum per single row, not sum across rows (avoids over-constraining repeats)
         var guessCounts: [Character: Int] = [:]
         for ch in guessChars {
             guessCounts[ch, default: 0] += 1
@@ -759,7 +881,6 @@ struct WordleView: View {
             }
         }
 
-        // 3) Yellow letters cannot be placed back into the same index they were yellow before
         for (ch, badPositions) in disallowed {
             for idx in badPositions {
                 if guessChars[idx] == ch {
@@ -783,9 +904,12 @@ struct WordleView: View {
         keyboardStates.removeAll()
         roundRef = nil
 
+        // Reset pinning/selection
+        pinned = Array(repeating: Array(repeating: nil, count: 5), count: 6)
+        selectedCell = nil
+
         // Start timing
         roundStartAt = Date()
-        // NEW: reset last round elapsed time
         lastRoundElapsedSeconds = nil
 
         if freePlay {
@@ -799,17 +923,16 @@ struct WordleView: View {
 
     private func endRound(win: Bool) {
         roundOver = true
-        // Clear current input to avoid duplicate rendering on the next row
+        // Clear current input and selection to avoid duplicate rendering
         currentInput = ""
+        selectedCell = nil
 
-        // Compute elapsed seconds for this round
         let elapsedSeconds: Int = {
             let start = roundStartAt ?? Date()
             let raw = Int(Date().timeIntervalSince(start))
             return max(0, raw)
         }()
 
-        // NEW: keep for UI chip
         lastRoundElapsedSeconds = elapsedSeconds
 
         answered += 1
@@ -820,18 +943,16 @@ struct WordleView: View {
                 currentBestStreak = currentStreak
             }
             message = (mode == .daily) ? "You got it! See you tomorrow." : "You got it!"
-            // NEW: record with guesses + histogram (per-type and per-mode)
             GameStats.shared.recordWordleResult(
                 type: (mode == .daily ? .daily : .free),
                 mode: (hardModeEnabled ? .hard : .normal),
                 won: true,
-                guesses: rowIndex, // number of guesses used (already incremented)
+                guesses: rowIndex,
                 currentBestStreak: currentBestStreak
             )
         } else {
             currentStreak = 0
             message = "The word was \(target)."
-            // NEW: record loss through the same API (won: false). Guesses ignored for loss.
             GameStats.shared.recordWordleResult(
                 type: (mode == .daily ? .daily : .free),
                 mode: (hardModeEnabled ? .hard : .normal),
@@ -841,7 +962,6 @@ struct WordleView: View {
             )
         }
 
-        // NEW: record timing stats (per-type and per-mode)
         GameStats.shared.recordWordleTime(
             type: (mode == .daily ? .daily : .free),
             mode: (hardModeEnabled ? .hard : .normal),
@@ -849,13 +969,11 @@ struct WordleView: View {
             elapsedSeconds: elapsedSeconds
         )
 
-        // Resolve a Bible reference for the target (random occurrence) — ensure it actually contains the token.
         if let ref = Self.verseIndex[target], Self.verseContainsWord(ref.text, word: target) {
             roundRef = ref
         } else {
             roundRef = Self.findExactOccurrence(for: target)
             if roundRef == nil {
-                // Log for diagnostics; UI will show a disabled chip as a last resort.
                 print("WORD: No exact verse reference found for \(target)")
             }
         }
@@ -912,7 +1030,6 @@ struct WordleView: View {
 
     // MARK: - Reference preview presentation
     private func presentReferencePreview(_ ref: VerseRefInfo) {
-        // Build ref and present immediately; load lazily in sheet task
         let sr = ScriptureRef(bookName: ref.bookName, chapter: ref.chapter, startVerse: ref.verse, endVerse: nil)
         selectedRef = sr
         loadedPreview = nil
@@ -952,7 +1069,6 @@ struct WordleView: View {
     @ViewBuilder
     private func endOfRoundActionArea() -> some View {
         HStack(spacing: 10) {
-            // 1) Reference chip (expanded)
             if let ref = roundRef {
                 Button {
                     presentReferencePreview(ref)
@@ -965,7 +1081,6 @@ struct WordleView: View {
                 .buttonStyle(ModernPillButtonStyle(tint: .blue))
                 .controlSize(.large)
             } else {
-                // Disabled placeholder (expanded) to keep row aligned
                 Button { } label: {
                     Text("Reference")
                         .font(.headline)
@@ -979,7 +1094,6 @@ struct WordleView: View {
                 .accessibilityHidden(true)
             }
 
-            // 2) Time chip (expanded, no icon)
             if let secs = lastRoundElapsedSeconds {
                 Button(action: { }) {
                     Text(formatElapsed(secs))
@@ -1006,7 +1120,6 @@ struct WordleView: View {
                 .accessibilityHidden(true)
             }
 
-            // 3) Next / Play Daily (keep intrinsic width so the other two grow larger)
             if mode == .freePlay {
                 Button("Next") { startNewRound(freePlay: true) }
                     .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
@@ -1027,7 +1140,6 @@ struct WordleView: View {
         }
     }
 
-    // NEW: formatter for elapsed seconds (h:mm:ss or m:ss)
     private func formatElapsed(_ s: Int) -> String {
         let seconds = max(0, s)
         let h = seconds / 3600
