@@ -129,6 +129,7 @@ final class iCloudSyncCoordinator {
             + Self.refMatchKeys
             + Self.verseMatchKeys
             + Self.quizKeys
+            + Self.quizPerBookMapKeys    // NEW: include per-book quiz maps
             + Self.bookOrderKeys
             + Self.whoAmIKeys
             + Self.wordleKeys            // FIX: include Wordle keys so they mirror/merge
@@ -169,7 +170,7 @@ final class iCloudSyncCoordinator {
         var mergedGameKey = false
 
         for key in keysToProcess {
-            if isGameCounterKey(key) || Self.gameDailyAndLastPlayedKeys.contains(key) { mergedGameKey = true }
+            if isGameCounterKey(key) || Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) { mergedGameKey = true }
             // Merge only for domains we own in coordinator
             if allKnownKeys.contains(key) {
                 mergeIncomingKVSValue(forKey: key)
@@ -269,7 +270,7 @@ final class iCloudSyncCoordinator {
             mirrorSettingsKeyToKVS(key)
             return
         }
-        if Self.gameDailyAndLastPlayedKeys.contains(key) || isGameCounterKey(key) {
+        if Self.gameDailyAndLastPlayedKeys.contains(key) || isGameCounterKey(key) || Self.quizPerBookMapKeys.contains(key) {
             mirrorGamesKeyToKVS(key)
             return
         }
@@ -336,7 +337,7 @@ final class iCloudSyncCoordinator {
             mergeSettingsIncoming(forKey: key)
             return
         }
-        if Self.gameDailyAndLastPlayedKeys.contains(key) || isGameCounterKey(key) {
+        if Self.gameDailyAndLastPlayedKeys.contains(key) || isGameCounterKey(key) || Self.quizPerBookMapKeys.contains(key) {
             mergeGamesIncoming(forKey: key)
             return
         }
@@ -364,7 +365,7 @@ final class iCloudSyncCoordinator {
             let hasRemote = (kvs.object(forKey: key) != nil) || (remoteDict.keys.contains(key))
             guard hasRemote else { continue }
 
-            if isGameCounterKey(key) || Self.gameDailyAndLastPlayedKeys.contains(key) { mergedGameKey = true }
+            if isGameCounterKey(key) || Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) { mergedGameKey = true }
             mergeIncomingKVSValue(forKey: key)
             touchedAny = true
         }
@@ -404,3 +405,4 @@ private extension iCloudSyncCoordinator {
         "lastReadText"
     ]
 }
+

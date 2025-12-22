@@ -790,6 +790,28 @@ struct GamesOverviewCardView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
 
+                    // NEW: Bible Quiz specific — Accuracy by Testament
+                    if selectedGame == "Bible Quiz" {
+                        let summary = GameStats.shared.quizOTNTSummary()
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Accuracy by Testament (OT vs NT)")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            HStack(spacing: 8) {
+                                metricChip(
+                                    title: "OT",
+                                    value: "\(Int(round(summary.otPct)))% (\(summary.otCorrect)/\(summary.otAnswered))",
+                                    tint: .blue
+                                )
+                                metricChip(
+                                    title: "NT",
+                                    value: "\(Int(round(summary.ntPct)))% (\(summary.ntCorrect)/\(summary.ntAnswered))",
+                                    tint: .green
+                                )
+                            }
+                        }
+                    }
+
                     // WORD-only section: move WordleStatsCardView content here when selected
                     if selectedGame == "WORD" {
                         // Segmented picker scope
@@ -1229,3 +1251,4 @@ struct PlayerStatSheetCardView: View {
         }
     }
 }
+

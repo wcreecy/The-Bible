@@ -70,6 +70,12 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
+    // NEW: Bible Quiz per-book maps mirrored via KVS (JSON [String:Int])
+    static let quizPerBookMapKeys: [String] = [
+        "quizPerBookAnsweredMap",
+        "quizPerBookCorrectMap"
+    ]
+
     // Game keys: Book Order — now per-difficulty (easy/normal/hard/all) + legacy unsuffixed for reset/back-compat
     static let bookOrderKeys: [String] = {
         let diffs = ["easy", "normal", "hard", "all"]
@@ -167,9 +173,10 @@ extension iCloudSyncCoordinator {
 
     // Local -> KVS for games
     func mirrorGamesKeyToKVS(_ key: String) {
-        if Self.gameDailyAndLastPlayedKeys.contains(key) {
+        if Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) {
             switch key {
-            case "gamesDailyAnswered", "gamesDailyCorrect":
+            case "gamesDailyAnswered", "gamesDailyCorrect",
+                 "quizPerBookAnsweredMap", "quizPerBookCorrectMap":
                 let localData = defaults.data(forKey: key)
                 let remoteData = kvs.object(forKey: key) as? Data
                 if localData != remoteData {
@@ -213,9 +220,10 @@ extension iCloudSyncCoordinator {
 
     // KVS -> Local for games
     func mergeGamesIncoming(forKey key: String) {
-        if Self.gameDailyAndLastPlayedKeys.contains(key) {
+        if Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) {
             switch key {
-            case "gamesDailyAnswered", "gamesDailyCorrect":
+            case "gamesDailyAnswered", "gamesDailyCorrect",
+                 "quizPerBookAnsweredMap", "quizPerBookCorrectMap":
                 guard let remoteData = kvs.object(forKey: key) as? Data else { return }
                 let localData = defaults.data(forKey: key)
                 typealias Map = [String: Int]

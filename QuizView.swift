@@ -552,12 +552,16 @@ struct QuizView: View {
             currentStreak += 1
             bestStreak = max(bestStreak, currentStreak)
             recordRound(correct: 1, answered: 1, bestStreak: currentStreak)
+            // Log per-book maps
+            GameStats.shared.recordQuizPerBook(bookName: correctBookName, answered: 1, correct: 1)
             #if canImport(UIKit)
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
             #endif
         } else {
             currentStreak = 0
             recordRound(correct: 0, answered: 1, bestStreak: currentStreak)
+            // Log answered-only for the correct book (the referenced book)
+            GameStats.shared.recordQuizPerBook(bookName: correctBookName, answered: 1, correct: 0)
             #if canImport(UIKit)
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
             #endif
@@ -679,6 +683,10 @@ struct QuizView: View {
         sessionAnswered += 1
         currentStreak = 0
         recordRound(correct: 0, answered: 1, bestStreak: currentStreak)
+        // Timeout still counts as answered for the referenced (correct) book
+        if !correctBookName.isEmpty {
+            GameStats.shared.recordQuizPerBook(bookName: correctBookName, answered: 1, correct: 0)
+        }
         showAnswerReveal = true
         #if canImport(UIKit)
         UINotificationFeedbackGenerator().notificationOccurred(.error)
@@ -714,3 +722,4 @@ struct QuizView: View {
         QuizView()
     }
 }
+

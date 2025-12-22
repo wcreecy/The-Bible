@@ -216,6 +216,28 @@ final class GameStats: ObservableObject {
         saveJSONMap(perCorrect, forKey: "gamesDailyCorrect_\(key)")
     }
 
+    // NEW: Bible Quiz per-book maps write API
+    func recordQuizPerBook(bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
+        guard !bookName.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
+        // Answered map
+        var answeredMap: [String: Int] = loadJSONMap(forKey: "quizPerBookAnsweredMap")
+        if addAnswered != 0 {
+            answeredMap[bookName, default: 0] = max(0, (answeredMap[bookName] ?? 0) + max(0, addAnswered))
+            saveJSONMap(answeredMap, forKey: "quizPerBookAnsweredMap")
+            iCloudSyncCoordinator.shared.pushKey("quizPerBookAnsweredMap")
+        }
+        // Correct map
+        var correctMap: [String: Int] = loadJSONMap(forKey: "quizPerBookCorrectMap")
+        if addCorrect != 0 {
+            correctMap[bookName, default: 0] = max(0, (correctMap[bookName] ?? 0) + max(0, addCorrect))
+            saveJSONMap(correctMap, forKey: "quizPerBookCorrectMap")
+            iCloudSyncCoordinator.shared.pushKey("quizPerBookCorrectMap")
+        }
+
+        // Nudge listeners
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
     // Call this when a round/question ends to update all-time stats and sync.
     func recordRound(game: GameID, difficulty: Difficulty, correct addCorrect: Int, answered addAnswered: Int, currentBestStreak: Int) {
         let defaults = UserDefaults.standard
@@ -833,6 +855,51 @@ final class GameStats: ObservableObject {
         let f = RelativeDateTimeFormatter()
         f.unitsStyle = .short
         return (name, f.localizedString(for: date, relativeTo: now))
+    }
+
+    // MARK: - NEW: Bible Quiz per-book read + OT/NT aggregation
+
+    private func loadQuizPerBookMaps() -> (answered: [String: Int], correct: [String: Int]) {
+        let a: [String: Int] = loadJSONMap(forKey: "quizPerBookAnsweredMap")
+        let c: [String: Int] = loadJSONMap(forKey: "quizPerBookCorrectMap")
+        return (a, c)
+    }
+
+    // Matthew boundary splitter using BibleData.books; fallback to simple sets if Matthew missing.
+    private func isOT(bookName: String) -> Bool? {
+        let books = BibleData.books
+        let indexMap = Dictionary(uniqueKeysWithValues: books.enumerated().map { ($1.name, $0) })
+        guard let mattIdx = indexMap["Matthew"], let idx = indexMap[bookName] else {
+            // Unknown when missing; return nil so caller can ignore
+            return nil
+        }
+        return idx < mattIdx
+    }
+
+    // Returns OT/NT totals for answered and correct, plus percentages.
+    func quizOTNTSummary() -> (otAnswered: Int, otCorrect: Int, ntAnswered: Int, ntCorrect: Int, otPct: Double, ntPct: Double) {
+        let (answeredMap, correctMap) = loadQuizPerBookMaps()
+        var otA = 0, otC = 0, ntA = 0, ntC = 0
+
+        // Union of all books seen in either map
+        let allBooks = Set(answeredMap.keys).union(correctMap.keys)
+        for b in allBooks {
+            let a = max(0, answeredMap[b] ?? 0)
+            let c = max(0, correctMap[b] ?? 0)
+            if let ot = isOT(bookName: b) {
+                if ot {
+                    otA += a; otC += c
+                } else {
+                    ntA += a; ntC += c
+                }
+            } else {
+                // If we can't classify (unknown name), ignore it
+            }
+        }
+
+        let otPct = otA > 0 ? min(100, max(0, (Double(otC) / Double(otA)) * 100.0)) : 0
+        let ntPct = ntA > 0 ? min(100, max(0, (Double(ntC) / Double(ntA)) * 100.0)) : 0
+        return (otA, otC, ntA, ntC, otPct, ntPct)
     }
 }
 
