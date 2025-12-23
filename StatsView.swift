@@ -117,6 +117,9 @@ struct StatsView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
+                // Ensure the mode picker is always above scroll content and captures taps
+                .background(Color(.systemBackground))
+                .zIndex(10)
 
                 // Mode-specific content
                 if statsSelectedMode == .bible {

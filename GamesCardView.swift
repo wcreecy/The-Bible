@@ -140,15 +140,27 @@ struct GamesCardView: View {
                         }
                     }
 
-                    // Place Play button right next to "Gamer Score" on the same row
+                    // Place Play button right next to "Gamer Score" on the same row (regular width only)
+                    #if os(iOS)
+                    if UIDevice.current.userInterfaceIdiom == .pad {
+                        GamesOverviewPlayButton(openAction: {
+                            // Switch to Games tab or open default list (no specific selection here)
+                            NotificationCenter.default.post(
+                                name: .switchToTab,
+                                object: nil,
+                                userInfo: ["tabName": "games"]
+                            )
+                        }, selectedGame: "All Games")
+                    }
+                    #else
                     GamesOverviewPlayButton(openAction: {
-                        // Switch to Games tab or open default list (no specific selection here)
                         NotificationCenter.default.post(
                             name: .switchToTab,
                             object: nil,
                             userInfo: ["tabName": "games"]
                         )
                     }, selectedGame: "All Games")
+                    #endif
 
                     Spacer()
                 }
@@ -737,12 +749,14 @@ struct GamesOverviewCardView: View {
                         .font(.headline)
                         .lineLimit(1)
 
-                    // Play button immediately after the title (away from the picker)
-                    GamesOverviewPlayButton(openAction: openSelectedGame, selectedGame: selectedGame)
+                    // Play button next to the title on larger screens only
+                    if hSizeClass != .compact {
+                        GamesOverviewPlayButton(openAction: openSelectedGame, selectedGame: selectedGame)
+                    }
 
                     Spacer(minLength: 8)
 
-                    // Note: Play button moved next to the title. Picker remains fully tappable.
+                    // Picker remains fully tappable
                     Picker(selection: $selectedGame) {
                         ForEach(pickerOptions, id: \.self) { name in
                             Label(name, systemImage: gameIcon(for: name))
@@ -778,6 +792,17 @@ struct GamesOverviewCardView: View {
                     .pickerStyle(.menu)
                     .controlSize(.mini)
                     .animation(.easeInOut(duration: 0.2), value: selectedGame)
+                }
+
+                // On iPhone, move Play button to its own row so it doesn’t crowd the picker
+                if hSizeClass == .compact {
+                    Button(action: openSelectedGame) {
+                        Label("Play", systemImage: "play.fill")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.regular)
                 }
 
                 // Keep a horizontal line between the header and stats

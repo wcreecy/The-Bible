@@ -157,17 +157,8 @@ struct TotalsCardView: View {
                 }
             }
         }
-        // Make the entire card clickable to expand/collapse
-        .contentShape(Rectangle())
-        .highPriorityGesture(
-            TapGesture().onEnded {
-                withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                    isExpanded.toggle()
-                }
-            }
-        )
-        .accessibilityAddTraits(.isButton)
-        .accessibilityLabel(Text(isExpanded ? "Hide details" : "Show details"))
+        // NOTE: Removed "entire card is tappable" gesture. It could intercept touches intended
+        // for other controls (like the top mode picker) if view bounds overlap during animations.
     }
 
     // Max minutes helper for a safe y-domain
