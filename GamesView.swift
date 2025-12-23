@@ -20,6 +20,8 @@ struct GamesView: View {
 
     @State private var selection: GameRoute? = nil
     @State private var pulse: Bool = false
+    // Drives the programmatic push without deprecated APIs
+    @State private var isPresentingProgrammatic: Bool = false
 
     // NEW: Debug flag to allow Daily Wordle replay
     @AppStorage("wordleAllowDailyReplay") private var wordleAllowDailyReplay: Bool = false
@@ -204,6 +206,7 @@ struct GamesView: View {
         }
         .listStyle(.insetGrouped)
         .navigationTitle("Games")
+        // Value-based destinations for user-tapped links
         .navigationDestination(for: GameRoute.self) { route in
             switch route {
             case .quiz:
@@ -226,33 +229,49 @@ struct GamesView: View {
                 WordleView() // NEW
             }
         }
+        // Programmatic destination without deprecated APIs
+        .navigationDestination(isPresented: $isPresentingProgrammatic) {
+            Group {
+                if selection == .quiz {
+                    QuizView()
+                } else if selection == .hangman {
+                    HangmanGameView()
+                } else if selection == .beatTheClock {
+                    BeatTheClockGameView()
+                } else if selection == .verseMatch {
+                    VerseMatchGameView()
+                } else if selection == .favoritesFlashcards {
+                    FavoritesFlashcardsGameView()
+                } else if selection == .bookOrder {
+                    BookOrderGameView()
+                } else if selection == .wordSearch {
+                    WordSearchGameView()
+                } else if selection == .whoAmI {
+                    WhoAmIGameView()
+                } else if selection == .wordle {
+                    WordleView()
+                } else {
+                    EmptyView()
+                }
+            }
+            .onDisappear {
+                // Reset when user navigates back
+                selection = nil
+            }
+        }
         .onAppear { selection = nil }
-        // NEW: respond to cross-tab "open game" requests
+        // Respond to cross-tab "open game" requests
         .onReceive(NotificationCenter.default.publisher(for: .openGameStart)) { note in
             guard let name = note.userInfo?["gameName"] as? String,
                   let route = route(forDisplayName: name) else { return }
-            // Programmatically navigate using selection + hidden link
             DispatchQueue.main.async {
                 selection = route
+                isPresentingProgrammatic = true
             }
         }
-        // Hidden programmatic links for selection routing
-        .background(
-            Group {
-                NavigationLink(tag: GameRoute.quiz, selection: $selection) { QuizView() } label: { EmptyView() }
-                NavigationLink(tag: GameRoute.hangman, selection: $selection) { HangmanGameView() } label: { EmptyView() }
-                NavigationLink(tag: GameRoute.beatTheClock, selection: $selection) { BeatTheClockGameView() } label: { EmptyView() }
-                NavigationLink(tag: GameRoute.verseMatch, selection: $selection) { VerseMatchGameView() } label: { EmptyView() }
-                NavigationLink(tag: GameRoute.bookOrder, selection: $selection) { BookOrderGameView() } label: { EmptyView() }
-                NavigationLink(tag: GameRoute.whoAmI, selection: $selection) { WhoAmIGameView() } label: { EmptyView() }
-                NavigationLink(tag: GameRoute.wordle, selection: $selection) { WordleView() } label: { EmptyView() }
-                // Optional: include others if you later add them to the picker
-            }
-        )
     }
 }
 
 #Preview {
     NavigationStack { GamesView() }
 }
-

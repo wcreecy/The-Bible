@@ -72,22 +72,10 @@ struct ProgressCardView: View {
     var body: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 10) {
-                // Collapsed vs expanded header
-                if isExpanded {
-                    if hSizeClass == .compact {
-                        compactHeader
-                            .contentShape(Rectangle())
-                            .onTapGesture { toggleExpanded() }
-                    } else {
-                        regularHeader
-                            .contentShape(Rectangle())
-                            .onTapGesture { toggleExpanded() }
-                    }
-                } else {
-                    collapsedHeader
-                        .contentShape(Rectangle())
-                        .onTapGesture { toggleExpanded() }
-                }
+                // Unified header tap target
+                headerView
+                    .contentShape(Rectangle())
+                    .onTapGesture { toggleExpanded() }
 
                 // Actions (kept)
                 HStack(spacing: 10) {
@@ -137,6 +125,20 @@ struct ProgressCardView: View {
     private func toggleExpanded() {
         withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
             isExpanded.toggle()
+        }
+    }
+
+    // MARK: - Unified header
+    @ViewBuilder
+    private var headerView: some View {
+        if isExpanded {
+            if hSizeClass == .compact {
+                compactHeader
+            } else {
+                regularHeader
+            }
+        } else {
+            collapsedHeader
         }
     }
 
@@ -212,7 +214,7 @@ struct ProgressCardView: View {
                     Text(title)
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                    // Small accent chip for percent
+                    // Small accent chip for percent — mark decorative to avoid intercepting taps
                     Text("\(percent)%")
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(tint)
@@ -223,6 +225,7 @@ struct ProgressCardView: View {
                                 .fill(tint.opacity(0.12))
                         )
                         .accessibilityHidden(true)
+                        .allowsHitTesting(false)
                 }
                 Text(countText + " " + title.lowercased())
                     .font(.footnote.weight(.semibold))
@@ -241,6 +244,7 @@ struct ProgressCardView: View {
         )
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(title) \(countText), \(percent) percent complete")
+        .allowsHitTesting(false) // ensure the tile never steals the header tap
     }
 
     // MARK: - Original headers (kept for expanded view)
@@ -284,6 +288,7 @@ struct ProgressCardView: View {
                 labeledRing(title: "Chapters", percent: chaptersPercent, tint: .blue)
                 labeledRing(title: "Verses", percent: versesPercent, tint: .accentColor)
             }
+            .allowsHitTesting(false) // decorative cluster; avoid stealing taps
         }
     }
 
@@ -334,6 +339,7 @@ struct ProgressCardView: View {
             .accessibilityLabel(Text("\(title) \(percent) percent complete"))
         }
         .padding(.vertical, 2)
+        .allowsHitTesting(false) // decorative; keep header tap unified
     }
 
     // MARK: - Expanded content (kept)
