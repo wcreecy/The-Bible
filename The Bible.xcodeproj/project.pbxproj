@@ -148,6 +148,7 @@
 		2CD7D82D2ECA126500849235 /* PinnedVerseWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */; };
 		2CD7D8312ECA163A00849235 /* PinnedVerseWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */; };
 		2CD7D8342ECA16BE00849235 /* PinnedVerseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */; };
+		2CE02E832EFAEDE700F76E16 /* GamesProgressRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE02E822EFAEDE700F76E16 /* GamesProgressRing.swift */; };
 		2CE1B9622EDD1FFF001779B1 /* GamesCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE1B9612EDD1FFF001779B1 /* GamesCardView.swift */; };
 		2CE599562ECF4D9600A24C9F /* SmartLinkSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE599552ECF4D9600A24C9F /* SmartLinkSheet.swift */; };
 		2CF043692EE9F3D600DB1283 /* Canon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF043682EE9F3D600DB1283 /* Canon.swift */; };
@@ -353,6 +354,7 @@
 		2CD7D8282ECA125200849235 /* PinnedVerseIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseIntent.swift; sourceTree = "<group>"; };
 		2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseProvider.swift; sourceTree = "<group>"; };
 		2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseWidget.swift; sourceTree = "<group>"; };
+		2CE02E822EFAEDE700F76E16 /* GamesProgressRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesProgressRing.swift; sourceTree = "<group>"; };
 		2CE1B9612EDD1FFF001779B1 /* GamesCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesCardView.swift; sourceTree = "<group>"; };
 		2CE599552ECF4D9600A24C9F /* SmartLinkSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartLinkSheet.swift; sourceTree = "<group>"; };
 		2CEA02D52EBE677900039D4B /* The Bible WidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "The Bible WidgetsExtension.entitlements"; sourceTree = "<group>"; };
@@ -666,6 +668,7 @@
 				2C1400FD2EF2C0D400A93CA9 /* StatsChartConfig.swift */,
 				2C556D412EF3620E0044426E /* AppTab.swift */,
 				2CFEACC52EF4A50B00064270 /* WordleStatsCardView.swift */,
+				2CE02E822EFAEDE700F76E16 /* GamesProgressRing.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1119,6 +1122,7 @@
 				2CC853B12EF05DDF00753104 /* ScripturePreviewCard.swift in Sources */,
 				2C6BB6532EF1FF3C0010D769 /* BibleStatsStore+SessionsBridge.swift in Sources */,
 				2C2764F82EE8C8DB00A321FE /* DailyFocusCard.swift in Sources */,
+				2CE02E832EFAEDE700F76E16 /* GamesProgressRing.swift in Sources */,
 				2C4BE6362EEDE2260090F5A2 /* AverageSessionCardView.swift in Sources */,
 				2C2A44F02EEE261B00FE8C2F /* Notifications.swift in Sources */,
 				2C27657E2EE8ECB400A321FE /* StreaksViewModel.swift in Sources */,
