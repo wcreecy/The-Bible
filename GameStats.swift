@@ -198,7 +198,7 @@ final class GameStats: ObservableObject {
         }
     }
 
-    // NEW: Per-mode storage key for WORD daily maps
+    // NEW: Per-mode storage key for WORD (Normal vs Hard)
     private static func storageKeyForWord(mode: WordMode) -> String {
         switch mode {
         case .normal: return "word_normal"
@@ -206,7 +206,6 @@ final class GameStats: ObservableObject {
         }
     }
 
-    // Update both overall and per-game daily maps
     private func updateDailyMaps(addAnswered: Int, addCorrect: Int, forGameKey key: String) {
         // Local yyyy-MM-dd key
         let dayKey = Self.localDayKey(for: Date())
@@ -278,7 +277,6 @@ final class GameStats: ObservableObject {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // Call this when a round/question ends to update all-time stats and sync.
     func recordRound(game: GameID, difficulty: Difficulty, correct addCorrect: Int, answered addAnswered: Int, currentBestStreak: Int) {
         let defaults = UserDefaults.standard
         var changedKeys: [String] = []
@@ -301,7 +299,6 @@ final class GameStats: ObservableObject {
             }
         }
 
-        // Map difficulty to per-game suffix
         func suffix(for game: GameID, difficulty: Difficulty) -> String? {
             switch game {
             case .quiz:
@@ -312,16 +309,14 @@ final class GameStats: ObservableObject {
                 case .medium, .none: return nil
                 }
             case .hangman, .beatclock, .versematch:
-                // Change: treat both .normal and legacy .medium as "normal" suffix
                 switch difficulty {
                 case .easy: return "easy"
                 case .normal: return "normal"
-                case .medium: return "normal" // legacy callers now write to "normal"
+                case .medium: return "normal"
                 case .hard: return "hard"
                 case .none: return nil
                 }
             case .bookorder:
-                // Now per-difficulty (easy/normal/hard/all) — map none->all for "All Books" mode
                 switch difficulty {
                 case .easy: return "easy"
                 case .normal: return "normal"
@@ -337,7 +332,6 @@ final class GameStats: ObservableObject {
                 case .medium, .none: return nil
                 }
             case .wordle:
-                // Legacy generic writer — keep writing to "_all" for back-compat (deprecated)
                 switch difficulty {
                 case .none: return "all"
                 default: return "all"
@@ -345,7 +339,6 @@ final class GameStats: ObservableObject {
             }
         }
 
-        // Resolve keys and apply updates
         let suf = suffix(for: game, difficulty: difficulty)
 
         switch game {
@@ -386,33 +379,27 @@ final class GameStats: ObservableObject {
             maxInt("whoamiAllTimeBestStreak_\(s)", candidate: currentBestStreak)
 
         case .wordle:
-            // Deprecated: generic recordRound for Wordle writes to legacy "_all"
             guard let s = suf else { return }
             incInt("wordleAllTimeCorrect_\(s)", by: addCorrect)
             incInt("wordleAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("wordleAllTimeBestStreak_\(s)", candidate: currentBestStreak)
         }
 
-        // NEW: Append to per-day maps and stamp last played
         do {
-            // Update overall + per-game daily maps
             let key = Self.storageKey(for: game)
             updateDailyMaps(addAnswered: addAnswered, addCorrect: addCorrect, forGameKey: key)
 
-            // Stamp last played time and game name
             let nowTS = Date().timeIntervalSince1970
             let defaults = UserDefaults.standard
             defaults.set(nowTS, forKey: "gamesLastPlayedAt")
             defaults.set(Self.gameDisplayName(for: game), forKey: "gamesLastPlayedGameName")
         }
 
-        // Push changed keys to iCloud KVS
         let kvs = iCloudSyncCoordinator.shared
         for key in changedKeys {
             kvs.pushKey(key)
         }
 
-        // Notify UI (Home games card, Stats) to refresh gamer score
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
@@ -439,9 +426,7 @@ final class GameStats: ObservableObject {
 
         // Keep legacy “_all” untouched for back-compat. Do not auto-aggregate to "_all".
 
-        // Daily progress maps + last played metadata (same as generic path)
         do {
-            // Update overall + per-game (combined "word") daily maps
             updateDailyMaps(addAnswered: addAnswered, addCorrect: addCorrect, forGameKey: "word")
 
             let nowTS = Date().timeIntervalSince1970
@@ -499,6 +484,17 @@ final class GameStats: ObservableObject {
             // Per-mode
             incInt("wordleWinsGuessSum_\(modeSuf)", by: clamped)
             incInt("wordleWinsOnGuess\(clamped)_\(modeSuf)", by: 1)
+        }
+
+        // NEW: Stamp Daily solved day -> JSON map ["yyyy-MM-dd": 1]
+        if type == .daily && won {
+            let dayKey = Self.localDayKey(for: Date())
+            var solved: [String: Int] = loadJSONMap(forKey: "wordleDailySolvedDays")
+            if solved[dayKey] != 1 {
+                solved[dayKey] = 1
+                saveJSONMap(solved, forKey: "wordleDailySolvedDays")
+                iCloudSyncCoordinator.shared.pushKey("wordleDailySolvedDays")
+            }
         }
 
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
@@ -585,7 +581,6 @@ final class GameStats: ObservableObject {
         let bestStreak: Int?
     }
 
-    // Updated: aggregate suffixed + conditional legacy for Quiz
     private var quiz: GameStat {
         let c = sumAcross(prefix: "quizAllTimeCorrect", parts: ["_easy","_normal","_hard"], legacyKey: "quizAllTimeCorrect")
         let a = sumAcross(prefix: "quizAllTimeAnswered", parts: ["_easy","_normal","_hard"], legacyKey: "quizAllTimeAnswered")
@@ -594,21 +589,17 @@ final class GameStats: ObservableObject {
     }
 
     private var hangman: GameStat {
-        // Change: read both "_normal" and legacy "_medium"
         let c = sumAcross(prefix: "hangmanAllTimeCorrect", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "hangmanAllTimeCorrect")
         let a = sumAcross(prefix: "hangmanAllTimeAnswered", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "hangmanAllTimeAnswered")
         let best = maxAcross(prefix: "hangmanAllTimeBestStreak", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "hangmanAllTimeBestStreak")
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
-    // New: Verse Match reader (prefers versematch*, falls back to refmatch* legacy if needed)
     private var versematch: GameStat {
-        // Prefer new versematch keys
         let cNew = sumAcross(prefix: "versematchAllTimeCorrect", parts: ["_easy","_normal","_hard","_medium"], legacyKey: nil)
         let aNew = sumAcross(prefix: "versematchAllTimeAnswered", parts: ["_easy","_normal","_hard","_medium"], legacyKey: nil)
         let bestNew = maxAcross(prefix: "versematchAllTimeBestStreak", parts: ["_easy","_normal","_hard","_medium"], legacyKey: nil)
 
-        // If all new are zero, include legacy refmatch
         let hasNew = (cNew + aNew + (bestNew)) > 0
         if hasNew {
             return GameStat(correct: cNew, answered: aNew, bestStreak: bestNew == 0 ? nil : bestNew)
@@ -620,7 +611,6 @@ final class GameStats: ObservableObject {
         }
     }
 
-    // Updated: aggregate suffixed + conditional legacy for Beat the Clock
     private var beatclock: GameStat {
         let c = sumAcross(prefix: "beatclockAllTimeCorrect", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "beatclockAllTimeCorrect")
         let a = sumAcross(prefix: "beatclockAllTimeAnswered", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "beatclockAllTimeAnswered")
@@ -629,14 +619,12 @@ final class GameStats: ObservableObject {
     }
 
     private var bookorder: GameStat {
-        // New per-difficulty suffixes: easy/normal/hard/all
         let c = sumAcross(prefix: "bookorderAllTimeCorrect", parts: ["_easy","_normal","_hard","_all"], legacyKey: "bookorderAllTimeCorrect")
         let a = sumAcross(prefix: "bookorderAllTimeAnswered", parts: ["_easy","_normal","_hard","_all"], legacyKey: "bookorderAllTimeAnswered")
         let best = maxAcross(prefix: "bookorderAllTimeBestStreak", parts: ["_easy","_normal","_hard","_all"], legacyKey: "bookorderAllTimeBestStreak")
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
-    // NEW: aggregate for Who am I? (easy/normal/hard) — keep consistent helper
     private var whoami: GameStat {
         let c = sumAcross(prefix: "whoamiAllTimeCorrect", parts: ["_easy","_normal","_hard"], legacyKey: "whoamiAllTimeCorrect")
         let a = sumAcross(prefix: "whoamiAllTimeAnswered", parts: ["_easy","_normal","_hard"], legacyKey: "whoamiAllTimeAnswered")
@@ -644,7 +632,6 @@ final class GameStats: ObservableObject {
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
-    // NEW: Wordle per-type readers + legacy
     private func wordle(type: WordleType) -> GameStat {
         let suf = (type == .daily) ? "_daily" : "_free"
         let c = readInt("wordleAllTimeCorrect\(suf)")
@@ -659,7 +646,6 @@ final class GameStats: ObservableObject {
         return GameStat(correct: max(0, c), answered: max(0, a), bestStreak: (best == 0 ? nil : best))
     }
 
-    // NEW: Wordle win-guess stats readers (per-type and per-mode)
     func wordleWinGuessStats(type: WordleType) -> (averageGuessesOnWins: Double, winsByGuess: [Int]) {
         let suf = (type == .daily) ? "daily" : "free"
         let totalWins = max(0, readInt("wordleAllTimeCorrect_\(suf)"))
@@ -670,11 +656,9 @@ final class GameStats: ObservableObject {
     }
 
     func wordleWinGuessStatsCombined() -> (averageGuessesOnWins: Double, winsByGuess: [Int]) {
-        // Combine daily + free (ignore legacy "_all" for these new stats)
         let (_, distDaily) = wordleWinGuessStats(type: .daily)
         let (_, distFree) = wordleWinGuessStats(type: .free)
 
-        // Average needs to be recomputed from totals to be correct:
         let winsDaily = max(0, readInt("wordleAllTimeCorrect_daily"))
         let winsFree = max(0, readInt("wordleAllTimeCorrect_free"))
         let sumDaily = max(0, readInt("wordleWinsGuessSum_daily"))
@@ -687,7 +671,6 @@ final class GameStats: ObservableObject {
         return (avg, dist)
     }
 
-    // NEW: per-mode win-guess stats (normal/hard)
     func wordleWinGuessStats(mode: WordMode) -> (averageGuessesOnWins: Double, winsByGuess: [Int]) {
         let suf = (mode == .normal) ? "normal" : "hard"
         let totalWins = max(0, readInt("wordleAllTimeCorrect_\(suf)"))
@@ -701,20 +684,18 @@ final class GameStats: ObservableObject {
         let (avgN, distN) = wordleWinGuessStats(mode: .normal)
         let (avgH, distH) = wordleWinGuessStats(mode: .hard)
 
-        // Weighted average by number of wins
         let winsN = max(0, readInt("wordleAllTimeCorrect_normal"))
         let winsH = max(0, readInt("wordleAllTimeCorrect_hard"))
         let sumN = max(0, readInt("wordleWinsGuessSum_normal"))
         let sumH = max(0, readInt("wordleWinsGuessSum_hard"))
         let totalWins = winsN + winsH
         let totalSum = sumN + sumH
-        let avg = totalWins > 0 ? Double(totalSum) / Double(totalWins) : max(avgN, avgH) // fallback
+        let avg = totalWins > 0 ? Double(totalSum) / Double(totalWins) : max(avgN, avgH)
 
         let dist = zip(distN, distH).map(+)
         return (avg, dist)
     }
 
-    // NEW: Wordle timing readers (per-type and per-mode)
     func wordleTimeStats(type: WordleType) -> (total: Int, wins: Int, losses: Int) {
         let suf = (type == .daily) ? "daily" : "free"
         let total = max(0, readInt("wordleTimeTotal_seconds_\(suf)"))
@@ -729,7 +710,6 @@ final class GameStats: ObservableObject {
         return (d.total + f.total, d.wins + f.wins, d.losses + f.losses)
     }
 
-    // NEW: per-mode timing readers
     func wordleTimeStats(mode: WordMode) -> (total: Int, wins: Int, losses: Int) {
         let suf = (mode == .normal) ? "normal" : "hard"
         let total = max(0, readInt("wordleTimeTotal_seconds_\(suf)"))
@@ -744,7 +724,6 @@ final class GameStats: ObservableObject {
         return (n.total + h.total, n.wins + h.wins, n.losses + h.losses)
     }
 
-    // NEW: counts for denominators (per-mode)
     func wordleCounts(mode: WordMode) -> (answered: Int, wins: Int) {
         let suf = (mode == .normal) ? "normal" : "hard"
         let wins = max(0, readInt("wordleAllTimeCorrect_\(suf)"))
@@ -772,8 +751,7 @@ final class GameStats: ObservableObject {
 
     // MARK: - New daily helpers and last played
 
-    // Local-day key formatter
-    private static func localDayKey(for date: Date, calendar: Calendar = .autoupdatingCurrent) -> String {
+    static func localDayKey(for date: Date, calendar: Calendar = .autoupdatingCurrent) -> String {
         var cal = calendar
         cal.timeZone = .autoupdatingCurrent
         let start = cal.startOfDay(for: date)
@@ -784,7 +762,6 @@ final class GameStats: ObservableObject {
         return String(format: "%04d-%02d-%02d", y, m, d)
     }
 
-    // Load/save JSON map [String: Int] in UserDefaults
     private func loadJSONMap(forKey key: String) -> [String: Int] {
         let defaults = UserDefaults.standard
         guard let data = defaults.data(forKey: key),
@@ -801,7 +778,6 @@ final class GameStats: ObservableObject {
         }
     }
 
-    // Load/save nested JSON map [String: [String: Int]]
     private func loadNestedJSONMap(forKey key: String) -> [String: [String: Int]] {
         let defaults = UserDefaults.standard
         guard let data = defaults.data(forKey: key),
@@ -830,7 +806,6 @@ final class GameStats: ObservableObject {
         }
     }
 
-    // Returns today's (answered, correct, pct)
     func todayStats(now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (answered: Int, correct: Int, pct: Double) {
         let key = Self.localDayKey(for: now, calendar: calendar)
         let answeredMap: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered")
@@ -842,15 +817,12 @@ final class GameStats: ObservableObject {
     }
 
     var lastPlayedGameName: String? {
-        // Back-compat: if the stored value is the old name, present the new name.
         if let raw = UserDefaults.standard.string(forKey: "gamesLastPlayedGameName") {
             if raw == "Wordle (Bible)" { return "WORD" }
             return raw
         }
         return nil
     }
-
-    // MARK: - NEW: Public helpers for Overview card (activity/trend/last played)
 
     func dailySeriesLast(days: Int, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> [(date: Date, answered: Int, correct: Int)] {
         var cal = calendar
@@ -872,7 +844,6 @@ final class GameStats: ObservableObject {
         return series
     }
 
-    // Per-game series (by display name)
     func dailySeriesLast(days: Int, forDisplayName name: String, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> [(date: Date, answered: Int, correct: Int)] {
         if name == "All Games" { return dailySeriesLast(days: days, now: now, calendar: calendar) }
         guard let gameKey = Self.storageKey(forDisplayName: name) else {
@@ -898,7 +869,6 @@ final class GameStats: ObservableObject {
         return series
     }
 
-    // NEW: Per-WORD-mode series
     func dailySeriesLast(days: Int, forWordMode mode: WordMode, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> [(date: Date, answered: Int, correct: Int)] {
         let gameKey = Self.storageKeyForWord(mode: mode)
 
@@ -926,7 +896,6 @@ final class GameStats: ObservableObject {
         cal.timeZone = .autoupdatingCurrent
 
         let series = dailySeriesLast(days: 1825, now: now, calendar: cal)
-        // Longest streak: max contiguous days with answered > 0
         var longest = 0
         var currentRun = 0
         for (_, a, _) in series {
@@ -938,9 +907,7 @@ final class GameStats: ObservableObject {
             }
         }
 
-        // Current streak ends today if today > 0, else yesterday if yesterday > 0
         var current = 0
-        // Walk backward from the end while answered > 0
         for (_, a, _) in series.reversed() {
             if a > 0 { current += 1 } else { break }
         }
@@ -948,7 +915,6 @@ final class GameStats: ObservableObject {
         return (current, longest)
     }
 
-    // Per-game streaks (by display name)
     func activityStreaks(forDisplayName name: String, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (current: Int, longest: Int) {
         if name == "All Games" { return activityStreaks(now: now, calendar: calendar) }
 
@@ -975,7 +941,6 @@ final class GameStats: ObservableObject {
         return (current, longest)
     }
 
-    // NEW: Per-WORD-mode streaks
     func activityStreaks(forWordMode mode: WordMode, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (current: Int, longest: Int) {
         var cal = calendar
         cal.timeZone = .autoupdatingCurrent
@@ -1017,7 +982,6 @@ final class GameStats: ObservableObject {
         return (cur, cur - prev)
     }
 
-    // Per-game 7-day trend (by display name)
     func accuracy7DayTrend(forDisplayName name: String, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (currentPct: Double, deltaVsPrev: Double) {
         if name == "All Games" { return accuracy7DayTrend(now: now, calendar: calendar) }
 
@@ -1037,7 +1001,6 @@ final class GameStats: ObservableObject {
         return (cur, cur - prev)
     }
 
-    // NEW: Per-WORD-mode 7-day trend
     func accuracy7DayTrend(forWordMode mode: WordMode, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (currentPct: Double, deltaVsPrev: Double) {
         let s14 = dailySeriesLast(days: 14, forWordMode: mode, now: now, calendar: calendar)
         let last7 = s14.suffix(7)
@@ -1045,7 +1008,7 @@ final class GameStats: ObservableObject {
 
         func pct(for slice: ArraySlice<(date: Date, answered: Int, correct: Int)>) -> Double {
             let a = slice.reduce(0) { $0 + max(0, $1.answered) }
-            let c = slice.reduce(0) { $0 + max(0, $1.correct) }
+            let c = slice.reduce(0, { $0 + max(0, $1.correct) })
             guard a > 0 else { return 0 }
             return min(100, max(0, (Double(c) / Double(a)) * 100.0))
         }
@@ -1080,23 +1043,19 @@ final class GameStats: ObservableObject {
         return (a, c)
     }
 
-    // Matthew boundary splitter using BibleData.books; fallback to simple sets if Matthew missing.
     private func isOT(bookName: String) -> Bool? {
         let books = BibleData.books
         let indexMap = Dictionary(uniqueKeysWithValues: books.enumerated().map { ($1.name, $0) })
         guard let mattIdx = indexMap["Matthew"], let idx = indexMap[bookName] else {
-            // Unknown when missing; return nil so caller can ignore
             return nil
         }
         return idx < mattIdx
     }
 
-    // Returns OT/NT totals for answered and correct, plus percentages.
     func quizOTNTSummary() -> (otAnswered: Int, otCorrect: Int, ntAnswered: Int, ntCorrect: Int, otPct: Double, ntPct: Double) {
         let (answeredMap, correctMap) = loadQuizPerBookMaps()
         var otA = 0, otC = 0, ntA = 0, ntC = 0
 
-        // Union of all books seen in either map
         let allBooks = Set(answeredMap.keys).union(correctMap.keys)
         for b in allBooks {
             let a = max(0, answeredMap[b] ?? 0)
@@ -1107,8 +1066,6 @@ final class GameStats: ObservableObject {
                 } else {
                     ntA += a; ntC += c
                 }
-            } else {
-                // If we can't classify (unknown name), ignore it
             }
         }
 
@@ -1117,7 +1074,6 @@ final class GameStats: ObservableObject {
         return (otA, otC, ntA, ntC, otPct, ntPct)
     }
 
-    // NEW: Accuracy by Genre (all-time per-book maps)
     func quizAccuracyByGenre() -> [(genre: String, answered: Int, correct: Int, pct: Double)] {
         let (answeredMap, correctMap) = loadQuizPerBookMaps()
         var buckets: [StatsSeriesBuilder.Genre: (a: Int, c: Int)] = [:]
@@ -1142,11 +1098,9 @@ final class GameStats: ObservableObject {
         }
     }
 
-    // NEW: Weak books over last N days with min attempts threshold
     func quizWeakBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
         let (dailyA, dailyC) = loadQuizPerBookDailyMaps()
 
-        // Build a list of day keys for the last N days in local time
         var cal = Calendar.autoupdatingCurrent
         cal.timeZone = .autoupdatingCurrent
         let startOfToday = cal.startOfDay(for: Date())
@@ -1157,7 +1111,6 @@ final class GameStats: ObservableObject {
             }
         }
 
-        // Aggregate per book across selected day keys
         var bookA: [String: Int] = [:]
         var bookC: [String: Int] = [:]
         for k in keys {
@@ -1173,7 +1126,6 @@ final class GameStats: ObservableObject {
             }
         }
 
-        // Compute list with threshold filter and accuracy
         var rows: [(String, Int, Int, Double)] = []
         let allBooks = Set(bookA.keys).union(bookC.keys)
         for b in allBooks {
@@ -1184,12 +1136,30 @@ final class GameStats: ObservableObject {
             rows.append((b, a, c, pct))
         }
 
-        // Sort ascending by pct, then by name for stability
         rows.sort { lhs, rhs in
             if lhs.3 == rhs.3 { return lhs.0 < rhs.0 }
             return lhs.3 < rhs.3
         }
         return rows
+    }
+
+    // MARK: - NEW: WORD daily solved last-N day keys
+
+    func wordleDailySolvedDayKeysLast(days: Int, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> Set<String> {
+        let solved: [String: Int] = loadJSONMap(forKey: "wordleDailySolvedDays")
+        var cal = calendar
+        cal.timeZone = .autoupdatingCurrent
+        let startOfToday = cal.startOfDay(for: now)
+        var keys: Set<String> = []
+        for i in stride(from: days - 1, through: 0, by: -1) {
+            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                let k = Self.localDayKey(for: d, calendar: cal)
+                if solved[k] == 1 {
+                    keys.insert(k)
+                }
+            }
+        }
+        return keys
     }
 }
 

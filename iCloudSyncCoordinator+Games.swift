@@ -151,6 +151,11 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
+    // NEW: WORD daily solved flags (JSON [String:Int] dayKey -> 1)
+    static let wordleSolvedMapKeys: [String] = [
+        "wordleDailySolvedDays"
+    ]
+
     // Game daily + last played keys
     static let gameDailyAndLastPlayedKeys: [String] = [
         "gamesDailyAnswered",      // JSON [String: Int]
@@ -192,10 +197,11 @@ extension iCloudSyncCoordinator {
 
     // Local -> KVS for games
     func mirrorGamesKeyToKVS(_ key: String) {
-        if Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) {
+        if Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) || Self.wordleSolvedMapKeys.contains(key) {
             switch key {
             case "gamesDailyAnswered", "gamesDailyCorrect",
-                 "quizPerBookAnsweredMap", "quizPerBookCorrectMap":
+                 "quizPerBookAnsweredMap", "quizPerBookCorrectMap",
+                 "wordleDailySolvedDays":
                 let localData = defaults.data(forKey: key)
                 let remoteData = kvs.object(forKey: key) as? Data
                 if localData != remoteData {
@@ -239,27 +245,15 @@ extension iCloudSyncCoordinator {
 
     // KVS -> Local for games
     func mergeGamesIncoming(forKey key: String) {
-        if Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) {
+        if Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) || Self.wordleSolvedMapKeys.contains(key) {
             switch key {
             case "gamesDailyAnswered", "gamesDailyCorrect",
-                 "quizPerBookAnsweredMap", "quizPerBookCorrectMap":
+                 "quizPerBookAnsweredMap", "quizPerBookCorrectMap",
+                 "wordleDailySolvedDays":
                 if let remoteData = kvs.object(forKey: key) as? Data {
-                    // NEW: If the remote map decodes to empty {}, treat as a reset: clear local and local-only per-game/per-mode maps.
+                    // If the remote map decodes to empty {}, treat as a reset: clear local.
                     if let remoteMap = decode(remoteData, as: [String: Int].self), remoteMap.isEmpty {
                         defaults.removeObject(forKey: key)
-                        if key == "gamesDailyAnswered" || key == "gamesDailyCorrect" {
-                            // Per-game daily maps (local-only)
-                            let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","word"]
-                            for g in perGameKeys {
-                                defaults.removeObject(forKey: "gamesDailyAnswered_\(g)")
-                                defaults.removeObject(forKey: "gamesDailyCorrect_\(g)")
-                            }
-                            // Per-WORD-mode daily maps (local-only)
-                            for modeKey in ["word_normal", "word_hard"] {
-                                defaults.removeObject(forKey: "gamesDailyAnswered_\(modeKey)")
-                                defaults.removeObject(forKey: "gamesDailyCorrect_\(modeKey)")
-                            }
-                        }
                     } else {
                         // Normal path: max-merge remote into local (sanitized)
                         let localData = defaults.data(forKey: key)
@@ -270,21 +264,8 @@ extension iCloudSyncCoordinator {
                         }
                     }
                 } else {
-                    // Remote deletion: clear local value and, for daily maps, also clear local per-game/per-mode maps
+                    // Remote deletion: clear local value
                     defaults.removeObject(forKey: key)
-                    if key == "gamesDailyAnswered" || key == "gamesDailyCorrect" {
-                        // Per-game daily maps (local-only)
-                        let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","word"]
-                        for g in perGameKeys {
-                            defaults.removeObject(forKey: "gamesDailyAnswered_\(g)")
-                            defaults.removeObject(forKey: "gamesDailyCorrect_\(g)")
-                        }
-                        // Per-WORD-mode daily maps (local-only)
-                        for modeKey in ["word_normal", "word_hard"] {
-                            defaults.removeObject(forKey: "gamesDailyAnswered_\(modeKey)")
-                            defaults.removeObject(forKey: "gamesDailyCorrect_\(modeKey)")
-                        }
-                    }
                 }
             case "gamesLastPlayedAt":
                 if kvs.object(forKey: key) == nil {
@@ -421,8 +402,12 @@ extension iCloudSyncCoordinator {
         kvs.removeObject(forKey: "gamesLastPlayedAt")
         kvs.removeObject(forKey: "gamesLastPlayedGameName")
 
+        // NEW: Clear WORD daily solved flags
+        defaults.removeObject(forKey: "wordleDailySolvedDays")
+        kvs.removeObject(forKey: "wordleDailySolvedDays")
+
         // Enqueue these for sync (they are in allKnownKeys)
-        enqueueKeysForSync(overallMapKeys + ["gamesLastPlayedAt", "gamesLastPlayedGameName"])
+        enqueueKeysForSync(overallMapKeys + ["gamesLastPlayedAt", "gamesLastPlayedGameName", "wordleDailySolvedDays"])
 
         // 2b) Clear per-WORD mode daily maps (local-only keys used by Games tab scope)
         for modeKey in ["word_normal", "word_hard"] {
@@ -575,3 +560,4 @@ extension iCloudSyncCoordinator {
         return merged
     }
 }
+

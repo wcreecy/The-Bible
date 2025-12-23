@@ -369,6 +369,7 @@ struct GamesOverviewCardView: View {
                     }
 
                     // 30-day sparkline — scoped to selected game
+                    // NEW: For WORD, overlay gold dots on days with a Daily solve.
                     Chart {
                         ForEach(series30, id: \.date) { point in
                             LineMark(
@@ -383,6 +384,28 @@ struct GamesOverviewCardView: View {
                             )
                             .interpolationMethod(.monotone)
                             .foregroundStyle(Color.accentColor.opacity(hasRecentActivity30 ? 0.18 : 0.08))
+                        }
+
+                        // Overlay: only when WORD is selected (any scope). We use the combined solved-day map.
+                        if selectedGame == "WORD" {
+                            // Build the last-30-day solved day key set once
+                            let solvedKeys: Set<String> = GameStats.shared.wordleDailySolvedDayKeysLast(days: 30)
+                            ForEach(series30, id: \.date) { point in
+                                // Match by local yyyy-MM-dd key
+                                let key = {
+                                    var cal = Calendar.autoupdatingCurrent
+                                    cal.timeZone = .autoupdatingCurrent
+                                    return GameStats.localDayKey(for: point.date, calendar: cal)
+                                }()
+                                if solvedKeys.contains(key) {
+                                    PointMark(
+                                        x: .value("Date", point.date),
+                                        y: .value("Played", point.answered)
+                                    )
+                                    .symbolSize(28) // small dot
+                                    .foregroundStyle(Color.yellow.opacity(0.9))
+                                }
+                            }
                         }
                     }
                     .chartXAxis(.hidden)
@@ -700,3 +723,4 @@ struct GamesOverviewCardView: View {
         }
     }
 }
+
