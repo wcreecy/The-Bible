@@ -150,6 +150,7 @@
 		2CD7D8342ECA16BE00849235 /* PinnedVerseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */; };
 		2CE02E832EFAEDE700F76E16 /* GamesProgressRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE02E822EFAEDE700F76E16 /* GamesProgressRing.swift */; };
 		2CE02E852EFAEEF600F76E16 /* PlayerStatSheetCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE02E842EFAEEF600F76E16 /* PlayerStatSheetCardView.swift */; };
+		2CE02E872EFAF11700F76E16 /* GamesOverviewCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE02E862EFAF11700F76E16 /* GamesOverviewCardView.swift */; };
 		2CE1B9622EDD1FFF001779B1 /* GamesCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE1B9612EDD1FFF001779B1 /* GamesCardView.swift */; };
 		2CE599562ECF4D9600A24C9F /* SmartLinkSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE599552ECF4D9600A24C9F /* SmartLinkSheet.swift */; };
 		2CF043692EE9F3D600DB1283 /* Canon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF043682EE9F3D600DB1283 /* Canon.swift */; };
@@ -357,6 +358,7 @@
 		2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseWidget.swift; sourceTree = "<group>"; };
 		2CE02E822EFAEDE700F76E16 /* GamesProgressRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesProgressRing.swift; sourceTree = "<group>"; };
 		2CE02E842EFAEEF600F76E16 /* PlayerStatSheetCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStatSheetCardView.swift; sourceTree = "<group>"; };
+		2CE02E862EFAF11700F76E16 /* GamesOverviewCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesOverviewCardView.swift; sourceTree = "<group>"; };
 		2CE1B9612EDD1FFF001779B1 /* GamesCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesCardView.swift; sourceTree = "<group>"; };
 		2CE599552ECF4D9600A24C9F /* SmartLinkSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartLinkSheet.swift; sourceTree = "<group>"; };
 		2CEA02D52EBE677900039D4B /* The Bible WidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "The Bible WidgetsExtension.entitlements"; sourceTree = "<group>"; };
@@ -672,6 +674,7 @@
 				2CFEACC52EF4A50B00064270 /* WordleStatsCardView.swift */,
 				2CE02E822EFAEDE700F76E16 /* GamesProgressRing.swift */,
 				2CE02E842EFAEEF600F76E16 /* PlayerStatSheetCardView.swift */,
+				2CE02E862EFAF11700F76E16 /* GamesOverviewCardView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1105,6 +1108,7 @@
 				2C1400FC2EF2BFA200A93CA9 /* StatsViewModel.swift in Sources */,
 				2C2A45002EEE343800FE8C2F /* SettingsLiveActivitiesSection.swift in Sources */,
 				2C1400FE2EF2C0D400A93CA9 /* StatsChartConfig.swift in Sources */,
+				2CE02E872EFAF11700F76E16 /* GamesOverviewCardView.swift in Sources */,
 				2CE1B9622EDD1FFF001779B1 /* GamesCardView.swift in Sources */,
 				2C1400F82EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift in Sources */,
 				2C6BB6592EF1FF880010D769 /* BibleStatsStore+LastRead.swift in Sources */,
