@@ -1,5 +1,10 @@
 import SwiftUI
 
+extension Notification.Name {
+    // New cross-tab route to open a specific game start from Stats (or elsewhere)
+    static let openGameStart = Notification.Name("openGameStart")
+}
+
 struct GamesView: View {
     private enum GameRoute: Hashable {
         case quiz
@@ -42,6 +47,20 @@ struct GamesView: View {
     // - Debug flag allows replay (forced availability)
     private var shouldGlowWordle: Bool {
         return !hasPlayedDailyWordleTodayRaw || wordleAllowDailyReplay
+    }
+
+    // Map display names to routes for cross-tab open
+    private func route(forDisplayName name: String) -> GameRoute? {
+        switch name {
+        case "Bible Quiz": return .quiz
+        case "Hangman": return .hangman
+        case "Verse Match": return .verseMatch
+        case "Beat the Clock": return .beatTheClock
+        case "Book Order": return .bookOrder
+        case "Who am I?": return .whoAmI
+        case "WORD": return .wordle
+        default: return nil
+        }
     }
 
     var body: some View {
@@ -208,9 +227,32 @@ struct GamesView: View {
             }
         }
         .onAppear { selection = nil }
+        // NEW: respond to cross-tab "open game" requests
+        .onReceive(NotificationCenter.default.publisher(for: .openGameStart)) { note in
+            guard let name = note.userInfo?["gameName"] as? String,
+                  let route = route(forDisplayName: name) else { return }
+            // Programmatically navigate using selection + hidden link
+            DispatchQueue.main.async {
+                selection = route
+            }
+        }
+        // Hidden programmatic links for selection routing
+        .background(
+            Group {
+                NavigationLink(tag: GameRoute.quiz, selection: $selection) { QuizView() } label: { EmptyView() }
+                NavigationLink(tag: GameRoute.hangman, selection: $selection) { HangmanGameView() } label: { EmptyView() }
+                NavigationLink(tag: GameRoute.beatTheClock, selection: $selection) { BeatTheClockGameView() } label: { EmptyView() }
+                NavigationLink(tag: GameRoute.verseMatch, selection: $selection) { VerseMatchGameView() } label: { EmptyView() }
+                NavigationLink(tag: GameRoute.bookOrder, selection: $selection) { BookOrderGameView() } label: { EmptyView() }
+                NavigationLink(tag: GameRoute.whoAmI, selection: $selection) { WhoAmIGameView() } label: { EmptyView() }
+                NavigationLink(tag: GameRoute.wordle, selection: $selection) { WordleView() } label: { EmptyView() }
+                // Optional: include others if you later add them to the picker
+            }
+        )
     }
 }
 
 #Preview {
     NavigationStack { GamesView() }
 }
+

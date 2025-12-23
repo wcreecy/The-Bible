@@ -114,6 +114,14 @@ final class iCloudSyncCoordinator {
         for key in allKnownKeys {
             mirrorLocalKeyToKVS(key)
         }
+        // Perform an immediate synchronize off-main and stamp lastPushDate.
+        let _ = Task.detached {
+            NSUbiquitousKeyValueStore.default.synchronize()
+            await MainActor.run {
+                iCloudSyncCoordinator.shared.lastPushDate = Date()
+            }
+        }
+        // Also keep the debounced path in case additional keys arrive shortly.
         enqueueKeysForSync(allKnownKeys)
     }
 
@@ -354,24 +362,72 @@ final class iCloudSyncCoordinator {
     // MARK: - One-shot reconcile pass at startup/identity change
 
     func reconcileAllKeysFromKVS() {
-        // After a synchronize, merge only keys that actually exist remotely.
+        // After a synchronize, merge keys that exist remotely, AND clear local for certain domains if absent remotely.
         let remoteDict = kvs.dictionaryRepresentation
 
         var mergedGameKey = false
         var touchedAny = false
 
         for key in allKnownKeys {
-            // Use object(forKey:) to detect presence reliably across types
             let hasRemote = (kvs.object(forKey: key) != nil) || (remoteDict.keys.contains(key))
-            guard hasRemote else { continue }
 
-            if isGameCounterKey(key) || Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) { mergedGameKey = true }
-            mergeIncomingKVSValue(forKey: key)
-            touchedAny = true
+            if hasRemote {
+                if isGameCounterKey(key) || Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) {
+                    mergedGameKey = true
+                }
+                mergeIncomingKVSValue(forKey: key)
+                touchedAny = true
+                continue
+            }
+
+            // Handle remote deletions for game daily maps and last played, and per-book maps.
+            if Self.gameDailyAndLastPlayedKeys.contains(key) {
+                // Clear local copy if present
+                if defaults.object(forKey: key) != nil {
+                    defaults.removeObject(forKey: key)
+                    touchedAny = true
+                    mergedGameKey = true
+
+                    // If overall daily maps were removed remotely, also clear local per-game/per-mode daily maps
+                    if key == "gamesDailyAnswered" || key == "gamesDailyCorrect" {
+                        let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","word"]
+                        for g in perGameKeys {
+                            defaults.removeObject(forKey: "gamesDailyAnswered_\(g)")
+                            defaults.removeObject(forKey: "gamesDailyCorrect_\(g)")
+                        }
+                        for modeKey in ["word_normal", "word_hard"] {
+                            defaults.removeObject(forKey: "gamesDailyAnswered_\(modeKey)")
+                            defaults.removeObject(forKey: "gamesDailyCorrect_\(modeKey)")
+                        }
+                    }
+                }
+                continue
+            }
+
+            if Self.quizPerBookMapKeys.contains(key) {
+                if defaults.object(forKey: key) != nil {
+                    defaults.removeObject(forKey: key)
+                    touchedAny = true
+                    mergedGameKey = true
+                }
+                continue
+            }
+
+            // NEW: Bible stats — treat absence remotely as deletion locally
+            if Self.bibleStatsKeys.contains(key) {
+                if defaults.object(forKey: key) != nil {
+                    defaults.removeObject(forKey: key)
+                    touchedAny = true
+                }
+                continue
+            }
+
+            // For other domains (e.g., counters), absence on KVS is not a delete signal; skip.
         }
 
         if touchedAny {
             BibleStatsStore.shared.resetCaches()
+
             if mergedGameKey {
                 let repaired = normalizeGameCountersInvariant()
                 if !repaired.isEmpty {
@@ -381,6 +437,7 @@ final class iCloudSyncCoordinator {
                     NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
                 }
             }
+
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
             }
@@ -405,4 +462,3 @@ private extension iCloudSyncCoordinator {
         "lastReadText"
     ]
 }
-

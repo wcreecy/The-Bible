@@ -139,6 +139,17 @@ struct GamesCardView: View {
                             // Medal/tier chip removed
                         }
                     }
+
+                    // Place Play button right next to "Gamer Score" on the same row
+                    GamesOverviewPlayButton(openAction: {
+                        // Switch to Games tab or open default list (no specific selection here)
+                        NotificationCenter.default.post(
+                            name: .switchToTab,
+                            object: nil,
+                            userInfo: ["tabName": "games"]
+                        )
+                    }, selectedGame: "All Games")
+
                     Spacer()
                 }
 
@@ -576,6 +587,33 @@ struct GamesOverviewCardView: View {
     @State private var weakBooksScope: Int = 0 // 0=30 days, 1=60 days
     @State private var weakBooksMinAttempts: Int = 5
 
+    // MARK: - Play Now routing
+
+    private func postSwitchToGamesTab() {
+        NotificationCenter.default.post(
+            name: .switchToTab,
+            object: nil,
+            userInfo: ["tabName": "games"]
+        )
+    }
+
+    private func openSelectedGame() {
+        // If "All Games", just switch to the Games tab list.
+        guard selectedGame != "All Games" else {
+            postSwitchToGamesTab()
+            return
+        }
+        postSwitchToGamesTab()
+        // Small async hop to allow tab switch before routing
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            NotificationCenter.default.post(
+                name: .openGameStart,
+                object: nil,
+                userInfo: ["gameName": selectedGame]
+            )
+        }
+    }
+
     var body: some View {
         GroupBox {
             let _ = stats.version
@@ -699,8 +737,12 @@ struct GamesOverviewCardView: View {
                         .font(.headline)
                         .lineLimit(1)
 
+                    // Play button immediately after the title (away from the picker)
+                    GamesOverviewPlayButton(openAction: openSelectedGame, selectedGame: selectedGame)
+
                     Spacer(minLength: 8)
 
+                    // Note: Play button moved next to the title. Picker remains fully tappable.
                     Picker(selection: $selectedGame) {
                         ForEach(pickerOptions, id: \.self) { name in
                             Label(name, systemImage: gameIcon(for: name))
@@ -1122,6 +1164,7 @@ struct GamesOverviewCardView: View {
                 }
             }
             .padding(.top, 2)
+            // Compact, icon-only Play button overlay removed — now in header row
         } label: {
             Label("Games", systemImage: "gamecontroller")
         }
@@ -1437,3 +1480,44 @@ struct PlayerStatSheetCardView: View {
     }
 }
 
+// MARK: - Floating, icon-only play button used by the Overview card
+private struct GamesOverviewPlayButton: View {
+    var openAction: (() -> Void)? = nil
+    var selectedGame: String? = nil
+
+    var body: some View {
+        Button {
+            openAction?()
+        } label: {
+            Image(systemName: "play.fill")
+                .font(.headline)
+                .symbolRenderingMode(.hierarchical)
+                .padding(8)
+        }
+        .buttonStyle(.plain)
+        .background(.ultraThinMaterial, in: Circle())
+        .overlay(
+            Circle().stroke(Color.black.opacity(0.08), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.08), radius: 2, x: 0, y: 1)
+        .accessibilityLabel(
+            Text(
+                {
+                    let name = selectedGame ?? "All Games"
+                    return name == "All Games" ? "Open Games" : "Play \(name)"
+                }()
+            )
+        )
+        .accessibilityHint(selectedGame == "All Games" ? "Opens the Games list" : "Opens the selected game")
+    }
+}
+
+#Preview {
+    ScrollView {
+        VStack(spacing: 16) {
+            GamesOverviewCardView()
+            PlayerStatSheetCardView()
+        }
+        .padding()
+    }
+}

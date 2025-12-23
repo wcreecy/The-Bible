@@ -243,39 +243,96 @@ extension iCloudSyncCoordinator {
             switch key {
             case "gamesDailyAnswered", "gamesDailyCorrect",
                  "quizPerBookAnsweredMap", "quizPerBookCorrectMap":
-                guard let remoteData = kvs.object(forKey: key) as? Data else { return }
-                let localData = defaults.data(forKey: key)
-                typealias Map = [String: Int]
-                let merged = mergeIntMapMax(localData: localData, remoteData: remoteData, type: Map.self)
-                if let data = try? JSONEncoder().encode(merged) {
-                    defaults.set(data, forKey: key)
+                if let remoteData = kvs.object(forKey: key) as? Data {
+                    // NEW: If the remote map decodes to empty {}, treat as a reset: clear local and local-only per-game/per-mode maps.
+                    if let remoteMap = decode(remoteData, as: [String: Int].self), remoteMap.isEmpty {
+                        defaults.removeObject(forKey: key)
+                        if key == "gamesDailyAnswered" || key == "gamesDailyCorrect" {
+                            // Per-game daily maps (local-only)
+                            let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","word"]
+                            for g in perGameKeys {
+                                defaults.removeObject(forKey: "gamesDailyAnswered_\(g)")
+                                defaults.removeObject(forKey: "gamesDailyCorrect_\(g)")
+                            }
+                            // Per-WORD-mode daily maps (local-only)
+                            for modeKey in ["word_normal", "word_hard"] {
+                                defaults.removeObject(forKey: "gamesDailyAnswered_\(modeKey)")
+                                defaults.removeObject(forKey: "gamesDailyCorrect_\(modeKey)")
+                            }
+                        }
+                    } else {
+                        // Normal path: max-merge remote into local (sanitized)
+                        let localData = defaults.data(forKey: key)
+                        typealias Map = [String: Int]
+                        let merged = mergeIntMapMax(localData: localData, remoteData: remoteData, type: Map.self)
+                        if let data = try? JSONEncoder().encode(merged) {
+                            defaults.set(data, forKey: key)
+                        }
+                    }
+                } else {
+                    // Remote deletion: clear local value and, for daily maps, also clear local per-game/per-mode maps
+                    defaults.removeObject(forKey: key)
+                    if key == "gamesDailyAnswered" || key == "gamesDailyCorrect" {
+                        // Per-game daily maps (local-only)
+                        let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","word"]
+                        for g in perGameKeys {
+                            defaults.removeObject(forKey: "gamesDailyAnswered_\(g)")
+                            defaults.removeObject(forKey: "gamesDailyCorrect_\(g)")
+                        }
+                        // Per-WORD-mode daily maps (local-only)
+                        for modeKey in ["word_normal", "word_hard"] {
+                            defaults.removeObject(forKey: "gamesDailyAnswered_\(modeKey)")
+                            defaults.removeObject(forKey: "gamesDailyCorrect_\(modeKey)")
+                        }
+                    }
                 }
             case "gamesLastPlayedAt":
-                let remote = kvs.double(forKey: key)
-                let local = defaults.double(forKey: key)
-                if remote > local {
-                    defaults.set(remote, forKey: key)
-                } else if remote < local {
-                    kvs.set(local, forKey: key)
+                if kvs.object(forKey: key) == nil {
+                    // Remote deletion
+                    defaults.removeObject(forKey: key)
+                } else {
+                    let remote = kvs.double(forKey: key)
+                    if remote <= 0 {
+                        // Treat zero/empty as reset
+                        defaults.removeObject(forKey: key)
+                    } else {
+                        let local = defaults.double(forKey: key)
+                        if remote > local {
+                            defaults.set(remote, forKey: key)
+                        } else if remote < local {
+                            kvs.set(local, forKey: key)
+                        }
+                    }
                 }
             case "gamesLastPlayedGameName":
-                let remoteName = kvs.string(forKey: key) ?? ""
-                let localName = defaults.string(forKey: key) ?? ""
-                let remoteAt = kvs.double(forKey: "gamesLastPlayedAt")
-                let localAt = defaults.double(forKey: "gamesLastPlayedAt")
-                if remoteAt > localAt {
-                    defaults.set(remoteName, forKey: key)
-                    defaults.set(remoteAt, forKey: "gamesLastPlayedAt")
-                } else if remoteAt < localAt {
-                    kvs.set(localName, forKey: key)
-                    kvs.set(localAt, forKey: "gamesLastPlayedAt")
+                if kvs.object(forKey: key) == nil {
+                    // Remote deletion
+                    defaults.removeObject(forKey: key)
                 } else {
-                    if localName.isEmpty && !remoteName.isEmpty {
-                        defaults.set(remoteName, forKey: key)
-                    } else if !localName.isEmpty && remoteName.isEmpty {
-                        kvs.set(localName, forKey: key)
-                    } else if localName != remoteName && !remoteName.isEmpty {
-                        defaults.set(remoteName, forKey: key)
+                    let remoteName = kvs.string(forKey: key) ?? ""
+                    let remoteAt = kvs.double(forKey: "gamesLastPlayedAt")
+                    if remoteName.isEmpty || remoteAt <= 0 {
+                        // Treat empty/zero as reset
+                        defaults.removeObject(forKey: key)
+                        defaults.removeObject(forKey: "gamesLastPlayedAt")
+                    } else {
+                        let localName = defaults.string(forKey: key) ?? ""
+                        let localAt = defaults.double(forKey: "gamesLastPlayedAt")
+                        if remoteAt > localAt {
+                            defaults.set(remoteName, forKey: key)
+                            defaults.set(remoteAt, forKey: "gamesLastPlayedAt")
+                        } else if remoteAt < localAt {
+                            kvs.set(localName, forKey: key)
+                            kvs.set(localAt, forKey: "gamesLastPlayedAt")
+                        } else {
+                            if localName.isEmpty && !remoteName.isEmpty {
+                                defaults.set(remoteName, forKey: key)
+                            } else if !localName.isEmpty && remoteName.isEmpty {
+                                kvs.set(localName, forKey: key)
+                            } else if localName != remoteName && !remoteName.isEmpty {
+                                defaults.set(remoteName, forKey: key)
+                            }
+                        }
                     }
                 }
             default:
@@ -366,6 +423,25 @@ extension iCloudSyncCoordinator {
 
         // Enqueue these for sync (they are in allKnownKeys)
         enqueueKeysForSync(overallMapKeys + ["gamesLastPlayedAt", "gamesLastPlayedGameName"])
+
+        // 2b) Clear per-WORD mode daily maps (local-only keys used by Games tab scope)
+        for modeKey in ["word_normal", "word_hard"] {
+            defaults.removeObject(forKey: "gamesDailyAnswered_\(modeKey)")
+            defaults.removeObject(forKey: "gamesDailyCorrect_\(modeKey)")
+        }
+
+        // 2c) Clear Bible Quiz per-book analytics (all-time maps mirrored, daily nested local-only)
+        for key in ["quizPerBookAnsweredMap", "quizPerBookCorrectMap"] {
+            defaults.removeObject(forKey: key)
+            kvs.removeObject(forKey: key)
+        }
+        defaults.removeObject(forKey: "quizPerBookDailyAnswered")
+        defaults.removeObject(forKey: "quizPerBookDailyCorrect")
+        enqueueKeysForSync(["quizPerBookAnsweredMap", "quizPerBookCorrectMap"])
+
+        // 2d) Optional: clear WORD daily completion flags so Daily isn’t “completed” after reset
+        defaults.removeObject(forKey: "wordleDailyCompletedDay")
+        defaults.removeObject(forKey: "wordleDailyTarget")
 
         // 3) Clear per-game daily maps (local-only keys; not mirrored to KVS)
         let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","word"]

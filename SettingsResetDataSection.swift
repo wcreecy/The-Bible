@@ -30,6 +30,7 @@ struct SettingsResetDataSection: View {
                 Button("Cancel", role: .cancel) {}
                 Button("Reset", role: .destructive) {
                     let defaults = BibleStatsStore.Defaults.provider
+                    // Local removals
                     defaults.removeObject(forKey: BibleStatsStore.Defaults.keyTotals)
                     defaults.removeObject(forKey: BibleStatsStore.Defaults.keyDailyTotals)
                     defaults.removeObject(forKey: BibleStatsStore.Defaults.keyDailyTotalsByBook)
@@ -39,8 +40,24 @@ struct SettingsResetDataSection: View {
                     defaults.removeObject(forKey: BibleStatsStore.Defaults.keyChapterCompletionDates)
                     defaults.removeObject(forKey: "readingSessions")
 
+                    // Mirror deletions to iCloud KVS so other devices clear too
+                    let kvs = iCloudSyncCoordinator.shared.kvs
+                    var keys = iCloudSyncCoordinator.bibleStatsKeys
+                    for key in keys {
+                        kvs.removeObject(forKey: key)
+                    }
+                    // Ensure sessions deletion is also mirrored (now in bibleStatsKeys, but keep explicit for safety)
+                    kvs.removeObject(forKey: "readingSessions")
+                    if !keys.contains("readingSessions") {
+                        keys.append("readingSessions")
+                    }
+
+                    // Reset caches and notify UI locally
                     BibleStatsStore.shared.resetCaches()
                     NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+
+                    // Enqueue these keys and push now so deletions propagate immediately
+                    iCloudSyncCoordinator.shared.enqueueKeysForSync(keys)
                     iCloudSyncCoordinator.shared.pushAllNow()
                 }
             } message: {
@@ -50,4 +67,3 @@ struct SettingsResetDataSection: View {
         .headerProminence(.increased)
     }
 }
-

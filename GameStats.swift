@@ -233,7 +233,7 @@ final class GameStats: ObservableObject {
     // NEW: Bible Quiz per-book maps write API (all-time + daily nested maps)
     func recordQuizPerBook(bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
         guard !bookName.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
-        let defaults = UserDefaults.standard
+        let _ = UserDefaults.standard
 
         // Answered map (all-time)
         var answeredMap: [String: Int] = loadJSONMap(forKey: "quizPerBookAnsweredMap")
