@@ -490,7 +490,7 @@ private struct GamesProgressRing<Label: View>: View {
         self.progress = max(0, min(1, progress))
         self.lineWidth = lineWidth
         self.size = size
-        self.tint = tint
+               self.tint = tint
         self.track = track
         self.label = label()
     }
@@ -751,18 +751,49 @@ struct GamesOverviewCardView: View {
                     }
 
                     // NEW: Activity & Trend row for Overview — scoped to selectedGame
-                    let series30 = (selectedGame == "All Games")
-                        ? GameStats.shared.dailySeriesLast(days: 30)
-                        : GameStats.shared.dailySeriesLast(days: 30, forDisplayName: selectedGame)
+                    // UPDATED: WORD respects mode scope (Combined/Normal/Hard)
+                    let series30: [(date: Date, answered: Int, correct: Int)] = {
+                        if selectedGame == "All Games" {
+                            return GameStats.shared.dailySeriesLast(days: 30)
+                        } else if selectedGame == "WORD" {
+                            switch wordScope {
+                            case 0: return GameStats.shared.dailySeriesLast(days: 30, forWordMode: .normal)
+                            case 1: return GameStats.shared.dailySeriesLast(days: 30, forWordMode: .hard)
+                            default: return GameStats.shared.dailySeriesLast(days: 30, forDisplayName: selectedGame)
+                            }
+                        } else {
+                            return GameStats.shared.dailySeriesLast(days: 30, forDisplayName: selectedGame)
+                        }
+                    }()
                     let activeDays30 = series30.filter { $0.answered > 0 }.count
                     let totalPlayed30 = series30.reduce(0) { $0 + max(0, $1.answered) }
                     let avgPerActive = activeDays30 > 0 ? totalPlayed30 / activeDays30 : 0
-                    let streaksInfo = (selectedGame == "All Games")
-                        ? GameStats.shared.activityStreaks()
-                        : GameStats.shared.activityStreaks(forDisplayName: selectedGame)
-                    let trend7 = (selectedGame == "All Games")
-                        ? GameStats.shared.accuracy7DayTrend()
-                        : GameStats.shared.accuracy7DayTrend(forDisplayName: selectedGame)
+                    let streaksInfo: (current: Int, longest: Int) = {
+                        if selectedGame == "All Games" {
+                            return GameStats.shared.activityStreaks()
+                        } else if selectedGame == "WORD" {
+                            switch wordScope {
+                            case 0: return GameStats.shared.activityStreaks(forWordMode: .normal)
+                            case 1: return GameStats.shared.activityStreaks(forWordMode: .hard)
+                            default: return GameStats.shared.activityStreaks(forDisplayName: selectedGame)
+                            }
+                        } else {
+                            return GameStats.shared.activityStreaks(forDisplayName: selectedGame)
+                        }
+                    }()
+                    let trend7: (currentPct: Double, deltaVsPrev: Double) = {
+                        if selectedGame == "All Games" {
+                            return GameStats.shared.accuracy7DayTrend()
+                        } else if selectedGame == "WORD" {
+                            switch wordScope {
+                            case 0: return GameStats.shared.accuracy7DayTrend(forWordMode: .normal)
+                            case 1: return GameStats.shared.accuracy7DayTrend(forWordMode: .hard)
+                            default: return GameStats.shared.accuracy7DayTrend(forDisplayName: selectedGame)
+                            }
+                        } else {
+                            return GameStats.shared.accuracy7DayTrend(forDisplayName: selectedGame)
+                        }
+                    }()
                     let trendTint: Color = trend7.deltaVsPrev >= 0 ? .green : .red
                     let trendArrow: String = trend7.deltaVsPrev >= 0 ? "arrow.up.right" : "arrow.down.right"
                     let hasRecentActivity30 = series30.contains { $0.answered > 0 }
@@ -1405,3 +1436,4 @@ struct PlayerStatSheetCardView: View {
         }
     }
 }
+

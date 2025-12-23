@@ -376,6 +376,9 @@ extension iCloudSyncCoordinator {
 
         // 4) Notify UI to recompute all derived metrics to zero (streaks, Qs/day, 7D accuracy, per-game charts, insights)
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+
+        // 5) NEW: Immediately push all known keys so zeros/removals propagate across devices now.
+        pushAllNow()
     }
 
     // Invariant repair: answered >= correct for all games
@@ -496,4 +499,3 @@ extension iCloudSyncCoordinator {
         return merged
     }
 }
-

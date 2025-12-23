@@ -64,11 +64,11 @@ struct WordleView: View {
     // NEW: Hard Mode toggle (persisted locally; stats still aggregate with normal mode)
     @AppStorage("wordleHardModeEnabled") private var hardModeEnabled: Bool = false
 
-    // All-time (per mode) — unchanged: still per-type for the scoreboard
-    private var allTimeSuffix: String { mode == .daily ? "daily" : "free" }
-    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeCorrect_\(allTimeSuffix)") }
-    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeAnswered_\(allTimeSuffix)") }
-    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeBestStreak_\(allTimeSuffix)") }
+    // All-time (per mode) — now split by difficulty for the in-game scoreboard
+    private var allTimeModeSuffix: String { hardModeEnabled ? "hard" : "normal" }
+    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeCorrect_\(allTimeModeSuffix)") }
+    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeAnswered_\(allTimeModeSuffix)") }
+    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeBestStreak_\(allTimeModeSuffix)") }
 
     // Daily
     private var todayKey: String { Self.localDayKey(for: Date()) }
@@ -532,20 +532,16 @@ struct WordleView: View {
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 guard !roundOver, r == rowIndex else { return }
-
-                                // NEW: Toggle off if tapping the already-selected cell
+                                // Toggle off if tapping the same selected cell
                                 if let sel = selectedCell, sel.row == r, sel.col == c {
                                     selectedCell = nil
                                     return
                                 }
-
-                                // NEW: If any selection exists and the tapped cell is blank, exit locked mode
+                                // If any selection exists and this tapped cell is blank, exit locked mode
                                 if selectedCell != nil, ch.isEmpty {
                                     selectedCell = nil
                                     return
                                 }
-
-                                // Default behavior: select this cell
                                 selectedCell = (row: r, col: c)
                             }
                     }
@@ -834,7 +830,7 @@ struct WordleView: View {
             let eval = evaluations[r]
             var perRowCounts: [Character: Int] = [:]
 
-            for i in 0..<5 {
+        for i in 0..<5 {
                 let ch = Array(g)[i]
                 switch eval[i] {
                 case .correct:

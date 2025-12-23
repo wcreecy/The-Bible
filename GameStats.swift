@@ -198,6 +198,14 @@ final class GameStats: ObservableObject {
         }
     }
 
+    // NEW: Per-mode storage key for WORD daily maps
+    private static func storageKeyForWord(mode: WordMode) -> String {
+        switch mode {
+        case .normal: return "word_normal"
+        case .hard:   return "word_hard"
+        }
+    }
+
     // Update both overall and per-game daily maps
     private func updateDailyMaps(addAnswered: Int, addCorrect: Int, forGameKey key: String) {
         // Local yyyy-MM-dd key
@@ -454,6 +462,10 @@ final class GameStats: ObservableObject {
             answered: 1,
             currentBestStreak: currentBestStreak
         )
+
+        // NEW: also update per-mode daily maps so mode-scoped activity/trend work
+        let perModeKey = Self.storageKeyForWord(mode: mode)
+        updateDailyMaps(addAnswered: 1, addCorrect: won ? 1 : 0, forGameKey: perModeKey)
 
         let defaults = UserDefaults.standard
         let typeSuf = (type == .daily) ? "daily" : "free"
@@ -886,6 +898,29 @@ final class GameStats: ObservableObject {
         return series
     }
 
+    // NEW: Per-WORD-mode series
+    func dailySeriesLast(days: Int, forWordMode mode: WordMode, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> [(date: Date, answered: Int, correct: Int)] {
+        let gameKey = Self.storageKeyForWord(mode: mode)
+
+        var cal = calendar
+        cal.timeZone = .autoupdatingCurrent
+        let startOfToday = cal.startOfDay(for: now)
+
+        let answeredMap: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered_\(gameKey)")
+        let correctMap: [String: Int] = loadJSONMap(forKey: "gamesDailyCorrect_\(gameKey)")
+
+        var series: [(Date, Int, Int)] = []
+        for i in stride(from: days - 1, through: 0, by: -1) {
+            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                let key = Self.localDayKey(for: d, calendar: cal)
+                let a = max(0, answeredMap[key] ?? 0)
+                let c = max(0, correctMap[key] ?? 0)
+                series.append((d, a, c))
+            }
+        }
+        return series
+    }
+
     func activityStreaks(now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (current: Int, longest: Int) {
         var cal = calendar
         cal.timeZone = .autoupdatingCurrent
@@ -940,6 +975,31 @@ final class GameStats: ObservableObject {
         return (current, longest)
     }
 
+    // NEW: Per-WORD-mode streaks
+    func activityStreaks(forWordMode mode: WordMode, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (current: Int, longest: Int) {
+        var cal = calendar
+        cal.timeZone = .autoupdatingCurrent
+        let series = dailySeriesLast(days: 1825, forWordMode: mode, now: now, calendar: cal)
+
+        var longest = 0
+        var currentRun = 0
+        for (_, a, _) in series {
+            if a > 0 {
+                currentRun += 1
+                longest = max(longest, currentRun)
+            } else {
+                currentRun = 0
+            }
+        }
+
+        var current = 0
+        for (_, a, _) in series.reversed() {
+            if a > 0 { current += 1 } else { break }
+        }
+
+        return (current, longest)
+    }
+
     func accuracy7DayTrend(now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (currentPct: Double, deltaVsPrev: Double) {
         let s14 = dailySeriesLast(days: 14, now: now, calendar: calendar)
         let last7 = s14.suffix(7)
@@ -962,6 +1022,24 @@ final class GameStats: ObservableObject {
         if name == "All Games" { return accuracy7DayTrend(now: now, calendar: calendar) }
 
         let s14 = dailySeriesLast(days: 14, forDisplayName: name, now: now, calendar: calendar)
+        let last7 = s14.suffix(7)
+        let prev7 = s14.prefix(max(0, s14.count - 7))
+
+        func pct(for slice: ArraySlice<(date: Date, answered: Int, correct: Int)>) -> Double {
+            let a = slice.reduce(0) { $0 + max(0, $1.answered) }
+            let c = slice.reduce(0) { $0 + max(0, $1.correct) }
+            guard a > 0 else { return 0 }
+            return min(100, max(0, (Double(c) / Double(a)) * 100.0))
+        }
+
+        let cur = pct(for: last7)
+        let prev = pct(for: prev7)
+        return (cur, cur - prev)
+    }
+
+    // NEW: Per-WORD-mode 7-day trend
+    func accuracy7DayTrend(forWordMode mode: WordMode, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (currentPct: Double, deltaVsPrev: Double) {
+        let s14 = dailySeriesLast(days: 14, forWordMode: mode, now: now, calendar: calendar)
         let last7 = s14.suffix(7)
         let prev7 = s14.prefix(max(0, s14.count - 7))
 
