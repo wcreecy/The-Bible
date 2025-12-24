@@ -1,5 +1,4 @@
 import SwiftUI
-import Charts
 
 struct PlayerStatSheetCardView: View {
     @ObservedObject private var stats = GameStats.shared
@@ -168,37 +167,6 @@ struct PlayerStatSheetCardView: View {
                         )
                     }
                     .animation(.easeInOut(duration: 0.2), value: sort)
-
-                    // Where you play at the bottom of the Player Stat Sheet
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Where you play")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-
-                        Chart {
-                            ForEach(Array(entries.enumerated()), id: \.offset) { pair in
-                                let entry = pair.element
-                                BarMark(
-                                    x: .value("Game", entry.name),
-                                    y: .value("Played", entry.answered)
-                                )
-                                .foregroundStyle(Color.accentColor.opacity(0.85))
-                                .cornerRadius(4)
-                                .annotation(position: .top, alignment: .center) {
-                                    if entry.answered > 0 {
-                                        Text("\(entry.answered)")
-                                            .font(.caption2)
-                                            .foregroundStyle(.secondary)
-                                            .monospacedDigit()
-                                    }
-                                }
-                            }
-                        }
-                        .chartYAxis(.hidden)
-                        .frame(height: 120)
-                        .animation(.easeInOut(duration: 0.35), value: version)
-                    }
-                    .padding(.top, 8)
                 }
             }
             .padding(.top, 2)

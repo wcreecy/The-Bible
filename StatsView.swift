@@ -264,6 +264,9 @@ struct StatsView: View {
                 VStack(spacing: 16) {
                     GamesOverviewCardView()
                         .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+                    // NEW: All-games comparison chart
+                    AllGamesComparisonCardView()
+                        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
                     PlayerStatSheetCardView()
                         .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
                 }
@@ -273,6 +276,8 @@ struct StatsView: View {
                 // iPhone: single-column stack of game stats
                 VStack(spacing: 16) {
                     GamesOverviewCardView()
+                    // NEW: All-games comparison chart
+                    AllGamesComparisonCardView()
                     PlayerStatSheetCardView()
                 }
                 .padding(.horizontal, 16)
@@ -758,3 +763,4 @@ private extension Binding {
         )
     }
 }
+

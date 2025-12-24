@@ -68,6 +68,7 @@
 		2C33952B2EED9D8B00E8CA41 /* Color+GamerScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33952A2EED9D8B00E8CA41 /* Color+GamerScore.swift */; };
 		2C33952D2EEDCB3D00E8CA41 /* ProgressRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33952C2EEDCB3D00E8CA41 /* ProgressRing.swift */; };
 		2C3395312EEDCB4300E8CA41 /* BookChaptersDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3395302EEDCB4300E8CA41 /* BookChaptersDetailView.swift */; };
+		2C3A48EB2EFC12EB0040AC67 /* AllGamesComparisonCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3A48EA2EFC12EB0040AC67 /* AllGamesComparisonCardView.swift */; };
 		2C3F38102EC4042D002CA795 /* Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3F380F2EC4042D002CA795 /* Styles.swift */; };
 		2C462E272ED7BC0500AE0E5F /* StreakTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C462E262ED7BC0400AE0E5F /* StreakTracker.swift */; };
 		2C49CF462EBE10000006FF79 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D972EB3895400A657FA /* HomeView.swift */; };
@@ -279,6 +280,7 @@
 		2C33952A2EED9D8B00E8CA41 /* Color+GamerScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+GamerScore.swift"; sourceTree = "<group>"; };
 		2C33952C2EEDCB3D00E8CA41 /* ProgressRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRing.swift; sourceTree = "<group>"; };
 		2C3395302EEDCB4300E8CA41 /* BookChaptersDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookChaptersDetailView.swift; sourceTree = "<group>"; };
+		2C3A48EA2EFC12EB0040AC67 /* AllGamesComparisonCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllGamesComparisonCardView.swift; sourceTree = "<group>"; };
 		2C3B0F6D2EB14F3D0089556C /* The Bible.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "The Bible.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C3B0F7E2EB14F3E0089556C /* The BibleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The BibleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C3B0F882EB14F3E0089556C /* The BibleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The BibleUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -675,6 +677,7 @@
 				2CE02E822EFAEDE700F76E16 /* GamesProgressRing.swift */,
 				2CE02E842EFAEEF600F76E16 /* PlayerStatSheetCardView.swift */,
 				2CE02E862EFAF11700F76E16 /* GamesOverviewCardView.swift */,
+				2C3A48EA2EFC12EB0040AC67 /* AllGamesComparisonCardView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1146,6 +1149,7 @@
 				2C2A44FA2EEE337A00FE8C2F /* SettingsAppearanceSection.swift in Sources */,
 				2C2764EC2EE8C20D00A321FE /* PrayerStudyTimerSetupView.swift in Sources */,
 				2C2A44DC2EEE152900FE8C2F /* SideBySideGameArea.swift in Sources */,
+				2C3A48EB2EFC12EB0040AC67 /* AllGamesComparisonCardView.swift in Sources */,
 				2CF043692EE9F3D600DB1283 /* Canon.swift in Sources */,
 				2C2A44D62EEE151700FE8C2F /* WordSearchEngine.swift in Sources */,
 				2C2A44D82EEE151E00FE8C2F /* WordSearchViewModel.swift in Sources */,
