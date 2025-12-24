@@ -25,6 +25,9 @@ struct QuizView: View {
     @AppStorage("quizAllTimeAnswered_hard") private var allTimeAnsweredHard: Int = 0
     @AppStorage("quizAllTimeBestStreak_hard") private var allTimeBestStreakHard: Int = 0
 
+    // Global Auto‑Win debug toggle
+    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
+
     private var allTimeCorrect: Int {
         switch quizDifficulty {
         case "normal": return allTimeCorrectNormal
@@ -64,6 +67,43 @@ struct QuizView: View {
             answered: answered,
             currentBestStreak: bestStreak
         )
+    }
+
+    // MARK: - Persistent streak helpers (per difficulty)
+    private func streakSuffix() -> String {
+        switch quizDifficulty {
+        case "normal": return "normal"
+        case "hard": return "hard"
+        default: return "easy"
+        }
+    }
+    private func persistentStreakKey() -> String { "quizPersistentStreak_\(streakSuffix())" }
+    private func persistentBestKey() -> String { "quizPersistentBestStreak_\(streakSuffix())" }
+
+    private func readPersistentStreak() -> Int {
+        max(0, UserDefaults.standard.integer(forKey: persistentStreakKey()))
+    }
+    private func writePersistentStreak(_ value: Int) {
+        let v = max(0, value)
+        let key = persistentStreakKey()
+        UserDefaults.standard.set(v, forKey: key)
+        iCloudSyncCoordinator.shared.pushKey(key)
+    }
+    private func readPersistentBest() -> Int {
+        max(0, UserDefaults.standard.integer(forKey: persistentBestKey()))
+    }
+    private func writePersistentBest(_ value: Int) {
+        let v = max(0, value)
+        let key = persistentBestKey()
+        UserDefaults.standard.set(v, forKey: key)
+        iCloudSyncCoordinator.shared.pushKey(key)
+    }
+    private func seedStreakFromPersistence() {
+        let persisted = readPersistentStreak()
+        currentStreak = persisted
+        // Keep session best at least as high as persisted best
+        let persistedBest = readPersistentBest()
+        bestStreak = max(bestStreak, persistedBest)
     }
     
     private struct QuizQuestion: Identifiable {
@@ -333,6 +373,18 @@ struct QuizView: View {
                             }
                             .padding(.top, 4)
                         }
+
+                        // DEBUG: WIN button
+                        if debugAutoWinEnabled, started, selectedOption == nil {
+                            Button("WIN") {
+                                // Equivalent to selecting the correct option
+                                selectOption(correctBookName)
+                            }
+                            .buttonStyle(ModernPillButtonStyle(tint: .red))
+                            .controlSize(.large)
+                            .padding(.top, 4)
+                            .accessibilityLabel("Win this round")
+                        }
                     }
                     .padding(.vertical)
                 }
@@ -376,7 +428,14 @@ struct QuizView: View {
         }
         .onAppear {
             rebuildPools()
+            // Seed streaks from persisted values so they survive navigation/relaunch
+            seedStreakFromPersistence()
         }
+        // When difficulty changes, switch to that difficulty’s persisted streaks
+        .onChange(of: quizDifficulty) { _, _ in
+            seedStreakFromPersistence()
+        }
+        // Do not reset persistent streaks on disappear; keep only session counters transient
         .onDisappear { resetSessionScores() }
     }
     
@@ -482,7 +541,8 @@ struct QuizView: View {
 
     // MARK: - Game flow
     private func startQuiz() {
-        currentStreak = 0
+        // Do NOT reset persistent streaks; seed from persistence instead
+        seedStreakFromPersistence()
         started = true
         score = 0
         questionNumber = 0
@@ -549,18 +609,33 @@ struct QuizView: View {
         let isCorrect = (name == correctBookName)
         if isCorrect {
             score += 1
-            currentStreak += 1
-            bestStreak = max(bestStreak, currentStreak)
-            recordRound(correct: 1, answered: 1, bestStreak: currentStreak)
-            // Log per-book maps
+
+            // Persistent streak: increment on correct
+            let persisted = readPersistentStreak() + 1
+            writePersistentStreak(persisted)
+            currentStreak = persisted
+
+            // Update persistent best if needed
+            let bestPersisted = readPersistentBest()
+            if persisted > bestPersisted {
+                writePersistentBest(persisted)
+            }
+            // Keep session best in sync
+            bestStreak = max(bestStreak, persisted, readPersistentBest())
+
+            recordRound(correct: 1, answered: 1, bestStreak: bestStreak)
+            // Per-book maps
             GameStats.shared.recordQuizPerBook(bookName: correctBookName, answered: 1, correct: 1)
             #if canImport(UIKit)
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
             #endif
         } else {
+            // Persistent streak: reset on incorrect
+            writePersistentStreak(0)
             currentStreak = 0
-            recordRound(correct: 0, answered: 1, bestStreak: currentStreak)
-            // Log answered-only for the correct book (the referenced book)
+
+            recordRound(correct: 0, answered: 1, bestStreak: bestStreak)
+            // Answered-only for the referenced book
             GameStats.shared.recordQuizPerBook(bookName: correctBookName, answered: 1, correct: 0)
             #if canImport(UIKit)
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
@@ -600,7 +675,7 @@ struct QuizView: View {
     
     private func loadQuestion(from q: QuizQuestion) {
         currentVerseText = q.verseText
-        correctBookName = q.correctBook
+        correctBookName = q.verseText.isEmpty ? "" : q.correctBook
         currentChapterNumber = q.chapter
         currentVerseNumber = q.verse
         options = q.options
@@ -609,10 +684,10 @@ struct QuizView: View {
     }
     
     private func resetSessionScores() {
+        // Do NOT reset persistent streaks on navigation changes.
         score = 0
         sessionAnswered = 0
-        currentStreak = 0
-        bestStreak = 0
+        // Keep currentStreak/bestStreak as-is (they reflect persisted values)
     }
     
     // MARK: - UI helpers
@@ -681,8 +756,12 @@ struct QuizView: View {
         guard selectedOption == nil else { return }
         selectedOption = "__timeout__"
         sessionAnswered += 1
+
+        // Timeout is incorrect -> reset persistent streak
+        writePersistentStreak(0)
         currentStreak = 0
-        recordRound(correct: 0, answered: 1, bestStreak: currentStreak)
+
+        recordRound(correct: 0, answered: 1, bestStreak: bestStreak)
         // Timeout still counts as answered for the referenced (correct) book
         if !correctBookName.isEmpty {
             GameStats.shared.recordQuizPerBook(bookName: correctBookName, answered: 1, correct: 0)
@@ -722,4 +801,3 @@ struct QuizView: View {
         QuizView()
     }
 }
-

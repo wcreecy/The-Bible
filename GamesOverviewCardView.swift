@@ -210,6 +210,7 @@ struct GamesOverviewCardView: View {
                     // Play button next to the title on larger screens only
                     if hSizeClass != .compact {
                         GamesOverviewPlayButton(openAction: openSelectedGame, selectedGame: selectedGame)
+                            .padding(.leading, 10) // add horizontal space between title and Play button
                     }
 
                     Spacer(minLength: 8)

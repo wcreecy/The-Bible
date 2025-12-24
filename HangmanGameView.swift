@@ -13,9 +13,8 @@ struct HangmanGameView: View {
         }
     }
 
-    // MARK: - Debug/Test: Force Jesus Round toggle (shared across games)
-    @AppStorage("forceJesusTestEnabled") private var forceJesusTestEnabled: Bool = false
-    @State private var showJesusAlert: Bool = false
+    // Global Auto‑Win debug toggle
+    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
     enum Theme: String, CaseIterable, Identifiable {
         case all = "All"
@@ -29,7 +28,7 @@ struct HangmanGameView: View {
         case normal = "Normal"   // was Medium
         case hard = "Hard"
         var id: String { rawValue }
-    }
+        }
 
     @State private var started = false
     @State private var howToExpanded: Bool = false
@@ -101,13 +100,46 @@ struct HangmanGameView: View {
     // Keyboard layout toggle: false = QWERTY, true = A-Z
     @State private var useAlphabeticalLayout: Bool = false
 
+    // MARK: - Persistent streak helpers (per difficulty)
+    private func persistentKeys() -> (current: String, best: String) {
+        let suf = difficultyKeySuffix()
+        return ("hangmanPersistentStreak_\(suf)", "hangmanPersistentBestStreak_\(suf)")
+    }
+    private func readPersistentStreak() -> Int {
+        let key = persistentKeys().current
+        return max(0, UserDefaults.standard.integer(forKey: key))
+    }
+    private func writePersistentStreak(_ value: Int) {
+        let v = max(0, value)
+        let key = persistentKeys().current
+        UserDefaults.standard.set(v, forKey: key)
+        // Optional: push to iCloud KVS (local persistence requirement does not need it)
+        iCloudSyncCoordinator.shared.pushKey(key)
+    }
+    private func readPersistentBest() -> Int {
+        let key = persistentKeys().best
+        return max(0, UserDefaults.standard.integer(forKey: key))
+    }
+    private func writePersistentBest(_ value: Int) {
+        let v = max(0, value)
+        let key = persistentKeys().best
+        UserDefaults.standard.set(v, forKey: key)
+        iCloudSyncCoordinator.shared.pushKey(key)
+    }
+    private func seedStreakFromPersistence() {
+        let persistedCurrent = readPersistentStreak()
+        currentStreak = persistedCurrent
+        // Keep session best at least as high as persisted best
+        let persistedBest = readPersistentBest()
+        currentBestStreak = max(currentBestStreak, persistedBest)
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
                 if !started {
                     startSection
                 } else {
-                    // Capture connected keyboard input (A–Z, Enter) when playing
                     #if canImport(UIKit)
                     KeyCaptureRepresentable(
                         onKey: { ch in
@@ -115,11 +147,8 @@ struct HangmanGameView: View {
                                 guess(ch)
                             }
                         },
-                        onBackspace: {
-                            // No-op for Hangman
-                        },
+                        onBackspace: {},
                         onEnter: {
-                            // Allow Enter to advance when round is over
                             if roundOver {
                                 nextRound()
                             }
@@ -130,6 +159,16 @@ struct HangmanGameView: View {
                     #endif
 
                     inGameSection
+
+                    if debugAutoWinEnabled, started, !roundOver {
+                        Button("WIN") {
+                            endRound(win: true)
+                        }
+                        .buttonStyle(ModernPillButtonStyle(tint: .red))
+                        .controlSize(.large)
+                        .padding(.top, 6)
+                        .accessibilityLabel("Win this round")
+                    }
                 }
             }
             .padding(.horizontal)
@@ -144,9 +183,13 @@ struct HangmanGameView: View {
                 if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadNamesAsync() }
                 if loadedPlaces.isEmpty { loadedPlaces = await GameDataLoaders.loadLocationsAsync() }
             }
+            // Seed streaks from persisted values (survive app relaunch/navigation)
+            seedStreakFromPersistence()
         }
         .onChange(of: difficulty) { _, newValue in
             applyMaxWrong(for: newValue)
+            // When difficulty changes, switch to that difficulty’s persisted streaks
+            seedStreakFromPersistence()
         }
         .navigationDestination(isPresented: $navigateToReader) {
             if let book = navBook, let chapter = navChapter {
@@ -158,7 +201,6 @@ struct HangmanGameView: View {
         .sheet(isPresented: $showPreviousSheet) {
             previousRoundSheet()
         }
-        // Smart link style scripture preview sheet (like Wordle)
         .sheet(isPresented: $showRefSheet, onDismiss: {
             selectedRef = nil
             loadedPreview = nil
@@ -173,9 +215,7 @@ struct HangmanGameView: View {
                                 let verseLines = preview.verses.map { $0.text }.joined(separator: " ")
                                 UIPasteboard.general.string = "\(preview.title) — \(verseLines)"
                             },
-                            onClose: {
-                                showRefSheet = false
-                            }
+                            onClose: { showRefSheet = false }
                         )
                     } else {
                         ContentUnavailableView("No reference available", systemImage: "book")
@@ -191,18 +231,14 @@ struct HangmanGameView: View {
                 }
                 .presentationDetents([.medium, .large])
             }
-            // Lazily load when a new ref is selected, ensuring the sheet presents on first tap
             .task(id: selectedRef) {
                 guard let sr = selectedRef else { return }
                 loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
             }
         }
-        .alert("Jesus Saves", isPresented: $showJesusAlert) {
-            Button("OK", role: .cancel) { }
-        }
     }
 
-    // MARK: - Sections extracted to reduce type-checking complexity
+    // MARK: - Sections
 
     @ViewBuilder
     private var startSection: some View {
@@ -258,11 +294,6 @@ struct HangmanGameView: View {
         .pickerStyle(.segmented)
         .padding(.horizontal)
 
-        // Debug/Test toggle
-        Toggle("Force Jesus Round (Test)", isOn: $forceJesusTestEnabled)
-            .tint(.orange)
-            .padding(.horizontal)
-
         Button("Start") { startGame() }
             .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
             .controlSize(.large)
@@ -296,17 +327,10 @@ struct HangmanGameView: View {
             .padding(.top, 4)
             .accessibilityLabel("Word to guess")
 
-        // Small hint under the word
-        Text("Tap the letters to guess")
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-            .padding(.top, 2)
-
         Text("Mistakes: \(wrongGuesses)/\(maxWrong)")
             .font(.subheadline)
             .foregroundStyle(wrongGuesses >= maxWrong - 1 ? .red : .secondary)
 
-        // On-screen keyboard (QWERTY, like Wordle) with larger keys and layout toggle
         keyboardView()
             .padding(.top, 8)
 
@@ -341,7 +365,6 @@ struct HangmanGameView: View {
 
             Spacer(minLength: 6)
 
-            // Reference chip: show depending on difficulty rules
             if let ref = firstReferenceForCurrentTarget(), shouldShowReference() {
                 Button {
                     presentReferencePreview(from: ref)
@@ -427,7 +450,8 @@ struct HangmanGameView: View {
     }
 
     private var drawingHeight: CGFloat {
-        UIDevice.current.userInterfaceIdiom == .pad ? 150 : 120
+        // Smaller to emphasize tighter proportions
+        UIDevice.current.userInterfaceIdiom == .pad ? 130 : 100
     }
 
     private func applyMaxWrong(for d: Difficulty) {
@@ -476,10 +500,11 @@ struct HangmanGameView: View {
                 answered = 0
                 correctLetters.removeAll()
                 wrongLetters.removeAll()
-                currentStreak = 0
-                currentBestStreak = 0
+                // Do NOT reset streaks here; they persist across sessions
                 started = true
                 applyMaxWrong(for: difficulty)
+                // Ensure we seed from persistence right as we start
+                seedStreakFromPersistence()
                 nextRound()
             }
             return
@@ -488,10 +513,10 @@ struct HangmanGameView: View {
         answered = 0
         correctLetters.removeAll()
         wrongLetters.removeAll()
-        currentStreak = 0
-        currentBestStreak = 0
+        // Do NOT reset streaks here; they persist across sessions
         started = true
         applyMaxWrong(for: difficulty)
+        seedStreakFromPersistence()
         nextRound()
     }
 
@@ -567,12 +592,22 @@ struct HangmanGameView: View {
         if win { score += 1 }
 
         if win {
-            currentStreak += 1
-            if currentStreak > currentBestStreak {
-                currentBestStreak = currentStreak
-                let generator = UINotificationFeedbackGenerator()
-                generator.notificationOccurred(.success)
+            // Persistent streak: increment on win
+            let persisted = readPersistentStreak() + 1
+            writePersistentStreak(persisted)
+            currentStreak = persisted
+
+            // Update persistent best if needed
+            let bestPersisted = readPersistentBest()
+            if persisted > bestPersisted {
+                writePersistentBest(persisted)
             }
+            // Keep session best in sync
+            currentBestStreak = max(currentBestStreak, persisted, readPersistentBest())
+
+            let generator = UINotificationFeedbackGenerator()
+            generator.notificationOccurred(.success)
+
             GameStats.shared.recordRound(
                 game: .hangman,
                 difficulty: mapDifficulty(difficulty),
@@ -580,11 +615,11 @@ struct HangmanGameView: View {
                 answered: 1,
                 currentBestStreak: currentBestStreak
             )
-            if isJesusName(targetWord) {
-                showJesusAlert = true
-            }
         } else {
+            // Persistent streak: reset on loss
+            writePersistentStreak(0)
             currentStreak = 0
+
             GameStats.shared.recordRound(
                 game: .hangman,
                 difficulty: mapDifficulty(difficulty),
@@ -598,7 +633,7 @@ struct HangmanGameView: View {
     private func difficultyKeySuffix() -> String {
         switch difficulty {
         case .easy: return "easy"
-        case .normal: return "normal" // changed from "medium" to "normal"
+        case .normal: return "normal"
         case .hard: return "hard"
         }
     }
@@ -612,19 +647,6 @@ struct HangmanGameView: View {
     }
 
     private func generateRound() {
-        if forceJesusTestEnabled {
-            currentRoundCategory = .people
-            targetWord = "Jesus"
-            displayWord = masked(from: targetWord)
-            if loadedPeople.isEmpty { loadedPeople = GameDataLoaders.loadNames() }
-            if let entry = loadedPeople.first(where: { isJesusName($0.name) }) {
-                currentTargetReference = entry.firstReference
-            } else {
-                currentTargetReference = nil
-            }
-            return
-        }
-
         let actualCategory: Theme
         if theme == .all {
             actualCategory = [Theme.people, Theme.places, Theme.books].randomElement()!
@@ -710,7 +732,6 @@ struct HangmanGameView: View {
         return currentTargetReference
     }
 
-    // Present immediately; load lazily inside the sheet
     private func presentReferencePreview(from refString: String) {
         selectedRef = parseScriptureRef(from: refString)
         loadedPreview = nil
@@ -718,7 +739,6 @@ struct HangmanGameView: View {
     }
 
     private func parseScriptureRef(from ref: String) -> ScriptureRef? {
-        // Preferred path: use the robust linker (handles abbreviations, spacing, hyphens)
         let attributed = BibleReferenceLinker.linkify(ref)
         for run in attributed.runs {
             if let url = run.attributes.link, let parsed = BibleReferenceLinker.parse(url: url) {
@@ -726,7 +746,6 @@ struct HangmanGameView: View {
             }
         }
 
-        // Fallback: simple manual parse with best-effort book resolution
         let trimmed = ref.trimmingCharacters(in: .whitespacesAndNewlines)
         let parts = trimmed.split { $0.isWhitespace }
         guard let lastPart = parts.last else { return nil }
@@ -742,16 +761,13 @@ struct HangmanGameView: View {
         guard let chapterNum = Int(chapterDigits), let verseNum = Int(verseDigits) else { return nil }
         let bookRaw = parts.dropLast().joined(separator: " ")
 
-        // Try exact book match
         if let book = BibleData.books.first(where: { $0.name.compare(bookRaw, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
             return ScriptureRef(bookName: book.name, chapter: chapterNum, startVerse: verseNum, endVerse: nil)
         }
-        // Try collapsed spaces match
         let collapsed = bookRaw.replacingOccurrences(of: " ", with: "")
         if let book = BibleData.books.first(where: { $0.name.replacingOccurrences(of: " ", with: "").compare(collapsed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame }) {
             return ScriptureRef(bookName: book.name, chapter: chapterNum, startVerse: verseNum, endVerse: nil)
         }
-        // Try inserting a space between leading digits and letters ("1John" -> "1 John")
         let spacedLeading: String
         if let first = bookRaw.first, first.isNumber {
             let digits = String(bookRaw.prefix { $0.isNumber })
@@ -766,24 +782,15 @@ struct HangmanGameView: View {
         return nil
     }
 
-    // MARK: - Jesus detection helper
-    private func isJesusName(_ s: String) -> Bool {
-        let trimmed = s.trimmingCharacters(in: .whitespacesAndNewlines)
-        let lower = trimmed.lowercased()
-        return lower == "jesus" || lower == "jesus christ"
-    }
-
     // MARK: - On-screen keyboard
 
     private func keyboardView() -> some View {
-        // Larger key metrics
         let keyFontSize: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 22 : 18
         let keyMinWidth: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 44 : 36
         let keyMinHeight: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 48 : 42
         let keySpacing: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 10 : 9
         let rowSpacing: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 12 : 10
 
-        // Build rows depending on layout
         let qwertyRows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
         let alphaRows = ["ABCDEFG", "HIJKLMN", "OPQRSTU", "VWXYZ"]
 
@@ -796,7 +803,6 @@ struct HangmanGameView: View {
         }()
 
         return VStack(spacing: rowSpacing) {
-            // Iterate rows; we will inject the toggle button at the desired spot
             ForEach(rows.indices, id: \.self) { rowIndex in
                 let rowChars = rows[rowIndex]
                 HStack(spacing: keySpacing) {
@@ -819,9 +825,7 @@ struct HangmanGameView: View {
                         .disabled(isGuessed || roundOver)
                         .opacity(roundOver ? 0.6 : 1.0)
 
-                        // Insert the layout toggle button next to the "M" in QWERTY, or after "Z" in A-Z
                         if !useAlphabeticalLayout {
-                            // QWERTY: add after 'M' which is the last char in bottom row
                             if rowIndex == rows.count - 1, ch == "M" {
                                 layoutToggleButton(
                                     title: "A-Z",
@@ -834,7 +838,6 @@ struct HangmanGameView: View {
                     }
 
                     if useAlphabeticalLayout {
-                        // A-Z: add at end of last row (after Z)
                         if rowIndex == rows.count - 1 {
                             layoutToggleButton(
                                 title: "QWERTY",
@@ -901,7 +904,9 @@ private struct HangmanDrawing: View {
         GeometryReader { geo in
             let w = geo.size.width
             let h = geo.size.height
-            let scaleX = w / 100.0
+
+            // Tight virtual width (64); height 140
+            let scaleX = w / 64.0
             let scaleY = h / 140.0
 
             ZStack {
@@ -923,92 +928,99 @@ private struct HangmanDrawing: View {
         }
     }
 
+    // Base: shorter but still connected to the pole at x=16 (end from 38 -> 34).
     private func base(scaleX: CGFloat, scaleY: CGFloat) -> some View {
         Path { p in
-            p.move(to: CGPoint(x: 10 * scaleX, y: 130 * scaleY))
-            p.addLine(to: CGPoint(x: 90 * scaleX, y: 130 * scaleY))
+            p.move(to: CGPoint(x: 16 * scaleX, y: 130 * scaleY))
+            p.addLine(to: CGPoint(x: 34 * scaleX, y: 130 * scaleY))
         }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+        .stroke(stroke, style: StrokeStyle(lineWidth: 3.0, lineCap: .round))
         .transition(.opacity)
     }
 
+    // Pole at x=16
     private func pole(scaleX: CGFloat, scaleY: CGFloat) -> some View {
         Path { p in
-            p.move(to: CGPoint(x: 25 * scaleX, y: 130 * scaleY))
-            p.addLine(to: CGPoint(x: 25 * scaleX, y: 20 * scaleY))
+            p.move(to: CGPoint(x: 16 * scaleX, y: 130 * scaleY))
+            p.addLine(to: CGPoint(x: 16 * scaleX, y: 24 * scaleY))
         }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+        .stroke(stroke, style: StrokeStyle(lineWidth: 3.0, lineCap: .round))
         .transition(.opacity)
     }
 
+    // Beam cut in half: 16 → 32
     private func beam(scaleX: CGFloat, scaleY: CGFloat) -> some View {
         Path { p in
-            p.move(to: CGPoint(x: 25 * scaleX, y: 20 * scaleY))
-            p.addLine(to: CGPoint(x: 70 * scaleX, y: 20 * scaleY))
+            p.move(to: CGPoint(x: 16 * scaleX, y: 24 * scaleY))
+            p.addLine(to: CGPoint(x: 32 * scaleX, y: 24 * scaleY))
         }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+        .stroke(stroke, style: StrokeStyle(lineWidth: 3.0, lineCap: .round))
         .transition(.opacity)
     }
 
+    // Rope at x=32
     private func rope(scaleX: CGFloat, scaleY: CGFloat) -> some View {
         Path { p in
-            p.move(to: CGPoint(x: 70 * scaleX, y: 20 * scaleY))
-            p.addLine(to: CGPoint(x: 70 * scaleX, y: 35 * scaleY))
+            p.move(to: CGPoint(x: 32 * scaleX, y: 24 * scaleY))
+            p.addLine(to: CGPoint(x: 32 * scaleX, y: 38 * scaleY))
         }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+        .stroke(stroke, style: StrokeStyle(lineWidth: 2.6, lineCap: .round))
         .transition(.opacity)
     }
 
+    // Head centered at x=32 — make a little bigger (diameter 16 instead of 14)
     private func head(scaleX: CGFloat, scaleY: CGFloat) -> some View {
         Circle()
-            .stroke(stroke, lineWidth: 3)
-            .frame(width: 18 * scaleX, height: 18 * scaleY)
-            .position(x: 70 * scaleX, y: 45 * scaleY)
+            .stroke(stroke, lineWidth: 2.6)
+            .frame(width: 16 * scaleX, height: 16 * scaleY)
+            .position(x: 32 * scaleX, y: 46 * scaleY)
             .transition(.opacity)
     }
 
     private func torso(scaleX: CGFloat, scaleY: CGFloat) -> some View {
         Path { p in
-            p.move(to: CGPoint(x: 70 * scaleX, y: 54 * scaleY))
-            p.addLine(to: CGPoint(x: 70 * scaleX, y: 88 * scaleY))
+            p.move(to: CGPoint(x: 32 * scaleX, y: 54 * scaleY))
+            p.addLine(to: CGPoint(x: 32 * scaleX, y: 88 * scaleY))
         }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+        .stroke(stroke, style: StrokeStyle(lineWidth: 2.6, lineCap: .round))
         .transition(.opacity)
     }
 
+    // Arms shorter (endpoints moved slightly inward/up)
     private func leftArm(scaleX: CGFloat, scaleY: CGFloat) -> some View {
         Path { p in
-            p.move(to: CGPoint(x: 70 * scaleX, y: 62 * scaleY))
-            p.addLine(to: CGPoint(x: 58 * scaleX, y: 74 * scaleY))
+            p.move(to: CGPoint(x: 32 * scaleX, y: 62 * scaleY))
+            p.addLine(to: CGPoint(x: 28.5 * scaleX, y: 68 * scaleY))
         }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+        .stroke(stroke, style: StrokeStyle(lineWidth: 2.6, lineCap: .round))
         .transition(.opacity)
     }
 
     private func rightArm(scaleX: CGFloat, scaleY: CGFloat) -> some View {
         Path { p in
-            p.move(to: CGPoint(x: 70 * scaleX, y: 62 * scaleY))
-            p.addLine(to: CGPoint(x: 82 * scaleX, y: 74 * scaleY))
+            p.move(to: CGPoint(x: 32 * scaleX, y: 62 * scaleY))
+            p.addLine(to: CGPoint(x: 35.5 * scaleX, y: 68 * scaleY))
         }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+        .stroke(stroke, style: StrokeStyle(lineWidth: 2.6, lineCap: .round))
         .transition(.opacity)
     }
 
+    // Legs shorter (endpoints moved slightly inward/up)
     private func leftLeg(scaleX: CGFloat, scaleY: CGFloat) -> some View {
         Path { p in
-            p.move(to: CGPoint(x: 70 * scaleX, y: 88 * scaleY))
-            p.addLine(to: CGPoint(x: 60 * scaleX, y: 106 * scaleY))
+            p.move(to: CGPoint(x: 32 * scaleX, y: 88 * scaleY))
+            p.addLine(to: CGPoint(x: 29 * scaleX, y: 98 * scaleY))
         }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+        .stroke(stroke, style: StrokeStyle(lineWidth: 2.6, lineCap: .round))
         .transition(.opacity)
     }
 
     private func rightLeg(scaleX: CGFloat, scaleY: CGFloat) -> some View {
         Path { p in
-            p.move(to: CGPoint(x: 70 * scaleX, y: 88 * scaleY))
-            p.addLine(to: CGPoint(x: 80 * scaleX, y: 106 * scaleY))
+            p.move(to: CGPoint(x: 32 * scaleX, y: 88 * scaleY))
+            p.addLine(to: CGPoint(x: 35 * scaleX, y: 98 * scaleY))
         }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+        .stroke(stroke, style: StrokeStyle(lineWidth: 2.6, lineCap: .round))
         .transition(.opacity)
     }
 }
@@ -1066,4 +1078,3 @@ private struct KeyCaptureRepresentable: UIViewRepresentable {
     }
 }
 #endif
-

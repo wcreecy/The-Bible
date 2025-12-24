@@ -10,13 +10,11 @@ struct WhoAmIGameView: View {
     @State private var selectedRef: ScriptureRef? = nil
     @State private var loadedPreview: (title: String, verses: [Verse])? = nil
     @State private var currentRefIndex: Int = 0
-    // Nonce to force lazy loader to run even if selectedRef compares equal
     @State private var selectionNonce: UUID = UUID()
 
-    // Debug/Test toggle shared across games
-    @AppStorage("forceJesusTestEnabled") private var forceJesusTestEnabled: Bool = false
+    // Global Auto‑Win debug toggle
+    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
-    // Collects the maximum measured height from all choice cells
     private struct ChoiceHeightKey: PreferenceKey {
         static var defaultValue: CGFloat = 0
         static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
@@ -85,18 +83,12 @@ struct WhoAmIGameView: View {
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
 
-                    // Debug/Test toggle
-                    Toggle("Force Jesus Round (Test)", isOn: $forceJesusTestEnabled)
-                        .tint(.orange)
-                        .padding(.horizontal)
-
                     Button("Start") { vm.startGame() }
                         .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                         .controlSize(.large)
                         .frame(maxWidth: 240)
                     Spacer(minLength: 24)
                 } else {
-                    // Scoreboard
                     GameScoreboardCard(
                         currentCorrect: vm.score,
                         currentAnswered: vm.answered,
@@ -146,7 +138,6 @@ struct WhoAmIGameView: View {
                                         vm.select(choice)
                                     }
                                 } label: {
-                                    // Uniform-sized, leading-aligned, multi-line text inside each cell
                                     Text(choice)
                                         .font(.footnote)
                                         .multilineTextAlignment(.leading)
@@ -168,7 +159,6 @@ struct WhoAmIGameView: View {
                                             }
                                         )
                                 }
-                                // Do not disable; route behavior via action above
                                 .background(
                                     RoundedRectangle(cornerRadius: 12, style: .continuous)
                                         .fill(backgroundColor(for: choice))
@@ -202,6 +192,16 @@ struct WhoAmIGameView: View {
                             .foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity, alignment: .center)
                     }
+
+                    if debugAutoWinEnabled, vm.started, !vm.roundOver, vm.selectedChoice == nil {
+                        Button("WIN") {
+                            vm.select(vm.correctChoice)
+                        }
+                        .buttonStyle(ModernPillButtonStyle(tint: .red))
+                        .controlSize(.large)
+                        .padding(.top, 6)
+                        .accessibilityLabel("Win this round")
+                    }
                 }
             }
             .padding()
@@ -218,7 +218,6 @@ struct WhoAmIGameView: View {
             refChoices = []
             currentRefIndex = 0
         }) {
-            // Sheet content
             let content = NavigationStack {
                 VStack(alignment: .leading, spacing: 12) {
                     if refChoices.isEmpty {
@@ -242,7 +241,6 @@ struct WhoAmIGameView: View {
 
                         ScriptureLinksList(refs: refChoices, onTap: { ref in
                             if let idx = refChoices.firstIndex(where: { $0 == ref }) {
-                                // Update selection/index; lazy loader will fire via nonce
                                 setCurrentRefIndex(idx)
                             } else {
                                 selectedRef = ref
@@ -289,22 +287,18 @@ struct WhoAmIGameView: View {
                 }
                 .presentationDetents([.medium, .large])
                 .onAppear {
-                    // Ensure we have a selected ref; if not, select first
                     if !refChoices.isEmpty, selectedRef == nil {
                         currentRefIndex = max(0, min(currentRefIndex, refChoices.count - 1))
                         selectedRef = refChoices[currentRefIndex]
                         selectionNonce = UUID()
                     }
-                    // Eager safety: if we already have a selection but no preview, load now
                     if let sr = selectedRef, loadedPreview == nil {
                         loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
                     }
                 }
             }
 
-            // Attach the lazy loaders at the same scope as Hangman, keyed by nonce
             content
-                // Lazy loader: runs on first appearance and whenever selectionNonce changes
                 .task(id: selectionNonce) {
                     if let sr = selectedRef {
                         loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
@@ -312,15 +306,11 @@ struct WhoAmIGameView: View {
                         loadedPreview = nil
                     }
                 }
-                // Safety net: when the sheet is presented, if we already have a selection but no preview, load it now.
                 .task(id: showRefSheet) {
                     if showRefSheet, let sr = selectedRef, loadedPreview == nil {
                         loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
                     }
                 }
-        }
-        .alert("Jesus Saves", isPresented: $vm.showJesusBonusAlert) {
-            Button("OK", role: .cancel) { }
         }
     }
 
@@ -364,13 +354,11 @@ struct WhoAmIGameView: View {
             return
         }
 
-        // Normalize non‑breaking/narrow spaces to regular spaces
         let nbspChars: [Character] = ["\u{00A0}", "\u{202F}", "\u{2007}"]
         for ch in nbspChars {
             refStr = refStr.replacingOccurrences(of: String(ch), with: " ")
         }
 
-        // Split on commas/semicolons into parts, then linkify each part
         let separators = CharacterSet(charactersIn: ",;")
         let parts = refStr.components(separatedBy: separators)
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -387,7 +375,6 @@ struct WhoAmIGameView: View {
             }
         }
 
-        // Fallback: try whole string if parts yielded nothing
         if all.isEmpty {
             let attributed = BibleReferenceLinker.linkify(refStr)
             let refs = ScriptureRefExtractor.refs(in: attributed)
@@ -401,7 +388,6 @@ struct WhoAmIGameView: View {
         refChoices = all
         currentRefIndex = 0
 
-        // Select first ref (if any) and present; bump nonce so lazy loader fires
         selectedRef = all.first
         selectionNonce = UUID()
         loadedPreview = nil
@@ -419,7 +405,6 @@ struct WhoAmIGameView: View {
         let ref = refChoices[clamped]
         selectedRef = ref
         selectionNonce = UUID()
-        // Do not load verses here; the .task keyed by nonce will handle it
         loadedPreview = nil
     }
 

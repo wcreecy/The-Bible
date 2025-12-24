@@ -5,6 +5,9 @@ struct BookOrderGameView: View {
     @State private var howToExpanded: Bool = false
     @State private var difficultyExpanded: Bool = false
 
+    // Global Auto‑Win debug toggle
+    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
+
     private var currentPercent: Double { vm.answered > 0 ? Double(vm.score) / Double(vm.answered) : 0 }
     private var allTimePercent: Double { vm.allTimeAnswered > 0 ? Double(vm.allTimeCorrect) / Double(vm.allTimeAnswered) : 0 }
 
@@ -174,6 +177,18 @@ struct BookOrderGameView: View {
                             }
                             .padding(.top)
                         }
+                    }
+
+                    // DEBUG: WIN button
+                    if debugAutoWinEnabled, vm.started, !vm.showResult, !vm.correctOrder.isEmpty {
+                        Button("WIN") {
+                            vm.currentItems = vm.correctOrder
+                            vm.checkOrder()
+                        }
+                        .buttonStyle(ModernPillButtonStyle(tint: .red))
+                        .controlSize(.large)
+                        .padding(.top, 6)
+                        .accessibilityLabel("Win this round")
                     }
                 }
                 .padding()

@@ -22,6 +22,8 @@ struct VerseMatchGameView: View {
 
     @State private var started = false
     @AppStorage("versematchScope") private var verseScopeRaw: String = "whole"
+    // Global Auto‑Win debug toggle
+    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
     @State private var questionNumber: Int = 0
     @State private var score: Int = 0
@@ -45,6 +47,42 @@ struct VerseMatchGameView: View {
     @State private var options: [AnswerOption] = []
     @State private var correctIndex: Int = -1
     @State private var selectedIndex: Int? = nil
+
+    // MARK: - Persistent streak helpers (per difficulty)
+    private func persistentSuffix() -> String {
+        switch difficulty {
+        case .easy: return "easy"
+        case .normal: return "normal"
+        case .hard: return "hard"
+        }
+    }
+    private func persistentStreakKey() -> String { "versematchPersistentStreak_\(persistentSuffix())" }
+    private func persistentBestKey() -> String { "versematchPersistentBestStreak_\(persistentSuffix())" }
+
+    private func readPersistentStreak() -> Int {
+        max(0, UserDefaults.standard.integer(forKey: persistentStreakKey()))
+    }
+    private func writePersistentStreak(_ value: Int) {
+        let v = max(0, value)
+        let key = persistentStreakKey()
+        UserDefaults.standard.set(v, forKey: key)
+        iCloudSyncCoordinator.shared.pushKey(key)
+    }
+    private func readPersistentBest() -> Int {
+        max(0, UserDefaults.standard.integer(forKey: persistentBestKey()))
+    }
+    private func writePersistentBest(_ value: Int) {
+        let v = max(0, value)
+        let key = persistentBestKey()
+        UserDefaults.standard.set(v, forKey: key)
+        iCloudSyncCoordinator.shared.pushKey(key)
+    }
+    private func seedStreakFromPersistence() {
+        let persisted = readPersistentStreak()
+        currentStreak = persisted
+        let persistedBest = readPersistentBest()
+        currentBestStreak = max(currentBestStreak, persistedBest)
+    }
 
     var body: some View {
         ScrollView {
@@ -198,6 +236,17 @@ struct VerseMatchGameView: View {
                             .foregroundStyle(correct ? .green : .red)
                             .padding(.top, 8)
                     }
+
+                    // DEBUG: WIN button
+                    if debugAutoWinEnabled, started, selectedIndex == nil, correctIndex >= 0 {
+                        Button("WIN") {
+                            select(correctIndex)
+                        }
+                        .buttonStyle(ModernPillButtonStyle(tint: .red))
+                        .controlSize(.large)
+                        .padding(.top, 6)
+                        .accessibilityLabel("Win this round")
+                    }
                 }
             }
             .padding()
@@ -223,6 +272,14 @@ struct VerseMatchGameView: View {
                 }
             }
         }
+        .onAppear {
+            // Seed streaks from persisted values so they survive navigation/relaunch
+            seedStreakFromPersistence()
+        }
+        .onChange(of: difficulty) { _, _ in
+            // Switch to this difficulty’s persisted streaks
+            seedStreakFromPersistence()
+        }
     }
 
     // MARK: - Game flow
@@ -230,8 +287,8 @@ struct VerseMatchGameView: View {
     private func startGame() {
         score = 0
         answered = 0
-        currentStreak = 0
-        currentBestStreak = 0
+        // Do NOT reset persistent streaks here; seed from persistence
+        seedStreakFromPersistence()
         questionNumber = 0
         started = true
         history = []
@@ -255,12 +312,21 @@ struct VerseMatchGameView: View {
         if idx == correctIndex { score += 1 }
 
         if idx == correctIndex {
-            currentStreak += 1
-            if currentStreak > currentBestStreak {
-                currentBestStreak = currentStreak
-                let generator = UINotificationFeedbackGenerator()
-                generator.notificationOccurred(.success)
+            // Persistent streak: increment on correct
+            let persisted = readPersistentStreak() + 1
+            writePersistentStreak(persisted)
+            currentStreak = persisted
+
+            // Update persistent best if needed
+            let bestPersisted = readPersistentBest()
+            if persisted > bestPersisted {
+                writePersistentBest(persisted)
             }
+            currentBestStreak = max(currentBestStreak, persisted, readPersistentBest())
+
+            let generator = UINotificationFeedbackGenerator()
+            generator.notificationOccurred(.success)
+
             GameStats.shared.recordRound(
                 game: .versematch,
                 difficulty: mapDifficulty(difficulty),
@@ -269,7 +335,10 @@ struct VerseMatchGameView: View {
                 currentBestStreak: currentBestStreak
             )
         } else {
+            // Persistent streak: reset on incorrect
+            writePersistentStreak(0)
             currentStreak = 0
+
             GameStats.shared.recordRound(
                 game: .versematch,
                 difficulty: mapDifficulty(difficulty),
@@ -596,4 +665,3 @@ struct VerseMatchGameView: View {
         }
     }
 }
-

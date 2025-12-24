@@ -340,6 +340,8 @@ struct HomeView: View {
                     switchTo(.games)
                 },
                 onOpenStats: {
+                    // Force StatsView to open on the Game Stats tab
+                    UserDefaults.standard.set("Game Stats", forKey: "statsSelectedMode")
                     switchTo(.stats)
                 },
                 onShufflePlay: {
@@ -371,6 +373,8 @@ struct HomeView: View {
                 bibleVM: bibleVM,
                 scenePhase: scenePhase,
                 onOpenStats: {
+                    // Force StatsView to open on the Bible Stats tab
+                    UserDefaults.standard.set("Bible Stats", forKey: "statsSelectedMode")
                     switchTo(.stats)
                 }
             )
@@ -600,4 +604,3 @@ struct HomeView: View {
 // Note: HeroCard, button styles, DayCell, WeekRow,
 // PrayerStudyTimerSetupView, and DebouncedWidgetReloader have been
 // moved to their own files as part of UI extraction.
-

@@ -39,6 +39,30 @@ final class iCloudSyncCoordinator {
     var debounceTask: Task<Void, Never>?
     let debounceInterval: TimeInterval = 1.0
 
+    // Ensure start() is performed once per app run
+    private var didStart = false
+
+    // MARK: - Logging
+
+    private func log(_ message: @autoclosure () -> String) {
+        #if DEBUG
+        print("KVS:", message())
+        #endif
+    }
+
+    private func isWordDailyKey(_ key: String) -> Bool {
+        return Self.wordleSolvedMapKeys.contains(key)
+            || Self.wordleDailyResultKeys.contains(key)
+            || Self.wordleDailyFlagKeys.contains(key)
+    }
+
+    private func anyWordDailyKey<S: Sequence>(_ keys: S) -> Bool where S.Element == String {
+        for k in keys {
+            if isWordDailyKey(k) { return true }
+        }
+        return false
+    }
+
     private init() {
         NotificationCenter.default.addObserver(
             self,
@@ -72,11 +96,17 @@ final class iCloudSyncCoordinator {
     // MARK: - Public API
 
     func start() {
+        guard !didStart else { return }
+        didStart = true
+
+        log("start() called. KVS available: \(kvsAvailable ? "yes" : "no"). Synchronizing + reconciling…")
+
         // Pull -> merge -> normalize -> push repairs (debounced)
         reconcileAllKeysFromKVS()
 
         // One-time bootstrap: push local differences (no blind timestamp bumps) after initial pull/merge
         if !defaults.bool(forKey: bootstrapFlagKey) {
+            log("Bootstrap not complete — pushing local differences to KVS…")
             pushLocalDifferencesToKVS()
             defaults.set(true, forKey: bootstrapFlagKey)
         }
@@ -84,6 +114,7 @@ final class iCloudSyncCoordinator {
         // Normalize impossible pairs once at startup too (heals existing data even if no merge occurs this run)
         let repaired = normalizeGameCountersInvariant()
         if !repaired.isEmpty {
+            log("Repaired game invariants for keys: \(Array(repaired))")
             enqueueKeysForSync(repaired)
             // Post asynchronously to avoid interfering with any active keyboard session
             DispatchQueue.main.async {
@@ -94,6 +125,7 @@ final class iCloudSyncCoordinator {
         // NEW: Migrate legacy Reference Match -> Verse Match keys once if needed.
         let migrated = migrateRefMatchToVerseMatchIfNeeded()
         if !migrated.isEmpty {
+            log("Migrated legacy refmatch -> versematch for keys: \(Array(migrated))")
             enqueueKeysForSync(migrated)
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
@@ -104,6 +136,9 @@ final class iCloudSyncCoordinator {
     // Call after local writes if you want to eagerly push a specific key.
     func pushKey(_ key: String) {
         guard allKnownKeys.contains(key) else { return }
+        if isWordDailyKey(key) {
+            log("pushKey(\(key)) — mirroring WORD daily key to KVS")
+        }
         // Mirror only if changed, then schedule synchronize (debounced).
         mirrorLocalKeyToKVS(key)
         enqueueKeyForSync(key)
@@ -111,6 +146,7 @@ final class iCloudSyncCoordinator {
 
     // Optional: push all known keys now (useful on app background)
     func pushAllNow() {
+        log("pushAllNow() — mirroring all known keys. Includes WORD daily: \(Self.wordleSolvedMapKeys + Self.wordleDailyResultKeys + Self.wordleDailyFlagKeys)")
         for key in allKnownKeys {
             mirrorLocalKeyToKVS(key)
         }
@@ -142,6 +178,10 @@ final class iCloudSyncCoordinator {
             + Self.whoAmIKeys
             + Self.wordleKeys            // FIX: include Wordle keys so they mirror/merge
             + Self.gameDailyAndLastPlayedKeys
+            // NEW: Include WORD daily status/result/flag keys so they reconcile/push and pass the change filter.
+            + Self.wordleSolvedMapKeys
+            + Self.wordleDailyResultKeys
+            + Self.wordleDailyFlagKeys
         )
     }
 
@@ -170,6 +210,11 @@ final class iCloudSyncCoordinator {
         guard let userInfo = note.userInfo else { return }
 
         let changedKeys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String] ?? []
+        if anyWordDailyKey(changedKeys) {
+            let wordKeys = changedKeys.filter { isWordDailyKey($0) }
+            log("didChangeExternallyNotification — WORD daily keys changed: \(wordKeys)")
+        }
+
         // Filter to known data keys; ignore our timestamp companion keys (handled inside domain helpers)
         let keysToProcess = changedKeys.filter { allKnownKeys.contains($0) || Self.lastReadWidgetKeys.contains($0) }
 
@@ -178,9 +223,17 @@ final class iCloudSyncCoordinator {
         var mergedGameKey = false
 
         for key in keysToProcess {
-            if isGameCounterKey(key) || Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) { mergedGameKey = true }
+            if isGameCounterKey(key)
+                || Self.gameDailyAndLastPlayedKeys.contains(key)
+                || Self.quizPerBookMapKeys.contains(key)
+                || isWordDailyKey(key) {
+                mergedGameKey = true
+            }
             // Merge only for domains we own in coordinator
             if allKnownKeys.contains(key) {
+                if isWordDailyKey(key) {
+                    log("Merging incoming WORD daily key: \(key)")
+                }
                 mergeIncomingKVSValue(forKey: key)
             }
         }
@@ -192,6 +245,7 @@ final class iCloudSyncCoordinator {
         if mergedGameKey {
             let repairedKeys = normalizeGameCountersInvariant()
             if !repairedKeys.isEmpty {
+                log("Post-merge invariant repair — enqueue: \(Array(repairedKeys))")
                 enqueueKeysForSync(repairedKeys)
             }
         }
@@ -258,6 +312,8 @@ final class iCloudSyncCoordinator {
             return
         }
 
+        log("Ubiquity identity changed — synchronizing and reconciling all keys…")
+
         // Account changed: pull, merge, and repair. Do not blindly push local values first.
         kvs.synchronize()
         reconcileAllKeysFromKVS()
@@ -267,6 +323,7 @@ final class iCloudSyncCoordinator {
     @objc
     func handleAppDidEnterBackground() {
         // Mirror any differences and coalesce into a single synchronize
+        log("App did enter background — pushAllNow()")
         pushAllNow()
     }
     #endif
@@ -274,11 +331,17 @@ final class iCloudSyncCoordinator {
     // MARK: - Local -> KVS dispatch
 
     func mirrorLocalKeyToKVS(_ key: String) {
+        if isWordDailyKey(key) {
+            log("mirrorLocalKeyToKVS(\(key)) — WORD daily key")
+        }
         if Self.settingsKeys.contains(key) {
             mirrorSettingsKeyToKVS(key)
             return
         }
-        if Self.gameDailyAndLastPlayedKeys.contains(key) || isGameCounterKey(key) || Self.quizPerBookMapKeys.contains(key) {
+        if Self.gameDailyAndLastPlayedKeys.contains(key)
+            || isGameCounterKey(key)
+            || Self.quizPerBookMapKeys.contains(key)
+            || isWordDailyKey(key) {
             mirrorGamesKeyToKVS(key)
             return
         }
@@ -314,7 +377,13 @@ final class iCloudSyncCoordinator {
         debounceTask?.cancel()
 
         // Clear pending set now (on MainActor)
+        let toSync = pendingKeys
         pendingKeys.removeAll()
+
+        if anyWordDailyKey(toSync) {
+            let wordKeys = toSync.filter { isWordDailyKey($0) }
+            log("Scheduling KVS synchronize (debounced) for keys: \(Array(wordKeys))")
+        }
 
         let delayNanos = UInt64(debounceInterval * 1_000_000_000)
 
@@ -341,11 +410,17 @@ final class iCloudSyncCoordinator {
     // MARK: - KVS -> Local dispatch
 
     func mergeIncomingKVSValue(forKey key: String) {
+        if isWordDailyKey(key) {
+            log("mergeIncomingKVSValue(\(key)) — WORD daily key")
+        }
         if Self.settingsKeys.contains(key) {
             mergeSettingsIncoming(forKey: key)
             return
         }
-        if Self.gameDailyAndLastPlayedKeys.contains(key) || isGameCounterKey(key) || Self.quizPerBookMapKeys.contains(key) {
+        if Self.gameDailyAndLastPlayedKeys.contains(key)
+            || isGameCounterKey(key)
+            || Self.quizPerBookMapKeys.contains(key)
+            || isWordDailyKey(key) {
             mergeGamesIncoming(forKey: key)
             return
         }
@@ -368,19 +443,34 @@ final class iCloudSyncCoordinator {
         var mergedGameKey = false
         var touchedAny = false
 
+        // Log presence of WORD daily keys on the server for quick diagnosis
+        do {
+            let solved = remoteDict.keys.contains("wordleDailySolvedDays") || kvs.object(forKey: "wordleDailySolvedDays") != nil
+            let result = remoteDict.keys.contains("wordleDailyResultMap") || kvs.object(forKey: "wordleDailyResultMap") != nil
+            let completed = remoteDict.keys.contains("wordleDailyCompletedDay") || kvs.object(forKey: "wordleDailyCompletedDay") != nil
+            let target = remoteDict.keys.contains("wordleDailyTarget") || kvs.object(forKey: "wordleDailyTarget") != nil
+            log("reconcileAllKeysFromKVS — WORD presence -> solved:\(solved) result:\(result) completed:\(completed) target:\(target)")
+        }
+
         for key in allKnownKeys {
             let hasRemote = (kvs.object(forKey: key) != nil) || (remoteDict.keys.contains(key))
 
             if hasRemote {
-                if isGameCounterKey(key) || Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) {
+                if isGameCounterKey(key)
+                    || Self.gameDailyAndLastPlayedKeys.contains(key)
+                    || Self.quizPerBookMapKeys.contains(key)
+                    || isWordDailyKey(key) {
                     mergedGameKey = true
+                }
+                if isWordDailyKey(key) {
+                    log("Reconcile merging WORD daily key: \(key)")
                 }
                 mergeIncomingKVSValue(forKey: key)
                 touchedAny = true
                 continue
             }
 
-            // Handle remote deletions for game daily maps and last played, and per-book maps.
+            // Handle remote deletions for game daily maps and last played, per-book maps, and WORD daily keys.
             if Self.gameDailyAndLastPlayedKeys.contains(key) {
                 // Clear local copy if present
                 if defaults.object(forKey: key) != nil {
@@ -413,6 +503,17 @@ final class iCloudSyncCoordinator {
                 continue
             }
 
+            // NEW: Handle remote deletion for WORD daily keys as well (clear local)
+            if isWordDailyKey(key) {
+                if defaults.object(forKey: key) != nil {
+                    defaults.removeObject(forKey: key)
+                    touchedAny = true
+                    mergedGameKey = true
+                    log("Reconcile: remote deletion detected for WORD key \(key) — cleared local")
+                }
+                continue
+            }
+
             // NEW: Bible stats — treat absence remotely as deletion locally
             if Self.bibleStatsKeys.contains(key) {
                 if defaults.object(forKey: key) != nil {
@@ -431,6 +532,7 @@ final class iCloudSyncCoordinator {
             if mergedGameKey {
                 let repaired = normalizeGameCountersInvariant()
                 if !repaired.isEmpty {
+                    log("Reconcile invariant repair — enqueue: \(Array(repaired))")
                     enqueueKeysForSync(repaired)
                 }
                 DispatchQueue.main.async {

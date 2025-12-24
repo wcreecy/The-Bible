@@ -12,9 +12,8 @@ struct BeatTheClockGameView: View {
     @State private var difficulty: Difficulty = .normal
     @State private var category: Category = .people
 
-    // Debug/Test toggle shared across games
-    @AppStorage("forceJesusTestEnabled") private var forceJesusTestEnabled: Bool = false
-    @State private var showJesusAlert: Bool = false
+    // Global Auto‑Win debug toggle
+    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
     // Data
     @State private var loadedPeople: [BibleName] = []
@@ -69,14 +68,48 @@ struct BeatTheClockGameView: View {
         return !selectionLocked && !trimmed.isEmpty
     }
 
-    // Size class to choose compact (iPhone) vs regular (iPad) layout
     @Environment(\.horizontalSizeClass) private var hSizeClass
     private var isCompact: Bool { hSizeClass == .compact }
 
-    // Timer sizing
     private var timerIconSize: CGFloat { isCompact ? 14 : 24 }
     private var timerTextSize: CGFloat { isCompact ? 22 : 34 }
     private var timerWidth: CGFloat { isCompact ? 64 : 90 }
+
+    // MARK: - Persistent streak helpers (per difficulty)
+    private func persistentSuffix() -> String {
+        switch difficulty {
+        case .easy: return "easy"
+        case .normal: return "normal"
+        case .hard: return "hard"
+        }
+    }
+    private func persistentStreakKey() -> String { "beatclockPersistentStreak_\(persistentSuffix())" }
+    private func persistentBestKey() -> String { "beatclockPersistentBestStreak_\(persistentSuffix())" }
+
+    private func readPersistentStreak() -> Int {
+        max(0, UserDefaults.standard.integer(forKey: persistentStreakKey()))
+    }
+    private func writePersistentStreak(_ value: Int) {
+        let v = max(0, value)
+        let key = persistentStreakKey()
+        UserDefaults.standard.set(v, forKey: key)
+        iCloudSyncCoordinator.shared.pushKey(key)
+    }
+    private func readPersistentBest() -> Int {
+        max(0, UserDefaults.standard.integer(forKey: persistentBestKey()))
+    }
+    private func writePersistentBest(_ value: Int) {
+        let v = max(0, value)
+        let key = persistentBestKey()
+        UserDefaults.standard.set(v, forKey: key)
+        iCloudSyncCoordinator.shared.pushKey(key)
+    }
+    private func seedStreakFromPersistence() {
+        let persisted = readPersistentStreak()
+        currentStreak = persisted
+        let persistedBest = readPersistentBest()
+        currentBestStreak = max(currentBestStreak, persistedBest)
+    }
 
     var body: some View {
         ScrollView {
@@ -134,11 +167,6 @@ struct BeatTheClockGameView: View {
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
 
-                    // Debug/Test toggle
-                    Toggle("Force Jesus Round (Test)", isOn: $forceJesusTestEnabled)
-                        .tint(.orange)
-                        .padding(.horizontal)
-
                     Button("Start") { startGame() }
                         .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                         .controlSize(.large)
@@ -146,7 +174,6 @@ struct BeatTheClockGameView: View {
                     Spacer(minLength: 32)
                 } else {
                     if isCompact {
-                        // iPhone: full-width scoreboard with a compact timer overlaid top-right
                         ZStack(alignment: .topTrailing) {
                             GameScoreboardCard(
                                 currentCorrect: score,
@@ -158,14 +185,13 @@ struct BeatTheClockGameView: View {
                             )
                             .frame(maxWidth: .infinity)
                             .multilineTextAlignment(.center)
-                            .padding(.trailing, timerWidth + 12) // keep text away from timer badge
+                            .padding(.trailing, timerWidth + 12)
 
                             timerView
                                 .frame(width: timerWidth)
                                 .padding(.top, 4)
                         }
                     } else {
-                        // iPad: side-by-side layout with larger timer
                         HStack(alignment: .center, spacing: 16) {
                             GameScoreboardCard(
                                 currentCorrect: score,
@@ -186,7 +212,6 @@ struct BeatTheClockGameView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                     }
 
-                    // Clue
                     GroupBox {
                         VStack(alignment: .leading, spacing: 6) {
                             Text(currentEntryIsPerson ? "Person" : "Place")
@@ -201,7 +226,6 @@ struct BeatTheClockGameView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
 
-                    // Input
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Type a Bible book")
                             .font(.headline)
@@ -275,6 +299,16 @@ struct BeatTheClockGameView: View {
                         Button("Show answers (\(acceptableBooks.count))") { showAnswers = true }
                             .buttonStyle(ModernPillButtonStyle(tint: .blue))
                     }
+
+                    if debugAutoWinEnabled, started, !selectionLocked {
+                        Button("WIN") {
+                            endRound(correct: true)
+                        }
+                        .buttonStyle(ModernPillButtonStyle(tint: .red))
+                        .controlSize(.large)
+                        .padding(.top, 6)
+                        .accessibilityLabel("Win this round")
+                    }
                 }
             }
             .padding()
@@ -282,7 +316,6 @@ struct BeatTheClockGameView: View {
         .navigationTitle("Beat the Clock")
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            // Ensure state updates happen on the main actor
             if loadedPeople.isEmpty {
                 let people = await GameDataLoaders.loadNamesAsync()
                 loadedPeople = people
@@ -291,6 +324,14 @@ struct BeatTheClockGameView: View {
                 let places = await GameDataLoaders.loadLocationsAsync()
                 loadedPlaces = places
             }
+        }
+        .onAppear {
+            // Seed streaks from persisted values so they survive navigation/relaunch
+            seedStreakFromPersistence()
+        }
+        .onChange(of: difficulty) { _, _ in
+            // Switch to this difficulty’s persisted streaks
+            seedStreakFromPersistence()
         }
         .onReceive(timer) { _ in
             guard started, !selectionLocked else { return }
@@ -332,9 +373,6 @@ struct BeatTheClockGameView: View {
                 .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { showAnswers = false } } }
             }
         }
-        .alert("Jesus Saves", isPresented: $showJesusAlert) {
-            Button("OK", role: .cancel) { }
-        }
     }
 
     private var timerColor: Color {
@@ -343,7 +381,6 @@ struct BeatTheClockGameView: View {
         return .green
     }
 
-    // Extracted timer view so we can reuse with different layouts
     private var timerView: some View {
         VStack(spacing: 6) {
             Image(systemName: "timer")
@@ -371,8 +408,8 @@ struct BeatTheClockGameView: View {
         score = 0
         answered = 0
         started = true
-        currentStreak = 0
-        currentBestStreak = 0
+        // Do NOT reset persistent streaks here; seed from persistence
+        seedStreakFromPersistence()
         nextRound()
     }
 
@@ -382,22 +419,6 @@ struct BeatTheClockGameView: View {
         remainingSeconds = roundTime
         acceptableBooks = []
         pulse = false
-
-        // Force Jesus test round if enabled
-        if forceJesusTestEnabled {
-            currentEntryIsPerson = true
-            targetLabel = "Jesus"
-            if loadedPeople.isEmpty { loadedPeople = GameDataLoaders.loadNames() }
-            if let entry = loadedPeople.first(where: { isJesusName(entryName: $0.name) }) {
-                referenceBookName = parseBookName(from: entry.firstReference)
-            } else {
-                referenceBookName = nil
-            }
-            acceptableBooks = booksMentioning(targetLabel)
-            if let ref = referenceBookName { acceptableBooks.insert(ref) }
-            DispatchQueue.main.async { self.searchFieldFocused = true }
-            return
-        }
 
         switch category {
         case .people:
@@ -454,9 +475,19 @@ struct BeatTheClockGameView: View {
         let accepted = acceptableBooks.contains { normalize($0) == normalized }
         if accepted {
             score += 1
-            currentStreak += 1
-            if currentStreak > currentBestStreak { currentBestStreak = currentStreak }
-            // Centralized write
+
+            // Persistent streak: increment on correct
+            let persisted = readPersistentStreak() + 1
+            writePersistentStreak(persisted)
+            currentStreak = persisted
+
+            // Update persistent best if needed
+            let bestPersisted = readPersistentBest()
+            if persisted > bestPersisted {
+                writePersistentBest(persisted)
+            }
+            currentBestStreak = max(currentBestStreak, persisted, readPersistentBest())
+
             GameStats.shared.recordRound(
                 game: .beatclock,
                 difficulty: mapDifficulty(difficulty),
@@ -465,13 +496,11 @@ struct BeatTheClockGameView: View {
                 currentBestStreak: currentBestStreak
             )
             let generator = UINotificationFeedbackGenerator(); generator.notificationOccurred(.success)
-
-            // Jesus bonus popup trigger
-            if isJesusName(entryName: targetLabel) {
-                showJesusAlert = true
-            }
         } else {
+            // Persistent streak: reset on incorrect
+            writePersistentStreak(0)
             currentStreak = 0
+
             GameStats.shared.recordRound(
                 game: .beatclock,
                 difficulty: mapDifficulty(difficulty),
@@ -489,8 +518,19 @@ struct BeatTheClockGameView: View {
         answered += 1
         if correct {
             score += 1
-            currentStreak += 1
-            if currentStreak > currentBestStreak { currentBestStreak = currentStreak }
+
+            // Persistent streak: increment on correct
+            let persisted = readPersistentStreak() + 1
+            writePersistentStreak(persisted)
+            currentStreak = persisted
+
+            // Update persistent best if needed
+            let bestPersisted = readPersistentBest()
+            if persisted > bestPersisted {
+                writePersistentBest(persisted)
+            }
+            currentBestStreak = max(currentBestStreak, persisted, readPersistentBest())
+
             GameStats.shared.recordRound(
                 game: .beatclock,
                 difficulty: mapDifficulty(difficulty),
@@ -498,11 +538,11 @@ struct BeatTheClockGameView: View {
                 answered: 1,
                 currentBestStreak: currentBestStreak
             )
-            if isJesusName(entryName: targetLabel) {
-                showJesusAlert = true
-            }
         } else {
+            // Persistent streak: reset on incorrect
+            writePersistentStreak(0)
             currentStreak = 0
+
             GameStats.shared.recordRound(
                 game: .beatclock,
                 difficulty: mapDifficulty(difficulty),
@@ -559,12 +599,5 @@ struct BeatTheClockGameView: View {
         case .normal: return .normal
         case .hard: return .hard
         }
-    }
-
-    // MARK: - Jesus detection helper
-    private func isJesusName(entryName: String) -> Bool {
-        let trimmed = entryName.trimmingCharacters(in: .whitespacesAndNewlines)
-        let lower = trimmed.lowercased()
-        return lower == "jesus" || lower == "jesus christ"
     }
 }

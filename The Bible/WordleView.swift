@@ -64,6 +64,9 @@ struct WordleView: View {
     // NEW: Hard Mode toggle (persisted locally; stats still aggregate with normal mode)
     @AppStorage("wordleHardModeEnabled") private var hardModeEnabled: Bool = false
 
+    // NEW: Global Auto‑Win debug toggle
+    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
+
     // All-time (per mode) — now split by difficulty for the in-game scoreboard
     private var allTimeModeSuffix: String { hardModeEnabled ? "hard" : "normal" }
     private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeCorrect_\(allTimeModeSuffix)") }
@@ -86,6 +89,32 @@ struct WordleView: View {
 
     // NEW: confirmation for reveal
     @State private var confirmReveal: Bool = false
+
+    // MARK: - Persistent WORD streak helpers (overall, survives app relaunch)
+    private let persistentStreakKey = "wordlePersistentStreak"
+    private let persistentBestStreakKey = "wordlePersistentBestStreak"
+
+    private func readPersistentStreak() -> Int {
+        return max(0, UserDefaults.standard.integer(forKey: persistentStreakKey))
+    }
+
+    private func writePersistentStreak(_ value: Int) {
+        let v = max(0, value)
+        let defaults = UserDefaults.standard
+        defaults.set(v, forKey: persistentStreakKey)
+        iCloudSyncCoordinator.shared.pushKey(persistentStreakKey)
+    }
+
+    private func readPersistentBest() -> Int {
+        return max(0, UserDefaults.standard.integer(forKey: persistentBestStreakKey))
+    }
+
+    private func writePersistentBest(_ value: Int) {
+        let v = max(0, value)
+        let defaults = UserDefaults.standard
+        defaults.set(v, forKey: persistentBestStreakKey)
+        iCloudSyncCoordinator.shared.pushKey(persistentBestStreakKey)
+    }
 
     // MARK: - Helpers for tokenization
     private static func sanitizeLetters(_ s: String) -> String {
@@ -297,6 +326,17 @@ struct WordleView: View {
                         }
                         .padding(.horizontal)
                         .padding(.top, 2)
+
+                        // DEBUG: WIN button
+                        if debugAutoWinEnabled, started, !roundOver {
+                            Button("WIN") {
+                                endRound(win: true)
+                            }
+                            .buttonStyle(ModernPillButtonStyle(tint: .red))
+                            .controlSize(.large)
+                            .padding(.top, 6)
+                            .accessibilityLabel("Win this round")
+                        }
                     }
                 }
             }
@@ -358,6 +398,14 @@ struct WordleView: View {
             Button("Cancel", role: .cancel) { }
         } message: {
             Text("This will reveal the answer and count this round as a loss.")
+        }
+        // Seed session streaks from persistent values so they survive navigation/relaunch
+        .onAppear {
+            let persistedCurrent = readPersistentStreak()
+            currentStreak = persistedCurrent
+            // Keep session best at least as high as persisted best
+            let persistedBest = readPersistentBest()
+            currentBestStreak = max(currentBestStreak, persistedBest)
         }
     }
 
@@ -934,10 +982,20 @@ struct WordleView: View {
         answered += 1
         if win {
             score += 1
-            currentStreak += 1
-            if currentStreak > currentBestStreak {
-                currentBestStreak = currentStreak
+
+            // Persistent streak: increment on win
+            let persisted = readPersistentStreak() + 1
+            writePersistentStreak(persisted)
+            currentStreak = persisted
+
+            // Update persistent best if needed
+            let bestPersisted = readPersistentBest()
+            if persisted > bestPersisted {
+                writePersistentBest(persisted)
             }
+            // Keep session best in sync
+            currentBestStreak = max(currentBestStreak, persisted, readPersistentBest())
+
             message = (mode == .daily) ? "You got it! See you tomorrow." : "You got it!"
             GameStats.shared.recordWordleResult(
                 type: (mode == .daily ? .daily : .free),
@@ -947,7 +1005,10 @@ struct WordleView: View {
                 currentBestStreak: currentBestStreak
             )
         } else {
+            // Persistent streak: reset on loss (includes Reveal)
+            writePersistentStreak(0)
             currentStreak = 0
+
             message = "The word was \(target)."
             GameStats.shared.recordWordleResult(
                 type: (mode == .daily ? .daily : .free),
@@ -977,6 +1038,28 @@ struct WordleView: View {
         if mode == .daily {
             UserDefaults.standard.set(todayKey, forKey: "wordleDailyCompletedDay")
             UserDefaults.standard.set(target, forKey: "wordleDailyTarget")
+            // NEW: Push daily flags to iCloud KVS so other devices see completion/target
+            iCloudSyncCoordinator.shared.pushKey("wordleDailyCompletedDay")
+            iCloudSyncCoordinator.shared.pushKey("wordleDailyTarget")
+
+            // NEW: Persist a per-day result summary for the Games list row
+            let defaults = UserDefaults.standard
+            let key = "wordleDailyResultMap"
+            struct DailyResult: Codable { let won: Bool; let guesses: Int; let elapsed: Int; let word: String }
+            var map: [String: DailyResult] = [:]
+            if let data = defaults.data(forKey: key),
+               let decoded = try? JSONDecoder().decode([String: DailyResult].self, from: data) {
+                map = decoded
+            }
+            map[todayKey] = DailyResult(won: win, guesses: rowIndex, elapsed: elapsedSeconds, word: target)
+            if let data = try? JSONEncoder().encode(map) {
+                defaults.set(data, forKey: key)
+                // Mirror to iCloud KVS so other devices see the same-day result
+                iCloudSyncCoordinator.shared.pushKey(key)
+            }
+
+            // Nudge any listeners that might want to update immediately
+            NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
         }
     }
 

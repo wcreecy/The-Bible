@@ -15,6 +15,9 @@ struct SettingsDebugUtilitiesView: View {
     // NEW: Debug flag to allow replaying Daily Wordle
     @AppStorage("wordleAllowDailyReplay") private var wordleAllowDailyReplay: Bool = false
 
+    // NEW: Global Auto-Win flag (read by all games)
+    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
+
     @State private var debugAlertTitle: String = ""
     @State private var debugAlertMessage: String = ""
     @State private var showDebugAlert: Bool = false
@@ -23,8 +26,14 @@ struct SettingsDebugUtilitiesView: View {
     var body: some View {
         Section {
             if debugUtilitiesExpanded {
-                // NEW: Wordle debug toggle
+                // NEW: Global debug toggles
                 Group {
+                    Toggle("Auto‑Win Button (Debug)", isOn: $debugAutoWinEnabled)
+                        .tint(.red)
+                    Text("Shows a WIN button in supported games to instantly win the current round.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+
                     Toggle("Allow Daily WORD Replay (Debug)", isOn: $wordleAllowDailyReplay)
                         .tint(.green)
                     Text("When enabled, the Daily WORD can be played again even after completing it today.")
@@ -460,4 +469,3 @@ struct SettingsDebugUtilitiesView: View {
     }
 }
 #endif
-

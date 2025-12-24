@@ -58,7 +58,9 @@ final class BookOrderGameViewModel: ObservableObject {
     @Published var showingCorrectOrder: Bool = false
     @Published var lastSubmittedOrder: [String]? = nil
     
-    @Published var difficulty: BookOrderDifficulty = .normal
+    @Published var difficulty: BookOrderDifficulty = .normal {
+        didSet { seedStreakFromPersistence() }
+    }
     @Published var source: BookSourceScope = .both
     
     private var sliceFirst: String? = nil
@@ -90,12 +92,39 @@ final class BookOrderGameViewModel: ObservableObject {
     var allTimeBestStreak: Int {
         UserDefaults.standard.integer(forKey: keyAllTimeBestStreak)
     }
+
+    // MARK: - Persistent streak helpers (per difficulty)
+    private var persistentStreakKey: String { "bookorderPersistentStreak_\(keySuffix)" }
+    private var persistentBestKey: String { "bookorderPersistentBestStreak_\(keySuffix)" }
+
+    private func readPersistentStreak() -> Int {
+        max(0, UserDefaults.standard.integer(forKey: persistentStreakKey))
+    }
+    private func writePersistentStreak(_ value: Int) {
+        let v = max(0, value)
+        UserDefaults.standard.set(v, forKey: persistentStreakKey)
+        iCloudSyncCoordinator.shared.pushKey(persistentStreakKey)
+    }
+    private func readPersistentBest() -> Int {
+        max(0, UserDefaults.standard.integer(forKey: persistentBestKey))
+    }
+    private func writePersistentBest(_ value: Int) {
+        let v = max(0, value)
+        UserDefaults.standard.set(v, forKey: persistentBestKey)
+        iCloudSyncCoordinator.shared.pushKey(persistentBestKey)
+    }
+    private func seedStreakFromPersistence() {
+        let persisted = readPersistentStreak()
+        currentStreak = persisted
+        let persistedBest = readPersistentBest()
+        currentBestStreak = max(currentBestStreak, persistedBest)
+    }
     
     func startGame() {
         score = 0
         answered = 0
-        currentStreak = 0
-        currentBestStreak = 0
+        // Do NOT reset persistent streaks here; seed from persistence
+        seedStreakFromPersistence()
         showResult = false
         wasCorrect = false
         showingCorrectOrder = false
@@ -283,19 +312,31 @@ final class BookOrderGameViewModel: ObservableObject {
         if currentItems == correctOrder {
             wasCorrect = true
             score += 1
-            currentStreak += 1
-            if currentStreak > currentBestStreak {
-                currentBestStreak = currentStreak
+
+            // Persistent streak: increment on correct
+            let persisted = readPersistentStreak() + 1
+            writePersistentStreak(persisted)
+            currentStreak = persisted
+
+            // Update persistent best if needed
+            let bestPersisted = readPersistentBest()
+            if persisted > bestPersisted {
+                writePersistentBest(persisted)
             }
+            currentBestStreak = max(currentBestStreak, persisted, readPersistentBest())
         } else {
             wasCorrect = false
+
+            // Persistent streak: reset on incorrect
+            writePersistentStreak(0)
             currentStreak = 0
+
             showingCorrectOrder = true
         }
         
         answered += 1
         
-        updateAllTime(correct: wasCorrect ? 1 : 0, answered: 1, streak: currentStreak)
+        updateAllTime(correct: wasCorrect ? 1 : 0, answered: 1, streak: currentBestStreak)
         
         showResult = true
     }
@@ -316,7 +357,7 @@ final class BookOrderGameViewModel: ObservableObject {
             difficulty: statsDifficulty,
             correct: correct,
             answered: answered,
-            currentBestStreak: max(streak, allTimeBestStreak)
+            currentBestStreak: streak
         )
     }
     

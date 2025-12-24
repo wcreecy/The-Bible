@@ -156,6 +156,18 @@ extension iCloudSyncCoordinator {
         "wordleDailySolvedDays"
     ]
 
+    // NEW: WORD daily result summary map (JSON Data [String: DailyResult])
+    // We treat it as a raw Data key like other JSON maps, but with custom merge below.
+    static let wordleDailyResultKeys: [String] = [
+        "wordleDailyResultMap"
+    ]
+
+    // NEW: WORD daily completion flags (String values)
+    static let wordleDailyFlagKeys: [String] = [
+        "wordleDailyCompletedDay",  // yyyy-MM-dd
+        "wordleDailyTarget"        // answer word
+    ]
+
     // Game daily + last played keys
     static let gameDailyAndLastPlayedKeys: [String] = [
         "gamesDailyAnswered",      // JSON [String: Int]
@@ -197,11 +209,12 @@ extension iCloudSyncCoordinator {
 
     // Local -> KVS for games
     func mirrorGamesKeyToKVS(_ key: String) {
-        if Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) || Self.wordleSolvedMapKeys.contains(key) {
+        if Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) || Self.wordleSolvedMapKeys.contains(key) || Self.wordleDailyResultKeys.contains(key) || Self.wordleDailyFlagKeys.contains(key) {
             switch key {
             case "gamesDailyAnswered", "gamesDailyCorrect",
                  "quizPerBookAnsweredMap", "quizPerBookCorrectMap",
-                 "wordleDailySolvedDays":
+                 "wordleDailySolvedDays",
+                 "wordleDailyResultMap":
                 let localData = defaults.data(forKey: key)
                 let remoteData = kvs.object(forKey: key) as? Data
                 if localData != remoteData {
@@ -211,6 +224,18 @@ extension iCloudSyncCoordinator {
                         kvs.removeObject(forKey: key)
                     }
                 }
+
+            case "wordleDailyCompletedDay", "wordleDailyTarget":
+                let local = defaults.string(forKey: key)
+                let remote = kvs.string(forKey: key)
+                if local != remote {
+                    if let s = local {
+                        kvs.set(s, forKey: key)
+                    } else if remote != nil {
+                        kvs.removeObject(forKey: key)
+                    }
+                }
+
             case "gamesLastPlayedAt":
                 let local = defaults.double(forKey: key)
                 let remoteObj = kvs.object(forKey: key) as? NSNumber
@@ -245,7 +270,7 @@ extension iCloudSyncCoordinator {
 
     // KVS -> Local for games
     func mergeGamesIncoming(forKey key: String) {
-        if Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) || Self.wordleSolvedMapKeys.contains(key) {
+        if Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) || Self.wordleSolvedMapKeys.contains(key) || Self.wordleDailyResultKeys.contains(key) || Self.wordleDailyFlagKeys.contains(key) {
             switch key {
             case "gamesDailyAnswered", "gamesDailyCorrect",
                  "quizPerBookAnsweredMap", "quizPerBookCorrectMap",
@@ -267,6 +292,45 @@ extension iCloudSyncCoordinator {
                     // Remote deletion: clear local value
                     defaults.removeObject(forKey: key)
                 }
+
+            case "wordleDailyResultMap":
+                // Merge [String: DailyResult] by day key, preferring remote for overlapping days
+                if let remoteData = kvs.object(forKey: key) as? Data {
+                    let localData = defaults.data(forKey: key)
+                    typealias DailyResult = [String: Any] // placeholder for decode attempt
+                    // Decode remote as [String: AnyCodable]-like by using a concrete struct
+                    struct Result: Codable { let won: Bool; let guesses: Int; let elapsed: Int; let word: String }
+                    let remoteMap = decode(remoteData, as: [String: Result].self) ?? [:]
+                    let localMap = decode(localData, as: [String: Result].self) ?? [:]
+                    var merged = localMap
+                    for (k, v) in remoteMap {
+                        merged[k] = v // remote wins for overlapping keys
+                    }
+                    if merged.isEmpty {
+                        defaults.removeObject(forKey: key)
+                    } else if let data = try? JSONEncoder().encode(merged) {
+                        defaults.set(data, forKey: key)
+                    }
+                } else {
+                    // Remote deletion: clear local
+                    defaults.removeObject(forKey: key)
+                }
+
+            case "wordleDailyCompletedDay", "wordleDailyTarget":
+                if kvs.object(forKey: key) == nil {
+                    defaults.removeObject(forKey: key)
+                } else {
+                    let remoteVal = kvs.string(forKey: key) ?? ""
+                    let localVal = defaults.string(forKey: key) ?? ""
+                    if remoteVal != localVal {
+                        if remoteVal.isEmpty {
+                            defaults.removeObject(forKey: key)
+                        } else {
+                            defaults.set(remoteVal, forKey: key)
+                        }
+                    }
+                }
+
             case "gamesLastPlayedAt":
                 if kvs.object(forKey: key) == nil {
                     // Remote deletion
@@ -406,8 +470,12 @@ extension iCloudSyncCoordinator {
         defaults.removeObject(forKey: "wordleDailySolvedDays")
         kvs.removeObject(forKey: "wordleDailySolvedDays")
 
+        // NEW: Clear WORD daily result summaries
+        defaults.removeObject(forKey: "wordleDailyResultMap")
+        kvs.removeObject(forKey: "wordleDailyResultMap")
+
         // Enqueue these for sync (they are in allKnownKeys)
-        enqueueKeysForSync(overallMapKeys + ["gamesLastPlayedAt", "gamesLastPlayedGameName", "wordleDailySolvedDays"])
+        enqueueKeysForSync(overallMapKeys + ["gamesLastPlayedAt", "gamesLastPlayedGameName", "wordleDailySolvedDays", "wordleDailyResultMap"])
 
         // 2b) Clear per-WORD mode daily maps (local-only keys used by Games tab scope)
         for modeKey in ["word_normal", "word_hard"] {
@@ -560,4 +628,3 @@ extension iCloudSyncCoordinator {
         return merged
     }
 }
-

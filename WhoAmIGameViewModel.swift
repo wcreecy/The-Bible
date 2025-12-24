@@ -42,7 +42,9 @@ final class WhoAmIGameViewModel: ObservableObject {
     // Start screen state
     @Published var started: Bool = false
     @Published var mode: Mode = .names
-    @Published var difficulty: Difficulty = .easy
+    @Published var difficulty: Difficulty = .easy {
+        didSet { seedStreakFromPersistence() }
+    }
     @Published var howToExpanded: Bool = false
     @Published var difficultyExpanded: Bool = false
 
@@ -82,8 +84,38 @@ final class WhoAmIGameViewModel: ObservableObject {
     // NEW: Jesus bonus alert flag (bound in view)
     @Published var showJesusBonusAlert: Bool = false
 
+    // MARK: - Persistent streak helpers (per difficulty)
+    private var persistentStreakKey: String { "whoamiPersistentStreak_\(difficulty.rawValue)" }
+    private var persistentBestKey: String { "whoamiPersistentBestStreak_\(difficulty.rawValue)" }
+
+    private func readPersistentStreak() -> Int {
+        max(0, UserDefaults.standard.integer(forKey: persistentStreakKey))
+    }
+    private func writePersistentStreak(_ value: Int) {
+        let v = max(0, value)
+        UserDefaults.standard.set(v, forKey: persistentStreakKey)
+        iCloudSyncCoordinator.shared.pushKey(persistentStreakKey)
+    }
+    private func readPersistentBest() -> Int {
+        max(0, UserDefaults.standard.integer(forKey: persistentBestKey))
+    }
+    private func writePersistentBest(_ value: Int) {
+        let v = max(0, value)
+        UserDefaults.standard.set(v, forKey: persistentBestKey)
+        iCloudSyncCoordinator.shared.pushKey(persistentBestKey)
+    }
+    private func seedStreakFromPersistence() {
+        let persisted = readPersistentStreak()
+        currentStreak = persisted
+        let persistedBest = readPersistentBest()
+        currentBestStreak = max(currentBestStreak, persistedBest)
+    }
+
     // Load data
     func onAppear() {
+        // Seed streaks from persisted values so they survive navigation/relaunch
+        seedStreakFromPersistence()
+
         Task {
             if entries.isEmpty {
                 let names = await GameDataLoaders.loadNamesAsync()
@@ -108,8 +140,8 @@ final class WhoAmIGameViewModel: ObservableObject {
     func startGame() {
         score = 0
         answered = 0
-        currentStreak = 0
-        currentBestStreak = 0
+        // Do NOT reset persistent streaks here; seed from persistence
+        seedStreakFromPersistence()
         roundOver = false
         showReveal = false
         selectedChoice = nil
@@ -169,8 +201,19 @@ final class WhoAmIGameViewModel: ObservableObject {
         let isCorrect = (choice == correctChoice)
         if isCorrect {
             score += 1
-            currentStreak += 1
-            currentBestStreak = max(currentBestStreak, currentStreak)
+
+            // Persistent streak: increment on correct
+            let persisted = readPersistentStreak() + 1
+            writePersistentStreak(persisted)
+            currentStreak = persisted
+
+            // Update persistent best if needed
+            let bestPersisted = readPersistentBest()
+            if persisted > bestPersisted {
+                writePersistentBest(persisted)
+            }
+            currentBestStreak = max(currentBestStreak, persisted, readPersistentBest())
+
             GameStats.shared.recordRound(
                 game: .whoami,
                 difficulty: difficulty.statsDifficulty,
@@ -180,13 +223,14 @@ final class WhoAmIGameViewModel: ObservableObject {
             )
 
             // Jesus bonus popup trigger:
-            // - Names mode: prompt is the name; check if it's Jesus
-            // - Reverse mode: correctChoice is the name; check if it's Jesus
             if (mode == .names && isJesusName(promptTitle)) || (mode == .reverse && isJesusName(correctChoice)) {
                 showJesusBonusAlert = true
             }
         } else {
+            // Persistent streak: reset on incorrect
+            writePersistentStreak(0)
             currentStreak = 0
+
             GameStats.shared.recordRound(
                 game: .whoami,
                 difficulty: difficulty.statsDifficulty,
@@ -203,7 +247,7 @@ final class WhoAmIGameViewModel: ObservableObject {
         guard !roundOver else { return }
         stopTimer()
         answered += 1
-        currentStreak = 0
+        // Do NOT reset persistent streak on skip/timeout (only on explicit incorrect selection)
         GameStats.shared.recordRound(
             game: .whoami,
             difficulty: difficulty.statsDifficulty,
@@ -293,4 +337,3 @@ final class WhoAmIGameViewModel: ObservableObject {
         return lower == "jesus" || lower == "jesus christ"
     }
 }
-
