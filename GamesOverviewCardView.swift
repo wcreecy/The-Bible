@@ -57,6 +57,10 @@ struct GamesOverviewCardView: View {
     @State private var weakBooksScope: Int = 0 // 0=30 days, 1=60 days
     @State private var weakBooksMinAttempts: Int = 5
 
+    // Drill-down: Bible Quiz genre -> per-book sheet
+    @State private var showGenreDrill: Bool = false
+    @State private var selectedGenre: String? = nil
+
     // MARK: - Play Now routing
 
     private func postSwitchToGamesTab() {
@@ -467,14 +471,48 @@ struct GamesOverviewCardView: View {
                                             default: return .gray
                                             }
                                         }()
-                                        MetricChip(
-                                            title: row.genre,
-                                            value: "\(Int(round(row.pct)))% (\(row.correct)/\(row.answered))",
-                                            tint: tint
-                                        )
+                                        Button {
+                                            selectedGenre = row.genre
+                                            showGenreDrill = true
+                                        } label: {
+                                            MetricChip(
+                                                title: row.genre,
+                                                value: "\(Int(round(row.pct)))% (\(row.correct)/\(row.answered))",
+                                                tint: tint
+                                            )
+                                        }
+                                        .buttonStyle(.plain)
+                                        .accessibilityLabel("Show accuracy by book for \(row.genre)")
                                     }
                                 }
                                 .padding(.horizontal, 2)
+                            }
+                        }
+                    }
+
+                    // NEW: Hangman specific — Accuracy by Category (People/Places/Books)
+                    if selectedGame == "Hangman" {
+                        let rows = GameStats.shared.hangmanAccuracyByCategory()
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Accuracy by Category")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            HStack(spacing: 8) {
+                                ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                                    let tint: Color = {
+                                        switch row.category {
+                                        case "People": return .orange
+                                        case "Places": return .teal
+                                        case "Books": return .purple
+                                        default: return .gray
+                                        }
+                                    }()
+                                    MetricChip(
+                                        title: row.category,
+                                        value: "\(Int(round(row.pct)))% (\(row.correct)/\(row.answered))",
+                                        tint: tint
+                                    )
+                                }
                             }
                         }
                     }
@@ -686,6 +724,47 @@ struct GamesOverviewCardView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
             version &+= 1
+        }
+        // Drill-down sheet for Bible Quiz genre -> per-book accuracy
+        .sheet(isPresented: $showGenreDrill) {
+            NavigationStack {
+                VStack(alignment: .leading, spacing: 12) {
+                    if let g = selectedGenre {
+                        let rows = GameStats.shared.quizAccuracyByBook(inGenre: g)
+                        if rows.isEmpty {
+                            ContentUnavailableView("No data for \(g)", systemImage: "book")
+                        } else {
+                            List {
+                                ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                                    HStack {
+                                        Text(row.book)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        Text("\(Int(round(row.pct)))%")
+                                            .font(.footnote.weight(.semibold))
+                                            .monospacedDigit()
+                                            .foregroundStyle(Color.gamerScoreColor(for: row.pct))
+                                            .frame(width: 56, alignment: .trailing)
+                                        Text("(\(row.correct)/\(row.answered))")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                            .frame(width: 88, alignment: .trailing)
+                                    }
+                                }
+                            }
+                            .listStyle(.insetGrouped)
+                        }
+                    } else {
+                        ContentUnavailableView("No genre selected", systemImage: "tag")
+                    }
+                }
+                .navigationTitle(selectedGenre ?? "Genre")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Close") { showGenreDrill = false }
+                    }
+                }
+            }
         }
     }
 

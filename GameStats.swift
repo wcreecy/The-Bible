@@ -1161,5 +1161,68 @@ final class GameStats: ObservableObject {
         }
         return keys
     }
-}
 
+    // MARK: - NEW: Hangman per-category (People/Places/Books)
+
+    private func loadHangmanPerCategoryMaps() -> (answered: [String: Int], correct: [String: Int]) {
+        let a: [String: Int] = loadJSONMap(forKey: "hangmanPerCategoryAnsweredMap")
+        let c: [String: Int] = loadJSONMap(forKey: "hangmanPerCategoryCorrectMap")
+        return (a, c)
+    }
+
+    func recordHangmanCategory(category: String, answered addAnswered: Int, correct addCorrect: Int) {
+        let trimmed = category.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
+
+        var answeredMap: [String: Int] = loadJSONMap(forKey: "hangmanPerCategoryAnsweredMap")
+        if addAnswered != 0 {
+            answeredMap[trimmed, default: 0] = max(0, (answeredMap[trimmed] ?? 0) + max(0, addAnswered))
+            saveJSONMap(answeredMap, forKey: "hangmanPerCategoryAnsweredMap")
+            iCloudSyncCoordinator.shared.pushKey("hangmanPerCategoryAnsweredMap")
+        }
+
+        var correctMap: [String: Int] = loadJSONMap(forKey: "hangmanPerCategoryCorrectMap")
+        if addCorrect != 0 {
+            correctMap[trimmed, default: 0] = max(0, (correctMap[trimmed] ?? 0) + max(0, addCorrect))
+            saveJSONMap(correctMap, forKey: "hangmanPerCategoryCorrectMap")
+            iCloudSyncCoordinator.shared.pushKey("hangmanPerCategoryCorrectMap")
+        }
+
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
+    func hangmanAccuracyByCategory() -> [(category: String, answered: Int, correct: Int, pct: Double)] {
+        let (aMap, cMap) = loadHangmanPerCategoryMaps()
+        // Fixed order: People, Places, Books
+        let order = ["People", "Places", "Books"]
+        return order.map { cat in
+            let a = max(0, aMap[cat] ?? 0)
+            let c = max(0, cMap[cat] ?? 0)
+            let pct = a > 0 ? min(100, max(0, (Double(c) / Double(a)) * 100.0)) : 0
+            return (cat, a, c, pct)
+        }
+    }
+
+    // MARK: - NEW: Bible Quiz per-genre drill-down (book-level)
+    func quizAccuracyByBook(inGenre genreName: String) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        let (answeredMap, correctMap) = loadQuizPerBookMaps()
+        // Build from canonical books list so we include books with zero attempts (e.g., Genesis, Exodus).
+        let allCanonicalBooks = BibleData.books.map { $0.name }
+        var rows: [(String, Int, Int, Double)] = []
+        for b in allCanonicalBooks {
+            let genre = StatsSeriesBuilder.genreForBook(b).rawValue
+            guard genre == genreName else { continue }
+            let a = max(0, answeredMap[b] ?? 0)
+            let c = max(0, correctMap[b] ?? 0)
+            // Include even when a == 0 so the list matches Genre Distribution behavior.
+            let pct = a > 0 ? min(100, max(0, (Double(c) / Double(a)) * 100.0)) : 0
+            rows.append((b, a, c, pct))
+        }
+        // Sort by canonical order
+        let canonicalPos = Dictionary(uniqueKeysWithValues: allCanonicalBooks.enumerated().map { ($1, $0) })
+        rows.sort { lhs, rhs in
+            (canonicalPos[lhs.0] ?? .max) < (canonicalPos[rhs.0] ?? .max)
+        }
+        return rows
+    }
+}

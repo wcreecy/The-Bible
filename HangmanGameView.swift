@@ -304,6 +304,7 @@ struct HangmanGameView: View {
     @ViewBuilder
     private var inGameSection: some View {
         roundHeader
+            .padding(.horizontal, 4) // nudge header in a bit more on iPhone
 
         GameScoreboardCard(
             currentCorrect: score,
@@ -319,6 +320,7 @@ struct HangmanGameView: View {
             totalPieces: 10
         )
         .frame(height: drawingHeight)
+        .padding(.horizontal, 12) // inset the board so it doesn’t touch the device edges
         .padding(.top, 0)
 
         Text(spacedDisplayWord())
@@ -332,6 +334,7 @@ struct HangmanGameView: View {
             .foregroundStyle(wrongGuesses >= maxWrong - 1 ? .red : .secondary)
 
         keyboardView()
+            .padding(.horizontal, 6) // pull keys (Q/P columns) in from the edges
             .padding(.top, 8)
 
         if roundOver {
@@ -591,6 +594,7 @@ struct HangmanGameView: View {
         answered += 1
         if win { score += 1 }
 
+        // Persistent streak updates
         if win {
             // Persistent streak: increment on win
             let persisted = readPersistentStreak() + 1
@@ -602,32 +606,35 @@ struct HangmanGameView: View {
             if persisted > bestPersisted {
                 writePersistentBest(persisted)
             }
-            // Keep session best in sync
             currentBestStreak = max(currentBestStreak, persisted, readPersistentBest())
 
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
-
-            GameStats.shared.recordRound(
-                game: .hangman,
-                difficulty: mapDifficulty(difficulty),
-                correct: 1,
-                answered: 1,
-                currentBestStreak: currentBestStreak
-            )
         } else {
             // Persistent streak: reset on loss
             writePersistentStreak(0)
             currentStreak = 0
+        }
 
-            GameStats.shared.recordRound(
-                game: .hangman,
-                difficulty: mapDifficulty(difficulty),
-                correct: 0,
+        // Record all-time round
+        GameStats.shared.recordRound(
+            game: .hangman,
+            difficulty: mapDifficulty(difficulty),
+            correct: win ? 1 : 0,
+            answered: 1,
+            currentBestStreak: currentBestStreak
+        )
+
+        // NEW: Record per-category (People/Places/Books) accuracy
+        if currentRoundCategory != .all {
+            GameStats.shared.recordHangmanCategory(
+                category: currentRoundCategory.rawValue,
                 answered: 1,
-                currentBestStreak: currentBestStreak
+                correct: win ? 1 : 0
             )
         }
+
+        // Keep rest of end-of-round flow (reference, etc.) unchanged
     }
 
     private func difficultyKeySuffix() -> String {
@@ -786,10 +793,12 @@ struct HangmanGameView: View {
 
     private func keyboardView() -> some View {
         let keyFontSize: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 22 : 18
-        let keyMinWidth: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 44 : 36
+        // Slightly narrower keys on iPhone to make room for edge padding
+        let keyMinWidth: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 44 : 34
         let keyMinHeight: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 48 : 42
-        let keySpacing: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 10 : 9
-        let rowSpacing: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 12 : 10
+        // Tighten spacing a touch on iPhone so the keyboard fits well with the added insets
+        let keySpacing: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 10 : 8
+        let rowSpacing: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 12 : 9
 
         let qwertyRows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
         let alphaRows = ["ABCDEFG", "HIJKLMN", "OPQRSTU", "VWXYZ"]
