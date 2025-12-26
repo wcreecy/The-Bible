@@ -42,6 +42,11 @@ final class iCloudSyncCoordinator {
     // Ensure start() is performed once per app run
     private var didStart = false
 
+    // MARK: - Reset epoch for Bible stats/sessions
+
+    private let bibleStatsResetEpochKVSKey = "bibleStatsResetEpoch"          // in KVS
+    private let bibleStatsLastSeenEpochLocalKey = "bibleStatsLastSeenResetEpoch" // in local defaults
+
     // MARK: - Logging
 
     private func log(_ message: @autoclosure () -> String) {
@@ -145,20 +150,59 @@ final class iCloudSyncCoordinator {
     }
 
     // Optional: push all known keys now (useful on app background)
-    func pushAllNow() {
+    // Completion is invoked on the main actor after the immediate synchronize finishes.
+    func pushAllNow(completion: (() -> Void)? = nil) {
         log("pushAllNow() — mirroring all known keys. Includes WORD daily: \(Self.wordleSolvedMapKeys + Self.wordleDailyResultKeys + Self.wordleDailyFlagKeys)")
         for key in allKnownKeys {
             mirrorLocalKeyToKVS(key)
         }
-        // Perform an immediate synchronize off-main and stamp lastPushDate.
+        // Perform a single immediate synchronize off-main and stamp lastPushDate.
         let _ = Task.detached {
             NSUbiquitousKeyValueStore.default.synchronize()
             await MainActor.run {
                 iCloudSyncCoordinator.shared.lastPushDate = Date()
+                completion?()
             }
         }
-        // Also keep the debounced path in case additional keys arrive shortly.
-        enqueueKeysForSync(allKnownKeys)
+        // Intentionally do NOT enqueue a debounced sync here to avoid a near-duplicate sync shortly after.
+    }
+
+    // MARK: - Reset helpers (public) — called by Settings
+
+    func resetAllBibleStatsAndSessions() {
+        // 1) Clear local stores (sessions via API so caches/listeners update)
+        ReadingSessionsStore.shared.clearAll()
+        BibleStatsStore.shared.clearAllLocal()
+
+        // 2) Remove KVS copies for Bible stats + sessions keys
+        let kvsKeysToRemove: [String] = [
+            BibleStatsStore.Defaults.keyTotals,
+            BibleStatsStore.Defaults.keyDailyTotals,
+            BibleStatsStore.Defaults.keyDailyTotalsByBook,
+            BibleStatsStore.Defaults.keyVisitedChapters,
+            BibleStatsStore.Defaults.keyLastRead,
+            BibleStatsStore.Defaults.keySeenVersesByChapter,
+            BibleStatsStore.Defaults.keyChapterCompletionDates,
+            "readingSessions"
+        ]
+        for k in kvsKeysToRemove {
+            kvs.removeObject(forKey: k)
+        }
+
+        // 3) Set/reset epoch in both KVS and local so older devices won’t re-populate
+        let now = Date().timeIntervalSince1970
+        kvs.set(now, forKey: bibleStatsResetEpochKVSKey)
+        defaults.set(now, forKey: bibleStatsLastSeenEpochLocalKey)
+
+        // 4) Flush to server (off-main) and notify UI
+        let _ = Task.detached {
+            NSUbiquitousKeyValueStore.default.synchronize()
+            await MainActor.run {
+                iCloudSyncCoordinator.shared.lastPushDate = Date()
+                BibleStatsStore.shared.resetCaches()
+                NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+            }
+        }
     }
 
     // MARK: - Key sets (union)
@@ -174,6 +218,7 @@ final class iCloudSyncCoordinator {
             + Self.verseMatchKeys
             + Self.quizKeys
             + Self.quizPerBookMapKeys    // NEW: include per-book quiz maps
+            + Self.hangmanPerCategoryMapKeys // NEW: include Hangman per-category maps
             + Self.bookOrderKeys
             + Self.whoAmIKeys
             + Self.wordleKeys            // FIX: include Wordle keys so they mirror/merge
@@ -182,6 +227,8 @@ final class iCloudSyncCoordinator {
             + Self.wordleSolvedMapKeys
             + Self.wordleDailyResultKeys
             + Self.wordleDailyFlagKeys
+            // NEW: Include per-game daily maps so second-row metrics sync
+            + Self.perGameDailyMapKeys
         )
     }
 
@@ -209,10 +256,48 @@ final class iCloudSyncCoordinator {
 
         guard let userInfo = note.userInfo else { return }
 
+        // Refine: react only to server/initial sync changes; log/skip quota/account changes.
+        let reasonRaw = userInfo[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int
+        if let reason = reasonRaw {
+            switch reason {
+            case NSUbiquitousKeyValueStoreServerChange,
+                 NSUbiquitousKeyValueStoreInitialSyncChange:
+                break // proceed
+            case NSUbiquitousKeyValueStoreQuotaViolationChange:
+                log("didChangeExternallyNotification — quota violation reported; skipping merge.")
+                return
+            case NSUbiquitousKeyValueStoreAccountChange:
+                log("didChangeExternallyNotification — account change (handled via identity change); skipping merge.")
+                return
+            default:
+                break // unknown reason; proceed conservatively
+            }
+        }
+
         let changedKeys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String] ?? []
         if anyWordDailyKey(changedKeys) {
             let wordKeys = changedKeys.filter { isWordDailyKey($0) }
             log("didChangeExternallyNotification — WORD daily keys changed: \(wordKeys)")
+        }
+
+        // NEW: React immediately to a remote reset epoch while the app is open.
+        if changedKeys.contains(bibleStatsResetEpochKVSKey) {
+            let incoming = kvs.double(forKey: bibleStatsResetEpochKVSKey)
+            if incoming > 0 {
+                let lastSeen = defaults.double(forKey: bibleStatsLastSeenEpochLocalKey)
+                if incoming > lastSeen {
+                    log("KVS change: bibleStatsResetEpoch advanced (\(incoming) > \(lastSeen)) — clearing local Bible stats + sessions now")
+                    // Clear sessions via API (updates caches/listeners and mirrors to KVS)
+                    ReadingSessionsStore.shared.clearAll()
+                    // Clear local Bible stats + caches
+                    BibleStatsStore.shared.clearAllLocal()
+                    // Record last-seen epoch locally to prevent re-clearing
+                    defaults.set(incoming, forKey: bibleStatsLastSeenEpochLocalKey)
+                    // Notify UI
+                    BibleStatsStore.shared.resetCaches()
+                    NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+                }
+            }
         }
 
         // Filter to known data keys; ignore our timestamp companion keys (handled inside domain helpers)
@@ -226,6 +311,8 @@ final class iCloudSyncCoordinator {
             if isGameCounterKey(key)
                 || Self.gameDailyAndLastPlayedKeys.contains(key)
                 || Self.quizPerBookMapKeys.contains(key)
+                || Self.hangmanPerCategoryMapKeys.contains(key)
+                || Self.perGameDailyMapKeys.contains(key)
                 || isWordDailyKey(key) {
                 mergedGameKey = true
             }
@@ -322,9 +409,26 @@ final class iCloudSyncCoordinator {
     #if canImport(UIKit)
     @objc
     func handleAppDidEnterBackground() {
-        // Mirror any differences and coalesce into a single synchronize
-        log("App did enter background — pushAllNow()")
-        pushAllNow()
+        // Begin a background task so the immediate synchronize has time to complete.
+        let app = UIApplication.shared
+        var bgTask: UIBackgroundTaskIdentifier = .invalid
+        bgTask = app.beginBackgroundTask(withName: "KVSFlushOnBackground") {
+            // Expiration handler
+            if bgTask != .invalid {
+                app.endBackgroundTask(bgTask)
+                bgTask = .invalid
+            }
+        }
+
+        log("App did enter background — pushAllNow() with background task")
+
+        // Mirror any differences and perform a single immediate synchronize.
+        pushAllNow { [weak app] in
+            // End background task after the off-main synchronize finishes.
+            if let app, bgTask != .invalid {
+                app.endBackgroundTask(bgTask)
+            }
+        }
     }
     #endif
 
@@ -341,6 +445,8 @@ final class iCloudSyncCoordinator {
         if Self.gameDailyAndLastPlayedKeys.contains(key)
             || isGameCounterKey(key)
             || Self.quizPerBookMapKeys.contains(key)
+            || Self.hangmanPerCategoryMapKeys.contains(key)
+            || Self.perGameDailyMapKeys.contains(key)
             || isWordDailyKey(key) {
             mirrorGamesKeyToKVS(key)
             return
@@ -420,6 +526,8 @@ final class iCloudSyncCoordinator {
         if Self.gameDailyAndLastPlayedKeys.contains(key)
             || isGameCounterKey(key)
             || Self.quizPerBookMapKeys.contains(key)
+            || Self.hangmanPerCategoryMapKeys.contains(key)
+            || Self.perGameDailyMapKeys.contains(key)
             || isWordDailyKey(key) {
             mergeGamesIncoming(forKey: key)
             return
@@ -443,6 +551,22 @@ final class iCloudSyncCoordinator {
         var mergedGameKey = false
         var touchedAny = false
 
+        // Check for a remote Bible stats reset epoch first; if newer than local, clear local data.
+        let incomingEpoch = kvs.double(forKey: bibleStatsResetEpochKVSKey)
+        if incomingEpoch > 0 {
+            let lastSeen = defaults.double(forKey: bibleStatsLastSeenEpochLocalKey)
+            if incomingEpoch > lastSeen {
+                log("Reconcile: Detected newer bibleStatsResetEpoch (\(incomingEpoch) > \(lastSeen)) — clearing local Bible stats + sessions")
+                // Clear sessions via API (updates caches/listeners and KVS)
+                ReadingSessionsStore.shared.clearAll()
+                // Clear Bible stats locally and caches
+                BibleStatsStore.shared.clearAllLocal()
+                touchedAny = true
+                // Record last-seen epoch locally to prevent re-clearing
+                defaults.set(incomingEpoch, forKey: bibleStatsLastSeenEpochLocalKey)
+            }
+        }
+
         // Log presence of WORD daily keys on the server for quick diagnosis
         do {
             let solved = remoteDict.keys.contains("wordleDailySolvedDays") || kvs.object(forKey: "wordleDailySolvedDays") != nil
@@ -459,6 +583,8 @@ final class iCloudSyncCoordinator {
                 if isGameCounterKey(key)
                     || Self.gameDailyAndLastPlayedKeys.contains(key)
                     || Self.quizPerBookMapKeys.contains(key)
+                    || Self.hangmanPerCategoryMapKeys.contains(key)
+                    || Self.perGameDailyMapKeys.contains(key)
                     || isWordDailyKey(key) {
                     mergedGameKey = true
                 }
@@ -470,7 +596,7 @@ final class iCloudSyncCoordinator {
                 continue
             }
 
-            // Handle remote deletions for game daily maps and last played, per-book maps, and WORD daily keys.
+            // Handle remote deletions for game daily maps and last played, per-book maps, per-game daily maps, and WORD daily keys.
             if Self.gameDailyAndLastPlayedKeys.contains(key) {
                 // Clear local copy if present
                 if defaults.object(forKey: key) != nil {
@@ -494,7 +620,17 @@ final class iCloudSyncCoordinator {
                 continue
             }
 
-            if Self.quizPerBookMapKeys.contains(key) {
+            if Self.quizPerBookMapKeys.contains(key) || Self.hangmanPerCategoryMapKeys.contains(key) {
+                if defaults.object(forKey: key) != nil {
+                    defaults.removeObject(forKey: key)
+                    touchedAny = true
+                    mergedGameKey = true
+                }
+                continue
+            }
+
+            // NEW: Handle remote deletion for per-game daily maps (clear local)
+            if Self.perGameDailyMapKeys.contains(key) {
                 if defaults.object(forKey: key) != nil {
                     defaults.removeObject(forKey: key)
                     touchedAny = true

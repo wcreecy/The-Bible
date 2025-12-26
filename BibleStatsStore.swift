@@ -58,6 +58,19 @@ final class BibleStatsStore {
         cacheChapterCompletionDates = nil
     }
 
+    // Clear all local Bible stats data (does not touch iCloud; coordinator handles that).
+    func clearAllLocal() {
+        let d = Defaults.provider
+        d.removeObject(forKey: Defaults.keyTotals)
+        d.removeObject(forKey: Defaults.keyDailyTotals)
+        d.removeObject(forKey: Defaults.keyDailyTotalsByBook)
+        d.removeObject(forKey: Defaults.keyVisitedChapters)
+        d.removeObject(forKey: Defaults.keyLastRead)
+        d.removeObject(forKey: Defaults.keySeenVersesByChapter)
+        d.removeObject(forKey: Defaults.keyChapterCompletionDates)
+        resetCaches()
+    }
+
     // MARK: - JSON helpers
 
     func loadJSON<T: Decodable>(key: String, default defaultValue: T) -> T {

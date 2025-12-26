@@ -17,6 +17,12 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
+    // NEW: Hangman per-category maps mirrored via KVS (JSON [String:Int])
+    static let hangmanPerCategoryMapKeys: [String] = [
+        "hangmanPerCategoryAnsweredMap",
+        "hangmanPerCategoryCorrectMap"
+    ]
+
     // Game keys: Beat the Clock
     static let beatClockKeys: [String] = {
         // Include both legacy "medium" and new "normal"
@@ -176,6 +182,22 @@ extension iCloudSyncCoordinator {
         "gamesLastPlayedGameName"  // String
     ]
 
+    // NEW: Per-game (and per-WORD-mode) daily maps (JSON [String:Int]) — now mirrored via KVS
+    static let perGameDailyMapKeys: [String] = {
+        let gameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","word"]
+        var keys: [String] = []
+        for g in gameKeys {
+            keys.append("gamesDailyAnswered_\(g)")
+            keys.append("gamesDailyCorrect_\(g)")
+        }
+        // WORD per-mode daily maps (Normal/Hard)
+        for modeKey in ["word_normal", "word_hard"] {
+            keys.append("gamesDailyAnswered_\(modeKey)")
+            keys.append("gamesDailyCorrect_\(modeKey)")
+        }
+        return keys
+    }()
+
     // Timestamp helpers (for LWW game keys)
     func tsKey(for key: String) -> String { "__ts__\(key)" }
 
@@ -209,10 +231,19 @@ extension iCloudSyncCoordinator {
 
     // Local -> KVS for games
     func mirrorGamesKeyToKVS(_ key: String) {
-        if Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) || Self.wordleSolvedMapKeys.contains(key) || Self.wordleDailyResultKeys.contains(key) || Self.wordleDailyFlagKeys.contains(key) {
+        if Self.gameDailyAndLastPlayedKeys.contains(key)
+            || Self.quizPerBookMapKeys.contains(key)
+            || Self.hangmanPerCategoryMapKeys.contains(key)
+            || Self.perGameDailyMapKeys.contains(key)
+            || Self.wordleSolvedMapKeys.contains(key)
+            || Self.wordleDailyResultKeys.contains(key)
+            || Self.wordleDailyFlagKeys.contains(key) {
             switch key {
             case "gamesDailyAnswered", "gamesDailyCorrect",
                  "quizPerBookAnsweredMap", "quizPerBookCorrectMap",
+                 "hangmanPerCategoryAnsweredMap", "hangmanPerCategoryCorrectMap",
+                 // NEW: per-game daily maps
+                 _ where Self.perGameDailyMapKeys.contains(key),
                  "wordleDailySolvedDays",
                  "wordleDailyResultMap":
                 let localData = defaults.data(forKey: key)
@@ -270,10 +301,19 @@ extension iCloudSyncCoordinator {
 
     // KVS -> Local for games
     func mergeGamesIncoming(forKey key: String) {
-        if Self.gameDailyAndLastPlayedKeys.contains(key) || Self.quizPerBookMapKeys.contains(key) || Self.wordleSolvedMapKeys.contains(key) || Self.wordleDailyResultKeys.contains(key) || Self.wordleDailyFlagKeys.contains(key) {
+        if Self.gameDailyAndLastPlayedKeys.contains(key)
+            || Self.quizPerBookMapKeys.contains(key)
+            || Self.hangmanPerCategoryMapKeys.contains(key)
+            || Self.perGameDailyMapKeys.contains(key)
+            || Self.wordleSolvedMapKeys.contains(key)
+            || Self.wordleDailyResultKeys.contains(key)
+            || Self.wordleDailyFlagKeys.contains(key) {
             switch key {
             case "gamesDailyAnswered", "gamesDailyCorrect",
                  "quizPerBookAnsweredMap", "quizPerBookCorrectMap",
+                 "hangmanPerCategoryAnsweredMap", "hangmanPerCategoryCorrectMap",
+                 // NEW: per-game daily maps
+                 _ where Self.perGameDailyMapKeys.contains(key),
                  "wordleDailySolvedDays":
                 if let remoteData = kvs.object(forKey: key) as? Data {
                     // If the remote map decodes to empty {}, treat as a reset: clear local.
@@ -297,8 +337,6 @@ extension iCloudSyncCoordinator {
                 // Merge [String: DailyResult] by day key, preferring remote for overlapping days
                 if let remoteData = kvs.object(forKey: key) as? Data {
                     let localData = defaults.data(forKey: key)
-                    typealias DailyResult = [String: Any] // placeholder for decode attempt
-                    // Decode remote as [String: AnyCodable]-like by using a concrete struct
                     struct Result: Codable { let won: Bool; let guesses: Int; let elapsed: Int; let word: String }
                     let remoteMap = decode(remoteData, as: [String: Result].self) ?? [:]
                     let localMap = decode(localData, as: [String: Result].self) ?? [:]
@@ -477,10 +515,14 @@ extension iCloudSyncCoordinator {
         // Enqueue these for sync (they are in allKnownKeys)
         enqueueKeysForSync(overallMapKeys + ["gamesLastPlayedAt", "gamesLastPlayedGameName", "wordleDailySolvedDays", "wordleDailyResultMap"])
 
-        // 2b) Clear per-WORD mode daily maps (local-only keys used by Games tab scope)
+        // 2b) Clear per-WORD mode daily maps (now mirrored via KVS too)
         for modeKey in ["word_normal", "word_hard"] {
-            defaults.removeObject(forKey: "gamesDailyAnswered_\(modeKey)")
-            defaults.removeObject(forKey: "gamesDailyCorrect_\(modeKey)")
+            let aKey = "gamesDailyAnswered_\(modeKey)"
+            let cKey = "gamesDailyCorrect_\(modeKey)"
+            defaults.removeObject(forKey: aKey)
+            defaults.removeObject(forKey: cKey)
+            kvs.removeObject(forKey: aKey)
+            kvs.removeObject(forKey: cKey)
         }
 
         // 2c) Clear Bible Quiz per-book analytics (all-time maps mirrored, daily nested local-only)
@@ -492,15 +534,26 @@ extension iCloudSyncCoordinator {
         defaults.removeObject(forKey: "quizPerBookDailyCorrect")
         enqueueKeysForSync(["quizPerBookAnsweredMap", "quizPerBookCorrectMap"])
 
+        // 2c.1) Clear Hangman per-category analytics (all-time maps mirrored)
+        for key in ["hangmanPerCategoryAnsweredMap", "hangmanPerCategoryCorrectMap"] {
+            defaults.removeObject(forKey: key)
+            kvs.removeObject(forKey: key)
+        }
+        enqueueKeysForSync(["hangmanPerCategoryAnsweredMap", "hangmanPerCategoryCorrectMap"])
+
         // 2d) Optional: clear WORD daily completion flags so Daily isn’t “completed” after reset
         defaults.removeObject(forKey: "wordleDailyCompletedDay")
         defaults.removeObject(forKey: "wordleDailyTarget")
 
-        // 3) Clear per-game daily maps (local-only keys; not mirrored to KVS)
+        // 3) Clear per-game daily maps (now mirrored — clear both local and remote)
         let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","word"]
         for g in perGameKeys {
-            defaults.removeObject(forKey: "gamesDailyAnswered_\(g)")
-            defaults.removeObject(forKey: "gamesDailyCorrect_\(g)")
+            let aKey = "gamesDailyAnswered_\(g)"
+            let cKey = "gamesDailyCorrect_\(g)"
+            defaults.removeObject(forKey: aKey)
+            defaults.removeObject(forKey: cKey)
+            kvs.removeObject(forKey: aKey)
+            kvs.removeObject(forKey: cKey)
         }
 
         // 4) Notify UI to recompute all derived metrics to zero (streaks, Qs/day, 7D accuracy, per-game charts, insights)

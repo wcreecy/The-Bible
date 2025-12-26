@@ -77,8 +77,8 @@ extension GameStats {
     }
 
     // NEW: Seed random stats across all games for the last N days (default 31).
-    // This writes both all-time counters and daily maps (overall + per-game).
-    // For WORD (daily/free), it also seeds timing totals for wins and losses.
+    // Ensures per-day coverage for all difficulties per game, and seeds WORD across types and modes.
+    // Writes all-time counters and daily maps (overall + per-game + per-WORD-mode), and pushes keys to iCloud KVS.
     func seedRandomStatsAllGamesLastNDays(days: Int = 31) {
         let defaults = UserDefaults.standard
         let kvs = iCloudSyncCoordinator.shared
@@ -184,6 +184,16 @@ extension GameStats {
             return (correct, answered, bestStreak)
         }
 
+        func addToPerGameDaily(gameKey: String, dayKey: String, answered addA: Int, correct addC: Int) {
+            var aMap = loadIntMap(forKey: "gamesDailyAnswered_\(gameKey)")
+            aMap[dayKey, default: 0] = max(0, (aMap[dayKey] ?? 0) + max(0, addA))
+            saveIntMap(aMap, forKey: "gamesDailyAnswered_\(gameKey)", pushToKVS: true)
+
+            var cMap = loadIntMap(forKey: "gamesDailyCorrect_\(gameKey)")
+            cMap[dayKey, default: 0] = max(0, (cMap[dayKey] ?? 0) + max(0, addC))
+            saveIntMap(cMap, forKey: "gamesDailyCorrect_\(gameKey)", pushToKVS: true)
+        }
+
         let cal = Calendar.autoupdatingCurrent
         let startOfToday = cal.startOfDay(for: Date())
 
@@ -194,23 +204,7 @@ extension GameStats {
             var overallAnsweredForDay = 0
             var overallCorrectForDay = 0
 
-            // Helper to add to per-game daily maps
-            func addToPerGameDaily(gameKey: String, answered addA: Int, correct addC: Int) {
-                // Answered
-                var aMap = loadIntMap(forKey: "gamesDailyAnswered_\(gameKey)")
-                aMap[dayKey, default: 0] = max(0, (aMap[dayKey] ?? 0) + max(0, addA))
-                saveIntMap(aMap, forKey: "gamesDailyAnswered_\(gameKey)", pushToKVS: false)
-
-                // Correct
-                var cMap = loadIntMap(forKey: "gamesDailyCorrect_\(gameKey)")
-                cMap[dayKey, default: 0] = max(0, (cMap[dayKey] ?? 0) + max(0, addC))
-                saveIntMap(cMap, forKey: "gamesDailyCorrect_\(gameKey)", pushToKVS: false)
-
-                overallAnsweredForDay += max(0, addA)
-                overallCorrectForDay += max(0, addC)
-            }
-
-            // Seed standard games
+            // Seed standard games — ensure at least one round per difficulty each day, plus random extras.
             let standardGames: [(GameID, [Difficulty], Int)] = [
                 (.quiz,      [.easy, .normal, .hard], 12),
                 (.hangman,   [.easy, .normal, .hard], 10),
@@ -221,16 +215,13 @@ extension GameStats {
             ]
 
             for (game, diffs, maxQ) in standardGames {
-                let rounds = Int.random(in: 1...3)
                 var gameAnswered = 0
                 var gameCorrect = 0
                 let gKey = gameKey(for: game)
 
-                for _ in 0..<rounds {
-                    let d = diffs.randomElement() ?? diffs.first!
+                // Guarantee coverage: one round per difficulty
+                for d in diffs {
                     let r = rollRound(maxQ: maxQ)
-
-                    // Increment all-time counters
                     if let suf = suffix(for: game, difficulty: d) {
                         let pfx: String
                         switch game {
@@ -240,63 +231,199 @@ extension GameStats {
                         case .versematch: pfx = "versematch"
                         case .bookorder: pfx = "bookorder"
                         case .whoami: pfx = "whoami"
-                        case .wordle: pfx = "wordle" // not used here
+                        case .wordle: pfx = "wordle"
                         }
                         incInt("\(pfx)AllTimeCorrect_\(suf)", by: r.correct)
                         incInt("\(pfx)AllTimeAnswered_\(suf)", by: r.answered)
                         maxInt("\(pfx)AllTimeBestStreak_\(suf)", candidate: r.bestStreak)
                     }
+                    gameAnswered += r.answered
+                    gameCorrect += r.correct
+                }
 
+                // Extra random rounds for variability (0...2)
+                let extraRounds = Int.random(in: 0...2)
+                for _ in 0..<extraRounds {
+                    let d = diffs.randomElement() ?? diffs.first!
+                    let r = rollRound(maxQ: maxQ)
+                    if let suf = suffix(for: game, difficulty: d) {
+                        let pfx: String
+                        switch game {
+                        case .quiz: pfx = "quiz"
+                        case .hangman: pfx = "hangman"
+                        case .beatclock: pfx = "beatclock"
+                        case .versematch: pfx = "versematch"
+                        case .bookorder: pfx = "bookorder"
+                        case .whoami: pfx = "whoami"
+                        case .wordle: pfx = "wordle"
+                        }
+                        incInt("\(pfx)AllTimeCorrect_\(suf)", by: r.correct)
+                        incInt("\(pfx)AllTimeAnswered_\(suf)", by: r.answered)
+                        maxInt("\(pfx)AllTimeBestStreak_\(suf)", candidate: r.bestStreak)
+                    }
                     gameAnswered += r.answered
                     gameCorrect += r.correct
                 }
 
                 // Per-game daily maps
-                addToPerGameDaily(gameKey: gKey, answered: gameAnswered, correct: gameCorrect)
+                addToPerGameDaily(gameKey: gKey, dayKey: dayKey, answered: gameAnswered, correct: gameCorrect)
+                overallAnsweredForDay += gameAnswered
+                overallCorrectForDay += gameCorrect
             }
 
-            // Seed WORD (Wordle) daily + free
+            // Seed WORD (Wordle): both types (daily/free) and both modes (normal/hard).
             do {
+                enum Mode { case normal, hard }
+                func modeSuffix(_ m: Mode) -> String { m == .normal ? "normal" : "hard" }
+
+                var wordAnsweredCombined = 0
+                var wordCorrectCombined = 0
+
+                // Track best daily win (fewest guesses) for the result map
+                var bestDailyWin: (guesses: Int, elapsed: Int, word: String)? = nil
+                var anyDailyWin = false
+
                 let types: [WordleType] = [.daily, .free]
-                var wordAnswered = 0
-                var wordCorrect = 0
 
                 for t in types {
-                    let rounds = Int.random(in: 0...2) // some days may have no games of a type
-                    let suf = (t == .daily) ? "daily" : "free"
+                    let typeSuf = (t == .daily) ? "daily" : "free"
 
-                    for _ in 0..<rounds {
+                    // Guarantee at least one round for each mode per type
+                    let baseModes: [Mode] = [.normal, .hard]
+                    for m in baseModes {
                         let won = Bool.random()
                         let guesses = won ? Int.random(in: 1...6) : 6
                         let bestStreak = Int.random(in: 0...6)
-
-                        // All-time counters
-                        incInt("wordleAllTimeCorrect_\(suf)", by: won ? 1 : 0)
-                        incInt("wordleAllTimeAnswered_\(suf)", by: 1)
-                        maxInt("wordleAllTimeBestStreak_\(suf)", candidate: bestStreak)
-
-                        // Guess stats on wins
-                        if won {
-                            incInt("wordleWinsGuessSum_\(suf)", by: guesses)
-                            incInt("wordleWinsOnGuess\(max(1, min(6, guesses)))_\(suf)", by: 1)
-                        }
-
-                        // NEW: timing totals for wins and losses
                         let elapsed = Int.random(in: 20...300)
-                        incInt("wordleTimeTotal_seconds_\(suf)", by: elapsed)
+
+                        // Per-type counters
+                        incInt("wordleAllTimeCorrect_\(typeSuf)", by: won ? 1 : 0)
+                        incInt("wordleAllTimeAnswered_\(typeSuf)", by: 1)
+                        maxInt("wordleAllTimeBestStreak_\(typeSuf)", candidate: bestStreak)
+
+                        // Per-mode counters (aggregates across types)
+                        let mSuf = modeSuffix(m)
+                        incInt("wordleAllTimeCorrect_\(mSuf)", by: won ? 1 : 0)
+                        incInt("wordleAllTimeAnswered_\(mSuf)", by: 1)
+                        maxInt("wordleAllTimeBestStreak_\(mSuf)", candidate: bestStreak)
+
+                        // Guess histograms on wins (per-type + per-mode)
                         if won {
-                            incInt("wordleTimeWins_seconds_\(suf)", by: elapsed)
-                        } else {
-                            incInt("wordleTimeLosses_seconds_\(suf)", by: elapsed)
+                            let g = max(1, min(6, guesses))
+                            incInt("wordleWinsGuessSum_\(typeSuf)", by: g)
+                            incInt("wordleWinsOnGuess\(g)_\(typeSuf)", by: 1)
+
+                            incInt("wordleWinsGuessSum_\(mSuf)", by: g)
+                            incInt("wordleWinsOnGuess\(g)_\(mSuf)", by: 1)
                         }
 
-                        wordAnswered += 1
-                        wordCorrect += won ? 1 : 0
+                        // Timing totals (per-type + per-mode)
+                        incInt("wordleTimeTotal_seconds_\(typeSuf)", by: elapsed)
+                        if won { incInt("wordleTimeWins_seconds_\(typeSuf)", by: elapsed) }
+                        else   { incInt("wordleTimeLosses_seconds_\(typeSuf)", by: elapsed) }
+
+                        incInt("wordleTimeTotal_seconds_\(mSuf)", by: elapsed)
+                        if won { incInt("wordleTimeWins_seconds_\(mSuf)", by: elapsed) }
+                        else   { incInt("wordleTimeLosses_seconds_\(mSuf)", by: elapsed) }
+
+                        // Per-game daily maps (combined WORD)
+                        wordAnsweredCombined += 1
+                        wordCorrectCombined += (won ? 1 : 0)
+
+                        // Per-mode daily maps
+                        let perModeKey = (m == .normal) ? "word_normal" : "word_hard"
+                        addToPerGameDaily(gameKey: perModeKey, dayKey: dayKey, answered: 1, correct: (won ? 1 : 0))
+
+                        // Track daily solved/result for Daily type
+                        if t == .daily, won {
+                            anyDailyWin = true
+                            if bestDailyWin == nil || guesses < bestDailyWin!.guesses {
+                                // Use a simple placeholder target for debug seeding
+                                let targetWord = ["JESUS","GRACE","FAITH","ANGEL","CROSS","ABRAM","SARAH","JONAH","MOSES","DAVID"].randomElement() ?? "JESUS"
+                                bestDailyWin = (guesses, elapsed, targetWord)
+                            }
+                        }
+                    }
+
+                    // Extra random rounds per type (0...2), random mode
+                    let extraRounds = Int.random(in: 0...2)
+                    for _ in 0..<extraRounds {
+                        let m: Mode = Bool.random() ? .normal : .hard
+                        let won = Bool.random()
+                        let guesses = won ? Int.random(in: 1...6) : 6
+                        let bestStreak = Int.random(in: 0...6)
+                        let elapsed = Int.random(in: 20...300)
+                        let mSuf = modeSuffix(m)
+
+                        // Per-type counters
+                        incInt("wordleAllTimeCorrect_\(typeSuf)", by: won ? 1 : 0)
+                        incInt("wordleAllTimeAnswered_\(typeSuf)", by: 1)
+                        maxInt("wordleAllTimeBestStreak_\(typeSuf)", candidate: bestStreak)
+
+                        // Per-mode counters
+                        incInt("wordleAllTimeCorrect_\(mSuf)", by: won ? 1 : 0)
+                        incInt("wordleAllTimeAnswered_\(mSuf)", by: 1)
+                        maxInt("wordleAllTimeBestStreak_\(mSuf)", candidate: bestStreak)
+
+                        // Guess histograms on wins
+                        if won {
+                            let g = max(1, min(6, guesses))
+                            incInt("wordleWinsGuessSum_\(typeSuf)", by: g)
+                            incInt("wordleWinsOnGuess\(g)_\(typeSuf)", by: 1)
+
+                            incInt("wordleWinsGuessSum_\(mSuf)", by: g)
+                            incInt("wordleWinsOnGuess\(g)_\(mSuf)", by: 1)
+                        }
+
+                        // Timings
+                        incInt("wordleTimeTotal_seconds_\(typeSuf)", by: elapsed)
+                        if won { incInt("wordleTimeWins_seconds_\(typeSuf)", by: elapsed) }
+                        else   { incInt("wordleTimeLosses_seconds_\(typeSuf)", by: elapsed) }
+
+                        incInt("wordleTimeTotal_seconds_\(mSuf)", by: elapsed)
+                        if won { incInt("wordleTimeWins_seconds_\(mSuf)", by: elapsed) }
+                        else   { incInt("wordleTimeLosses_seconds_\(mSuf)", by: elapsed) }
+
+                        // Combined and per-mode daily maps
+                        wordAnsweredCombined += 1
+                        wordCorrectCombined += (won ? 1 : 0)
+                        let perModeKey = (m == .normal) ? "word_normal" : "word_hard"
+                        addToPerGameDaily(gameKey: perModeKey, dayKey: dayKey, answered: 1, correct: (won ? 1 : 0))
+
+                        if t == .daily, won {
+                            anyDailyWin = true
+                            if bestDailyWin == nil || guesses < bestDailyWin!.guesses {
+                                let targetWord = ["JESUS","GRACE","FAITH","ANGEL","CROSS","ABRAM","SARAH","JONAH","MOSES","DAVID"].randomElement() ?? "JESUS"
+                                bestDailyWin = (guesses, elapsed, targetWord)
+                            }
+                        }
                     }
                 }
 
                 // Per-game daily maps for WORD (combined key "word")
-                addToPerGameDaily(gameKey: "word", answered: wordAnswered, correct: wordCorrect)
+                addToPerGameDaily(gameKey: "word", dayKey: dayKey, answered: wordAnsweredCombined, correct: wordCorrectCombined)
+                overallAnsweredForDay += wordAnsweredCombined
+                overallCorrectForDay += wordCorrectCombined
+
+                // Daily solved map flag when any daily win occurred
+                var solvedMap: [String: Int] = loadIntMap(forKey: "wordleDailySolvedDays")
+                solvedMap[dayKey] = anyDailyWin ? 1 : (solvedMap[dayKey] ?? 0)
+                saveIntMap(solvedMap, forKey: "wordleDailySolvedDays", pushToKVS: true)
+
+                // Daily result map: store best daily win (if any)
+                if anyDailyWin, let best = bestDailyWin {
+                    struct DailyResult: Codable { let won: Bool; let guesses: Int; let elapsed: Int; let word: String }
+                    var resultMap: [String: DailyResult] = [:]
+                    if let data = defaults.data(forKey: "wordleDailyResultMap"),
+                       let decoded = try? JSONDecoder().decode([String: DailyResult].self, from: data) {
+                        resultMap = decoded
+                    }
+                    resultMap[dayKey] = DailyResult(won: true, guesses: best.guesses, elapsed: best.elapsed, word: best.word)
+                    if let data = try? JSONEncoder().encode(resultMap) {
+                        defaults.set(data, forKey: "wordleDailyResultMap")
+                        kvs.pushKey("wordleDailyResultMap")
+                    }
+                }
             }
 
             // Update overall daily maps for this day (push to KVS)
@@ -314,4 +441,3 @@ extension GameStats {
     }
 }
 #endif
-
