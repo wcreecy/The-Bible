@@ -3,7 +3,8 @@ import Foundation
 @MainActor
 extension BibleStatsStore {
     // Sessions-only: compute month total strictly from ReadingSessionsStore (no fallback to daily totals)
-    func totalForMonth(containing date: Date, calendar: Calendar = .autoupdatingCurrent) -> Int {
+    // Renamed to avoid clashing with the daily-totals-based method declared elsewhere.
+    func sessionsTotalForMonth(containing date: Date, calendar: Calendar = .autoupdatingCurrent) -> Int {
         return totalForMonthFromSessions(containing: date, calendar: calendar)
     }
 

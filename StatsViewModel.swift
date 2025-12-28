@@ -216,19 +216,48 @@ final class StatsViewModel: ObservableObject {
     }
 
     private func refreshSessionScopedPerBook() {
-        let cal = Calendar.current
+        // REVISED: Build per-book maps from BibleStatsStore daily totals (not sessions)
+        var cal = Calendar.autoupdatingCurrent
+        cal.timeZone = .autoupdatingCurrent
         let now = Date()
+        let startOfToday = cal.startOfDay(for: now)
 
-        let last7Sessions = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: now, calendar: cal)
-        perBookLast7Totals = StatsSeriesBuilder.groupSessionsByBook(last7Sessions)
+        let store = BibleStatsStore.shared
 
-        let monthSessions = ReadingSessionsStore.shared.sessions(inMonthContaining: now, calendar: cal)
-        perBookMonthTotals = StatsSeriesBuilder.groupSessionsByBook(monthSessions)
+        // All-time per-book from synced totals
+        let allTimePerBook: [String: Int] = store.loadTotals()
+        perBookAllTimeSessionTotals = allTimePerBook
+        totalSecondsAllTime = allTimePerBook.values.reduce(0) { $0 + max(0, $1) }
 
-        let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: now, calendar: cal)
-        perBookAllTimeSessionTotals = StatsSeriesBuilder.groupSessionsByBook(allSessions)
-        totalSecondsAllTime = allSessions.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
+        // Daily per-book map: ["yyyy-MM-dd": [book: seconds]]
+        let dailyByBook: [String: [String: Int]] = store.loadDailyTotalsByBook()
 
+        func sumPerBook(for keys: [String]) -> [String: Int] {
+            var map: [String: Int] = [:]
+            for k in keys {
+                if let perBook = dailyByBook[k] {
+                    for (book, sec) in perBook {
+                        map[book, default: 0] += max(0, sec)
+                    }
+                }
+            }
+            return map
+        }
+
+        // Last 7 days (including today)
+        var last7Keys: [String] = []
+        for i in 0..<7 {
+            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                last7Keys.append(BibleStatsStore.isoDateString(d, calendar: cal))
+            }
+        }
+        perBookLast7Totals = sumPerBook(for: last7Keys)
+
+        // This month
+        let monthKeys = BibleStatsStore.isoKeysForMonth(containing: now, calendar: cal)
+        perBookMonthTotals = sumPerBook(for: monthKeys)
+
+        // Top 3 books for this month (based on daily totals by book)
         let sortedTop = perBookMonthTotals.sorted { lhs, rhs in
             if lhs.value == rhs.value { return lhs.key < rhs.key }
             return lhs.value > rhs.value

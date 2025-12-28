@@ -165,12 +165,11 @@ final class ReadingTimeTracker: ObservableObject {
         if duration > 0 {
             // Append session record
             ReadingSessionsStore.shared.appendSession(.init(start: start, end: end, book: book, chapter: currentChapterNumber))
-            // Also ensure totals reflect elapsed time (in case we didn’t persist yet)
-            accumulatedInSession += duration
+            // DO NOT add `duration` to accumulatedInSession here — it would double-count
+            // Just flush whatever remainder is currently accumulated (seconds since last flush)
             flush(bookName: book, soft: !finalize)
         }
         // Reset the sessionStart for subsequent segments
         sessionStart = finalize ? nil : Date()
     }
 }
-

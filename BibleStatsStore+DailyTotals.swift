@@ -39,4 +39,25 @@ extension BibleStatsStore {
         }
         return sum
     }
+
+    // MARK: - Month totals (overall)
+
+    // Sum of all daily totals for the calendar month containing `date` (local time).
+    func totalForMonth(containing date: Date, calendar: Calendar = .autoupdatingCurrent) -> Int {
+        var cal = calendar
+        cal.timeZone = .autoupdatingCurrent
+
+        let daily = loadDailyTotals()
+        let keys = Self.isoKeysForMonth(containing: date, calendar: cal)
+        var sum = 0
+        for k in keys {
+            sum += max(0, daily[k, default: 0])
+        }
+        return sum
+    }
+
+    // Convenience: sum for the current month.
+    func totalForCurrentMonth(calendar: Calendar = .autoupdatingCurrent) -> Int {
+        totalForMonth(containing: Date(), calendar: calendar)
+    }
 }
