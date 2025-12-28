@@ -259,16 +259,21 @@ struct StatsView: View {
 
     private var gameContent: some View {
         Group {
-            if hSizeClass == .regular {
-                // iPad: stack game stats vertically, full width
-                VStack(spacing: 16) {
-                    GamesOverviewCardView()
-                        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
-                    // NEW: All-games comparison chart
-                    AllGamesComparisonCardView()
-                        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
-                    PlayerStatSheetCardView()
-                        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                // iPad: two-column layout (Games card | All Games + Player Stats)
+                HStack(alignment: .top, spacing: 16) {
+                    // Column 1: Games card
+                    VStack(spacing: 16) {
+                        GamesOverviewCardView()
+                    }
+                    .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+
+                    // Column 2: All Games comparison + Player stats sheet
+                    VStack(spacing: 16) {
+                        AllGamesComparisonCardView()
+                        PlayerStatSheetCardView()
+                    }
+                    .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
@@ -763,4 +768,3 @@ private extension Binding {
         )
     }
 }
-
