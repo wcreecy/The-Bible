@@ -495,6 +495,11 @@ struct BeatTheClockGameView: View {
                 answered: 1,
                 currentBestStreak: currentBestStreak
             )
+
+            // NEW: Per-type stat write (People/Places)
+            let typeName = currentEntryIsPerson ? "People" : "Places"
+            GameStats.shared.recordBeatClockType(type: typeName, answered: 1, correct: 1)
+
             let generator = UINotificationFeedbackGenerator(); generator.notificationOccurred(.success)
         } else {
             // Persistent streak: reset on incorrect
@@ -508,6 +513,11 @@ struct BeatTheClockGameView: View {
                 answered: 1,
                 currentBestStreak: currentBestStreak
             )
+
+            // NEW: Per-type stat write (People/Places)
+            let typeName = currentEntryIsPerson ? "People" : "Places"
+            GameStats.shared.recordBeatClockType(type: typeName, answered: 1, correct: 0)
+
             let generator = UINotificationFeedbackGenerator(); generator.notificationOccurred(.error)
         }
     }
@@ -538,6 +548,10 @@ struct BeatTheClockGameView: View {
                 answered: 1,
                 currentBestStreak: currentBestStreak
             )
+
+            // NEW: Per-type stat write (People/Places)
+            let typeName = currentEntryIsPerson ? "People" : "Places"
+            GameStats.shared.recordBeatClockType(type: typeName, answered: 1, correct: 1)
         } else {
             // Persistent streak: reset on incorrect
             writePersistentStreak(0)
@@ -550,6 +564,10 @@ struct BeatTheClockGameView: View {
                 answered: 1,
                 currentBestStreak: currentBestStreak
             )
+
+            // NEW: Per-type stat write (People/Places)
+            let typeName = currentEntryIsPerson ? "People" : "Places"
+            GameStats.shared.recordBeatClockType(type: typeName, answered: 1, correct: 0)
         }
     }
 

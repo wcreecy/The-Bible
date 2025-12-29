@@ -36,6 +36,12 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
+    // NEW: Beat the Clock per-type maps mirrored via KVS (JSON [String:Int])
+    static let beatClockPerTypeMapKeys: [String] = [
+        "beatclockPerTypeAnsweredMap",
+        "beatclockPerTypeCorrectMap"
+    ]
+
     // Game keys: Reference Match (legacy)
     static let refMatchKeys: [String] = {
         // Include both legacy "medium" and new "normal"
@@ -63,6 +69,12 @@ extension iCloudSyncCoordinator {
         }
         return keys
     }()
+
+    // NEW: Verse Match per-book maps mirrored via KVS (JSON [String:Int])
+    static let verseMatchPerBookMapKeys: [String] = [
+        "versematchPerBookAnsweredMap",
+        "versematchPerBookCorrectMap"
+    ]
 
     // Game keys: Quiz (@AppStorage uses easy/normal/hard)
     static let quizKeys: [String] = {
@@ -234,6 +246,8 @@ extension iCloudSyncCoordinator {
         if Self.gameDailyAndLastPlayedKeys.contains(key)
             || Self.quizPerBookMapKeys.contains(key)
             || Self.hangmanPerCategoryMapKeys.contains(key)
+            || Self.beatClockPerTypeMapKeys.contains(key)
+            || Self.verseMatchPerBookMapKeys.contains(key)
             || Self.perGameDailyMapKeys.contains(key)
             || Self.wordleSolvedMapKeys.contains(key)
             || Self.wordleDailyResultKeys.contains(key)
@@ -242,6 +256,8 @@ extension iCloudSyncCoordinator {
             case "gamesDailyAnswered", "gamesDailyCorrect",
                  "quizPerBookAnsweredMap", "quizPerBookCorrectMap",
                  "hangmanPerCategoryAnsweredMap", "hangmanPerCategoryCorrectMap",
+                 "beatclockPerTypeAnsweredMap", "beatclockPerTypeCorrectMap",
+                 "versematchPerBookAnsweredMap", "versematchPerBookCorrectMap",
                  // NEW: per-game daily maps
                  _ where Self.perGameDailyMapKeys.contains(key),
                  "wordleDailySolvedDays",
@@ -304,6 +320,8 @@ extension iCloudSyncCoordinator {
         if Self.gameDailyAndLastPlayedKeys.contains(key)
             || Self.quizPerBookMapKeys.contains(key)
             || Self.hangmanPerCategoryMapKeys.contains(key)
+            || Self.beatClockPerTypeMapKeys.contains(key)
+            || Self.verseMatchPerBookMapKeys.contains(key)
             || Self.perGameDailyMapKeys.contains(key)
             || Self.wordleSolvedMapKeys.contains(key)
             || Self.wordleDailyResultKeys.contains(key)
@@ -312,6 +330,8 @@ extension iCloudSyncCoordinator {
             case "gamesDailyAnswered", "gamesDailyCorrect",
                  "quizPerBookAnsweredMap", "quizPerBookCorrectMap",
                  "hangmanPerCategoryAnsweredMap", "hangmanPerCategoryCorrectMap",
+                 "beatclockPerTypeAnsweredMap", "beatclockPerTypeCorrectMap",
+                 "versematchPerBookAnsweredMap", "versematchPerBookCorrectMap",
                  // NEW: per-game daily maps
                  _ where Self.perGameDailyMapKeys.contains(key),
                  "wordleDailySolvedDays":
@@ -541,6 +561,20 @@ extension iCloudSyncCoordinator {
         }
         enqueueKeysForSync(["hangmanPerCategoryAnsweredMap", "hangmanPerCategoryCorrectMap"])
 
+        // 2c.2) Clear Beat the Clock per-type analytics (all-time maps mirrored)
+        for key in ["beatclockPerTypeAnsweredMap", "beatclockPerTypeCorrectMap"] {
+            defaults.removeObject(forKey: key)
+            kvs.removeObject(forKey: key)
+        }
+        enqueueKeysForSync(["beatclockPerTypeAnsweredMap", "beatclockPerTypeCorrectMap"])
+
+        // 2c.3) Clear Verse Match per-book analytics (all-time maps mirrored)
+        for key in ["versematchPerBookAnsweredMap", "versematchPerBookCorrectMap"] {
+            defaults.removeObject(forKey: key)
+            kvs.removeObject(forKey: key)
+        }
+        enqueueKeysForSync(["versematchPerBookAnsweredMap", "versematchPerBookCorrectMap"])
+
         // 2d) Optional: clear WORD daily completion flags so Daily isn’t “completed” after reset
         defaults.removeObject(forKey: "wordleDailyCompletedDay")
         defaults.removeObject(forKey: "wordleDailyTarget")
@@ -681,3 +715,4 @@ extension iCloudSyncCoordinator {
         return merged
     }
 }
+

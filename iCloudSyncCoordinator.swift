@@ -214,7 +214,9 @@ final class iCloudSyncCoordinator {
             + Self.verseMatchKeys
             + Self.quizKeys
             + Self.quizPerBookMapKeys
+            + Self.verseMatchPerBookMapKeys
             + Self.hangmanPerCategoryMapKeys
+            + Self.beatClockPerTypeMapKeys
             + Self.bookOrderKeys
             + Self.whoAmIKeys
             + Self.wordleKeys
@@ -279,6 +281,8 @@ final class iCloudSyncCoordinator {
             if isGameCounterKey(key)
                 || Self.gameDailyAndLastPlayedKeys.contains(key)
                 || Self.quizPerBookMapKeys.contains(key)
+                || Self.verseMatchPerBookMapKeys.contains(key)
+                || Self.beatClockPerTypeMapKeys.contains(key)
                 || Self.hangmanPerCategoryMapKeys.contains(key)
                 || Self.perGameDailyMapKeys.contains(key)
                 || Self.wordleSolvedMapKeys.contains(key)
@@ -398,6 +402,8 @@ final class iCloudSyncCoordinator {
         if Self.gameDailyAndLastPlayedKeys.contains(key)
             || isGameCounterKey(key)
             || Self.quizPerBookMapKeys.contains(key)
+            || Self.verseMatchPerBookMapKeys.contains(key)
+            || Self.beatClockPerTypeMapKeys.contains(key)
             || Self.hangmanPerCategoryMapKeys.contains(key)
             || Self.perGameDailyMapKeys.contains(key)
             || Self.wordleSolvedMapKeys.contains(key)
@@ -473,6 +479,8 @@ final class iCloudSyncCoordinator {
         if Self.gameDailyAndLastPlayedKeys.contains(key)
             || isGameCounterKey(key)
             || Self.quizPerBookMapKeys.contains(key)
+            || Self.verseMatchPerBookMapKeys.contains(key)
+            || Self.beatClockPerTypeMapKeys.contains(key)
             || Self.hangmanPerCategoryMapKeys.contains(key)
             || Self.perGameDailyMapKeys.contains(key)
             || Self.wordleSolvedMapKeys.contains(key)
@@ -522,6 +530,8 @@ final class iCloudSyncCoordinator {
                 if isGameCounterKey(key)
                     || Self.gameDailyAndLastPlayedKeys.contains(key)
                     || Self.quizPerBookMapKeys.contains(key)
+                    || Self.verseMatchPerBookMapKeys.contains(key)
+                    || Self.beatClockPerTypeMapKeys.contains(key)
                     || Self.hangmanPerCategoryMapKeys.contains(key)
                     || Self.perGameDailyMapKeys.contains(key)
                     || Self.wordleSolvedMapKeys.contains(key)
@@ -556,7 +566,10 @@ final class iCloudSyncCoordinator {
                 continue
             }
 
-            if Self.quizPerBookMapKeys.contains(key) || Self.hangmanPerCategoryMapKeys.contains(key) {
+            if Self.quizPerBookMapKeys.contains(key)
+                || Self.verseMatchPerBookMapKeys.contains(key)
+                || Self.beatClockPerTypeMapKeys.contains(key)
+                || Self.hangmanPerCategoryMapKeys.contains(key) {
                 if defaults.object(forKey: key) != nil {
                     defaults.removeObject(forKey: key)
                     touchedAny = true
@@ -633,3 +646,4 @@ private extension iCloudSyncCoordinator {
         "lastReadText"
     ]
 }
+

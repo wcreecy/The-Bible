@@ -480,6 +480,7 @@ struct GamesOverviewCardView: View {
                                                 value: "\(Int(round(row.pct)))% (\(row.correct)/\(row.answered))",
                                                 tint: tint
                                             )
+                                            .fixedSize(horizontal: true, vertical: false)
                                         }
                                         .buttonStyle(.plain)
                                         .accessibilityLabel("Show accuracy by book for \(row.genre)")
@@ -513,6 +514,91 @@ struct GamesOverviewCardView: View {
                                         tint: tint
                                     )
                                 }
+                            }
+                        }
+                    }
+
+                    // NEW: Beat the Clock specific — Accuracy by Type (People/Places)
+                    if selectedGame == "Beat the Clock" {
+                        let rows = GameStats.shared.beatclockAccuracyByType()
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Accuracy by Type")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            HStack(spacing: 8) {
+                                ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                                    let tint: Color = {
+                                        switch row.type {
+                                        case "People": return .orange
+                                        case "Places": return .teal
+                                        default: return .gray
+                                        }
+                                    }()
+                                    MetricChip(
+                                        title: row.type,
+                                        value: "\(Int(round(row.pct)))% (\(row.correct)/\(row.answered))",
+                                        tint: tint
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // NEW: Verse Match specific — Accuracy by Testament
+                    if selectedGame == "Verse Match" {
+                        let summary = GameStats.shared.verseMatchOTNTSummary()
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Accuracy by Testament (OT vs NT)")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            HStack(spacing: 8) {
+                                MetricChip(
+                                    title: "OT",
+                                    value: "\(Int(round(summary.otPct)))% (\(summary.otCorrect)/\(summary.otAnswered))",
+                                    tint: .blue
+                                )
+                                MetricChip(
+                                    title: "NT",
+                                    value: "\(Int(round(summary.ntPct)))% (\(summary.ntCorrect)/\(summary.ntAnswered))",
+                                    tint: .green
+                                )
+                            }
+                        }
+                    }
+
+                    // NEW: Verse Match specific — Accuracy by Genre (summary chips)
+                    if selectedGame == "Verse Match" {
+                        let rows = GameStats.shared.verseMatchAccuracyByGenre()
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Accuracy by Genre")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 8) {
+                                    ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                                        let tint: Color = {
+                                            switch row.genre {
+                                            case "Law": return .blue
+                                            case "History": return .teal
+                                            case "Poetry": return .purple
+                                            case "Major Prophets": return .orange
+                                            case "Minor Prophets": return .pink
+                                            case "Gospels": return .green
+                                            case "Acts": return .indigo
+                                            case "Epistles": return .cyan
+                                            case "Apocalypse": return .red
+                                            default: return .gray
+                                            }
+                                        }()
+                                        MetricChip(
+                                            title: row.genre,
+                                            value: "\(Int(round(row.pct)))% (\(row.correct)/\(row.answered))",
+                                            tint: tint
+                                        )
+                                        .fixedSize(horizontal: true, vertical: false)
+                                    }
+                                }
+                                .padding(.horizontal, 2)
                             }
                         }
                     }

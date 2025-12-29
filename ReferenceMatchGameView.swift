@@ -173,7 +173,7 @@ struct VerseMatchGameView: View {
                                         .fontWeight(.semibold)
                                     if selectedIndex != nil {
                                         Button(action: { toggleFavoriteCurrent() }) {
-                                            Image(systemName: currentFavoriteExists() ? "heart.fill" : "heart")
+                                            Image(systemName: "heart.fill")
                                                 .foregroundStyle(.red)
                                         }
                                         .buttonStyle(.plain)
@@ -311,7 +311,9 @@ struct VerseMatchGameView: View {
         answered += 1
         if idx == correctIndex { score += 1 }
 
-        if idx == correctIndex {
+        let isCorrect = (idx == correctIndex)
+
+        if isCorrect {
             // Persistent streak: increment on correct
             let persisted = readPersistentStreak() + 1
             writePersistentStreak(persisted)
@@ -334,6 +336,11 @@ struct VerseMatchGameView: View {
                 answered: 1,
                 currentBestStreak: currentBestStreak
             )
+
+            // NEW: per-book aggregation for Verse Match (syncs via KVS)
+            if let b = refBook {
+                GameStats.shared.recordVerseMatchPerBook(bookName: b.name, answered: 1, correct: 1)
+            }
         } else {
             // Persistent streak: reset on incorrect
             writePersistentStreak(0)
@@ -346,6 +353,11 @@ struct VerseMatchGameView: View {
                 answered: 1,
                 currentBestStreak: currentBestStreak
             )
+
+            // NEW: answered-only for the correct book
+            if let b = refBook {
+                GameStats.shared.recordVerseMatchPerBook(bookName: b.name, answered: 1, correct: 0)
+            }
         }
     }
 

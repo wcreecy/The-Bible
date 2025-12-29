@@ -277,6 +277,30 @@ final class GameStats: ObservableObject {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
+    // NEW: Verse Match per-book maps write API (all-time)
+    func recordVerseMatchPerBook(bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
+        let trimmed = bookName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
+
+        // Answered map (all-time)
+        var answeredMap: [String: Int] = loadJSONMap(forKey: "versematchPerBookAnsweredMap")
+        if addAnswered != 0 {
+            answeredMap[trimmed, default: 0] = max(0, (answeredMap[trimmed] ?? 0) + max(0, addAnswered))
+            saveJSONMap(answeredMap, forKey: "versematchPerBookAnsweredMap")
+            iCloudSyncCoordinator.shared.pushKey("versematchPerBookAnsweredMap")
+        }
+
+        // Correct map (all-time)
+        var correctMap: [String: Int] = loadJSONMap(forKey: "versematchPerBookCorrectMap")
+        if addCorrect != 0 {
+            correctMap[trimmed, default: 0] = max(0, (correctMap[trimmed] ?? 0) + max(0, addCorrect))
+            saveJSONMap(correctMap, forKey: "versematchPerBookCorrectMap")
+            iCloudSyncCoordinator.shared.pushKey("versematchPerBookCorrectMap")
+        }
+
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
     func recordRound(game: GameID, difficulty: Difficulty, correct addCorrect: Int, answered addAnswered: Int, currentBestStreak: Int) {
         let defaults = UserDefaults.standard
         var changedKeys: [String] = []
@@ -1224,5 +1248,102 @@ final class GameStats: ObservableObject {
             (canonicalPos[lhs.0] ?? .max) < (canonicalPos[rhs.0] ?? .max)
         }
         return rows
+    }
+
+    // MARK: - NEW: Beat the Clock per-type (People/Places)
+
+    private func loadBeatClockPerTypeMaps() -> (answered: [String: Int], correct: [String: Int]) {
+        let a: [String: Int] = loadJSONMap(forKey: "beatclockPerTypeAnsweredMap")
+        let c: [String: Int] = loadJSONMap(forKey: "beatclockPerTypeCorrectMap")
+        return (a, c)
+    }
+
+    func recordBeatClockType(type: String, answered addAnswered: Int, correct addCorrect: Int) {
+        let trimmed = type.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
+
+        // Answered map
+        var aMap: [String: Int] = loadJSONMap(forKey: "beatclockPerTypeAnsweredMap")
+        if addAnswered != 0 {
+            aMap[trimmed, default: 0] = max(0, (aMap[trimmed] ?? 0) + max(0, addAnswered))
+            saveJSONMap(aMap, forKey: "beatclockPerTypeAnsweredMap")
+            iCloudSyncCoordinator.shared.pushKey("beatclockPerTypeAnsweredMap")
+        }
+
+        // Correct map
+        var cMap: [String: Int] = loadJSONMap(forKey: "beatclockPerTypeCorrectMap")
+        if addCorrect != 0 {
+            cMap[trimmed, default: 0] = max(0, (cMap[trimmed] ?? 0) + max(0, addCorrect))
+            saveJSONMap(cMap, forKey: "beatclockPerTypeCorrectMap")
+            iCloudSyncCoordinator.shared.pushKey("beatclockPerTypeCorrectMap")
+        }
+
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
+    func beatclockAccuracyByType() -> [(type: String, answered: Int, correct: Int, pct: Double)] {
+        let (aMap, cMap) = loadBeatClockPerTypeMaps()
+        // Fixed order for UI: People, Places
+        let order = ["People", "Places"]
+        return order.map { t in
+            let a = max(0, aMap[t] ?? 0)
+            let c = max(0, cMap[t] ?? 0)
+            let pct = a > 0 ? min(100, max(0, (Double(c) / Double(a)) * 100.0)) : 0
+            return (t, a, c, pct)
+        }
+    }
+
+    // MARK: - NEW: Verse Match per-book read + OT/NT and Genre aggregations
+
+    private func loadVerseMatchPerBookMaps() -> (answered: [String: Int], correct: [String: Int]) {
+        let a: [String: Int] = loadJSONMap(forKey: "versematchPerBookAnsweredMap")
+        let c: [String: Int] = loadJSONMap(forKey: "versematchPerBookCorrectMap")
+        return (a, c)
+    }
+
+    func verseMatchOTNTSummary() -> (otAnswered: Int, otCorrect: Int, ntAnswered: Int, ntCorrect: Int, otPct: Double, ntPct: Double) {
+        let (answeredMap, correctMap) = loadVerseMatchPerBookMaps()
+        var otA = 0, otC = 0, ntA = 0, ntC = 0
+
+        let allBooks = Set(answeredMap.keys).union(correctMap.keys)
+        for b in allBooks {
+            let a = max(0, answeredMap[b] ?? 0)
+            let c = max(0, correctMap[b] ?? 0)
+            if let ot = isOT(bookName: b) {
+                if ot {
+                    otA += a; otC += c
+                } else {
+                    ntA += a; ntC += c
+                }
+            }
+        }
+
+        let otPct = otA > 0 ? min(100, max(0, (Double(otC) / Double(otA)) * 100.0)) : 0
+        let ntPct = ntA > 0 ? min(100, max(0, (Double(ntC) / Double(ntA)) * 100.0)) : 0
+        return (otA, otC, ntA, ntC, otPct, ntPct)
+    }
+
+    func verseMatchAccuracyByGenre() -> [(genre: String, answered: Int, correct: Int, pct: Double)] {
+        let (answeredMap, correctMap) = loadVerseMatchPerBookMaps()
+        var buckets: [StatsSeriesBuilder.Genre: (a: Int, c: Int)] = [:]
+
+        let allBooks = Set(answeredMap.keys).union(correctMap.keys)
+        for b in allBooks {
+            let a = max(0, answeredMap[b] ?? 0)
+            let c = max(0, correctMap[b] ?? 0)
+            guard a > 0 else { continue }
+            let g = StatsSeriesBuilder.genreForBook(b)
+            var cur = buckets[g] ?? (0, 0)
+            cur.a += a
+            cur.c += c
+            buckets[g] = cur
+        }
+
+        let order: [StatsSeriesBuilder.Genre] = [.Law, .History, .Poetry, .MajorProphets, .MinorProphets, .Gospels, .Acts, .Epistles, .Apocalypse]
+        return order.map { g in
+            let vals = buckets[g] ?? (0, 0)
+            let pct = vals.a > 0 ? min(100, max(0, (Double(vals.c) / Double(vals.a)) * 100.0)) : 0
+            return (g.rawValue, vals.a, vals.c, pct)
+        }
     }
 }
