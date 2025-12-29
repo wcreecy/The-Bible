@@ -57,8 +57,9 @@ struct AllGamesComparisonCardView: View {
                         return Row(name: e.name, played: played, accuracy: acc)
                     }
 
-                    // Extract the chart into a small subview to keep the ViewBuilder simple
+                    // Add breathing room between header line and chart
                     ChartView(rows: rows, sort: sort, version: version)
+                        .padding(.top, 20)
 
                     // Legend-like caption
                     HStack(spacing: 12) {
