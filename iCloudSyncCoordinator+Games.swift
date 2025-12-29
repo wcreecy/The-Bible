@@ -36,6 +36,16 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
+    // NEW: Beat the Clock persistent streak keys (local-only; used to seed streaks on launch)
+    static let beatClockPersistentStreakKeys: [String] = {
+        var keys: [String] = []
+        for d in ["easy","normal","hard"] {
+            keys.append("beatclockPersistentStreak_\(d)")
+            keys.append("beatclockPersistentBestStreak_\(d)")
+        }
+        return keys
+    }()
+
     // NEW: Beat the Clock per-type maps mirrored via KVS (JSON [String:Int])
     static let beatClockPerTypeMapKeys: [String] = [
         "beatclockPerTypeAnsweredMap",
@@ -85,6 +95,8 @@ extension iCloudSyncCoordinator {
             keys.append("quizAllTimeAnswered_\(d)")
             keys.append("quizAllTimeBestStreak_\(d)")
         }
+        // Include legacy unsuffixed keys so reset clears older installs and fallbacks
+        keys.append(contentsOf: ["quizAllTimeCorrect", "quizAllTimeAnswered", "quizAllTimeBestStreak"])
         return keys
     }()
 
@@ -108,7 +120,7 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // Game keys: Who am I? (easy/normal/hard) — only suffixed; no legacy unsuffixed shipped
+    // Game keys: Who am I? (easy/normal/hard)
     static let whoAmIKeys: [String] = {
         let diffs = ["easy", "normal", "hard"]
         var keys: [String] = []
@@ -117,6 +129,8 @@ extension iCloudSyncCoordinator {
             keys.append("whoamiAllTimeAnswered_\(d)")
             keys.append("whoamiAllTimeBestStreak_\(d)")
         }
+        // Include legacy unsuffixed keys for safety because the read path can fall back to them
+        keys.append(contentsOf: ["whoamiAllTimeCorrect", "whoamiAllTimeAnswered", "whoamiAllTimeBestStreak"])
         return keys
     }()
 
@@ -512,6 +526,12 @@ extension iCloudSyncCoordinator {
         // 1) Reset all-time counters (includes WORD extras)
         resetAllGameCountersToZero()
 
+        // 1b) Clear any local-only persistent streak caches (Beat the Clock)
+        for key in Self.beatClockPersistentStreakKeys {
+            defaults.removeObject(forKey: key)
+            // Not mirrored to KVS; these keys are local-only
+        }
+
         // 2) Clear overall daily maps (JSON [String:Int]) and last played metadata
         let overallMapKeys = ["gamesDailyAnswered", "gamesDailyCorrect"]
         for key in overallMapKeys {
@@ -635,11 +655,13 @@ extension iCloudSyncCoordinator {
         repairSuffixed(prefix: "refmatch", diffs: ["easy","normal","medium","hard"])
         repairPair(correctKey: "refmatchAllTimeCorrect", answeredKey: "refmatchAllTimeAnswered")
 
-        // Quiz (easy/normal/hard)
+        // Quiz (easy/normal/hard) + legacy unsuffixed
         repairSuffixed(prefix: "quiz", diffs: ["easy","normal","hard"])
+        repairPair(correctKey: "quizAllTimeCorrect", answeredKey: "quizAllTimeAnswered")
 
-        // Who am I? (easy/normal/hard)
+        // Who am I? (easy/normal/hard) + legacy unsuffixed
         repairSuffixed(prefix: "whoami", diffs: ["easy","normal","hard"])
+        repairPair(correctKey: "whoamiAllTimeCorrect", answeredKey: "whoamiAllTimeAnswered")
 
         // Book Order (easy/normal/hard/all) + legacy unsuffixed
         repairSuffixed(prefix: "bookorder", diffs: ["easy","normal","hard","all"])
@@ -715,4 +737,3 @@ extension iCloudSyncCoordinator {
         return merged
     }
 }
-
