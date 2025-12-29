@@ -1167,6 +1167,52 @@ final class GameStats: ObservableObject {
         return rows
     }
 
+    // NEW: Strongest books (mirror of weak books) — highest accuracy first
+    func quizStrongBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        let (dailyA, dailyC) = loadQuizPerBookDailyMaps()
+
+        var cal = Calendar.autoupdatingCurrent
+        cal.timeZone = .autoupdatingCurrent
+        let startOfToday = cal.startOfDay(for: Date())
+        var keys: [String] = []
+        for i in stride(from: lastNDays - 1, through: 0, by: -1) {
+            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                keys.append(Self.localDayKey(for: d, calendar: cal))
+            }
+        }
+
+        var bookA: [String: Int] = [:]
+        var bookC: [String: Int] = [:]
+        for k in keys {
+            if let perBookA = dailyA[k] {
+                for (book, val) in perBookA {
+                    bookA[book, default: 0] += max(0, val)
+                }
+            }
+            if let perBookC = dailyC[k] {
+                for (book, val) in perBookC {
+                    bookC[book, default: 0] += max(0, val)
+                }
+            }
+        }
+
+        var rows: [(String, Int, Int, Double)] = []
+        let allBooks = Set(bookA.keys).union(bookC.keys)
+        for b in allBooks {
+            let a = max(0, bookA[b] ?? 0)
+            let c = max(0, bookC[b] ?? 0)
+            guard a >= minAttempts else { continue }
+            let pct = a > 0 ? min(100, max(0, (Double(c) / Double(a)) * 100.0)) : 0
+            rows.append((b, a, c, pct))
+        }
+
+        rows.sort { lhs, rhs in
+            if lhs.3 == rhs.3 { return lhs.0 < rhs.0 }
+            return lhs.3 > rhs.3
+        }
+        return rows
+    }
+
     // MARK: - NEW: WORD daily solved last-N day keys
 
     func wordleDailySolvedDayKeysLast(days: Int, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> Set<String> {
@@ -1345,5 +1391,25 @@ final class GameStats: ObservableObject {
             let pct = vals.a > 0 ? min(100, max(0, (Double(vals.c) / Double(vals.a)) * 100.0)) : 0
             return (g.rawValue, vals.a, vals.c, pct)
         }
+    }
+
+    // NEW: Verse Match per-genre drill-down (book-level)
+    func verseMatchAccuracyByBook(inGenre genreName: String) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        let (answeredMap, correctMap) = loadVerseMatchPerBookMaps()
+        let allCanonicalBooks = BibleData.books.map { $0.name }
+        var rows: [(String, Int, Int, Double)] = []
+        for b in allCanonicalBooks {
+            let genre = StatsSeriesBuilder.genreForBook(b).rawValue
+            guard genre == genreName else { continue }
+            let a = max(0, answeredMap[b] ?? 0)
+            let c = max(0, correctMap[b] ?? 0)
+            let pct = a > 0 ? min(100, max(0, (Double(c) / Double(a)) * 100.0)) : 0
+            rows.append((b, a, c, pct))
+        }
+        let canonicalPos = Dictionary(uniqueKeysWithValues: allCanonicalBooks.enumerated().map { ($1, $0) })
+        rows.sort { lhs, rhs in
+            (canonicalPos[lhs.0] ?? .max) < (canonicalPos[rhs.0] ?? .max)
+        }
+        return rows
     }
 }

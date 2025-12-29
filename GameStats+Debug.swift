@@ -112,6 +112,23 @@ extension GameStats {
             }
         }
 
+        func loadNestedIntMap(forKey key: String) -> [String: [String: Int]] {
+            guard let data = defaults.data(forKey: key),
+                  let map = try? JSONDecoder().decode([String: [String: Int]].self, from: data) else {
+                return [:]
+            }
+            return map
+        }
+
+        func saveNestedIntMap(_ map: [String: [String: Int]], forKey key: String, pushToKVS: Bool) {
+            if let data = try? JSONEncoder().encode(map) {
+                defaults.set(data, forKey: key)
+                if pushToKVS {
+                    kvs.pushKey(key)
+                }
+            }
+        }
+
         func incInt(_ key: String, by delta: Int) {
             let old = defaults.integer(forKey: key)
             let newVal = max(0, old + max(0, delta))
@@ -196,6 +213,9 @@ extension GameStats {
 
         let cal = Calendar.autoupdatingCurrent
         let startOfToday = cal.startOfDay(for: Date())
+
+        // Canonical Bible book names for per-book seeding
+        let allBooks: [String] = BibleData.books.map { $0.name }
 
         for dayOffset in 0..<max(31, days) {
             guard let date = cal.date(byAdding: .day, value: -dayOffset, to: startOfToday) else { continue }
@@ -424,6 +444,93 @@ extension GameStats {
                         kvs.pushKey("wordleDailyResultMap")
                     }
                 }
+            }
+
+            // NEW: Seed Bible Quiz per-book (all-time + daily nested) for OT/NT, Genre, Weak/Strong
+            do {
+                // All-time per-book maps
+                var quizPerBookA = loadIntMap(forKey: "quizPerBookAnsweredMap")
+                var quizPerBookC = loadIntMap(forKey: "quizPerBookCorrectMap")
+                // Daily nested maps
+                var quizDailyA = loadNestedIntMap(forKey: "quizPerBookDailyAnswered")
+                var quizDailyC = loadNestedIntMap(forKey: "quizPerBookDailyCorrect")
+                var dayA = quizDailyA[dayKey] ?? [:]
+                var dayC = quizDailyC[dayKey] ?? [:]
+
+                // Pick a handful of books each day and attribute some attempts
+                let countBooks = Int.random(in: 4...10)
+                let chosen = allBooks.shuffled().prefix(min(countBooks, allBooks.count))
+                for book in chosen {
+                    let attempts = Int.random(in: 2...6)
+                    let correct = Int.random(in: 0...attempts)
+
+                    // All-time
+                    quizPerBookA[book, default: 0] += attempts
+                    quizPerBookC[book, default: 0] += correct
+
+                    // Daily nested
+                    dayA[book, default: 0] += attempts
+                    dayC[book, default: 0] += correct
+                }
+
+                // Save back
+                saveIntMap(quizPerBookA, forKey: "quizPerBookAnsweredMap", pushToKVS: true)
+                saveIntMap(quizPerBookC, forKey: "quizPerBookCorrectMap", pushToKVS: true)
+                quizDailyA[dayKey] = dayA
+                quizDailyC[dayKey] = dayC
+                saveNestedIntMap(quizDailyA, forKey: "quizPerBookDailyAnswered", pushToKVS: true)
+                saveNestedIntMap(quizDailyC, forKey: "quizPerBookDailyCorrect", pushToKVS: true)
+            }
+
+            // NEW: Seed Verse Match per-book (all-time) for OT/NT + Genre
+            do {
+                var vmPerBookA = loadIntMap(forKey: "versematchPerBookAnsweredMap")
+                var vmPerBookC = loadIntMap(forKey: "versematchPerBookCorrectMap")
+
+                let countBooks = Int.random(in: 4...10)
+                let chosen = allBooks.shuffled().prefix(min(countBooks, allBooks.count))
+                for book in chosen {
+                    let attempts = Int.random(in: 1...5)
+                    let correct = Int.random(in: 0...attempts)
+                    vmPerBookA[book, default: 0] += attempts
+                    vmPerBookC[book, default: 0] += correct
+                }
+
+                saveIntMap(vmPerBookA, forKey: "versematchPerBookAnsweredMap", pushToKVS: true)
+                saveIntMap(vmPerBookC, forKey: "versematchPerBookCorrectMap", pushToKVS: true)
+            }
+
+            // NEW: Seed Hangman per-category (People/Places/Books) — all-time
+            do {
+                var hA = loadIntMap(forKey: "hangmanPerCategoryAnsweredMap")
+                var hC = loadIntMap(forKey: "hangmanPerCategoryCorrectMap")
+                for cat in ["People","Places","Books"] {
+                    // Not every category every day
+                    if Bool.random() {
+                        let attempts = Int.random(in: 1...6)
+                        let correct = Int.random(in: 0...attempts)
+                        hA[cat, default: 0] += attempts
+                        hC[cat, default: 0] += correct
+                    }
+                }
+                saveIntMap(hA, forKey: "hangmanPerCategoryAnsweredMap", pushToKVS: true)
+                saveIntMap(hC, forKey: "hangmanPerCategoryCorrectMap", pushToKVS: true)
+            }
+
+            // NEW: Seed Beat the Clock per-type (People/Places) — all-time
+            do {
+                var bcA = loadIntMap(forKey: "beatclockPerTypeAnsweredMap")
+                var bcC = loadIntMap(forKey: "beatclockPerTypeCorrectMap")
+                for t in ["People","Places"] {
+                    if Bool.random() {
+                        let attempts = Int.random(in: 2...8)
+                        let correct = Int.random(in: 0...attempts)
+                        bcA[t, default: 0] += attempts
+                        bcC[t, default: 0] += correct
+                    }
+                }
+                saveIntMap(bcA, forKey: "beatclockPerTypeAnsweredMap", pushToKVS: true)
+                saveIntMap(bcC, forKey: "beatclockPerTypeCorrectMap", pushToKVS: true)
             }
 
             // Update overall daily maps for this day (push to KVS)

@@ -590,12 +590,19 @@ struct GamesOverviewCardView: View {
                                             default: return .gray
                                             }
                                         }()
-                                        MetricChip(
-                                            title: row.genre,
-                                            value: "\(Int(round(row.pct)))% (\(row.correct)/\(row.answered))",
-                                            tint: tint
-                                        )
-                                        .fixedSize(horizontal: true, vertical: false)
+                                        Button {
+                                            selectedGenre = row.genre
+                                            showGenreDrill = true
+                                        } label: {
+                                            MetricChip(
+                                                title: row.genre,
+                                                value: "\(Int(round(row.pct)))% (\(row.correct)/\(row.answered))",
+                                                tint: tint
+                                            )
+                                            .fixedSize(horizontal: true, vertical: false)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .accessibilityLabel("Show accuracy by book for \(row.genre)")
                                     }
                                 }
                                 .padding(.horizontal, 2)
@@ -671,6 +678,75 @@ struct GamesOverviewCardView: View {
                             }
                         }
                         .padding(.top, 4)
+
+                        // NEW: Bible Quiz specific — Top strong books (mirror of weak books)
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("Top Strong Books")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                Spacer()
+                                // Reuse same scope control (30D/60D)
+                                Picker("Scope", selection: $weakBooksScope) {
+                                    Text("30D").tag(0)
+                                    Text("60D").tag(1)
+                                }
+                                .pickerStyle(.segmented)
+                                .frame(maxWidth: 140)
+                            }
+
+                            // Reuse same min attempts Stepper
+                            HStack(spacing: 10) {
+                                Text("Min attempts")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Stepper(value: $weakBooksMinAttempts, in: 1...50) {
+                                    Text("\(weakBooksMinAttempts)")
+                                        .font(.footnote.weight(.semibold))
+                                        .monospacedDigit()
+                                }
+                                .frame(maxWidth: 180, alignment: .leading)
+                                Spacer()
+                            }
+
+                            let daysStrong = (weakBooksScope == 0) ? 30 : 60
+                            let allStrong = GameStats.shared.quizStrongBooks(lastNDays: daysStrong, minAttempts: weakBooksMinAttempts)
+                            let strongRows = Array(allStrong.prefix(5)) // top 5 strongest
+
+                            if strongRows.isEmpty {
+                                Text("Not enough recent Bible Quiz activity.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                ForEach(Array(strongRows.enumerated()), id: \.offset) { _, row in
+                                    HStack {
+                                        Text(row.book)
+                                            .font(.subheadline.weight(.semibold))
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        Text("\(Int(round(row.pct)))%")
+                                            .font(.footnote.weight(.semibold))
+                                            .monospacedDigit()
+                                            .foregroundStyle(.green)
+                                            .frame(width: 56, alignment: .trailing)
+                                        Text("(\(row.correct)/\(row.answered))")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                            .frame(width: 88, alignment: .trailing)
+                                    }
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 10)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .fill(Color(.secondarySystemBackground))
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .stroke(Color.black.opacity(0.06), lineWidth: 1)
+                                    )
+                                }
+                            }
+                        }
+                        .padding(.top, 2)
                     }
 
                     // WORD-only section: move WordleStatsCardView content here when selected
@@ -811,33 +887,59 @@ struct GamesOverviewCardView: View {
         .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
             version &+= 1
         }
-        // Drill-down sheet for Bible Quiz genre -> per-book accuracy
+        // Drill-down sheet for Bible Quiz or Verse Match genre -> per-book accuracy
         .sheet(isPresented: $showGenreDrill) {
             NavigationStack {
                 VStack(alignment: .leading, spacing: 12) {
                     if let g = selectedGenre {
-                        let rows = GameStats.shared.quizAccuracyByBook(inGenre: g)
-                        if rows.isEmpty {
-                            ContentUnavailableView("No data for \(g)", systemImage: "book")
-                        } else {
-                            List {
-                                ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
-                                    HStack {
-                                        Text(row.book)
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                        Text("\(Int(round(row.pct)))%")
-                                            .font(.footnote.weight(.semibold))
-                                            .monospacedDigit()
-                                            .foregroundStyle(Color.gamerScoreColor(for: row.pct))
-                                            .frame(width: 56, alignment: .trailing)
-                                        Text("(\(row.correct)/\(row.answered))")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                            .frame(width: 88, alignment: .trailing)
+                        if selectedGame == "Verse Match" {
+                            let rows = GameStats.shared.verseMatchAccuracyByBook(inGenre: g)
+                            if rows.isEmpty {
+                                ContentUnavailableView("No data for \(g)", systemImage: "book")
+                            } else {
+                                List {
+                                    ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                                        HStack {
+                                            Text(row.book)
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                            Text("\(Int(round(row.pct)))%")
+                                                .font(.footnote.weight(.semibold))
+                                                .monospacedDigit()
+                                                .foregroundStyle(Color.gamerScoreColor(for: row.pct))
+                                                .frame(width: 56, alignment: .trailing)
+                                            Text("(\(row.correct)/\(row.answered))")
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                                .frame(width: 88, alignment: .trailing)
+                                        }
                                     }
                                 }
+                                .listStyle(.insetGrouped)
                             }
-                            .listStyle(.insetGrouped)
+                        } else {
+                            let rows = GameStats.shared.quizAccuracyByBook(inGenre: g)
+                            if rows.isEmpty {
+                                ContentUnavailableView("No data for \(g)", systemImage: "book")
+                            } else {
+                                List {
+                                    ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                                        HStack {
+                                            Text(row.book)
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                            Text("\(Int(round(row.pct)))%")
+                                                .font(.footnote.weight(.semibold))
+                                                .monospacedDigit()
+                                                .foregroundStyle(Color.gamerScoreColor(for: row.pct))
+                                                .frame(width: 56, alignment: .trailing)
+                                            Text("(\(row.correct)/\(row.answered))")
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                                .frame(width: 88, alignment: .trailing)
+                                        }
+                                    }
+                                }
+                                .listStyle(.insetGrouped)
+                            }
                         }
                     } else {
                         ContentUnavailableView("No genre selected", systemImage: "tag")
@@ -889,4 +991,3 @@ struct GamesOverviewCardView: View {
         }
     }
 }
-
