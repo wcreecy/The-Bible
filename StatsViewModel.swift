@@ -224,11 +224,6 @@ final class StatsViewModel: ObservableObject {
 
         let store = BibleStatsStore.shared
 
-        // All-time per-book from synced totals
-        let allTimePerBook: [String: Int] = store.loadTotals()
-        perBookAllTimeSessionTotals = allTimePerBook
-        totalSecondsAllTime = allTimePerBook.values.reduce(0) { $0 + max(0, $1) }
-
         // Daily per-book map: ["yyyy-MM-dd": [book: seconds]]
         let dailyByBook: [String: [String: Int]] = store.loadDailyTotalsByBook()
 
@@ -242,6 +237,18 @@ final class StatsViewModel: ObservableObject {
                 }
             }
             return map
+        }
+
+        // All-time per-book derived by summing all dailyByBook entries (ensures seconds + prevents legacy drift)
+        do {
+            var allTimeMap: [String: Int] = [:]
+            for (_, perBook) in dailyByBook {
+                for (book, sec) in perBook {
+                    allTimeMap[book, default: 0] += max(0, sec)
+                }
+            }
+            perBookAllTimeSessionTotals = allTimeMap
+            totalSecondsAllTime = allTimeMap.values.reduce(0) { $0 + max(0, $1) }
         }
 
         // Last 7 days (including today)
