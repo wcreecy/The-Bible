@@ -1,3 +1,5 @@
+// the entire code of the file with your changes goes here.
+// Do not skip over anything.
 import SwiftUI
 import Charts
 
@@ -7,19 +9,15 @@ struct GamesOverviewCardView: View {
     @ObservedObject private var stats = GameStats.shared
     @State private var version: Int = 0
 
-    // Size class to adapt header layout on iPhone
     @Environment(\.horizontalSizeClass) private var hSizeClass
-
-    // Persist the selected game across launches
     @AppStorage("statsSelectedGame") private var selectedGame: String = "All Games"
 
-    // Sleek icon for each game
     private func gameIcon(for name: String) -> String {
         switch name {
         case "All Games":    return "sparkles"
         case "Bible Quiz":   return "questionmark.circle"
         case "Hangman":      return "figure"
-        case "Verse Match":  return "text.badge.checkmark"
+        case "Verse Match":  return "text.quote"
         case "Beat the Clock": return "timer"
         case "Book Order":   return "books.vertical"
         case "Who am I?":    return "person.crop.circle.badge.questionmark"
@@ -28,40 +26,31 @@ struct GamesOverviewCardView: View {
         }
     }
 
-    // Custom sort key: treat "WORD" as "Who am I?" for ordering.
     private func sortKey(for name: String) -> String {
         let key = (name == "WORD") ? "Who am I?" : name
         return key.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .autoupdatingCurrent)
     }
 
-    // Stable comparator that forces "Who am I?" above "WORD" when keys tie.
     private func gameNameComparator(_ lhs: String, _ rhs: String) -> Bool {
         let l = sortKey(for: lhs)
         let r = sortKey(for: rhs)
         if l == r {
-            // Explicit priority: Who am I? first, then WORD, then deterministic fallback
             let priority: [String: Int] = ["Who am I?": 0, "WORD": 1]
             let pl = priority[lhs] ?? 2
             let pr = priority[rhs] ?? 2
             if pl != pr { return pl < pr }
-            // Deterministic fallback to avoid instability
             return lhs.localizedCaseInsensitiveCompare(rhs) == .orderedAscending
         }
         return l.localizedCompare(r) == .orderedAscending
     }
 
-    // WORD scope picker state (0=Normal, 1=Hard, 2=Combined)
     @State private var wordScope: Int = 2
 
-    // Bible Quiz: weak books controls
-    @State private var weakBooksScope: Int = 0 // 0=30 days, 1=60 days
+    @State private var weakBooksScope: Int = 0
     @State private var weakBooksMinAttempts: Int = 5
 
-    // Drill-down: Bible Quiz genre -> per-book sheet
     @State private var showGenreDrill: Bool = false
     @State private var selectedGenre: String? = nil
-
-    // MARK: - Play Now routing
 
     private func postSwitchToGamesTab() {
         NotificationCenter.default.post(
@@ -72,13 +61,11 @@ struct GamesOverviewCardView: View {
     }
 
     private func openSelectedGame() {
-        // If "All Games", just switch to the Games tab list.
         guard selectedGame != "All Games" else {
             postSwitchToGamesTab()
             return
         }
         postSwitchToGamesTab()
-        // Small async hop to allow tab switch before routing
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             NotificationCenter.default.post(
                 name: .openGameStart,
@@ -99,39 +86,33 @@ struct GamesOverviewCardView: View {
             let overallPct = breakdown.percentage
             let isEmpty = (totalAnswered == 0)
 
-            // Alphabetical picker options, case/diacritic-insensitive, with a stable tiebreaker:
-            // "Who am I?" must always appear above "WORD".
             let availableNames = Array(Set(entries.map { $0.name }))
             let pickerOptions = ["All Games"] + availableNames.sorted(by: gameNameComparator)
 
-            // Resolve selected entry (if any)
             let selectedEntry = entries.first(where: { $0.name == selectedGame })
 
-            // WORD-scoped KPIs and ring values when selected
             let wordScoped: (accPct: Double, played: Int, correct: Int, bestStreak: Int)? = {
                 guard selectedGame == "WORD" else { return nil }
 
-                // Per-mode counts
                 let n = GameStats.shared.wordleCounts(mode: .normal)
                 let h = GameStats.shared.wordleCounts(mode: .hard)
 
-                // Best streaks from persisted keys (include legacy _all for combined)
                 let bestN = UserDefaults.standard.integer(forKey: "wordleAllTimeBestStreak_normal")
                 let bestH = UserDefaults.standard.integer(forKey: "wordleAllTimeBestStreak_hard")
                 let bestAll = UserDefaults.standard.integer(forKey: "wordleAllTimeBestStreak_all")
 
                 switch wordScope {
-                case 0: // Normal
+                case 0:
                     let a = n.answered
                     let w = n.wins
                     let pct = a > 0 ? min(100, max(0, (Double(w) / Double(a)) * 100.0)) : 0
                     return (pct, a, w, bestN)
-                case 1: // Hard
+                case 1:
                     let a = h.answered
                     let w = h.wins
                     let pct = a > 0 ? min(100, max(0, (Double(w) / Double(a)) * 100.0)) : 0
                     return (pct, a, w, bestH)
-                default: // Combined
+                default:
                     let a = n.answered + h.answered
                     let w = n.wins + h.wins
                     let pct = a > 0 ? min(100, max(0, (Double(w) / Double(a)) * 100.0)) : 0
@@ -140,7 +121,6 @@ struct GamesOverviewCardView: View {
                 }
             }()
 
-            // KPIs per selection (falls back to generic for non-WORD)
             let kpiAccuracyPct: Double = {
                 if selectedGame == "WORD", let scoped = wordScoped { return scoped.accPct }
                 if selectedGame == "All Games" { return overallPct }
@@ -169,7 +149,6 @@ struct GamesOverviewCardView: View {
                 }
             }()
 
-            // Displayed gamer score in the ring (overall vs per-game or WORD-scoped)
             let displayPct: Double = {
                 if selectedGame == "WORD", let scoped = wordScoped { return scoped.accPct }
                 return (selectedGame == "All Games") ? overallPct : kpiAccuracyPct
@@ -177,7 +156,6 @@ struct GamesOverviewCardView: View {
             let displayTint: Color = Color.gamerScoreColor(for: displayPct)
 
             VStack(alignment: .leading, spacing: 10) {
-                // Single-row header with picker (compact tweaks)
                 HStack(spacing: hSizeClass == .compact ? 10 : 12) {
                     if isEmpty {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -211,15 +189,13 @@ struct GamesOverviewCardView: View {
                         .font(.headline)
                         .lineLimit(1)
 
-                    // Play button next to the title on larger screens only
                     if hSizeClass != .compact {
                         GamesOverviewPlayButton(openAction: openSelectedGame, selectedGame: selectedGame)
-                            .padding(.leading, 10) // add horizontal space between title and Play button
+                            .padding(.leading, 10)
                     }
 
                     Spacer(minLength: 8)
 
-                    // Picker remains fully tappable
                     Picker(selection: $selectedGame) {
                         ForEach(pickerOptions, id: \.self) { name in
                             Label(name, systemImage: gameIcon(for: name))
@@ -257,7 +233,6 @@ struct GamesOverviewCardView: View {
                     .animation(.easeInOut(duration: 0.2), value: selectedGame)
                 }
 
-                // On iPhone, move Play button to its own row so it doesn’t crowd the picker
                 if hSizeClass == .compact {
                     Button(action: openSelectedGame) {
                         Label("Play", systemImage: "play.fill")
@@ -268,11 +243,9 @@ struct GamesOverviewCardView: View {
                     .controlSize(.regular)
                 }
 
-                // Keep a horizontal line between the header and stats
                 Divider()
 
                 if !isEmpty {
-                    // KPIs reflect selected game (and WORD scope when applicable)
                     HStack(spacing: 8) {
                         MetricChip(title: "Accuracy", value: "\(Int(round(kpiAccuracyPct)))%", tint: kpiAccuracyTint)
                         MetricChip(title: "Played", value: "\(kpiPlayed)", tint: .blue)
@@ -280,8 +253,6 @@ struct GamesOverviewCardView: View {
                         MetricChip(title: "Best Streak", value: (kpiBestStreak > 0 ? "\(kpiBestStreak)" : "—"), tint: .orange)
                     }
 
-                    // NEW: Activity & Trend row for Overview — scoped to selectedGame
-                    // UPDATED: WORD respects mode scope (Combined/Normal/Hard)
                     let series30: [(date: Date, answered: Int, correct: Int)] = {
                         if selectedGame == "All Games" {
                             return GameStats.shared.dailySeriesLast(days: 30)
@@ -328,14 +299,12 @@ struct GamesOverviewCardView: View {
                     let trendArrow: String = trend7.deltaVsPrev >= 0 ? "arrow.up.right" : "arrow.down.right"
                     let hasRecentActivity30 = series30.contains { $0.answered > 0 }
 
-                    // Make this KPI row horizontally scrollable so 7D chip has normal size
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
                             MetricChip(title: "Active Days (30D)", value: "\(activeDays30)", tint: .purple)
                             MetricChip(title: "Qs/Day", value: "\(avgPerActive)", tint: .teal)
                             MetricChip(title: "Current Streak", value: streaksInfo.current > 0 ? "\(streaksInfo.current)" : "—", tint: .orange)
                             MetricChip(title: "Longest Streak", value: "\(streaksInfo.longest)", tint: .orange)
-                            // 7D Accuracy with delta (normal size chip)
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("7D Accuracy")
                                     .font(.caption)
@@ -373,8 +342,6 @@ struct GamesOverviewCardView: View {
                             .padding(.top, 2)
                     }
 
-                    // 30-day sparkline — scoped to selected game
-                    // NEW: For WORD, overlay gold dots on days with a Daily solve.
                     Chart {
                         ForEach(series30, id: \.date) { point in
                             LineMark(
@@ -391,12 +358,9 @@ struct GamesOverviewCardView: View {
                             .foregroundStyle(Color.accentColor.opacity(hasRecentActivity30 ? 0.18 : 0.08))
                         }
 
-                        // Overlay: only when WORD is selected (any scope). We use the combined solved-day map.
                         if selectedGame == "WORD" {
-                            // Build the last-30-day solved day key set once
                             let solvedKeys: Set<String> = GameStats.shared.wordleDailySolvedDayKeysLast(days: 30)
                             ForEach(series30, id: \.date) { point in
-                                // Match by local yyyy-MM-dd key
                                 let key = {
                                     var cal = Calendar.autoupdatingCurrent
                                     cal.timeZone = .autoupdatingCurrent
@@ -407,7 +371,7 @@ struct GamesOverviewCardView: View {
                                         x: .value("Date", point.date),
                                         y: .value("Played", point.answered)
                                     )
-                                    .symbolSize(28) // small dot
+                                    .symbolSize(28)
                                     .foregroundStyle(Color.yellow.opacity(0.9))
                                 }
                             }
@@ -419,12 +383,40 @@ struct GamesOverviewCardView: View {
                     .accessibilityLabel("Played per day in the last 30 days")
                     .animation(.easeInOut(duration: 0.35), value: version)
 
-                    // Caption clarifying the sparkline
                     Text("Questions per day (last 30 days)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
 
-                    // NEW: Bible Quiz specific — Accuracy by Testament
+                    if selectedGame == "All Games", hasRecentActivity30 {
+                        let bestDay: (date: Date, answered: Int, accuracy: Double)? = {
+                            let maxA = series30.map { $0.answered }.max() ?? 0
+                            guard maxA > 0 else { return nil }
+                            let candidates = series30.filter { $0.answered == maxA }
+                            let withAccuracy = candidates.map { p -> (Date, Int, Double) in
+                                let pct = p.answered > 0 ? (Double(p.correct) / Double(p.answered)) * 100.0 : 0
+                                return (p.date, p.answered, pct)
+                            }
+                            let sorted = withAccuracy.sorted {
+                                if $0.2 == $1.2 {
+                                    return $0.0 > $1.0
+                                }
+                                return $0.2 > $1.2
+                            }
+                            if let top = sorted.first {
+                                return (top.0, top.1, top.2)
+                            }
+                            return nil
+                        }()
+
+                        if let best = bestDay {
+                            Text("Best day in last 30 days: \(best.date.formatted(date: .abbreviated, time: .omitted)) — \(best.answered) questions, \(Int(round(best.accuracy)))% accuracy")
+                                .font(.footnote)
+                                .foregroundStyle(.primary)
+                                .monospacedDigit()
+                                .padding(.top, 4)
+                        }
+                    }
+
                     if selectedGame == "Bible Quiz" {
                         let summary = GameStats.shared.quizOTNTSummary()
                         VStack(alignment: .leading, spacing: 8) {
@@ -446,7 +438,6 @@ struct GamesOverviewCardView: View {
                         }
                     }
 
-                    // NEW: Bible Quiz specific — Accuracy by Genre (summary chips with horizontal scroll)
                     if selectedGame == "Bible Quiz" {
                         let rows = GameStats.shared.quizAccuracyByGenre()
                         VStack(alignment: .leading, spacing: 8) {
@@ -456,7 +447,6 @@ struct GamesOverviewCardView: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 8) {
                                     ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
-                                        // Choose a gentle tint per genre (fixed palette)
                                         let tint: Color = {
                                             switch row.genre {
                                             case "Law": return .blue
@@ -491,7 +481,6 @@ struct GamesOverviewCardView: View {
                         }
                     }
 
-                    // NEW: Hangman specific — Accuracy by Category (People/Places/Books)
                     if selectedGame == "Hangman" {
                         let rows = GameStats.shared.hangmanAccuracyByCategory()
                         VStack(alignment: .leading, spacing: 8) {
@@ -518,7 +507,6 @@ struct GamesOverviewCardView: View {
                         }
                     }
 
-                    // NEW: Beat the Clock specific — Accuracy by Type (People/Places)
                     if selectedGame == "Beat the Clock" {
                         let rows = GameStats.shared.beatclockAccuracyByType()
                         VStack(alignment: .leading, spacing: 8) {
@@ -544,7 +532,6 @@ struct GamesOverviewCardView: View {
                         }
                     }
 
-                    // NEW: Verse Match specific — Accuracy by Testament
                     if selectedGame == "Verse Match" {
                         let summary = GameStats.shared.verseMatchOTNTSummary()
                         VStack(alignment: .leading, spacing: 8) {
@@ -566,7 +553,6 @@ struct GamesOverviewCardView: View {
                         }
                     }
 
-                    // NEW: Verse Match specific — Accuracy by Genre (summary chips)
                     if selectedGame == "Verse Match" {
                         let rows = GameStats.shared.verseMatchAccuracyByGenre()
                         VStack(alignment: .leading, spacing: 8) {
@@ -610,7 +596,6 @@ struct GamesOverviewCardView: View {
                         }
                     }
 
-                    // NEW: Bible Quiz specific — Top weak books (last 30/60 days)
                     if selectedGame == "Bible Quiz" {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
@@ -626,7 +611,6 @@ struct GamesOverviewCardView: View {
                                 .frame(maxWidth: 140)
                             }
 
-                            // Min attempts threshold control
                             HStack(spacing: 10) {
                                 Text("Min attempts")
                                     .font(.caption)
@@ -642,7 +626,7 @@ struct GamesOverviewCardView: View {
 
                             let days = (weakBooksScope == 0) ? 30 : 60
                             let allRows = GameStats.shared.quizWeakBooks(lastNDays: days, minAttempts: weakBooksMinAttempts)
-                            let rows = Array(allRows.prefix(5)) // top 5 weakest
+                            let rows = Array(allRows.prefix(5))
 
                             if rows.isEmpty {
                                 Text("Not enough recent Bible Quiz activity.")
@@ -679,14 +663,12 @@ struct GamesOverviewCardView: View {
                         }
                         .padding(.top, 4)
 
-                        // NEW: Bible Quiz specific — Top strong books (mirror of weak books)
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
                                 Text("Top Strong Books")
                                     .font(.subheadline)
                                     .foregroundStyle(.secondary)
                                 Spacer()
-                                // Reuse same scope control (30D/60D)
                                 Picker("Scope", selection: $weakBooksScope) {
                                     Text("30D").tag(0)
                                     Text("60D").tag(1)
@@ -695,7 +677,6 @@ struct GamesOverviewCardView: View {
                                 .frame(maxWidth: 140)
                             }
 
-                            // Reuse same min attempts Stepper
                             HStack(spacing: 10) {
                                 Text("Min attempts")
                                     .font(.caption)
@@ -711,7 +692,7 @@ struct GamesOverviewCardView: View {
 
                             let daysStrong = (weakBooksScope == 0) ? 30 : 60
                             let allStrong = GameStats.shared.quizStrongBooks(lastNDays: daysStrong, minAttempts: weakBooksMinAttempts)
-                            let strongRows = Array(allStrong.prefix(5)) // top 5 strongest
+                            let strongRows = Array(allStrong.prefix(5))
 
                             if strongRows.isEmpty {
                                 Text("Not enough recent Bible Quiz activity.")
@@ -749,9 +730,142 @@ struct GamesOverviewCardView: View {
                         .padding(.top, 2)
                     }
 
-                    // WORD-only section: move WordleStatsCardView content here when selected
+                    // NEW: Verse Match weak/strong sections (mirroring Bible Quiz)
+                    if selectedGame == "Verse Match" {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("Top Weak Books")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                Spacer()
+                                Picker("Scope", selection: $weakBooksScope) {
+                                    Text("30D").tag(0)
+                                    Text("60D").tag(1)
+                                }
+                                .pickerStyle(.segmented)
+                                .frame(maxWidth: 140)
+                            }
+
+                            HStack(spacing: 10) {
+                                Text("Min attempts")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Stepper(value: $weakBooksMinAttempts, in: 1...50) {
+                                    Text("\(weakBooksMinAttempts)")
+                                        .font(.footnote.weight(.semibold))
+                                        .monospacedDigit()
+                                }
+                                .frame(maxWidth: 180, alignment: .leading)
+                                Spacer()
+                            }
+
+                            let days = (weakBooksScope == 0) ? 30 : 60
+                            let allRows = GameStats.shared.verseMatchWeakBooks(lastNDays: days, minAttempts: weakBooksMinAttempts)
+                            let rows = Array(allRows.prefix(5))
+
+                            if rows.isEmpty {
+                                Text("Not enough recent Verse Match activity.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                                    HStack {
+                                        Text(row.book)
+                                            .font(.subheadline.weight(.semibold))
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        Text("\(Int(round(row.pct)))%")
+                                            .font(.footnote.weight(.semibold))
+                                            .monospacedDigit()
+                                            .foregroundStyle(.red)
+                                            .frame(width: 56, alignment: .trailing)
+                                        Text("(\(row.correct)/\(row.answered))")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                            .frame(width: 88, alignment: .trailing)
+                                    }
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 10)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .fill(Color(.secondarySystemBackground))
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .stroke(Color.black.opacity(0.06), lineWidth: 1)
+                                    )
+                                }
+                            }
+                        }
+                        .padding(.top, 4)
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("Top Strong Books")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                Spacer()
+                                Picker("Scope", selection: $weakBooksScope) {
+                                    Text("30D").tag(0)
+                                    Text("60D").tag(1)
+                                }
+                                .pickerStyle(.segmented)
+                                .frame(maxWidth: 140)
+                            }
+
+                            HStack(spacing: 10) {
+                                Text("Min attempts")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Stepper(value: $weakBooksMinAttempts, in: 1...50) {
+                                    Text("\(weakBooksMinAttempts)")
+                                        .font(.footnote.weight(.semibold))
+                                        .monospacedDigit()
+                                }
+                                .frame(maxWidth: 180, alignment: .leading)
+                                Spacer()
+                            }
+
+                            let daysStrong = (weakBooksScope == 0) ? 30 : 60
+                            let allStrong = GameStats.shared.verseMatchStrongBooks(lastNDays: daysStrong, minAttempts: weakBooksMinAttempts)
+                            let strongRows = Array(allStrong.prefix(5))
+
+                            if strongRows.isEmpty {
+                                Text("Not enough recent Verse Match activity.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                ForEach(Array(strongRows.enumerated()), id: \.offset) { _, row in
+                                    HStack {
+                                        Text(row.book)
+                                            .font(.subheadline.weight(.semibold))
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        Text("\(Int(round(row.pct)))%")
+                                            .font(.footnote.weight(.semibold))
+                                            .monospacedDigit()
+                                            .foregroundStyle(.green)
+                                            .frame(width: 56, alignment: .trailing)
+                                        Text("(\(row.correct)/\(row.answered))")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                            .frame(width: 88, alignment: .trailing)
+                                    }
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 10)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .fill(Color(.secondarySystemBackground))
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .stroke(Color.black.opacity(0.06), lineWidth: 1)
+                                    )
+                                }
+                            }
+                        }
+                        .padding(.top, 2)
+                    }
+
                     if selectedGame == "WORD" {
-                        // Segmented picker scope (Combined/Normal/Hard) — Combined default (tag 2)
                         Picker("Scope", selection: $wordScope) {
                             Text("Combined").tag(2)
                             Text("Normal").tag(0)
@@ -759,7 +873,6 @@ struct GamesOverviewCardView: View {
                         }
                         .pickerStyle(.segmented)
 
-                        // Average guesses + distribution (per mode)
                         let averageAndDist: (avg: Double, dist: [Int]) = {
                             switch wordScope {
                             case 0:
@@ -820,7 +933,6 @@ struct GamesOverviewCardView: View {
                         }
                         .frame(height: 180)
 
-                        // Timing stats (per mode)
                         let timeStats: (total: Int, wins: Int, losses: Int) = {
                             switch wordScope {
                             case 0: return GameStats.shared.wordleTimeStats(mode: .normal)
@@ -829,7 +941,6 @@ struct GamesOverviewCardView: View {
                             }
                         }()
 
-                        // Counts for denominators (per mode)
                         let counts: (answered: Int, wins: Int, losses: Int) = {
                             switch wordScope {
                             case 0:
@@ -871,14 +982,12 @@ struct GamesOverviewCardView: View {
                 }
             }
             .padding(.top, 2)
-            // Compact, icon-only Play button overlay removed — now in header row
         } label: {
             Label("Games", systemImage: "gamecontroller")
         }
         .onAppear { version &+= 1 }
         .onChange(of: stats.version) { _, _ in
             version &+= 1
-            // Ensure selection remains valid after a stats refresh
             let names = Array(Set(GameStats.shared.breakdownSnapshot().entries.map { $0.name }))
             if selectedGame != "All Games" && !names.contains(selectedGame) {
                 selectedGame = "All Games"
@@ -887,7 +996,6 @@ struct GamesOverviewCardView: View {
         .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
             version &+= 1
         }
-        // Drill-down sheet for Bible Quiz or Verse Match genre -> per-book accuracy
         .sheet(isPresented: $showGenreDrill) {
             NavigationStack {
                 VStack(alignment: .leading, spacing: 12) {
@@ -956,8 +1064,6 @@ struct GamesOverviewCardView: View {
         }
     }
 
-    // Removed local metricChip/labeledValue; using shared MetricChip/LabeledValue instead.
-
     private func timingPill(title: String, value: String, tint: Color) -> some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(title)
@@ -991,3 +1097,4 @@ struct GamesOverviewCardView: View {
         }
     }
 }
+

@@ -1,55 +1,47 @@
+// the entire code of the file with your changes goes here.
+// Do not skip over anything.
 import Foundation
 import Combine
 
-// Centralized aggregator and writer for all game counters and derived Gamer Score.
-// Uses UserDefaults-backed counters (synced via iCloudSyncCoordinator) and exposes
-// a single write API for all games. Also provides a per-game breakdown snapshot for UI.
 @MainActor
 final class GameStats: ObservableObject {
     static let shared = GameStats()
 
-    // Simple version token to force SwiftUI refreshes when external sync merges occur.
     @Published private(set) var version: Int = 0
 
     private var observer: Any?
 
-    // Canonical game identifiers
     enum GameID {
         case quiz
         case hangman
         case beatclock
         case versematch
         case bookorder
-        case whoami // NEW
-        case wordle // NEW
+        case whoami
+        case wordle
     }
 
-    // Canonical difficulty for the write API (maps to per-game suffixes)
     enum Difficulty {
         case easy
-        case normal     // quiz "normal"
-        case medium     // legacy for hangman/beatclock/refmatch — now maps to "normal"
+        case normal
+        case medium
         case hard
-        case none       // bookorder (no per-difficulty keys), wordle (no difficulty)
+        case none
     }
 
-    // Wordle type (split Daily vs Free Play)
     enum WordleType {
         case daily
         case free
     }
 
-    // NEW: Wordle mode (Normal vs Hard) — aggregates across daily+free
     enum WordMode {
         case normal
         case hard
     }
 
     private init() {
-        // One-time: wipe legacy unsuffixed keys to avoid double-counting with suffixed data.
         migrateLegacyGameKeysIfNeeded()
 
-        // Listen for iCloud KVS merges of game counters
         observer = NotificationCenter.default.addObserver(
             forName: .gameStatsExternallyUpdated,
             object: nil,
@@ -61,58 +53,39 @@ final class GameStats: ObservableObject {
         }
     }
 
-    // MARK: - One-time migration (wipe legacy unsuffixed keys)
-
     private static let legacyWipeFlagKey = "didWipeLegacyUnsuffixedGameKeys_v1"
 
     private func migrateLegacyGameKeysIfNeeded() {
         let defaults = UserDefaults.standard
         guard !defaults.bool(forKey: Self.legacyWipeFlagKey) else { return }
 
-        // Legacy unsuffixed keys to remove (Book Order intentionally retained as unsuffixed)
         let legacyKeys: [String] = [
-            // Quiz (old unsuffixed)
             "quizAllTimeCorrect",
             "quizAllTimeAnswered",
             "quizAllTimeBestStreak",
-
-            // Hangman (old unsuffixed)
             "hangmanAllTimeCorrect",
             "hangmanAllTimeAnswered",
             "hangmanAllTimeBestStreak",
-
-            // Beat the Clock (old unsuffixed)
             "beatclockAllTimeCorrect",
             "beatclockAllTimeAnswered",
             "beatclockAllTimeBestStreak",
-
-            // Verse Match (old unsuffixed)
             "refmatchAllTimeCorrect",
             "refmatchAllTimeAnswered",
             "refmatchAllTimeBestStreak"
-
-            // Who am I? shipped only suffixed keys — nothing to wipe here.
-            // Book Order is intentionally unsuffixed — do not wipe.
-            // Wordle is new — no legacy unsuffixed keys here.
         ]
 
         for key in legacyKeys {
             defaults.removeObject(forKey: key)
         }
 
-        // Mark migration complete
         defaults.set(true, forKey: Self.legacyWipeFlagKey)
-
-        // Nudge listeners that totals may have changed due to cleanup
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
-
-    // MARK: - Public read API
 
     struct Snapshot {
         let totalCorrect: Int
         let totalAnswered: Int
-        let percentage: Double // 0...100
+        let percentage: Double
     }
 
     func snapshot() -> Snapshot {
@@ -121,7 +94,6 @@ final class GameStats: ObservableObject {
         return Snapshot(totalCorrect: totals.correct, totalAnswered: totals.answered, percentage: pct)
     }
 
-    // Public breakdown for Stats tab
     struct GameBreakdown {
         struct Entry {
             let name: String
@@ -145,9 +117,8 @@ final class GameStats: ObservableObject {
         let r = versematch
         let b = beatclock
         let o = bookorder
-        let w = whoami // NEW
+        let w = whoami
 
-        // Wordle: include both types + legacy "_all" for overall breakdown
         let wdDaily = wordle(type: .daily)
         let wdFree = wordle(type: .free)
         let wdLegacyAll = wordleLegacyAll
@@ -169,9 +140,6 @@ final class GameStats: ObservableObject {
         return GameBreakdown(entries: entries)
     }
 
-    // MARK: - Public write API
-
-    // Helper: short storage key per game (for per-game daily maps)
     private static func storageKey(for game: GameID) -> String {
         switch game {
         case .quiz: return "quiz"
@@ -180,11 +148,10 @@ final class GameStats: ObservableObject {
         case .versematch: return "versematch"
         case .bookorder: return "bookorder"
         case .whoami: return "whoami"
-        case .wordle: return "word" // combined/overall Wordle
+        case .wordle: return "word"
         }
     }
 
-    // Reverse mapping from display name to storage key
     private static func storageKey(forDisplayName name: String) -> String? {
         switch name {
         case "Bible Quiz": return "quiz"
@@ -198,7 +165,6 @@ final class GameStats: ObservableObject {
         }
     }
 
-    // NEW: Per-mode storage key for WORD (Normal vs Hard)
     private static func storageKeyForWord(mode: WordMode) -> String {
         switch mode {
         case .normal: return "word_normal"
@@ -207,10 +173,8 @@ final class GameStats: ObservableObject {
     }
 
     private func updateDailyMaps(addAnswered: Int, addCorrect: Int, forGameKey key: String) {
-        // Local yyyy-MM-dd key
         let dayKey = Self.localDayKey(for: Date())
 
-        // Overall maps
         var dailyAnswered: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered")
         dailyAnswered[dayKey, default: 0] = max(0, (dailyAnswered[dayKey] ?? 0) + max(0, addAnswered))
         saveJSONMap(dailyAnswered, forKey: "gamesDailyAnswered")
@@ -219,7 +183,6 @@ final class GameStats: ObservableObject {
         dailyCorrect[dayKey, default: 0] = max(0, (dailyCorrect[dayKey] ?? 0) + max(0, addCorrect))
         saveJSONMap(dailyCorrect, forKey: "gamesDailyCorrect")
 
-        // Per-game maps
         var perAnswered: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered_\(key)")
         perAnswered[dayKey, default: 0] = max(0, (perAnswered[dayKey] ?? 0) + max(0, addAnswered))
         saveJSONMap(perAnswered, forKey: "gamesDailyAnswered_\(key)")
@@ -229,12 +192,10 @@ final class GameStats: ObservableObject {
         saveJSONMap(perCorrect, forKey: "gamesDailyCorrect_\(key)")
     }
 
-    // NEW: Bible Quiz per-book maps write API (all-time + daily nested maps)
     func recordQuizPerBook(bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
         guard !bookName.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
         let _ = UserDefaults.standard
 
-        // Answered map (all-time)
         var answeredMap: [String: Int] = loadJSONMap(forKey: "quizPerBookAnsweredMap")
         if addAnswered != 0 {
             answeredMap[bookName, default: 0] = max(0, (answeredMap[bookName] ?? 0) + max(0, addAnswered))
@@ -242,7 +203,6 @@ final class GameStats: ObservableObject {
             iCloudSyncCoordinator.shared.pushKey("quizPerBookAnsweredMap")
         }
 
-        // Correct map (all-time)
         var correctMap: [String: Int] = loadJSONMap(forKey: "quizPerBookCorrectMap")
         if addCorrect != 0 {
             correctMap[bookName, default: 0] = max(0, (correctMap[bookName] ?? 0) + max(0, addCorrect))
@@ -250,10 +210,8 @@ final class GameStats: ObservableObject {
             iCloudSyncCoordinator.shared.pushKey("quizPerBookCorrectMap")
         }
 
-        // NEW: Daily nested maps for last N days analytics
         let dayKey = Self.localDayKey(for: Date())
 
-        // Daily Answered: [dayKey: [book: Int]]
         var dailyAnsweredNested: [String: [String: Int]] = loadNestedJSONMap(forKey: "quizPerBookDailyAnswered")
         var dayAnswered = dailyAnsweredNested[dayKey] ?? [:]
         if addAnswered != 0 {
@@ -263,7 +221,6 @@ final class GameStats: ObservableObject {
             iCloudSyncCoordinator.shared.pushKey("quizPerBookDailyAnswered")
         }
 
-        // Daily Correct: [dayKey: [book: Int]]
         var dailyCorrectNested: [String: [String: Int]] = loadNestedJSONMap(forKey: "quizPerBookDailyCorrect")
         var dayCorrect = dailyCorrectNested[dayKey] ?? [:]
         if addCorrect != 0 {
@@ -273,16 +230,14 @@ final class GameStats: ObservableObject {
             iCloudSyncCoordinator.shared.pushKey("quizPerBookDailyCorrect")
         }
 
-        // Nudge listeners
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // NEW: Verse Match per-book maps write API (all-time)
+    // UPDATED: Verse Match per-book maps writer — now writes all-time + daily nested maps
     func recordVerseMatchPerBook(bookName: String, answered addAnswered: Int, correct addCorrect: Int) {
         let trimmed = bookName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
 
-        // Answered map (all-time)
         var answeredMap: [String: Int] = loadJSONMap(forKey: "versematchPerBookAnsweredMap")
         if addAnswered != 0 {
             answeredMap[trimmed, default: 0] = max(0, (answeredMap[trimmed] ?? 0) + max(0, addAnswered))
@@ -290,12 +245,30 @@ final class GameStats: ObservableObject {
             iCloudSyncCoordinator.shared.pushKey("versematchPerBookAnsweredMap")
         }
 
-        // Correct map (all-time)
         var correctMap: [String: Int] = loadJSONMap(forKey: "versematchPerBookCorrectMap")
         if addCorrect != 0 {
             correctMap[trimmed, default: 0] = max(0, (correctMap[trimmed] ?? 0) + max(0, addCorrect))
             saveJSONMap(correctMap, forKey: "versematchPerBookCorrectMap")
             iCloudSyncCoordinator.shared.pushKey("versematchPerBookCorrectMap")
+        }
+
+        // NEW: Daily nested maps (local-only; not mirrored to KVS, same as Quiz)
+        let dayKey = Self.localDayKey(for: Date())
+
+        var vmDailyA: [String: [String: Int]] = loadNestedJSONMap(forKey: "versematchPerBookDailyAnswered")
+        var vmDayA = vmDailyA[dayKey] ?? [:]
+        if addAnswered != 0 {
+            vmDayA[trimmed, default: 0] = max(0, (vmDayA[trimmed] ?? 0) + max(0, addAnswered))
+            vmDailyA[dayKey] = vmDayA
+            saveNestedJSONMap(vmDailyA, forKey: "versematchPerBookDailyAnswered")
+        }
+
+        var vmDailyC: [String: [String: Int]] = loadNestedJSONMap(forKey: "versematchPerBookDailyCorrect")
+        var vmDayC = vmDailyC[dayKey] ?? [:]
+        if addCorrect != 0 {
+            vmDayC[trimmed, default: 0] = max(0, (vmDayC[trimmed] ?? 0) + max(0, addCorrect))
+            vmDailyC[dayKey] = vmDayC
+            saveNestedJSONMap(vmDailyC, forKey: "versematchPerBookDailyCorrect")
         }
 
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
@@ -427,7 +400,6 @@ final class GameStats: ObservableObject {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // New: Wordle type-aware writer (per-type)
     func recordWordleRound(type: WordleType, correct addCorrect: Int, answered addAnswered: Int, currentBestStreak: Int) {
         let defaults = UserDefaults.standard
         let suf = (type == .daily) ? "daily" : "free"
@@ -448,8 +420,6 @@ final class GameStats: ObservableObject {
         incInt("wordleAllTimeAnswered_\(suf)", by: addAnswered)
         maxInt("wordleAllTimeBestStreak_\(suf)", candidate: currentBestStreak)
 
-        // Keep legacy “_all” untouched for back-compat. Do not auto-aggregate to "_all".
-
         do {
             updateDailyMaps(addAnswered: addAnswered, addCorrect: addCorrect, forGameKey: "word")
 
@@ -462,9 +432,7 @@ final class GameStats: ObservableObject {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // NEW: Wordle result writer with guesses + histogram tracking — now per-type and per-mode
     func recordWordleResult(type: WordleType, mode: WordMode, won: Bool, guesses: Int, currentBestStreak: Int) {
-        // First, update the standard per-type counters (correct/answered/streak)
         recordWordleRound(
             type: type,
             correct: won ? 1 : 0,
@@ -472,7 +440,6 @@ final class GameStats: ObservableObject {
             currentBestStreak: currentBestStreak
         )
 
-        // NEW: also update per-mode daily maps so mode-scoped activity/trend work
         let perModeKey = Self.storageKeyForWord(mode: mode)
         updateDailyMaps(addAnswered: 1, addCorrect: won ? 1 : 0, forGameKey: perModeKey)
 
@@ -494,23 +461,17 @@ final class GameStats: ObservableObject {
             if candidate > old { setInt(key, candidate) }
         }
 
-        // Per-mode aggregates (Normal/Hard) — counts and streak
         incInt("wordleAllTimeCorrect_\(modeSuf)", by: won ? 1 : 0)
         incInt("wordleAllTimeAnswered_\(modeSuf)", by: 1)
         maxInt("wordleAllTimeBestStreak_\(modeSuf)", candidate: currentBestStreak)
 
-        // Only track guess distribution and average on wins
         if won {
-            // Per-type
             incInt("wordleWinsGuessSum_\(typeSuf)", by: clamped)
             incInt("wordleWinsOnGuess\(clamped)_\(typeSuf)", by: 1)
-
-            // Per-mode
             incInt("wordleWinsGuessSum_\(modeSuf)", by: clamped)
             incInt("wordleWinsOnGuess\(clamped)_\(modeSuf)", by: 1)
         }
 
-        // NEW: Stamp Daily solved day -> JSON map ["yyyy-MM-dd": 1]
         if type == .daily && won {
             let dayKey = Self.localDayKey(for: Date())
             var solved: [String: Int] = loadJSONMap(forKey: "wordleDailySolvedDays")
@@ -524,12 +485,10 @@ final class GameStats: ObservableObject {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // Overload retained for back-compat (assumes Normal mode)
     func recordWordleResult(type: WordleType, won: Bool, guesses: Int, currentBestStreak: Int) {
         recordWordleResult(type: type, mode: .normal, won: won, guesses: guesses, currentBestStreak: currentBestStreak)
     }
 
-    // NEW: Wordle timing writer (total, wins, losses) — now also per-mode
     func recordWordleTime(type: WordleType, mode: WordMode, won: Bool, elapsedSeconds: Int) {
         let defaults = UserDefaults.standard
         let typeSuf = (type == .daily) ? "daily" : "free"
@@ -544,7 +503,6 @@ final class GameStats: ObservableObject {
             setInt(key, old + max(0, delta))
         }
 
-        // Per-type timing
         incInt("wordleTimeTotal_seconds_\(typeSuf)", by: elapsedSeconds)
         if won {
             incInt("wordleTimeWins_seconds_\(typeSuf)", by: elapsedSeconds)
@@ -552,7 +510,6 @@ final class GameStats: ObservableObject {
             incInt("wordleTimeLosses_seconds_\(typeSuf)", by: elapsedSeconds)
         }
 
-        // Per-mode timing
         incInt("wordleTimeTotal_seconds_\(modeSuf)", by: elapsedSeconds)
         if won {
             incInt("wordleTimeWins_seconds_\(modeSuf)", by: elapsedSeconds)
@@ -563,18 +520,14 @@ final class GameStats: ObservableObject {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // Overload retained for back-compat (assumes Normal mode)
     func recordWordleTime(type: WordleType, won: Bool, elapsedSeconds: Int) {
         recordWordleTime(type: type, mode: .normal, won: won, elapsedSeconds: elapsedSeconds)
     }
-
-    // MARK: - Aggregation (reads)
 
     private func readInt(_ key: String) -> Int {
         UserDefaults.standard.integer(forKey: key)
     }
 
-    // Prefer suffixed keys; only use legacy if all suffixed are zero.
     private func sumAcross(prefix: String, parts: [String], legacyKey: String?) -> Int {
         let partValues = parts.map { readInt("\(prefix)\($0)") }
         let sumParts = partValues.reduce(0) { $0 + max(0, $1) }
@@ -772,8 +725,6 @@ final class GameStats: ObservableObject {
         let raw = (Double(correct) / Double(answered)) * 100.0
         return min(100, max(0, raw))
     }
-
-    // MARK: - New daily helpers and last played
 
     static func localDayKey(for date: Date, calendar: Calendar = .autoupdatingCurrent) -> String {
         var cal = calendar
@@ -1053,8 +1004,6 @@ final class GameStats: ObservableObject {
         return (name, f.localizedString(for: date, relativeTo: now))
     }
 
-    // MARK: - NEW: Bible Quiz per-book read + OT/NT aggregation
-
     private func loadQuizPerBookMaps() -> (answered: [String: Int], correct: [String: Int]) {
         let a: [String: Int] = loadJSONMap(forKey: "quizPerBookAnsweredMap")
         let c: [String: Int] = loadJSONMap(forKey: "quizPerBookCorrectMap")
@@ -1167,7 +1116,6 @@ final class GameStats: ObservableObject {
         return rows
     }
 
-    // NEW: Strongest books (mirror of weak books) — highest accuracy first
     func quizStrongBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
         let (dailyA, dailyC) = loadQuizPerBookDailyMaps()
 
@@ -1213,8 +1161,6 @@ final class GameStats: ObservableObject {
         return rows
     }
 
-    // MARK: - NEW: WORD daily solved last-N day keys
-
     func wordleDailySolvedDayKeysLast(days: Int, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> Set<String> {
         let solved: [String: Int] = loadJSONMap(forKey: "wordleDailySolvedDays")
         var cal = calendar
@@ -1231,8 +1177,6 @@ final class GameStats: ObservableObject {
         }
         return keys
     }
-
-    // MARK: - NEW: Hangman per-category (People/Places/Books)
 
     private func loadHangmanPerCategoryMaps() -> (answered: [String: Int], correct: [String: Int]) {
         let a: [String: Int] = loadJSONMap(forKey: "hangmanPerCategoryAnsweredMap")
@@ -1263,7 +1207,6 @@ final class GameStats: ObservableObject {
 
     func hangmanAccuracyByCategory() -> [(category: String, answered: Int, correct: Int, pct: Double)] {
         let (aMap, cMap) = loadHangmanPerCategoryMaps()
-        // Fixed order: People, Places, Books
         let order = ["People", "Places", "Books"]
         return order.map { cat in
             let a = max(0, aMap[cat] ?? 0)
@@ -1273,10 +1216,8 @@ final class GameStats: ObservableObject {
         }
     }
 
-    // MARK: - NEW: Bible Quiz per-genre drill-down (book-level)
     func quizAccuracyByBook(inGenre genreName: String) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
         let (answeredMap, correctMap) = loadQuizPerBookMaps()
-        // Build from canonical books list so we include books with zero attempts (e.g., Genesis, Exodus).
         let allCanonicalBooks = BibleData.books.map { $0.name }
         var rows: [(String, Int, Int, Double)] = []
         for b in allCanonicalBooks {
@@ -1284,19 +1225,15 @@ final class GameStats: ObservableObject {
             guard genre == genreName else { continue }
             let a = max(0, answeredMap[b] ?? 0)
             let c = max(0, correctMap[b] ?? 0)
-            // Include even when a == 0 so the list matches Genre Distribution behavior.
             let pct = a > 0 ? min(100, max(0, (Double(c) / Double(a)) * 100.0)) : 0
             rows.append((b, a, c, pct))
         }
-        // Sort by canonical order
         let canonicalPos = Dictionary(uniqueKeysWithValues: allCanonicalBooks.enumerated().map { ($1, $0) })
         rows.sort { lhs, rhs in
             (canonicalPos[lhs.0] ?? .max) < (canonicalPos[rhs.0] ?? .max)
         }
         return rows
     }
-
-    // MARK: - NEW: Beat the Clock per-type (People/Places)
 
     private func loadBeatClockPerTypeMaps() -> (answered: [String: Int], correct: [String: Int]) {
         let a: [String: Int] = loadJSONMap(forKey: "beatclockPerTypeAnsweredMap")
@@ -1308,7 +1245,6 @@ final class GameStats: ObservableObject {
         let trimmed = type.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, (addAnswered != 0 || addCorrect != 0) else { return }
 
-        // Answered map
         var aMap: [String: Int] = loadJSONMap(forKey: "beatclockPerTypeAnsweredMap")
         if addAnswered != 0 {
             aMap[trimmed, default: 0] = max(0, (aMap[trimmed] ?? 0) + max(0, addAnswered))
@@ -1316,7 +1252,6 @@ final class GameStats: ObservableObject {
             iCloudSyncCoordinator.shared.pushKey("beatclockPerTypeAnsweredMap")
         }
 
-        // Correct map
         var cMap: [String: Int] = loadJSONMap(forKey: "beatclockPerTypeCorrectMap")
         if addCorrect != 0 {
             cMap[trimmed, default: 0] = max(0, (cMap[trimmed] ?? 0) + max(0, addCorrect))
@@ -1329,7 +1264,6 @@ final class GameStats: ObservableObject {
 
     func beatclockAccuracyByType() -> [(type: String, answered: Int, correct: Int, pct: Double)] {
         let (aMap, cMap) = loadBeatClockPerTypeMaps()
-        // Fixed order for UI: People, Places
         let order = ["People", "Places"]
         return order.map { t in
             let a = max(0, aMap[t] ?? 0)
@@ -1339,11 +1273,16 @@ final class GameStats: ObservableObject {
         }
     }
 
-    // MARK: - NEW: Verse Match per-book read + OT/NT and Genre aggregations
-
     private func loadVerseMatchPerBookMaps() -> (answered: [String: Int], correct: [String: Int]) {
         let a: [String: Int] = loadJSONMap(forKey: "versematchPerBookAnsweredMap")
         let c: [String: Int] = loadJSONMap(forKey: "versematchPerBookCorrectMap")
+        return (a, c)
+    }
+
+    // NEW: Verse Match daily nested per-book maps loader
+    private func loadVerseMatchPerBookDailyMaps() -> (answered: [String: [String: Int]], correct: [String: [String: Int]]) {
+        let a: [String: [String: Int]] = loadNestedJSONMap(forKey: "versematchPerBookDailyAnswered")
+        let c: [String: [String: Int]] = loadNestedJSONMap(forKey: "versematchPerBookDailyCorrect")
         return (a, c)
     }
 
@@ -1393,7 +1332,6 @@ final class GameStats: ObservableObject {
         }
     }
 
-    // NEW: Verse Match per-genre drill-down (book-level)
     func verseMatchAccuracyByBook(inGenre genreName: String) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
         let (answeredMap, correctMap) = loadVerseMatchPerBookMaps()
         let allCanonicalBooks = BibleData.books.map { $0.name }
@@ -1412,4 +1350,96 @@ final class GameStats: ObservableObject {
         }
         return rows
     }
+
+    // NEW: Verse Match weak/strong books over last N days (mirrors Quiz)
+    func verseMatchWeakBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        let (dailyA, dailyC) = loadVerseMatchPerBookDailyMaps()
+
+        var cal = Calendar.autoupdatingCurrent
+        cal.timeZone = .autoupdatingCurrent
+        let startOfToday = cal.startOfDay(for: Date())
+        var keys: [String] = []
+        for i in stride(from: lastNDays - 1, through: 0, by: -1) {
+            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                keys.append(Self.localDayKey(for: d, calendar: cal))
+            }
+        }
+
+        var bookA: [String: Int] = [:]
+        var bookC: [String: Int] = [:]
+        for k in keys {
+            if let perBookA = dailyA[k] {
+                for (book, val) in perBookA {
+                    bookA[book, default: 0] += max(0, val)
+                }
+            }
+            if let perBookC = dailyC[k] {
+                for (book, val) in perBookC {
+                    bookC[book, default: 0] += max(0, val)
+                }
+            }
+        }
+
+        var rows: [(String, Int, Int, Double)] = []
+        let allBooks = Set(bookA.keys).union(bookC.keys)
+        for b in allBooks {
+            let a = max(0, bookA[b] ?? 0)
+            let c = max(0, bookC[b] ?? 0)
+            guard a >= minAttempts else { continue }
+            let pct = a > 0 ? min(100, max(0, (Double(c) / Double(a)) * 100.0)) : 0
+            rows.append((b, a, c, pct))
+        }
+
+        rows.sort { lhs, rhs in
+            if lhs.3 == rhs.3 { return lhs.0 < rhs.0 }
+            return lhs.3 < rhs.3
+        }
+        return rows
+    }
+
+    func verseMatchStrongBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        let (dailyA, dailyC) = loadVerseMatchPerBookDailyMaps()
+
+        var cal = Calendar.autoupdatingCurrent
+        cal.timeZone = .autoupdatingCurrent
+        let startOfToday = cal.startOfDay(for: Date())
+        var keys: [String] = []
+        for i in stride(from: lastNDays - 1, through: 0, by: -1) {
+            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
+                keys.append(Self.localDayKey(for: d, calendar: cal))
+            }
+        }
+
+        var bookA: [String: Int] = [:]
+        var bookC: [String: Int] = [:]
+        for k in keys {
+            if let perBookA = dailyA[k] {
+                for (book, val) in perBookA {
+                    bookA[book, default: 0] += max(0, val)
+                }
+            }
+            if let perBookC = dailyC[k] {
+                for (book, val) in perBookC {
+                    bookC[book, default: 0] += max(0, val)
+                }
+            }
+        }
+
+        var rows: [(String, Int, Int, Double)] = []
+        let allBooks = Set(bookA.keys).union(bookC.keys)
+        for b in allBooks {
+            let a = max(0, bookA[b] ?? 0)
+            let c = max(0, bookC[b] ?? 0)
+            guard a >= minAttempts else { continue }
+            let pct = a > 0 ? min(100, max(0, (Double(c) / Double(a)) * 100.0)) : 0
+            rows.append((b, a, c, pct))
+        }
+
+        rows.sort { lhs, rhs in
+            if lhs.3 == rhs.3 { return lhs.0 < rhs.0 }
+            return lhs.3 > rhs.3
+        }
+        return rows
+    }
 }
+
