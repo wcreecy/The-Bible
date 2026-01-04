@@ -41,6 +41,7 @@ final class GameStats: ObservableObject {
 
     private init() {
         migrateLegacyGameKeysIfNeeded()
+        migrateQuizCombinedIfNeeded()
 
         observer = NotificationCenter.default.addObserver(
             forName: .gameStatsExternallyUpdated,
@@ -54,6 +55,7 @@ final class GameStats: ObservableObject {
     }
 
     private static let legacyWipeFlagKey = "didWipeLegacyUnsuffixedGameKeys_v1"
+    private static let quizCombinedMigrationFlagKey = "didMigrateQuizCombinedAll_v1"
 
     private func migrateLegacyGameKeysIfNeeded() {
         let defaults = UserDefaults.standard
@@ -79,6 +81,54 @@ final class GameStats: ObservableObject {
         }
 
         defaults.set(true, forKey: Self.legacyWipeFlagKey)
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
+    // One-time migration: combine existing per-difficulty Quiz stats into combined "_all" keys.
+    private func migrateQuizCombinedIfNeeded() {
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: Self.quizCombinedMigrationFlagKey) else { return }
+
+        // Sum across easy/normal/hard; also consider legacy unsuffixed as fallback
+        func readInt(_ key: String) -> Int { max(0, defaults.integer(forKey: key)) }
+
+        let cEasy = readInt("quizAllTimeCorrect_easy")
+        let cNorm = readInt("quizAllTimeCorrect_normal")
+        let cHard = readInt("quizAllTimeCorrect_hard")
+        let aEasy = readInt("quizAllTimeAnswered_easy")
+        let aNorm = readInt("quizAllTimeAnswered_normal")
+        let aHard = readInt("quizAllTimeAnswered_hard")
+        let bEasy = readInt("quizAllTimeBestStreak_easy")
+        let bNorm = readInt("quizAllTimeBestStreak_normal")
+        let bHard = readInt("quizAllTimeBestStreak_hard")
+
+        let legacyC = readInt("quizAllTimeCorrect")
+        let legacyA = readInt("quizAllTimeAnswered")
+        let legacyB = readInt("quizAllTimeBestStreak")
+
+        let sumCorrect = cEasy + cNorm + cHard + legacyC
+        let sumAnswered = aEasy + aNorm + aHard + legacyA
+        let bestStreak = max(bEasy, bNorm, bHard, legacyB)
+
+        let existingAllC = readInt("quizAllTimeCorrect_all")
+        let existingAllA = readInt("quizAllTimeAnswered_all")
+        let existingAllB = readInt("quizAllTimeBestStreak_all")
+
+        // Only write if the combined keys are currently zero to avoid clobbering user progress
+        if existingAllC == 0 && sumCorrect > 0 {
+            defaults.set(sumCorrect, forKey: "quizAllTimeCorrect_all")
+            iCloudSyncCoordinator.shared.pushKey("quizAllTimeCorrect_all")
+        }
+        if existingAllA == 0 && sumAnswered > 0 {
+            defaults.set(sumAnswered, forKey: "quizAllTimeAnswered_all")
+            iCloudSyncCoordinator.shared.pushKey("quizAllTimeAnswered_all")
+        }
+        if existingAllB == 0 && bestStreak > 0 {
+            defaults.set(bestStreak, forKey: "quizAllTimeBestStreak_all")
+            iCloudSyncCoordinator.shared.pushKey("quizAllTimeBestStreak_all")
+        }
+
+        defaults.set(true, forKey: Self.quizCombinedMigrationFlagKey)
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
@@ -341,9 +391,14 @@ final class GameStats: ObservableObject {
         switch game {
         case .quiz:
             guard let s = suf else { return }
+            // Keep per-difficulty keys for back-compat/analytics
             incInt("quizAllTimeCorrect_\(s)", by: addCorrect)
             incInt("quizAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("quizAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            // NEW: Mirror to combined keys so all difficulties share the same all-time stats
+            incInt("quizAllTimeCorrect_all", by: addCorrect)
+            incInt("quizAllTimeAnswered_all", by: addAnswered)
+            maxInt("quizAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .hangman:
             guard let s = suf else { return }
@@ -564,6 +619,14 @@ final class GameStats: ObservableObject {
     }
 
     private var quiz: GameStat {
+        // Prefer combined keys if present; otherwise fall back to summing per-difficulty/legacy
+        let combinedC = max(0, readInt("quizAllTimeCorrect_all"))
+        let combinedA = max(0, readInt("quizAllTimeAnswered_all"))
+        let combinedB = max(0, readInt("quizAllTimeBestStreak_all"))
+        if (combinedC + combinedA + combinedB) > 0 {
+            return GameStat(correct: combinedC, answered: combinedA, bestStreak: combinedB == 0 ? nil : combinedB)
+        }
+
         let c = sumAcross(prefix: "quizAllTimeCorrect", parts: ["_easy","_normal","_hard"], legacyKey: "quizAllTimeCorrect")
         let a = sumAcross(prefix: "quizAllTimeAnswered", parts: ["_easy","_normal","_hard"], legacyKey: "quizAllTimeAnswered")
         let best = maxAcross(prefix: "quizAllTimeBestStreak", parts: ["_easy","_normal","_hard"], legacyKey: "quizAllTimeBestStreak")
@@ -971,7 +1034,7 @@ final class GameStats: ObservableObject {
 
         func pct(for slice: ArraySlice<(date: Date, answered: Int, correct: Int)>) -> Double {
             let a = slice.reduce(0) { $0 + max(0, $1.answered) }
-            let c = slice.reduce(0) { $0 + max(0, $1.correct) }
+            let c = slice.reduce(0, { $0 + max(0, $1.correct) })
             guard a > 0 else { return 0 }
             return min(100, max(0, (Double(c) / Double(a)) * 100.0))
         }
@@ -1447,3 +1510,4 @@ final class GameStats: ObservableObject {
         return rows
     }
 }
+

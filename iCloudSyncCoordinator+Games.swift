@@ -86,9 +86,9 @@ extension iCloudSyncCoordinator {
         "versematchPerBookCorrectMap"
     ]
 
-    // Game keys: Quiz (@AppStorage uses easy/normal/hard)
+    // Game keys: Quiz — now includes combined "all" variants for shared all-time stats
     static let quizKeys: [String] = {
-        let diffs = ["easy", "normal", "hard"]
+        let diffs = ["easy", "normal", "hard", "all"]
         var keys: [String] = []
         for d in diffs {
             keys.append("quizAllTimeCorrect_\(d)")
@@ -655,8 +655,8 @@ extension iCloudSyncCoordinator {
         repairSuffixed(prefix: "refmatch", diffs: ["easy","normal","medium","hard"])
         repairPair(correctKey: "refmatchAllTimeCorrect", answeredKey: "refmatchAllTimeAnswered")
 
-        // Quiz (easy/normal/hard) + legacy unsuffixed
-        repairSuffixed(prefix: "quiz", diffs: ["easy","normal","hard"])
+        // Quiz — include combined "all" so shared all-time stays consistent
+        repairSuffixed(prefix: "quiz", diffs: ["easy","normal","hard","all"])
         repairPair(correctKey: "quizAllTimeCorrect", answeredKey: "quizAllTimeAnswered")
 
         // Who am I? (easy/normal/hard) + legacy unsuffixed

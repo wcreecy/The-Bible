@@ -417,7 +417,7 @@ final class iCloudSyncCoordinator {
         debounceTask?.cancel()
 
         // Clear pending set now (on MainActor)
-        let toSync = pendingKeys
+        _ = pendingKeys
         pendingKeys.removeAll()
 
         let delayNanos = UInt64(debounceInterval * 1_000_000_000)

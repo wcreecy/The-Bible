@@ -13,44 +13,18 @@ struct QuizView: View {
     @AppStorage("quizScope") private var quizScopeRaw: String = "whole"
     @AppStorage("quizDifficulty") private var quizDifficulty: String = "easy"
     
-    @AppStorage("quizAllTimeCorrect_easy") private var allTimeCorrectEasy: Int = 0
-    @AppStorage("quizAllTimeAnswered_easy") private var allTimeAnsweredEasy: Int = 0
-    @AppStorage("quizAllTimeBestStreak_easy") private var allTimeBestStreakEasy: Int = 0
-
-    @AppStorage("quizAllTimeCorrect_normal") private var allTimeCorrectNormal: Int = 0
-    @AppStorage("quizAllTimeAnswered_normal") private var allTimeAnsweredNormal: Int = 0
-    @AppStorage("quizAllTimeBestStreak_normal") private var allTimeBestStreakNormal: Int = 0
-
-    @AppStorage("quizAllTimeCorrect_hard") private var allTimeCorrectHard: Int = 0
-    @AppStorage("quizAllTimeAnswered_hard") private var allTimeAnsweredHard: Int = 0
-    @AppStorage("quizAllTimeBestStreak_hard") private var allTimeBestStreakHard: Int = 0
+    // COMBINED all-time stats (shared across difficulties)
+    @AppStorage("quizAllTimeCorrect_all") private var allTimeCorrectAll: Int = 0
+    @AppStorage("quizAllTimeAnswered_all") private var allTimeAnsweredAll: Int = 0
+    @AppStorage("quizAllTimeBestStreak_all") private var allTimeBestStreakAll: Int = 0
 
     // Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
-    private var allTimeCorrect: Int {
-        switch quizDifficulty {
-        case "normal": return allTimeCorrectNormal
-        case "hard": return allTimeCorrectHard
-        default: return allTimeCorrectEasy
-        }
-    }
-
-    private var allTimeAnswered: Int {
-        switch quizDifficulty {
-        case "normal": return allTimeAnsweredNormal
-        case "hard": return allTimeAnsweredHard
-        default: return allTimeAnsweredEasy
-        }
-    }
-
-    private var allTimeBestStreak: Int {
-        switch quizDifficulty {
-        case "normal": return allTimeBestStreakNormal
-        case "hard": return allTimeBestStreakHard
-        default: return allTimeBestStreakEasy
-        }
-    }
+    // Display the shared all-time stats regardless of difficulty
+    private var allTimeCorrect: Int { allTimeCorrectAll }
+    private var allTimeAnswered: Int { allTimeAnsweredAll }
+    private var allTimeBestStreak: Int { allTimeBestStreakAll }
     
     // Centralized write to GameStats (iCloud KVS mirrored)
     private func recordRound(correct: Int, answered: Int, bestStreak: Int) {
@@ -801,3 +775,4 @@ struct QuizView: View {
         QuizView()
     }
 }
+
