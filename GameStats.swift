@@ -42,6 +42,7 @@ final class GameStats: ObservableObject {
     private init() {
         migrateLegacyGameKeysIfNeeded()
         migrateQuizCombinedIfNeeded()
+        migrateBookOrderCombinedIfNeeded()
 
         observer = NotificationCenter.default.addObserver(
             forName: .gameStatsExternallyUpdated,
@@ -56,6 +57,7 @@ final class GameStats: ObservableObject {
 
     private static let legacyWipeFlagKey = "didWipeLegacyUnsuffixedGameKeys_v1"
     private static let quizCombinedMigrationFlagKey = "didMigrateQuizCombinedAll_v1"
+    private static let bookOrderCombinedMigrationFlagKey = "didMigrateBookOrderCombinedAll_v1"
 
     private func migrateLegacyGameKeysIfNeeded() {
         let defaults = UserDefaults.standard
@@ -129,6 +131,53 @@ final class GameStats: ObservableObject {
         }
 
         defaults.set(true, forKey: Self.quizCombinedMigrationFlagKey)
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
+    // One-time migration: combine existing per-difficulty Book Order stats into combined "_all" keys.
+    private func migrateBookOrderCombinedIfNeeded() {
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: Self.bookOrderCombinedMigrationFlagKey) else { return }
+
+        func readInt(_ key: String) -> Int { max(0, defaults.integer(forKey: key)) }
+
+        let cEasy = readInt("bookorderAllTimeCorrect_easy")
+        let cNorm = readInt("bookorderAllTimeCorrect_normal")
+        let cHard = readInt("bookorderAllTimeCorrect_hard")
+        let aEasy = readInt("bookorderAllTimeAnswered_easy")
+        let aNorm = readInt("bookorderAllTimeAnswered_normal")
+        let aHard = readInt("bookorderAllTimeAnswered_hard")
+        let bEasy = readInt("bookorderAllTimeBestStreak_easy")
+        let bNorm = readInt("bookorderAllTimeBestStreak_normal")
+        let bHard = readInt("bookorderAllTimeBestStreak_hard")
+
+        // Legacy unsuffixed fallback
+        let legacyC = readInt("bookorderAllTimeCorrect")
+        let legacyA = readInt("bookorderAllTimeAnswered")
+        let legacyB = readInt("bookorderAllTimeBestStreak")
+
+        let sumCorrect = cEasy + cNorm + cHard + legacyC
+        let sumAnswered = aEasy + aNorm + aHard + legacyA
+        let bestStreak = max(bEasy, bNorm, bHard, legacyB)
+
+        let existingAllC = readInt("bookorderAllTimeCorrect_all")
+        let existingAllA = readInt("bookorderAllTimeAnswered_all")
+        let existingAllB = readInt("bookorderAllTimeBestStreak_all")
+
+        if existingAllC == 0 && sumCorrect > 0 {
+            defaults.set(sumCorrect, forKey: "bookorderAllTimeCorrect_all")
+            iCloudSyncCoordinator.shared.pushKey("bookorderAllTimeCorrect_all")
+        }
+        if existingAllA == 0 && sumAnswered > 0 {
+            defaults.set(sumAnswered, forKey: "bookorderAllTimeAnswered_all")
+            iCloudSyncCoordinator.shared.pushKey("bookorderAllTimeAnswered_all")
+        }
+        if existingAllB == 0 && bestStreak > 0 {
+            defaults.set(bestStreak, forKey: "bookorderAllTimeBestStreak_all")
+            iCloudSyncCoordinator.shared.pushKey("bookorderAllTimeBestStreak_all")
+        }
+
+        defaults.set(true, forKey: Self.bookOrderCombinedMigrationFlagKey)
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
@@ -368,7 +417,7 @@ final class GameStats: ObservableObject {
                 case .easy: return "easy"
                 case .normal: return "normal"
                 case .hard: return "hard"
-                case .medium: return nil
+                case .medium: return "normal" // FIX: treat “medium” as “normal” for Book Order
                 case .none: return "all"
                 }
             case .whoami:
@@ -425,9 +474,16 @@ final class GameStats: ObservableObject {
 
         case .bookorder:
             guard let s = suf else { return }
+            // Write per-difficulty (or "all" if difficulty == .none)
             incInt("bookorderAllTimeCorrect_\(s)", by: addCorrect)
             incInt("bookorderAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("bookorderAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            // NEW: Mirror to combined keys when not already writing to "_all"
+            if s != "all" {
+                incInt("bookorderAllTimeCorrect_all", by: addCorrect)
+                incInt("bookorderAllTimeAnswered_all", by: addAnswered)
+                maxInt("bookorderAllTimeBestStreak_all", candidate: currentBestStreak)
+            }
 
         case .whoami:
             guard let s = suf else { return }
@@ -664,9 +720,17 @@ final class GameStats: ObservableObject {
     }
 
     private var bookorder: GameStat {
-        let c = sumAcross(prefix: "bookorderAllTimeCorrect", parts: ["_easy","_normal","_hard","_all"], legacyKey: "bookorderAllTimeCorrect")
-        let a = sumAcross(prefix: "bookorderAllTimeAnswered", parts: ["_easy","_normal","_hard","_all"], legacyKey: "bookorderAllTimeAnswered")
-        let best = maxAcross(prefix: "bookorderAllTimeBestStreak", parts: ["_easy","_normal","_hard","_all"], legacyKey: "bookorderAllTimeBestStreak")
+        // Prefer combined keys if present; otherwise fall back to summing per-difficulty/legacy
+        let combinedC = max(0, readInt("bookorderAllTimeCorrect_all"))
+        let combinedA = max(0, readInt("bookorderAllTimeAnswered_all"))
+        let combinedB = max(0, readInt("bookorderAllTimeBestStreak_all"))
+        if (combinedC + combinedA + combinedB) > 0 {
+            return GameStat(correct: combinedC, answered: combinedA, bestStreak: combinedB == 0 ? nil : combinedB)
+        }
+
+        let c = sumAcross(prefix: "bookorderAllTimeCorrect", parts: ["_easy","_normal","_hard"], legacyKey: "bookorderAllTimeCorrect")
+        let a = sumAcross(prefix: "bookorderAllTimeAnswered", parts: ["_easy","_normal","_hard"], legacyKey: "bookorderAllTimeAnswered")
+        let best = maxAcross(prefix: "bookorderAllTimeBestStreak", parts: ["_easy","_normal","_hard"], legacyKey: "bookorderAllTimeBestStreak")
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 

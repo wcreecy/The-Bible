@@ -187,7 +187,7 @@ extension GameStats {
                 case .easy: return "easy"
                 case .normal: return "normal"
                 case .hard: return "hard"
-                case .medium: return nil
+                case .medium: return "normal" // FIX: treat “medium” as “normal” in debug seeding too
                 case .none: return "all"
                 }
             case .whoami:
@@ -603,3 +603,4 @@ extension GameStats {
     }
 }
 #endif
+

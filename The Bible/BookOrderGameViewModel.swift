@@ -66,7 +66,7 @@ final class BookOrderGameViewModel: ObservableObject {
     private var sliceFirst: String? = nil
     private var sliceLast: String? = nil
     
-    // Per-difficulty keys (suffixed)
+    // Per-difficulty suffix (used for persistence keys for streaks and writes via GameStats)
     private var keySuffix: String {
         switch difficulty {
         case .easy: return "easy"
@@ -79,18 +79,27 @@ final class BookOrderGameViewModel: ObservableObject {
     private var keyAllTimeAnswered: String { "bookorderAllTimeAnswered_\(keySuffix)" }
     private var keyAllTimeBestStreak: String { "bookorderAllTimeBestStreak_\(keySuffix)" }
     
-    // Read-only accessors for displaying per-difficulty all-time stats.
-    // Writing is centralized through GameStats to avoid double-counting.
+    // NEW: Aggregate getters for the in-game scoreboard (sum across easy/normal/hard/all; best streak = max).
+    private func readInt(_ key: String) -> Int { max(0, UserDefaults.standard.integer(forKey: key)) }
+    private var allSuffixes: [String] { ["easy", "normal", "hard", "all"] }
+    private func sumAll(_ base: String) -> Int {
+        allSuffixes.reduce(0) { acc, suf in acc + readInt("\(base)_\(suf)") }
+    }
+    private func maxAll(_ base: String) -> Int {
+        allSuffixes.map { readInt("\(base)_\($0)") }.max() ?? 0
+    }
+
+    // Displayed on the scoreboard “All-time” row (aggregate across modes)
     var allTimeCorrect: Int {
-        UserDefaults.standard.integer(forKey: keyAllTimeCorrect)
+        sumAll("bookorderAllTimeCorrect")
     }
     
     var allTimeAnswered: Int {
-        UserDefaults.standard.integer(forKey: keyAllTimeAnswered)
+        sumAll("bookorderAllTimeAnswered")
     }
     
     var allTimeBestStreak: Int {
-        UserDefaults.standard.integer(forKey: keyAllTimeBestStreak)
+        maxAll("bookorderAllTimeBestStreak")
     }
 
     // MARK: - Persistent streak helpers (per difficulty)
