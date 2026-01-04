@@ -35,9 +35,10 @@ struct BeatTheClockGameView: View {
     @State private var currentStreak: Int = 0
     @State private var currentBestStreak: Int = 0
 
-    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "beatclockAllTimeCorrect_\(difficultyKeySuffix())") }
-    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "beatclockAllTimeAnswered_\(difficultyKeySuffix())") }
-    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "beatclockAllTimeBestStreak_\(difficultyKeySuffix())") }
+    // Read combined all-time stats (shared across difficulties)
+    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "beatclockAllTimeCorrect_all") }
+    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "beatclockAllTimeAnswered_all") }
+    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "beatclockAllTimeBestStreak_all") }
 
     // Search
     @State private var searchText: String = ""
@@ -607,10 +608,6 @@ struct BeatTheClockGameView: View {
         return "\(pct)%"
     }
 
-    private func difficultyKeySuffix() -> String {
-        switch difficulty { case .easy: return "easy"; case .normal: return "normal"; case .hard: return "hard" }
-    }
-
     private func mapDifficulty(_ d: Difficulty) -> GameStats.Difficulty {
         switch d {
         case .easy: return .easy
@@ -619,3 +616,4 @@ struct BeatTheClockGameView: View {
         }
     }
 }
+

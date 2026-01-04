@@ -353,9 +353,14 @@ final class GameStats: ObservableObject {
 
         case .beatclock:
             guard let s = suf else { return }
+            // Keep per-difficulty keys for back-compat/analytics
             incInt("beatclockAllTimeCorrect_\(s)", by: addCorrect)
             incInt("beatclockAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("beatclockAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            // NEW: Always mirror to combined keys so all difficulties share the same all-time stats
+            incInt("beatclockAllTimeCorrect_all", by: addCorrect)
+            incInt("beatclockAllTimeAnswered_all", by: addAnswered)
+            maxInt("beatclockAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .versematch:
             guard let s = suf else { return }
@@ -1442,4 +1447,3 @@ final class GameStats: ObservableObject {
         return rows
     }
 }
-

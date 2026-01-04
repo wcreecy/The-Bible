@@ -25,8 +25,8 @@ extension iCloudSyncCoordinator {
 
     // Game keys: Beat the Clock
     static let beatClockKeys: [String] = {
-        // Include both legacy "medium" and new "normal"
-        let diffs = ["easy", "normal", "medium", "hard"]
+        // Include both legacy "medium" and new "normal", plus combined "all"
+        let diffs = ["easy", "normal", "medium", "hard", "all"]
         var keys: [String] = []
         for d in diffs {
             keys.append("beatclockAllTimeCorrect_\(d)")
@@ -647,8 +647,8 @@ extension iCloudSyncCoordinator {
         repairSuffixed(prefix: "hangman", diffs: ["easy","normal","medium","hard"])
         repairPair(correctKey: "hangmanAllTimeCorrect", answeredKey: "hangmanAllTimeAnswered")
 
-        // Beat the Clock — include both normal and medium
-        repairSuffixed(prefix: "beatclock", diffs: ["easy","normal","medium","hard"])
+        // Beat the Clock — include normal, medium (legacy), and combined "all"
+        repairSuffixed(prefix: "beatclock", diffs: ["easy","normal","medium","hard","all"])
 
         // Verse Match (new) + Reference Match (legacy)
         repairSuffixed(prefix: "versematch", diffs: ["easy","normal","medium","hard"])

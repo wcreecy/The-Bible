@@ -30,11 +30,32 @@ extension GameStats {
         }
 
         // Beat the Clock (easy/normal/hard) — was medium, now normal
+        // UPDATED: Also write to combined all-time keys (_all) so stats are shared across difficulties.
         for _ in 0..<roundsPerGame {
             let diffs: [Difficulty] = [.easy, .normal, .hard]
             let d = diffs.randomElement() ?? .easy
             let r = rollRound(maxQ: 15)
+
+            // Existing path (kept): writes per-difficulty via recordRound.
             recordRound(game: .beatclock, difficulty: d, correct: r.correct, answered: r.answered, currentBestStreak: r.bestStreak)
+
+            // NEW: Mirror to combined Beat the Clock all-time keys.
+            let defaults = UserDefaults.standard
+            func setInt(_ key: String, _ value: Int) {
+                defaults.set(max(0, value), forKey: key)
+                iCloudSyncCoordinator.shared.pushKey(key)
+            }
+            func incInt(_ key: String, by delta: Int) {
+                let old = defaults.integer(forKey: key)
+                setInt(key, old + max(0, delta))
+            }
+            func maxInt(_ key: String, candidate: Int) {
+                let old = defaults.integer(forKey: key)
+                if candidate > old { setInt(key, candidate) }
+            }
+            incInt("beatclockAllTimeCorrect_all", by: r.correct)
+            incInt("beatclockAllTimeAnswered_all", by: r.answered)
+            maxInt("beatclockAllTimeBestStreak_all", candidate: r.bestStreak)
         }
 
         // Verse Match (easy/normal/hard) — was medium, now normal
@@ -242,21 +263,33 @@ extension GameStats {
                 // Guarantee coverage: one round per difficulty
                 for d in diffs {
                     let r = rollRound(maxQ: maxQ)
-                    if let suf = suffix(for: game, difficulty: d) {
-                        let pfx: String
-                        switch game {
-                        case .quiz: pfx = "quiz"
-                        case .hangman: pfx = "hangman"
-                        case .beatclock: pfx = "beatclock"
-                        case .versematch: pfx = "versematch"
-                        case .bookorder: pfx = "bookorder"
-                        case .whoami: pfx = "whoami"
-                        case .wordle: pfx = "wordle"
-                        }
-                        incInt("\(pfx)AllTimeCorrect_\(suf)", by: r.correct)
-                        incInt("\(pfx)AllTimeAnswered_\(suf)", by: r.answered)
-                        maxInt("\(pfx)AllTimeBestStreak_\(suf)", candidate: r.bestStreak)
+
+                    // Determine prefix and suffix for all-time keys, forcing Beat the Clock to "_all"
+                    let pfx: String
+                    switch game {
+                    case .quiz: pfx = "quiz"
+                    case .hangman: pfx = "hangman"
+                    case .beatclock: pfx = "beatclock"
+                    case .versematch: pfx = "versematch"
+                    case .bookorder: pfx = "bookorder"
+                    case .whoami: pfx = "whoami"
+                    case .wordle: pfx = "wordle"
                     }
+
+                    let baseSuffix = suffix(for: game, difficulty: d)
+                    let s = (game == .beatclock) ? "all" : (baseSuffix ?? "")
+
+                    if game == .beatclock {
+                        // Combined all-time keys
+                        incInt("\(pfx)AllTimeCorrect_\(s)", by: r.correct)
+                        incInt("\(pfx)AllTimeAnswered_\(s)", by: r.answered)
+                        maxInt("\(pfx)AllTimeBestStreak_\(s)", candidate: r.bestStreak)
+                    } else if let sfx = baseSuffix {
+                        incInt("\(pfx)AllTimeCorrect_\(sfx)", by: r.correct)
+                        incInt("\(pfx)AllTimeAnswered_\(sfx)", by: r.answered)
+                        maxInt("\(pfx)AllTimeBestStreak_\(sfx)", candidate: r.bestStreak)
+                    }
+
                     gameAnswered += r.answered
                     gameCorrect += r.correct
                 }
@@ -266,21 +299,31 @@ extension GameStats {
                 for _ in 0..<extraRounds {
                     let d = diffs.randomElement() ?? diffs.first!
                     let r = rollRound(maxQ: maxQ)
-                    if let suf = suffix(for: game, difficulty: d) {
-                        let pfx: String
-                        switch game {
-                        case .quiz: pfx = "quiz"
-                        case .hangman: pfx = "hangman"
-                        case .beatclock: pfx = "beatclock"
-                        case .versematch: pfx = "versematch"
-                        case .bookorder: pfx = "bookorder"
-                        case .whoami: pfx = "whoami"
-                        case .wordle: pfx = "wordle"
-                        }
-                        incInt("\(pfx)AllTimeCorrect_\(suf)", by: r.correct)
-                        incInt("\(pfx)AllTimeAnswered_\(suf)", by: r.answered)
-                        maxInt("\(pfx)AllTimeBestStreak_\(suf)", candidate: r.bestStreak)
+
+                    let pfx: String
+                    switch game {
+                    case .quiz: pfx = "quiz"
+                    case .hangman: pfx = "hangman"
+                    case .beatclock: pfx = "beatclock"
+                    case .versematch: pfx = "versematch"
+                    case .bookorder: pfx = "bookorder"
+                    case .whoami: pfx = "whoami"
+                    case .wordle: pfx = "wordle"
                     }
+
+                    let baseSuffix = suffix(for: game, difficulty: d)
+                    let s = (game == .beatclock) ? "all" : (baseSuffix ?? "")
+
+                    if game == .beatclock {
+                        incInt("\(pfx)AllTimeCorrect_\(s)", by: r.correct)
+                        incInt("\(pfx)AllTimeAnswered_\(s)", by: r.answered)
+                        maxInt("\(pfx)AllTimeBestStreak_\(s)", candidate: r.bestStreak)
+                    } else if let sfx = baseSuffix {
+                        incInt("\(pfx)AllTimeCorrect_\(sfx)", by: r.correct)
+                        incInt("\(pfx)AllTimeAnswered_\(sfx)", by: r.answered)
+                        maxInt("\(pfx)AllTimeBestStreak_\(sfx)", candidate: r.bestStreak)
+                    }
+
                     gameAnswered += r.answered
                     gameCorrect += r.correct
                 }
@@ -339,12 +382,18 @@ extension GameStats {
 
                         // Timing totals (per-type + per-mode)
                         incInt("wordleTimeTotal_seconds_\(typeSuf)", by: elapsed)
-                        if won { incInt("wordleTimeWins_seconds_\(typeSuf)", by: elapsed) }
-                        else   { incInt("wordleTimeLosses_seconds_\(typeSuf)", by: elapsed) }
+                        if won {
+                            incInt("wordleTimeWins_seconds_\(typeSuf)", by: elapsed)
+                        } else {
+                            incInt("wordleTimeLosses_seconds_\(typeSuf)", by: elapsed)
+                        }
 
                         incInt("wordleTimeTotal_seconds_\(mSuf)", by: elapsed)
-                        if won { incInt("wordleTimeWins_seconds_\(mSuf)", by: elapsed) }
-                        else   { incInt("wordleTimeLosses_seconds_\(mSuf)", by: elapsed) }
+                        if won {
+                            incInt("wordleTimeWins_seconds_\(mSuf)", by: elapsed)
+                        } else {
+                            incInt("wordleTimeLosses_seconds_\(mSuf)", by: elapsed)
+                        }
 
                         // Per-game daily maps (combined WORD)
                         wordAnsweredCombined += 1
@@ -397,12 +446,18 @@ extension GameStats {
 
                         // Timings
                         incInt("wordleTimeTotal_seconds_\(typeSuf)", by: elapsed)
-                        if won { incInt("wordleTimeWins_seconds_\(typeSuf)", by: elapsed) }
-                        else   { incInt("wordleTimeLosses_seconds_\(typeSuf)", by: elapsed) }
+                        if won {
+                            incInt("wordleTimeWins_seconds_\(typeSuf)", by: elapsed)
+                        } else {
+                            incInt("wordleTimeLosses_seconds_\(typeSuf)", by: elapsed)
+                        }
 
                         incInt("wordleTimeTotal_seconds_\(mSuf)", by: elapsed)
-                        if won { incInt("wordleTimeWins_seconds_\(mSuf)", by: elapsed) }
-                        else   { incInt("wordleTimeLosses_seconds_\(mSuf)", by: elapsed) }
+                        if won {
+                            incInt("wordleTimeWins_seconds_\(mSuf)", by: elapsed)
+                        } else {
+                            incInt("wordleTimeLosses_seconds_\(mSuf)", by: elapsed)
+                        }
 
                         // Combined and per-mode daily maps
                         wordAnsweredCombined += 1

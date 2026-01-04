@@ -47,30 +47,6 @@ final class iCloudSyncCoordinator {
     private let bibleStatsResetEpochKVSKey = "bibleStatsResetEpoch"          // in KVS
     private let bibleStatsLastSeenEpochLocalKey = "bibleStatsLastSeenResetEpoch" // in local defaults
 
-    // MARK: - Logging
-
-    // Silence legacy debug logs to reduce noise
-    private func log(_ message: @autoclosure () -> String) {
-        // no-op
-    }
-
-    // New, concise sync event logging with timestamps
-    private static let tsFormatter: ISO8601DateFormatter = {
-        let f = ISO8601DateFormatter()
-        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        return f
-    }()
-
-    private func logPushEvent(_ context: String) {
-        let ts = Self.tsFormatter.string(from: Date())
-        print("KVS PUSH [\(ts)] \(context)")
-    }
-
-    private func logMergeEvent(_ context: String) {
-        let ts = Self.tsFormatter.string(from: Date())
-        print("KVS MERGE [\(ts)] \(context)")
-    }
-
     private init() {
         NotificationCenter.default.addObserver(
             self,
@@ -155,7 +131,6 @@ final class iCloudSyncCoordinator {
             NSUbiquitousKeyValueStore.default.synchronize()
             await MainActor.run {
                 iCloudSyncCoordinator.shared.lastPushDate = Date()
-                iCloudSyncCoordinator.shared.logPushEvent("pushAllNow (immediate synchronize)")
                 completion?()
             }
         }
@@ -194,7 +169,6 @@ final class iCloudSyncCoordinator {
             NSUbiquitousKeyValueStore.default.synchronize()
             await MainActor.run {
                 iCloudSyncCoordinator.shared.lastPushDate = Date()
-                iCloudSyncCoordinator.shared.logPushEvent("resetAllBibleStatsAndSessions (removed keys + set epoch)")
                 BibleStatsStore.shared.resetCaches()
                 NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
             }
@@ -252,7 +226,7 @@ final class iCloudSyncCoordinator {
 
         guard let userInfo = note.userInfo else { return }
 
-        // Refine: react only to server/initial sync changes; log/skip quota/account changes.
+        // Refine: react only to server/initial sync changes; skip quota/account changes.
         let reasonRaw = userInfo[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int
         if let reason = reasonRaw {
             switch reason {
@@ -319,9 +293,8 @@ final class iCloudSyncCoordinator {
             }
         }
 
-        // Record and log last merge time
+        // Record last merge time
         lastMergeDate = Date()
-        logMergeEvent("didChangeExternallyNotification (merged \(keysToProcess.count) key(s))")
 
         // Special-case: Last Read widget keys are not in allKnownKeys (they live as raw KVS/app-group values for widgets).
         if keysToProcess.contains(where: { Self.lastReadWidgetKeys.contains($0) }) {
@@ -460,7 +433,6 @@ final class iCloudSyncCoordinator {
                     NSUbiquitousKeyValueStore.default.synchronize()
                     await MainActor.run {
                         iCloudSyncCoordinator.shared.lastPushDate = Date()
-                        iCloudSyncCoordinator.shared.logPushEvent("debounced synchronize for \(toSync.count) key(s)")
                     }
                 }
             } onCancel: {
@@ -625,7 +597,6 @@ final class iCloudSyncCoordinator {
                 NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
             }
             lastMergeDate = Date()
-            logMergeEvent("reconcileAllKeysFromKVS (touched keys)")
         }
     }
 
@@ -646,4 +617,3 @@ private extension iCloudSyncCoordinator {
         "lastReadText"
     ]
 }
-
