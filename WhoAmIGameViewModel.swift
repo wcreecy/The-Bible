@@ -68,10 +68,10 @@ final class WhoAmIGameViewModel: ObservableObject {
     @Published var currentStreak: Int = 0
     @Published var currentBestStreak: Int = 0
 
-    // All-time (read-only via UserDefaults keys managed by GameStats)
-    private var allTimeCorrectKey: String { "whoamiAllTimeCorrect_\(difficulty.rawValue)" }
-    private var allTimeAnsweredKey: String { "whoamiAllTimeAnswered_\(difficulty.rawValue)" }
-    private var allTimeBestStreakKey: String { "whoamiAllTimeBestStreak_\(difficulty.rawValue)" }
+    // All-time (combined across difficulties)
+    private var allTimeCorrectKey: String { "whoamiAllTimeCorrect_all" }
+    private var allTimeAnsweredKey: String { "whoamiAllTimeAnswered_all" }
+    private var allTimeBestStreakKey: String { "whoamiAllTimeBestStreak_all" }
 
     var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: allTimeCorrectKey) }
     var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: allTimeAnsweredKey) }
@@ -337,3 +337,4 @@ final class WhoAmIGameViewModel: ObservableObject {
         return lower == "jesus" || lower == "jesus christ"
     }
 }
+

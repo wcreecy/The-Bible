@@ -45,6 +45,7 @@ final class GameStats: ObservableObject {
         migrateBookOrderCombinedIfNeeded()
         migrateHangmanCombinedIfNeeded() // NEW: backfill combined “_all” for Hangman
         migrateVerseMatchCombinedIfNeeded() // NEW: backfill combined “_all” for Verse Match
+        migrateWhoAmICombinedIfNeeded() // NEW: backfill combined “_all” for Who am I?
 
         observer = NotificationCenter.default.addObserver(
             forName: .gameStatsExternallyUpdated,
@@ -62,6 +63,7 @@ final class GameStats: ObservableObject {
     private static let bookOrderCombinedMigrationFlagKey = "didMigrateBookOrderCombinedAll_v1"
     private static let hangmanCombinedMigrationFlagKey = "didMigrateHangmanCombinedAll_v1" // NEW
     private static let verseMatchCombinedMigrationFlagKey = "didMigrateVerseMatchCombinedAll_v1" // NEW
+    private static let whoamiCombinedMigrationFlagKey = "didMigrateWhoAmICombinedAll_v1" // NEW
 
     private func migrateLegacyGameKeysIfNeeded() {
         let defaults = UserDefaults.standard
@@ -288,6 +290,50 @@ final class GameStats: ObservableObject {
         }
 
         defaults.set(true, forKey: Self.verseMatchCombinedMigrationFlagKey)
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
+    // NEW: One-time migration: combine existing per-difficulty Who am I? stats into combined "_all" keys.
+    private func migrateWhoAmICombinedIfNeeded() {
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: Self.whoamiCombinedMigrationFlagKey) else { return }
+
+        func readInt(_ key: String) -> Int { max(0, defaults.integer(forKey: key)) }
+
+        let cEasy = readInt("whoamiAllTimeCorrect_easy")
+        let cNorm = readInt("whoamiAllTimeCorrect_normal")
+        let cHard = readInt("whoamiAllTimeCorrect_hard")
+
+        let aEasy = readInt("whoamiAllTimeAnswered_easy")
+        let aNorm = readInt("whoamiAllTimeAnswered_normal")
+        let aHard = readInt("whoamiAllTimeAnswered_hard")
+
+        let bEasy = readInt("whoamiAllTimeBestStreak_easy")
+        let bNorm = readInt("whoamiAllTimeBestStreak_normal")
+        let bHard = readInt("whoamiAllTimeBestStreak_hard")
+
+        let sumCorrect = cEasy + cNorm + cHard
+        let sumAnswered = aEasy + aNorm + aHard
+        let bestStreak = max(bEasy, bNorm, bHard)
+
+        let existingAllC = readInt("whoamiAllTimeCorrect_all")
+        let existingAllA = readInt("whoamiAllTimeAnswered_all")
+        let existingAllB = readInt("whoamiAllTimeBestStreak_all")
+
+        if existingAllC == 0 && sumCorrect > 0 {
+            defaults.set(sumCorrect, forKey: "whoamiAllTimeCorrect_all")
+            iCloudSyncCoordinator.shared.pushKey("whoamiAllTimeCorrect_all")
+        }
+        if existingAllA == 0 && sumAnswered > 0 {
+            defaults.set(sumAnswered, forKey: "whoamiAllTimeAnswered_all")
+            iCloudSyncCoordinator.shared.pushKey("whoamiAllTimeAnswered_all")
+        }
+        if existingAllB == 0 && bestStreak > 0 {
+            defaults.set(bestStreak, forKey: "whoamiAllTimeBestStreak_all")
+            iCloudSyncCoordinator.shared.pushKey("whoamiAllTimeBestStreak_all")
+        }
+
+        defaults.set(true, forKey: Self.whoamiCombinedMigrationFlagKey)
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
@@ -606,9 +652,14 @@ final class GameStats: ObservableObject {
 
         case .whoami:
             guard let s = suf else { return }
+            // Keep per-difficulty keys for back-compat/analytics
             incInt("whoamiAllTimeCorrect_\(s)", by: addCorrect)
             incInt("whoamiAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("whoamiAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            // NEW: Mirror to combined keys so all difficulties share the same all-time stats
+            incInt("whoamiAllTimeCorrect_all", by: addCorrect)
+            incInt("whoamiAllTimeAnswered_all", by: addAnswered)
+            maxInt("whoamiAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .wordle:
             guard let s = suf else { return }
@@ -870,6 +921,14 @@ final class GameStats: ObservableObject {
     }
 
     private var whoami: GameStat {
+        // NEW: Prefer combined keys if present; otherwise fall back to summing per-difficulty
+        let combinedC = max(0, readInt("whoamiAllTimeCorrect_all"))
+        let combinedA = max(0, readInt("whoamiAllTimeAnswered_all"))
+        let combinedB = max(0, readInt("whoamiAllTimeBestStreak_all"))
+        if (combinedC + combinedA + combinedB) > 0 {
+            return GameStat(correct: combinedC, answered: combinedA, bestStreak: combinedB == 0 ? nil : combinedB)
+        }
+
         let c = sumAcross(prefix: "whoamiAllTimeCorrect", parts: ["_easy","_normal","_hard"], legacyKey: "whoamiAllTimeCorrect")
         let a = sumAcross(prefix: "whoamiAllTimeAnswered", parts: ["_easy","_normal","_hard"], legacyKey: "whoamiAllTimeAnswered")
         let best = maxAcross(prefix: "whoamiAllTimeBestStreak", parts: ["_easy","_normal","_hard"], legacyKey: "whoamiAllTimeBestStreak")
