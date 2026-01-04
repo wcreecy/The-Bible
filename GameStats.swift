@@ -44,6 +44,7 @@ final class GameStats: ObservableObject {
         migrateQuizCombinedIfNeeded()
         migrateBookOrderCombinedIfNeeded()
         migrateHangmanCombinedIfNeeded() // NEW: backfill combined “_all” for Hangman
+        migrateVerseMatchCombinedIfNeeded() // NEW: backfill combined “_all” for Verse Match
 
         observer = NotificationCenter.default.addObserver(
             forName: .gameStatsExternallyUpdated,
@@ -60,6 +61,7 @@ final class GameStats: ObservableObject {
     private static let quizCombinedMigrationFlagKey = "didMigrateQuizCombinedAll_v1"
     private static let bookOrderCombinedMigrationFlagKey = "didMigrateBookOrderCombinedAll_v1"
     private static let hangmanCombinedMigrationFlagKey = "didMigrateHangmanCombinedAll_v1" // NEW
+    private static let verseMatchCombinedMigrationFlagKey = "didMigrateVerseMatchCombinedAll_v1" // NEW
 
     private func migrateLegacyGameKeysIfNeeded() {
         let defaults = UserDefaults.standard
@@ -233,6 +235,59 @@ final class GameStats: ObservableObject {
         }
 
         defaults.set(true, forKey: Self.hangmanCombinedMigrationFlagKey)
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
+    // NEW: One-time migration: combine existing per-difficulty Verse Match stats into combined "_all" keys.
+    private func migrateVerseMatchCombinedIfNeeded() {
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: Self.verseMatchCombinedMigrationFlagKey) else { return }
+
+        func readInt(_ key: String) -> Int { max(0, defaults.integer(forKey: key)) }
+
+        // New Verse Match keys
+        let cEasy = readInt("versematchAllTimeCorrect_easy")
+        let cNorm = readInt("versematchAllTimeCorrect_normal")
+        let cMed  = readInt("versematchAllTimeCorrect_medium")
+        let cHard = readInt("versematchAllTimeCorrect_hard")
+
+        let aEasy = readInt("versematchAllTimeAnswered_easy")
+        let aNorm = readInt("versematchAllTimeAnswered_normal")
+        let aMed  = readInt("versematchAllTimeAnswered_medium")
+        let aHard = readInt("versematchAllTimeAnswered_hard")
+
+        let bEasy = readInt("versematchAllTimeBestStreak_easy")
+        let bNorm = readInt("versematchAllTimeBestStreak_normal")
+        let bMed  = readInt("versematchAllTimeBestStreak_medium")
+        let bHard = readInt("versematchAllTimeBestStreak_hard")
+
+        // Legacy Reference Match fallback
+        let legacyC = readInt("refmatchAllTimeCorrect")
+        let legacyA = readInt("refmatchAllTimeAnswered")
+        let legacyB = readInt("refmatchAllTimeBestStreak")
+
+        let sumCorrect = cEasy + cNorm + cMed + cHard + legacyC
+        let sumAnswered = aEasy + aNorm + aMed + aHard + legacyA
+        let bestStreak = max(bEasy, bNorm, bMed, bHard, legacyB)
+
+        let existingAllC = readInt("versematchAllTimeCorrect_all")
+        let existingAllA = readInt("versematchAllTimeAnswered_all")
+        let existingAllB = readInt("versematchAllTimeBestStreak_all")
+
+        if existingAllC == 0 && sumCorrect > 0 {
+            defaults.set(sumCorrect, forKey: "versematchAllTimeCorrect_all")
+            iCloudSyncCoordinator.shared.pushKey("versematchAllTimeCorrect_all")
+        }
+        if existingAllA == 0 && sumAnswered > 0 {
+            defaults.set(sumAnswered, forKey: "versematchAllTimeAnswered_all")
+            iCloudSyncCoordinator.shared.pushKey("versematchAllTimeAnswered_all")
+        }
+        if existingAllB == 0 && bestStreak > 0 {
+            defaults.set(bestStreak, forKey: "versematchAllTimeBestStreak_all")
+            iCloudSyncCoordinator.shared.pushKey("versematchAllTimeBestStreak_all")
+        }
+
+        defaults.set(true, forKey: Self.verseMatchCombinedMigrationFlagKey)
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
@@ -527,9 +582,14 @@ final class GameStats: ObservableObject {
 
         case .versematch:
             guard let s = suf else { return }
+            // Keep per-difficulty keys for back-compat/analytics
             incInt("versematchAllTimeCorrect_\(s)", by: addCorrect)
             incInt("versematchAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("versematchAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            // NEW: Mirror to combined keys so all difficulties share the same all-time stats
+            incInt("versematchAllTimeCorrect_all", by: addCorrect)
+            incInt("versematchAllTimeAnswered_all", by: addAnswered)
+            maxInt("versematchAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .bookorder:
             guard let s = suf else { return }
@@ -764,6 +824,14 @@ final class GameStats: ObservableObject {
     }
 
     private var versematch: GameStat {
+        // NEW: Prefer combined keys if present; otherwise fall back to new per-difficulty or legacy refmatch
+        let combinedC = max(0, readInt("versematchAllTimeCorrect_all"))
+        let combinedA = max(0, readInt("versematchAllTimeAnswered_all"))
+        let combinedB = max(0, readInt("versematchAllTimeBestStreak_all"))
+        if (combinedC + combinedA + combinedB) > 0 {
+            return GameStat(correct: combinedC, answered: combinedA, bestStreak: combinedB == 0 ? nil : combinedB)
+        }
+
         let cNew = sumAcross(prefix: "versematchAllTimeCorrect", parts: ["_easy","_normal","_hard","_medium"], legacyKey: nil)
         let aNew = sumAcross(prefix: "versematchAllTimeAnswered", parts: ["_easy","_normal","_hard","_medium"], legacyKey: nil)
         let bestNew = maxAcross(prefix: "versematchAllTimeBestStreak", parts: ["_easy","_normal","_hard","_medium"], legacyKey: nil)

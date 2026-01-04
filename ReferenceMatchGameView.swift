@@ -36,9 +36,10 @@ struct VerseMatchGameView: View {
     @State private var history: [(book: Book, chapter: Chapter, verse: Verse, options: [AnswerOption], correctIndex: Int, selectedIndex: Int?)] = []
     @State private var currentIndex: Int = -1
 
-    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "versematchAllTimeCorrect_\(difficultyKeySuffix())") }
-    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "versematchAllTimeAnswered_\(difficultyKeySuffix())") }
-    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "versematchAllTimeBestStreak_\(difficultyKeySuffix())") }
+    // Aggregated all-time stats across all difficulties (use combined “_all” keys)
+    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "versematchAllTimeCorrect_all") }
+    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "versematchAllTimeAnswered_all") }
+    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "versematchAllTimeBestStreak_all") }
 
     @State private var refBook: Book? = nil
     @State private var refChapter: Chapter? = nil
@@ -171,14 +172,6 @@ struct VerseMatchGameView: View {
                                     Text("\(b.name) \(c.number):\(v.number)")
                                         .font(.title3)
                                         .fontWeight(.semibold)
-                                    if selectedIndex != nil {
-                                        Button(action: { toggleFavoriteCurrent() }) {
-                                            Image(systemName: "heart.fill")
-                                                .foregroundStyle(.red)
-                                        }
-                                        .buttonStyle(.plain)
-                                        .accessibilityLabel(currentFavoriteExists() ? "Remove Favorite" : "Add to Favorites")
-                                    }
                                 }
                             } else {
                                 Text("No reference")
