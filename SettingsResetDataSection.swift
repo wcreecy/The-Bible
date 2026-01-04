@@ -29,36 +29,10 @@ struct SettingsResetDataSection: View {
             .alert("Reset All Reading Stats?", isPresented: $showingResetReadingAlert) {
                 Button("Cancel", role: .cancel) {}
                 Button("Reset", role: .destructive) {
-                    let defaults = BibleStatsStore.Defaults.provider
-                    // Local removals
-                    defaults.removeObject(forKey: BibleStatsStore.Defaults.keyTotals)
-                    defaults.removeObject(forKey: BibleStatsStore.Defaults.keyDailyTotals)
-                    defaults.removeObject(forKey: BibleStatsStore.Defaults.keyDailyTotalsByBook)
-                    defaults.removeObject(forKey: BibleStatsStore.Defaults.keyVisitedChapters)
-                    defaults.removeObject(forKey: BibleStatsStore.Defaults.keyLastRead)
-                    defaults.removeObject(forKey: BibleStatsStore.Defaults.keySeenVersesByChapter)
-                    defaults.removeObject(forKey: BibleStatsStore.Defaults.keyChapterCompletionDates)
-                    defaults.removeObject(forKey: "readingSessions")
-
-                    // Mirror deletions to iCloud KVS so other devices clear too
-                    let kvs = iCloudSyncCoordinator.shared.kvs
-                    var keys = iCloudSyncCoordinator.bibleStatsKeys
-                    for key in keys {
-                        kvs.removeObject(forKey: key)
-                    }
-                    // Ensure sessions deletion is also mirrored (now in bibleStatsKeys, but keep explicit for safety)
-                    kvs.removeObject(forKey: "readingSessions")
-                    if !keys.contains("readingSessions") {
-                        keys.append("readingSessions")
-                    }
-
-                    // Reset caches and notify UI locally
-                    BibleStatsStore.shared.resetCaches()
-                    NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
-
-                    // Enqueue these keys and push now so deletions propagate immediately
-                    iCloudSyncCoordinator.shared.enqueueKeysForSync(keys)
-                    iCloudSyncCoordinator.shared.pushAllNow()
+                    // Delegate to coordinator: clears local stats/sessions, removes KVS copies,
+                    // stamps a reset epoch to prevent older devices from repopulating,
+                    // and performs synchronize off-main.
+                    iCloudSyncCoordinator.shared.resetAllBibleStatsAndSessions()
                 }
             } message: {
                 Text("All reading statistics, progress, and sessions will be removed. This cannot be undone. Do you want to continue?")

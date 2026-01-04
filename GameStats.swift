@@ -51,10 +51,9 @@ final class GameStats: ObservableObject {
             forName: .gameStatsExternallyUpdated,
             object: nil,
             queue: .main
-        ) { _ in
-            Task { @MainActor in
-                GameStats.shared.version &+= 1
-            }
+        ) { [weak self] _ in
+            // Important: mutate the existing instance; do NOT touch GameStats.shared here.
+            self?.version &+= 1
         }
     }
 
@@ -1768,4 +1767,3 @@ final class GameStats: ObservableObject {
         return rows
     }
 }
-
