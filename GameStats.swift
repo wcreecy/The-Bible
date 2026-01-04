@@ -43,6 +43,7 @@ final class GameStats: ObservableObject {
         migrateLegacyGameKeysIfNeeded()
         migrateQuizCombinedIfNeeded()
         migrateBookOrderCombinedIfNeeded()
+        migrateHangmanCombinedIfNeeded() // NEW: backfill combined “_all” for Hangman
 
         observer = NotificationCenter.default.addObserver(
             forName: .gameStatsExternallyUpdated,
@@ -58,6 +59,7 @@ final class GameStats: ObservableObject {
     private static let legacyWipeFlagKey = "didWipeLegacyUnsuffixedGameKeys_v1"
     private static let quizCombinedMigrationFlagKey = "didMigrateQuizCombinedAll_v1"
     private static let bookOrderCombinedMigrationFlagKey = "didMigrateBookOrderCombinedAll_v1"
+    private static let hangmanCombinedMigrationFlagKey = "didMigrateHangmanCombinedAll_v1" // NEW
 
     private func migrateLegacyGameKeysIfNeeded() {
         let defaults = UserDefaults.standard
@@ -178,6 +180,59 @@ final class GameStats: ObservableObject {
         }
 
         defaults.set(true, forKey: Self.bookOrderCombinedMigrationFlagKey)
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
+    // NEW: One-time migration: combine existing per-difficulty Hangman stats into combined "_all" keys.
+    private func migrateHangmanCombinedIfNeeded() {
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: Self.hangmanCombinedMigrationFlagKey) else { return }
+
+        func readInt(_ key: String) -> Int { max(0, defaults.integer(forKey: key)) }
+
+        // Include legacy “medium” mapped to “normal” era; sum all that exist.
+        let cEasy = readInt("hangmanAllTimeCorrect_easy")
+        let cNorm = readInt("hangmanAllTimeCorrect_normal")
+        let cMed  = readInt("hangmanAllTimeCorrect_medium")
+        let cHard = readInt("hangmanAllTimeCorrect_hard")
+
+        let aEasy = readInt("hangmanAllTimeAnswered_easy")
+        let aNorm = readInt("hangmanAllTimeAnswered_normal")
+        let aMed  = readInt("hangmanAllTimeAnswered_medium")
+        let aHard = readInt("hangmanAllTimeAnswered_hard")
+
+        let bEasy = readInt("hangmanAllTimeBestStreak_easy")
+        let bNorm = readInt("hangmanAllTimeBestStreak_normal")
+        let bMed  = readInt("hangmanAllTimeBestStreak_medium")
+        let bHard = readInt("hangmanAllTimeBestStreak_hard")
+
+        // Legacy unsuffixed fallback
+        let legacyC = readInt("hangmanAllTimeCorrect")
+        let legacyA = readInt("hangmanAllTimeAnswered")
+        let legacyB = readInt("hangmanAllTimeBestStreak")
+
+        let sumCorrect = cEasy + cNorm + cMed + cHard + legacyC
+        let sumAnswered = aEasy + aNorm + aMed + aHard + legacyA
+        let bestStreak = max(bEasy, bNorm, bMed, bHard, legacyB)
+
+        let existingAllC = readInt("hangmanAllTimeCorrect_all")
+        let existingAllA = readInt("hangmanAllTimeAnswered_all")
+        let existingAllB = readInt("hangmanAllTimeBestStreak_all")
+
+        if existingAllC == 0 && sumCorrect > 0 {
+            defaults.set(sumCorrect, forKey: "hangmanAllTimeCorrect_all")
+            iCloudSyncCoordinator.shared.pushKey("hangmanAllTimeCorrect_all")
+        }
+        if existingAllA == 0 && sumAnswered > 0 {
+            defaults.set(sumAnswered, forKey: "hangmanAllTimeAnswered_all")
+            iCloudSyncCoordinator.shared.pushKey("hangmanAllTimeAnswered_all")
+        }
+        if existingAllB == 0 && bestStreak > 0 {
+            defaults.set(bestStreak, forKey: "hangmanAllTimeBestStreak_all")
+            iCloudSyncCoordinator.shared.pushKey("hangmanAllTimeBestStreak_all")
+        }
+
+        defaults.set(true, forKey: Self.hangmanCombinedMigrationFlagKey)
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
@@ -454,6 +509,10 @@ final class GameStats: ObservableObject {
             incInt("hangmanAllTimeCorrect_\(s)", by: addCorrect)
             incInt("hangmanAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("hangmanAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            // NEW: Mirror to combined keys so all difficulties share the same all-time stats
+            incInt("hangmanAllTimeCorrect_all", by: addCorrect)
+            incInt("hangmanAllTimeAnswered_all", by: addAnswered)
+            maxInt("hangmanAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .beatclock:
             guard let s = suf else { return }
@@ -690,6 +749,14 @@ final class GameStats: ObservableObject {
     }
 
     private var hangman: GameStat {
+        // NEW: Prefer combined keys if present; otherwise fall back to summing per-difficulty/legacy
+        let combinedC = max(0, readInt("hangmanAllTimeCorrect_all"))
+        let combinedA = max(0, readInt("hangmanAllTimeAnswered_all"))
+        let combinedB = max(0, readInt("hangmanAllTimeBestStreak_all"))
+        if (combinedC + combinedA + combinedB) > 0 {
+            return GameStat(correct: combinedC, answered: combinedA, bestStreak: combinedB == 0 ? nil : combinedB)
+        }
+
         let c = sumAcross(prefix: "hangmanAllTimeCorrect", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "hangmanAllTimeCorrect")
         let a = sumAcross(prefix: "hangmanAllTimeAnswered", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "hangmanAllTimeAnswered")
         let best = maxAcross(prefix: "hangmanAllTimeBestStreak", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "hangmanAllTimeBestStreak")
@@ -928,7 +995,7 @@ final class GameStats: ObservableObject {
             if raw == "Wordle (Bible)" { return "WORD" }
             return raw
         }
-        return nil
+               return nil
     }
 
     func dailySeriesLast(days: Int, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> [(date: Date, answered: Int, correct: Int)] {

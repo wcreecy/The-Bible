@@ -4,8 +4,8 @@ import Foundation
 extension iCloudSyncCoordinator {
     // Game keys: Hangman
     static let hangmanKeys: [String] = {
-        // Include both legacy "medium" and new "normal"
-        let diffs = ["easy", "normal", "medium", "hard"]
+        // Include both legacy "medium" and new "normal", plus combined "all"
+        let diffs = ["easy", "normal", "medium", "hard", "all"]
         var keys: [String] = []
         for d in diffs {
             keys.append("hangmanAllTimeCorrect_\(d)")
@@ -643,8 +643,8 @@ extension iCloudSyncCoordinator {
             }
         }
 
-        // Hangman (easy/normal/medium/hard) + legacy unsuffixed
-        repairSuffixed(prefix: "hangman", diffs: ["easy","normal","medium","hard"])
+        // Hangman (easy/normal/medium/hard/all) + legacy unsuffixed
+        repairSuffixed(prefix: "hangman", diffs: ["easy","normal","medium","hard","all"])
         repairPair(correctKey: "hangmanAllTimeCorrect", answeredKey: "hangmanAllTimeAnswered")
 
         // Beat the Clock — include normal, medium (legacy), and combined "all"

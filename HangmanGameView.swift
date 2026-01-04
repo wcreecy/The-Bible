@@ -55,17 +55,15 @@ struct HangmanGameView: View {
     @State private var currentStreak: Int = 0
     @State private var currentBestStreak: Int = 0
 
+    // Always show aggregated all-time across difficulties
     private var allTimeCorrect: Int {
-        let key = "hangmanAllTimeCorrect_\(difficultyKeySuffix())"
-        return UserDefaults.standard.integer(forKey: key)
+        UserDefaults.standard.integer(forKey: "hangmanAllTimeCorrect_all")
     }
     private var allTimeAnswered: Int {
-        let key = "hangmanAllTimeAnswered_\(difficultyKeySuffix())"
-        return UserDefaults.standard.integer(forKey: key)
+        UserDefaults.standard.integer(forKey: "hangmanAllTimeAnswered_all")
     }
     private var allTimeBestStreak: Int {
-        let key = "hangmanAllTimeBestStreak_\(difficultyKeySuffix())"
-        return UserDefaults.standard.integer(forKey: key)
+        UserDefaults.standard.integer(forKey: "hangmanAllTimeBestStreak_all")
     }
 
     @State private var loadedPeople: [BibleName] = []
