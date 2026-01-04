@@ -47,6 +47,11 @@ final class iCloudSyncCoordinator {
     private let bibleStatsResetEpochKVSKey = "bibleStatsResetEpoch"          // in KVS
     private let bibleStatsLastSeenEpochLocalKey = "bibleStatsLastSeenResetEpoch" // in local defaults
 
+    // MARK: - Reset epoch for Game stats (NEW)
+
+    private let gameStatsResetEpochKVSKey = "gameStatsResetEpoch"            // in KVS
+    private let gameStatsLastSeenEpochLocalKey = "gameStatsLastSeenResetEpoch" // in local defaults
+
     private init() {
         NotificationCenter.default.addObserver(
             self,
@@ -243,6 +248,16 @@ final class iCloudSyncCoordinator {
         }
 
         let changedKeys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String] ?? []
+
+        // If a reset-epoch changed, run a full reconcile so we clear local immediately.
+        if changedKeys.contains(gameStatsResetEpochKVSKey) {
+            reconcileAllKeysFromKVS()
+            return
+        }
+        if changedKeys.contains(bibleStatsResetEpochKVSKey) {
+            reconcileAllKeysFromKVS()
+            return
+        }
 
         // Filter to known data keys; ignore our timestamp companion keys (handled inside domain helpers)
         let keysToProcess = changedKeys.filter { allKnownKeys.contains($0) || Self.lastReadWidgetKeys.contains($0) }
@@ -492,6 +507,20 @@ final class iCloudSyncCoordinator {
                 touchedAny = true
                 // Record last-seen epoch locally to prevent re-clearing
                 defaults.set(incomingEpoch, forKey: bibleStatsLastSeenEpochLocalKey)
+            }
+        }
+
+        // NEW: Check for a remote Game stats reset epoch; if newer than local, clear local game data only.
+        let incomingGameEpoch = kvs.double(forKey: gameStatsResetEpochKVSKey)
+        if incomingGameEpoch > 0 {
+            let lastSeenGame = defaults.double(forKey: gameStatsLastSeenEpochLocalKey)
+            if incomingGameEpoch > lastSeenGame {
+                // Purge local game data without writing back to KVS (remote reset is authoritative)
+                clearAllGameDataLocalOnly()
+                touchedAny = true
+                mergedGameKey = true
+                // Stamp last-seen epoch locally to prevent re-clearing
+                defaults.set(incomingGameEpoch, forKey: gameStatsLastSeenEpochLocalKey)
             }
         }
 

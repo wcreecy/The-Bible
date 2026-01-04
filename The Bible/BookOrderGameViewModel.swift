@@ -79,27 +79,41 @@ final class BookOrderGameViewModel: ObservableObject {
     private var keyAllTimeAnswered: String { "bookorderAllTimeAnswered_\(keySuffix)" }
     private var keyAllTimeBestStreak: String { "bookorderAllTimeBestStreak_\(keySuffix)" }
     
-    // NEW: Aggregate getters for the in-game scoreboard (sum across easy/normal/hard/all; best streak = max).
+    // NEW: Aggregate getters for the in-game scoreboard that avoid double-counting.
     private func readInt(_ key: String) -> Int { max(0, UserDefaults.standard.integer(forKey: key)) }
-    private var allSuffixes: [String] { ["easy", "normal", "hard", "all"] }
-    private func sumAll(_ base: String) -> Int {
-        allSuffixes.reduce(0) { acc, suf in acc + readInt("\(base)_\(suf)") }
-    }
-    private func maxAll(_ base: String) -> Int {
-        allSuffixes.map { readInt("\(base)_\($0)") }.max() ?? 0
+    private var diffsNoAll: [String] { ["easy", "normal", "hard"] }
+
+    // Prefer combined "_all" when present; otherwise sum easy/normal/hard only.
+    private func combinedOrSum(_ base: String) -> Int {
+        let combined = readInt("\(base)_all")
+        if combined > 0 {
+            return combined
+        } else {
+            return diffsNoAll.reduce(0) { acc, suf in acc + readInt("\(base)_\(suf)") }
+        }
     }
 
-    // Displayed on the scoreboard “All-time” row (aggregate across modes)
+    // Prefer combined best streak when present; otherwise max across easy/normal/hard.
+    private func combinedOrMax(_ base: String) -> Int {
+        let combined = readInt("\(base)_all")
+        if combined > 0 {
+            return combined
+        } else {
+            return diffsNoAll.map { readInt("\(base)_\($0)") }.max() ?? 0
+        }
+    }
+
+    // Displayed on the scoreboard “All-time” row (aggregate without double-counting)
     var allTimeCorrect: Int {
-        sumAll("bookorderAllTimeCorrect")
+        combinedOrSum("bookorderAllTimeCorrect")
     }
     
     var allTimeAnswered: Int {
-        sumAll("bookorderAllTimeAnswered")
+        combinedOrSum("bookorderAllTimeAnswered")
     }
     
     var allTimeBestStreak: Int {
-        maxAll("bookorderAllTimeBestStreak")
+        combinedOrMax("bookorderAllTimeBestStreak")
     }
 
     // MARK: - Persistent streak helpers (per difficulty)

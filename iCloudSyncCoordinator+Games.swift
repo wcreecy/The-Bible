@@ -23,6 +23,16 @@ extension iCloudSyncCoordinator {
         "hangmanPerCategoryCorrectMap"
     ]
 
+    // NEW: Hangman persistent streak keys (local-only; used by HangmanGameView)
+    static let hangmanPersistentStreakKeys: [String] = {
+        var keys: [String] = []
+        for d in ["easy","normal","hard"] {
+            keys.append("hangmanPersistentStreak_\(d)")
+            keys.append("hangmanPersistentBestStreak_\(d)")
+        }
+        return keys
+    }()
+
     // Game keys: Beat the Clock
     static let beatClockKeys: [String] = {
         // Include both legacy "medium" and new "normal", plus combined "all"
@@ -69,13 +79,25 @@ extension iCloudSyncCoordinator {
 
     // Game keys: Verse Match (new)
     static let verseMatchKeys: [String] = {
-        // Include both "normal" and legacy "medium" to be safe during transition
-        let diffs = ["easy", "normal", "medium", "hard"]
+        // Include "easy/normal/medium/hard" and combined "all" to match UI's aggregated reads
+        let diffs = ["easy", "normal", "medium", "hard", "all"]
         var keys: [String] = []
         for d in diffs {
             keys.append("versematchAllTimeCorrect_\(d)")
             keys.append("versematchAllTimeAnswered_\(d)")
             keys.append("versematchAllTimeBestStreak_\(d)")
+        }
+        // Include legacy unsuffixed keys for safety
+        keys.append(contentsOf: ["versematchAllTimeCorrect", "versematchAllTimeAnswered", "versematchAllTimeBestStreak"])
+        return keys
+    }()
+
+    // NEW: Verse Match persistent streak keys (local-only; used by VerseMatchGameView)
+    static let verseMatchPersistentStreakKeys: [String] = {
+        var keys: [String] = []
+        for d in ["easy","normal","hard"] {
+            keys.append("versematchPersistentStreak_\(d)")
+            keys.append("versematchPersistentBestStreak_\(d)")
         }
         return keys
     }()
@@ -120,9 +142,19 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // Game keys: Who am I? (easy/normal/hard)
+    // NEW: Book Order persistent streak keys (local-only; used by BookOrderGameViewModel)
+    static let bookOrderPersistentStreakKeys: [String] = {
+        var keys: [String] = []
+        for d in ["easy","normal","hard","all"] {
+            keys.append("bookorderPersistentStreak_\(d)")
+            keys.append("bookorderPersistentBestStreak_\(d)")
+        }
+        return keys
+    }()
+
+    // Game keys: Who am I? (easy/normal/hard + combined "all")
     static let whoAmIKeys: [String] = {
-        let diffs = ["easy", "normal", "hard"]
+        let diffs = ["easy", "normal", "hard", "all"]
         var keys: [String] = []
         for d in diffs {
             keys.append("whoamiAllTimeCorrect_\(d)")
@@ -521,13 +553,75 @@ extension iCloudSyncCoordinator {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
+    // NEW: Local-only purge of all game-related data (used when a newer remote reset epoch is observed).
+    func clearAllGameDataLocalOnly() {
+        // 1) Remove numeric counters locally (let remote zeros/timestamps win)
+        let gameKeys = Array(
+            Self.hangmanKeys
+            + Self.beatClockKeys
+            + Self.refMatchKeys
+            + Self.verseMatchKeys
+            + Self.quizKeys
+            + Self.bookOrderKeys
+            + Self.whoAmIKeys
+            + Self.wordleKeys
+        )
+        for key in gameKeys {
+            defaults.removeObject(forKey: key)
+            defaults.removeObject(forKey: tsKey(for: key))
+        }
+
+        // 1b) Clear local-only persistent streak caches (Beat the Clock + Verse Match + Hangman + Book Order)
+        for key in Self.beatClockPersistentStreakKeys
+                    + Self.verseMatchPersistentStreakKeys
+                    + Self.hangmanPersistentStreakKeys
+                    + Self.bookOrderPersistentStreakKeys {
+            defaults.removeObject(forKey: key)
+        }
+
+        // 2) Clear overall daily maps and last played locally
+        for key in ["gamesDailyAnswered", "gamesDailyCorrect", "gamesLastPlayedAt", "gamesLastPlayedGameName"] {
+            defaults.removeObject(forKey: key)
+        }
+
+        // 2b) Clear per-WORD mode daily maps locally
+        for modeKey in ["word_normal", "word_hard"] {
+            defaults.removeObject(forKey: "gamesDailyAnswered_\(modeKey)")
+            defaults.removeObject(forKey: "gamesDailyCorrect_\(modeKey)")
+        }
+
+        // 2c) Clear analytics maps locally
+        for key in ["quizPerBookAnsweredMap", "quizPerBookCorrectMap",
+                    "hangmanPerCategoryAnsweredMap", "hangmanPerCategoryCorrectMap",
+                    "beatclockPerTypeAnsweredMap", "beatclockPerTypeCorrectMap",
+                    "versematchPerBookAnsweredMap", "versematchPerBookCorrectMap",
+                    "wordleDailySolvedDays", "wordleDailyResultMap",
+                    "wordleDailyCompletedDay", "wordleDailyTarget",
+                    "quizPerBookDailyAnswered", "quizPerBookDailyCorrect"] {
+            defaults.removeObject(forKey: key)
+        }
+
+        // 3) Clear per-game daily maps locally
+        let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","word"]
+        for g in perGameKeys {
+            defaults.removeObject(forKey: "gamesDailyAnswered_\(g)")
+            defaults.removeObject(forKey: "gamesDailyCorrect_\(g)")
+        }
+
+        // 4) Notify UI to recompute derived metrics to zero
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+    }
+
     // NEW: Full wipe of all game-related data: counters, daily maps (overall + per-game), and last played.
     func resetAllGameDataToZero() {
         // 1) Reset all-time counters (includes WORD extras)
         resetAllGameCountersToZero()
 
-        // 1b) Clear any local-only persistent streak caches (Beat the Clock)
-        for key in Self.beatClockPersistentStreakKeys {
+        // 1b) Clear any local-only persistent streak caches (Beat the Clock + Verse Match + Hangman + Book Order)
+        for key in Self.beatClockPersistentStreakKeys
+                    + Self.verseMatchPersistentStreakKeys
+                    + Self.hangmanPersistentStreakKeys
+                    + Self.bookOrderPersistentStreakKeys {
             defaults.removeObject(forKey: key)
             // Not mirrored to KVS; these keys are local-only
         }
@@ -610,10 +704,15 @@ extension iCloudSyncCoordinator {
             kvs.removeObject(forKey: cKey)
         }
 
-        // 4) Notify UI to recompute all derived metrics to zero (streaks, Qs/day, 7D accuracy, per-game charts, insights)
+        // 4) Set/reset the Game Stats reset epoch in both KVS and local so older devices won’t re-populate
+        let now = Date().timeIntervalSince1970
+        kvs.set(now, forKey: "gameStatsResetEpoch")
+        defaults.set(now, forKey: "gameStatsLastSeenResetEpoch")
+
+        // 5) Notify UI to recompute all derived metrics to zero (streaks, Qs/day, 7D accuracy, per-game charts, insights)
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
 
-        // 5) NEW: Immediately push all known keys so zeros/removals propagate across devices now.
+        // 6) Immediately push all known keys so zeros/removals propagate across devices now (also flushes epoch)
         pushAllNow()
     }
 
@@ -650,8 +749,8 @@ extension iCloudSyncCoordinator {
         // Beat the Clock — include normal, medium (legacy), and combined "all"
         repairSuffixed(prefix: "beatclock", diffs: ["easy","normal","medium","hard","all"])
 
-        // Verse Match (new) + Reference Match (legacy)
-        repairSuffixed(prefix: "versematch", diffs: ["easy","normal","medium","hard"])
+        // Verse Match (new) + Reference Match (legacy) — include combined "all"
+        repairSuffixed(prefix: "versematch", diffs: ["easy","normal","medium","hard","all"])
         repairSuffixed(prefix: "refmatch", diffs: ["easy","normal","medium","hard"])
         repairPair(correctKey: "refmatchAllTimeCorrect", answeredKey: "refmatchAllTimeAnswered")
 
@@ -659,8 +758,8 @@ extension iCloudSyncCoordinator {
         repairSuffixed(prefix: "quiz", diffs: ["easy","normal","hard","all"])
         repairPair(correctKey: "quizAllTimeCorrect", answeredKey: "quizAllTimeAnswered")
 
-        // Who am I? (easy/normal/hard) + legacy unsuffixed
-        repairSuffixed(prefix: "whoami", diffs: ["easy","normal","hard"])
+        // Who am I? — include combined "all" + legacy unsuffixed
+        repairSuffixed(prefix: "whoami", diffs: ["easy","normal","hard","all"])
         repairPair(correctKey: "whoamiAllTimeCorrect", answeredKey: "whoamiAllTimeAnswered")
 
         // Book Order (easy/normal/hard/all) + legacy unsuffixed
