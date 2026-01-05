@@ -146,6 +146,9 @@ struct ContentView: View {
         )
         .fontDesign(selectedTab == .settings ? .default : (preferredFontDesign ?? .default))
         .onAppear {
+            // START iCloud KVS coordinator so game/bible stats pull/merge on launch.
+            iCloudSyncCoordinator.shared.start()
+
             // One-time cleanup of deprecated keys
             if !didCleanupAppTimeKeys {
                 UserDefaults.standard.removeObject(forKey: "appTotalActiveSeconds")
@@ -317,6 +320,9 @@ struct ContentView: View {
         .onChange(of: scenePhase) { _, newValue in
             switch newValue {
             case .active:
+                // Re-run start (idempotent) to ensure any missed merges are reconciled on resume.
+                iCloudSyncCoordinator.shared.start()
+
                 // Account for any background elapsed time while timer/stopwatch was running
                 applyBackgroundElapsedIfAny()
                 // Start foreground usage timer

@@ -53,7 +53,10 @@ final class GameStats: ObservableObject {
             queue: .main
         ) { [weak self] _ in
             // Important: mutate the existing instance; do NOT touch GameStats.shared here.
-            self?.version &+= 1
+            // Hop to the main actor explicitly to satisfy Sendable closure constraints.
+            Task { @MainActor [weak self] in
+                self?.version &+= 1
+            }
         }
     }
 
@@ -898,6 +901,14 @@ final class GameStats: ObservableObject {
     }
 
     private var beatclock: GameStat {
+        // NEW: Prefer combined keys if present; otherwise fall back to summing per-difficulty/legacy
+        let combinedC = max(0, readInt("beatclockAllTimeCorrect_all"))
+        let combinedA = max(0, readInt("beatclockAllTimeAnswered_all"))
+        let combinedB = max(0, readInt("beatclockAllTimeBestStreak_all"))
+        if (combinedC + combinedA + combinedB) > 0 {
+            return GameStat(correct: combinedC, answered: combinedA, bestStreak: combinedB == 0 ? nil : combinedB)
+        }
+
         let c = sumAcross(prefix: "beatclockAllTimeCorrect", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "beatclockAllTimeCorrect")
         let a = sumAcross(prefix: "beatclockAllTimeAnswered", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "beatclockAllTimeAnswered")
         let best = maxAcross(prefix: "beatclockAllTimeBestStreak", parts: ["_easy","_normal","_hard","_medium"], legacyKey: "beatclockAllTimeBestStreak")
