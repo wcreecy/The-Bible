@@ -264,7 +264,7 @@ extension GameStats {
                 for d in diffs {
                     let r = rollRound(maxQ: maxQ)
 
-                    // Determine prefix and suffix for all-time keys, forcing Beat the Clock to "_all"
+                    // Determine prefix and suffix for all-time keys, forcing Beat the Clock to also update combined "_all"
                     let pfx: String
                     switch game {
                     case .quiz: pfx = "quiz"
@@ -277,13 +277,18 @@ extension GameStats {
                     }
 
                     let baseSuffix = suffix(for: game, difficulty: d)
-                    let s = (game == .beatclock) ? "all" : (baseSuffix ?? "")
 
                     if game == .beatclock {
-                        // Combined all-time keys
-                        incInt("\(pfx)AllTimeCorrect_\(s)", by: r.correct)
-                        incInt("\(pfx)AllTimeAnswered_\(s)", by: r.answered)
-                        maxInt("\(pfx)AllTimeBestStreak_\(s)", candidate: r.bestStreak)
+                        // Write combined "_all"
+                        incInt("\(pfx)AllTimeCorrect_all", by: r.correct)
+                        incInt("\(pfx)AllTimeAnswered_all", by: r.answered)
+                        maxInt("\(pfx)AllTimeBestStreak_all", candidate: r.bestStreak)
+                        // Also write per-difficulty so readers that aggregate by difficulty can see non-zero values.
+                        if let sfx = baseSuffix {
+                            incInt("\(pfx)AllTimeCorrect_\(sfx)", by: r.correct)
+                            incInt("\(pfx)AllTimeAnswered_\(sfx)", by: r.answered)
+                            maxInt("\(pfx)AllTimeBestStreak_\(sfx)", candidate: r.bestStreak)
+                        }
                     } else if let sfx = baseSuffix {
                         incInt("\(pfx)AllTimeCorrect_\(sfx)", by: r.correct)
                         incInt("\(pfx)AllTimeAnswered_\(sfx)", by: r.answered)
@@ -312,12 +317,18 @@ extension GameStats {
                     }
 
                     let baseSuffix = suffix(for: game, difficulty: d)
-                    let s = (game == .beatclock) ? "all" : (baseSuffix ?? "")
 
                     if game == .beatclock {
-                        incInt("\(pfx)AllTimeCorrect_\(s)", by: r.correct)
-                        incInt("\(pfx)AllTimeAnswered_\(s)", by: r.answered)
-                        maxInt("\(pfx)AllTimeBestStreak_\(s)", candidate: r.bestStreak)
+                        // Write combined "_all"
+                        incInt("\(pfx)AllTimeCorrect_all", by: r.correct)
+                        incInt("\(pfx)AllTimeAnswered_all", by: r.answered)
+                        maxInt("\(pfx)AllTimeBestStreak_all", candidate: r.bestStreak)
+                        // Also write per-difficulty
+                        if let sfx = baseSuffix {
+                            incInt("\(pfx)AllTimeCorrect_\(sfx)", by: r.correct)
+                            incInt("\(pfx)AllTimeAnswered_\(sfx)", by: r.answered)
+                            maxInt("\(pfx)AllTimeBestStreak_\(sfx)", candidate: r.bestStreak)
+                        }
                     } else if let sfx = baseSuffix {
                         incInt("\(pfx)AllTimeCorrect_\(sfx)", by: r.correct)
                         incInt("\(pfx)AllTimeAnswered_\(sfx)", by: r.answered)
@@ -603,4 +614,3 @@ extension GameStats {
     }
 }
 #endif
-

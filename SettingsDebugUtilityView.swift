@@ -131,10 +131,11 @@ struct SettingsDebugUtilitiesView: View {
                 // Games
                 Group {
                     Button {
-                        GameStats.shared.seedRandomStatsAllGames()
-                        debugShow("Games", "Seeded random stats across all games and difficulties.")
+                        // Use the 31-day seeder so daily maps and all-time counters are populated (incl. Beat the Clock).
+                        GameStats.shared.seedRandomStatsAllGamesLastNDays(days: 31)
+                        debugShow("Games", "Seeded random stats across all games and difficulties for the last 31 days.")
                     } label: {
-                        Label("Seed Random Game Stats", systemImage: "gamecontroller")
+                        Label("Seed Random Game Stats (31 Days)", systemImage: "gamecontroller")
                     }
 
                     Button(role: .destructive) {
