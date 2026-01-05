@@ -72,6 +72,9 @@ struct JournalEditorView: View {
     // iPhone: full-screen Bible mode toggle
     @State private var isShowingBibleReader: Bool = false
 
+    // Focus state for editable navigation title
+    @FocusState private var titleFocused: Bool
+
     init(verseRef: VerseRef?, initialBody: String? = nil, showTagColors: Bool = false, editingEntry: JournalEntry? = nil, onClose: (() -> Void)? = nil) {
         self.verseRef = verseRef
         self.showTagColors = showTagColors
@@ -135,16 +138,6 @@ struct JournalEditorView: View {
                     }
                 }
             }
-            .navigationTitle(
-                {
-                    let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
-                    if editingEntry != nil {
-                        return trimmed.isEmpty ? "Untitled" : trimmed
-                    } else {
-                        return trimmed.isEmpty ? "New Entry" : trimmed
-                    }
-                }()
-            )
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") {
@@ -155,6 +148,20 @@ struct JournalEditorView: View {
                         }
                     }
                     .keyboardShortcut("w", modifiers: [.command])
+                }
+                // Editable navigation title
+                ToolbarItem(placement: .principal) {
+                    TextField("Untitled", text: $title)
+                        .textInputAutocapitalization(.sentences)
+                        .disableAutocorrection(false)
+                        .font(.title3.weight(.semibold))
+                        .multilineTextAlignment(.center)
+                        .focused($titleFocused)
+                        .submitLabel(.done)
+                        .frame(maxWidth: .infinity)
+                        .contentShape(Rectangle()) // enlarge tappable area
+                        .onTapGesture { titleFocused = true } // tap to focus
+                        .accessibilityLabel("Title")
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     if hSize != .regular {
@@ -180,6 +187,7 @@ struct JournalEditorView: View {
                     .keyboardShortcut("s", modifiers: [.command])
                 }
             }
+            .navigationBarTitleDisplayMode(.inline)
             .alert("Couldn’t Save Entry", isPresented: $showSaveError) {
                 Button("OK", role: .cancel) {}
             } message: {
@@ -229,12 +237,7 @@ struct JournalEditorView: View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
-                    TextField("Title", text: $title)
-                        .font(.title2.weight(.semibold))
-                        .textInputAutocapitalization(.sentences)
-                        .disableAutocorrection(false)
-                        .padding(.horizontal, 12)
-                        .padding(.top, 8)
+                    // Title field removed; title is edited in the navigation bar.
 
                     VStack(alignment: .leading, spacing: 8) {
                         TextField("Add tags (comma-separated)", text: $tagsText)
@@ -414,12 +417,7 @@ struct JournalEditorView: View {
     private var editorColumn: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                TextField("Title", text: $title)
-                    .font(.title2.weight(.semibold))
-                    .textInputAutocapitalization(.sentences)
-                    .disableAutocorrection(false)
-                    .padding(.horizontal, 12)
-                    .padding(.top, 8)
+                // Title field removed; title is edited in the navigation bar.
 
                 VStack(alignment: .leading, spacing: 8) {
                     TextField("Add tags (comma-separated)", text: $tagsText)
