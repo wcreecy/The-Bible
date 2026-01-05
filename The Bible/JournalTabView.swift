@@ -62,6 +62,9 @@ struct JournalTabView: View {
     }
     @AppStorage("journalRightPaneMode") private var rightPaneMode: RightPaneMode = .smartLinks
 
+    // Focus for editable navigation title (iPad inline editor)
+    @FocusState private var iPadTitleFocused: Bool
+
     private func loadPins() {
         let parts = pinnedIDsRaw.split(separator: ",").map { String($0) }
         pinnedIDs = Set(parts)
@@ -380,7 +383,7 @@ struct JournalTabView: View {
         HStack(spacing: 0) {
             ScrollView {
                 VStack(spacing: 0) {
-                    HStack {
+                    HStack(alignment: .center, spacing: 8) {
                         Button("Save") {
                             let tags = editingTagsText
                                 .split(separator: ",")
@@ -396,7 +399,26 @@ struct JournalTabView: View {
                         .buttonStyle(.borderedProminent)
                         .controlSize(.regular)
 
-                        Spacer(minLength: 0)
+                        // Editable title centered in the same row
+                        TextField("Untitled", text: Binding(
+                            get: { e.title },
+                            set: { new in
+                                e.title = new
+                                e.updatedAt = Date()
+                                scheduleAutosave()
+                            }
+                        ))
+                        .textInputAutocapitalization(.sentences)
+                        .disableAutocorrection(false)
+                        .font(.title.weight(.semibold)) // bigger, more prominent
+                        .multilineTextAlignment(.center)
+                        .focused($iPadTitleFocused)
+                        .submitLabel(.done)
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, 6)
+                        .contentShape(Rectangle())
+                        .onTapGesture { iPadTitleFocused = true }
+                        .accessibilityLabel("Title")
 
                         Button("Cancel") {
                             // If this was a brand-new entry and still blank, discard it.
@@ -423,19 +445,7 @@ struct JournalTabView: View {
                     Divider()
 
                     VStack(alignment: .leading, spacing: 12) {
-                        TextField("Title", text: Binding(
-                            get: { e.title },
-                            set: { new in
-                                e.title = new
-                                e.updatedAt = Date()
-                                scheduleAutosave()
-                            }
-                        ))
-                        .font(.title2.weight(.semibold))
-                        .textInputAutocapitalization(.sentences)
-                        .disableAutocorrection(false)
-                        .padding(.horizontal, 12)
-                        .padding(.top, 8)
+                        // Title field removed; title is edited in the header row above.
 
                         TextField("Add tags (comma-separated)", text: $editingTagsText)
                             .textInputAutocapitalization(.never)
@@ -443,6 +453,7 @@ struct JournalTabView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .padding(.horizontal, 12)
+                            .padding(.top, 8)
 
                         if !parsedEditingTags.isEmpty {
                             ScrollView(.horizontal, showsIndicators: false) {
@@ -494,6 +505,12 @@ struct JournalTabView: View {
             .onAppear {
                 editingTagsText = e.tags.joined(separator: ", ")
                 inlineLinkedBody = BibleReferenceLinker.linkify(e.body)
+                if e.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    // Focus title when creating a new/untitled entry
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        iPadTitleFocused = true
+                    }
+                }
             }
             .onDisappear {
                 autosaveTask?.cancel()
@@ -545,8 +562,8 @@ struct JournalTabView: View {
             .layoutPriority(0)
         }
         .zIndex(1)
-        .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
-        .toolbar { }
+        // No principal toolbar title while editing; it's in the header row now.
+        .navigationBarTitleDisplayMode(.inline)
         .eraseToAnyView()
     }
 
@@ -736,16 +753,15 @@ struct JournalTabView: View {
         )
     }
 
-    // Read-only pane (unchanged)
+    // Read-only pane: always show the title at the top of the content (iPhone and iPad)
     @ViewBuilder
     private func readOnlyPane(entry: JournalEntry) -> some View {
         let linkedBody = BibleReferenceLinker.linkify(entry.body)
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                if hSize != .regular {
-                    Text(entry.title.isEmpty ? "Untitled" : entry.title)
-                        .font(.title2).bold()
-                }
+                Text(entry.title.isEmpty ? "Untitled" : entry.title)
+                    .font(.title2).bold()
+
                 if !entry.tags.isEmpty {
                     TagChipRow(tags: entry.tags, selectedTags: [], showColorPicker: false, onTap: nil, onColorChange: nil)
                 }
