@@ -213,6 +213,12 @@ struct JournalEditorView: View {
                     let end = (content as NSString).length
                     textSelectionRange = NSRange(location: end, length: 0)
                 }
+                // NEW: For new entries with empty title, auto-focus title so caret is visible.
+                if editingEntry == nil && title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        titleFocused = true
+                    }
+                }
             }
             .onDisappear {
                 linkifyTask?.cancel()
