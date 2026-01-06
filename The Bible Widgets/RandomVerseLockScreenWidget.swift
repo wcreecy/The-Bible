@@ -73,15 +73,20 @@ struct RandomVerseLockScreenView: View {
             }
             .widgetURL(deepLinkURL())
         case .accessoryRectangular:
-            VStack(alignment: .leading, spacing: 4) {
+            // Exactly 3 lines:
+            // 1) Reference (bold, single line)
+            // 2-3) Scripture text (regular, up to 2 lines)
+            VStack(alignment: .leading, spacing: 1.5) {
                 Text("\(entry.book) \(entry.chapter):\(entry.verse)")
                     .font(.caption2.weight(.semibold))
                     .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-                Text("“\(entry.text)”")
-                    .font(.caption2)
-                    .lineLimit(3)
-                    .minimumScaleFactor(0.7)
+                    .minimumScaleFactor(0.85)
+
+                Text(entry.text)
+                    .font(.footnote) // bigger than caption
+                    .lineLimit(2) // lines 2 and 3
+                    .minimumScaleFactor(0.85)
+                    .truncationMode(.tail)
             }
             .widgetURL(deepLinkURL())
         default:
