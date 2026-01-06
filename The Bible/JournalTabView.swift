@@ -592,7 +592,7 @@ struct JournalTabView: View {
                     .zIndex(1)
             }
         }
-        .navigationTitle(e.title.isEmpty ? "Untitled" : e.title)
+        // Remove navigation title here to avoid duplicate (small) title on iPad detail.
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 let shareTitle: String = e.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled" : e.title
