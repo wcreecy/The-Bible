@@ -43,6 +43,10 @@ struct JournalDetailView: View {
         }
     }
 
+    private var displayTitle: String {
+        entry.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled" : entry.title
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -61,8 +65,22 @@ struct JournalDetailView: View {
                 }
             }
         }
-        .navigationTitle(entry.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Untitled" : entry.title)
+        // Replace static navigationTitle with a tappable principal title to enter edit mode.
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                Button {
+                    journalComposer.presentForEditing(entry: entry)
+                } label: {
+                    Text(displayTitle)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Edit title")
+                .accessibilityHint("Tap to edit this entry")
+            }
             ToolbarItemGroup(placement: .topBarTrailing) {
                 // Share button: shares title + body
                 ShareLink(item: shareText) {
