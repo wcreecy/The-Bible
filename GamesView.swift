@@ -154,54 +154,58 @@ struct GamesView: View {
             }
 
         case .wordle:
-            ZStack {
-                if shouldGlowWordle {
-                    // Layered blurred glows for a soft aura effect
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color.green.opacity(0.28))
-                        .blur(radius: pulse ? 18 : 12)
-                        .scaleEffect(pulse ? 1.02 : 1.0)
-                        .animation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: pulse)
-
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color.green.opacity(0.18))
-                        .blur(radius: pulse ? 30 : 22)
-                        .scaleEffect(pulse ? 1.03 : 1.0)
-                        .animation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: pulse)
-                }
-
-                HStack(spacing: 12) {
-                    Image(systemName: "square.grid.3x3")
-                        .foregroundStyle(.mint)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("WORD").font(.headline)
-                        if let result = todayWordResult {
-                            if result.won {
-                                // Win line: green
-                                Text("Solved in \(result.guesses) \(result.guesses == 1 ? "guess" : "guesses") – \(formatElapsed(result.elapsed)); \(result.word.uppercased())")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.green)
-                                    .lineLimit(1)
-                            } else {
-                                // Loss line: red (entire line)
-                                HStack(spacing: 4) {
-                                    Text("Not solved –")
-                                        .font(.subheadline)
-                                    Text(result.word.uppercased())
-                                        .font(.subheadline.weight(.semibold))
-                                }
-                                .foregroundStyle(.red)
+            HStack(spacing: 12) {
+                Image(systemName: "square.grid.3x3")
+                    .foregroundStyle(.mint)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("WORD").font(.headline)
+                    if let result = todayWordResult {
+                        if result.won {
+                            // Win line: green
+                            Text("Solved in \(result.guesses) \(result.guesses == 1 ? "guess" : "guesses") – \(formatElapsed(result.elapsed)); \(result.word.uppercased())")
+                                .font(.subheadline)
+                                .foregroundStyle(.green)
                                 .lineLimit(1)
-                            }
                         } else {
-                            Text("Guess the 5‑letter word in 6 tries").font(.subheadline).foregroundStyle(.secondary)
+                            // Loss line: red (entire line)
+                            HStack(spacing: 4) {
+                                Text("Not solved –")
+                                    .font(.subheadline)
+                                Text(result.word.uppercased())
+                                    .font(.subheadline.weight(.semibold))
+                            }
+                            .foregroundStyle(.red)
+                            .lineLimit(1)
                         }
+                    } else {
+                        Text("Guess the 5‑letter word in 6 tries").font(.subheadline).foregroundStyle(.secondary)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, 6)
-                .contentShape(Rectangle())
+
+                Spacer(minLength: 8)
+
+                if shouldGlowWordle {
+                    // Trailing subtle indicator dot
+                    ZStack {
+                        Circle()
+                            .fill(Color.green.opacity(0.25))
+                            .frame(width: 14, height: 14)
+                            .blur(radius: 4)
+                            .opacity(pulse ? 1.0 : 0.8)
+                            .scaleEffect(pulse ? 1.06 : 1.0)
+                            .animation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: pulse)
+
+                        Circle()
+                            .fill(Color.green)
+                            .frame(width: 8, height: 8)
+                            .opacity(0.95)
+                    }
+                    .accessibilityLabel("Daily available")
+                }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 6)
+            .contentShape(Rectangle())
             .onAppear {
                 loadTodayWordResult()
                 if shouldGlowWordle {
