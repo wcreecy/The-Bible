@@ -401,6 +401,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				BibleData.swift,
+				kjv.json,
 			);
 			target = 2C49CF5C2EBE16090006FF79 /* The Bible WidgetsExtension */;
 		};
