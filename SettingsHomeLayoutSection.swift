@@ -31,7 +31,12 @@ struct SettingsHomeLayoutSection: View {
     }
 
     var body: some View {
-        Section(header: Text("Home Layout"), footer: Text("Reorder or hide sections on the Home page. The title card always stays at the top.").font(.footnote).foregroundStyle(.secondary)) {
+        Section(
+            header: Text("Home Layout").foregroundStyle(.white),
+            footer: Text("Reorder or hide sections on the Home page. The title card always stays at the top.")
+                .font(.footnote)
+                .foregroundStyle(Color.white.opacity(0.7))
+        ) {
 
             NavigationLink {
                 HomeLayoutEditorView(

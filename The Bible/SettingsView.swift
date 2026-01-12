@@ -11,41 +11,54 @@ struct SettingsView: View {
     @Query private var journalEntries: [JournalEntry]
 
     var body: some View {
-        Form {
-            // Sections split into dedicated views
-            SettingsVOTDSection()
-            SettingsAppearanceSection()
-            SettingsTimerSection()
-            SettingsDailyGoalSection()
-            SettingsLiveActivitiesSection()
-            SettingsHomeLayoutSection()
+        ZStack {
+            Image("blackleather")
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea()
 
-            // Journal Tags manager (kept here)
-            Section(header: Text("Journal")) {
-                let uniqueCount: Int = {
-                    let unique = Set(
-                        journalEntries
-                            .flatMap { $0.tags.map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() } }
-                            .filter { !$0.isEmpty }
-                    )
-                    return unique.count
-                }()
+            Form {
+                // Sections split into dedicated views
+                SettingsVOTDSection()
+                SettingsAppearanceSection()
+                SettingsTimerSection()
+                SettingsDailyGoalSection()
+                SettingsLiveActivitiesSection()
+                SettingsHomeLayoutSection()
 
-                NavigationLink {
-                    TagManagerView()
-                } label: {
-                    Label("Manage Tags (\(uniqueCount))", systemImage: "tag")
+                // Journal Tags manager (kept here)
+                Section(header:
+                    Text("Journal")
+                        .foregroundStyle(.white) // Make header text white
+                ) {
+                    let uniqueCount: Int = {
+                        let unique = Set(
+                            journalEntries
+                                .flatMap { $0.tags.map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() } }
+                                .filter { !$0.isEmpty }
+                        )
+                        return unique.count
+                    }()
+
+                    NavigationLink {
+                        TagManagerView()
+                    } label: {
+                        Label("Manage Tags (\(uniqueCount))", systemImage: "tag")
+                    }
+                    .accessibilityIdentifier("tagManagerLink")
                 }
-                .accessibilityIdentifier("tagManagerLink")
+                .headerProminence(.increased)
+
+                SettingsiCloudSection()
+                SettingsResetDataSection()
+
+                #if DEBUG
+                SettingsDebugUtilitiesView()
+                #endif
             }
-            .headerProminence(.increased)
-
-            SettingsiCloudSection()
-            SettingsResetDataSection()
-
-            #if DEBUG
-            SettingsDebugUtilitiesView()
-            #endif
+            .scrollContentBackground(.hidden)   // hide Form’s default background
+            .background(Color.clear)            // keep it transparent
+            .listRowBackground(Color.clear)     // rows float above the image
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)

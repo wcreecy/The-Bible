@@ -5,7 +5,12 @@ struct SettingsTimerSection: View {
     @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
 
     var body: some View {
-        Section(header: Text("Timer"), footer: Text("Choose the sound that plays when the prayer/study timer finishes.").font(.footnote).foregroundStyle(.secondary)) {
+        Section(
+            header: Text("Timer").foregroundStyle(.white),
+            footer: Text("Choose the sound that plays when the prayer/study timer finishes.")
+                .font(.footnote)
+                .foregroundStyle(Color.white.opacity(0.7))
+        ) {
             LabeledContent {
                 HStack(spacing: 10) {
                     Picker("", selection: Binding<String>(

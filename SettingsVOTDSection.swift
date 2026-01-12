@@ -48,10 +48,10 @@ struct SettingsVOTDSection: View {
 
     var body: some View {
         Section(
-            header: Text("Verse of the Day"),
+            header: Text("Verse of the Day").foregroundStyle(.white),
             footer: Text("Choose which part of the Bible the Verse of the Day is selected from. You can also set two daily auto-refresh times; the verse will refresh at those times unless paused on the Home page.")
                 .font(.footnote)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.white.opacity(0.7))
         ) {
             VStack(spacing: 8) {
                 HStack(spacing: 0) {
@@ -99,7 +99,7 @@ struct SettingsVOTDSection: View {
 
                     Text(nextVOTDDescription)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.white.opacity(0.7))
                         .accessibilityIdentifier("votdNextRefreshDescription")
                 }
                 .padding(.top, 8)
