@@ -8,10 +8,10 @@ struct SearchView: View {
 
     // MARK: - Scope State
     private enum SearchScope: String, CaseIterable, Identifiable {
-        case all = "Whole Bible"
+        case all = "OT & NT"
         case ot = "OT"
         case nt = "NT"
-        case specific = "Specific Book"
+        case specific = "Book"
         var id: String { rawValue }
     }
     @State private var scope: SearchScope = .all
@@ -20,6 +20,9 @@ struct SearchView: View {
     @State private var selectedBook: Book? = nil
     @State private var showBookPicker: Bool = false
     @State private var bookQuery: String = ""
+
+    // Track if we have applied segmented control appearance
+    @State private var didConfigureSegmentedAppearance: Bool = false
 
     // MARK: - Tokenization
     private var tokens: [String] {
@@ -86,6 +89,9 @@ struct SearchView: View {
                             }
                             .buttonStyle(.plain)
                         }
+                        // Ensure list rows render white text by default over the background
+                        .scrollContentBackground(.hidden)
+                        .background(Color.clear)
                     }
                 } else {
                     ContentUnavailableView(
@@ -97,7 +103,33 @@ struct SearchView: View {
                 }
             }
         }
+        // Make all default text white for readability over the image
+        .foregroundStyle(.white)
+        .background(
+            ZStack {
+                Image("biblesearch")
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
+                // Subtle veil to improve contrast; adjust or remove as desired
+                Color.black.opacity(0.10)
+                    .ignoresSafeArea()
+            }
+        )
         .navigationTitle("Search")
+        .toolbar {
+            // Force the nav bar title to render in white
+            ToolbarItem(placement: .principal) {
+                Text("Search")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+            }
+        }
+        // Make the navigation bar background transparent so white title is visible in light mode
+        .toolbarBackground(.clear, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        // Ensure the toolbar uses a dark color scheme for contrast against the background image in light mode as well
+        .toolbarColorScheme(.dark, for: .navigationBar)
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Enter at least two words")
         .onChange(of: query) { _, _ in
             debounceSearch()
@@ -113,7 +145,10 @@ struct SearchView: View {
                 performSearch()
             }
         }
-        .onAppear { performSearch() }
+        .onAppear {
+            performSearch()
+            configureSegmentedControlAppearanceIfNeeded()
+        }
         // Popover for selecting a specific book (searchable & scrollable)
         .popover(isPresented: $showBookPicker, arrowEdge: .top) {
             VStack(spacing: 0) {
@@ -182,12 +217,14 @@ struct SearchView: View {
     private var scopeControls: some View {
         // Segmented control for scope + conditional specific-book selector
         VStack(spacing: 8) {
+            // Segmented control directly (no large backdrop)
             Picker("Scope", selection: $scope) {
                 ForEach(SearchScope.allCases) { s in
                     Text(s.rawValue).tag(s)
                 }
             }
             .pickerStyle(.segmented)
+            .tint(.white) // keep white selection highlight
             .padding([.horizontal, .top])
 
             if scope == .specific {
@@ -231,6 +268,25 @@ struct SearchView: View {
             }
         }
         .animation(.easeInOut, value: scope)
+    }
+
+    // MARK: - Appearance tweak for segmented control
+    private func configureSegmentedControlAppearanceIfNeeded() {
+        guard !didConfigureSegmentedAppearance else { return }
+        didConfigureSegmentedAppearance = true
+
+        let normalAttrs: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.white,
+            .font: UIFont.systemFont(ofSize: UIFont.labelFontSize, weight: .regular)
+        ]
+        let selectedAttrs: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.black,
+            .font: UIFont.systemFont(ofSize: UIFont.labelFontSize, weight: .semibold)
+        ]
+
+        let appearance = UISegmentedControl.appearance()
+        appearance.setTitleTextAttributes(normalAttrs, for: .normal)
+        appearance.setTitleTextAttributes(selectedAttrs, for: .selected)
     }
 
     // MARK: - Open in Bible Tab
