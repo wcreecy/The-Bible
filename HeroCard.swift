@@ -84,8 +84,8 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
         titleFont: Font = .headline,
         titleFontWeight: Font.Weight = .bold,
         centerHeader: Bool = false,
-        titleAccessory: @escaping () -> TitleAccessory,
-        @ViewBuilder content: () -> Content
+        @ViewBuilder content: () -> Content,
+        titleAccessory: @escaping () -> TitleAccessory
     ) where TrailingAccessory == EmptyView {
         self.title = title
         self.subtitle = subtitle
@@ -244,6 +244,9 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
         self.content = content()
     }
 
+    // Common opacity for translucent cards
+    private let cardOpacity: Double = 0.90
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             if !(title.isEmpty && subtitle == nil && icon == nil && iconContent == nil) {
@@ -312,16 +315,19 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
             Group {
                 if let backgroundColor {
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(backgroundColor)
+                        .fill(backgroundColor.opacity(cardOpacity))
                 } else {
                     if colorScheme == .dark {
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
+                            .fill(Color(.secondarySystemBackground).opacity(cardOpacity))
                     } else {
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
                             .fill(
                                 LinearGradient(
-                                    colors: [Color(.secondarySystemBackground), Color(.systemBackground)],
+                                    colors: [
+                                        Color(.secondarySystemBackground).opacity(cardOpacity),
+                                        Color(.systemBackground).opacity(cardOpacity)
+                                    ],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 )
@@ -344,4 +350,3 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
         .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 4)
     }
 }
-
