@@ -454,7 +454,12 @@ struct HomeView: View {
                 .padding(.horizontal, 16)
             }
         }
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .background(
+            Image("river-bg")
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea()
+        )
         .navigationTitle("")
         .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
         .appToast(isPresented: $showFocusSavedToast, symbol: "checkmark.seal.fill", text: "Focus Saved", tint: .green)
