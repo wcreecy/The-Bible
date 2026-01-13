@@ -276,6 +276,13 @@ struct GamesView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden) // Allow our background to show behind the list
+        .background(
+            Image("games")
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea()
+        )
         .navigationTitle("Games")
         // Value-based destinations for user-tapped links
         .navigationDestination(for: GameRoute.self) { route in
