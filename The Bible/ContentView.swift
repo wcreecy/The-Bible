@@ -514,8 +514,6 @@ private final class MoreTabStyler: NSObject, UINavigationControllerDelegate {
 
     // Adjust this alpha to taste (0 = fully transparent, 1 = opaque)
     private let cellAlpha: CGFloat = 0.45
-    // Chevron visibility: keep white and mostly opaque so it stands out over the image
-    private let chevronAlpha: CGFloat = 0.95
 
     func install(on nav: UINavigationController, imageName: String) {
         self.imageName = imageName
@@ -600,46 +598,75 @@ private final class MoreTabStyler: NSObject, UINavigationControllerDelegate {
         table.layoutIfNeeded()
 
         for cell in table.visibleCells {
-            applyTranslucency(to: cell, color: translucent)
+            applyTranslucency(to: cell, color: translucent, trait: table.traitCollection)
         }
     }
 
-    private func applyTranslucency(to cell: UITableViewCell, color: UIColor) {
+    private func applyTranslucency(to cell: UITableViewCell, color: UIColor, trait: UITraitCollection) {
         cell.isOpaque = false
         cell.layer.isOpaque = false
 
-        // Base backgrounds
-        cell.backgroundColor = color
+        // Single translucent layer across the whole row via backgroundView
         cell.contentView.isOpaque = false
         cell.contentView.layer.isOpaque = false
-        cell.contentView.backgroundColor = color
+        cell.contentView.backgroundColor = .clear
+        cell.backgroundColor = .clear
 
-        // Selected background should match translucency
+        // Provide one background layer that fills the entire cell (content + accessory areas)
+        let bg = cell.backgroundView ?? UIView()
+        bg.isOpaque = false
+        bg.layer.isOpaque = false
+        bg.backgroundColor = color
+        bg.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        bg.frame = cell.bounds
+        cell.backgroundView = bg
+
+        // Disable automatic list background painting to avoid subtle alpha differences
+        if #available(iOS 15.0, *) {
+            cell.automaticallyUpdatesBackgroundConfiguration = false
+        }
+        if #available(iOS 14.0, *) {
+            cell.backgroundConfiguration = nil
+        }
+
+        // Selected background uses the exact same translucency (no added alpha)
         if cell.selectedBackgroundView == nil {
             let sel = UIView()
             sel.isOpaque = false
-            sel.backgroundColor = color.withAlphaComponent(min(1.0, cellAlpha + 0.08))
+            sel.layer.isOpaque = false
+            sel.backgroundColor = color
+            sel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             cell.selectedBackgroundView = sel
         } else {
             cell.selectedBackgroundView?.isOpaque = false
-            cell.selectedBackgroundView?.backgroundColor = color.withAlphaComponent(min(1.0, cellAlpha + 0.08))
+            cell.selectedBackgroundView?.layer.isOpaque = false
+            cell.selectedBackgroundView?.backgroundColor = color
         }
 
-        // Make the chevron (disclosure indicator) WHITE and visible
-        let chevronColor = UIColor.white.withAlphaComponent(chevronAlpha)
+        // Adaptive chevron color: black in light mode, white in dark mode
+        let isDark = (trait.userInterfaceStyle == .dark)
+        let chevronBase: UIColor = isDark ? .white : .black
+        let chevronColor = chevronBase.withAlphaComponent(0.95)
+
+        // Chevron tint; leave its background clear so we keep exactly one translucent layer
         cell.tintColor = chevronColor
         if let iv = cell.accessoryView as? UIImageView {
             iv.tintColor = chevronColor
-            iv.alpha = chevronAlpha
+            iv.alpha = 0.95
+            iv.isOpaque = false
+            iv.layer.isOpaque = false
+            iv.backgroundColor = .clear
         } else if cell.accessoryType == .disclosureIndicator {
             // Replace system indicator with a tinted SF Symbol for reliable alpha/color control
             let config = UIImage.SymbolConfiguration(pointSize: 13, weight: .semibold)
             let img = UIImage(systemName: "chevron.right", withConfiguration: config)?.withRenderingMode(.alwaysTemplate)
             let iv = UIImageView(image: img)
             iv.tintColor = chevronColor
-            iv.alpha = chevronAlpha
+            iv.alpha = 0.95
             iv.contentMode = .center
-            // Give it a concrete size so it shows up immediately
+            iv.isOpaque = false
+            iv.layer.isOpaque = false
+            iv.backgroundColor = .clear
             iv.frame = CGRect(x: 0, y: 0, width: 12, height: 20)
             cell.accessoryView = iv
             cell.accessoryType = .none
@@ -648,13 +675,6 @@ private final class MoreTabStyler: NSObject, UINavigationControllerDelegate {
         // Labels shouldn’t add their own opaque backgrounds
         cell.textLabel?.backgroundColor = .clear
         cell.detailTextLabel?.backgroundColor = .clear
-
-        // iOS 14+ background configuration
-        if #available(iOS 14.0, *) {
-            var bg = UIBackgroundConfiguration.listCell()
-            bg.backgroundColor = color
-            cell.backgroundConfiguration = bg
-        }
     }
 
     // MARK: - Delegate proxy to restyle every cell when it appears
@@ -665,10 +685,10 @@ private final class MoreTabStyler: NSObject, UINavigationControllerDelegate {
             return
         }
         let original = table.delegate
-        let proxy = TableDelegateProxy(original: original) { [weak self] cell in
-            guard let self else { return }
+        let proxy = TableDelegateProxy(original: original) { [weak self, weak table] cell in
+            guard let self, let table else { return }
             let translucent = UIColor.secondarySystemBackground.withAlphaComponent(self.cellAlpha)
-            self.applyTranslucency(to: cell, color: translucent)
+            self.applyTranslucency(to: cell, color: translucent, trait: table.traitCollection)
         }
         table.delegate = proxy
         objc_setAssociatedObject(table, key, proxy, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)

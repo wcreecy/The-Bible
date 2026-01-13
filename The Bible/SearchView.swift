@@ -61,6 +61,7 @@ struct SearchView: View {
         VStack(spacing: 0) {
             // Scope controls at the top
             scopeControls
+                .foregroundStyle(.white) // keep scope controls white over the background image
 
             Group {
                 if canSearch {
@@ -71,6 +72,7 @@ struct SearchView: View {
                             description: Text("Try different keywords or check spelling.")
                         )
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                        .foregroundStyle(.white) // empty state over image
                     } else {
                         List(results) { item in
                             Button {
@@ -80,17 +82,18 @@ struct SearchView: View {
                                     // Verse text snippet
                                     Text(item.verse.text)
                                         .font(.body)
+                                        .foregroundStyle(.primary) // adaptive text: black in light, white in dark
                                         .lineLimit(3)
                                     // Reference line
                                     Text("\(item.book.name) \(item.chapter.number):\(item.verse.number)")
                                         .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(.secondary) // adaptive secondary
                                 }
                             }
                             .buttonStyle(.plain)
                         }
-                        // Ensure list rows render white text by default over the background
-                        .scrollContentBackground(.hidden)
+                        // Show the system-appropriate list background; keep content readable
+                        .scrollContentBackground(.automatic)
                         .background(Color.clear)
                     }
                 } else {
@@ -100,18 +103,16 @@ struct SearchView: View {
                         description: Text("Enter at least two words to begin searching.")
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .foregroundStyle(.white) // empty state over image
                 }
             }
         }
-        // Make all default text white for readability over the image
-        .foregroundStyle(.white)
         .background(
             ZStack {
                 Image("biblesearch")
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
-                // Subtle veil to improve contrast; adjust or remove as desired
                 Color.black.opacity(0.10)
                     .ignoresSafeArea()
             }
