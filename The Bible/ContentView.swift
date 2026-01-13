@@ -7,6 +7,8 @@
 
 import SwiftUI
 import Combine
+import UIKit
+import ObjectiveC
 
 struct ContentView: View {
     // Separate coordinators per tab to avoid path leakage/corruption
@@ -186,6 +188,9 @@ struct ContentView: View {
 
             // Initialize previousTab at launch
             previousTab = selectedTab
+
+            // Install background behind the system "More" list on iPhone
+            installMoreTabBackground()
         }
         .onChange(of: selectedTab) { oldValue, newValue in
             // When leaving Games tab, persist latest session accuracy baseline for the Home games card caret
@@ -329,6 +334,9 @@ struct ContentView: View {
                 startUsageTimerIfNeeded()
                 // Also re-check streak status on resume
                 checkAndMarkGoalIfMet()
+
+                // Re-ensure the "More" background is installed after app resumes
+                installMoreTabBackground()
             case .inactive, .background:
                 // Remember when we went foreground to compute elapsed when returning
                 lastBackgroundedAt = Date().timeIntervalSince1970
@@ -456,6 +464,244 @@ struct ContentView: View {
                 body: (body?.isEmpty ?? true) ? nil : body
             )
         }
+    }
+
+    // MARK: - "More" tab background for iPhone
+
+    private func installMoreTabBackground() {
+        guard UIDevice.current.userInterfaceIdiom == .phone else { return }
+        DispatchQueue.main.async {
+            // Find the UITabBarController SwiftUI creates
+            let tab: UITabBarController? = UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .flatMap { $0.windows }
+                .compactMap { $0.rootViewController }
+                .compactMap { $0.findTabBarController() }
+                .first
+
+            guard let tab else { return }
+
+            // Hook and style the system "More" navigation controller
+            let moreNav = tab.moreNavigationController
+            MoreTabStyler.shared.install(on: moreNav, imageName: "river-bg")
+        }
+    }
+}
+
+private extension UIViewController {
+    func findTabBarController() -> UITabBarController? {
+        if let t = self as? UITabBarController { return t }
+        if let nav = self as? UINavigationController {
+            for vc in nav.viewControllers {
+                if let t = vc.findTabBarController() { return t }
+            }
+        }
+        for child in children {
+            if let t = child.findTabBarController() { return t }
+        }
+        if let presented = presentedViewController {
+            return presented.findTabBarController()
+        }
+        return nil
+    }
+}
+
+// Helper that keeps the background in place even when "More" pushes/pops).
+private final class MoreTabStyler: NSObject, UINavigationControllerDelegate {
+    static let shared = MoreTabStyler()
+
+    private var imageName: String = "river-bg"
+
+    // Adjust this alpha to taste (0 = fully transparent, 1 = opaque)
+    private let cellAlpha: CGFloat = 0.45
+    // Chevron visibility: keep white and mostly opaque so it stands out over the image
+    private let chevronAlpha: CGFloat = 0.95
+
+    func install(on nav: UINavigationController, imageName: String) {
+        self.imageName = imageName
+        nav.delegate = self
+        // Kick off a series of styling passes so the very first visit is covered
+        schedulePostShowStyling(on: nav)
+    }
+
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        schedulePostShowStyling(on: navigationController)
+    }
+
+    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+        schedulePostShowStyling(on: navigationController)
+    }
+
+    // Run several passes over the next few runloops to catch the table after layout
+    private func schedulePostShowStyling(on nav: UINavigationController) {
+        let delays: [TimeInterval] = [0.0, 0.03, 0.10, 0.25]
+        for d in delays {
+            DispatchQueue.main.asyncAfter(deadline: .now() + d) { [weak self, weak nav] in
+                guard let self, let nav else { return }
+                self.apply(to: nav)
+            }
+        }
+    }
+
+    private func apply(to nav: UINavigationController) {
+        // Ensure hierarchy is loaded
+        _ = nav.topViewController?.view
+
+        // Insert a single background image view behind the nav controller's content
+        if nav.view.viewWithTag(987_654) == nil, let img = UIImage(named: imageName) {
+            let iv = UIImageView(image: img)
+            iv.translatesAutoresizingMaskIntoConstraints = false
+            iv.contentMode = .scaleAspectFill
+            iv.tag = 987_654
+            nav.view.insertSubview(iv, at: 0)
+            NSLayoutConstraint.activate([
+                iv.topAnchor.constraint(equalTo: nav.view.topAnchor),
+                iv.leadingAnchor.constraint(equalTo: nav.view.leadingAnchor),
+                iv.trailingAnchor.constraint(equalTo: nav.view.trailingAnchor),
+                iv.bottomAnchor.constraint(equalTo: nav.view.bottomAnchor)
+            ])
+        }
+
+        // Clear backgrounds so the image is visible
+        nav.view.backgroundColor = .clear
+        nav.topViewController?.view.backgroundColor = .clear
+
+        // Style the More list table and its cells
+        if let table = findTable(in: nav.view) {
+            styleMoreTable(table)
+            ensureDelegateProxy(for: table)
+        }
+    }
+
+    private func findTable(in root: UIView) -> UITableView? {
+        if let t = root as? UITableView { return t }
+        for sub in root.subviews {
+            if let t = findTable(in: sub) { return t }
+        }
+        return nil
+    }
+
+    private func styleMoreTable(_ table: UITableView) {
+        table.isOpaque = false
+        table.backgroundColor = .clear
+        table.backgroundView = nil
+        table.separatorColor = UIColor.separator.withAlphaComponent(0.5)
+        table.tableHeaderView?.backgroundColor = .clear
+        table.tableFooterView?.backgroundColor = .clear
+
+        // Pass 1: style any already-visible cells
+        styleVisibleCells(in: table)
+    }
+
+    private func styleVisibleCells(in table: UITableView) {
+        let translucent = UIColor.secondarySystemBackground.withAlphaComponent(cellAlpha)
+
+        // Ensure the table has laid out its cells before styling
+        table.layoutIfNeeded()
+
+        for cell in table.visibleCells {
+            applyTranslucency(to: cell, color: translucent)
+        }
+    }
+
+    private func applyTranslucency(to cell: UITableViewCell, color: UIColor) {
+        cell.isOpaque = false
+        cell.layer.isOpaque = false
+
+        // Base backgrounds
+        cell.backgroundColor = color
+        cell.contentView.isOpaque = false
+        cell.contentView.layer.isOpaque = false
+        cell.contentView.backgroundColor = color
+
+        // Selected background should match translucency
+        if cell.selectedBackgroundView == nil {
+            let sel = UIView()
+            sel.isOpaque = false
+            sel.backgroundColor = color.withAlphaComponent(min(1.0, cellAlpha + 0.08))
+            cell.selectedBackgroundView = sel
+        } else {
+            cell.selectedBackgroundView?.isOpaque = false
+            cell.selectedBackgroundView?.backgroundColor = color.withAlphaComponent(min(1.0, cellAlpha + 0.08))
+        }
+
+        // Make the chevron (disclosure indicator) WHITE and visible
+        let chevronColor = UIColor.white.withAlphaComponent(chevronAlpha)
+        cell.tintColor = chevronColor
+        if let iv = cell.accessoryView as? UIImageView {
+            iv.tintColor = chevronColor
+            iv.alpha = chevronAlpha
+        } else if cell.accessoryType == .disclosureIndicator {
+            // Replace system indicator with a tinted SF Symbol for reliable alpha/color control
+            let config = UIImage.SymbolConfiguration(pointSize: 13, weight: .semibold)
+            let img = UIImage(systemName: "chevron.right", withConfiguration: config)?.withRenderingMode(.alwaysTemplate)
+            let iv = UIImageView(image: img)
+            iv.tintColor = chevronColor
+            iv.alpha = chevronAlpha
+            iv.contentMode = .center
+            // Give it a concrete size so it shows up immediately
+            iv.frame = CGRect(x: 0, y: 0, width: 12, height: 20)
+            cell.accessoryView = iv
+            cell.accessoryType = .none
+        }
+
+        // Labels shouldn’t add their own opaque backgrounds
+        cell.textLabel?.backgroundColor = .clear
+        cell.detailTextLabel?.backgroundColor = .clear
+
+        // iOS 14+ background configuration
+        if #available(iOS 14.0, *) {
+            var bg = UIBackgroundConfiguration.listCell()
+            bg.backgroundColor = color
+            cell.backgroundConfiguration = bg
+        }
+    }
+
+    // MARK: - Delegate proxy to restyle every cell when it appears
+
+    private func ensureDelegateProxy(for table: UITableView) {
+        let key = UnsafeRawPointer(bitPattern: 0xB17E_BABE)!
+        if objc_getAssociatedObject(table, key) != nil {
+            return
+        }
+        let original = table.delegate
+        let proxy = TableDelegateProxy(original: original) { [weak self] cell in
+            guard let self else { return }
+            let translucent = UIColor.secondarySystemBackground.withAlphaComponent(self.cellAlpha)
+            self.applyTranslucency(to: cell, color: translucent)
+        }
+        table.delegate = proxy
+        objc_setAssociatedObject(table, key, proxy, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    }
+}
+
+private final class TableDelegateProxy: NSObject, UITableViewDelegate {
+    weak var original: UITableViewDelegate?
+    private let styler: (UITableViewCell) -> Void
+
+    init(original: UITableViewDelegate?, styler: @escaping (UITableViewCell) -> Void) {
+        self.original = original
+        self.styler = styler
+        super.init()
+    }
+
+    // Intercept willDisplay to restyle each cell
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        styler(cell)
+        original?.tableView?(tableView, willDisplay: cell, forRowAt: indexPath)
+    }
+
+    // Forward everything else to the original delegate
+    override func responds(to aSelector: Selector!) -> Bool {
+        if super.responds(to: aSelector) { return true }
+        return original?.responds(to: aSelector) ?? false
+    }
+
+    override func forwardingTarget(for aSelector: Selector!) -> Any? {
+        if let original, original.responds(to: aSelector) {
+            return original
+        }
+        return super.forwardingTarget(for: aSelector)
     }
 }
 
