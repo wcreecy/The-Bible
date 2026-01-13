@@ -513,7 +513,7 @@ private final class MoreTabStyler: NSObject, UINavigationControllerDelegate {
     private var imageName: String = "river-bg"
 
     // Adjust this alpha to taste (0 = fully transparent, 1 = opaque)
-    private let cellAlpha: CGFloat = 0.45
+    private let cellAlpha: CGFloat = 0.90
 
     func install(on nav: UINavigationController, imageName: String) {
         self.imageName = imageName
