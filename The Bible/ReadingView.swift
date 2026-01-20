@@ -181,6 +181,9 @@ struct ReadingView: View {
                 }
             }
             .scrollPosition(id: $viewModel.topVisibleVerseID, anchor: .top)
+
+            // Bottom corner navigation arrows overlay
+            overlayArrows
         }
         .contentShape(Rectangle())
         .simultaneousGesture(
@@ -202,6 +205,51 @@ struct ReadingView: View {
                     viewModel.markActivity()
                 }
         )
+    }
+
+    // MARK: - Overlay Arrows
+
+    private var overlayArrows: some View {
+        // Small, semi-transparent chevrons in bottom-left and bottom-right.
+        // Use padding to respect safe area and provide a larger hit target.
+        ZStack {
+            VStack {
+                Spacer()
+                HStack {
+                    Button(action: {
+                        viewModel.previousChapter()
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(.primary)
+                            .padding(10) // hit target
+                            .background(.ultraThinMaterial, in: Circle())
+                            .opacity(0.7)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Previous chapter")
+                    .padding(.leading, 12)
+
+                    Spacer()
+
+                    Button(action: {
+                        viewModel.nextChapter()
+                    }) {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(.primary)
+                            .padding(10) // hit target
+                            .background(.ultraThinMaterial, in: Circle())
+                            .opacity(0.7)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Next chapter")
+                    .padding(.trailing, 12)
+                }
+                .padding(.bottom, 10)
+            }
+        }
+        .allowsHitTesting(true)
     }
 
     // Extracted to reduce type-checking complexity
