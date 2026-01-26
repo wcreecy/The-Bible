@@ -13,6 +13,11 @@ struct PlayerStatSheetCardView: View {
     }
     @State private var sort: Sort = .avg
 
+    @Environment(\.colorScheme) private var colorScheme
+    private var segmentedTint: Color {
+        colorScheme == .light ? Color.black.opacity(0.85) : Color.accentColor
+    }
+
     private func uniqueMaxIndex<T: Comparable & Equatable>(_ values: [T]) -> Int? {
         guard let maxVal = values.max() else { return nil }
         let indices = values.enumerated().filter { $0.element == maxVal }.map { $0.offset }
@@ -61,6 +66,7 @@ struct PlayerStatSheetCardView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .tint(segmentedTint)
                     .frame(maxWidth: 280)
                 }
 

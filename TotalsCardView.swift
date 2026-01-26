@@ -40,6 +40,11 @@ struct TotalsCardView: View {
     let formatSeconds: (Int) -> String
 
     @Environment(\.horizontalSizeClass) private var hSizeClass
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var segmentedTint: Color {
+        colorScheme == .light ? Color.black.opacity(0.85) : Color.accentColor
+    }
 
     var body: some View {
         GroupBox {
@@ -66,6 +71,7 @@ struct TotalsCardView: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                .tint(segmentedTint)
 
                 // Chips
                 LazyVGrid(columns: chipGridColumns, spacing: 8) {
@@ -140,6 +146,7 @@ struct TotalsCardView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .tint(segmentedTint)
 
                     ForEach(rows, id: \.book) { entry in
                         HStack {

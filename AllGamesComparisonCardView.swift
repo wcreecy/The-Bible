@@ -22,6 +22,11 @@ struct AllGamesComparisonCardView: View {
         let accuracy: Double // 0...100
     }
 
+    @Environment(\.colorScheme) private var colorScheme
+    private var segmentedTint: Color {
+        colorScheme == .light ? Color.black.opacity(0.85) : Color.accentColor
+    }
+
     var body: some View {
         GroupBox {
             // Build a small, explicitly-typed data model first
@@ -42,6 +47,7 @@ struct AllGamesComparisonCardView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .tint(segmentedTint)
                     .frame(maxWidth: 280)
                 }
 

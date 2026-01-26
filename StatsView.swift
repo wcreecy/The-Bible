@@ -68,10 +68,16 @@ struct StatsView: View {
 
     // Size-class aware layout
     @Environment(\.horizontalSizeClass) private var hSizeClass
+    @Environment(\.colorScheme) private var colorScheme
 
     // OT/NT totals for the OTNT card — UI-only
     @State private var otSeconds: Int = 0
     @State private var ntSeconds: Int = 0
+
+    // Segmented control tint for readability
+    private var segmentedTint: Color {
+        colorScheme == .light ? Color.black.opacity(0.85) : Color.accentColor
+    }
 
     // MARK: - Active bucket label for Totals card
 
@@ -114,6 +120,7 @@ struct StatsView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .tint(segmentedTint)
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 8)

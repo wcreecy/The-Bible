@@ -21,6 +21,11 @@ struct GenreDistributionCardView: View {
     let genreColor: (String) -> Color
     let formatSeconds: (Int) -> String
 
+    @Environment(\.colorScheme) private var colorScheme
+    private var segmentedTint: Color {
+        colorScheme == .light ? Color.black.opacity(0.85) : Color.accentColor
+    }
+
     var body: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 10) {
@@ -36,6 +41,7 @@ struct GenreDistributionCardView: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                .tint(segmentedTint)
 
                 let maxValRaw = perGenreTotals.map { max(0, $0.seconds) }.max() ?? 0
                 let maxVal = max(1, maxValRaw)

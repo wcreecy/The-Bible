@@ -13,6 +13,11 @@ struct OTNTCardView: View {
     let ntSeconds: Int
     let formatSeconds: (Int) -> String
 
+    @Environment(\.colorScheme) private var colorScheme
+    private var segmentedTint: Color {
+        colorScheme == .light ? Color.black.opacity(0.85) : Color.accentColor
+    }
+
     var body: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 8) {
@@ -28,6 +33,7 @@ struct OTNTCardView: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                .tint(segmentedTint)
 
                 HStack(spacing: 8) {
                     Text("OT")
