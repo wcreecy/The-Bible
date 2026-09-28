@@ -532,7 +532,7 @@ extension iCloudSyncCoordinator {
         for key in gameKeys {
             defaults.set(0, forKey: key)
             writeLocalTimestampNow(for: key)
-            kvs.set(0, forKey: key)
+            kvs.set(Int(0), forKey: key)
             writeRemoteTimestampNow(for: key)
         }
         enqueueKeysForSync(Set(gameKeys))
@@ -546,7 +546,7 @@ extension iCloudSyncCoordinator {
         for key in keys {
             defaults.set(0, forKey: key)
             writeLocalTimestampNow(for: key)
-            kvs.set(0, forKey: key)
+            kvs.set(Int(0), forKey: key)
             writeRemoteTimestampNow(for: key)
         }
         enqueueKeysForSync(keys)
