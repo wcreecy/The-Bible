@@ -7,7 +7,6 @@ import WidgetKit
 struct ReadingView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
-    @EnvironmentObject private var journalComposer: JournalComposer
     @Environment(\.scenePhase) private var scenePhase
 
     let book: Book
@@ -275,16 +274,6 @@ struct ReadingView: View {
             .foregroundStyle(.blue)
 
             Button(action: {
-                let refText = "\(bookName) \(chapterNumber):\(verse.number)"
-                openJournalForReference(text: refText)
-                withAnimation(.easeInOut) { viewModel.menuVerse = nil }
-                viewModel.markActivity()
-            }) {
-                Image(systemName: "book.closed")
-            }
-            .foregroundStyle(.brown)
-
-            Button(action: {
                 if viewModel.isPinned(verse.number) {
                     Task { @MainActor in
                         await viewModel.pinnedStore.clear()
@@ -337,46 +326,6 @@ struct ReadingView: View {
         .frame(maxWidth: .infinity)
         .padding(.horizontal)
         .padding(.bottom, 6)
-    }
-
-    // MARK: - Journal
-
-    private func openJournalForReference(text: String) {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let colon = trimmed.lastIndex(of: ":") else {
-            journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
-            return
-        }
-        let before = String(trimmed[..<colon])
-        let after = String(trimmed[trimmed.index(after: colon)...])
-        let parts = before.split(separator: " ")
-        guard let last = parts.last, let chapterNum = Int(last) else {
-            journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
-            return
-        }
-        let bookName = parts.dropLast().joined(separator: " ")
-        guard let verseNum = Int(after) else {
-            journalComposer.present(initialBody: nil, verseRef: nil, showTagColors: false)
-            return
-        }
-        let ref = VerseRef(book: bookName, chapter: chapterNum, verse: verseNum, translation: "KJV")
-
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 2])
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                NotificationCenter.default.post(
-                    name: JournalNotifications.startInlineNewFromBible,
-                    object: nil,
-                    userInfo: [
-                        "book": bookName,
-                        "chapter": chapterNum,
-                        "verse": verseNum
-                    ]
-                )
-            }
-        } else {
-            journalComposer.present(initialBody: nil, verseRef: ref, showTagColors: true)
-        }
     }
 
     // MARK: - Favorites

@@ -16,8 +16,6 @@ struct ContentView: View {
     @StateObject private var bibleCoordinator = NavigationCoordinator()
     // Favorites, Search, Settings don’t currently push via coordinator; no path binding needed.
 
-    // FIX: Instantiate the ObservableObject
-    @StateObject private var journalComposer = JournalComposer()
     @State private var selectedTab: AppTab = .home
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
     
@@ -92,11 +90,6 @@ struct ContentView: View {
                 .tag(AppTab.bible)
             }
             
-            // Journal tab manages its own navigation
-            JournalTabView()
-                .tabItem { Label("Journal", systemImage: "book.closed") }
-                .tag(AppTab.journal)
-            
             // Games tab: no shared path
             NavigationStack {
                 GamesView()
@@ -137,7 +130,6 @@ struct ContentView: View {
             .tabItem { Label("Settings", systemImage: "gear") }
             .tag(AppTab.settings)
         }
-        .environmentObject(journalComposer)
         // Apply your preferred color scheme even on the Settings tab so it updates in place.
         .preferredColorScheme(preferredScheme)
         .dynamicTypeSize(selectedTab == .settings ? .large : (preferredDynamicType ?? .large))
@@ -162,7 +154,7 @@ struct ContentView: View {
                 didCleanupKeepScreenOnKey = true
             }
 
-            // Prewarm linkify and book names to reduce first-typing latency in Journal
+            // Prewarm Bible book names for reference lookups.
             Task.detached {
                 _ = await BibleReferenceLinker.linkify("")
                 _ = await BibleLibrary.shared.bookNames()
@@ -224,17 +216,6 @@ struct ContentView: View {
                     .onChange(of: proxy.size) { _, newSize in rootSize = newSize }
             }
         )
-        .sheet(isPresented: Binding(
-            get: { journalComposer.isPresented },
-            set: { newVal in if !newVal { journalComposer.dismiss() } }
-        )) {
-            JournalEditorView(
-                verseRef: journalComposer.verseRef,
-                initialBody: journalComposer.initialBody,
-                showTagColors: journalComposer.showTagColors,
-                editingEntry: journalComposer.editingEntry
-            )
-        }
         .onOpenURL { url in
             // Handle taps from widgets and other custom links.
             guard url.scheme?.lowercased() == "thebible" else { return }

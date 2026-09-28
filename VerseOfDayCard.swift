@@ -15,9 +15,6 @@ struct VerseOfDayCard: View {
     let onToggleFavorite: (HomeVerseRef) -> Void
     let onOpenReader: (HomeVerseRef) -> Void
     let onTogglePaused: () -> Void
-    // NEW: Journal action
-    let onOpenJournal: (HomeVerseRef) -> Void
-
     // Dynamic title/icon based on time of day
     let title: String
     let icon: String
@@ -84,13 +81,6 @@ struct VerseOfDayCard: View {
                         }
                         .font(.title3)
                         .help("Share")
-
-                        Button(action: { onOpenJournal(v) }) {
-                            Image(systemName: "book.closed")
-                        }
-                        .font(.title3)
-                        .foregroundStyle(.brown)
-                        .help("Journal")
 
                         Button(action: { onToggleFavorite(v) }) {
                             Image(systemName: isFavorited(v) ? "heart.fill" : "heart")

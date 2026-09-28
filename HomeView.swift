@@ -53,7 +53,6 @@ struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
     @EnvironmentObject private var coordinator: NavigationCoordinator
-    @EnvironmentObject private var journalComposer: JournalComposer
 
     @State private var showCopyToast: Bool = false
     @State private var showFocusSavedToast: Bool = false
@@ -213,32 +212,6 @@ struct HomeView: View {
                 },
                 onTogglePaused: {
                     votdVM.togglePaused()
-                },
-                onOpenJournal: { v in
-                    // Mirror ReadingView.openJournalForReference behavior
-                    let bookName = v.bookName
-                    let chapterNum = v.chapterNumber
-                    let verseNum = v.verseNumber
-
-                    if UIDevice.current.userInterfaceIdiom == .pad {
-                        // iPad: switch to Journal tab and start inline new entry
-                        switchTo(.journal)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                            NotificationCenter.default.post(
-                                name: JournalNotifications.startInlineNewFromBible,
-                                object: nil,
-                                userInfo: [
-                                    "book": bookName,
-                                    "chapter": chapterNum,
-                                    "verse": verseNum
-                                ]
-                            )
-                        }
-                    } else {
-                        // iPhone: present the composer with the verseRef and tag colors enabled
-                        let ref = VerseRef(book: bookName, chapter: chapterNum, verse: verseNum, translation: "KJV")
-                        journalComposer.present(initialBody: nil, verseRef: ref, showTagColors: true)
-                    }
                 },
                 title: verseCardTitle,
                 icon: verseCardIcon

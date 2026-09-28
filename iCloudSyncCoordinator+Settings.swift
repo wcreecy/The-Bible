@@ -5,13 +5,9 @@ extension iCloudSyncCoordinator {
     // Settings keys to sync across devices
     // - dailyGoalMinutes: simple Int
     // - dailyGoalHistoryChanges: JSON Data of [ { isoDate: String, minutes: Int } ]
-    // - tagDisplayNameMap: [String: String]
-    // - tagColorMap: [String: [Double]] (RGBA components)
     static let settingsKeys: [String] = [
         "dailyGoalMinutes",
-        "dailyGoalHistoryChanges",
-        "tagDisplayNameMap",
-        "tagColorMap"
+        "dailyGoalHistoryChanges"
     ]
 
     // Local -> KVS
@@ -34,23 +30,6 @@ extension iCloudSyncCoordinator {
                 if remoteData != localData {
                     kvs.set(localData, forKey: key)
                 }
-            }
-
-        case "tagDisplayNameMap":
-            // Stored as [String: String] in UserDefaults
-            let local = (defaults.dictionary(forKey: key) as? [String: String]) ?? [:]
-            // KVS returns Any?; coerce to [String: String] if possible
-            let remote = kvs.dictionary(forKey: key) as? [String: String] ?? [:]
-            if local != remote {
-                kvs.set(local, forKey: key)
-            }
-
-        case "tagColorMap":
-            // Stored as [String: [Double]] in UserDefaults (RGBA)
-            let local = (defaults.dictionary(forKey: key) as? [String: [Double]]) ?? [:]
-            let remote = kvs.dictionary(forKey: key) as? [String: [Double]] ?? [:]
-            if local != remote {
-                kvs.set(local, forKey: key)
             }
 
         default:
@@ -107,27 +86,6 @@ extension iCloudSyncCoordinator {
             // Notify readers that evaluation context changed
             BibleStatsStore.shared.resetCaches()
             NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
-
-        case "tagDisplayNameMap":
-            // Prefer exact type match; ignore malformed payloads
-            if let remote = kvs.dictionary(forKey: key) as? [String: String] {
-                let local = (defaults.dictionary(forKey: key) as? [String: String]) ?? [:]
-                if local != remote {
-                    defaults.set(remote, forKey: key)
-                    // Also refresh in-memory cache inside TagDisplayNameStore if needed
-                    NotificationCenter.default.post(name: .init("TagDisplayNameMapDidChange"), object: nil)
-                }
-            }
-
-        case "tagColorMap":
-            if let remote = kvs.dictionary(forKey: key) as? [String: [Double]] {
-                let local = (defaults.dictionary(forKey: key) as? [String: [Double]]) ?? [:]
-                if local != remote {
-                    defaults.set(remote, forKey: key)
-                    // Also refresh in-memory cache inside TagColorStore if needed
-                    NotificationCenter.default.post(name: .init("TagColorMapDidChange"), object: nil)
-                }
-            }
 
         default:
             break

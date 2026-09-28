@@ -101,7 +101,6 @@ struct The_Bible__iOS_App: App {
                     Favorite.self,
                     Bookmark.self,
                     VerseNote.self,
-                    JournalEntry.self,
                 configurations: cloudKitConfig
             )
             print("✅ CloudKit-backed ModelContainer initialized successfully.")
@@ -125,8 +124,7 @@ struct The_Bible__iOS_App: App {
                     ReadingProgress.self,
                     Favorite.self,
                     Bookmark.self,
-                    VerseNote.self,
-                    JournalEntry.self
+                    VerseNote.self
             )
             print("ℹ️ Using local on-disk SwiftData store (no CloudKit). Data will NOT sync between devices.")
             UserDefaults.standard.set(false, forKey: "swiftdataCloudKitEnabled")
@@ -151,7 +149,6 @@ struct The_Bible__iOS_App: App {
                     Favorite.self,
                     Bookmark.self,
                     VerseNote.self,
-                    JournalEntry.self,
                 configurations: memoryConfig
             )
             print("ℹ️ Using in-memory SwiftData store. Data will NOT persist or sync.")

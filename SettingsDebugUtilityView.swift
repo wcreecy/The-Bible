@@ -6,7 +6,6 @@ struct SettingsDebugUtilitiesView: View {
     @EnvironmentObject private var cloudKitManager: CloudKitManager
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Favorite.createdAt, order: .reverse) private var favorites: [Favorite]
-    @Query private var journalEntries: [JournalEntry]
 
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
@@ -180,15 +179,9 @@ struct SettingsDebugUtilitiesView: View {
                     }
 
                     Button {
-                        print("Favorites: \(favorites.count)")
-                        print("Journal entries: \(journalEntries.count)")
-                        for e in journalEntries.prefix(5) {
-                            print("• \(e.title)")
-                        }
-                        debugShow("Counts",
-                                  "Favorites: \(favorites.count)\nJournal entries: \(journalEntries.count)")
+                        debugShow("Favorites", "Count: \(favorites.count)")
                     } label: {
-                        Label("Count Favorites & Journal", systemImage: "number")
+                        Label("Count Favorites", systemImage: "number")
                     }
 
                     Button {
@@ -221,26 +214,6 @@ struct SettingsDebugUtilitiesView: View {
                         debugShow("Home Layout", "Set hidden to baseline: Games, Streaks, Bible Stats.")
                     } label: {
                         Label("Apply Hidden Baseline", systemImage: "eye.slash")
-                    }
-                }
-
-                // Journal
-                Group {
-                    Button {
-                        insertSampleJournalEntry()
-                    } label: {
-                        Label("Insert Sample Journal Entry", systemImage: "square.and.pencil")
-                    }
-
-                    Button {
-                        let count = journalEntries.count
-                        print("Journal entries count: \(count)")
-                        for e in journalEntries.prefix(10) {
-                            print("• \(e.title)")
-                        }
-                        debugShow("Journal", "Entries count: \(count)")
-                    } label: {
-                        Label("Count Journal Entries", systemImage: "list.bullet.rectangle")
                     }
                 }
 
@@ -320,21 +293,6 @@ struct SettingsDebugUtilitiesView: View {
             debugShow("Favorites", "Deleted all favorites.")
         } catch {
             debugShow("Favorites", "Error deleting: \(error.localizedDescription)")
-        }
-    }
-
-    private func insertSampleJournalEntry() {
-        let entry = JournalEntry()
-        entry.title = "Sample Entry \(Int.random(in: 100...999))"
-        entry.body = "This is a sample journal entry created from Settings debug."
-        entry.tags = ["sample", "debug"]
-        entry.updatedAt = Date()
-        modelContext.insert(entry)
-        do {
-            try modelContext.save()
-            debugShow("Journal", "Inserted a sample entry.")
-        } catch {
-            debugShow("Journal", "Save failed: \(error.localizedDescription)")
         }
     }
 

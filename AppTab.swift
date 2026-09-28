@@ -4,7 +4,6 @@ import Foundation
 enum AppTab: Int, CaseIterable {
     case home = 0
     case bible
-    case journal
     case games
     case stats
     case favorites
@@ -15,7 +14,6 @@ enum AppTab: Int, CaseIterable {
         switch self {
         case .home: return "home"
         case .bible: return "bible"
-        case .journal: return "journal"
         case .games: return "games"
         case .stats: return "stats"
         case .favorites: return "favorites"
@@ -28,7 +26,6 @@ enum AppTab: Int, CaseIterable {
         switch name.lowercased() {
         case "home": return .home
         case "bible": return .bible
-        case "journal": return .journal
         case "games": return .games
         case "stats": return .stats
         case "favorites": return .favorites
