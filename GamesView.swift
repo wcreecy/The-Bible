@@ -1,360 +1,403 @@
 import SwiftUI
 
 extension Notification.Name {
-    // New cross-tab route to open a specific game start from Stats (or elsewhere)
     static let openGameStart = Notification.Name("openGameStart")
 }
 
+private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
+    case quiz
+    case hangman
+    case beatTheClock
+    case verseMatch
+    case favoritesFlashcards
+    case bookOrder
+    case wordSearch
+    case whoAmI
+    case wordle
+
+    var id: String { rawValue }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .quiz: "Bible Quiz"
+        case .hangman: "Hangman"
+        case .beatTheClock: "Beat the Clock"
+        case .verseMatch: "Verse Match"
+        case .favoritesFlashcards: "Favorites Flashcards"
+        case .bookOrder: "Book Order"
+        case .wordSearch: "Word Search"
+        case .whoAmI: "Who am I?"
+        case .wordle: "WORD"
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .quiz: "Bible Quiz"
+        case .hangman: "Hangman"
+        case .beatTheClock: "Beat the Clock"
+        case .verseMatch: "Verse Match"
+        case .favoritesFlashcards: "Favorites Flashcards"
+        case .bookOrder: "Book Order"
+        case .wordSearch: "Word Search"
+        case .whoAmI: "Who am I?"
+        case .wordle: "WORD"
+        }
+    }
+
+    var subtitle: LocalizedStringResource {
+        switch self {
+        case .quiz: "Test your Bible knowledge"
+        case .hangman: "Guess a person, place, or book"
+        case .beatTheClock: "Name a book before time runs out"
+        case .verseMatch: "Match each verse to its reference"
+        case .favoritesFlashcards: "Practice your saved verses"
+        case .bookOrder: "Put Bible books in order"
+        case .wordSearch: "Find hidden words from a verse"
+        case .whoAmI: "Match names and descriptions"
+        case .wordle: "Solve today's five-letter word"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .quiz: "questionmark.circle.fill"
+        case .hangman: "text.word.spacing"
+        case .beatTheClock: "hourglass"
+        case .verseMatch: "text.quote"
+        case .favoritesFlashcards: "rectangle.portrait.on.rectangle.portrait"
+        case .bookOrder: "list.number"
+        case .wordSearch: "square.grid.3x3.topleft.filled"
+        case .whoAmI: "person.text.rectangle"
+        case .wordle: "square.grid.3x3.fill"
+        }
+    }
+
+    var tint: Color {
+        switch self {
+        case .quiz: .blue
+        case .hangman: .teal
+        case .beatTheClock: .indigo
+        case .verseMatch: .orange
+        case .favoritesFlashcards: .pink
+        case .bookOrder: .purple
+        case .wordSearch: .green
+        case .whoAmI: .brown
+        case .wordle: .mint
+        }
+    }
+}
+
+private enum GameCategory: String, CaseIterable, Identifiable {
+    case knowledge
+    case words
+    case memory
+    case speed
+
+    var id: String { rawValue }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .knowledge: "Knowledge"
+        case .words: "Words"
+        case .memory: "Memory"
+        case .speed: "Speed"
+        }
+    }
+
+    var routes: [GameRoute] {
+        switch self {
+        case .knowledge: [.quiz, .whoAmI]
+        case .words: [.wordle, .hangman, .wordSearch]
+        case .memory: [.verseMatch, .bookOrder, .favoritesFlashcards]
+        case .speed: [.beatTheClock]
+        }
+    }
+}
+
+private struct DailyWordResult: Codable {
+    let won: Bool
+    let guesses: Int
+    let elapsed: Int
+    let word: String
+}
+
 struct GamesView: View {
-    private enum GameRoute: Hashable {
-        case quiz
-        case hangman
-        case beatTheClock
-        case verseMatch
-        case favoritesFlashcards
-        case bookOrder
-        case wordSearch
-        case whoAmI // NEW
-        case wordle  // NEW
+    @State private var selection: GameRoute?
+    @State private var isPresentingProgrammatic = false
+    @State private var todayWordResult: DailyWordResult?
+    @State private var refreshToken = 0
+
+    @AppStorage("favoriteGameRoutes") private var favoriteRoutesRaw = ""
+    @AppStorage("recentGameRoutes") private var recentRoutesRaw = ""
+
+    private var favoriteRoutes: [GameRoute] {
+        let favorites = Set(favoriteRoutesRaw.split(separator: ",").compactMap { GameRoute(rawValue: String($0)) })
+        return GameRoute.allCases.filter(favorites.contains)
     }
 
-    @State private var selection: GameRoute? = nil
-    @State private var pulse: Bool = false
-    // Drives the programmatic push without deprecated APIs
-    @State private var isPresentingProgrammatic: Bool = false
-
-    // NEW: Debug flag to allow Daily Wordle replay
-    @AppStorage("wordleAllowDailyReplay") private var wordleAllowDailyReplay: Bool = false
-
-    // Local-day key helper (yyyy-MM-dd in the user’s current time zone)
-    private func localDayKey(for date: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> String {
-        var cal = calendar
-        cal.timeZone = .autoupdatingCurrent
-        let start = cal.startOfDay(for: date)
-        let comps = cal.dateComponents([.year, .month, .day], from: start)
-        let y = comps.year ?? 1970
-        let m = comps.month ?? 1
-        let d = comps.day ?? 1
-        return String(format: "%04d-%02d-%02d", y, m, d)
+    private var recentRoutes: [GameRoute] {
+        recentRoutesRaw.split(separator: ",").compactMap { GameRoute(rawValue: String($0)) }
     }
 
-    private var hasPlayedDailyWordleTodayRaw: Bool {
-        let today = localDayKey()
-        let stored = UserDefaults.standard.string(forKey: "wordleDailyCompletedDay")
-        return stored == today
-    }
-
-    // Glow whenever Daily Wordle is available:
-    // - Not played today (normal availability), OR
-    // - Debug flag allows replay (forced availability)
-    private var shouldGlowWordle: Bool {
-        return !hasPlayedDailyWordleTodayRaw || wordleAllowDailyReplay
-    }
-
-    // NEW: Load today's WORD daily result (if any)
-    private struct DailyResult: Codable { let won: Bool; let guesses: Int; let elapsed: Int; let word: String }
-
-    @State private var todayWordResult: DailyResult? = nil
-    @State private var refreshToken: Int = 0
-
-    private func loadTodayWordResult() {
-        let today = localDayKey()
-        let defaults = UserDefaults.standard
-        if let data = defaults.data(forKey: "wordleDailyResultMap"),
-           let map = try? JSONDecoder().decode([String: DailyResult].self, from: data) {
-            todayWordResult = map[today]
-        } else {
-            todayWordResult = nil
-        }
-    }
-
-    private func formatElapsed(_ s: Int) -> String {
-        let seconds = max(0, s)
-        let h = seconds / 3600
-        let m = (seconds % 3600) / 60
-        let sec = seconds % 60
-        if h > 0 {
-            return String(format: "%d:%02d:%02d", h, m, sec)
-        } else {
-            return String(format: "%d:%02d", m, sec)
-        }
-    }
-
-    // Map display names to routes for cross-tab open
-    private func route(forDisplayName name: String) -> GameRoute? {
-        switch name {
-        case "Bible Quiz": return .quiz
-        case "Hangman": return .hangman
-        case "Verse Match": return .verseMatch
-        case "Beat the Clock": return .beatTheClock
-        case "Book Order": return .bookOrder
-        case "Who am I?": return .whoAmI
-        case "WORD": return .wordle
-        default: return nil
-        }
-    }
-
-    // Display name for sorting and row labels
-    private func displayName(for route: GameRoute) -> String {
-        switch route {
-        case .quiz: return "Bible Quiz"
-        case .hangman: return "Hangman"
-        case .verseMatch: return "Verse Match"
-        case .whoAmI: return "Who am I?"
-        case .wordle: return "WORD"
-        case .bookOrder: return "Book Order"
-        case .beatTheClock: return "Beat the Clock"
-        case .wordSearch: return "Word Search"
-        case .favoritesFlashcards: return "Favorites Flashcards"
-        }
-    }
-
-    // Row content builder preserving per-game UI (WORD special case)
-    @ViewBuilder
-    private func rowView(for route: GameRoute) -> some View {
-        switch route {
-        case .quiz:
-            HStack(spacing: 12) {
-                Image(systemName: "questionmark.circle")
-                    .foregroundStyle(.blue)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Bible Quiz").font(.headline)
-                    Text("Guess which book the given verse is from").font(.subheadline).foregroundStyle(.secondary)
-                }
-            }
-
-        case .hangman:
-            HStack(spacing: 12) {
-                Image(systemName: "text.word.spacing")
-                    .foregroundStyle(.teal)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Hangman").font(.headline)
-                    Text("Guess a person, place or book from the Bible").font(.subheadline).foregroundStyle(.secondary)
-                }
-            }
-
-        case .verseMatch:
-            HStack(spacing: 12) {
-                Image(systemName: "text.quote")
-                    .foregroundStyle(.orange)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Verse Match").font(.headline)
-                    Text("Match the verse to its reference").font(.subheadline).foregroundStyle(.secondary)
-                }
-            }
-
-        case .whoAmI:
-            HStack(spacing: 12) {
-                Image(systemName: "person.text.rectangle")
-                    .foregroundStyle(.brown)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Who am I?").font(.headline)
-                    Text("Match names and descriptions").font(.subheadline).foregroundStyle(.secondary)
-                }
-            }
-
-        case .wordle:
-            HStack(spacing: 12) {
-                Image(systemName: "square.grid.3x3")
-                    .foregroundStyle(.mint)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("WORD").font(.headline)
-                    if let result = todayWordResult {
-                        if result.won {
-                            // Win line: green
-                            Text("Solved in \(result.guesses) \(result.guesses == 1 ? "guess" : "guesses") – \(formatElapsed(result.elapsed)); \(result.word.uppercased())")
-                                .font(.subheadline)
-                                .foregroundStyle(.green)
-                                .lineLimit(1)
-                        } else {
-                            // Loss line: red (entire line)
-                            HStack(spacing: 4) {
-                                Text("Not solved –")
-                                    .font(.subheadline)
-                                Text(result.word.uppercased())
-                                    .font(.subheadline.weight(.semibold))
-                            }
-                            .foregroundStyle(.red)
-                            .lineLimit(1)
-                        }
-                    } else {
-                        Text("Guess the 5‑letter word in 6 tries").font(.subheadline).foregroundStyle(.secondary)
-                    }
-                }
-
-                Spacer(minLength: 8)
-
-                if shouldGlowWordle {
-                    // Trailing subtle indicator dot
-                    ZStack {
-                        Circle()
-                            .fill(Color.green.opacity(0.25))
-                            .frame(width: 14, height: 14)
-                            .blur(radius: 4)
-                            .opacity(pulse ? 1.0 : 0.8)
-                            .scaleEffect(pulse ? 1.06 : 1.0)
-                            .animation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: pulse)
-
-                        Circle()
-                            .fill(Color.green)
-                            .frame(width: 8, height: 8)
-                            .opacity(0.95)
-                    }
-                    .accessibilityLabel("Daily available")
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, 6)
-            .contentShape(Rectangle())
-            .onAppear {
-                loadTodayWordResult()
-                if shouldGlowWordle {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        pulse = true
-                    }
-                }
-            }
-
-        case .bookOrder:
-            HStack(spacing: 12) {
-                Image(systemName: "list.number")
-                    .foregroundStyle(.purple)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Book Order").font(.headline)
-                    Text("Drag books into order").font(.subheadline).foregroundStyle(.secondary)
-                }
-            }
-
-        case .beatTheClock:
-            HStack(spacing: 12) {
-                Image(systemName: "hourglass")
-                    .foregroundStyle(.indigo)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Beat the Clock").font(.headline)
-                    Text("Name a Bible book before time runs out").font(.subheadline).foregroundStyle(.secondary)
-                }
-            }
-
-        case .wordSearch:
-            HStack(spacing: 12) {
-                Image(systemName: "grid")
-                    .foregroundStyle(.green)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Word Search").font(.headline)
-                    Text("Find 3–6 hidden words from a verse").font(.subheadline).foregroundStyle(.secondary)
-                }
-            }
-
-        case .favoritesFlashcards:
-            HStack(spacing: 12) {
-                Image(systemName: "rectangle.portrait.on.rectangle.portrait")
-                    .foregroundStyle(.pink)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Favorites Flashcards").font(.headline)
-                    Text("Practice your favorited verses with flashcards").font(.subheadline).foregroundStyle(.secondary)
-                }
-            }
-        }
+    private var statsByName: [String: GameStats.GameBreakdown.Entry] {
+        Dictionary(uniqueKeysWithValues: GameStats.shared.breakdownSnapshot().entries.map { ($0.name, $0) })
     }
 
     var body: some View {
-        // Build and sort all routes by display name (case-insensitive; WORD caps don’t affect order)
-        let allRoutes: [GameRoute] = [
-            .quiz, .hangman, .verseMatch, .whoAmI, .wordle, .bookOrder, .beatTheClock, .wordSearch, .favoritesFlashcards
-        ]
-        let sortedRoutes = allRoutes.sorted {
-            displayName(for: $0).localizedCaseInsensitiveCompare(displayName(for: $1)) == .orderedAscending
-        }
-
         List {
-            Section("Available Games") {
-                ForEach(sortedRoutes, id: \.self) { route in
-                    NavigationLink(value: route) {
-                        rowView(for: route)
-                    }
-                }
+            DailyChallengeSection(
+                route: .wordle,
+                result: todayWordResult,
+                progress: progressText(for: .wordle)
+            )
+
+            GameCollectionSection(
+                title: "Recently Played",
+                emptyMessage: "Games you play will appear here.",
+                routes: recentRoutes,
+                favoriteRoutes: Set(favoriteRoutes),
+                progress: progressText,
+                toggleFavorite: toggleFavorite
+            )
+
+            GameCollectionSection(
+                title: "Favorites",
+                emptyMessage: "Tap a star to keep a game close at hand.",
+                routes: favoriteRoutes,
+                favoriteRoutes: Set(favoriteRoutes),
+                progress: progressText,
+                toggleFavorite: toggleFavorite
+            )
+
+            ForEach(GameCategory.allCases) { category in
+                GameCollectionSection(
+                    title: category.title,
+                    routes: category.routes,
+                    favoriteRoutes: Set(favoriteRoutes),
+                    progress: progressText,
+                    toggleFavorite: toggleFavorite
+                )
             }
         }
         .listStyle(.insetGrouped)
-        .scrollContentBackground(.hidden)
-        .background(AppBackgroundView(tab: .games))
-        .adaptiveBackgroundForeground(tab: .games)
+        .background(Color(.systemGroupedBackground))
         .navigationTitle("Games")
-        // Value-based destinations for user-tapped links
         .navigationDestination(for: GameRoute.self) { route in
-            switch route {
-            case .quiz:
-                QuizView()
-            case .hangman:
-                HangmanGameView()
-            case .beatTheClock:
-                BeatTheClockGameView()
-            case .verseMatch:
-                VerseMatchGameView()
-            case .favoritesFlashcards:
-                FavoritesFlashcardsGameView()
-            case .bookOrder:
-                BookOrderGameView()
-            case .wordSearch:
-                WordSearchGameView()
-            case .whoAmI:
-                WhoAmIGameView() // NEW
-            case .wordle:
-                WordleView() // NEW
-            }
+            destination(for: route)
+                .onAppear { recordRecentlyPlayed(route) }
         }
-        // Programmatic destination without deprecated APIs
         .navigationDestination(isPresented: $isPresentingProgrammatic) {
-            Group {
-                if selection == .quiz {
-                    QuizView()
-                } else if selection == .hangman {
-                    HangmanGameView()
-                } else if selection == .beatTheClock {
-                    BeatTheClockGameView()
-                } else if selection == .verseMatch {
-                    VerseMatchGameView()
-                } else if selection == .favoritesFlashcards {
-                    FavoritesFlashcardsGameView()
-                } else if selection == .bookOrder {
-                    BookOrderGameView()
-                } else if selection == .wordSearch {
-                    WordSearchGameView()
-                } else if selection == .whoAmI {
-                    WhoAmIGameView()
-                } else if selection == .wordle {
-                    WordleView()
-                } else {
-                    EmptyView()
-                }
-            }
-            .onDisappear {
-                // Reset when user navigates back
-                selection = nil
+            if let selection {
+                destination(for: selection)
+                    .onAppear { recordRecentlyPlayed(selection) }
+                    .onDisappear { self.selection = nil }
             }
         }
         .onAppear {
             selection = nil
             loadTodayWordResult()
         }
-        // Respond to cross-tab "open game" requests
         .onReceive(NotificationCenter.default.publisher(for: .openGameStart)) { note in
             guard let name = note.userInfo?["gameName"] as? String,
-                  let route = route(forDisplayName: name) else { return }
-            DispatchQueue.main.async {
-                selection = route
-                isPresentingProgrammatic = true
-            }
+                  let route = GameRoute.allCases.first(where: { $0.displayName == name }) else { return }
+            selection = route
+            isPresentingProgrammatic = true
         }
-        // Refresh when Word results/statistics change (including when WordleView writes the result)
         .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
             refreshToken &+= 1
             loadTodayWordResult()
         }
-        // Refresh when app becomes active (covers crossing midnight)
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             refreshToken &+= 1
             loadTodayWordResult()
+        }
+    }
+
+    @ViewBuilder
+    private func destination(for route: GameRoute) -> some View {
+        switch route {
+        case .quiz: QuizView()
+        case .hangman: HangmanGameView()
+        case .beatTheClock: BeatTheClockGameView()
+        case .verseMatch: VerseMatchGameView()
+        case .favoritesFlashcards: FavoritesFlashcardsGameView()
+        case .bookOrder: BookOrderGameView()
+        case .wordSearch: WordSearchGameView()
+        case .whoAmI: WhoAmIGameView()
+        case .wordle: WordleView()
+        }
+    }
+
+    private func progressText(for route: GameRoute) -> String {
+        _ = refreshToken
+
+        if route == .wordle, let result = todayWordResult {
+            return result.won ? "Solved in \(result.guesses)/6" : "Try again tomorrow"
+        }
+
+        guard let entry = statsByName[route.displayName], entry.answered > 0 else {
+            return "Not played"
+        }
+
+        let accuracy = Int((Double(entry.correct) / Double(entry.answered) * 100).rounded())
+        if let bestStreak = entry.bestStreak, bestStreak > 0 {
+            return "\(accuracy)% · Best \(bestStreak)"
+        }
+        return "\(accuracy)% · \(entry.answered) played"
+    }
+
+    private func toggleFavorite(_ route: GameRoute) {
+        var favorites = Set(favoriteRoutesRaw.split(separator: ",").compactMap { GameRoute(rawValue: String($0)) })
+        if favorites.contains(route) {
+            favorites.remove(route)
+        } else {
+            favorites.insert(route)
+        }
+        favoriteRoutesRaw = GameRoute.allCases.filter(favorites.contains).map(\.rawValue).joined(separator: ",")
+    }
+
+    private func recordRecentlyPlayed(_ route: GameRoute) {
+        var routes = recentRoutes.filter { $0 != route }
+        routes.insert(route, at: 0)
+        recentRoutesRaw = routes.prefix(3).map(\.rawValue).joined(separator: ",")
+    }
+
+    private func loadTodayWordResult() {
+        let today = GameStats.localDayKey(for: Date())
+        guard let data = UserDefaults.standard.data(forKey: "wordleDailyResultMap"),
+              let results = try? JSONDecoder().decode([String: DailyWordResult].self, from: data) else {
+            todayWordResult = nil
+            return
+        }
+        todayWordResult = results[today]
+    }
+}
+
+private struct DailyChallengeSection: View {
+    let route: GameRoute
+    let result: DailyWordResult?
+    let progress: String
+
+    var body: some View {
+        Section("Daily Challenge") {
+            NavigationLink(value: route) {
+                HStack(spacing: 14) {
+                    Image(systemName: result == nil ? "sparkles" : "checkmark.seal.fill")
+                        .font(.title2)
+                        .foregroundStyle(result == nil ? .orange : .green)
+                        .frame(width: 36, height: 36)
+                        .background(.thinMaterial, in: Circle())
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(route.title)
+                            .font(.headline)
+                        Text(result == nil ? "A new Bible word is ready" : progress)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+
+                    if result == nil {
+                        Text("Play")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.tint)
+                    }
+                }
+                .padding(.vertical, 8)
+            }
+        }
+    }
+}
+
+private struct GameCollectionSection: View {
+    let title: LocalizedStringResource
+    var emptyMessage: LocalizedStringResource?
+    let routes: [GameRoute]
+    let favoriteRoutes: Set<GameRoute>
+    let progress: (GameRoute) -> String
+    let toggleFavorite: (GameRoute) -> Void
+
+    init(
+        title: LocalizedStringResource,
+        emptyMessage: LocalizedStringResource? = nil,
+        routes: [GameRoute],
+        favoriteRoutes: Set<GameRoute>,
+        progress: @escaping (GameRoute) -> String,
+        toggleFavorite: @escaping (GameRoute) -> Void
+    ) {
+        self.title = title
+        self.emptyMessage = emptyMessage
+        self.routes = routes
+        self.favoriteRoutes = favoriteRoutes
+        self.progress = progress
+        self.toggleFavorite = toggleFavorite
+    }
+
+    var body: some View {
+        Section {
+            if routes.isEmpty, let emptyMessage {
+                Text(emptyMessage)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(routes) { route in
+                    GameNavigationRow(
+                        route: route,
+                        progress: progress(route),
+                        isFavorite: favoriteRoutes.contains(route),
+                        toggleFavorite: { toggleFavorite(route) }
+                    )
+                }
+            }
+        } header: {
+            Text(title)
+        }
+    }
+}
+
+private struct GameNavigationRow: View {
+    let route: GameRoute
+    let progress: String
+    let isFavorite: Bool
+    let toggleFavorite: () -> Void
+
+    var body: some View {
+        HStack(spacing: 8) {
+            NavigationLink(value: route) {
+                HStack(spacing: 12) {
+                    Image(systemName: route.systemImage)
+                        .font(.title3)
+                        .foregroundStyle(route.tint)
+                        .frame(width: 28)
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(route.title)
+                            .font(.headline)
+                        Text(route.subtitle)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+
+                    Spacer(minLength: 8)
+
+                    Text(progress)
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.trailing)
+                }
+                .padding(.vertical, 4)
+            }
+
+            Button(action: toggleFavorite) {
+                Image(systemName: isFavorite ? "star.fill" : "star")
+                    .foregroundStyle(isFavorite ? .yellow : .secondary)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(isFavorite ? "Remove from favorites" : "Add to favorites")
         }
     }
 }
