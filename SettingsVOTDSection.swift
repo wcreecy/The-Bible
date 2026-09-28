@@ -4,6 +4,7 @@ struct SettingsVOTDSection: View {
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
 
+    @AppStorage("votdRefreshFrequency") private var refreshFrequencyRaw: String = VOTDRefreshFrequency.custom.rawValue
     @AppStorage("votdRefresh1Hour") private var votdRefresh1Hour: Int = 6
     @AppStorage("votdRefresh1Minute") private var votdRefresh1Minute: Int = 0
     @AppStorage("votdRefresh2Hour") private var votdRefresh2Hour: Int = 18
@@ -39,8 +40,13 @@ struct SettingsVOTDSection: View {
         )
     }
 
+    private var refreshFrequency: VOTDRefreshFrequency {
+        VOTDRefreshFrequency(rawValue: refreshFrequencyRaw) ?? .custom
+    }
+
     private var nextVOTDDescription: String {
         VOTDSchedule.nextAutoRefreshDescription(
+            frequency: refreshFrequency,
             first: (votdRefresh1Hour, votdRefresh1Minute),
             second: (votdRefresh2Hour, votdRefresh2Minute)
         )
@@ -49,7 +55,7 @@ struct SettingsVOTDSection: View {
     var body: some View {
         Section(
             header: Text("Verse of the Day").foregroundStyle(.white),
-            footer: Text("Choose which part of the Bible the Verse of the Day is selected from. You can also set two daily auto-refresh times; the verse will refresh at those times unless paused on the Home page.")
+            footer: Text("Choose where verses come from and how often they refresh. Auto-refresh remains disabled while the verse is paused on the Home page.")
                 .font(.footnote)
                 .foregroundStyle(Color.white.opacity(0.7))
         ) {
@@ -86,16 +92,30 @@ struct SettingsVOTDSection: View {
                 }
 
                 VStack(alignment: .leading, spacing: 10) {
-                    Label("Auto-Refresh Times", systemImage: "clock.arrow.2.circlepath")
+                    Label("Auto-Refresh", systemImage: "clock.arrow.2.circlepath")
                         .font(.headline)
 
-                    DatePicker("Refresh Time 1", selection: refresh1DateBinding, displayedComponents: .hourAndMinute)
-                        .datePickerStyle(.compact)
-                        .accessibilityIdentifier("votdRefreshTime1")
+                    Picker("Refresh Frequency", selection: $refreshFrequencyRaw) {
+                        ForEach(VOTDRefreshFrequency.allCases) { frequency in
+                            Text(frequency.title).tag(frequency.rawValue)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .accessibilityIdentifier("votdRefreshFrequency")
 
-                    DatePicker("Refresh Time 2", selection: refresh2DateBinding, displayedComponents: .hourAndMinute)
-                        .datePickerStyle(.compact)
-                        .accessibilityIdentifier("votdRefreshTime2")
+                    if refreshFrequency == .custom {
+                        DatePicker("Morning Refresh", selection: refresh1DateBinding, displayedComponents: .hourAndMinute)
+                            .datePickerStyle(.compact)
+                            .accessibilityIdentifier("votdRefreshTime1")
+
+                        DatePicker("Evening Refresh", selection: refresh2DateBinding, displayedComponents: .hourAndMinute)
+                            .datePickerStyle(.compact)
+                            .accessibilityIdentifier("votdRefreshTime2")
+                    } else if refreshFrequency == .daily {
+                        DatePicker("Daily Refresh Time", selection: refresh1DateBinding, displayedComponents: .hourAndMinute)
+                            .datePickerStyle(.compact)
+                            .accessibilityIdentifier("votdDailyRefreshTime")
+                    }
 
                     Text(nextVOTDDescription)
                         .font(.caption)

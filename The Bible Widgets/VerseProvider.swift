@@ -43,10 +43,11 @@ struct VerseProvider: TimelineProvider {
 
     private func nextAutoRefreshDate(from now: Date = Date()) -> Date {
         let defaults = UserDefaults.standard
-        let h1 = defaults.integer(forKey: "votdRefresh1Hour")
-        let m1 = defaults.integer(forKey: "votdRefresh1Minute")
-        let h2 = defaults.integer(forKey: "votdRefresh2Hour")
-        let m2 = defaults.integer(forKey: "votdRefresh2Minute")
+        let frequency = defaults.string(forKey: "votdRefreshFrequency") ?? "custom"
+        let h1 = defaults.object(forKey: "votdRefresh1Hour") as? Int ?? 6
+        let m1 = defaults.object(forKey: "votdRefresh1Minute") as? Int ?? 0
+        let h2 = defaults.object(forKey: "votdRefresh2Hour") as? Int ?? 18
+        let m2 = defaults.object(forKey: "votdRefresh2Minute") as? Int ?? 0
 
         func dateForToday(hour: Int, minute: Int, from now: Date) -> Date? {
             let cal = Calendar.current
@@ -55,13 +56,23 @@ struct VerseProvider: TimelineProvider {
         }
 
         let cal = Calendar.current
-        guard let t1 = dateForToday(hour: h1, minute: m1, from: now),
-              let t2 = dateForToday(hour: h2, minute: m2, from: now) else {
-            // Fallback: refresh later today
+
+        if frequency == "hourly" {
+            let startOfHour = cal.dateInterval(of: .hour, for: now)?.start ?? now
+            return cal.date(byAdding: .hour, value: 1, to: startOfHour) ?? now.addingTimeInterval(3600)
+        }
+
+        guard let t1 = dateForToday(hour: h1, minute: m1, from: now) else {
             return now.addingTimeInterval(3600)
         }
         if now < t1 { return t1 }
-        if now < t2 { return t2 }
+
+        if frequency == "custom",
+           let t2 = dateForToday(hour: h2, minute: m2, from: now),
+           now < t2 {
+            return t2
+        }
+
         let tomorrow = cal.date(byAdding: .day, value: 1, to: now) ?? now
         return dateForToday(hour: h1, minute: m1, from: tomorrow) ?? now.addingTimeInterval(86400)
     }

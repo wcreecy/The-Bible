@@ -18,7 +18,7 @@ struct HomeLayoutStore {
     @AppStorage(Self.keyFavHidden) private var favHiddenRaw: String = ""
 
     // Baseline hidden set used when no hidden config exists
-    static let baselineHidden: Set<HomeCardID> = [.games, .streaks, .bibleStats]
+    static let baselineHidden: Set<HomeCardID> = []
 
     init() {}
 

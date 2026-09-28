@@ -1,5 +1,24 @@
 import Foundation
 
+enum VOTDRefreshFrequency: String, CaseIterable, Identifiable {
+    case custom
+    case hourly
+    case daily
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .custom:
+            return "Twice Daily"
+        case .hourly:
+            return "Hourly"
+        case .daily:
+            return "Daily"
+        }
+    }
+}
+
 enum VOTDSchedule {
     // Build a Date for "today at hour:minute" in the user’s current calendar/time zone.
     static func dateForToday(hour: Int, minute: Int, from now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> Date? {
@@ -19,6 +38,7 @@ enum VOTDSchedule {
     // Given one or two (hour, minute) pairs, return the next scheduled refresh Date from "now".
     // If both times today have passed, returns tomorrow’s first time.
     static func nextAutoRefreshDate(
+        frequency: VOTDRefreshFrequency = .custom,
         first: (hour: Int, minute: Int),
         second: (hour: Int, minute: Int)? = nil,
         from now: Date = Date(),
@@ -27,29 +47,33 @@ enum VOTDSchedule {
         var cal = calendar
         cal.timeZone = .autoupdatingCurrent
 
+        if frequency == .hourly {
+            let startOfHour = cal.dateInterval(of: .hour, for: now)?.start ?? now
+            return cal.date(byAdding: .hour, value: 1, to: startOfHour) ?? now.addingTimeInterval(3600)
+        }
+
         guard let firstToday = dateForToday(hour: first.hour, minute: first.minute, from: now, calendar: cal) else {
             return now
         }
 
-        if let second {
+        if frequency == .custom, let second {
             guard let secondToday = dateForToday(hour: second.hour, minute: second.minute, from: now, calendar: cal) else {
                 return now
             }
             if now < firstToday { return firstToday }
             if now < secondToday { return secondToday }
-            // Tomorrow at first time
-            let tomorrow = cal.date(byAdding: .day, value: 1, to: now) ?? now
-            return dateForToday(hour: first.hour, minute: first.minute, from: tomorrow, calendar: cal) ?? now
-        } else {
-            if now < firstToday { return firstToday }
-            let tomorrow = cal.date(byAdding: .day, value: 1, to: now) ?? now
-            return dateForToday(hour: first.hour, minute: first.minute, from: tomorrow, calendar: cal) ?? now
+        } else if now < firstToday {
+            return firstToday
         }
+
+        let tomorrow = cal.date(byAdding: .day, value: 1, to: now) ?? now
+        return dateForToday(hour: first.hour, minute: first.minute, from: tomorrow, calendar: cal) ?? now
     }
 
     // Builds a user-facing description like:
     // "Next auto refresh: Today at 6:00 AM" or "Tomorrow at 6:00 PM" or "Mar 12 at 6:00 AM"
     static func nextAutoRefreshDescription(
+        frequency: VOTDRefreshFrequency = .custom,
         first: (hour: Int, minute: Int),
         second: (hour: Int, minute: Int)? = nil,
         from now: Date = Date(),
@@ -59,7 +83,7 @@ enum VOTDSchedule {
         var cal = calendar
         cal.timeZone = .autoupdatingCurrent
 
-        let next = nextAutoRefreshDate(first: first, second: second, from: now, calendar: cal)
+        let next = nextAutoRefreshDate(frequency: frequency, first: first, second: second, from: now, calendar: cal)
         let isToday = cal.isDate(now, inSameDayAs: next)
         let isTomorrow = cal.isDate(next, inSameDayAs: cal.date(byAdding: .day, value: 1, to: now) ?? next)
 

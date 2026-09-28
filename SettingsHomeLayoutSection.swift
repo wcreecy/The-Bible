@@ -33,7 +33,7 @@ struct SettingsHomeLayoutSection: View {
     var body: some View {
         Section(
             header: Text("Home Layout").foregroundStyle(.white),
-            footer: Text("Reorder or hide sections on the Home page. The title card always stays at the top.")
+            footer: Text("Choose what appears directly on Home and what is available inside the collapsed Show More section.")
                 .font(.footnote)
                 .foregroundStyle(Color.white.opacity(0.7))
         ) {
@@ -48,7 +48,7 @@ struct SettingsHomeLayoutSection: View {
                     hasFavorite: hasFavoriteLayout
                 )
             } label: {
-                Label("Edit Order & Visibility", systemImage: "arrow.up.arrow.down")
+                Label("Customize Home Content", systemImage: "slider.horizontal.3")
             }
         }
         .headerProminence(.increased)

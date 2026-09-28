@@ -20,6 +20,7 @@ final class VerseOfDayViewModel: ObservableObject {
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
 
     // Refresh schedule (same keys)
+    @AppStorage("votdRefreshFrequency") private var refreshFrequencyRaw: String = VOTDRefreshFrequency.custom.rawValue
     @AppStorage("votdRefresh1Hour") private var votdRefresh1Hour: Int = 6
     @AppStorage("votdRefresh1Minute") private var votdRefresh1Minute: Int = 0
     @AppStorage("votdRefresh2Hour") private var votdRefresh2Hour: Int = 18
@@ -158,6 +159,7 @@ final class VerseOfDayViewModel: ObservableObject {
 
     private func nextAutoRefreshDate(from now: Date = Date()) -> Date {
         VOTDSchedule.nextAutoRefreshDate(
+            frequency: VOTDRefreshFrequency(rawValue: refreshFrequencyRaw) ?? .custom,
             first: (votdRefresh1Hour, votdRefresh1Minute),
             second: (votdRefresh2Hour, votdRefresh2Minute),
             from: now
@@ -170,6 +172,7 @@ final class VerseOfDayViewModel: ObservableObject {
             return
         }
         nextRefreshDescription = VOTDSchedule.nextAutoRefreshDescription(
+            frequency: VOTDRefreshFrequency(rawValue: refreshFrequencyRaw) ?? .custom,
             first: (votdRefresh1Hour, votdRefresh1Minute),
             second: (votdRefresh2Hour, votdRefresh2Minute)
         )

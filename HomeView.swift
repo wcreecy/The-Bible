@@ -86,6 +86,7 @@ struct HomeView: View {
     }
 
     // Verse-of-the-Day: configurable times and scheduler (delegated to VM, keep keys observed)
+    @AppStorage("votdRefreshFrequency") private var votdRefreshFrequency: String = VOTDRefreshFrequency.custom.rawValue
     @AppStorage("votdRefresh1Hour") private var votdRefresh1Hour: Int = 6
     @AppStorage("votdRefresh1Minute") private var votdRefresh1Minute: Int = 0
     @AppStorage("votdRefresh2Hour") private var votdRefresh2Hour: Int = 18
@@ -154,6 +155,40 @@ struct HomeView: View {
 
     // NEW: Bind Live Activities setting directly so Home tracks Settings in real time.
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
+
+    @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
+    @State private var hiddenCards: Set<HomeCardID> = HomeLayoutStore.baselineHidden
+    @State private var showMoreCards: Bool = false
+    @State private var hasFavoriteLayout: Bool = false
+
+    private var moreCards: [HomeCardID] {
+        layoutOrder.filter {
+            ![.verseOfDay, .resumeReading].contains($0) && !hiddenCards.contains($0)
+        }
+    }
+
+    private func loadHomeLayout() {
+        let store = HomeLayoutStore()
+        let loaded = store.load()
+        layoutOrder = loaded.order
+        hiddenCards = loaded.hidden
+        hasFavoriteLayout = store.hasFavorite
+    }
+
+    private func saveHomeLayout() {
+        HomeLayoutStore().save(order: layoutOrder, hidden: hiddenCards)
+    }
+
+    private func saveFavoriteLayout() {
+        HomeLayoutStore().saveFavorite(order: layoutOrder, hidden: hiddenCards)
+        hasFavoriteLayout = true
+    }
+
+    private func applyFavoriteLayout() {
+        let store = HomeLayoutStore()
+        store.applyFavoriteIfAvailable()
+        loadHomeLayout()
+    }
 
     // Helper to switch tabs via enum (with backward-compatible Int payload)
     private func switchTo(_ tab: AppTab) {
@@ -327,81 +362,82 @@ struct HomeView: View {
     }
 
     var body: some View {
-        // Load from centralized layout store
-        let store = HomeLayoutStore()
-        let loaded = store.load()
-        // Keep state for dynamic updates
-        let activeCards: [HomeCardID] = loaded.order.filter { !loaded.hidden.contains($0) }
-
         ScrollView {
-            if isPad {
-                let leftCards = activeCards.enumerated().compactMap { $0.offset % 2 == 0 ? $0.element : nil }
-                let rightCards = activeCards.enumerated().compactMap { $0.offset % 2 == 1 ? $0.element : nil }
-
-                VStack(spacing: 16) {
-                    TitleCardView(
-                        isPad: isPad,
-                        goalMinutes: dailyGoalMinutes,
-                        todayReadingSeconds: bibleVM.todaySeconds,
-                        streak: StreakTracker.currentStreak,
-                        onSearch: {
-                            DispatchQueue.main.async {
-                                NotificationCenter.default.post(name: .openBibleSearch, object: nil)
-                            }
-                        },
-                        onRead: {
-                            DispatchQueue.main.async { switchTo(.bible) }
-                        },
-                        onFavorites: {
-                            DispatchQueue.main.async { switchTo(.favorites) }
+            VStack(spacing: 16) {
+                TitleCardView(
+                    isPad: isPad,
+                    goalMinutes: dailyGoalMinutes,
+                    todayReadingSeconds: bibleVM.todaySeconds,
+                    streak: StreakTracker.currentStreak,
+                    onSearch: {
+                        DispatchQueue.main.async {
+                            NotificationCenter.default.post(name: .openBibleSearch, object: nil)
                         }
-                    )
-
-                    HStack(alignment: .top, spacing: 16) {
-                        VStack(spacing: 16) {
-                            ForEach(leftCards, id: \.self) { id in
-                                card(for: id)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .top)
-
-                        VStack(spacing: 16) {
-                            ForEach(rightCards, id: \.self) { id in
-                                card(for: id)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .top)
+                    },
+                    onRead: {
+                        DispatchQueue.main.async { switchTo(.bible) }
+                    },
+                    onFavorites: {
+                        DispatchQueue.main.async { switchTo(.favorites) }
                     }
-                }
-                .padding(.horizontal, 24)
-            } else {
-                VStack(spacing: 16) {
-                    TitleCardView(
-                        isPad: isPad,
-                        goalMinutes: dailyGoalMinutes,
-                        todayReadingSeconds: bibleVM.todaySeconds,
-                        streak: StreakTracker.currentStreak,
-                        onSearch: {
-                            DispatchQueue.main.async {
-                                NotificationCenter.default.post(name: .openBibleSearch, object: nil)
-                            }
-                        },
-                        onRead: {
-                            DispatchQueue.main.async { switchTo(.bible) }
-                        },
-                        onFavorites: {
-                            DispatchQueue.main.async { switchTo(.favorites) }
-                        }
-                    )
+                )
 
-                    ForEach(loaded.order, id: \.self) { cardID in
-                        if !loaded.hidden.contains(cardID) {
+                if !hiddenCards.contains(.verseOfDay) {
+                    card(for: .verseOfDay)
+                }
+
+                if !hiddenCards.contains(.resumeReading) {
+                    card(for: .resumeReading)
+                }
+
+                if !moreCards.isEmpty {
+                    Button {
+                        withAnimation(.snappy) {
+                            showMoreCards.toggle()
+                        }
+                    } label: {
+                        HStack {
+                            Label(
+                                showMoreCards ? "Show Less" : "Show More",
+                                systemImage: "square.grid.2x2"
+                            )
+                            Spacer()
+                            Image(systemName: "chevron.down")
+                                .rotationEffect(.degrees(showMoreCards ? 180 : 0))
+                        }
+                        .font(.headline)
+                        .padding()
+                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityHint(showMoreCards ? "Hides additional Home cards" : "Shows additional Home cards")
+
+                    if showMoreCards {
+                        ForEach(moreCards) { cardID in
                             card(for: cardID)
                         }
+                        .transition(.opacity.combined(with: .move(edge: .top)))
                     }
                 }
-                .padding(.horizontal, 16)
+
+                NavigationLink {
+                    HomeLayoutEditorView(
+                        order: $layoutOrder,
+                        hiddenSet: $hiddenCards,
+                        onDone: saveHomeLayout,
+                        onSaveFavorite: saveFavoriteLayout,
+                        onResetToFavorite: applyFavoriteLayout,
+                        hasFavorite: hasFavoriteLayout
+                    )
+                } label: {
+                    Label("Customize Home", systemImage: "slider.horizontal.3")
+                        .font(.subheadline.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .tint(.accentColor)
             }
+            .padding(.horizontal, isPad ? 24 : 16)
         }
         .background(
             Image("river-bg")
@@ -413,6 +449,7 @@ struct HomeView: View {
         .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
         .appToast(isPresented: $showFocusSavedToast, symbol: "checkmark.seal.fill", text: "Focus Saved", tint: .green)
         .onAppear {
+            loadHomeLayout()
             Task { _ = await BibleLibrary.shared.bookNames() }
             bibleStore.ensureLoaded()
 
@@ -445,7 +482,7 @@ struct HomeView: View {
             gameStatsVersion = GameStats.shared.snapshot().totalAnswered
         }
         .onReceive(NotificationCenter.default.publisher(for: .homeLayoutChanged)) { _ in
-            // Trigger a refresh by changing a token state if needed, or rely on recomputation via body
+            loadHomeLayout()
         }
         .onChange(of: progressList) { _, _ in
             mirrorLastReadToAppGroup()
@@ -468,6 +505,7 @@ struct HomeView: View {
             }
         }
         // Forward VOTD schedule changes to the VM
+        .onChange(of: votdRefreshFrequency) { _, _ in votdVM.refreshScheduleChanged() }
         .onChange(of: votdRefresh1Hour) { _, _ in votdVM.refreshScheduleChanged() }
         .onChange(of: votdRefresh1Minute) { _, _ in votdVM.refreshScheduleChanged() }
         .onChange(of: votdRefresh2Hour) { _, _ in votdVM.refreshScheduleChanged() }

@@ -11,6 +11,12 @@ struct HomeLayoutEditorView: View {
 
     @State private var editMode: EditMode = .active
 
+    private let mainCards: [HomeCardID] = [.verseOfDay, .resumeReading]
+
+    private var showMoreCards: [HomeCardID] {
+        order.filter { !mainCards.contains($0) }
+    }
+
     private func isVisible(_ id: HomeCardID) -> Bool {
         !hiddenSet.contains(id)
     }
@@ -35,6 +41,39 @@ struct HomeLayoutEditorView: View {
         onDone()
     }
 
+    private func moveShowMoreCards(from offsets: IndexSet, to destination: Int) {
+        var reorderedCards = showMoreCards
+        reorderedCards.move(fromOffsets: offsets, toOffset: destination)
+        order = mainCards + reorderedCards
+        onDone()
+    }
+
+    private func layoutRow(for id: HomeCardID) -> some View {
+        HStack {
+            Image(systemName: id.systemImage)
+                .foregroundStyle(.secondary)
+                .frame(width: 24)
+
+            Text(id.title)
+
+            Spacer()
+
+            Button {
+                toggleVisibility(id)
+            } label: {
+                Label(
+                    isVisible(id) ? "Shown" : "Hidden",
+                    systemImage: isVisible(id) ? "eye" : "eye.slash"
+                )
+                .font(.subheadline)
+                .foregroundStyle(isVisible(id) ? Color.accentColor : .secondary)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(isVisible(id) ? "Hide" : "Show") \(id.title)")
+            .accessibilityHint("Changes whether this card is available on Home")
+        }
+    }
+
     @ViewBuilder
     private func footerButton(title: String, systemImage: String, disabled: Bool = false, action: @escaping () -> Void) -> some View {
         Button(action: action) {
@@ -54,32 +93,27 @@ struct HomeLayoutEditorView: View {
     var body: some View {
         List {
             Section {
-                ForEach(order) { id in
-                    HStack {
-                        Image(systemName: id.systemImage)
-                            .foregroundStyle(.secondary)
-                        Text(id.title)
-                        Spacer()
-                        Button {
-                            toggleVisibility(id)
-                        } label: {
-                            Image(systemName: isVisible(id) ? "eye" : "eye.slash")
-                                .foregroundStyle(isVisible(id) ? .blue : .secondary)
-                                .accessibilityLabel(isVisible(id) ? "Hide" : "Show")
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityHint("Toggles visibility on the Home page")
-                    }
-                }
-                .onMove { indices, newOffset in
-                    order.move(fromOffsets: indices, toOffset: newOffset)
-                    onDone()
+                ForEach(mainCards) { id in
+                    layoutRow(for: id)
                 }
             } header: {
-                Text("Order & Visibility")
+                Label("Main Home", systemImage: "house")
+            } footer: {
+                Text("Shown cards appear directly on Home. These are not part of the collapsed Show More section.")
+            }
+
+            Section {
+                ForEach(showMoreCards) { id in
+                    layoutRow(for: id)
+                }
+                .onMove(perform: moveShowMoreCards)
+            } header: {
+                Label("Inside Show More", systemImage: "square.grid.2x2")
             } footer: {
                 VStack(alignment: .leading, spacing: 10) {
-                    footerButton(title: "Reset Order", systemImage: "arrow.counterclockwise") {
+                    Text("Shown cards become visible only after Show More is expanded. Drag to choose their order.")
+
+                    footerButton(title: "Reset Layout", systemImage: "arrow.counterclockwise") {
                         resetToDefault()
                     }
                     footerButton(title: "Show All Cards", systemImage: "eye") {
@@ -88,11 +122,6 @@ struct HomeLayoutEditorView: View {
                     footerButton(title: "Apply Favorite", systemImage: "star", disabled: !hasFavorite) {
                         onResetToFavorite()
                     }
-
-                    Text("Drag to reorder. Tap the eye to show or hide a card on the Home page.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .padding(.top, 4)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }

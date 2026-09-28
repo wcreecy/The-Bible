@@ -2,7 +2,7 @@
 import Foundation
 
 enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
-    case verseOfDay, dailyFocus, timer, resumeReading, games, streaks, bibleStats
+    case verseOfDay, resumeReading, streaks, timer, dailyFocus, games, bibleStats
 
     var id: String { rawValue }
 
