@@ -18,6 +18,8 @@ struct MoreView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(AppBackgroundView(tab: .more, defaultImageName: "river-bg"))
         .navigationTitle("More")
         .navigationDestination(for: MoreDestination.self) { destination in
             switch destination {

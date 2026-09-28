@@ -439,12 +439,7 @@ struct HomeView: View {
             }
             .padding(.horizontal, isPad ? 24 : 16)
         }
-        .background(
-            Image("river-bg")
-                .resizable()
-                .scaledToFill()
-                .ignoresSafeArea()
-        )
+        .background(AppBackgroundView(tab: .home, defaultImageName: "river-bg"))
         .navigationTitle("")
         .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
         .appToast(isPresented: $showFocusSavedToast, symbol: "checkmark.seal.fill", text: "Focus Saved", tint: .green)

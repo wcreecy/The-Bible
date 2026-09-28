@@ -275,7 +275,9 @@ struct GamesView: View {
                 }
             }
         }
-        .listStyle(.insetGrouped) // Use the system default background and insets
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(AppBackgroundView(tab: .games))
         .navigationTitle("Games")
         // Value-based destinations for user-tapped links
         .navigationDestination(for: GameRoute.self) { route in

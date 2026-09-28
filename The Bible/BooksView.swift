@@ -42,6 +42,7 @@ struct BooksView: View {
                     }
                 }
                 .listStyle(.insetGrouped)
+                .scrollContentBackground(.hidden)
             } else {
                 // Canonical OT/NT grouping
                 let canon = BibleData.books
@@ -95,6 +96,7 @@ struct BooksView: View {
                 .listStyle(.insetGrouped)
             }
         }
+        .background(AppBackgroundView(tab: .bible))
         .navigationTitle("Books")
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search books")
         .tint(.blue)

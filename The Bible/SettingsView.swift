@@ -7,15 +7,13 @@ struct SettingsView: View {
 
     var body: some View {
         ZStack {
-            Image("blackleather")
-                .resizable()
-                .scaledToFill()
-                .ignoresSafeArea()
+            AppBackgroundView(tab: .more, defaultImageName: "blackleather")
 
             Form {
                 // Sections split into dedicated views
                 SettingsVOTDSection()
                 SettingsAppearanceSection()
+                SettingsBackgroundSection()
                 SettingsTimerSection()
                 SettingsDailyGoalSection()
                 SettingsLiveActivitiesSection()

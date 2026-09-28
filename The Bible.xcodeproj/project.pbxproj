@@ -143,6 +143,7 @@
 		2CD7D8342ECA16BE00849235 /* PinnedVerseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */; };
 		2CD9C4FD306ACC080077D777 /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD9C4FC306ACC080077D777 /* MoreView.swift */; };
 		2CD9C5DF306AE0D80077D777 /* GameStartScreenStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD9C5DE306AE0D80077D777 /* GameStartScreenStyle.swift */; };
+		2CD9C6C1306AEA860077D777 /* BackgroundCustomization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD9C6C0306AEA860077D777 /* BackgroundCustomization.swift */; };
 		2CE02E832EFAEDE700F76E16 /* GamesProgressRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE02E822EFAEDE700F76E16 /* GamesProgressRing.swift */; };
 		2CE02E852EFAEEF600F76E16 /* PlayerStatSheetCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE02E842EFAEEF600F76E16 /* PlayerStatSheetCardView.swift */; };
 		2CE02E872EFAF11700F76E16 /* GamesOverviewCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE02E862EFAF11700F76E16 /* GamesOverviewCardView.swift */; };
@@ -345,6 +346,7 @@
 		2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseWidget.swift; sourceTree = "<group>"; };
 		2CD9C4FC306ACC080077D777 /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
 		2CD9C5DE306AE0D80077D777 /* GameStartScreenStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStartScreenStyle.swift; sourceTree = "<group>"; };
+		2CD9C6C0306AEA860077D777 /* BackgroundCustomization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundCustomization.swift; sourceTree = "<group>"; };
 		2CE02E822EFAEDE700F76E16 /* GamesProgressRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesProgressRing.swift; sourceTree = "<group>"; };
 		2CE02E842EFAEEF600F76E16 /* PlayerStatSheetCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStatSheetCardView.swift; sourceTree = "<group>"; };
 		2CE02E862EFAF11700F76E16 /* GamesOverviewCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesOverviewCardView.swift; sourceTree = "<group>"; };
@@ -658,6 +660,7 @@
 				2C3ED6962F006180005EBBBE /* BibleStatsStore+DebugSeeding.swift */,
 				2CD9C4FC306ACC080077D777 /* MoreView.swift */,
 				2CD9C5DE306AE0D80077D777 /* GameStartScreenStyle.swift */,
+				2CD9C6C0306AEA860077D777 /* BackgroundCustomization.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1078,6 +1081,7 @@
 				2C49CF512EBE10310006FF79 /* BookSelectionLink.swift in Sources */,
 				2C6BB64D2EF1FF300010D769 /* BibleStatsStore+DailyTotals.swift in Sources */,
 				2C4A26AF2EDB3BA30055FD1B /* ReadingSessionsStore.swift in Sources */,
+				2CD9C6C1306AEA860077D777 /* BackgroundCustomization.swift in Sources */,
 				2C2A44EA2EEE260300FE8C2F /* iCloudSyncCoordinator+Games.swift in Sources */,
 				2C4BE63A2EEDE22C0090F5A2 /* OTNTCardView.swift in Sources */,
 				2C2A44E02EEE153300FE8C2F /* HeaderBox.swift in Sources */,
