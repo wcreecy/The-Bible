@@ -24,6 +24,7 @@ struct SettingsView: View {
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         .formStyle(.grouped)
+        .defaultScrollAnchor(.top)
         .preferredColorScheme((ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme)
         .modifier(FontFamilyEnvironmentModifier(prefRaw: fontFamilyPreferenceRaw))
     }
@@ -312,6 +313,7 @@ private struct SettingsDetailForm<Content: View>: View {
         .navigationTitle(Text(title))
         .navigationBarTitleDisplayMode(.inline)
         .formStyle(.grouped)
+        .defaultScrollAnchor(.top)
     }
 }
 
