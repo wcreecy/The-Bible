@@ -5,6 +5,10 @@ struct SearchView: View {
     @State private var query: String = ""
     @State private var results: [SearchResult] = []
     @State private var searchTask: Task<Void, Never>? = nil
+    @State private var isSearching: Bool = false
+    @AppStorage("bibleRecentSearches") private var recentSearchesStorage: String = ""
+
+    private let suggestedSearches = ["love", "faith", "peace", "John 3:16", "Psalm 23"]
 
     // MARK: - Scope State
     private enum SearchScope: String, CaseIterable, Identifiable {
@@ -33,7 +37,15 @@ struct SearchView: View {
             .filter { !$0.isEmpty }
     }
 
-    private var canSearch: Bool { tokens.count >= 2 }
+    private var canSearch: Bool {
+        !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var recentSearches: [String] {
+        recentSearchesStorage
+            .components(separatedBy: "\n")
+            .filter { !$0.isEmpty }
+    }
 
     // MARK: - Canon helpers (split OT/NT by Matthew)
     private var canon: [Book] { BibleData.books }
@@ -65,7 +77,12 @@ struct SearchView: View {
 
             Group {
                 if canSearch {
-                    if results.isEmpty {
+                    if isSearching {
+                        ProgressView("Searching…")
+                            .tint(.white)
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    } else if results.isEmpty {
                         ContentUnavailableView(
                             "No Results",
                             systemImage: "magnifyingglass",
@@ -97,13 +114,7 @@ struct SearchView: View {
                         .background(Color.clear)
                     }
                 } else {
-                    ContentUnavailableView(
-                        "Search the Bible",
-                        systemImage: "magnifyingglass",
-                        description: Text("Enter at least two words to begin searching.")
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    .foregroundStyle(.white) // empty state over image
+                    searchSuggestions
                 }
             }
         }
@@ -131,7 +142,11 @@ struct SearchView: View {
         .toolbarBackground(.visible, for: .navigationBar)
         // Ensure the toolbar uses a dark color scheme for contrast against the background image in light mode as well
         .toolbarColorScheme(.dark, for: .navigationBar)
-        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Enter at least two words")
+        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Words or a reference")
+        .onSubmit(of: .search) {
+            saveRecentSearch(query)
+            performSearch()
+        }
         .onChange(of: query) { _, _ in
             debounceSearch()
         }
@@ -228,6 +243,14 @@ struct SearchView: View {
             .tint(.white) // keep white selection highlight
             .padding([.horizontal, .top])
 
+            HStack {
+                Text(resultStatusText)
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.9))
+                Spacer()
+            }
+            .padding(.horizontal)
+
             if scope == .specific {
                 HStack(spacing: 12) {
                     // Button that shows current selection and opens the dropdown
@@ -271,6 +294,48 @@ struct SearchView: View {
         .animation(.easeInOut, value: scope)
     }
 
+    private var resultStatusText: String {
+        if isSearching { return "Searching…" }
+        guard canSearch else { return "Ready to search" }
+        return results.count == 1 ? "1 result" : "\(results.count) results"
+    }
+
+    private var searchSuggestions: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                suggestionSection(title: "Suggested", systemImage: "magnifyingglass", searches: suggestedSearches)
+                if !recentSearches.isEmpty {
+                    suggestionSection(title: "Recent", systemImage: "clock.arrow.circlepath", searches: recentSearches)
+                }
+            }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .foregroundStyle(.white)
+    }
+
+    private func suggestionSection(
+        title: LocalizedStringKey,
+        systemImage: String,
+        searches: [String]
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title)
+                .font(.headline)
+            ForEach(searches, id: \.self) { search in
+                Button {
+                    query = search
+                    saveRecentSearch(search)
+                } label: {
+                    Label(search, systemImage: systemImage)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 4)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
     // MARK: - Appearance tweak for segmented control
     private func configureSegmentedControlAppearanceIfNeeded() {
         guard !didConfigureSegmentedAppearance else { return }
@@ -306,31 +371,42 @@ struct SearchView: View {
         let currentQuery = query
         let currentScope = scope
         let currentSelectedBook = selectedBook
+        isSearching = !currentQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         searchTask = Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 300_000_000)
+            try? await Task.sleep(for: .milliseconds(300))
             guard !Task.isCancelled else { return }
             await performSearchAsync(for: currentQuery, scope: currentScope, selectedBook: currentSelectedBook)
         }
     }
 
     private func performSearch() {
+        searchTask?.cancel()
         let current = query
         let currentScope = scope
         let currentSelectedBook = selectedBook
+        isSearching = !current.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         Task { await performSearchAsync(for: current, scope: currentScope, selectedBook: currentSelectedBook) }
     }
 
     @MainActor
     private func performSearchAsync(for query: String, scope: SearchScope, selectedBook: Book?) async {
-        // Tokenize
-        let tokens = query
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        let tokens = trimmedQuery
             .lowercased()
             .split { $0.isWhitespace || $0.isPunctuation }
             .map(String.init)
             .filter { !$0.isEmpty }
 
-        guard tokens.count >= 2 else {
+        guard !tokens.isEmpty else {
             results = []
+            isSearching = false
+            return
+        }
+
+        if let referenceResults = resultsForReference(trimmedQuery) {
+            results = referenceResults
+            isSearching = false
+            saveRecentSearch(trimmedQuery)
             return
         }
 
@@ -349,6 +425,7 @@ struct SearchView: View {
             } else {
                 // No specific book selected yet
                 results = []
+                isSearching = false
                 return
             }
         }
@@ -379,6 +456,90 @@ struct SearchView: View {
 
         // Update UI on main actor
         results = found
+        isSearching = false
+        saveRecentSearch(trimmedQuery)
+    }
+
+    private func saveRecentSearch(_ search: String) {
+        let trimmed = search.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        var searches = recentSearches.filter {
+            $0.compare(trimmed, options: [.caseInsensitive, .diacriticInsensitive]) != .orderedSame
+        }
+        searches.insert(trimmed, at: 0)
+        recentSearchesStorage = searches.prefix(6).joined(separator: "\n")
+    }
+
+    private func resultsForReference(_ query: String) -> [SearchResult]? {
+        let parts = query.split(whereSeparator: \Character.isWhitespace).map(String.init)
+        guard parts.count >= 2, let location = parts.last else { return nil }
+
+        let locationParts = location.split(separator: ":", omittingEmptySubsequences: false)
+        guard let chapterNumber = Int(locationParts[0]), chapterNumber > 0 else { return nil }
+        let verseNumber = locationParts.count == 2 ? Int(locationParts[1]) : nil
+        guard locationParts.count <= 2, locationParts.count == 1 || verseNumber != nil else { return nil }
+
+        let bookQuery = parts.dropLast().joined(separator: " ")
+        guard let book = bookMatchingReference(bookQuery),
+              let chapter = book.chapters.first(where: { $0.number == chapterNumber }) else {
+            return []
+        }
+
+        if let verseNumber {
+            guard let verse = chapter.verses.first(where: { $0.number == verseNumber }) else { return [] }
+            return [SearchResult(book: book, chapter: chapter, verse: verse)]
+        }
+
+        return chapter.verses.map { SearchResult(book: book, chapter: chapter, verse: $0) }
+    }
+
+    private func bookMatchingReference(_ reference: String) -> Book? {
+        let normalized = normalizeBookName(reference)
+        let aliases: [String: String] = [
+            "gen": "Genesis", "ex": "Exodus", "exod": "Exodus", "lev": "Leviticus",
+            "num": "Numbers", "deut": "Deuteronomy", "josh": "Joshua", "judg": "Judges",
+            "ps": "Psalms", "psa": "Psalms", "psalm": "Psalms", "prov": "Proverbs",
+            "eccl": "Ecclesiastes", "isa": "Isaiah", "jer": "Jeremiah", "ezek": "Ezekiel",
+            "dan": "Daniel", "hos": "Hosea", "matt": "Matthew", "mk": "Mark",
+            "mrk": "Mark", "lk": "Luke", "jn": "John", "jhn": "John", "acts": "Acts",
+            "rom": "Romans", "cor": "Corinthians", "gal": "Galatians", "eph": "Ephesians",
+            "phil": "Philippians", "col": "Colossians", "thess": "Thessalonians",
+            "tim": "Timothy", "heb": "Hebrews", "jas": "James", "pet": "Peter",
+            "rev": "Revelation"
+        ]
+
+        let expanded: String
+        let components = normalized.split(separator: " ").map(String.init)
+        if components.count > 1, let prefixNumber = Int(components[0]) {
+            let remainder = components.dropFirst().joined(separator: " ")
+            expanded = "\(prefixNumber) \(aliases[remainder] ?? remainder)"
+        } else {
+            expanded = aliases[normalized] ?? normalized
+        }
+
+        if let exactMatch = canon.first(where: {
+            normalizeBookName($0.name) == normalizeBookName(expanded)
+        }) {
+            return exactMatch
+        }
+
+        let abbreviatedParts = normalizeBookName(expanded).split(separator: " ")
+        let prefixMatches = canon.filter { book in
+            let bookParts = normalizeBookName(book.name).split(separator: " ")
+            return bookParts.count == abbreviatedParts.count
+                && zip(bookParts, abbreviatedParts).allSatisfy { bookPart, abbreviation in
+                    bookPart.hasPrefix(abbreviation)
+                }
+        }
+        return prefixMatches.count == 1 ? prefixMatches[0] : nil
+    }
+
+    private func normalizeBookName(_ value: String) -> String {
+        value
+            .lowercased()
+            .replacingOccurrences(of: ".", with: "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 
