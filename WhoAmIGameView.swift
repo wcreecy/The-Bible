@@ -5,12 +5,17 @@ struct WhoAmIGameView: View {
     @State private var maxChoiceHeight: CGFloat = 0
 
     // Sheet state for reference preview
-    @State private var showRefSheet: Bool = false
+    @State private var refSheetRequest: ReferenceSheetRequest?
     @State private var refChoices: [ScriptureRef] = []
     @State private var selectedRef: ScriptureRef? = nil
     @State private var loadedPreview: (title: String, verses: [Verse])? = nil
     @State private var currentRefIndex: Int = 0
     @State private var selectionNonce: UUID = UUID()
+
+    private struct ReferenceSheetRequest: Identifiable {
+        let id = UUID()
+        let references: [ScriptureRef]
+    }
 
     // Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
@@ -212,34 +217,35 @@ struct WhoAmIGameView: View {
         .onChange(of: vm.choices) { _, _ in
             maxChoiceHeight = 0
         }
-        .sheet(isPresented: $showRefSheet, onDismiss: {
+        .sheet(item: $refSheetRequest, onDismiss: {
             selectedRef = nil
             loadedPreview = nil
             refChoices = []
             currentRefIndex = 0
-        }) {
+        }) { request in
+            let displayedRefs = request.references
             let content = NavigationStack {
                 VStack(alignment: .leading, spacing: 12) {
-                    if refChoices.isEmpty {
+                    if displayedRefs.isEmpty {
                         ContentUnavailableView("No reference available", systemImage: "book")
                     } else {
                         HStack(spacing: 12) {
                             Button { moveRefIndex(-1) } label: { Image(systemName: "chevron.left") }
                                 .buttonStyle(.plain)
-                                .disabled(refChoices.count <= 1)
+                                .disabled(displayedRefs.count <= 1)
 
-                            Text("\(currentRefIndex + 1) of \(refChoices.count)")
+                            Text("\(currentRefIndex + 1) of \(displayedRefs.count)")
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
 
                             Button { moveRefIndex(+1) } label: { Image(systemName: "chevron.right") }
                                 .buttonStyle(.plain)
-                                .disabled(refChoices.count <= 1)
+                                .disabled(displayedRefs.count <= 1)
 
                             Spacer()
                         }
 
-                        ScriptureLinksList(refs: refChoices, onTap: { ref in
+                        ScriptureLinksList(refs: displayedRefs, onTap: { ref in
                             if let idx = refChoices.firstIndex(where: { $0 == ref }) {
                                 setCurrentRefIndex(idx)
                             } else {
@@ -282,14 +288,14 @@ struct WhoAmIGameView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("Close") { showRefSheet = false }
+                        Button("Close") { refSheetRequest = nil }
                     }
                 }
                 .presentationDetents([.medium, .large])
                 .onAppear {
-                    if !refChoices.isEmpty, selectedRef == nil {
-                        currentRefIndex = max(0, min(currentRefIndex, refChoices.count - 1))
-                        selectedRef = refChoices[currentRefIndex]
+                    if !displayedRefs.isEmpty, selectedRef == nil {
+                        currentRefIndex = max(0, min(currentRefIndex, displayedRefs.count - 1))
+                        selectedRef = displayedRefs[currentRefIndex]
                         selectionNonce = UUID()
                     }
                     if let sr = selectedRef, loadedPreview == nil {
@@ -304,11 +310,6 @@ struct WhoAmIGameView: View {
                         loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
                     } else {
                         loadedPreview = nil
-                    }
-                }
-                .task(id: showRefSheet) {
-                    if showRefSheet, let sr = selectedRef, loadedPreview == nil {
-                        loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
                     }
                 }
         }
@@ -350,7 +351,7 @@ struct WhoAmIGameView: View {
             selectedRef = nil
             loadedPreview = nil
             currentRefIndex = 0
-            showRefSheet = true
+            refSheetRequest = ReferenceSheetRequest(references: [])
             return
         }
 
@@ -391,7 +392,7 @@ struct WhoAmIGameView: View {
         selectedRef = all.first
         selectionNonce = UUID()
         loadedPreview = nil
-        showRefSheet = true
+        refSheetRequest = ReferenceSheetRequest(references: all)
     }
 
     private func setCurrentRefIndex(_ idx: Int) {
