@@ -94,9 +94,10 @@ struct BooksView: View {
                     }
                 }
                 .listStyle(.insetGrouped)
+                .scrollContentBackground(.hidden)
             }
         }
-        .background(Color(.systemGroupedBackground))
+        .background(AppBackgroundView(tab: .bible))
         .navigationTitle("Books")
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search books")
         .tint(.blue)

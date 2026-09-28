@@ -70,9 +70,10 @@ struct FavoritesView: View {
                     }
                     .onDelete(perform: deleteFiltered)
                 }
+                .scrollContentBackground(.hidden)
             }
         }
-        .background(Color(.systemGroupedBackground))
+        .background(AppBackgroundView(tab: .favorites))
         .navigationTitle("Favorites")
         .toolbar { EditButton() }
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search favorites")

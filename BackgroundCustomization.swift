@@ -138,13 +138,7 @@ struct AppBackgroundView: View {
             ZStack {
                 switch AppBackgroundMode(rawValue: modeRaw) ?? .defaultStyle {
                 case .defaultStyle:
-                    if let defaultImageName {
-                        Image(defaultImageName)
-                            .resizable()
-                            .scaledToFill()
-                    } else {
-                        Color(.systemGroupedBackground)
-                    }
+                    AppDefaultBackground()
                 case .builtIn:
                     Image(builtInAssetName)
                         .resizable()
@@ -154,12 +148,8 @@ struct AppBackgroundView: View {
                         Image(uiImage: image)
                             .resizable()
                             .scaledToFill()
-                    } else if let defaultImageName {
-                        Image(defaultImageName)
-                            .resizable()
-                            .scaledToFill()
                     } else {
-                        Color(.systemGroupedBackground)
+                        AppDefaultBackground()
                     }
                 case .color:
                     Color(hex: colorHex)
@@ -169,6 +159,37 @@ struct AppBackgroundView: View {
             .clipped()
         }
         .ignoresSafeArea(edges: extendsIntoSafeArea ? .all : [])
+        .accessibilityHidden(true)
+        .allowsHitTesting(false)
+    }
+}
+
+/// A calm, adaptive canvas that gives system Liquid Glass enough color to
+/// refract while keeping primary and secondary labels easy to read.
+struct AppDefaultBackground: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        ZStack {
+            Color(.systemGroupedBackground)
+
+            LinearGradient(
+                colors: colorScheme == .dark
+                    ? [
+                        Color.indigo.opacity(0.22),
+                        Color.teal.opacity(0.10),
+                        Color.clear
+                    ]
+                    : [
+                        Color.indigo.opacity(0.10),
+                        Color.cyan.opacity(0.07),
+                        Color.white.opacity(0.18)
+                    ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+        .ignoresSafeArea()
         .accessibilityHidden(true)
         .allowsHitTesting(false)
     }
@@ -285,14 +306,25 @@ private extension UIImage {
 }
 
 struct SettingsBackgroundSection: View {
+    @State private var selectedTab: AppTab = .home
+
     var body: some View {
         Section {
-            BackgroundEditor(tab: .home)
+            Picker("Page", selection: $selectedTab) {
+                ForEach(AppTab.allCases) { tab in
+                    Text(tab.title).tag(tab)
+                }
+            }
+            .pickerStyle(.segmented)
+            .accessibilityIdentifier("backgroundPagePicker")
+
+            BackgroundEditor(tab: selectedTab)
+                .id(selectedTab)
         } header: {
-            Text("Home Background")
+            Text("Page Background")
                 .foregroundStyle(.primary)
         } footer: {
-            Text("Imagery is reserved for Home. Search, Settings, and other information-heavy screens use system backgrounds for clarity.")
+            Text("Select a page to customize. Default uses the same adaptive background throughout the app.")
         }
         .headerProminence(.increased)
     }
@@ -308,6 +340,7 @@ private struct BackgroundEditor: View {
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var isLoadingPhoto = false
     @State private var errorMessage: String?
+    @State private var isConfirmingApplyToAll = false
 
     init(tab: AppTab) {
         self.tab = tab
@@ -371,6 +404,15 @@ private struct BackgroundEditor: View {
                 tab: tab,
                 defaultImageName: defaultImageName(for: tab)
             )
+
+            Button {
+                isConfirmingApplyToAll = true
+            } label: {
+                Label("Apply to All Pages", systemImage: "rectangle.on.rectangle.angled")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .accessibilityHint("Copies this page's background settings to every page")
         }
         .onChange(of: selectedPhoto) { _, newValue in
             guard let newValue else { return }
@@ -388,6 +430,18 @@ private struct BackgroundEditor: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(errorMessage ?? "")
+        }
+        .confirmationDialog(
+            "Apply this background to every page?",
+            isPresented: $isConfirmingApplyToAll,
+            titleVisibility: .visible
+        ) {
+            Button("Apply to All Pages") {
+                applyBackgroundToAllPages()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This replaces the individual background choices for Home, Bible, Favorites, Games, and More.")
         }
     }
 
@@ -418,13 +472,17 @@ private struct BackgroundEditor: View {
         }
     }
 
-    private func defaultImageName(for tab: AppTab) -> String? {
-        switch tab {
-        case .home, .more:
-            "river-bg"
-        case .bible, .favorites, .games:
-            nil
+    private func applyBackgroundToAllPages() {
+        for destinationTab in AppTab.allCases {
+            UserDefaults.standard.set(modeRaw, forKey: AppBackgroundStorage.modeKey(for: destinationTab))
+            UserDefaults.standard.set(colorHex, forKey: AppBackgroundStorage.colorKey(for: destinationTab))
+            UserDefaults.standard.set(photoFileName, forKey: AppBackgroundStorage.photoKey(for: destinationTab))
+            UserDefaults.standard.set(builtInAssetName, forKey: AppBackgroundStorage.builtInKey(for: destinationTab))
         }
+    }
+
+    private func defaultImageName(for tab: AppTab) -> String? {
+        nil
     }
 }
 

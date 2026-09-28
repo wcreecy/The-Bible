@@ -435,7 +435,7 @@ struct HomeView: View {
             }
             .padding(.horizontal, isPad ? 24 : 16)
         }
-        .background(AppBackgroundView(tab: .home, defaultImageName: "river-bg"))
+        .background(AppBackgroundView(tab: .home))
         .navigationTitle("")
         .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
         .appToast(isPresented: $showFocusSavedToast, symbol: "checkmark.seal.fill", text: "Focus Saved", tint: .green)

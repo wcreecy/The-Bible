@@ -181,7 +181,8 @@ struct GamesView: View {
             }
         }
         .listStyle(.insetGrouped)
-        .background(Color(.systemGroupedBackground))
+        .scrollContentBackground(.hidden)
+        .background(AppBackgroundView(tab: .games))
         .navigationTitle("Games")
         .navigationDestination(for: GameRoute.self) { route in
             destination(for: route)

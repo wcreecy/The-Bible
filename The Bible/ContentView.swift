@@ -104,6 +104,7 @@ struct ContentView: View {
             .tabItem { Label("More", systemImage: "ellipsis.circle") }
             .tag(AppTab.more)
         }
+        .background(AppBackgroundView(tab: selectedTab))
         // Apply your preferred color scheme even on the Settings tab so it updates in place.
         .preferredColorScheme(preferredScheme)
         .dynamicTypeSize(preferredDynamicType ?? systemDynamicTypeSize)
