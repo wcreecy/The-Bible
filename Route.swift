@@ -5,6 +5,7 @@ enum Route: Hashable {
     case book(Book)
     case chapter(book: Book, chapter: Chapter)
     case reader(book: Book, chapter: Chapter, startVerse: Int)
+    case search
 
     // Games
     case gameQuiz

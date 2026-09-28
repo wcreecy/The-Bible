@@ -287,7 +287,7 @@ struct HomeView: View {
                 onOpenStats: {
                     // Force StatsView to open on the Game Stats tab
                     UserDefaults.standard.set("Game Stats", forKey: "statsSelectedMode")
-                    switchTo(.stats)
+                    NotificationCenter.default.post(name: .openStats, object: nil)
                 },
                 onShufflePlay: {
                     // Choose one of the seven games at random (includes Who am I? and Wordle)
@@ -320,7 +320,7 @@ struct HomeView: View {
                 onOpenStats: {
                     // Force StatsView to open on the Bible Stats tab
                     UserDefaults.standard.set("Bible Stats", forKey: "statsSelectedMode")
-                    switchTo(.stats)
+                    NotificationCenter.default.post(name: .openStats, object: nil)
                 }
             )
         }
@@ -345,7 +345,9 @@ struct HomeView: View {
                         todayReadingSeconds: bibleVM.todaySeconds,
                         streak: StreakTracker.currentStreak,
                         onSearch: {
-                            DispatchQueue.main.async { switchTo(.search) }
+                            DispatchQueue.main.async {
+                                NotificationCenter.default.post(name: .openBibleSearch, object: nil)
+                            }
                         },
                         onRead: {
                             DispatchQueue.main.async { switchTo(.bible) }
@@ -380,7 +382,9 @@ struct HomeView: View {
                         todayReadingSeconds: bibleVM.todaySeconds,
                         streak: StreakTracker.currentStreak,
                         onSearch: {
-                            DispatchQueue.main.async { switchTo(.search) }
+                            DispatchQueue.main.async {
+                                NotificationCenter.default.post(name: .openBibleSearch, object: nil)
+                            }
                         },
                         onRead: {
                             DispatchQueue.main.async { switchTo(.bible) }

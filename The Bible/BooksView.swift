@@ -100,7 +100,14 @@ struct BooksView: View {
         .tint(.blue)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button {
+                    coordinator.push(.search)
+                } label: {
+                    Image(systemName: "magnifyingglass")
+                }
+                .accessibilityLabel("Search Bible text")
+
                 Menu {
                     Button {
                         sortAlphabetically = false

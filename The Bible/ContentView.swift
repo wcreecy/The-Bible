@@ -15,7 +15,7 @@ struct ContentView: View {
     // Separate coordinators per tab to avoid path leakage/corruption
     @StateObject private var homeCoordinator = NavigationCoordinator()
     @StateObject private var bibleCoordinator = NavigationCoordinator()
-    // Favorites, Search, Settings don’t currently push via coordinator; no path binding needed.
+    @State private var morePath: [MoreDestination] = []
 
     @State private var selectedTab: AppTab = .home
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
@@ -61,7 +61,6 @@ struct ContentView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            // Home tab: its own NavigationStack and coordinator/path
             NavigationStack(path: $homeCoordinator.path) {
                 HomeView()
                     .appDestinations(readerFontSize: $readerFontSize, isPad: usesWideLayout)
@@ -69,8 +68,7 @@ struct ContentView: View {
             .environmentObject(homeCoordinator)
             .tabItem { Label("Home", systemImage: "house") }
             .tag(AppTab.home)
-            
-            // Bible tab
+
             if usesWideLayout {
                 BibleSplitView()
                     .tabItem { Label("Bible", systemImage: "book") }
@@ -84,52 +82,31 @@ struct ContentView: View {
                 .tabItem { Label("Bible", systemImage: "book") }
                 .tag(AppTab.bible)
             }
-            
-            // Games tab: no shared path
-            NavigationStack {
-                GamesView()
-            }
-            .tabItem { Label("Games", systemImage: "gamecontroller") }
-            .tag(AppTab.games)
 
-            // Stats tab
-            NavigationStack {
-                StatsView()
-            }
-            .tabItem { Label("Stats", systemImage: "chart.bar") }
-            .tag(AppTab.stats)
-            
-            // Favorites tab: uses direct NavigationLinks; no shared path
             NavigationStack {
                 FavoritesView()
                     .appDestinations(readerFontSize: $readerFontSize, isPad: usesWideLayout)
             }
             .tabItem { Label("Favorites", systemImage: "heart") }
             .tag(AppTab.favorites)
-            
-            // Search tab: uses direct NavigationLinks; no shared path
+
             NavigationStack {
-                SearchView()
-                    .appDestinations(readerFontSize: $readerFontSize, isPad: usesWideLayout)
+                GamesView()
             }
-            .tabItem { Label("Search", systemImage: "magnifyingglass") }
-            .tag(AppTab.search)
-            
-            // Settings tab
-            NavigationStack {
-                SettingsView()
-                    .environment(\.font, nil)
-                    .fontDesign(.default)
+            .tabItem { Label("Games", systemImage: "gamecontroller") }
+            .tag(AppTab.games)
+
+            NavigationStack(path: $morePath) {
+                MoreView()
             }
-            .transaction { tx in tx.disablesAnimations = true }
-            .tabItem { Label("Settings", systemImage: "gear") }
-            .tag(AppTab.settings)
+            .tabItem { Label("More", systemImage: "ellipsis.circle") }
+            .tag(AppTab.more)
         }
         // Apply your preferred color scheme even on the Settings tab so it updates in place.
         .preferredColorScheme(preferredScheme)
         .dynamicTypeSize(preferredDynamicType ?? systemDynamicTypeSize)
-        .font(selectedTab == .settings ? nil : preferredFont)
-        .fontDesign(selectedTab == .settings ? .default : (preferredFontDesign ?? .default))
+        .font(preferredFont)
+        .fontDesign(preferredFontDesign ?? .default)
         .onAppear {
             // START iCloud KVS coordinator so game/bible stats pull/merge on launch.
             iCloudSyncCoordinator.shared.start()
@@ -271,7 +248,24 @@ struct ContentView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .openSettingsTab)) { _ in
-            selectedTab = .settings
+            selectedTab = .more
+            DispatchQueue.main.async {
+                morePath = [.settings]
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .openStats)) { _ in
+            selectedTab = .more
+            DispatchQueue.main.async {
+                morePath = [.stats]
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .openBibleSearch)) { _ in
+            selectedTab = .bible
+            guard !usesWideLayout else { return }
+            DispatchQueue.main.async {
+                bibleCoordinator.reset()
+                bibleCoordinator.push(.search)
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: .resetBibleNavigation)) { _ in
             // Ensure Bible tab is visible, then reset the Bible nav stack to Books list

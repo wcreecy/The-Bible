@@ -38,6 +38,9 @@ extension View {
                             }
                         }
 
+                case .search:
+                    SearchView()
+
                 // Games
                 case .gameQuiz:
                     QuizView()

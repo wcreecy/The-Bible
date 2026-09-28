@@ -18,8 +18,10 @@ extension Notification.Name {
     // userInfo: ["tab": Int]
     static let switchToTab = Notification.Name("switchToTab")
 
-    // Posted to request opening the Settings tab.
+    // Posted to request opening destinations now nested inside primary tabs.
     static let openSettingsTab = Notification.Name("OpenSettingsTab")
+    static let openStats = Notification.Name("OpenStats")
+    static let openBibleSearch = Notification.Name("OpenBibleSearch")
 
     // Posted to request resetting the Bible tab's navigation stack to the root (Books list).
     static let resetBibleNavigation = Notification.Name("ResetBibleNavigation")

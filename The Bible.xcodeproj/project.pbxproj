@@ -141,6 +141,7 @@
 		2CD7D82D2ECA126500849235 /* PinnedVerseWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */; };
 		2CD7D8312ECA163A00849235 /* PinnedVerseWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */; };
 		2CD7D8342ECA16BE00849235 /* PinnedVerseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */; };
+		2CD9C4FD306ACC080077D777 /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD9C4FC306ACC080077D777 /* MoreView.swift */; };
 		2CE02E832EFAEDE700F76E16 /* GamesProgressRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE02E822EFAEDE700F76E16 /* GamesProgressRing.swift */; };
 		2CE02E852EFAEEF600F76E16 /* PlayerStatSheetCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE02E842EFAEEF600F76E16 /* PlayerStatSheetCardView.swift */; };
 		2CE02E872EFAF11700F76E16 /* GamesOverviewCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE02E862EFAF11700F76E16 /* GamesOverviewCardView.swift */; };
@@ -341,6 +342,7 @@
 		2CD7D8282ECA125200849235 /* PinnedVerseIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseIntent.swift; sourceTree = "<group>"; };
 		2CD7D82A2ECA125E00849235 /* PinnedVerseProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseProvider.swift; sourceTree = "<group>"; };
 		2CD7D82C2ECA126500849235 /* PinnedVerseWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedVerseWidget.swift; sourceTree = "<group>"; };
+		2CD9C4FC306ACC080077D777 /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
 		2CE02E822EFAEDE700F76E16 /* GamesProgressRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesProgressRing.swift; sourceTree = "<group>"; };
 		2CE02E842EFAEEF600F76E16 /* PlayerStatSheetCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStatSheetCardView.swift; sourceTree = "<group>"; };
 		2CE02E862EFAF11700F76E16 /* GamesOverviewCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesOverviewCardView.swift; sourceTree = "<group>"; };
@@ -652,6 +654,7 @@
 				2CE02E862EFAF11700F76E16 /* GamesOverviewCardView.swift */,
 				2C3A48EA2EFC12EB0040AC67 /* AllGamesComparisonCardView.swift */,
 				2C3ED6962F006180005EBBBE /* BibleStatsStore+DebugSeeding.swift */,
+				2CD9C4FC306ACC080077D777 /* MoreView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1108,6 +1111,7 @@
 				2C4F30982ED9150E006C8DFD /* ReadingTimeTracker.swift in Sources */,
 				2CC5D6E92ED608E8009E4C0E /* Haptics.swift in Sources */,
 				2C2A45022EEE347F00FE8C2F /* HomeLayoutEditorView.swift in Sources */,
+				2CD9C4FD306ACC080077D777 /* MoreView.swift in Sources */,
 				2C49CF542EBE10310006FF79 /* Route.swift in Sources */,
 				2C6BB64B2EF1FF2A0010D769 /* BibleStatsStore+Totals.swift in Sources */,
 				2C49CF552EBE10310006FF79 /* TimerSound.swift in Sources */,

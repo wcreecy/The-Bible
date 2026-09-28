@@ -4,33 +4,27 @@ import Foundation
 enum AppTab: Int, CaseIterable {
     case home = 0
     case bible
-    case games
-    case stats
     case favorites
-    case search
-    case settings
+    case games
+    case more
 
     var name: String {
         switch self {
         case .home: return "home"
         case .bible: return "bible"
-        case .games: return "games"
-        case .stats: return "stats"
         case .favorites: return "favorites"
-        case .search: return "search"
-        case .settings: return "settings"
+        case .games: return "games"
+        case .more: return "more"
         }
     }
 
     static func from(name: String) -> AppTab? {
         switch name.lowercased() {
         case "home": return .home
-        case "bible": return .bible
-        case "games": return .games
-        case "stats": return .stats
+        case "bible", "search": return .bible
         case "favorites": return .favorites
-        case "search": return .search
-        case "settings": return .settings
+        case "games": return .games
+        case "more", "stats", "settings": return .more
         default: return nil
         }
     }
