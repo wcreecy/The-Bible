@@ -164,18 +164,29 @@ final class iCloudSyncCoordinator {
             kvs.removeObject(forKey: k)
         }
 
+        // Last Read is also mirrored outside the stats store for the widget.
+        for key in Self.lastReadWidgetKeys {
+            kvs.removeObject(forKey: key)
+        }
+        if let shared = UserDefaults(suiteName: "group.bible.app") {
+            for key in Self.lastReadWidgetKeys {
+                shared.removeObject(forKey: key)
+            }
+        }
+
         // 3) Set/reset epoch in both KVS and local so older devices won’t re-populate
         let now = Date().timeIntervalSince1970
         kvs.set(now, forKey: bibleStatsResetEpochKVSKey)
         defaults.set(now, forKey: bibleStatsLastSeenEpochLocalKey)
 
-        // 4) Flush to server (off-main) and notify UI
+        // 4) Refresh the UI immediately, then flush the deletion to iCloud off-main.
+        BibleStatsStore.shared.resetCaches()
+        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
         let _ = Task.detached {
             NSUbiquitousKeyValueStore.default.synchronize()
             await MainActor.run {
                 iCloudSyncCoordinator.shared.lastPushDate = Date()
-                BibleStatsStore.shared.resetCaches()
-                NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
             }
         }
     }
@@ -494,6 +505,8 @@ final class iCloudSyncCoordinator {
 
         var mergedGameKey = false
         var touchedAny = false
+        var appliedBibleReset = false
+        var appliedGameReset = false
 
         // Check for a remote Bible stats reset epoch first; if newer than local, clear local data.
         let incomingEpoch = kvs.double(forKey: bibleStatsResetEpochKVSKey)
@@ -504,6 +517,18 @@ final class iCloudSyncCoordinator {
                 ReadingSessionsStore.shared.clearAll()
                 // Clear Bible stats locally and caches
                 BibleStatsStore.shared.clearAllLocal()
+                for key in Self.bibleStatsKeys + Self.sessionKeys {
+                    kvs.removeObject(forKey: key)
+                }
+                for key in Self.lastReadWidgetKeys {
+                    kvs.removeObject(forKey: key)
+                }
+                if let shared = UserDefaults(suiteName: "group.bible.app") {
+                    for key in Self.lastReadWidgetKeys {
+                        shared.removeObject(forKey: key)
+                    }
+                }
+                appliedBibleReset = true
                 touchedAny = true
                 // Record last-seen epoch locally to prevent re-clearing
                 defaults.set(incomingEpoch, forKey: bibleStatsLastSeenEpochLocalKey)
@@ -517,6 +542,11 @@ final class iCloudSyncCoordinator {
             if incomingGameEpoch > lastSeenGame {
                 // Purge local game data without writing back to KVS (remote reset is authoritative)
                 clearAllGameDataLocalOnly()
+                for key in allKnownGameDataKeys {
+                    kvs.removeObject(forKey: key)
+                    kvs.removeObject(forKey: tsKey(for: key))
+                }
+                appliedGameReset = true
                 touchedAny = true
                 mergedGameKey = true
                 // Stamp last-seen epoch locally to prevent re-clearing
@@ -525,6 +555,14 @@ final class iCloudSyncCoordinator {
         }
 
         for key in allKnownKeys {
+            // A reset epoch is authoritative. Don't merge stale values that arrived in
+            // the same KVS snapshot after the local stores were just cleared.
+            if appliedBibleReset && (Self.bibleStatsKeys.contains(key) || Self.sessionKeys.contains(key)) {
+                continue
+            }
+            if appliedGameReset && allKnownGameDataKeys.contains(key) {
+                continue
+            }
             let hasRemote = (kvs.object(forKey: key) != nil) || (remoteDict.keys.contains(key))
 
             if hasRemote {

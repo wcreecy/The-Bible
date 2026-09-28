@@ -152,6 +152,40 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
+    // Streak values stored separately from the all-time counters by the remaining games.
+    // These are local-only today, but still form part of the user's game history.
+    static let additionalPersistentStreakKeys: [String] = {
+        var keys = ["wordlePersistentStreak", "wordlePersistentBestStreak"]
+        for difficulty in ["easy", "normal", "hard"] {
+            keys.append("quizPersistentStreak_\(difficulty)")
+            keys.append("quizPersistentBestStreak_\(difficulty)")
+            keys.append("whoamiPersistentStreak_\(difficulty)")
+            keys.append("whoamiPersistentBestStreak_\(difficulty)")
+        }
+        return keys
+    }()
+
+    static var allPersistentStreakKeys: [String] {
+        beatClockPersistentStreakKeys
+            + verseMatchPersistentStreakKeys
+            + hangmanPersistentStreakKeys
+            + bookOrderPersistentStreakKeys
+            + additionalPersistentStreakKeys
+    }
+
+    var allKnownGameDataKeys: Set<String> {
+        Set(
+            Self.hangmanKeys + Self.beatClockKeys + Self.refMatchKeys
+                + Self.verseMatchKeys + Self.quizKeys + Self.bookOrderKeys
+                + Self.whoAmIKeys + Self.wordleKeys
+                + Self.gameDailyAndLastPlayedKeys + Self.quizPerBookMapKeys
+                + Self.verseMatchPerBookMapKeys + Self.beatClockPerTypeMapKeys
+                + Self.hangmanPerCategoryMapKeys + Self.perGameDailyMapKeys
+                + Self.wordleSolvedMapKeys + Self.wordleDailyResultKeys
+                + Self.wordleDailyFlagKeys
+        )
+    }
+
     // Game keys: Who am I? (easy/normal/hard + combined "all")
     static let whoAmIKeys: [String] = {
         let diffs = ["easy", "normal", "hard", "all"]
@@ -572,10 +606,7 @@ extension iCloudSyncCoordinator {
         }
 
         // 1b) Clear local-only persistent streak caches (Beat the Clock + Verse Match + Hangman + Book Order)
-        for key in Self.beatClockPersistentStreakKeys
-                    + Self.verseMatchPersistentStreakKeys
-                    + Self.hangmanPersistentStreakKeys
-                    + Self.bookOrderPersistentStreakKeys {
+        for key in Self.allPersistentStreakKeys {
             defaults.removeObject(forKey: key)
         }
 
@@ -618,10 +649,7 @@ extension iCloudSyncCoordinator {
         resetAllGameCountersToZero()
 
         // 1b) Clear any local-only persistent streak caches (Beat the Clock + Verse Match + Hangman + Book Order)
-        for key in Self.beatClockPersistentStreakKeys
-                    + Self.verseMatchPersistentStreakKeys
-                    + Self.hangmanPersistentStreakKeys
-                    + Self.bookOrderPersistentStreakKeys {
+        for key in Self.allPersistentStreakKeys {
             defaults.removeObject(forKey: key)
             // Not mirrored to KVS; these keys are local-only
         }
