@@ -402,8 +402,8 @@ struct HomeView: View {
                                 .rotationEffect(.degrees(showMoreCards ? 180 : 0))
                         }
                         .font(.headline)
-                        .padding()
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+                        .padding(AppDesignMetrics.cardPadding)
+                        .imageOverlaySurface()
                     }
                     .buttonStyle(.plain)
                     .accessibilityHint(showMoreCards ? "Hides additional Home cards" : "Shows additional Home cards")
@@ -430,7 +430,7 @@ struct HomeView: View {
                         .font(.subheadline.weight(.semibold))
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(.borderedProminent)
                 .tint(.accentColor)
             }
             .padding(.horizontal, isPad ? 24 : 16)

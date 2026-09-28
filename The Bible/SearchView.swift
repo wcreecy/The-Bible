@@ -25,9 +25,6 @@ struct SearchView: View {
     @State private var showBookPicker: Bool = false
     @State private var bookQuery: String = ""
 
-    // Track if we have applied segmented control appearance
-    @State private var didConfigureSegmentedAppearance: Bool = false
-
     // MARK: - Tokenization
     private var tokens: [String] {
         query
@@ -73,14 +70,11 @@ struct SearchView: View {
         VStack(spacing: 0) {
             // Scope controls at the top
             scopeControls
-                .foregroundStyle(.white) // keep scope controls white over the background image
 
             Group {
                 if canSearch {
                     if isSearching {
                         ProgressView("Searching…")
-                            .tint(.white)
-                            .foregroundStyle(.white)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                     } else if results.isEmpty {
                         ContentUnavailableView(
@@ -89,7 +83,6 @@ struct SearchView: View {
                             description: Text("Try different keywords or check spelling.")
                         )
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                        .foregroundStyle(.white) // empty state over image
                     } else {
                         List(results) { item in
                             Button {
@@ -118,30 +111,8 @@ struct SearchView: View {
                 }
             }
         }
-        .background(
-            ZStack {
-                Image("biblesearch")
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea()
-                Color.black.opacity(0.10)
-                    .ignoresSafeArea()
-            }
-        )
+        .background(Color(.systemGroupedBackground))
         .navigationTitle("Search")
-        .toolbar {
-            // Force the nav bar title to render in white
-            ToolbarItem(placement: .principal) {
-                Text("Search")
-                    .font(.headline)
-                    .foregroundStyle(.white)
-            }
-        }
-        // Make the navigation bar background transparent so white title is visible in light mode
-        .toolbarBackground(.clear, for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
-        // Ensure the toolbar uses a dark color scheme for contrast against the background image in light mode as well
-        .toolbarColorScheme(.dark, for: .navigationBar)
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Words or a reference")
         .onSubmit(of: .search) {
             saveRecentSearch(query)
@@ -163,7 +134,6 @@ struct SearchView: View {
         }
         .onAppear {
             performSearch()
-            configureSegmentedControlAppearanceIfNeeded()
         }
         // Popover for selecting a specific book (searchable & scrollable)
         .popover(isPresented: $showBookPicker, arrowEdge: .top) {
@@ -240,13 +210,12 @@ struct SearchView: View {
                 }
             }
             .pickerStyle(.segmented)
-            .tint(.white) // keep white selection highlight
             .padding([.horizontal, .top])
 
             HStack {
                 Text(resultStatusText)
                     .font(.caption)
-                    .foregroundStyle(.white.opacity(0.9))
+                    .foregroundStyle(.secondary)
                 Spacer()
             }
             .padding(.horizontal)
@@ -270,7 +239,7 @@ struct SearchView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.vertical, 10)
                         .padding(.horizontal, 12)
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
+                        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                     }
                     .buttonStyle(.plain)
 
@@ -311,7 +280,6 @@ struct SearchView: View {
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .foregroundStyle(.white)
     }
 
     private func suggestionSection(
@@ -334,25 +302,8 @@ struct SearchView: View {
                 .buttonStyle(.plain)
             }
         }
-    }
-
-    // MARK: - Appearance tweak for segmented control
-    private func configureSegmentedControlAppearanceIfNeeded() {
-        guard !didConfigureSegmentedAppearance else { return }
-        didConfigureSegmentedAppearance = true
-
-        let normalAttrs: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.white,
-            .font: UIFont.systemFont(ofSize: UIFont.labelFontSize, weight: .regular)
-        ]
-        let selectedAttrs: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.black,
-            .font: UIFont.systemFont(ofSize: UIFont.labelFontSize, weight: .semibold)
-        ]
-
-        let appearance = UISegmentedControl.appearance()
-        appearance.setTitleTextAttributes(normalAttrs, for: .normal)
-        appearance.setTitleTextAttributes(selectedAttrs, for: .selected)
+        .padding(16)
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
     // MARK: - Open in Bible Tab

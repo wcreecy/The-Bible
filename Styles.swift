@@ -1,5 +1,47 @@
 import SwiftUI
 
+enum AppDesignMetrics {
+    static let cardCornerRadius: CGFloat = 16
+    static let cardPadding: CGFloat = 16
+    static let compactControlCornerRadius: CGFloat = 12
+}
+
+private struct ImageOverlaySurfaceModifier: ViewModifier {
+    let cornerRadius: CGFloat
+
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.colorSchemeContrast) private var colorSchemeContrast
+
+    private var scrimOpacity: Double {
+        if reduceTransparency { return 0.94 }
+        if colorSchemeContrast == .increased { return 0.88 }
+        return 0.76
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .background(
+                ZStack {
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .fill(.regularMaterial)
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .fill(Color.black.opacity(scrimOpacity))
+                }
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .strokeBorder(Color.white.opacity(colorSchemeContrast == .increased ? 0.45 : 0.18))
+            }
+            .environment(\.colorScheme, .dark)
+    }
+}
+
+extension View {
+    func imageOverlaySurface(cornerRadius: CGFloat = AppDesignMetrics.cardCornerRadius) -> some View {
+        modifier(ImageOverlaySurfaceModifier(cornerRadius: cornerRadius))
+    }
+}
+
 /// A modern pill-shaped button style used across the app for secondary actions.
 /// Native tinted Liquid Glass capsule that follows system appearance settings.
 public struct ModernPillButtonStyle: ButtonStyle {
@@ -49,9 +91,9 @@ public struct GameProminentButtonStyle: ButtonStyle {
                 .regular
                     .tint((isEnabled ? tint : .gray).opacity(pressed ? 0.8 : 1.0))
                     .interactive(isEnabled),
-                in: .rect(cornerRadius: 14)
+                in: .rect(cornerRadius: AppDesignMetrics.cardCornerRadius)
             )
-            .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
             .scaleEffect(pressed ? 0.98 : 1.0)
             .animation(.spring(response: 0.25, dampingFraction: 0.8), value: configuration.isPressed)
     }
@@ -76,9 +118,9 @@ public struct GameKeyButtonStyle: ButtonStyle {
                 .regular
                     .tint((isEnabled ? tint : .gray).opacity(pressed ? 0.24 : 0.16))
                     .interactive(isEnabled),
-                in: .rect(cornerRadius: 12)
+                in: .rect(cornerRadius: AppDesignMetrics.compactControlCornerRadius)
             )
-            .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: AppDesignMetrics.compactControlCornerRadius, style: .continuous))
             .scaleEffect(pressed ? 0.98 : 1.0)
             .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
     }

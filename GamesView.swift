@@ -197,6 +197,7 @@ struct GamesView: View {
         .onAppear {
             selection = nil
             loadTodayWordResult()
+            seedRecentGameIfNeeded()
         }
         .onReceive(NotificationCenter.default.publisher(for: .openGameStart)) { note in
             guard let name = note.userInfo?["gameName"] as? String,
@@ -261,6 +262,13 @@ struct GamesView: View {
         var routes = recentRoutes.filter { $0 != route }
         routes.insert(route, at: 0)
         recentRoutesRaw = routes.prefix(3).map(\.rawValue).joined(separator: ",")
+    }
+
+    private func seedRecentGameIfNeeded() {
+        guard recentRoutes.isEmpty,
+              let lastPlayedName = GameStats.shared.lastPlayedGameName,
+              let route = GameRoute.allCases.first(where: { $0.displayName == lastPlayedName }) else { return }
+        recentRoutesRaw = route.rawValue
     }
 
     private func loadTodayWordResult() {

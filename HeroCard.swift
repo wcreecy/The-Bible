@@ -18,6 +18,8 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
     @ViewBuilder var content: Content
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.colorSchemeContrast) private var colorSchemeContrast
 
     init(
         title: String,
@@ -244,8 +246,11 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
         self.content = content()
     }
 
-    // Common opacity for translucent cards
-    private let cardOpacity: Double = 0.90
+    private var scrimOpacity: Double {
+        if reduceTransparency { return 0.94 }
+        if colorSchemeContrast == .increased { return 0.88 }
+        return 0.76
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -310,43 +315,27 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
             }
             content
         }
-        .padding(16)
+        .padding(AppDesignMetrics.cardPadding)
         .background(
-            Group {
-                if let backgroundColor {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(backgroundColor.opacity(cardOpacity))
-                } else {
-                    if colorScheme == .dark {
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(Color(.secondarySystemBackground).opacity(cardOpacity))
-                    } else {
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(
-                                LinearGradient(
-                                    colors: [
-                                        Color(.secondarySystemBackground).opacity(cardOpacity),
-                                        Color(.systemBackground).opacity(cardOpacity)
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                    }
-                }
+            ZStack {
+                RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+                    .fill(backgroundColor.map(AnyShapeStyle.init) ?? AnyShapeStyle(.regularMaterial))
+                RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+                    .fill(Color.black.opacity(scrimOpacity))
             }
         )
         .overlay(
             Group {
                 if let strokeColor {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
                         .strokeBorder(strokeColor, lineWidth: 1)
                 } else {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .strokeBorder((colorScheme == .dark ? Color.white.opacity(0.15) : Color.black.opacity(0.06)), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+                        .strokeBorder(Color.white.opacity(colorSchemeContrast == .increased ? 0.45 : 0.18), lineWidth: 1)
                 }
             }
         )
+        .environment(\.colorScheme, .dark)
         .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 4)
     }
 }

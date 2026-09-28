@@ -285,49 +285,16 @@ private extension UIImage {
 }
 
 struct SettingsBackgroundSection: View {
-    @State private var selectedTab: AppTab = .home
-
     var body: some View {
         Section {
-            Picker("Page", selection: $selectedTab) {
-                ForEach(AppTab.allCases) { tab in
-                    Text(tab.title).tag(tab)
-                }
-            }
-
-            BackgroundEditor(tab: selectedTab)
-                .id(selectedTab)
-
-            Button("Apply This Background to All Tabs") {
-                applyToAllTabs()
-            }
-            .accessibilityHint("Uses the selected page's background on every tab.")
+            BackgroundEditor(tab: .home)
         } header: {
-            Text("Tab Backgrounds")
+            Text("Home Background")
                 .foregroundStyle(.primary)
         } footer: {
-            Text("Choose a photo or solid color for each tab. Default restores the app's original background.")
+            Text("Imagery is reserved for Home. Search, Settings, and other information-heavy screens use system backgrounds for clarity.")
         }
         .headerProminence(.increased)
-    }
-
-    private func applyToAllTabs() {
-        let defaults = UserDefaults.standard
-        let sourceMode = defaults.string(forKey: AppBackgroundStorage.modeKey(for: selectedTab))
-            ?? AppBackgroundMode.defaultStyle.rawValue
-        let sourceColor = defaults.string(forKey: AppBackgroundStorage.colorKey(for: selectedTab))
-            ?? "#F2F2F7"
-        let sourcePhoto = defaults.string(forKey: AppBackgroundStorage.photoKey(for: selectedTab))
-            ?? ""
-        let sourceBuiltIn = defaults.string(forKey: AppBackgroundStorage.builtInKey(for: selectedTab))
-            ?? BuiltInBackground.river.rawValue
-
-        for tab in AppTab.allCases {
-            defaults.set(sourceMode, forKey: AppBackgroundStorage.modeKey(for: tab))
-            defaults.set(sourceColor, forKey: AppBackgroundStorage.colorKey(for: tab))
-            defaults.set(sourcePhoto, forKey: AppBackgroundStorage.photoKey(for: tab))
-            defaults.set(sourceBuiltIn, forKey: AppBackgroundStorage.builtInKey(for: tab))
-        }
     }
 }
 

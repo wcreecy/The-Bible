@@ -144,8 +144,6 @@ struct ContentView: View {
             // Initialize previousTab at launch
             previousTab = selectedTab
 
-            // Install background behind the system "More" list on iPhone
-            installMoreTabBackground()
         }
         .onChange(of: selectedTab) { oldValue, newValue in
             // When leaving Games tab, persist latest session accuracy baseline for the Home games card caret
@@ -290,8 +288,6 @@ struct ContentView: View {
                 applyBackgroundElapsedIfAny()
                 // Start foreground usage timer
                 startUsageTimerIfNeeded()
-                // Re-ensure the "More" background is installed after app resumes
-                installMoreTabBackground()
             case .inactive, .background:
                 // Remember when we went foreground to compute elapsed when returning
                 lastBackgroundedAt = Date().timeIntervalSince1970

@@ -5,29 +5,21 @@ struct SettingsView: View {
     @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = FontFamilyPreference.system.rawValue
 
     var body: some View {
-        ZStack {
-            AppBackgroundView(tab: .more, defaultImageName: "blackleather")
+        Form {
+            SettingsPersonalizationLinksSection()
+            SettingsDailyExperienceLinksSection()
+            SettingsAppAndDataLinksSection()
+            SettingsDataManagementLinksSection()
 
-            Form {
-                SettingsPersonalizationLinksSection()
-                SettingsDailyExperienceLinksSection()
-                SettingsAppAndDataLinksSection()
-                SettingsDataManagementLinksSection()
+            #if DEBUG
+            SettingsDeveloperLinksSection()
+            #endif
 
-                #if DEBUG
-                SettingsDeveloperLinksSection()
-                #endif
-
-                Section {
-                    SettingsCloudSyncFooter()
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                }
+            Section {
+                SettingsCloudSyncFooter()
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
             }
-            .scrollContentBackground(.hidden)
-            .background(Color.clear)
-            .listRowBackground(Color.clear)
-            .adaptiveBackgroundForeground(tab: .more, defaultImageName: "blackleather")
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
@@ -45,7 +37,7 @@ private struct SettingsPersonalizationLinksSection: View {
             } label: {
                 SettingsNavigationRow(
                     title: "Appearance",
-                    subtitle: "Theme, text, fonts, and tab backgrounds",
+                    subtitle: "Theme, text, fonts, and Home background",
                     systemImage: "paintbrush"
                 )
             }
@@ -314,16 +306,8 @@ private struct SettingsDetailForm<Content: View>: View {
     }
 
     var body: some View {
-        ZStack {
-            AppBackgroundView(tab: .more, defaultImageName: "blackleather")
-
-            Form {
-                content
-            }
-            .scrollContentBackground(.hidden)
-            .background(Color.clear)
-            .listRowBackground(Color.clear)
-            .adaptiveBackgroundForeground(tab: .more, defaultImageName: "blackleather")
+        Form {
+            content
         }
         .navigationTitle(Text(title))
         .navigationBarTitleDisplayMode(.inline)
