@@ -42,7 +42,7 @@ final class WhoAmIGameViewModel: ObservableObject {
     // Start screen state
     @Published var started: Bool = false
     @Published var mode: Mode = .names
-    @Published var difficulty: Difficulty = .easy {
+    @Published var difficulty: Difficulty = .normal {
         didSet { seedStreakFromPersistence() }
     }
     @Published var howToExpanded: Bool = false
@@ -337,4 +337,3 @@ final class WhoAmIGameViewModel: ObservableObject {
         return lower == "jesus" || lower == "jesus christ"
     }
 }
-

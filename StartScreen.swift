@@ -13,10 +13,7 @@ struct WordSearchStartScreen: View {
         VStack(spacing: 16) {
             Spacer(minLength: 24)
             Text("Find hidden words from a random Bible verse.")
-                .font(.title3)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
+                .gameStartDescriptionStyle()
 
             VStack(alignment: .leading, spacing: 10) {
                 GroupBox {
@@ -50,6 +47,7 @@ struct WordSearchStartScreen: View {
                     }
                 }
             }
+            .gameStartOptionsStyle()
             .padding(.horizontal)
 
             Picker("Difficulty", selection: $difficulty) {
@@ -100,6 +98,7 @@ struct WordSearchStartScreen: View {
 
             Spacer(minLength: 24)
         }
+        .gameStartScreenStyle()
     }
 
     private func displayName(for d: WordSearchEngine.Difficulty) -> String {

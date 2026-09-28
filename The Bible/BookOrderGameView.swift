@@ -13,9 +13,7 @@ struct BookOrderGameView: View {
             if !vm.started {
                 VStack(spacing: 16) {
                     Text("Rearrange the books in the correct order.")
-                        .font(.title3)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
+                        .gameStartDescriptionStyle()
 
                     VStack(alignment: .leading, spacing: 10) {
                         GroupBox {
@@ -45,6 +43,7 @@ struct BookOrderGameView: View {
                             }
                         }
                     }
+                    .gameStartOptionsStyle()
                     .padding(.horizontal)
 
                     // Source on top: OT/NT, OT, NT

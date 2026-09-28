@@ -36,6 +36,8 @@ struct WordleView: View {
     // MARK: - State
     @State private var started: Bool = false
     @State private var mode: Mode = .freePlay
+    @State private var howToExpanded: Bool = false
+    @State private var gameOptionsExpanded: Bool = false
 
     @State private var target: String = ""
     @State private var guesses: [String] = Array(repeating: "", count: 6)
@@ -414,18 +416,40 @@ struct WordleView: View {
     private func startScreen() -> some View {
         VStack(spacing: 16) {
             Spacer(minLength: 24)
-            Image(systemName: "square.grid.3x3")
-                .font(.largeTitle)
-                .foregroundStyle(.mint)
-
-            Text("WORD")
-                .font(.title2.bold())
-
             Text("Guess the 5‑letter word in 6 tries.\nUse the on‑screen keyboard or a connected keyboard.")
-                .font(.body)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
+                .gameStartDescriptionStyle()
+
+            VStack(alignment: .leading, spacing: 10) {
+                GroupBox {
+                    DisclosureGroup(isExpanded: $howToExpanded) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("• Enter a five-letter word, then submit your guess.")
+                            Text("• Green letters are correct and in the right position.")
+                            Text("• Yellow letters are in the word but in a different position.")
+                            Text("• Gray letters are not in the word.")
+                            Text("• Solve the word in six guesses or fewer.")
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    } label: {
+                        Text("How to Play").font(.headline)
+                    }
+                }
+
+                GroupBox {
+                    DisclosureGroup(isExpanded: $gameOptionsExpanded) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("• Daily: Everyone gets the same word each day. It can normally be played once per day.")
+                            Text("• Free Play: Play unlimited rounds with a new word each time.")
+                            Text("• Hard Mode: Green letters must stay fixed, and yellow letters must be used in later guesses.")
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    } label: {
+                        Text("Game Options").font(.headline)
+                    }
+                }
+            }
+            .gameStartOptionsStyle()
+            .padding(.horizontal)
 
             Picker("Mode", selection: $mode) {
                 ForEach(Mode.allCases) { m in
@@ -486,7 +510,7 @@ struct WordleView: View {
 
             Spacer(minLength: 24)
         }
-        .padding()
+        .gameStartScreenStyle()
     }
 
     // MARK: - Board helpers (composition with pinned letters)

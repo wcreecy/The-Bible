@@ -242,10 +242,7 @@ struct HangmanGameView: View {
     private var startSection: some View {
         Spacer(minLength: 24)
         Text("Guess the person, place or book from the Bible")
-            .font(.body)
-            .foregroundStyle(.secondary)
-            .multilineTextAlignment(.center)
-            .padding(.horizontal)
+            .gameStartDescriptionStyle()
 
         VStack(alignment: .leading, spacing: 8) {
             GroupBox {
@@ -274,6 +271,7 @@ struct HangmanGameView: View {
                 }
             }
         }
+        .gameStartOptionsStyle()
         .padding(.horizontal)
 
         Picker("Theme", selection: $theme) {

@@ -39,10 +39,8 @@ struct FavoritesFlashcardsGameView: View {
                 .padding(.bottom, 30)
                 
                 Text("Build & test your memorization of the Word. As you favorite scriptures, they'll be added to the game")
-                    .font(.title3)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
+                    .gameStartDescriptionStyle()
+                    .padding(.horizontal)
                     .padding(.bottom, 16)
                 
                 Button("Start") {

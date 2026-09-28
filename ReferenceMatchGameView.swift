@@ -91,10 +91,7 @@ struct VerseMatchGameView: View {
                 if !started {
                     Spacer(minLength: 32)
                     Text("Choose the verse text that matches the reference.")
-                        .font(.title3)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
+                        .gameStartDescriptionStyle()
 
                     VStack(alignment: .leading, spacing: 10) {
                         GroupBox {
@@ -123,6 +120,7 @@ struct VerseMatchGameView: View {
                             }
                         }
                     }
+                    .gameStartOptionsStyle()
                     .padding(.horizontal)
 
                     VStack(spacing: 6) {

@@ -118,10 +118,7 @@ struct BeatTheClockGameView: View {
                 if !started {
                     Spacer(minLength: 32)
                     Text("Type a Bible book that mentions the shown person or place before the timer runs out.")
-                        .font(.title3)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
+                        .gameStartDescriptionStyle()
 
                     VStack(alignment: .leading, spacing: 10) {
                         GroupBox {
@@ -150,6 +147,7 @@ struct BeatTheClockGameView: View {
                             }
                         }
                     }
+                    .gameStartOptionsStyle()
                     .padding(.horizontal)
 
                     Picker("Category", selection: $category) {
@@ -616,4 +614,3 @@ struct BeatTheClockGameView: View {
         }
     }
 }
-

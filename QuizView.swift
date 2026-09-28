@@ -11,7 +11,7 @@ struct QuizView: View {
     @Query private var favorites: [Favorite]
     
     @AppStorage("quizScope") private var quizScopeRaw: String = "whole"
-    @AppStorage("quizDifficulty") private var quizDifficulty: String = "easy"
+    @AppStorage("quizDifficulty") private var quizDifficulty: String = "normal"
     
     // COMBINED all-time stats (shared across difficulties)
     @AppStorage("quizAllTimeCorrect_all") private var allTimeCorrectAll: Int = 0
@@ -175,10 +175,7 @@ struct QuizView: View {
             VStack(spacing: 16) {
                 if !started {
                     Text("Test your knowledge by guessing the book of the Bible from a given verse.")
-                        .font(.title3)
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal)
+                        .gameStartDescriptionStyle()
                     
                     VStack(alignment: .leading, spacing: 10) {
                         GroupBox {
@@ -207,6 +204,7 @@ struct QuizView: View {
                             }
                         }
                     }
+                    .gameStartOptionsStyle()
                     .padding(.horizontal)
                     
                     VStack(alignment: .center, spacing: 12) {
@@ -775,4 +773,3 @@ struct QuizView: View {
         QuizView()
     }
 }
-

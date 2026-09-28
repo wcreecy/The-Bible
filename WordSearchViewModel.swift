@@ -9,7 +9,7 @@ final class WordSearchViewModel: ObservableObject {
     @Published var started: Bool = false
     @Published var howToExpanded: Bool = false
     @Published var difficultyExpanded: Bool = false
-    @Published var difficulty: WordSearchEngine.Difficulty = .easy
+    @Published var difficulty: WordSearchEngine.Difficulty = .medium
     enum GameMode: String, CaseIterable, Identifiable { case normal, blind, favorites; var id: String { rawValue }; var displayName: String { switch self { case .normal: return "Normal"; case .blind: return "Blind"; case .favorites: return "Favorites" } } }
     @Published var gameMode: GameMode = .normal
 

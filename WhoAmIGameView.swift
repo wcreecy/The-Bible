@@ -33,10 +33,7 @@ struct WhoAmIGameView: View {
                 if !vm.started {
                     Spacer(minLength: 24)
                     Text("Match Bible names and descriptions.")
-                        .font(.title3)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
+                        .gameStartDescriptionStyle()
 
                     VStack(alignment: .leading, spacing: 10) {
                         GroupBox {
@@ -66,6 +63,7 @@ struct WhoAmIGameView: View {
                             }
                         }
                     }
+                    .gameStartOptionsStyle()
                     .padding(.horizontal)
 
                     Picker("Mode", selection: $vm.mode) {
