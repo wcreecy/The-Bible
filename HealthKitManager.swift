@@ -15,6 +15,11 @@ final class HealthKitManager {
         return healthStore != nil && mindfulType != nil
     }
 
+    func mindfulMinutesAuthorizationStatus() -> HKAuthorizationStatus? {
+        guard let healthStore, let mindfulType else { return nil }
+        return healthStore.authorizationStatus(for: mindfulType)
+    }
+
     // Request authorization if not already determined. Calls completion with success flag.
     func requestAuthorizationIfNeeded(completion: ((Bool) -> Void)? = nil) {
         guard let healthStore, let mindfulType else {

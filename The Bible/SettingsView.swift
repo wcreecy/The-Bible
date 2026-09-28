@@ -16,10 +16,8 @@ struct SettingsView: View {
                 SettingsBackgroundSection()
                 SettingsTimerSection()
                 SettingsDailyGoalSection()
-                SettingsLiveActivitiesSection()
+                SettingsPermissionsSection()
                 SettingsHomeLayoutSection()
-
-                SettingsiCloudSection()
                 SettingsResetDataSection()
 
                 #if DEBUG

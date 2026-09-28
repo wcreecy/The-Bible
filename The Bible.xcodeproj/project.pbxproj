@@ -144,6 +144,7 @@
 		2CD9C4FD306ACC080077D777 /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD9C4FC306ACC080077D777 /* MoreView.swift */; };
 		2CD9C5DF306AE0D80077D777 /* GameStartScreenStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD9C5DE306AE0D80077D777 /* GameStartScreenStyle.swift */; };
 		2CD9C6C1306AEA860077D777 /* BackgroundCustomization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD9C6C0306AEA860077D777 /* BackgroundCustomization.swift */; };
+		2CD9C7A3306AEF6E0077D777 /* SettingsPermissionsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD9C7A2306AEF6E0077D777 /* SettingsPermissionsSection.swift */; };
 		2CE02E832EFAEDE700F76E16 /* GamesProgressRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE02E822EFAEDE700F76E16 /* GamesProgressRing.swift */; };
 		2CE02E852EFAEEF600F76E16 /* PlayerStatSheetCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE02E842EFAEEF600F76E16 /* PlayerStatSheetCardView.swift */; };
 		2CE02E872EFAF11700F76E16 /* GamesOverviewCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE02E862EFAF11700F76E16 /* GamesOverviewCardView.swift */; };
@@ -347,6 +348,7 @@
 		2CD9C4FC306ACC080077D777 /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
 		2CD9C5DE306AE0D80077D777 /* GameStartScreenStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStartScreenStyle.swift; sourceTree = "<group>"; };
 		2CD9C6C0306AEA860077D777 /* BackgroundCustomization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundCustomization.swift; sourceTree = "<group>"; };
+		2CD9C7A2306AEF6E0077D777 /* SettingsPermissionsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPermissionsSection.swift; sourceTree = "<group>"; };
 		2CE02E822EFAEDE700F76E16 /* GamesProgressRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesProgressRing.swift; sourceTree = "<group>"; };
 		2CE02E842EFAEEF600F76E16 /* PlayerStatSheetCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStatSheetCardView.swift; sourceTree = "<group>"; };
 		2CE02E862EFAF11700F76E16 /* GamesOverviewCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesOverviewCardView.swift; sourceTree = "<group>"; };
@@ -661,6 +663,7 @@
 				2CD9C4FC306ACC080077D777 /* MoreView.swift */,
 				2CD9C5DE306AE0D80077D777 /* GameStartScreenStyle.swift */,
 				2CD9C6C0306AEA860077D777 /* BackgroundCustomization.swift */,
+				2CD9C7A2306AEF6E0077D777 /* SettingsPermissionsSection.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1089,6 +1092,7 @@
 				2C2765762EE8E30D00A321FE /* FocusViewModel.swift in Sources */,
 				2C3F38102EC4042D002CA795 /* Styles.swift in Sources */,
 				2C7EA8BB2EDE7AEA0073F01C /* iCloudSyncCoordinator.swift in Sources */,
+				2CD9C7A3306AEF6E0077D777 /* SettingsPermissionsSection.swift in Sources */,
 				2C1400FC2EF2BFA200A93CA9 /* StatsViewModel.swift in Sources */,
 				2C2A45002EEE343800FE8C2F /* SettingsLiveActivitiesSection.swift in Sources */,
 				2C1400FE2EF2C0D400A93CA9 /* StatsChartConfig.swift in Sources */,

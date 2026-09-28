@@ -28,7 +28,6 @@ final class PrayerTimerController: ObservableObject {
     @AppStorage("mindfulSessionStartDate") private var mindfulStartDate: Double = 0
     @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
     @AppStorage("didRequestNotifications") private var didRequestNotifications: Bool = false
-    @AppStorage("healthKitPrompted") private var healthKitPrompted: Bool = false
 
     // One-shot token to ignore stale pending actions
     @AppStorage("prayerTimerLastActionToken") private var lastActionToken: String = ""
@@ -108,9 +107,6 @@ final class PrayerTimerController: ObservableObject {
 
     func start(minutes: Int) {
         Task { await requestNotificationsIfNeeded() }
-        if HealthKitManager.shared.isAvailable() && !healthKitPrompted {
-            Task { await requestHealthKitIfNeeded() }
-        }
 
         let secs = max(1, minutes) * 60
         remainingSeconds = secs
@@ -397,17 +393,6 @@ final class PrayerTimerController: ObservableObject {
         didRequestNotifications = true
     }
 
-    private func requestHealthKitIfNeeded() async {
-        guard HealthKitManager.shared.isAvailable() && !healthKitPrompted else { return }
-        await withCheckedContinuation { continuation in
-            HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
-                Task { @MainActor in
-                    self.healthKitPrompted = true
-                }
-                continuation.resume()
-            }
-        }
-    }
 
     // MARK: - Reset
 

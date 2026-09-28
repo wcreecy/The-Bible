@@ -16,7 +16,6 @@ final class StopwatchController: ObservableObject {
 
     // Mindful/Health
     @AppStorage("mindfulSessionStartDate") private var mindfulStartDate: Double = 0
-    @AppStorage("healthKitPrompted") private var healthKitPrompted: Bool = false
 
     // Pending action dedupe
     @AppStorage("stopwatchLastActionToken") private var lastActionToken: String = ""
@@ -69,9 +68,6 @@ final class StopwatchController: ObservableObject {
 
     // MARK: - Control API
     func start() {
-        if HealthKitManager.shared.isAvailable() && !healthKitPrompted {
-            requestHealthKitIfNeeded()
-        }
         let now = Date().timeIntervalSince1970
         if storedStartDate == 0 {
             storedStartDate = now
@@ -198,14 +194,5 @@ final class StopwatchController: ObservableObject {
         }
     }
 
-    private func requestHealthKitIfNeeded() {
-        guard HealthKitManager.shared.isAvailable() && !healthKitPrompted else { return }
-        HealthKitManager.shared.requestAuthorizationIfNeeded { [weak self] _ in
-            guard let self else { return }
-            Task { @MainActor in
-                self.healthKitPrompted = true
-            }
-        }
-    }
 }
 

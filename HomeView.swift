@@ -57,7 +57,6 @@ struct HomeView: View {
     @State private var showCopyToast: Bool = false
     @State private var showFocusSavedToast: Bool = false
     @State private var lastVerseAutoRefreshToken: String = ""
-    @State private var isHealthKitAvailable: Bool = HealthKitManager.shared.isAvailable()
 
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -268,9 +267,6 @@ struct HomeView: View {
                     timerTintColor: timerTintColor,
                     formattedTime: { TimeFormatters.compactClock($0) },
                     onOpenSetup: {
-                        if isHealthKitAvailable && !(UserDefaults.standard.bool(forKey: "healthKitPrompted")) {
-                            Task { await requestHealthKitIfNeededForTimer() }
-                        }
                         let generator = UIImpactFeedbackGenerator(style: .light)
                         generator.impactOccurred()
                         showPrayerStudySheet = true
@@ -450,8 +446,6 @@ struct HomeView: View {
 
             if prayerMode == .focus { prayerMode = .timer }
 
-            isHealthKitAvailable = HealthKitManager.shared.isAvailable()
-
             // Verse-of-the-Day initial handling moved to VM
             votdVM.handleAppear()
 
@@ -574,18 +568,6 @@ struct HomeView: View {
     // MARK: - NEW: Games Card (Home) using centralized GameStats
     @State private var gameStatsVersion: Int = 0
 
-    // Permissions helper for timer setup
-    private func requestHealthKitIfNeededForTimer() async {
-        guard HealthKitManager.shared.isAvailable() && !(UserDefaults.standard.bool(forKey: "healthKitPrompted")) else { return }
-        await withCheckedContinuation { continuation in
-            HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
-                Task { @MainActor in
-                    UserDefaults.standard.set(true, forKey: "healthKitPrompted")
-                }
-                continuation.resume()
-            }
-        }
-    }
 }
 
 // Note: HeroCard, button styles, DayCell, WeekRow,

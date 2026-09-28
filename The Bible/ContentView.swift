@@ -5,6 +5,7 @@
 //  Shows the Books list on launch.
 //
 
+import HealthKit
 import SwiftUI
 import UIKit
 import ObjectiveC
@@ -18,6 +19,7 @@ struct ContentView: View {
     @State private var morePath: [MoreDestination] = []
 
     @State private var selectedTab: AppTab = .home
+    @AppStorage("healthKitPrompted") private var healthKitPrompted: Bool = false
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
     
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
@@ -161,6 +163,10 @@ struct ContentView: View {
                 UserDefaults.standard.set(baselinePct, forKey: "gamesSessionBaselinePct")
             }
 
+            if newValue == .bible {
+                requestMindfulMinutesAuthorizationIfNeeded()
+            }
+
             if newValue == .home {
                 Task { @MainActor in
                     await Task.yield()
@@ -297,6 +303,16 @@ struct ContentView: View {
     }
 
     // MARK: - Daily usage tracking (unchanged)...
+
+    private func requestMindfulMinutesAuthorizationIfNeeded() {
+        guard HealthKitManager.shared.isAvailable(),
+              HealthKitManager.shared.mindfulMinutesAuthorizationStatus() == .notDetermined,
+              !healthKitPrompted else { return }
+
+        HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
+            healthKitPrompted = true
+        }
+    }
 
     private func todayKey(for date: Date = Date()) -> String {
         let cal = Calendar.current
