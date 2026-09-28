@@ -28,7 +28,7 @@ struct AllGamesComparisonCardView: View {
     }
 
     var body: some View {
-        GroupBox {
+        HeroCard(title: "All Games Comparison", icon: "chart.bar.xaxis", tint: .blue) {
             // Build a small, explicitly-typed data model first
             let breakdown = GameStats.shared.breakdownSnapshot()
             let entries = breakdown.entries
@@ -36,20 +36,15 @@ struct AllGamesComparisonCardView: View {
             let isEmpty: Bool = (totalAnswered == 0)
 
             VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("All Games Comparison")
-                        .font(.subheadline).bold()
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                    Picker("Sort", selection: $sort) {
-                        ForEach(Sort.allCases) { s in
-                            Text(s.rawValue).tag(s)
-                        }
+                Picker("Sort", selection: $sort) {
+                    ForEach(Sort.allCases) { s in
+                        Text(s.rawValue).tag(s)
                     }
-                    .pickerStyle(.segmented)
-                    .tint(segmentedTint)
-                    .frame(maxWidth: 280)
                 }
+                .pickerStyle(.segmented)
+                .tint(segmentedTint)
+                .frame(maxWidth: 280, alignment: .trailing)
+                .frame(maxWidth: .infinity, alignment: .trailing)
 
                 if isEmpty {
                     Text("Play any game to build your Gamer Score.")
@@ -85,8 +80,6 @@ struct AllGamesComparisonCardView: View {
                 }
             }
             .padding(.top, 2)
-        } label: {
-            Label("All Games Comparison", systemImage: "chart.bar.xaxis")
         }
         .onAppear { version &+= 1 }
         .onChangeCompat(of: stats.version) { version &+= 1 }

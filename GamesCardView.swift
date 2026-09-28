@@ -6,6 +6,7 @@ struct MetricChip: View {
     let title: String
     let value: String
     let tint: Color
+    var fillsWidth: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -20,6 +21,7 @@ struct MetricChip: View {
         }
         .padding(.vertical, 10)
         .padding(.horizontal, 12)
+        .frame(maxWidth: fillsWidth ? .infinity : nil, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(tint.opacity(0.08))

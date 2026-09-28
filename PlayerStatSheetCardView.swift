@@ -31,7 +31,7 @@ struct PlayerStatSheetCardView: View {
     }
 
     var body: some View {
-        GroupBox {
+        HeroCard(title: "Player Stat Sheet", icon: "tablecells", tint: .indigo) {
             let _ = stats.version
 
             let breakdown = GameStats.shared.breakdownSnapshot()
@@ -55,28 +55,23 @@ struct PlayerStatSheetCardView: View {
             let worstStreakIndex = uniqueMinIndex(streaks.map { $0 == 0 ? Int.max : $0 })
 
             VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("Player Stat Sheet")
-                        .font(.subheadline).bold()
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                    Picker("Sort", selection: $sort) {
-                        ForEach(Sort.allCases) { s in
-                            Text(s.rawValue).tag(s)
-                        }
+                Picker("Sort", selection: $sort) {
+                    ForEach(Sort.allCases) { s in
+                        Text(s.rawValue).tag(s)
                     }
-                    .pickerStyle(.segmented)
-                    .tint(segmentedTint)
-                    .frame(maxWidth: 280)
                 }
+                .pickerStyle(.segmented)
+                .tint(segmentedTint)
+                .frame(maxWidth: 280, alignment: .trailing)
+                .frame(maxWidth: .infinity, alignment: .trailing)
 
                 if isEmpty {
                     Text("Play any game to build your Gamer Score.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 } else {
-                    let nameWidth: CGFloat = 140
-                    let colWidth: CGFloat = 72
+                    let nameWidth: CGFloat = 92
+                    let colWidth: CGFloat = 54
 
                     HStack(spacing: 10) {
                         Text("Game")
@@ -176,8 +171,6 @@ struct PlayerStatSheetCardView: View {
                 }
             }
             .padding(.top, 2)
-        } label: {
-            Label("Player Stat Sheet", systemImage: "tablecells")
         }
         .onAppear { version &+= 1 }
         .onChange(of: stats.version) { _, _ in version &+= 1 }

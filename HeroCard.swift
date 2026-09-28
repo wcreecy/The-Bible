@@ -17,8 +17,6 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
     private let iconContent: (() -> AnyView)?
     @ViewBuilder var content: Content
 
-    @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.colorSchemeContrast) private var colorSchemeContrast
 
     init(
@@ -246,12 +244,6 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
         self.content = content()
     }
 
-    private var scrimOpacity: Double {
-        if reduceTransparency { return 0.94 }
-        if colorSchemeContrast == .increased { return 0.88 }
-        return 0.76
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             if !(title.isEmpty && subtitle == nil && icon == nil && iconContent == nil) {
@@ -316,26 +308,21 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
             content
         }
         .padding(AppDesignMetrics.cardPadding)
-        .background(
-            ZStack {
-                RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
-                    .fill(backgroundColor.map(AnyShapeStyle.init) ?? AnyShapeStyle(.regularMaterial))
-                RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
-                    .fill(Color.black.opacity(scrimOpacity))
-            }
+        .background {
+            RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+                .fill(backgroundColor?.opacity(0.16) ?? .clear)
+        }
+        .glassEffect(
+            .regular,
+            in: .rect(cornerRadius: AppDesignMetrics.cardCornerRadius)
         )
-        .overlay(
-            Group {
-                if let strokeColor {
-                    RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
-                        .strokeBorder(strokeColor, lineWidth: 1)
-                } else {
-                    RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
-                        .strokeBorder(Color.white.opacity(colorSchemeContrast == .increased ? 0.45 : 0.18), lineWidth: 1)
-                }
-            }
-        )
-        .environment(\.colorScheme, .dark)
-        .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 4)
+        .overlay {
+            RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+                .strokeBorder(
+                    strokeColor ?? .primary.opacity(colorSchemeContrast == .increased ? 0.32 : 0.14),
+                    lineWidth: 1
+                )
+        }
+        .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 5)
     }
 }

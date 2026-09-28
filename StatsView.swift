@@ -267,35 +267,30 @@ struct StatsView: View {
     private var gameContent: some View {
         Group {
             if hSizeClass == .regular {
-                // Use two columns whenever the available width is regular.
                 HStack(alignment: .top, spacing: 16) {
-                    // Column 1: Games card
                     VStack(spacing: 16) {
                         GamesOverviewCardView()
                     }
-                    .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+                    .frame(maxWidth: 560, alignment: .topLeading)
 
-                    // Column 2: All Games comparison + Player stats sheet
                     VStack(spacing: 16) {
                         AllGamesComparisonCardView()
                         PlayerStatSheetCardView()
                     }
-                    .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+                    .frame(maxWidth: 560, alignment: .topLeading)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
+                .frame(maxWidth: .infinity, alignment: .top)
             } else {
-                // iPhone: single-column stack of game stats
                 VStack(spacing: 16) {
                     GamesOverviewCardView()
-                    // NEW: All-games comparison chart
                     AllGamesComparisonCardView()
                     PlayerStatSheetCardView()
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
+                .frame(maxWidth: 560)
             }
         }
+        .padding(.horizontal, 16)
+        .padding(.top, 8)
     }
 
     // Extracted card views for reuse in both layouts

@@ -9,30 +9,18 @@ enum AppDesignMetrics {
 private struct ImageOverlaySurfaceModifier: ViewModifier {
     let cornerRadius: CGFloat
 
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.colorSchemeContrast) private var colorSchemeContrast
-
-    private var scrimOpacity: Double {
-        if reduceTransparency { return 0.94 }
-        if colorSchemeContrast == .increased { return 0.88 }
-        return 0.76
-    }
 
     func body(content: Content) -> some View {
         content
-            .background(
-                ZStack {
-                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .fill(.regularMaterial)
-                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .fill(Color.black.opacity(scrimOpacity))
-                }
+            .glassEffect(
+                .regular,
+                in: .rect(cornerRadius: cornerRadius)
             )
             .overlay {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(Color.white.opacity(colorSchemeContrast == .increased ? 0.45 : 0.18))
+                    .strokeBorder(.primary.opacity(colorSchemeContrast == .increased ? 0.32 : 0.14))
             }
-            .environment(\.colorScheme, .dark)
     }
 }
 

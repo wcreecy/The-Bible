@@ -76,7 +76,7 @@ struct GamesOverviewCardView: View {
     }
 
     var body: some View {
-        GroupBox {
+        HeroCard(title: "Games", icon: "gamecontroller", tint: .purple) {
             let _ = stats.version
 
             let breakdown = GameStats.shared.breakdownSnapshot()
@@ -246,13 +246,6 @@ struct GamesOverviewCardView: View {
                 Divider()
 
                 if !isEmpty {
-                    HStack(spacing: 8) {
-                        MetricChip(title: "Accuracy", value: "\(Int(round(kpiAccuracyPct)))%", tint: kpiAccuracyTint)
-                        MetricChip(title: "Played", value: "\(kpiPlayed)", tint: .blue)
-                        MetricChip(title: "Correct", value: "\(kpiCorrect)", tint: .green)
-                        MetricChip(title: "Best Streak", value: (kpiBestStreak > 0 ? "\(kpiBestStreak)" : "—"), tint: .orange)
-                    }
-
                     let series30: [(date: Date, answered: Int, correct: Int)] = {
                         if selectedGame == "All Games" {
                             return GameStats.shared.dailySeriesLast(days: 30)
@@ -299,14 +292,34 @@ struct GamesOverviewCardView: View {
                     let trendArrow: String = trend7.deltaVsPrev >= 0 ? "arrow.up.right" : "arrow.down.right"
                     let hasRecentActivity30 = series30.contains { $0.answered > 0 }
 
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            MetricChip(title: "Active Days (30D)", value: "\(activeDays30)", tint: .purple)
-                            MetricChip(title: "Qs/Day", value: "\(avgPerActive)", tint: .teal)
-                            MetricChip(title: "Current Streak", value: streaksInfo.current > 0 ? "\(streaksInfo.current)" : "—", tint: .orange)
-                            MetricChip(title: "Longest Streak", value: "\(streaksInfo.longest)", tint: .orange)
+                    Grid(horizontalSpacing: 8, verticalSpacing: 8) {
+                        GridRow {
+                            MetricChip(title: "Accuracy", value: "\(Int(round(kpiAccuracyPct)))%", tint: kpiAccuracyTint, fillsWidth: true)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            MetricChip(title: "Played", value: "\(kpiPlayed)", tint: .blue, fillsWidth: true)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        GridRow {
+                            MetricChip(title: "Correct", value: "\(kpiCorrect)", tint: .green, fillsWidth: true)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            MetricChip(title: "Best Streak", value: kpiBestStreak > 0 ? "\(kpiBestStreak)" : "—", tint: .orange, fillsWidth: true)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        GridRow {
+                            MetricChip(title: "Active Days (30D)", value: "\(activeDays30)", tint: .purple, fillsWidth: true)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            MetricChip(title: "Questions / Day", value: "\(avgPerActive)", tint: .teal, fillsWidth: true)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        GridRow {
+                            MetricChip(title: "Current Streak", value: streaksInfo.current > 0 ? "\(streaksInfo.current)" : "—", tint: .orange, fillsWidth: true)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            MetricChip(title: "Longest Streak", value: "\(streaksInfo.longest)", tint: .orange, fillsWidth: true)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        GridRow {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("7D Accuracy")
+                                Text("7-Day Accuracy Trend")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                 HStack(spacing: 4) {
@@ -323,6 +336,7 @@ struct GamesOverviewCardView: View {
                             }
                             .padding(.vertical, 10)
                             .padding(.horizontal, 12)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                             .background(
                                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                                     .fill(trendTint.opacity(0.08))
@@ -331,8 +345,8 @@ struct GamesOverviewCardView: View {
                                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                                     .stroke(trendTint.opacity(0.25), lineWidth: 1)
                             )
+                            .gridCellColumns(2)
                         }
-                        .padding(.horizontal, 2)
                     }
 
                     if !hasRecentActivity30 {
@@ -982,8 +996,6 @@ struct GamesOverviewCardView: View {
                 }
             }
             .padding(.top, 2)
-        } label: {
-            Label("Games", systemImage: "gamecontroller")
         }
         .onAppear { version &+= 1 }
         .onChange(of: stats.version) { _, _ in
