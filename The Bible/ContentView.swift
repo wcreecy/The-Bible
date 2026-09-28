@@ -11,6 +11,7 @@ import UIKit
 import ObjectiveC
 
 struct ContentView: View {
+    @Environment(\.dynamicTypeSize) private var systemDynamicTypeSize
     // Separate coordinators per tab to avoid path leakage/corruption
     @StateObject private var homeCoordinator = NavigationCoordinator()
     @StateObject private var bibleCoordinator = NavigationCoordinator()
@@ -22,8 +23,6 @@ struct ContentView: View {
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
     @AppStorage("fontSizePreference") private var fontSizePreferenceRaw: String = FontSizePreference.system.rawValue
     @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = FontFamilyPreference.system.rawValue
-    
-    @State private var rootSize: CGSize = .zero
     
     // One-time cleanup flag for deprecated app time keys
     @AppStorage("didCleanupAppTimeKeys") private var didCleanupAppTimeKeys: Bool = false
@@ -58,8 +57,10 @@ struct ContentView: View {
     private var preferredCustomFontName: String? { (FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).customFontName }
     
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
-    private var isLandscape: Bool { rootSize.width > rootSize.height && rootSize != .zero }
-    private var baseFontSize: CGFloat { (isPad && isLandscape) ? 21 : 19 }
+    private var preferredFont: Font? {
+        guard let name = preferredCustomFontName else { return nil }
+        return .custom(name, size: 17, relativeTo: .body)
+    }
 
     // Track previous tab to detect leaving Games
     @State private var previousTab: AppTab = .home
@@ -132,12 +133,8 @@ struct ContentView: View {
         }
         // Apply your preferred color scheme even on the Settings tab so it updates in place.
         .preferredColorScheme(preferredScheme)
-        .dynamicTypeSize(selectedTab == .settings ? .large : (preferredDynamicType ?? .large))
-        .font(
-            selectedTab == .settings
-            ? .system(size: baseFontSize)
-            : (preferredCustomFontName != nil ? .custom(preferredCustomFontName!, size: baseFontSize) : .system(size: baseFontSize))
-        )
+        .dynamicTypeSize(preferredDynamicType ?? systemDynamicTypeSize)
+        .font(selectedTab == .settings ? nil : preferredFont)
         .fontDesign(selectedTab == .settings ? .default : (preferredFontDesign ?? .default))
         .onAppear {
             // START iCloud KVS coordinator so game/bible stats pull/merge on launch.
@@ -209,13 +206,6 @@ struct ContentView: View {
             // Update previousTab for next transition detection
             previousTab = newValue
         }
-        .background(
-            GeometryReader { proxy in
-                Color.clear
-                    .onAppear { rootSize = proxy.size }
-                    .onChange(of: proxy.size) { _, newSize in rootSize = newSize }
-            }
-        )
         .onOpenURL { url in
             // Handle taps from widgets and other custom links.
             guard url.scheme?.lowercased() == "thebible" else { return }
