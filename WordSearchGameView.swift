@@ -4,6 +4,7 @@ import Combine
 
 struct WordSearchGameView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Query private var favorites: [Favorite]
     @StateObject private var vm: WordSearchViewModel
     @State private var didBindVM = false
@@ -25,7 +26,7 @@ struct WordSearchGameView: View {
         )
     }
 
-    private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
+    private var isPad: Bool { horizontalSizeClass == .regular }
 
     var body: some View {
         ScrollViewReader { _ in

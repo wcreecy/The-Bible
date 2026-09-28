@@ -266,8 +266,8 @@ struct StatsView: View {
 
     private var gameContent: some View {
         Group {
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                // iPad: two-column layout (Games card | All Games + Player Stats)
+            if hSizeClass == .regular {
+                // Use two columns whenever the available width is regular.
                 HStack(alignment: .top, spacing: 16) {
                     // Column 1: Games card
                     VStack(spacing: 16) {

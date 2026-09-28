@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct GridBoard: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     let size: Int
     let grid: [[Character]]
     let selectionStart: (row: Int, col: Int)?
@@ -41,7 +42,7 @@ struct GridBoard: View {
 
     var body: some View {
         GeometryReader { geo in
-            let isPad = UIDevice.current.userInterfaceIdiom == .pad
+            let isPad = horizontalSizeClass == .regular
             let spacing: CGFloat = isPad ? 6 : 4
             let minCell: CGFloat = isPad ? 36 : 26
             let maxCell: CGFloat = isPad ? 58 : 36

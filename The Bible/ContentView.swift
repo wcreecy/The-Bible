@@ -11,6 +11,7 @@ import ObjectiveC
 
 struct ContentView: View {
     @Environment(\.dynamicTypeSize) private var systemDynamicTypeSize
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     // Separate coordinators per tab to avoid path leakage/corruption
     @StateObject private var homeCoordinator = NavigationCoordinator()
     @StateObject private var bibleCoordinator = NavigationCoordinator()
@@ -49,7 +50,7 @@ struct ContentView: View {
     private var preferredFontDesign: Font.Design? { (FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).fontDesign }
     private var preferredCustomFontName: String? { (FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).customFontName }
     
-    private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
+    private var usesWideLayout: Bool { horizontalSizeClass == .regular }
     private var preferredFont: Font? {
         guard let name = preferredCustomFontName else { return nil }
         return .custom(name, size: 17, relativeTo: .body)
@@ -63,21 +64,21 @@ struct ContentView: View {
             // Home tab: its own NavigationStack and coordinator/path
             NavigationStack(path: $homeCoordinator.path) {
                 HomeView()
-                    .appDestinations(readerFontSize: $readerFontSize, isPad: isPad)
+                    .appDestinations(readerFontSize: $readerFontSize, isPad: usesWideLayout)
             }
             .environmentObject(homeCoordinator)
             .tabItem { Label("Home", systemImage: "house") }
             .tag(AppTab.home)
             
             // Bible tab
-            if isPad {
+            if usesWideLayout {
                 BibleSplitView()
                     .tabItem { Label("Bible", systemImage: "book") }
                     .tag(AppTab.bible)
             } else {
                 NavigationStack(path: $bibleCoordinator.path) {
                     BooksView(books: BibleData.books)
-                        .appDestinations(readerFontSize: $readerFontSize, isPad: isPad)
+                        .appDestinations(readerFontSize: $readerFontSize, isPad: usesWideLayout)
                 }
                 .environmentObject(bibleCoordinator)
                 .tabItem { Label("Bible", systemImage: "book") }
@@ -101,7 +102,7 @@ struct ContentView: View {
             // Favorites tab: uses direct NavigationLinks; no shared path
             NavigationStack {
                 FavoritesView()
-                    .appDestinations(readerFontSize: $readerFontSize, isPad: isPad)
+                    .appDestinations(readerFontSize: $readerFontSize, isPad: usesWideLayout)
             }
             .tabItem { Label("Favorites", systemImage: "heart") }
             .tag(AppTab.favorites)
@@ -109,7 +110,7 @@ struct ContentView: View {
             // Search tab: uses direct NavigationLinks; no shared path
             NavigationStack {
                 SearchView()
-                    .appDestinations(readerFontSize: $readerFontSize, isPad: isPad)
+                    .appDestinations(readerFontSize: $readerFontSize, isPad: usesWideLayout)
             }
             .tabItem { Label("Search", systemImage: "magnifyingglass") }
             .tag(AppTab.search)
@@ -236,7 +237,7 @@ struct ContentView: View {
             // Switch to Bible tab first
             selectedTab = .bible
 
-            if isPad {
+            if usesWideLayout {
                 // Re-post once with a "relayed" flag so ContentView ignores it, but BibleSplitView can handle it.
                 DispatchQueue.main.async {
                     var user = note.userInfo ?? [:]

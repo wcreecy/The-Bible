@@ -60,6 +60,7 @@ struct HomeView: View {
     @State private var isHealthKitAvailable: Bool = HealthKitManager.shared.isAvailable()
 
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     private var timerTintColor: Color {
         if timerController.remainingSeconds > 300 {
@@ -79,7 +80,7 @@ struct HomeView: View {
     private var verseCardTitle: String { isEvening ? "Word of the Night" : "Verse of the Day" }
     private var verseCardIcon: String { isEvening ? "moon.stars" : "sun.max.fill" }
 
-    private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
+    private var isPad: Bool { horizontalSizeClass == .regular }
     var progress: ReadingProgress? {
         progressList.first
     }
