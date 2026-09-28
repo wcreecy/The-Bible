@@ -128,6 +128,12 @@ extension iCloudSyncCoordinator {
         "quizPerBookCorrectMap"
     ]
 
+    // Per-book daily maps used by the detailed Quiz statistics screen.
+    static let quizPerBookDailyMapKeys: [String] = [
+        "quizPerBookDailyAnswered",
+        "quizPerBookDailyCorrect"
+    ]
+
     // Game keys: Book Order — now per-difficulty (easy/normal/hard/all) + legacy unsuffixed for reset/back-compat
     static let bookOrderKeys: [String] = {
         let diffs = ["easy", "normal", "hard", "all"]
@@ -179,10 +185,11 @@ extension iCloudSyncCoordinator {
                 + Self.verseMatchKeys + Self.quizKeys + Self.bookOrderKeys
                 + Self.whoAmIKeys + Self.wordleKeys
                 + Self.gameDailyAndLastPlayedKeys + Self.quizPerBookMapKeys
+                + Self.quizPerBookDailyMapKeys
                 + Self.verseMatchPerBookMapKeys + Self.beatClockPerTypeMapKeys
                 + Self.hangmanPerCategoryMapKeys + Self.perGameDailyMapKeys
                 + Self.wordleSolvedMapKeys + Self.wordleDailyResultKeys
-                + Self.wordleDailyFlagKeys
+                + Self.wordleDailyFlagKeys + Self.allPersistentStreakKeys
         )
     }
 
@@ -309,8 +316,15 @@ extension iCloudSyncCoordinator {
         kvs.set(Date().timeIntervalSince1970, forKey: tsKey(for: key))
     }
 
+    func isTimestampedStatsKey(_ key: String) -> Bool {
+        Self.bibleStatsKeys.contains(key)
+            || Self.sessionKeys.contains(key)
+            || allKnownGameDataKeys.contains(key)
+    }
+
     // Identify game counter keys
     func isGameCounterKey(_ key: String) -> Bool {
+        Self.allPersistentStreakKeys.contains(key) ||
         Self.hangmanKeys.contains(key) ||
         Self.beatClockKeys.contains(key) ||
         Self.refMatchKeys.contains(key) ||
@@ -323,8 +337,20 @@ extension iCloudSyncCoordinator {
 
     // Local -> KVS for games
     func mirrorGamesKeyToKVS(_ key: String) {
+        let localTimestamp = readLocalTimestamp(for: key)
+        let remoteTimestamp = readRemoteTimestamp(for: key)
+        guard remoteTimestamp <= localTimestamp || (remoteTimestamp == 0 && localTimestamp == 0) else {
+            return
+        }
+        defer {
+            if localTimestamp > 0 {
+                kvs.set(localTimestamp, forKey: tsKey(for: key))
+            }
+        }
+
         if Self.gameDailyAndLastPlayedKeys.contains(key)
             || Self.quizPerBookMapKeys.contains(key)
+            || Self.quizPerBookDailyMapKeys.contains(key)
             || Self.hangmanPerCategoryMapKeys.contains(key)
             || Self.beatClockPerTypeMapKeys.contains(key)
             || Self.verseMatchPerBookMapKeys.contains(key)
@@ -338,6 +364,7 @@ extension iCloudSyncCoordinator {
                  "hangmanPerCategoryAnsweredMap", "hangmanPerCategoryCorrectMap",
                  "beatclockPerTypeAnsweredMap", "beatclockPerTypeCorrectMap",
                  "versematchPerBookAnsweredMap", "versematchPerBookCorrectMap",
+                 "quizPerBookDailyAnswered", "quizPerBookDailyCorrect",
                  // NEW: per-game daily maps
                  _ where Self.perGameDailyMapKeys.contains(key),
                  "wordleDailySolvedDays",
@@ -388,8 +415,6 @@ extension iCloudSyncCoordinator {
             let remoteVal = remoteObj?.intValue
             if remoteVal == nil || remoteVal != localVal {
                 kvs.set(localVal, forKey: key)
-                writeLocalTimestampNow(for: key)
-                writeRemoteTimestampNow(for: key)
             }
             return
         }
@@ -397,8 +422,46 @@ extension iCloudSyncCoordinator {
 
     // KVS -> Local for games
     func mergeGamesIncoming(forKey key: String) {
+        let remoteTimestamp = readRemoteTimestamp(for: key)
+        let localTimestamp = readLocalTimestamp(for: key)
+        if remoteTimestamp > 0 || localTimestamp > 0 {
+            if remoteTimestamp > localTimestamp {
+                if let remoteValue = kvs.object(forKey: key) {
+                    defaults.set(remoteValue, forKey: key)
+                } else {
+                    defaults.removeObject(forKey: key)
+                }
+                defaults.set(remoteTimestamp, forKey: tsKey(for: key))
+            } else if localTimestamp > remoteTimestamp {
+                mirrorGamesKeyToKVS(key)
+                enqueueKeyForSync(key)
+            }
+            return
+        }
+
+        // Legacy values without timestamps retain their existing merge behavior.
+        if Self.quizPerBookDailyMapKeys.contains(key) {
+            if let remoteData = kvs.object(forKey: key) as? Data {
+                let local = decode(defaults.data(forKey: key), as: [String: [String: Int]].self) ?? [:]
+                let remote = decode(remoteData, as: [String: [String: Int]].self) ?? [:]
+                var merged = local
+                for (day, remoteBooks) in remote {
+                    var books = merged[day] ?? [:]
+                    for (book, count) in remoteBooks {
+                        books[book] = max(books[book] ?? 0, max(0, count))
+                    }
+                    merged[day] = books
+                }
+                if let data = try? JSONEncoder().encode(merged) {
+                    defaults.set(data, forKey: key)
+                }
+            }
+            return
+        }
+
         if Self.gameDailyAndLastPlayedKeys.contains(key)
             || Self.quizPerBookMapKeys.contains(key)
+            || Self.quizPerBookDailyMapKeys.contains(key)
             || Self.hangmanPerCategoryMapKeys.contains(key)
             || Self.beatClockPerTypeMapKeys.contains(key)
             || Self.verseMatchPerBookMapKeys.contains(key)

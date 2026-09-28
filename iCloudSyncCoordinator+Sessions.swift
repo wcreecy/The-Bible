@@ -18,6 +18,13 @@ extension iCloudSyncCoordinator {
     // Local -> KVS
     func mirrorSessionsKeyToKVS(_ key: String) {
         guard Self.sessionKeys.contains(key) else { return }
+
+        let localTimestamp = readLocalTimestamp(for: key)
+        let remoteTimestamp = readRemoteTimestamp(for: key)
+        guard remoteTimestamp <= localTimestamp || (remoteTimestamp == 0 && localTimestamp == 0) else {
+            return
+        }
+
         let localData = defaults.data(forKey: key)
         let remoteData = kvs.object(forKey: key) as? Data
         if localData != remoteData {
@@ -27,11 +34,15 @@ extension iCloudSyncCoordinator {
                 kvs.removeObject(forKey: key)
             }
         }
+        if localTimestamp > 0 {
+            kvs.set(localTimestamp, forKey: tsKey(for: key))
+        }
     }
 
     // KVS -> Local
     func mergeSessionsIncoming(forKey key: String) {
         guard Self.sessionKeys.contains(key) else { return }
+
         guard let remoteData = kvs.object(forKey: key) as? Data else { return }
         let localData = defaults.data(forKey: key)
         typealias Arr = [ReadingSessionsStore.Session]
@@ -45,6 +56,16 @@ extension iCloudSyncCoordinator {
 
         if let data = try? JSONEncoder().encode(merged) {
             defaults.set(data, forKey: key)
+
+            // Sessions are append-only history. Republish the union so opening a
+            // stale device cannot replace sessions recorded on another device.
+            if data != (kvs.object(forKey: key) as? Data) {
+                let timestamp = Date().timeIntervalSince1970
+                kvs.set(data, forKey: key)
+                kvs.set(timestamp, forKey: tsKey(for: key))
+                defaults.set(timestamp, forKey: tsKey(for: key))
+                enqueueKeyForSync(key)
+            }
         }
     }
 

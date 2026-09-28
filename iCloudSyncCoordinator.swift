@@ -80,7 +80,12 @@ final class iCloudSyncCoordinator {
     // MARK: - Public API
 
     func start() {
-        guard !didStart else { return }
+        if didStart {
+            // Foreground callers use start() as an inexpensive catch-up point.
+            kvs.synchronize()
+            reconcileAllKeysFromKVS()
+            return
+        }
         didStart = true
 
         // Pull -> merge -> normalize -> push repairs (debounced)
@@ -115,7 +120,13 @@ final class iCloudSyncCoordinator {
     // Call after local writes if you want to eagerly push a specific key.
     func pushKey(_ key: String) {
         guard allKnownKeys.contains(key) else { return }
-        // Mirror only if changed, then schedule synchronize (debounced).
+
+        // Every local stats mutation gets a timestamp. This lets another device
+        // choose the complete value from the most recent writer.
+        if isTimestampedStatsKey(key) {
+            writeLocalTimestampNow(for: key)
+        }
+
         mirrorLocalKeyToKVS(key)
         enqueueKeyForSync(key)
     }
@@ -199,6 +210,7 @@ final class iCloudSyncCoordinator {
             + Self.verseMatchKeys
             + Self.quizKeys
             + Self.quizPerBookMapKeys
+            + Self.quizPerBookDailyMapKeys
             + Self.verseMatchPerBookMapKeys
             + Self.hangmanPerCategoryMapKeys
             + Self.beatClockPerTypeMapKeys
@@ -210,6 +222,7 @@ final class iCloudSyncCoordinator {
             + Self.wordleDailyResultKeys
             + Self.wordleDailyFlagKeys
             + Self.perGameDailyMapKeys
+            + Self.allPersistentStreakKeys
         )
     }
 
@@ -265,8 +278,17 @@ final class iCloudSyncCoordinator {
             return
         }
 
-        // Filter to known data keys; ignore our timestamp companion keys (handled inside domain helpers)
-        let keysToProcess = changedKeys.filter { allKnownKeys.contains($0) || Self.lastReadWidgetKeys.contains($0) }
+        // A timestamp and its value may arrive in separate notifications. Resolve
+        // timestamp companion keys back to their data keys so neither update is lost.
+        let keysToProcess = Set(changedKeys.compactMap { changedKey -> String? in
+            if allKnownKeys.contains(changedKey) || Self.lastReadWidgetKeys.contains(changedKey) {
+                return changedKey
+            }
+            let prefix = "__ts__"
+            guard changedKey.hasPrefix(prefix) else { return nil }
+            let dataKey = String(changedKey.dropFirst(prefix.count))
+            return allKnownKeys.contains(dataKey) ? dataKey : nil
+        })
 
         guard !keysToProcess.isEmpty else { return }
 
@@ -276,6 +298,7 @@ final class iCloudSyncCoordinator {
             if isGameCounterKey(key)
                 || Self.gameDailyAndLastPlayedKeys.contains(key)
                 || Self.quizPerBookMapKeys.contains(key)
+                || Self.quizPerBookDailyMapKeys.contains(key)
                 || Self.verseMatchPerBookMapKeys.contains(key)
                 || Self.beatClockPerTypeMapKeys.contains(key)
                 || Self.hangmanPerCategoryMapKeys.contains(key)
@@ -396,6 +419,7 @@ final class iCloudSyncCoordinator {
         if Self.gameDailyAndLastPlayedKeys.contains(key)
             || isGameCounterKey(key)
             || Self.quizPerBookMapKeys.contains(key)
+            || Self.quizPerBookDailyMapKeys.contains(key)
             || Self.verseMatchPerBookMapKeys.contains(key)
             || Self.beatClockPerTypeMapKeys.contains(key)
             || Self.hangmanPerCategoryMapKeys.contains(key)
@@ -472,6 +496,7 @@ final class iCloudSyncCoordinator {
         if Self.gameDailyAndLastPlayedKeys.contains(key)
             || isGameCounterKey(key)
             || Self.quizPerBookMapKeys.contains(key)
+            || Self.quizPerBookDailyMapKeys.contains(key)
             || Self.verseMatchPerBookMapKeys.contains(key)
             || Self.beatClockPerTypeMapKeys.contains(key)
             || Self.hangmanPerCategoryMapKeys.contains(key)
@@ -564,6 +589,7 @@ final class iCloudSyncCoordinator {
                 if isGameCounterKey(key)
                     || Self.gameDailyAndLastPlayedKeys.contains(key)
                     || Self.quizPerBookMapKeys.contains(key)
+                    || Self.quizPerBookDailyMapKeys.contains(key)
                     || Self.verseMatchPerBookMapKeys.contains(key)
                     || Self.beatClockPerTypeMapKeys.contains(key)
                     || Self.hangmanPerCategoryMapKeys.contains(key)
@@ -601,6 +627,7 @@ final class iCloudSyncCoordinator {
             }
 
             if Self.quizPerBookMapKeys.contains(key)
+                || Self.quizPerBookDailyMapKeys.contains(key)
                 || Self.verseMatchPerBookMapKeys.contains(key)
                 || Self.beatClockPerTypeMapKeys.contains(key)
                 || Self.hangmanPerCategoryMapKeys.contains(key) {

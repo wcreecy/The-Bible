@@ -21,14 +21,20 @@ extension iCloudSyncCoordinator {
             stats_keyVisitedChapters,
             stats_keyLastRead,
             stats_keySeenVersesByChapter,
-            stats_keyChapterCompletionDates,
-            stats_keyReadingSessions
+            stats_keyChapterCompletionDates
         ]
     }
 
     // Local -> KVS
     func mirrorBibleStatsKeyToKVS(_ key: String) {
         guard Self.bibleStatsKeys.contains(key) else { return }
+
+        let localTimestamp = readLocalTimestamp(for: key)
+        let remoteTimestamp = readRemoteTimestamp(for: key)
+        guard remoteTimestamp <= localTimestamp || (remoteTimestamp == 0 && localTimestamp == 0) else {
+            return
+        }
+
         let localData = defaults.data(forKey: key)
         let remoteData = kvs.object(forKey: key) as? Data
         if localData != remoteData {
@@ -38,12 +44,37 @@ extension iCloudSyncCoordinator {
                 kvs.removeObject(forKey: key)
             }
         }
+        if localTimestamp > 0 {
+            kvs.set(localTimestamp, forKey: tsKey(for: key))
+        }
     }
 
     // KVS -> Local
     func mergeBibleStatsIncoming(forKey key: String) {
         guard Self.bibleStatsKeys.contains(key) else { return }
 
+        let remoteTimestamp = readRemoteTimestamp(for: key)
+        let localTimestamp = readLocalTimestamp(for: key)
+        // Last-read is a single replaceable value. Cumulative reading history below
+        // is always merged so a stale device cannot replace newer history wholesale.
+        if key == Self.stats_keyLastRead && (remoteTimestamp > 0 || localTimestamp > 0) {
+            if remoteTimestamp > localTimestamp {
+                if let remoteValue = kvs.object(forKey: key) {
+                    defaults.set(remoteValue, forKey: key)
+                } else {
+                    defaults.removeObject(forKey: key)
+                }
+                defaults.set(remoteTimestamp, forKey: tsKey(for: key))
+                BibleStatsStore.shared.resetCaches()
+                NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+            } else if localTimestamp > remoteTimestamp {
+                mirrorBibleStatsKeyToKVS(key)
+                enqueueKeyForSync(key)
+            }
+            return
+        }
+
+        // Legacy values without timestamps retain the existing safe merge behavior.
         // Remote deletion: clear local copy and notify
         if kvs.object(forKey: key) == nil {
             defaults.removeObject(forKey: key)
@@ -129,6 +160,17 @@ extension iCloudSyncCoordinator {
 
         default:
             break
+        }
+
+        // Publish a repaired union back to KVS. This is important when this device
+        // had local entries the remote snapshot did not yet contain.
+        if let mergedData = defaults.data(forKey: key),
+           mergedData != (kvs.object(forKey: key) as? Data) {
+            let timestamp = Date().timeIntervalSince1970
+            kvs.set(mergedData, forKey: key)
+            kvs.set(timestamp, forKey: tsKey(for: key))
+            defaults.set(timestamp, forKey: tsKey(for: key))
+            enqueueKeyForSync(key)
         }
 
         // Invalidate caches and notify after any merge

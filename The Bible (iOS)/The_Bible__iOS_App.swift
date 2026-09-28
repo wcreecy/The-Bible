@@ -178,8 +178,8 @@ struct The_Bible__iOS_App: App {
                 .onChange(of: scenePhase) { _, newPhase in
                     switch newPhase {
                     case .active:
-                        // Ensure KVS merges are applied immediately when app becomes active.
-                        NSUbiquitousKeyValueStore.default.synchronize()
+                        // Pull and reconcile any stats updated on another device.
+                        iCloudSyncCoordinator.shared.start()
                         UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
                         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
                         Task { await cloudKitManager.refresh() }
