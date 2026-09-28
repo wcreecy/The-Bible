@@ -6,14 +6,12 @@ import UserNotifications
 
 struct SettingsPermissionsSection: View {
     @Environment(\.scenePhase) private var scenePhase
-    @EnvironmentObject private var cloudKitManager: CloudKitManager
 
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
 
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
     @State private var mindfulMinutesStatus: HKAuthorizationStatus?
     @State private var areSystemLiveActivitiesEnabled = true
-    @State private var isRefreshing = false
 
     var body: some View {
         Section {
@@ -62,22 +60,6 @@ struct SettingsPermissionsSection: View {
                 Button("Open System Settings", action: openSystemSettings)
                     .accessibilityIdentifier("liveActivitiesSystemSettingsButton")
             }
-
-            HStack {
-                Label("iCloud Sync", systemImage: "icloud")
-                Spacer()
-                Text(iCloudStatusText)
-                    .foregroundStyle(iCloudStatusColor)
-            }
-            .accessibilityIdentifier("icloudStatusText")
-
-            Button {
-                refreshStatuses()
-            } label: {
-                Label(isRefreshing ? "Refreshing…" : "Refresh Status", systemImage: "arrow.clockwise")
-            }
-            .disabled(isRefreshing)
-            .accessibilityIdentifier("permissionsRefreshButton")
 
             HStack {
                 Label("Photo Selection", systemImage: "photo.on.rectangle")
@@ -164,24 +146,6 @@ struct SettingsPermissionsSection: View {
         }
     }
 
-    private var iCloudStatusText: LocalizedStringKey {
-        switch cloudKitManager.accountState {
-        case .available: "Available"
-        case .noAccount: "No Account"
-        case .restricted: "Restricted"
-        case .couldNotDetermine: "Unavailable"
-        case .unknown: "Unknown"
-        }
-    }
-
-    private var iCloudStatusColor: Color {
-        switch cloudKitManager.accountState {
-        case .available: .green
-        case .noAccount, .restricted, .couldNotDetermine: .orange
-        case .unknown: .secondary
-        }
-    }
-
     private func handleNotificationsAction() {
         if notificationStatus == .notDetermined {
             Task {
@@ -203,15 +167,6 @@ struct SettingsPermissionsSection: View {
             }
         } else {
             openSystemSettings()
-        }
-    }
-
-    private func refreshStatuses() {
-        isRefreshing = true
-        Task {
-            await cloudKitManager.refresh()
-            await updateStatuses()
-            isRefreshing = false
         }
     }
 

@@ -5,7 +5,7 @@ import UIKit
 struct SettingsiCloudSection: View {
     @EnvironmentObject private var cloudKitManager: CloudKitManager
     @State private var isRefreshingCloudStatus: Bool = false
-    @State private var lastSyncedAt: Date?
+    @State private var lastSyncActivity: Date?
 
     private var iCloudStatusText: String {
         switch cloudKitManager.accountState {
@@ -35,11 +35,11 @@ struct SettingsiCloudSection: View {
                     .accessibilityIdentifier("icloudStatusText")
             }
             HStack {
-                Text("Last Synced")
+                Text("Last Sync Activity")
                 Spacer()
-                if let lastSyncedAt {
+                if let lastSyncActivity {
                     Text(
-                        lastSyncedAt,
+                        lastSyncActivity,
                         format: .dateTime
                             .month(.abbreviated)
                             .day()
@@ -106,13 +106,20 @@ struct SettingsiCloudSection: View {
         }
         .headerProminence(.increased)
         .task {
-            lastSyncedAt = iCloudSyncCoordinator.shared.lastPushDate
+            updateLastSyncActivity()
 
             for await _ in NotificationCenter.default.notifications(
                 named: UserDefaults.didChangeNotification
             ) {
-                lastSyncedAt = iCloudSyncCoordinator.shared.lastPushDate
+                updateLastSyncActivity()
             }
         }
+    }
+
+    private func updateLastSyncActivity() {
+        let coordinator = iCloudSyncCoordinator.shared
+        lastSyncActivity = [coordinator.lastPushDate, coordinator.lastMergeDate]
+            .compactMap { $0 }
+            .max()
     }
 }

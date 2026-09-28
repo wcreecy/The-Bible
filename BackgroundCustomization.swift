@@ -100,15 +100,21 @@ enum AppBackgroundStorage {
 struct AppBackgroundView: View {
     let tab: AppTab
     let defaultImageName: String?
+    let extendsIntoSafeArea: Bool
 
     @AppStorage private var modeRaw: String
     @AppStorage private var colorHex: String
     @AppStorage private var photoFileName: String
     @AppStorage private var builtInAssetName: String
 
-    init(tab: AppTab, defaultImageName: String? = nil) {
+    init(
+        tab: AppTab,
+        defaultImageName: String? = nil,
+        extendsIntoSafeArea: Bool = true
+    ) {
         self.tab = tab
         self.defaultImageName = defaultImageName
+        self.extendsIntoSafeArea = extendsIntoSafeArea
         _modeRaw = AppStorage(
             wrappedValue: AppBackgroundMode.defaultStyle.rawValue,
             AppBackgroundStorage.modeKey(for: tab)
@@ -128,37 +134,41 @@ struct AppBackgroundView: View {
     }
 
     var body: some View {
-        ZStack {
-            switch AppBackgroundMode(rawValue: modeRaw) ?? .defaultStyle {
-            case .defaultStyle:
-                if let defaultImageName {
-                    Image(defaultImageName)
+        GeometryReader { geometry in
+            ZStack {
+                switch AppBackgroundMode(rawValue: modeRaw) ?? .defaultStyle {
+                case .defaultStyle:
+                    if let defaultImageName {
+                        Image(defaultImageName)
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        Color(.systemGroupedBackground)
+                    }
+                case .builtIn:
+                    Image(builtInAssetName)
                         .resizable()
                         .scaledToFill()
-                } else {
-                    Color(.systemGroupedBackground)
+                case .photo:
+                    if let image = AppBackgroundStorage.image(named: photoFileName) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                    } else if let defaultImageName {
+                        Image(defaultImageName)
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        Color(.systemGroupedBackground)
+                    }
+                case .color:
+                    Color(hex: colorHex)
                 }
-            case .builtIn:
-                Image(builtInAssetName)
-                    .resizable()
-                    .scaledToFill()
-            case .photo:
-                if let image = AppBackgroundStorage.image(named: photoFileName) {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                } else if let defaultImageName {
-                    Image(defaultImageName)
-                        .resizable()
-                        .scaledToFill()
-                } else {
-                    Color(.systemGroupedBackground)
-                }
-            case .color:
-                Color(hex: colorHex)
             }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .clipped()
         }
-        .ignoresSafeArea()
+        .ignoresSafeArea(edges: extendsIntoSafeArea ? .all : [])
         .accessibilityHidden(true)
         .allowsHitTesting(false)
     }
@@ -505,13 +515,21 @@ private struct BackgroundPreview: View {
     let defaultImageName: String?
 
     var body: some View {
-        AppBackgroundView(tab: tab, defaultImageName: defaultImageName)
-            .frame(height: 120)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .strokeBorder(.separator)
-            }
+        GeometryReader { geometry in
+            AppBackgroundView(
+                tab: tab,
+                defaultImageName: defaultImageName,
+                extendsIntoSafeArea: false
+            )
+                .frame(width: geometry.size.width, height: 120)
+                .clipped()
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .strokeBorder(.separator)
+                }
+        }
+        .frame(height: 120)
     }
 }
 
