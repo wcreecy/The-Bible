@@ -91,7 +91,7 @@ struct SettingsiCloudSection: View {
             .disabled(isRefreshingCloudStatus)
             .accessibilityIdentifier("icloudRefreshButton")
         } header: {
-            Text("iCloud").foregroundStyle(.white)
+            Text("iCloud").foregroundStyle(.primary)
         } footer: {
             Text("""
             iCloud keeps your data up to date across your devices using CloudKit.
@@ -102,7 +102,7 @@ struct SettingsiCloudSection: View {
             • Unavailable: The status couldn’t be determined right now.
             """)
             .font(.footnote)
-            .foregroundStyle(Color.white.opacity(0.7))
+            .foregroundStyle(.secondary)
         }
         .headerProminence(.increased)
         .task {

@@ -32,10 +32,10 @@ struct SettingsHomeLayoutSection: View {
 
     var body: some View {
         Section(
-            header: Text("Home Layout").foregroundStyle(.white),
+            header: Text("Home Layout").foregroundStyle(.primary),
             footer: Text("Choose what appears directly on Home and what is available inside the collapsed Show More section.")
                 .font(.footnote)
-                .foregroundStyle(Color.white.opacity(0.7))
+                .foregroundStyle(.secondary)
         ) {
 
             NavigationLink {

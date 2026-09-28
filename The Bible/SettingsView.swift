@@ -27,6 +27,7 @@ struct SettingsView: View {
             .scrollContentBackground(.hidden)   // hide Form’s default background
             .background(Color.clear)            // keep it transparent
             .listRowBackground(Color.clear)     // rows float above the image
+            .adaptiveBackgroundForeground(tab: .more, defaultImageName: "blackleather")
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
@@ -34,6 +35,7 @@ struct SettingsView: View {
         .preferredColorScheme((ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme)
         .modifier(FontFamilyEnvironmentModifier(prefRaw: fontFamilyPreferenceRaw))
     }
+
 }
 
 #Preview {

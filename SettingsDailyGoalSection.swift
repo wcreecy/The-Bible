@@ -8,10 +8,10 @@ struct SettingsDailyGoalSection: View {
 
     var body: some View {
         Section(
-            header: Text("Daily Goal").foregroundStyle(.white),
+            header: Text("Daily Goal").foregroundStyle(.primary),
             footer: Text("Set the number of minutes you want to spend in the app each day. Your Daily Bible Streak is based on meeting this goal.")
                 .font(.footnote)
-                .foregroundStyle(Color.white.opacity(0.7))
+                .foregroundStyle(.secondary)
         ) {
             // Wrap in a container and attach .sheet here to avoid Section-hosting conflicts
             VStack(spacing: 0) {

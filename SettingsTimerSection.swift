@@ -6,10 +6,10 @@ struct SettingsTimerSection: View {
 
     var body: some View {
         Section(
-            header: Text("Timer").foregroundStyle(.white),
+            header: Text("Timer").foregroundStyle(.primary),
             footer: Text("Choose the sound that plays when the prayer/study timer finishes.")
                 .font(.footnote)
-                .foregroundStyle(Color.white.opacity(0.7))
+                .foregroundStyle(.secondary)
         ) {
             LabeledContent {
                 HStack(spacing: 10) {

@@ -74,6 +74,7 @@ struct FavoritesView: View {
             }
         }
         .background(AppBackgroundView(tab: .favorites))
+        .adaptiveBackgroundForeground(tab: .favorites)
         .navigationTitle("Favorites")
         .toolbar { EditButton() }
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search favorites")

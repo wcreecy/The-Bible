@@ -89,11 +89,11 @@ struct SettingsPermissionsSection: View {
             .accessibilityHint("The system photo picker shares only photos you select and does not require full library access.")
         } header: {
             Text("Permissions & Access")
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
         } footer: {
             Text("Access is requested when you use a feature that needs it. Photo backgrounds use the system picker, so the app only receives photos you select.")
                 .font(.footnote)
-                .foregroundStyle(Color.white.opacity(0.7))
+                .foregroundStyle(.secondary)
         }
         .headerProminence(.increased)
         .task {

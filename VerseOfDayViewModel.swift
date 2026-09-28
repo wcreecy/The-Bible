@@ -25,6 +25,7 @@ final class VerseOfDayViewModel: ObservableObject {
     @AppStorage("votdRefresh1Minute") private var votdRefresh1Minute: Int = 0
     @AppStorage("votdRefresh2Hour") private var votdRefresh2Hour: Int = 18
     @AppStorage("votdRefresh2Minute") private var votdRefresh2Minute: Int = 0
+    @AppStorage("votdRefreshNotificationsEnabled") private var refreshNotificationsEnabled: Bool = false
 
     // One-shot timer for next auto refresh
     private var nextRefreshTimer: Timer?
@@ -49,6 +50,7 @@ final class VerseOfDayViewModel: ObservableObject {
         }
         updateNextDescription()
         scheduleNextVerseRefreshTimer()
+        updateRefreshNotificationSchedule()
     }
 
     deinit {
@@ -98,8 +100,10 @@ final class VerseOfDayViewModel: ObservableObject {
             }
             nextRefreshTimer?.invalidate()
             nextRefreshTimer = nil
+            VOTDNotificationScheduler.cancel()
         } else {
             scheduleNextVerseRefreshTimer()
+            updateRefreshNotificationSchedule()
         }
         updateNextDescription()
         let generator = UIImpactFeedbackGenerator(style: .medium)
@@ -200,6 +204,22 @@ final class VerseOfDayViewModel: ObservableObject {
     func refreshScheduleChanged() {
         updateNextDescription()
         scheduleNextVerseRefreshTimer()
+        updateRefreshNotificationSchedule()
+    }
+
+    private func updateRefreshNotificationSchedule() {
+        guard refreshNotificationsEnabled, !paused else {
+            VOTDNotificationScheduler.cancel()
+            return
+        }
+
+        Task {
+            await VOTDNotificationScheduler.schedule(
+                frequency: VOTDRefreshFrequency(rawValue: refreshFrequencyRaw) ?? .custom,
+                first: (votdRefresh1Hour, votdRefresh1Minute),
+                second: (votdRefresh2Hour, votdRefresh2Minute)
+            )
+        }
     }
 }
 

@@ -278,6 +278,7 @@ struct GamesView: View {
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
         .background(AppBackgroundView(tab: .games))
+        .adaptiveBackgroundForeground(tab: .games)
         .navigationTitle("Games")
         // Value-based destinations for user-tapped links
         .navigationDestination(for: GameRoute.self) { route in

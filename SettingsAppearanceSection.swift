@@ -6,7 +6,7 @@ struct SettingsAppearanceSection: View {
     @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = FontFamilyPreference.system.rawValue
 
     var body: some View {
-        Section(header: Text("Appearance").foregroundStyle(.white)) {
+        Section(header: Text("Appearance").foregroundStyle(.primary)) {
             VStack(alignment: .leading, spacing: 8) {
                 Label("App Appearance", systemImage: "paintbrush")
                 HStack(spacing: 0) {

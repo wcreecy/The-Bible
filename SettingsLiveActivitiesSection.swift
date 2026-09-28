@@ -5,10 +5,10 @@ struct SettingsLiveActivitiesSection: View {
 
     var body: some View {
         Section(
-            header: Text("Live Activities").foregroundStyle(.white),
+            header: Text("Live Activities").foregroundStyle(.primary),
             footer: Text("Show your Prayer Timer, Stopwatch, or Daily Focus on the Lock Screen and Dynamic Island. You can turn this off anytime.")
                 .font(.footnote)
-                .foregroundStyle(Color.white.opacity(0.7))
+                .foregroundStyle(.secondary)
         ) {
             Toggle(isOn: $liveActivitiesEnabled) {
                 Label("Enable Live Activities", systemImage: "livephoto.play")

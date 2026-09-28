@@ -164,6 +164,116 @@ struct AppBackgroundView: View {
     }
 }
 
+private struct AdaptiveBackgroundForegroundModifier: ViewModifier {
+    let defaultImageName: String?
+
+    @Environment(\.colorScheme) private var inheritedColorScheme
+    @AppStorage private var modeRaw: String
+    @AppStorage private var colorHex: String
+    @AppStorage private var photoFileName: String
+    @AppStorage private var builtInAssetName: String
+
+    init(tab: AppTab, defaultImageName: String?) {
+        self.defaultImageName = defaultImageName
+        _modeRaw = AppStorage(
+            wrappedValue: AppBackgroundMode.defaultStyle.rawValue,
+            AppBackgroundStorage.modeKey(for: tab)
+        )
+        _colorHex = AppStorage(
+            wrappedValue: "#F2F2F7",
+            AppBackgroundStorage.colorKey(for: tab)
+        )
+        _photoFileName = AppStorage(
+            wrappedValue: "",
+            AppBackgroundStorage.photoKey(for: tab)
+        )
+        _builtInAssetName = AppStorage(
+            wrappedValue: BuiltInBackground.river.rawValue,
+            AppBackgroundStorage.builtInKey(for: tab)
+        )
+    }
+
+    func body(content: Content) -> some View {
+        content.environment(\.colorScheme, foregroundColorScheme)
+    }
+
+    private var foregroundColorScheme: ColorScheme {
+        let mode = AppBackgroundMode(rawValue: modeRaw) ?? .defaultStyle
+
+        if mode == .builtIn && builtInAssetName == BuiltInBackground.blackLeather.rawValue {
+            return .dark
+        }
+
+        let luminance: CGFloat?
+        switch mode {
+        case .color:
+            luminance = Self.relativeLuminance(hex: colorHex)
+        case .builtIn:
+            luminance = UIImage(named: builtInAssetName)?.averageRelativeLuminance
+        case .photo:
+            luminance = AppBackgroundStorage.image(named: photoFileName)?.averageRelativeLuminance
+                ?? defaultImageName.flatMap { UIImage(named: $0)?.averageRelativeLuminance }
+        case .defaultStyle:
+            luminance = defaultImageName.flatMap { UIImage(named: $0)?.averageRelativeLuminance }
+        }
+
+        guard let luminance else { return inheritedColorScheme }
+        return luminance > 0.179 ? .light : .dark
+    }
+
+    private static func relativeLuminance(hex: String) -> CGFloat? {
+        let cleaned = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        guard cleaned.count == 6, let value = UInt64(cleaned, radix: 16) else { return nil }
+
+        let channels = [
+            CGFloat((value >> 16) & 0xFF) / 255,
+            CGFloat((value >> 8) & 0xFF) / 255,
+            CGFloat(value & 0xFF) / 255
+        ].map { channel in
+            channel <= 0.04045
+                ? channel / 12.92
+                : pow((channel + 0.055) / 1.055, 2.4)
+        }
+
+        return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
+    }
+}
+
+extension View {
+    func adaptiveBackgroundForeground(tab: AppTab, defaultImageName: String? = nil) -> some View {
+        modifier(AdaptiveBackgroundForegroundModifier(tab: tab, defaultImageName: defaultImageName))
+    }
+}
+
+private extension UIImage {
+    var averageRelativeLuminance: CGFloat? {
+        guard let cgImage else { return nil }
+
+        var pixel = [UInt8](repeating: 0, count: 4)
+        guard let context = CGContext(
+            data: &pixel,
+            width: 1,
+            height: 1,
+            bitsPerComponent: 8,
+            bytesPerRow: 4,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else { return nil }
+
+        context.interpolationQuality = .medium
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: 1, height: 1))
+
+        let channels = pixel.prefix(3).map { value -> CGFloat in
+            let channel = CGFloat(value) / 255
+            return channel <= 0.04045
+                ? channel / 12.92
+                : pow((channel + 0.055) / 1.055, 2.4)
+        }
+
+        return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
+    }
+}
+
 struct SettingsBackgroundSection: View {
     @State private var selectedTab: AppTab = .home
 
@@ -184,7 +294,7 @@ struct SettingsBackgroundSection: View {
             .accessibilityHint("Uses the selected page's background on every tab.")
         } header: {
             Text("Tab Backgrounds")
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
         } footer: {
             Text("Choose a photo or solid color for each tab. Default restores the app's original background.")
         }

@@ -6,10 +6,10 @@ struct SettingsResetDataSection: View {
 
     var body: some View {
         Section(
-            header: Text("Reset Data").foregroundStyle(.white),
+            header: Text("Reset Data").foregroundStyle(.primary),
             footer: Text("Reset your all-time game statistics or reading stats. These actions cannot be undone.")
                 .font(.footnote)
-                .foregroundStyle(Color.white.opacity(0.7))
+                .foregroundStyle(.secondary)
         ) {
             Button(role: .destructive) {
                 showingResetQuizAlert = true
