@@ -38,12 +38,6 @@ struct BibleCanon {
     }
 }
 
-struct BookOrderRound {
-    let prompt: String
-    let shuffled: [String]
-    let correctOrder: [String]
-}
-
 @MainActor
 final class BookOrderGameViewModel: ObservableObject {
     @Published var started: Bool = false
@@ -52,6 +46,15 @@ final class BookOrderGameViewModel: ObservableObject {
     @Published var score: Int = 0
     @Published var answered: Int = 0
     @Published var currentStreak: Int = 0
+
+    private var keySuffix: String {
+        switch difficulty {
+        case .easy: return "easy"
+        case .normal: return "normal"
+        case .hard: return "hard"
+        case .all: return "all"
+        }
+    }
     @Published var currentBestStreak: Int = 0
     @Published var showResult: Bool = false
     @Published var wasCorrect: Bool = false
@@ -65,19 +68,6 @@ final class BookOrderGameViewModel: ObservableObject {
     
     private var sliceFirst: String? = nil
     private var sliceLast: String? = nil
-    
-    // Per-difficulty suffix (used for persistence keys for streaks and writes via GameStats)
-    private var keySuffix: String {
-        switch difficulty {
-        case .easy: return "easy"
-        case .normal: return "normal"
-        case .hard: return "hard"
-        case .all: return "all"
-        }
-    }
-    private var keyAllTimeCorrect: String { "bookorderAllTimeCorrect_\(keySuffix)" }
-    private var keyAllTimeAnswered: String { "bookorderAllTimeAnswered_\(keySuffix)" }
-    private var keyAllTimeBestStreak: String { "bookorderAllTimeBestStreak_\(keySuffix)" }
     
     // NEW: Aggregate getters for the in-game scoreboard that avoid double-counting.
     private func readInt(_ key: String) -> Int { max(0, UserDefaults.standard.integer(forKey: key)) }

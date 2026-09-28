@@ -6,27 +6,11 @@ import Foundation
 /// Updated to use BibleStatsStore's synced daily totals (yyyy-MM-dd local keys) instead of sessions,
 /// for consistent cross-device behavior via iCloud KVS.
 enum StreakTracker {
-    // Legacy keys kept only for backward compatibility (no longer used for computation)
-    private static let lastVisitKey = "bibleStreak_lastVisit"
-    private static let currentStreakKey = "bibleStreak_current"
-    private static let bestStreakKey = "bibleStreak_best"
-
-    private static var defaults: UserDefaults { .standard }
     private static var calendar: Calendar {
         var cal = Calendar.autoupdatingCurrent
         cal.timeZone = TimeZone.autoupdatingCurrent
         return cal
     }
-
-    // Local-day date formatter for keys (yyyy-MM-dd in the user's current time zone)
-    private static let localDayFormatter: DateFormatter = {
-        let df = DateFormatter()
-        df.calendar = Calendar.autoupdatingCurrent
-        df.timeZone = TimeZone.autoupdatingCurrent
-        df.locale = Locale(identifier: "en_US_POSIX")
-        df.dateFormat = "yyyy-MM-dd"
-        return df
-    }()
 
     // MARK: - Settings (history-aware)
 
@@ -113,26 +97,5 @@ enum StreakTracker {
             cursor = next
         }
         return best
-    }
-
-    // MARK: - Deprecated mutation APIs
-
-    @available(*, deprecated, message: "No-op. Streak is computed from synced daily totals.")
-    static func markGoalMet(on date: Date = Date()) {
-        defaults.removeObject(forKey: lastVisitKey)
-        defaults.removeObject(forKey: currentStreakKey)
-        defaults.removeObject(forKey: bestStreakKey)
-    }
-
-    @available(*, deprecated, message: "No-op. Streak is computed from synced daily totals.")
-    static func markVisitedToday(now: Date = Date()) {
-        // No-op
-    }
-
-    /// Reset legacy streak data (has no effect on computed streaks).
-    static func reset() {
-        defaults.removeObject(forKey: lastVisitKey)
-        defaults.removeObject(forKey: currentStreakKey)
-        defaults.removeObject(forKey: bestStreakKey)
     }
 }

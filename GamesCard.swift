@@ -1,5 +1,4 @@
 import SwiftUI
-import Combine
 
 struct GamesCard: View {
     // External actions
@@ -58,17 +57,6 @@ struct GamesCard: View {
         let rhs = A * Double(totalAnswered) - Double(totalCorrect)
         let x = ceil(rhs / denom)
         return max(0, Int(x))
-    }
-
-    private func relativeDaysString(since date: Date) -> String {
-        let cal = Calendar.current
-        let startOfToday = cal.startOfDay(for: Date())
-        let startOfThat = cal.startOfDay(for: date)
-        let comps = cal.dateComponents([.day], from: startOfThat, to: startOfToday)
-        let d = max(0, comps.day ?? 0)
-        if d == 0 { return "today" }
-        if d == 1 { return "1d ago" }
-        return "\(d)d ago"
     }
 
     var body: some View {

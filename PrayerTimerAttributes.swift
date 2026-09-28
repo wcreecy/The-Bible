@@ -2,7 +2,7 @@ import Foundation
 import ActivityKit
 
 // Shared attributes for the Prayer/Study timer Live Activity
-struct PrayerTimerAttributes: ActivityAttributes {
+struct PrayerTimerAttributes: nonisolated ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         var status: String // e.g., "In progress", "Paused", "Finished"
         var remaining: Int // seconds remaining
@@ -12,4 +12,3 @@ struct PrayerTimerAttributes: ActivityAttributes {
     }
     var sessionName: String // e.g., "Prayer/Study"
 }
-

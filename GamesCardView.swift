@@ -1,5 +1,4 @@
 import SwiftUI
-import Charts
 
 // MARK: - Shared tiny components
 
@@ -29,28 +28,6 @@ struct MetricChip: View {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(tint.opacity(0.25), lineWidth: 1)
         )
-    }
-}
-
-struct LabeledValue: View {
-    let text: String
-    let isBest: Bool
-    let isWorst: Bool
-
-    var body: some View {
-        HStack(spacing: 4) {
-            if isBest {
-                Image(systemName: "arrow.up.right")
-                    .foregroundStyle(.green)
-            } else if isWorst {
-                Image(systemName: "arrow.down.right")
-                    .foregroundStyle(.red)
-            }
-            Text(text)
-                .font(.footnote)
-                .monospacedDigit()
-                .foregroundStyle(isBest ? .green : (isWorst ? .red : .primary))
-        }
     }
 }
 

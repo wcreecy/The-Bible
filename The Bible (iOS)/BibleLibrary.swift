@@ -1,11 +1,5 @@
 import Foundation
-import SwiftUI
 import Combine
-
-// DTO for per-book JSON: [[String]] (array of chapters, each an array of verse strings)
-private struct KJVBookChaptersDTO: Decodable {
-    let chapters: [[String]]
-}
 
 // A concurrency-safe loader that can load the whole Bible or a single book off the main thread.
 // It supports per-book files in Bundle at "kjv_books/<BookName>.json" (array-of-array of strings).

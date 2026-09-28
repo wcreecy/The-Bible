@@ -968,22 +968,6 @@ final class GameStats: ObservableObject {
         return (avg, dist)
     }
 
-    func wordleWinGuessStatsCombined() -> (averageGuessesOnWins: Double, winsByGuess: [Int]) {
-        let (_, distDaily) = wordleWinGuessStats(type: .daily)
-        let (_, distFree) = wordleWinGuessStats(type: .free)
-
-        let winsDaily = max(0, readInt("wordleAllTimeCorrect_daily"))
-        let winsFree = max(0, readInt("wordleAllTimeCorrect_free"))
-        let sumDaily = max(0, readInt("wordleWinsGuessSum_daily"))
-        let sumFree = max(0, readInt("wordleWinsGuessSum_free"))
-        let totalWins = winsDaily + winsFree
-        let totalSum = sumDaily + sumFree
-        let avg = totalWins > 0 ? Double(totalSum) / Double(totalWins) : 0
-
-        let dist = zip(distDaily, distFree).map(+)
-        return (avg, dist)
-    }
-
     func wordleWinGuessStats(mode: WordMode) -> (averageGuessesOnWins: Double, winsByGuess: [Int]) {
         let suf = (mode == .normal) ? "normal" : "hard"
         let totalWins = max(0, readInt("wordleAllTimeCorrect_\(suf)"))
@@ -1015,12 +999,6 @@ final class GameStats: ObservableObject {
         let wins = max(0, readInt("wordleTimeWins_seconds_\(suf)"))
         let losses = max(0, readInt("wordleTimeLosses_seconds_\(suf)"))
         return (total, wins, losses)
-    }
-
-    func wordleTimeStatsCombined() -> (total: Int, wins: Int, losses: Int) {
-        let d = wordleTimeStats(type: .daily)
-        let f = wordleTimeStats(type: .free)
-        return (d.total + f.total, d.wins + f.wins, d.losses + f.losses)
     }
 
     func wordleTimeStats(mode: WordMode) -> (total: Int, wins: Int, losses: Int) {

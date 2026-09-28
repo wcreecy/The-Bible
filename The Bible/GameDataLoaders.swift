@@ -374,21 +374,6 @@ enum GameDataLoaders {
 
     // MARK: - Legacy JSON helpers (used for locations only)
 
-    private static func loadArray<T: Decodable>(_ type: T.Type, resource: String) -> T? {
-        guard let url = Bundle.main.url(forResource: resource, withExtension: "json") else {
-            print("⚠️ \(resource).json not found in bundle.")
-            return nil
-        }
-        do {
-            let data = try Data(contentsOf: url)
-            let decoded = try JSONDecoder().decode(T.self, from: data)
-            return decoded
-        } catch {
-            print("⚠️ Failed to decode \(resource).json: \(error)")
-            return nil
-        }
-    }
-
     private static func tryLoadArray<T: Decodable>(_ type: T.Type, resource: String) -> T? {
         guard let url = Bundle.main.url(forResource: resource, withExtension: "json") else {
             return nil

@@ -80,12 +80,6 @@ struct HomeView: View {
     private var verseCardIcon: String { isEvening ? "moon.stars" : "sun.max.fill" }
 
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
-    private var iPadCardHeight: CGFloat { 200 }
-
-    private var isEditingFocus: Bool {
-        prayerMode == .focus && (focusTitleIsFocused || focusBodyIsFocused)
-    }
-
     var progress: ReadingProgress? {
         progressList.first
     }
@@ -98,15 +92,6 @@ struct HomeView: View {
 
     // Bible store for async/on-demand loading
     @StateObject private var bibleStore = BibleStore.shared
-
-    // Debounced widget reload helper
-    private func debouncedReloadAllWidgets() {
-        DebouncedWidgetReloader.shared.reloadAll()
-    }
-
-    private func debouncedReload(kind: String) {
-        DebouncedWidgetReloader.shared.reload(kind: kind)
-    }
 
     private func mirrorLastReadToAppGroup() {
         guard let shared = sharedDefaults else { return }
@@ -142,28 +127,6 @@ struct HomeView: View {
     // Daily goal values for flame progress
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
     @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds: Int = 0
-
-    // Daily goal values (used inside Streaks card)
-    @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes_streaks: Int = 30
-    @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds_streaks: Int = 0
-    @AppStorage("dailyUsageTodayKey") private var dailyUsageTodayKey: String = ""
-
-    private var dailyGoalSeconds: Int { max(1, dailyGoalMinutes_streaks) * 60 }
-    private var dailyProgress: Double {
-        let used = max(0, BibleStatsStore.shared.totalForLast(days: 1))
-        return min(1.0, Double(used) / Double(dailyGoalSeconds))
-    }
-    private var remainingSecondsToday: Int {
-        let todayKey = BibleStatsStore.isoDateString(Date())
-        let used = max(0, BibleStatsStore.shared.loadDailyTotals()[todayKey, default: 0])
-        return max(0, dailyGoalSeconds - used)
-    }
-    private var remainingFormatted: String {
-        if remainingSecondsToday == 0 { return "Goal reached" }
-        let m = remainingSecondsToday / 60
-        let s = remainingSecondsToday % 60
-        return "\(m)m \(s)s left"
-    }
 
     @ViewBuilder
     private var streaksCard: some View {

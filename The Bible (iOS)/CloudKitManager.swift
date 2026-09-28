@@ -149,11 +149,6 @@ public final class CloudKitManager: ObservableObject {
         }
     }
 
-    // Expose databases if needed by callers
-    public func privateDatabase() -> CKDatabase { privateDB }
-    public func sharedDatabase() -> CKDatabase { sharedDB }
-    public func publicDatabase() -> CKDatabase { publicDB }
-
     public static func logEntitlementHints(containerIdentifier: String) {
         // We no longer use appStoreReceiptURL here. Provide general build hints.
         let bundleID = Bundle.main.bundleIdentifier ?? "<unknown>"

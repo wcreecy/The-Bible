@@ -11,12 +11,6 @@ final class InactivityMonitor {
     }
 
     @MainActor
-    func configure(timeout: TimeInterval? = nil, onInactive: (@MainActor () -> Void)? = nil) {
-        if let t = timeout { self.timeout = t }
-        if let cb = onInactive { self.onInactive = cb }
-    }
-
-    @MainActor
     func markActivity() {
         cancel()
         let deadline = Date().addingTimeInterval(timeout)

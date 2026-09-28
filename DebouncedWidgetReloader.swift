@@ -10,12 +10,6 @@ final class DebouncedWidgetReloader {
     private var pendingKinds = Set<String>()
     private let lock = NSLock()
 
-    func reloadAll() {
-        schedule {
-            WidgetCenter.shared.reloadAllTimelines()
-        }
-    }
-
     func reload(kind: String) {
         lock.lock()
         pendingKinds.insert(kind)

@@ -8,8 +8,6 @@ public struct WordSearchEngine {
         public let startCol: Int
         public let dr: Int
         public let dc: Int
-        public var endRow: Int { startRow + dr * (word.count - 1) }
-        public var endCol: Int { startCol + dc * (word.count - 1) }
         public init(word: String, startRow: Int, startCol: Int, dr: Int, dc: Int) {
             self.word = word
             self.startRow = startRow

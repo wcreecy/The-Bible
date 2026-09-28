@@ -57,34 +57,6 @@ public struct GameProminentButtonStyle: ButtonStyle {
     }
 }
 
-/// A prominent rounded rectangle style for primary actions outside the games.
-/// Matches the native Liquid Glass aesthetic used elsewhere in the app.
-public struct ModernProminentButtonStyle: ButtonStyle {
-    public var tint: Color = .accentColor
-    @Environment(\.isEnabled) private var isEnabled
-
-    public init(tint: Color = .accentColor) { self.tint = tint }
-
-    public func makeBody(configuration: Configuration) -> some View {
-        let pressed = configuration.isPressed
-
-        return configuration.label
-            .font(.headline.weight(.semibold))
-            .foregroundStyle(.white)
-            .padding(.vertical, 12)
-            .padding(.horizontal, 22)
-            .glassEffect(
-                .regular
-                    .tint((isEnabled ? tint : .gray).opacity(pressed ? 0.8 : 1.0))
-                    .interactive(isEnabled),
-                in: .rect(cornerRadius: 12)
-            )
-            .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-            .scaleEffect(pressed ? 0.98 : 1.0)
-            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
-    }
-}
-
 /// A key-like button style used for on-screen keyboards (e.g., Hangman).
 /// Tonal background with clear affordance and state colors.
 public struct GameKeyButtonStyle: ButtonStyle {

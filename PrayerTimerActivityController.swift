@@ -52,34 +52,6 @@ final class PrayerTimerActivityController {
         }
     }
     
-    func updateFocus(title: String?, body: String?) {
-        guard #available(iOS 16.1, *), let activity else { return }
-        Task {
-            if #available(iOS 17.0, *) {
-                let current = activity.content.state
-                let newState = PrayerTimerAttributes.ContentState(
-                    status: current.status,
-                    remaining: current.remaining,
-                    total: current.total,
-                    focusTitle: title,
-                    focusBody: body
-                )
-                let content = ActivityContent(state: newState, staleDate: .now.addingTimeInterval(1))
-                await activity.update(content)
-            } else {
-                let current = activity.contentState
-                let newState = PrayerTimerAttributes.ContentState(
-                    status: current.status,
-                    remaining: current.remaining,
-                    total: current.total,
-                    focusTitle: title,
-                    focusBody: body
-                )
-                await activity.update(using: newState)
-            }
-        }
-    }
-
     func ensureActivityForFocus(title: String?, body: String?) {
         guard #available(iOS 16.1, *) else { return }
         // Enforce single-active: end all Stopwatch and PrayerTimer activities first

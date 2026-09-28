@@ -8,9 +8,6 @@ struct BookOrderGameView: View {
     // Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
-    private var currentPercent: Double { vm.answered > 0 ? Double(vm.score) / Double(vm.answered) : 0 }
-    private var allTimePercent: Double { vm.allTimeAnswered > 0 ? Double(vm.allTimeCorrect) / Double(vm.allTimeAnswered) : 0 }
-
     var body: some View {
         VStack {
             if !vm.started {

@@ -263,33 +263,6 @@ struct BibleSplitView: View {
         }
     }
     
-    private struct ReaderSettingsView: View {
-        @Binding var fontSize: Double
-        @Binding var useTwoColumns: Bool
-        var body: some View {
-            Form {
-                Section("Text") {
-                    HStack {
-                        Text("Font Size")
-                        Spacer()
-                        Text("\(Int(fontSize)) pt").foregroundStyle(.secondary)
-                    }
-                    .accessibilityElement(children: .combine)
-                    Slider(value: $fontSize, in: 12...30, step: 1)
-                    Button {
-                        fontSize = 17
-                    } label: {
-                        Label("Reset to Default", systemImage: "arrow.counterclockwise")
-                    }
-                }
-                Section("Layout") {
-                    Toggle("Two-column reading", isOn: $useTwoColumns)
-                }
-            }
-            .navigationTitle("Reading Settings")
-        }
-    }
-
     // Added: Search results list view used by DetailRootContent
     private struct SearchResultsList: View {
         let results: [BibleSplitView.SearchHit]

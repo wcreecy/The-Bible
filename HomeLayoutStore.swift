@@ -123,17 +123,6 @@ struct HomeLayoutStore {
         save(order: fav.order, hidden: fav.hidden)
     }
 
-    // MARK: - Defaults
-
-    func resetToDefaults() {
-        // Clear current and favorite to return to baseline
-        orderRaw = ""
-        hiddenRaw = ""
-        favOrderRaw = ""
-        favHiddenRaw = ""
-        notifyChanged()
-    }
-
     // MARK: - Notification
 
     private func notifyChanged() {

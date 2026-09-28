@@ -29,38 +29,6 @@ extension BibleStatsStore {
         saveDailyTotalsByBook(dict)
     }
 
-    func totalsByBookForMonth(containing date: Date, calendar: Calendar = .autoupdatingCurrent) -> [String: Int] {
-        let dict = loadDailyTotalsByBook()
-        let keys = Self.isoKeysForMonth(containing: date, calendar: calendar)
-        var result: [String: Int] = [:]
-        for k in keys {
-            if let per = dict[k] {
-                for (book, sec) in per {
-                    result[book, default: 0] += max(0, sec)
-                }
-            }
-        }
-        return result
-    }
-
-    // Per-book totals for a rolling window of the last N days (including today)
-    func totalsByBookForLast(days: Int, including today: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> [String: Int] {
-        guard days > 0 else { return [:] }
-        let dict = loadDailyTotalsByBook()
-        var result: [String: Int] = [:]
-        for i in 0..<days {
-            if let date = calendar.date(byAdding: .day, value: -i, to: today) {
-                let key = Self.isoDateString(date, calendar: calendar)
-                if let per = dict[key] {
-                    for (book, sec) in per {
-                        result[book, default: 0] += max(0, sec)
-                    }
-                }
-            }
-        }
-        return result
-    }
-
     // MARK: - OT/NT split
 
     // Splits a per-book totals map into Old Testament vs New Testament sums.

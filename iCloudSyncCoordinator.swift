@@ -29,11 +29,6 @@ final class iCloudSyncCoordinator {
         set { defaults.set(newValue, forKey: lastMergeKey) }
     }
 
-    // Simple availability hint for KVS (user signed into iCloud)
-    var kvsAvailable: Bool {
-        FileManager.default.ubiquityIdentityToken != nil
-    }
-
     // Debounced push machinery (MainActor-safe)
     var pendingKeys: Set<String> = []
     var debounceTask: Task<Void, Never>?

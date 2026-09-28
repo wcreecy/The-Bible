@@ -705,11 +705,6 @@ struct HangmanGameView: View {
         }
     }
 
-    private func capitalize(_ s: String) -> String {
-        guard let first = s.first else { return s }
-        return String(first).uppercased() + s.dropFirst().lowercased()
-    }
-
     private func masked(from word: String) -> String {
         String(word.map { ch in
             ch.isLetter ? "_" : String(ch)

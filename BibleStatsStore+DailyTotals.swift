@@ -56,8 +56,4 @@ extension BibleStatsStore {
         return sum
     }
 
-    // Convenience: sum for the current month.
-    func totalForCurrentMonth(calendar: Calendar = .autoupdatingCurrent) -> Int {
-        totalForMonth(containing: Date(), calendar: calendar)
-    }
 }

@@ -492,13 +492,6 @@ struct VerseMatchGameView: View {
 
     // MARK: - Favorites helpers (SwiftData)
 
-    private func currentFavoriteExists() -> Bool {
-        guard let b = refBook, let c = refChapter, let v = refVerse else { return false }
-        return favorites.contains { fav in
-            fav.bookName == b.name && fav.chapterNumber == c.number && fav.verseNumber == v.number
-        }
-    }
-
     private func toggleFavoriteCurrent() {
         guard let b = refBook, let c = refChapter, let v = refVerse else { return }
         toggleFavorite(bookName: b.name, chapterNumber: c.number, verseNumber: v.number, verseText: v.text)
