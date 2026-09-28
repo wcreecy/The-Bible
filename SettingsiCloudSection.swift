@@ -5,6 +5,7 @@ import UIKit
 struct SettingsiCloudSection: View {
     @EnvironmentObject private var cloudKitManager: CloudKitManager
     @State private var isRefreshingCloudStatus: Bool = false
+    @State private var lastSyncedAt: Date?
 
     private var iCloudStatusText: String {
         switch cloudKitManager.accountState {
@@ -33,6 +34,25 @@ struct SettingsiCloudSection: View {
                     .foregroundStyle(iCloudStatusColor)
                     .accessibilityIdentifier("icloudStatusText")
             }
+            HStack {
+                Text("Last Synced")
+                Spacer()
+                if let lastSyncedAt {
+                    Text(
+                        lastSyncedAt,
+                        format: .dateTime
+                            .month(.abbreviated)
+                            .day()
+                            .year()
+                            .hour()
+                            .minute()
+                    )
+                } else {
+                    Text("Never")
+                }
+            }
+            .foregroundStyle(.secondary)
+            .accessibilityIdentifier("icloudLastSyncedAt")
             if let id = cloudKitManager.userRecordID {
                 HStack {
                     Text("User Record")
@@ -85,5 +105,14 @@ struct SettingsiCloudSection: View {
             .foregroundStyle(Color.white.opacity(0.7))
         }
         .headerProminence(.increased)
+        .task {
+            lastSyncedAt = iCloudSyncCoordinator.shared.lastPushDate
+
+            for await _ in NotificationCenter.default.notifications(
+                named: UserDefaults.didChangeNotification
+            ) {
+                lastSyncedAt = iCloudSyncCoordinator.shared.lastPushDate
+            }
+        }
     }
 }
