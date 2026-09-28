@@ -100,6 +100,11 @@ struct WordSearchGameView: View {
             }
             .navigationTitle("Word Search")
             .navigationBarTitleDisplayMode(.inline)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                if vm.started && vm.roundOver && !isPad {
+                    completionActionsPhone
+                }
+            }
             .onDisappear { vm.stopTimer() }
         }
         // Rebind the VM to the real environment context/fetcher once the view is active.
@@ -151,39 +156,57 @@ struct WordSearchGameView: View {
 
     private var wordListAndControlsPhone: some View {
         VStack(spacing: vm.difficulty == .easy ? 8 : 6) {
-            GroupBox {
-                VStack(alignment: .leading, spacing: 6) {
-                    if vm.gameMode == .blind && !vm.showBlindWordList {
-                        let foundCount = vm.targetWords.filter { vm.foundWords.contains($0) }.count
-                        HStack {
-                            Text("Words to find: \(vm.targetWords.count)").font(.headline)
-                            Spacer(minLength: 8)
-                            Text("Found: \(foundCount)").font(.headline).foregroundStyle(.secondary)
-                        }
-                    } else {
-                        Text("Find these words:").font(.headline)
-                        if vm.targetWords.isEmpty {
-                            Text("No words").foregroundStyle(.secondary)
+            if !vm.roundOver {
+                GroupBox {
+                    VStack(alignment: .leading, spacing: 6) {
+                        if vm.gameMode == .blind && !vm.showBlindWordList {
+                            let foundCount = vm.targetWords.filter { vm.foundWords.contains($0) }.count
+                            HStack {
+                                Text("Words to find: \(vm.targetWords.count)").font(.headline)
+                                Spacer(minLength: 8)
+                                Text("Found: \(foundCount)").font(.headline).foregroundStyle(.secondary)
+                            }
                         } else {
-                            WrapWordsView(words: vm.targetWords, found: vm.foundWords, revealed: vm.revealedWords)
+                            Text("Find these words:").font(.headline)
+                            if vm.targetWords.isEmpty {
+                                Text("No words").foregroundStyle(.secondary)
+                            } else {
+                                WrapWordsView(words: vm.targetWords, found: vm.foundWords, revealed: vm.revealedWords)
+                            }
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
 
-            WordSearchControlsBar(
-                onNewPuzzle: { vm.newPuzzle() },
-                onReveal: { vm.reveal() },
-                onChangeDifficultyOrMode: { vm.changeSettings() },
-                gameMode: vm.gameMode,
-                onToggleHealed: { vm.showBlindWordList.toggle() },
-                healedOn: vm.showBlindWordList,
-                roundOver: vm.roundOver
-            )
+                WordSearchControlsBar(
+                    onNewPuzzle: { vm.newPuzzle() },
+                    onReveal: { vm.reveal() },
+                    onChangeDifficultyOrMode: { vm.changeSettings() },
+                    gameMode: vm.gameMode,
+                    onToggleHealed: { vm.showBlindWordList.toggle() },
+                    healedOn: vm.showBlindWordList,
+                    roundOver: false
+                )
+            }
         }
         // Small positive top padding to ensure a tiny, consistent gap (no overlap) on all difficulties.
         .padding(.top, 2)
+    }
+
+    private var completionActionsPhone: some View {
+        WordSearchControlsBar(
+            onNewPuzzle: { vm.newPuzzle() },
+            onReveal: { vm.reveal() },
+            onChangeDifficultyOrMode: { vm.changeSettings() },
+            gameMode: vm.gameMode,
+            onToggleHealed: { vm.showBlindWordList.toggle() },
+            healedOn: vm.showBlindWordList,
+            roundOver: true
+        )
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal)
+        .padding(.vertical, 10)
+        .background(.bar)
     }
 
     // MARK: - Helpers
