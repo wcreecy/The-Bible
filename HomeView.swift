@@ -122,6 +122,18 @@ struct HomeView: View {
         coordinator.push(.reader(book: b, chapter: c, startVerse: verse))
     }
 
+    private func openInBibleTab(_ verse: HomeVerseRef) {
+        NotificationCenter.default.post(
+            name: .openBibleReference,
+            object: nil,
+            userInfo: [
+                "book": verse.bookName,
+                "chapter": verse.chapterNumber,
+                "verse": verse.verseNumber
+            ]
+        )
+    }
+
     // MARK: - Split cards to reduce type-checking complexity
 
     // Daily goal values for flame progress
@@ -168,10 +180,8 @@ struct HomeView: View {
                 onShareText: { v in shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText) },
                 isFavorited: { v in isFavorited(v) },
                 onToggleFavorite: { v in toggleFavorite(for: v) },
-                onOpenReader: { v in
-                    guard let book = BibleData.books.first(where: { $0.name == v.bookName }),
-                          let chapter = book.chapters.first(where: { $0.number == v.chapterNumber }) else { return }
-                    coordinator.push(.reader(book: book, chapter: chapter, startVerse: v.verseNumber))
+                onOpenReader: { verse in
+                    openInBibleTab(verse)
                 },
                 onTogglePaused: {
                     votdVM.togglePaused()
@@ -183,10 +193,8 @@ struct HomeView: View {
             .onTapGesture {
                 let generator = UIImpactFeedbackGenerator(style: .heavy)
                 generator.impactOccurred()
-                guard let v = votdVM.verse,
-                      let book = BibleData.books.first(where: { $0.name == v.bookName }),
-                      let chapter = book.chapters.first(where: { $0.number == v.chapterNumber }) else { return }
-                coordinator.push(.reader(book: book, chapter: chapter, startVerse: v.verseNumber))
+                guard let verse = votdVM.verse else { return }
+                openInBibleTab(verse)
             }
         case .dailyFocus:
             DailyFocusCard(
