@@ -5,6 +5,7 @@ import WidgetKit
 
 @MainActor
 struct ReadingView: View {
+    @EnvironmentObject private var coordinator: NavigationCoordinator
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
     @Environment(\.scenePhase) private var scenePhase
@@ -63,10 +64,7 @@ struct ReadingView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        viewModel.searchQuery = ""
-                        viewModel.searchResults = []
-                        viewModel.isSearching = false
-                        viewModel.isSearchPresented = true
+                        coordinator.push(.search)
                     } label: {
                         Image(systemName: "magnifyingglass")
                     }
@@ -129,9 +127,6 @@ struct ReadingView: View {
                 actionTitle: removedFavorite == nil ? nil : "Undo",
                 action: undoFavoriteRemoval
             )
-            .fullScreenCover(isPresented: $viewModel.isSearchPresented) {
-                ReadingSearchSheet(viewModel: viewModel)
-            }
             .persistenceFailureAlert(failure: $persistenceFailure)
     }
 

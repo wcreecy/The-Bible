@@ -22,12 +22,6 @@ final class ReadingViewModel: ObservableObject {
     @Published var pinVerse: Int? = nil
     @Published var topVisibleVerseID: String? = nil
 
-    // Search
-    @Published var isSearchPresented: Bool = false
-    @Published var searchQuery: String = ""
-    @Published var searchResults: [SearchResult] = []
-    @Published var isSearching: Bool = false
-
     // Reading progress
     @Published var highlightOnAppear: Bool = true
     private lazy var verseReadingTracker = VerseReadingTracker { updates in
@@ -291,98 +285,6 @@ final class ReadingViewModel: ObservableObject {
 
     func rowID(for verseNumber: Int) -> String {
         "\(currentBook.name)-\(currentChapter.number)-\(verseNumber)"
-    }
-
-    // MARK: - Search
-
-    struct SearchResult: Identifiable, Hashable {
-        let id = UUID()
-        let bookName: String
-        let chapterNumber: Int
-        let verseNumber: Int
-        let verseText: String
-    }
-
-    func eligibleWordCount(in text: String) -> Int {
-        let tokens = text
-            .lowercased()
-            .split { $0.isWhitespace || $0.isPunctuation }
-            .map(String.init)
-            .filter { !$0.isEmpty }
-        return tokens.count
-    }
-
-    func runSearchIfEligible(query: String, force: Bool = false) {
-        let tokens = query
-            .lowercased()
-            .split { $0.isWhitespace || $0.isPunctuation }
-            .map(String.init)
-            .filter { !$0.isEmpty }
-
-        guard force || tokens.count >= 2 else {
-            searchResults = []
-            isSearching = false
-            return
-        }
-
-        isSearching = true
-        let maxResults = 100
-        DispatchQueue.global(qos: .userInitiated).async {
-            var results: [SearchResult] = []
-            outer: for b in BibleData.books {
-                for c in b.chapters {
-                    for v in c.verses {
-                        let lower = v.text.lowercased()
-                        var matchesAll = true
-                        for t in tokens {
-                            if !lower.contains(t) { matchesAll = false; break }
-                        }
-                        if matchesAll {
-                            results.append(.init(bookName: b.name, chapterNumber: c.number, verseNumber: v.number, verseText: v.text))
-                            if results.count >= maxResults { break outer }
-                        }
-                    }
-                }
-            }
-            DispatchQueue.main.async {
-                self.searchResults = results
-                self.isSearching = false
-            }
-        }
-    }
-
-    func jumpToSearchResult(_ item: SearchResult) {
-        guard let targetBook = BibleData.books.first(where: { $0.name == item.bookName }) else { return }
-        let targetChapterIndex = targetBook.chapters.firstIndex(where: { $0.number == item.chapterNumber }) ?? 0
-        let targetChapter = targetBook.chapters[targetChapterIndex]
-        let clampedVerse = min(max(1, item.verseNumber), targetChapter.verses.count)
-
-        verseReadingTracker.resetVisibility()
-        currentBook = targetBook
-        if let idx = orderedBookNames.firstIndex(of: targetBook.name) {
-            currentBookNameIndex = idx
-        }
-        currentChapterIndex = targetChapterIndex
-        currentVerse = clampedVerse
-
-        highlightOnAppear = false
-
-        Task { @MainActor in
-            await Task.yield()
-            withAnimation(.easeInOut(duration: 0.35)) {
-                topVisibleVerseID = rowID(for: clampedVerse)
-            }
-            highlightedVerse = clampedVerse
-            await Task.yield()
-            highlightedVerse = clampedVerse
-            try? await Task.sleep(nanoseconds: 3_000_000_000)
-            withAnimation { highlightedVerse = nil }
-        }
-
-        ReadingTimeTracker.shared.changeBook(to: targetBook.name, chapter: targetChapter.number)
-        ReadingTimeTracker.shared.setCurrentLocation(bookName: targetBook.name, chapter: targetChapter.number)
-
-        isSearchPresented = false
     }
 
     // MARK: - Widget mirroring (Last Read)
