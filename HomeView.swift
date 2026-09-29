@@ -39,6 +39,7 @@ struct HomeView: View {
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
     @AppStorage("prayerMode") private var prayerMode: PrayerMode = .timer
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     private var sharedDefaults: UserDefaults? { UserDefaults(suiteName: "group.bible.app") }
 
@@ -375,6 +376,14 @@ struct HomeView: View {
                         DispatchQueue.main.async { switchTo(.favorites) }
                     }
                 )
+
+                if contextualTipsEnabled {
+                    ContextualTipView(
+                        title: "Explore more on Home",
+                        message: "Expand Show More for prayer timers and other cards. You can choose and reorder Home cards in Settings.",
+                        systemImage: "sparkles"
+                    )
+                }
 
                 if !hiddenCards.contains(.verseOfDay) {
                     card(for: .verseOfDay)

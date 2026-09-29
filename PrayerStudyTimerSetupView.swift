@@ -5,12 +5,21 @@ struct PrayerStudyTimerSetupView: View {
     let onStart: (Int) -> Void
 
     @State private var selectedMinutes: Int = 15
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     var body: some View {
         VStack(alignment: .center, spacing: 20) {
             Text("Prayer/Study Timer")
                 .font(.title2)
                 .bold()
+
+            if contextualTipsEnabled {
+                ContextualTipView(
+                    title: "Track mindful minutes",
+                    message: "Completed prayer and study timers can contribute Mindful Minutes to Apple Health when access is allowed in Settings.",
+                    systemImage: "heart.text.square"
+                )
+            }
 
             VStack(spacing: 16) {
                 Text("Duration")

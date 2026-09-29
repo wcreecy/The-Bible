@@ -10,6 +10,7 @@ struct HomeLayoutEditorView: View {
     var hasFavorite: Bool
 
     @State private var editMode: EditMode = .active
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     private let mainCards: [HomeCardID] = [.verseOfDay, .resumeReading]
 
@@ -92,6 +93,15 @@ struct HomeLayoutEditorView: View {
 
     var body: some View {
         List {
+            if contextualTipsEnabled {
+                ContextualTipView(
+                    title: "Make Home yours",
+                    message: "Use the eye buttons to show or hide cards, and drag items in Show More to reorder them.",
+                    systemImage: "rectangle.grid.1x2"
+                )
+                .listRowSeparator(.hidden)
+            }
+
             Section {
                 ForEach(mainCards) { id in
                     layoutRow(for: id)

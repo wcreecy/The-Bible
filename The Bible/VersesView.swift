@@ -8,6 +8,7 @@ struct VersesView: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var coordinator: NavigationCoordinator
     @Query private var favorites: [Favorite]
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     @State private var showToast: Bool = false
     @State private var toastText: String = ""
@@ -21,6 +22,15 @@ struct VersesView: View {
 
     var body: some View {
         List {
+            if contextualTipsEnabled {
+                ContextualTipView(
+                    title: "More verse actions",
+                    message: "Press and hold a verse to preview it, then favorite, bookmark, copy, or pin it to the Home Screen widget.",
+                    systemImage: "hand.tap"
+                )
+                .listRowSeparator(.hidden)
+            }
+
             ForEach(chapter.verses) { verse in
                 NavigationLink(
                     value: Route.reader(book: book, chapter: chapter, startVerse: verse.number)
@@ -31,12 +41,17 @@ struct VersesView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
-                .onLongPressGesture(minimumDuration: 0.5) {
-                    let generator = UIImpactFeedbackGenerator(style: .heavy)
-                    generator.impactOccurred()
-                    previewVerse = verse
-                }
+                .simultaneousGesture(
+                    LongPressGesture(minimumDuration: 0.5)
+                        .onEnded { _ in
+                            let generator = UIImpactFeedbackGenerator(style: .heavy)
+                            generator.impactOccurred()
+                            previewVerse = verse
+                        }
+                )
             }
         }
         .sheet(item: $previewVerse) { verse in

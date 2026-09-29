@@ -9,8 +9,8 @@ struct SettingsView: View {
             SettingsPersonalizationLinksSection()
             SettingsDailyExperienceLinksSection()
             SettingsAppAndDataLinksSection()
+            SettingsTipsSection()
             SettingsDataManagementLinksSection()
-
 
             Section {
                 SettingsCloudSyncFooter()
@@ -111,6 +111,33 @@ private struct SettingsAppAndDataLinksSection: View {
                     systemImage: "icloud"
                 )
             }
+        }
+    }
+}
+
+private struct SettingsTipsSection: View {
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+
+    var body: some View {
+        Section {
+            Toggle(isOn: $contextualTipsEnabled) {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Contextual Tips")
+                        Text("Show helpful hints while exploring features")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "lightbulb")
+                        .foregroundStyle(.tint)
+                }
+            }
+            .accessibilityIdentifier("contextualTipsToggle")
+        } header: {
+            Text("Help")
+        } footer: {
+            Text("Tips appear near features such as verse actions, widgets, timers, Health, and Home customization.")
         }
     }
 }
