@@ -8,6 +8,7 @@ struct VerseWidgetEntryView: View {
 
     private var isExtraLarge: Bool { widgetFamily == .systemExtraLarge }
     private var isLarge: Bool { widgetFamily == .systemLarge }
+    private var isMedium: Bool { widgetFamily == .systemMedium }
 
     private var isEvening: Bool {
         let hour = Calendar.current.component(.hour, from: entry.date)
@@ -22,7 +23,7 @@ struct VerseWidgetEntryView: View {
             // Self-identifying header so users know which widget this is
             HStack(spacing: 6) {
                 Image(systemName: headerIcon)
-                    .font(isExtraLarge ? .title2 : (isLarge ? .headline : .caption2))
+                    .font(isExtraLarge ? .title2 : (isLarge ? .headline : (isMedium ? .subheadline : .caption2)))
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(
                         isEvening
@@ -31,26 +32,26 @@ struct VerseWidgetEntryView: View {
                     )
 
                 Text(headerTitle)
-                    .font(isExtraLarge ? .title2.weight(.semibold) : (isLarge ? .headline.weight(.semibold) : .caption2.weight(.semibold)))
+                    .font(isExtraLarge ? .title2.weight(.semibold) : (isLarge ? .headline.weight(.semibold) : (isMedium ? .subheadline.weight(.semibold) : .caption2.weight(.semibold))))
                     .foregroundStyle(.white.opacity(0.7))
                     .lineLimit(1)
             }
 
             if !entry.text.isEmpty {
                 Text("“\(entry.text)\"")
-                    .font(isExtraLarge ? .largeTitle : (isLarge ? .title2 : .footnote))
+                    .font(isExtraLarge ? .largeTitle : (isLarge ? .title2 : (isMedium ? .body : .footnote)))
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.leading)
                     .lineLimit(isExtraLarge || isLarge ? 6 : 5)
                     .truncationMode(.tail)
                 if !entry.book.isEmpty && entry.chapter > 0 && entry.verse > 0 {
                     Text("\(entry.book) \(entry.chapter):\(entry.verse)")
-                        .font(isExtraLarge ? .title3 : (isLarge ? .subheadline : .caption2))
+                        .font(isExtraLarge ? .title3 : (isLarge ? .subheadline : (isMedium ? .caption : .caption2)))
                         .foregroundStyle(.white.opacity(0.7))
                 }
             } else {
                 Text("No verse yet")
-                    .font(isExtraLarge ? .largeTitle : (isLarge ? .title2 : .footnote))
+                    .font(isExtraLarge ? .largeTitle : (isLarge ? .title2 : (isMedium ? .body : .footnote)))
                     .foregroundStyle(.white.opacity(0.6))
             }
         }
