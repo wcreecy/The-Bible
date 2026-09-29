@@ -253,9 +253,7 @@ struct QuizView: View {
                             currentCorrect: score,
                             currentAnswered: sessionAnswered,
                             currentStreak: currentStreak,
-                            allTimeCorrect: allTimeCorrect,
-                            allTimeAnswered: allTimeAnswered,
-                            allTimeBestStreak: allTimeBestStreak
+                            game: .quiz
                         )
 
                         // Verse card

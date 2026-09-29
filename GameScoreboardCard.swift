@@ -1,14 +1,13 @@
 import SwiftUI
 
-public struct GameScoreboardCard: View {
+struct GameScoreboardCard: View {
+    @ObservedObject private var stats = GameStats.shared
     // Current session (live)
     let currentCorrect: Int
     let currentAnswered: Int
     let currentStreak: Int
-    // All-time
-    let allTimeCorrect: Int
-    let allTimeAnswered: Int
-    let allTimeBestStreak: Int
+    let game: GameStats.GameID
+    let wordMode: GameStats.WordMode?
 
     @Environment(\.horizontalSizeClass) private var hSize
 
@@ -29,23 +28,22 @@ public struct GameScoreboardCard: View {
     private var cardCornerRadius: CGFloat { isPadLike ? 18 : 16 }
     private var cardStrokeOpacity: Double { 0.06 }
 
-    public init(
+    init(
         currentCorrect: Int,
         currentAnswered: Int,
         currentStreak: Int,
-        allTimeCorrect: Int,
-        allTimeAnswered: Int,
-        allTimeBestStreak: Int
+        game: GameStats.GameID,
+        wordMode: GameStats.WordMode? = nil
     ) {
         self.currentCorrect = currentCorrect
         self.currentAnswered = currentAnswered
         self.currentStreak = currentStreak
-        self.allTimeCorrect = allTimeCorrect
-        self.allTimeAnswered = allTimeAnswered
-        self.allTimeBestStreak = allTimeBestStreak
+        self.game = game
+        self.wordMode = wordMode
     }
 
     public var body: some View {
+        let allTime = stats.scorecardStats(for: game, wordMode: wordMode)
         VStack {
             VStack(alignment: .leading, spacing: rowSpacing) {
                 // Current session stats
@@ -55,8 +53,8 @@ public struct GameScoreboardCard: View {
                         .foregroundStyle(.secondary)
                         .frame(width: sectionLabelWidth, alignment: .leading)
                     statPill(title: "Correct", value: "\(currentCorrect)")
-                    statPill(title: "Total", value: "\(currentAnswered)")
-                    streakPill(title: "Streak", current: currentStreak, allTimeBest: allTimeBestStreak)
+                    statPill(title: "Attempts", value: "\(currentAnswered)")
+                    streakPill(title: "Streak", current: currentStreak, allTimeBest: allTime.bestStreak)
                     statPill(title: "Percent", value: percentString(correct: currentCorrect, answered: currentAnswered))
                 }
                 // All-time stats
@@ -65,10 +63,10 @@ public struct GameScoreboardCard: View {
                         .font(sectionLabelFont)
                         .foregroundStyle(.secondary)
                         .frame(width: sectionLabelWidth, alignment: .leading)
-                    statPill(title: "Correct", value: "\(allTimeCorrect)")
-                    statPill(title: "Total", value: "\(allTimeAnswered)")
-                    statPill(title: "Streak", value: "\(allTimeBestStreak)")
-                    statPill(title: "Percent", value: percentString(correct: allTimeCorrect, answered: allTimeAnswered))
+                    statPill(title: "Correct", value: "\(allTime.correct)")
+                    statPill(title: "Attempts", value: "\(allTime.attempts)")
+                    statPill(title: "Streak", value: allTime.bestStreak > 0 ? "\(allTime.bestStreak)" : "—")
+                    statPill(title: "Percent", value: percentString(correct: allTime.correct, answered: allTime.attempts))
                 }
             }
             .padding(containerPadding)
@@ -138,7 +136,7 @@ public struct GameScoreboardCard: View {
     }
 
     private func percentString(correct: Int, answered: Int) -> String {
-        guard answered > 0 else { return "0%" }
+        guard answered > 0 else { return "—" }
         let raw = (Double(correct) / Double(answered)) * 100.0
         let clamped = min(100.0, max(0.0, raw))
         let pct = Int(round(clamped))
@@ -152,9 +150,7 @@ public struct GameScoreboardCard: View {
             currentCorrect: 7,
             currentAnswered: 10,
             currentStreak: 9,
-            allTimeCorrect: 120,
-            allTimeAnswered: 200,
-            allTimeBestStreak: 9
+            game: .quiz
         )
         .padding()
     }

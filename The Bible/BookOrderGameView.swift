@@ -85,9 +85,7 @@ struct BookOrderGameView: View {
                         currentCorrect: vm.score,
                         currentAnswered: vm.answered,
                         currentStreak: vm.currentStreak,
-                        allTimeCorrect: vm.allTimeCorrect,
-                        allTimeAnswered: vm.allTimeAnswered,
-                        allTimeBestStreak: vm.allTimeBestStreak
+                        game: .bookorder
                     )
 
                     List {

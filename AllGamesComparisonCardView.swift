@@ -3,12 +3,11 @@ import Charts
 
 struct AllGamesComparisonCardView: View {
     @ObservedObject private var stats = GameStats.shared
-    @State private var version: Int = 0
 
     // Sort options for the comparison
     fileprivate enum Sort: String, CaseIterable, Identifiable {
         case name = "Game"
-        case played = "Played"
+        case played = "Attempts"
         case accuracy = "Accuracy"
         var id: String { rawValue }
     }
@@ -19,7 +18,7 @@ struct AllGamesComparisonCardView: View {
         var id: String { name }
         let name: String
         let played: Int
-        let accuracy: Double // 0...100
+        let accuracy: Double? // nil until the game has an attempt
     }
 
     @Environment(\.colorScheme) private var colorScheme
@@ -54,19 +53,19 @@ struct AllGamesComparisonCardView: View {
                     // Derived metrics (typed rows)
                     let rows: [Row] = entries.map { e in
                         let played = max(0, e.answered)
-                        let acc: Double = played > 0 ? min(100, max(0, (Double(max(0, e.correct)) / Double(played)) * 100.0)) : 0
+                        let acc: Double? = played > 0 ? min(100, max(0, (Double(max(0, e.correct)) / Double(played)) * 100.0)) : nil
                         return Row(name: e.name, played: played, accuracy: acc)
                     }
 
                     // Add breathing room between header line and chart
-                    ChartView(rows: rows, sort: sort, version: version)
+                    ChartView(rows: rows, sort: sort, version: stats.version)
                         .padding(.top, 20)
 
                     // Legend-like caption
                     HStack(spacing: 12) {
                         HStack(spacing: 6) {
                             RoundedRectangle(cornerRadius: 3).fill(Color.accentColor.opacity(0.85)).frame(width: 12, height: 12)
-                            Text("Played")
+                            Text("Attempts")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -81,9 +80,6 @@ struct AllGamesComparisonCardView: View {
             }
             .padding(.top, 2)
         }
-        .onAppear { version &+= 1 }
-        .onChangeCompat(of: stats.version) { version &+= 1 }
-        .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in version &+= 1 }
     }
 }
 
@@ -105,7 +101,7 @@ fileprivate extension AllGamesComparisonCardView {
             case .accuracy:
                 return rows.sorted {
                     if $0.accuracy == $1.accuracy { return $0.name < $1.name }
-                    return $0.accuracy > $1.accuracy
+                    return ($0.accuracy ?? -1) > ($1.accuracy ?? -1)
                 }
             }
         }
@@ -124,10 +120,10 @@ fileprivate extension AllGamesComparisonCardView {
         var body: some View {
             Chart {
                 ForEach(sortedRows) { row in
-                    // Bars (Played)
+                    // Bars (Attempts)
                     BarMark(
                         x: .value("Game", row.name),
-                        y: .value("Played", row.played)
+                        y: .value("Attempts", row.played)
                     )
                     .foregroundStyle(Color.accentColor.opacity(0.85))
                     .cornerRadius(4)
@@ -140,20 +136,14 @@ fileprivate extension AllGamesComparisonCardView {
                         }
                     }
 
-                    // Line (Accuracy, scaled)
-                    LineMark(
-                        x: .value("Game", row.name),
-                        y: .value("Accuracy (scaled)", row.accuracy * scale)
-                    )
-                    .interpolationMethod(.monotone)
-                    .foregroundStyle(Color.green.opacity(0.8))
-
-                    // Points (Accuracy, scaled)
-                    PointMark(
-                        x: .value("Game", row.name),
-                        y: .value("Accuracy (scaled)", row.accuracy * scale)
-                    )
-                    .foregroundStyle(Color.green.opacity(0.9))
+                    if let accuracy = row.accuracy {
+                        PointMark(
+                            x: .value("Game", row.name),
+                            y: .value("Accuracy (scaled)", accuracy * scale)
+                        )
+                        .symbolSize(55)
+                        .foregroundStyle(Color.green.opacity(0.9))
+                    }
                 }
             }
             // Left Y-axis: raw counts/minutes

@@ -178,9 +178,7 @@ struct BeatTheClockGameView: View {
                                 currentCorrect: score,
                                 currentAnswered: answered,
                                 currentStreak: currentStreak,
-                                allTimeCorrect: allTimeCorrect,
-                                allTimeAnswered: allTimeAnswered,
-                                allTimeBestStreak: allTimeBestStreak
+                                game: .beatclock
                             )
                             .frame(maxWidth: .infinity)
                             .multilineTextAlignment(.center)
@@ -196,9 +194,7 @@ struct BeatTheClockGameView: View {
                                 currentCorrect: score,
                                 currentAnswered: answered,
                                 currentStreak: currentStreak,
-                                allTimeCorrect: allTimeCorrect,
-                                allTimeAnswered: allTimeAnswered,
-                                allTimeBestStreak: allTimeBestStreak
+                                game: .beatclock
                             )
                             .frame(maxWidth: .infinity)
                             .multilineTextAlignment(.center)

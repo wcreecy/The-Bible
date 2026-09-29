@@ -277,6 +277,7 @@ struct StatsView: View {
                 HStack(alignment: .top, spacing: 16) {
                     VStack(spacing: 16) {
                         GamesOverviewCardView()
+                        GameInsightsCardView()
                     }
                     .frame(maxWidth: 560, alignment: .topLeading)
 
@@ -290,6 +291,7 @@ struct StatsView: View {
             } else {
                 VStack(spacing: 16) {
                     GamesOverviewCardView()
+                    GameInsightsCardView()
                     AllGamesComparisonCardView()
                     PlayerStatSheetCardView()
                 }

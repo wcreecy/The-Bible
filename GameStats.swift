@@ -1,5 +1,3 @@
-// the entire code of the file with your changes goes here.
-// Do not skip over anything.
 import Foundation
 import Combine
 
@@ -379,9 +377,11 @@ final class GameStats: ObservableObject {
         let wdDaily = wordle(type: .daily)
         let wdFree = wordle(type: .free)
         let wdLegacyAll = wordleLegacyAll
+        let typedAnswered = wdDaily.answered + wdFree.answered
+        let typedCorrect = wdDaily.correct + wdFree.correct
         let wdCombined = GameStat(
-            correct: wdDaily.correct + wdFree.correct + wdLegacyAll.correct,
-            answered: wdDaily.answered + wdFree.answered + wdLegacyAll.answered,
+            correct: typedAnswered > 0 || typedCorrect > 0 ? typedCorrect : wdLegacyAll.correct,
+            answered: typedAnswered > 0 || typedCorrect > 0 ? typedAnswered : wdLegacyAll.answered,
             bestStreak: max((wdDaily.bestStreak ?? 0), (wdFree.bestStreak ?? 0), (wdLegacyAll.bestStreak ?? 0))
         )
 
@@ -395,6 +395,42 @@ final class GameStats: ObservableObject {
             .init(name: "WORD", correct: wdCombined.correct, answered: wdCombined.answered, bestStreak: wdCombined.bestStreak)
         ]
         return GameBreakdown(entries: entries)
+    }
+
+    struct ScorecardStats {
+        let correct: Int
+        let attempts: Int
+        let bestStreak: Int
+    }
+
+    /// The canonical source used by both the Stats tab and every in-game scorecard.
+    func scorecardStats(for game: GameID, wordMode: WordMode? = nil) -> ScorecardStats {
+        let stat: GameStat
+        switch game {
+        case .quiz: stat = quiz
+        case .hangman: stat = hangman
+        case .beatclock: stat = beatclock
+        case .versematch: stat = versematch
+        case .bookorder: stat = bookorder
+        case .whoami: stat = whoami
+        case .wordle:
+            if let wordMode {
+                let counts = wordleCounts(mode: wordMode)
+                let suffix = wordMode == .hard ? "hard" : "normal"
+                return ScorecardStats(
+                    correct: counts.wins,
+                    attempts: counts.answered,
+                    bestStreak: max(0, readInt("wordleAllTimeBestStreak_\(suffix)"))
+                )
+            }
+            let entry = breakdownSnapshot().entries.first { $0.name == "WORD" }
+            return ScorecardStats(
+                correct: entry?.correct ?? 0,
+                attempts: entry?.answered ?? 0,
+                bestStreak: entry?.bestStreak ?? 0
+            )
+        }
+        return ScorecardStats(correct: stat.correct, attempts: stat.answered, bestStreak: stat.bestStreak ?? 0)
     }
 
     private static func storageKey(for game: GameID) -> String {
@@ -429,16 +465,18 @@ final class GameStats: ObservableObject {
         }
     }
 
-    private func updateDailyMaps(addAnswered: Int, addCorrect: Int, forGameKey key: String) {
+    private func updateDailyMaps(addAnswered: Int, addCorrect: Int, forGameKey key: String, includeOverall: Bool = true) {
         let dayKey = Self.localDayKey(for: Date())
 
-        var dailyAnswered: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered")
-        dailyAnswered[dayKey, default: 0] = max(0, (dailyAnswered[dayKey] ?? 0) + max(0, addAnswered))
-        saveJSONMap(dailyAnswered, forKey: "gamesDailyAnswered")
+        if includeOverall {
+            var dailyAnswered: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered")
+            dailyAnswered[dayKey, default: 0] = max(0, (dailyAnswered[dayKey] ?? 0) + max(0, addAnswered))
+            saveJSONMap(dailyAnswered, forKey: "gamesDailyAnswered")
 
-        var dailyCorrect: [String: Int] = loadJSONMap(forKey: "gamesDailyCorrect")
-        dailyCorrect[dayKey, default: 0] = max(0, (dailyCorrect[dayKey] ?? 0) + max(0, addCorrect))
-        saveJSONMap(dailyCorrect, forKey: "gamesDailyCorrect")
+            var dailyCorrect: [String: Int] = loadJSONMap(forKey: "gamesDailyCorrect")
+            dailyCorrect[dayKey, default: 0] = max(0, (dailyCorrect[dayKey] ?? 0) + max(0, addCorrect))
+            saveJSONMap(dailyCorrect, forKey: "gamesDailyCorrect")
+        }
 
         var perAnswered: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered_\(key)")
         perAnswered[dayKey, default: 0] = max(0, (perAnswered[dayKey] ?? 0) + max(0, addAnswered))
@@ -729,7 +767,7 @@ final class GameStats: ObservableObject {
         )
 
         let perModeKey = Self.storageKeyForWord(mode: mode)
-        updateDailyMaps(addAnswered: 1, addCorrect: won ? 1 : 0, forGameKey: perModeKey)
+        updateDailyMaps(addAnswered: 1, addCorrect: won ? 1 : 0, forGameKey: perModeKey, includeOverall: false)
 
         let defaults = UserDefaults.standard
         let typeSuf = (type == .daily) ? "daily" : "free"
@@ -1024,9 +1062,11 @@ final class GameStats: ObservableObject {
 
     private func aggregateAll() -> (correct: Int, answered: Int) {
         let stats = [quiz, hangman, versematch, beatclock, bookorder, whoami]
+        let typedCorrect = wordle(type: .daily).correct + wordle(type: .free).correct
+        let typedAnswered = wordle(type: .daily).answered + wordle(type: .free).answered
         let wordleCombined = GameStat(
-            correct: wordle(type: .daily).correct + wordle(type: .free).correct + wordleLegacyAll.correct,
-            answered: wordle(type: .daily).answered + wordle(type: .free).answered + wordleLegacyAll.answered,
+            correct: typedCorrect > 0 || typedAnswered > 0 ? typedCorrect : wordleLegacyAll.correct,
+            answered: typedCorrect > 0 || typedAnswered > 0 ? typedAnswered : wordleLegacyAll.answered,
             bestStreak: nil
         )
         let totalCorrect = stats.reduce(0) { $0 + max(0, $1.correct) } + wordleCombined.correct
@@ -1197,7 +1237,9 @@ final class GameStats: ObservableObject {
         }
 
         var current = 0
-        for (_, a, _) in series.reversed() {
+        var currentSeries = Array(series)
+        if currentSeries.last?.answered == 0 { currentSeries.removeLast() }
+        for (_, a, _) in currentSeries.reversed() {
             if a > 0 { current += 1 } else { break }
         }
 
@@ -1223,7 +1265,9 @@ final class GameStats: ObservableObject {
         }
 
         var current = 0
-        for (_, a, _) in series.reversed() {
+        var currentSeries = Array(series)
+        if currentSeries.last?.answered == 0 { currentSeries.removeLast() }
+        for (_, a, _) in currentSeries.reversed() {
             if a > 0 { current += 1 } else { break }
         }
 
@@ -1247,7 +1291,9 @@ final class GameStats: ObservableObject {
         }
 
         var current = 0
-        for (_, a, _) in series.reversed() {
+        var currentSeries = Array(series)
+        if currentSeries.last?.answered == 0 { currentSeries.removeLast() }
+        for (_, a, _) in currentSeries.reversed() {
             if a > 0 { current += 1 } else { break }
         }
 
@@ -1369,7 +1415,7 @@ final class GameStats: ObservableObject {
         for b in allBooks {
             let a = max(0, answeredMap[b] ?? 0)
             let c = max(0, correctMap[b] ?? 0)
-            guard a > 0 else { continue }
+            guard a > 0, BibleData.books.contains(where: { $0.name == b }) else { continue }
             let g = StatsSeriesBuilder.genreForBook(b)
             var cur = buckets[g] ?? (0, 0)
             cur.a += a
@@ -1754,5 +1800,32 @@ final class GameStats: ObservableObject {
             return lhs.3 > rhs.3
         }
         return rows
+    }
+
+    /// Combined book mastery from the two games that record canonical Bible-book results.
+    func bookMastery(minAttempts: Int = 5) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
+        let quizMaps = loadQuizPerBookMaps()
+        let verseMaps = loadVerseMatchPerBookMaps()
+        return BibleData.books.compactMap { book in
+            let name = book.name
+            let answered = max(0, quizMaps.answered[name] ?? 0) + max(0, verseMaps.answered[name] ?? 0)
+            guard answered >= minAttempts else { return nil }
+            let correct = max(0, quizMaps.correct[name] ?? 0) + max(0, verseMaps.correct[name] ?? 0)
+            return (name, answered, correct, min(100, max(0, Double(correct) / Double(answered) * 100)))
+        }
+        .sorted { lhs, rhs in
+            if lhs.pct == rhs.pct { return lhs.book < rhs.book }
+            return lhs.pct > rhs.pct
+        }
+    }
+
+    func accuracyByDifficulty() -> [(difficulty: String, answered: Int, correct: Int, pct: Double)] {
+        ["easy", "normal", "hard"].map { difficulty in
+            let prefixes = ["quiz", "hangman", "versematch", "beatclock", "bookorder", "whoami"]
+            let answered = prefixes.reduce(0) { $0 + max(0, readInt("\($1)AllTimeAnswered_\(difficulty)")) }
+            let correct = prefixes.reduce(0) { $0 + max(0, readInt("\($1)AllTimeCorrect_\(difficulty)")) }
+            let pct = answered > 0 ? Double(correct) / Double(answered) * 100 : 0
+            return (difficulty.capitalized, answered, correct, pct)
+        }
     }
 }

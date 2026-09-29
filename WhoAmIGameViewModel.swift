@@ -247,7 +247,8 @@ final class WhoAmIGameViewModel: ObservableObject {
         guard !roundOver else { return }
         stopTimer()
         answered += 1
-        // Do NOT reset persistent streak on skip/timeout (only on explicit incorrect selection)
+        writePersistentStreak(0)
+        currentStreak = 0
         GameStats.shared.recordRound(
             game: .whoami,
             difficulty: difficulty.statsDifficulty,

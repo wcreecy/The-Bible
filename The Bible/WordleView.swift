@@ -264,9 +264,8 @@ struct WordleView: View {
                         currentCorrect: score,
                         currentAnswered: answered,
                         currentStreak: currentStreak,
-                        allTimeCorrect: allTimeCorrect,
-                        allTimeAnswered: allTimeAnswered,
-                        allTimeBestStreak: allTimeBestStreak
+                        game: .wordle,
+                        wordMode: hardModeEnabled ? .hard : .normal
                     )
                     .padding(.horizontal)
 

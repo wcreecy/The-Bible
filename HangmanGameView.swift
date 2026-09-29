@@ -306,9 +306,7 @@ struct HangmanGameView: View {
             currentCorrect: score,
             currentAnswered: answered,
             currentStreak: currentStreak,
-            allTimeCorrect: allTimeCorrect,
-            allTimeAnswered: allTimeAnswered,
-            allTimeBestStreak: allTimeBestStreak
+            game: .hangman
         )
 
         HangmanDrawing(

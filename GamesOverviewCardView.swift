@@ -1,5 +1,3 @@
-// the entire code of the file with your changes goes here.
-// Do not skip over anything.
 import SwiftUI
 import Charts
 
@@ -84,6 +82,13 @@ struct GamesOverviewCardView: View {
             let totalAnswered = breakdown.totalAnswered
             let totalCorrect = breakdown.totalCorrect
             let overallPct = breakdown.percentage
+            let playedGamePercentages = entries.compactMap { entry -> Double? in
+                guard entry.answered > 0 else { return nil }
+                return Double(entry.correct) / Double(entry.answered) * 100
+            }
+            let balancedPct = playedGamePercentages.isEmpty
+                ? 0
+                : playedGamePercentages.reduce(0, +) / Double(playedGamePercentages.count)
             let isEmpty = (totalAnswered == 0)
 
             let availableNames = Array(Set(entries.map { $0.name }))
@@ -151,7 +156,7 @@ struct GamesOverviewCardView: View {
 
             let displayPct: Double = {
                 if selectedGame == "WORD", let scoped = wordScoped { return scoped.accPct }
-                return (selectedGame == "All Games") ? overallPct : kpiAccuracyPct
+                return (selectedGame == "All Games") ? balancedPct : kpiAccuracyPct
             }()
             let displayTint: Color = Color.gamerScoreColor(for: displayPct)
 
@@ -288,6 +293,9 @@ struct GamesOverviewCardView: View {
                             return GameStats.shared.accuracy7DayTrend(forDisplayName: selectedGame)
                         }
                     }()
+                    let currentTrendAttempts = series30.suffix(7).reduce(0) { $0 + $1.answered }
+                    let previousTrendAttempts = series30.dropLast(7).suffix(7).reduce(0) { $0 + $1.answered }
+                    let hasTrendComparison = currentTrendAttempts > 0 && previousTrendAttempts > 0
                     let trendTint: Color = trend7.deltaVsPrev >= 0 ? .green : .red
                     let trendArrow: String = trend7.deltaVsPrev >= 0 ? "arrow.up.right" : "arrow.down.right"
                     let hasRecentActivity30 = series30.contains { $0.answered > 0 }
@@ -296,7 +304,7 @@ struct GamesOverviewCardView: View {
                         GridRow {
                             MetricChip(title: "Accuracy", value: "\(Int(round(kpiAccuracyPct)))%", tint: kpiAccuracyTint, fillsWidth: true)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                            MetricChip(title: "Played", value: "\(kpiPlayed)", tint: .blue, fillsWidth: true)
+                            MetricChip(title: "Attempts", value: "\(kpiPlayed)", tint: .blue, fillsWidth: true)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         GridRow {
@@ -308,7 +316,7 @@ struct GamesOverviewCardView: View {
                         GridRow {
                             MetricChip(title: "Active Days (30D)", value: "\(activeDays30)", tint: .purple, fillsWidth: true)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                            MetricChip(title: "Questions / Day", value: "\(avgPerActive)", tint: .teal, fillsWidth: true)
+                            MetricChip(title: "Attempts / Active Day", value: "\(avgPerActive)", tint: .teal, fillsWidth: true)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         GridRow {
@@ -323,15 +331,21 @@ struct GamesOverviewCardView: View {
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                 HStack(spacing: 4) {
-                                    Text("\(Int(round(trend7.currentPct)))%")
+                                    Text(currentTrendAttempts > 0 ? "\(Int(round(trend7.currentPct)))%" : "No recent attempts")
                                         .font(.footnote.weight(.semibold))
                                         .monospacedDigit()
-                                    Image(systemName: trendArrow)
-                                        .foregroundStyle(trendTint)
-                                    Text("\(Int(round(abs(trend7.deltaVsPrev))))%")
-                                        .font(.caption.weight(.semibold))
-                                        .monospacedDigit()
-                                        .foregroundStyle(trendTint)
+                                    if hasTrendComparison {
+                                        Image(systemName: trendArrow)
+                                            .foregroundStyle(trendTint)
+                                        Text("\(Int(round(abs(trend7.deltaVsPrev)))) pts")
+                                            .font(.caption.weight(.semibold))
+                                            .monospacedDigit()
+                                            .foregroundStyle(trendTint)
+                                    } else if currentTrendAttempts > 0 {
+                                        Text("No previous data")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
                                 }
                             }
                             .padding(.vertical, 10)
@@ -360,13 +374,13 @@ struct GamesOverviewCardView: View {
                         ForEach(series30, id: \.date) { point in
                             LineMark(
                                 x: .value("Date", point.date),
-                                y: .value("Played", point.answered)
+                                y: .value("Attempts", point.answered)
                             )
                             .interpolationMethod(.monotone)
                             .foregroundStyle(Color.accentColor.opacity(hasRecentActivity30 ? 0.9 : 0.35))
                             AreaMark(
                                 x: .value("Date", point.date),
-                                y: .value("Played", point.answered)
+                                y: .value("Attempts", point.answered)
                             )
                             .interpolationMethod(.monotone)
                             .foregroundStyle(Color.accentColor.opacity(hasRecentActivity30 ? 0.18 : 0.08))
@@ -1109,4 +1123,3 @@ struct GamesOverviewCardView: View {
         }
     }
 }
-

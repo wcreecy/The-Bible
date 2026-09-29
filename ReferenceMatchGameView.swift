@@ -156,9 +156,7 @@ struct VerseMatchGameView: View {
                         currentCorrect: score,
                         currentAnswered: answered,
                         currentStreak: currentStreak,
-                        allTimeCorrect: allTimeCorrect,
-                        allTimeAnswered: allTimeAnswered,
-                        allTimeBestStreak: allTimeBestStreak
+                        game: .versematch
                     )
 
                     GroupBox {
