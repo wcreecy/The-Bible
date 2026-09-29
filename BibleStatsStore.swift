@@ -18,6 +18,7 @@ final class BibleStatsStore {
         static let keyLastRead = "lastReadEntry"                    // JSON of LastRead
         static let keySeenVersesByChapter = "seenVersesByChapter"   // [String: [Int]] keyed by "Book:Chapter"
         static let keyChapterCompletionDates = "chapterCompletionDates" // [String: Date] keyed by "Book:Chapter"
+        static let keyReadingContributions = "readingTimeContributionsV2"
         // Swap this to your app group if desired:
         static var provider: UserDefaults { UserDefaults.standard }
 
@@ -45,6 +46,7 @@ final class BibleStatsStore {
     typealias SeenMap = [String: Set<Int>]
     var cacheSeenVersesByChapter: SeenMap?
     var cacheChapterCompletionDates: [String: Date]?
+    var cacheReadingContributions: [String: [String: [String: Int]]]?
 
     // MARK: - Cache reset for external updates
 
@@ -56,6 +58,7 @@ final class BibleStatsStore {
         cacheLastRead = nil
         cacheSeenVersesByChapter = nil
         cacheChapterCompletionDates = nil
+        cacheReadingContributions = nil
     }
 
     // Clear all local Bible stats data (does not touch iCloud; coordinator handles that).
@@ -68,6 +71,7 @@ final class BibleStatsStore {
         d.removeObject(forKey: Defaults.keyLastRead)
         d.removeObject(forKey: Defaults.keySeenVersesByChapter)
         d.removeObject(forKey: Defaults.keyChapterCompletionDates)
+        d.removeObject(forKey: Defaults.keyReadingContributions)
         resetCaches()
     }
 

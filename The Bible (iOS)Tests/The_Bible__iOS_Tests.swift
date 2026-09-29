@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import The_Bible__iOS_
+@testable import Bible
 
 @MainActor
 struct The_Bible__iOS_Tests {
@@ -149,5 +149,38 @@ struct The_Bible__iOS_Tests {
         #expect(!ReadingSessionsStore.isValid(noise))
         #expect(ReadingSessionsStore.isValid(valid))
         #expect(StatsSeriesBuilder.averageSessionLength(sessions: [noise, valid]) == 70)
+    }
+
+    @Test
+    func chapterSegmentsWithTheSameReadingSessionAreCombined() {
+        let sessionID = UUID()
+        let start = Date(timeIntervalSince1970: 2_000)
+        let firstChapter = ReadingSessionsStore.Session(
+            readingSessionID: sessionID,
+            start: start,
+            end: start.addingTimeInterval(120),
+            book: "John",
+            chapter: 1
+        )
+        let secondChapter = ReadingSessionsStore.Session(
+            readingSessionID: sessionID,
+            start: start.addingTimeInterval(120),
+            end: start.addingTimeInterval(300),
+            book: "John",
+            chapter: 2
+        )
+
+        let durations = StatsSeriesBuilder.sessionDurations(sessions: [firstChapter, secondChapter])
+
+        #expect(durations == [300])
+        #expect(StatsSeriesBuilder.averageSessionLength(sessions: [firstChapter, secondChapter]) == 300)
+    }
+
+    @Test
+    func readingComparisonHandlesGrowthDeclineAndNoBaseline() {
+        #expect(ReadingInsights(recentSeconds: 900, previousSeconds: 600).comparisonPercent == 50)
+        #expect(ReadingInsights(recentSeconds: 300, previousSeconds: 600).comparisonPercent == -50)
+        #expect(ReadingInsights(recentSeconds: 300, previousSeconds: 0).comparisonPercent == 100)
+        #expect(ReadingInsights(recentSeconds: 0, previousSeconds: 0).comparisonPercent == nil)
     }
 }

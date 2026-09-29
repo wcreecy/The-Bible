@@ -3,13 +3,13 @@ import Charts
 
 struct AverageSessionCardView: View {
     let title: String
-    let sessionsSeries: [(index: Int, minutes: Int)]
+    let sessionsSeries: [(index: Int, seconds: Int)]
     let avgSessionSeconds: Int
     let formatSeconds: (Int) -> String
 
     init(
         title: String = "Average Session Length",
-        sessionsSeries: [(index: Int, minutes: Int)],
+        sessionsSeries: [(index: Int, seconds: Int)],
         avgSessionSeconds: Int,
         formatSeconds: @escaping (Int) -> String
     ) {
@@ -37,12 +37,12 @@ struct AverageSessionCardView: View {
                         ForEach(sessionsSeries, id: \.index) { point in
                             LineMark(
                                 x: .value("Session", point.index),
-                                y: .value("Minutes", point.minutes)
+                                y: .value("Minutes", Double(point.seconds) / 60.0)
                             )
                             .foregroundStyle(.teal)
                             PointMark(
                                 x: .value("Session", point.index),
-                                y: .value("Minutes", point.minutes)
+                                y: .value("Minutes", Double(point.seconds) / 60.0)
                             )
                             .foregroundStyle(.teal)
                         }
@@ -59,8 +59,8 @@ struct AverageSessionCardView: View {
         }
     }
 
-    private var maxMinutes: Int {
+    private var maxMinutes: Double {
         guard !sessionsSeries.isEmpty else { return 0 }
-        return sessionsSeries.map { max(0, $0.minutes) }.max() ?? 0
+        return sessionsSeries.map { Double(max(0, $0.seconds)) / 60.0 }.max() ?? 0
     }
 }

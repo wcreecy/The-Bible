@@ -12,6 +12,7 @@ final class ReadingTimeTracker: ObservableObject {
 
     private var currentBook: String?
     private var currentChapterNumber: Int?
+    private var readingSessionID: UUID?
     private var segmentStartDate: Date?
     private var checkpointDate: Date?
     private var checkpointInstant: ContinuousClock.Instant?
@@ -39,6 +40,7 @@ final class ReadingTimeTracker: ObservableObject {
         closeActiveSegment()
         currentBook = bookName
         currentChapterNumber = chapter
+        readingSessionID = UUID()
         isPaused = false
         beginActiveSegment()
     }
@@ -58,6 +60,7 @@ final class ReadingTimeTracker: ObservableObject {
         stopTicker()
         currentBook = nil
         currentChapterNumber = nil
+        readingSessionID = nil
         isPaused = false
     }
 
@@ -151,6 +154,7 @@ final class ReadingTimeTracker: ObservableObject {
             let activeEnd = start.addingTimeInterval(TimeInterval(segmentRecordedSeconds))
             for interval in Self.splitAtMidnight(from: start, to: activeEnd) {
                 ReadingSessionsStore.shared.appendSession(.init(
+                    readingSessionID: readingSessionID,
                     start: interval.start,
                     end: interval.end,
                     book: book,
@@ -184,13 +188,8 @@ final class ReadingTimeTracker: ObservableObject {
     }
 
     private func persist(seconds: Int, bookName: String, from start: Date, to end: Date) {
-        var totals = BibleStatsStore.shared.loadTotals()
-        totals[bookName, default: 0] += seconds
-        BibleStatsStore.shared.saveTotals(totals)
-
         for allocation in Self.dailyAllocations(seconds: seconds, from: start, to: end) {
-            BibleStatsStore.shared.add(seconds: allocation.seconds, on: allocation.date)
-            BibleStatsStore.shared.add(bookName: bookName, seconds: allocation.seconds, on: allocation.date)
+            BibleStatsStore.shared.addReadingTime(bookName: bookName, seconds: allocation.seconds, on: allocation.date)
         }
     }
 

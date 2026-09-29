@@ -146,25 +146,25 @@ struct ProgressCardView: View {
 
     private var collapsedHeader: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Bible Reading Progress")
+            Text("Reading Progress")
                 .font(.headline)
 
             if hSizeClass == .regular {
                 HStack(spacing: 12) {
                     summaryTile(
-                        title: "Books",
+                        title: "Books fully viewed",
                         countText: "\(formatInt(booksCompleted))/\(formatInt(totalBooks))",
                         percent: booksPercent,
                         tint: .green
                     )
                     summaryTile(
-                        title: "Chapters",
+                        title: "Chapters fully viewed",
                         countText: "\(formatInt(visitedCount))/\(formatInt(totalChapters))",
                         percent: chaptersPercent,
                         tint: .blue
                     )
                     summaryTile(
-                        title: "Verses",
+                        title: "Verses viewed",
                         countText: "\(formatInt(completedVerses))/\(formatInt(totalVerses))",
                         percent: versesPercent,
                         tint: .accentColor
@@ -173,19 +173,19 @@ struct ProgressCardView: View {
             } else {
                 VStack(spacing: 8) {
                     summaryTile(
-                        title: "Books",
+                        title: "Books fully viewed",
                         countText: "\(formatInt(booksCompleted))/\(formatInt(totalBooks))",
                         percent: booksPercent,
                         tint: .green
                     )
                     summaryTile(
-                        title: "Chapters",
+                        title: "Chapters fully viewed",
                         countText: "\(formatInt(visitedCount))/\(formatInt(totalChapters))",
                         percent: chaptersPercent,
                         tint: .blue
                     )
                     summaryTile(
-                        title: "Verses",
+                        title: "Verses viewed",
                         countText: "\(formatInt(completedVerses))/\(formatInt(totalVerses))",
                         percent: versesPercent,
                         tint: .accentColor
@@ -251,7 +251,7 @@ struct ProgressCardView: View {
 
     private var compactHeader: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Bible Reading Progress")
+            Text("Reading Progress")
                 .font(.headline)
 
             VStack(spacing: 8) {
@@ -265,7 +265,7 @@ struct ProgressCardView: View {
     private var regularHeader: some View {
         HStack(alignment: .center, spacing: 14) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Bible Reading Progress")
+                Text("Reading Progress")
                     .font(.headline)
                 HStack(spacing: 8) {
                     Text("\(formatInt(booksCompleted))/\(formatInt(totalBooks)) books")

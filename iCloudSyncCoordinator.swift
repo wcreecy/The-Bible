@@ -160,6 +160,7 @@ final class iCloudSyncCoordinator {
             BibleStatsStore.Defaults.keyTotals,
             BibleStatsStore.Defaults.keyDailyTotals,
             BibleStatsStore.Defaults.keyDailyTotalsByBook,
+            BibleStatsStore.Defaults.keyReadingContributions,
             BibleStatsStore.Defaults.keyVisitedChapters,
             BibleStatsStore.Defaults.keyLastRead,
             BibleStatsStore.Defaults.keySeenVersesByChapter,

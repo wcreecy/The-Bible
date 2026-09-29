@@ -5,6 +5,9 @@ extension BibleStatsStore {
     // MARK: - Per-day per-book totals (for time-windowed top books)
 
     func loadDailyTotalsByBook() -> [String: [String: Int]] {
+        if Defaults.provider.data(forKey: Defaults.keyReadingContributions) != nil {
+            return derivedDailyTotalsByBook()
+        }
         if let cached = cacheDailyTotalsByBook { return cached }
         let dict: [String: [String: Int]] = loadJSON(key: Defaults.keyDailyTotalsByBook, default: [:])
         cacheDailyTotalsByBook = dict
@@ -46,7 +49,7 @@ extension BibleStatsStore {
             var ot = 0
             var nt = 0
             for (book, seconds) in totals {
-                let idx = indexMap[book] ?? Int.max
+                guard let idx = indexMap[book] else { continue }
                 if idx < mIdx { ot += max(0, seconds) } else { nt += max(0, seconds) }
             }
             return (ot, nt)

@@ -5,6 +5,9 @@ extension BibleStatsStore {
     // MARK: - Daily totals (overall)
 
     func loadDailyTotals() -> [String: Int] {
+        if Defaults.provider.data(forKey: Defaults.keyReadingContributions) != nil {
+            return derivedDailyTotals()
+        }
         if let cached = cacheDailyTotals { return cached }
         let decoded: [String: Int] = loadJSON(key: Defaults.keyDailyTotals, default: [:])
         cacheDailyTotals = decoded

@@ -88,7 +88,7 @@ struct TotalsCardView: View {
                             .foregroundStyle(.secondary)
                         Chart {
                             ForEach(series, id: \.date) { item in
-                                let minutes = Int(round(Double(item.seconds) / 60.0))
+                                let minutes = Double(item.seconds) / 60.0
                                 BarMark(
                                     x: .value("Date", item.date, unit: currentBarUnit),
                                     y: .value("Minutes", minutes)
@@ -99,12 +99,12 @@ struct TotalsCardView: View {
                                     if minutes > 0, showValueLabels {
                                         // Smaller font on iPhone (compact) for legibility with many bars
                                         if hSizeClass == .compact {
-                                            Text("\(minutes)")
+                                            Text(minutes.formatted(.number.precision(.fractionLength(minutes < 1 ? 1 : 0))))
                                                 .font(.system(size: 9, weight: .semibold))
                                                 .foregroundStyle(.secondary)
                                                 .monospacedDigit()
                                         } else {
-                                            Text("\(minutes)")
+                                            Text(minutes.formatted(.number.precision(.fractionLength(minutes < 1 ? 1 : 0))))
                                                 .font(.caption2.weight(.semibold))
                                                 .foregroundStyle(.secondary)
                                                 .monospacedDigit()
@@ -169,10 +169,10 @@ struct TotalsCardView: View {
     }
 
     // Max minutes helper for a safe y-domain
-    private var maxMinutesInSeries: Int {
+    private var maxMinutesInSeries: Double {
         guard !series.isEmpty else { return 0 }
         let maxSeconds = series.map { max(0, $0.seconds) }.max() ?? 0
-        return Int(round(Double(maxSeconds) / 60.0))
+        return Double(maxSeconds) / 60.0
     }
 
     // Responsive chip grid (simple heuristic)

@@ -126,6 +126,9 @@
 		2C9CD7852EE2FFB90073622F /* GameStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9CD7842EE2FFB90073622F /* GameStats.swift */; };
 		2CB309D32EC2CE2D0032CB7D /* BibleReferenceLinker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB309D22EC2CE2D0032CB7D /* BibleReferenceLinker.swift */; };
 		2CB929A9306BD98000B03AB0 /* ContextualTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB929A8306BD98000B03AB0 /* ContextualTipView.swift */; };
+		2CB929AB306BEBD900B03AB0 /* ReadingInsights.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB929AA306BEBD900B03AB0 /* ReadingInsights.swift */; };
+		2CB929AD306BEBD900B03AB0 /* ReadingInsightsCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB929AC306BEBD900B03AB0 /* ReadingInsightsCardView.swift */; };
+		2CB929AF306BEBD900B03AB0 /* BibleStatsStore+Contributions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB929AE306BEBD900B03AB0 /* BibleStatsStore+Contributions.swift */; };
 		2CBD4223306B561D002E33CE /* PersistenceFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBD4222306B561D002E33CE /* PersistenceFeedback.swift */; };
 		2CBD4225306B575C002E33CE /* VerseActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBD4224306B575C002E33CE /* VerseActionMenu.swift */; };
 		2CBDF1DA2ED09F7E00CEE884 /* WordSearchGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBDF1D92ED09F7E00CEE884 /* WordSearchGameView.swift */; };
@@ -333,6 +336,9 @@
 		2CB677DA2EB680AE00E609B5 /* BibleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BibleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CB677E42EB680AE00E609B5 /* BibleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BibleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CB929A8306BD98000B03AB0 /* ContextualTipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualTipView.swift; sourceTree = "<group>"; };
+		2CB929AA306BEBD900B03AB0 /* ReadingInsights.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingInsights.swift; sourceTree = "<group>"; };
+		2CB929AC306BEBD900B03AB0 /* ReadingInsightsCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingInsightsCardView.swift; sourceTree = "<group>"; };
+		2CB929AE306BEBD900B03AB0 /* BibleStatsStore+Contributions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BibleStatsStore+Contributions.swift"; sourceTree = "<group>"; };
 		2CBD4222306B561D002E33CE /* PersistenceFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceFeedback.swift; sourceTree = "<group>"; };
 		2CBD4224306B575C002E33CE /* VerseActionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerseActionMenu.swift; sourceTree = "<group>"; };
 		2CBDF1D92ED09F7E00CEE884 /* WordSearchGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordSearchGameView.swift; sourceTree = "<group>"; };
@@ -673,6 +679,9 @@
 				2CBD4222306B561D002E33CE /* PersistenceFeedback.swift */,
 				2CBD4224306B575C002E33CE /* VerseActionMenu.swift */,
 				2CB929A8306BD98000B03AB0 /* ContextualTipView.swift */,
+				2CB929AA306BEBD900B03AB0 /* ReadingInsights.swift */,
+				2CB929AC306BEBD900B03AB0 /* ReadingInsightsCardView.swift */,
+				2CB929AE306BEBD900B03AB0 /* BibleStatsStore+Contributions.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1111,6 +1120,7 @@
 				2C6BB6592EF1FF880010D769 /* BibleStatsStore+LastRead.swift in Sources */,
 				2C49CF522EBE10310006FF79 /* ShareText.swift in Sources */,
 				2CF0436D2EE9F6D800DB1283 /* TimeFormatters.swift in Sources */,
+				2CB929AD306BEBD900B03AB0 /* ReadingInsightsCardView.swift in Sources */,
 				2C49CF872EBE2E9C0006FF79 /* StopwatchActivityController.swift in Sources */,
 				2CD7D8252EC9FF9A00849235 /* LastReadWidget.swift in Sources */,
 				2C49CF822EBE27D40006FF79 /* PrayerTimerActivityController.swift in Sources */,
@@ -1168,8 +1178,10 @@
 				2C135C3B2EC650D900306AD5 /* GameScoreboardCard.swift in Sources */,
 				2CF0436F2EE9F6DB00DB1283 /* DateFormatters.swift in Sources */,
 				2C33952D2EEDCB3D00E8CA41 /* ProgressRing.swift in Sources */,
+				2CB929AB306BEBD900B03AB0 /* ReadingInsights.swift in Sources */,
 				2C33952B2EED9D8B00E8CA41 /* Color+GamerScore.swift in Sources */,
 				2C2765782EE8E5B800A321FE /* PrayerTimerController.swift in Sources */,
+				2CB929AF306BEBD900B03AB0 /* BibleStatsStore+Contributions.swift in Sources */,
 				2C4F309A2ED91514006C8DFD /* BibleStatsStore.swift in Sources */,
 				2CFEACC62EF4A50B00064270 /* WordleStatsCardView.swift in Sources */,
 				2C2A44FE2EEE340000FE8C2F /* SettingsDailyGoalSection.swift in Sources */,

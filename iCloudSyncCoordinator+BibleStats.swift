@@ -10,6 +10,7 @@ extension iCloudSyncCoordinator {
     static var stats_keyLastRead: String { BibleStatsStore.Defaults.keyLastRead }
     static var stats_keySeenVersesByChapter: String { BibleStatsStore.Defaults.keySeenVersesByChapter }
     static var stats_keyChapterCompletionDates: String { BibleStatsStore.Defaults.keyChapterCompletionDates }
+    static var stats_keyReadingContributions: String { BibleStatsStore.Defaults.keyReadingContributions }
     // Reading sessions (JSON array)
     static var stats_keyReadingSessions: String { "readingSessions" }
 
@@ -21,7 +22,8 @@ extension iCloudSyncCoordinator {
             stats_keyVisitedChapters,
             stats_keyLastRead,
             stats_keySeenVersesByChapter,
-            stats_keyChapterCompletionDates
+            stats_keyChapterCompletionDates,
+            stats_keyReadingContributions
         ]
     }
 
@@ -118,6 +120,14 @@ extension iCloudSyncCoordinator {
             let merged = mergeNestedIntMapMax(localData: localData, remoteData: remoteData, type: Map.self)
             if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
 
+        case Self.stats_keyReadingContributions:
+            typealias Map = [String: [String: [String: Int]]]
+            if let remote = decode(remoteData, as: Map.self), remote.isEmpty {
+                clearAndNotify(); return
+            }
+            let merged = mergeContributionMap(localData: localData, remoteData: remoteData)
+            if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
+
         case Self.stats_keyVisitedChapters:
             typealias Arr = [String]
             if let remote = decode(remoteData, as: Arr.self), remote.isEmpty {
@@ -195,6 +205,24 @@ extension iCloudSyncCoordinator {
                 }
             }
             merged[date] = perBook
+        }
+        return merged
+    }
+
+    private func mergeContributionMap(localData: Data?, remoteData: Data) -> [String: [String: [String: Int]]] {
+        typealias Map = [String: [String: [String: Int]]]
+        let local = decode(localData, as: Map.self) ?? [:]
+        let remote = decode(remoteData, as: Map.self) ?? [:]
+        var merged = local
+        for (day, books) in remote {
+            for (book, devices) in books {
+                for (device, seconds) in devices {
+                    merged[day, default: [:]][book, default: [:]][device] = max(
+                        merged[day]?[book]?[device] ?? 0,
+                        max(0, seconds)
+                    )
+                }
+            }
         }
         return merged
     }

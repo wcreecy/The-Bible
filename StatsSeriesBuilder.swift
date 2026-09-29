@@ -5,10 +5,20 @@ struct StatsSeriesBuilder {
     enum Aggregation { case daily, weekly, monthly, yearly }
 
     static func averageSessionLength(sessions: [ReadingSessionsStore.Session]) -> Int {
+        let durations = sessionDurations(sessions: sessions)
+        guard !durations.isEmpty else { return 0 }
+        return durations.reduce(0, +) / durations.count
+    }
+
+    static func sessionDurations(sessions: [ReadingSessionsStore.Session]) -> [Int] {
         let filtered = sessions.filter(ReadingSessionsStore.isValid)
-        guard !filtered.isEmpty else { return 0 }
-        let total = filtered.reduce(0) { $0 + ReadingSessionsStore.duration(of: $1) }
-        return total / filtered.count
+        let grouped = Dictionary(grouping: filtered) { session in
+            session.readingSessionID.map { "session:\($0.uuidString)" }
+                ?? "legacy:\(session.start.timeIntervalSinceReferenceDate):\(session.end.timeIntervalSinceReferenceDate):\(session.book):\(session.chapter ?? 0)"
+        }
+        return grouped.values.map { group in
+            group.reduce(0) { $0 + ReadingSessionsStore.duration(of: $1) }
+        }.sorted()
     }
 
     enum Genre: String, CaseIterable, Identifiable {
@@ -68,6 +78,7 @@ struct StatsSeriesBuilder {
     static func computeGenreTotals(from perBook: [String: Int]) -> [(genre: String, seconds: Int)] {
         var buckets: [Genre: Int] = [:]
         for (book, seconds) in perBook {
+            guard BibleData.books.contains(where: { $0.name == book }) else { continue }
             let g = genreForBook(book)
             buckets[g, default: 0] += max(0, seconds)
         }

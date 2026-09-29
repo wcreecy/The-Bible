@@ -23,10 +23,19 @@ final class ReadingSessionsStore {
     }
 
     struct Session: Codable, Equatable {
+        let readingSessionID: UUID?
         let start: Date
         let end: Date
         let book: String
         let chapter: Int?
+
+        init(readingSessionID: UUID? = nil, start: Date, end: Date, book: String, chapter: Int?) {
+            self.readingSessionID = readingSessionID
+            self.start = start
+            self.end = end
+            self.book = book
+            self.chapter = chapter
+        }
     }
 
     private struct Defaults {

@@ -31,7 +31,8 @@ final class StatsViewModel: ObservableObject {
 
     // Charts datasets and consistency
     @Published var last7Daily: [(date: Date, seconds: Int)] = []
-    @Published var sessionsLast7: [(index: Int, minutes: Int)] = []
+    @Published var sessionsLast7: [(index: Int, seconds: Int)] = []
+    @Published private(set) var refreshRevision: Int = 0
     @Published var avgSessionSecondsLast7: Int = 0
     @Published var last30Daily: [(date: Date, seconds: Int)] = []
 
@@ -46,6 +47,7 @@ final class StatsViewModel: ObservableObject {
 
     // Last session length (seconds)
     @Published var lastSessionSeconds: Int = 0
+    @Published var readingInsights = ReadingInsights()
 
     // Observers/subscriptions
     private var cancellables: Set<AnyCancellable> = []
@@ -90,6 +92,8 @@ final class StatsViewModel: ObservableObject {
         computeCompletionMetricsVerseComplete()
         computePerBookProgressVerseComplete()
         computeVerseTotalsAndCompleted()
+        readingInsights = ReadingInsightsCalculator.calculate()
+        refreshRevision &+= 1
     }
 
     // MARK: - Data refresh internals
@@ -168,10 +172,8 @@ final class StatsViewModel: ObservableObject {
             .filter(ReadingSessionsStore.isValid)
             .sorted { $0.end < $1.end }
         avgSessionSecondsLast7 = StatsSeriesBuilder.averageSessionLength(sessions: sessionsIn7Days)
-        sessionsLast7 = sessionsIn7Days.enumerated().map { (idx, s) in
-            let durSec = ReadingSessionsStore.duration(of: s)
-            let minutes = Int(round(Double(durSec) / 60.0))
-            return (index: idx + 1, minutes: minutes)
+        sessionsLast7 = StatsSeriesBuilder.sessionDurations(sessions: sessionsIn7Days).enumerated().map { (idx, durSec) in
+            return (index: idx + 1, seconds: durSec)
         }
 
         let allSessions = ReadingSessionsStore.shared.allSessions().filter(ReadingSessionsStore.isValid)

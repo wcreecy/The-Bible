@@ -348,8 +348,8 @@ struct HomeView: View {
                 bibleVM: bibleVM,
                 scenePhase: scenePhase,
                 onOpenStats: {
-                    // Force StatsView to open on the Bible Stats tab
-                    UserDefaults.standard.set("Bible Stats", forKey: "statsSelectedMode")
+                    // Force StatsView to open on the Reading Stats tab
+                    UserDefaults.standard.set("Reading Stats", forKey: "statsSelectedMode")
                     NotificationCenter.default.post(name: .openStats, object: nil)
                 }
             )

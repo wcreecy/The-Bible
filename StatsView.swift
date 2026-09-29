@@ -19,7 +19,7 @@ struct StatsView: View {
     }
 
     private enum StatsMode: String, CaseIterable, Identifiable {
-        case bible = "Bible Stats"
+        case bible = "Reading Stats"
         case games = "Game Stats"
         var id: String { rawValue }
     }
@@ -112,7 +112,7 @@ struct StatsView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
-                // Top toggle: Bible Stats vs Game Stats
+                // Top toggle: Reading Stats vs Game Stats
                 HStack {
                     Picker("Mode", selection: statsModeBinding) {
                         ForEach(StatsMode.allCases) { mode in
@@ -208,6 +208,11 @@ struct StatsView: View {
         .onChange(of: timeScopeGenre) { _, _ in
             recomputeGenresFromScope()
         }
+        .onChange(of: model.refreshRevision) { _, _ in
+            recomputeTotalsCardMetrics()
+            recomputeOTNTFromScope()
+            recomputeGenresFromScope()
+        }
         // Ensure only one expandable card is open at a time
         .onChange(of: showBookProgressDetails) {
             if showBookProgressDetails {
@@ -231,6 +236,7 @@ struct StatsView: View {
                     // Column 1
                     VStack(spacing: 16) {
                         progressCard
+                        readingInsightsCard
                         topBooksThisMonthCard
                         // Moved Genre Distribution under Top Books This Month in the first column
                         genreCard
@@ -252,6 +258,7 @@ struct StatsView: View {
                 // Single-column layout on iPhone (Bible-only)
                 VStack(spacing: 16) {
                     progressCard
+                    readingInsightsCard
                     totalsCard
                     otntCard
                     genreCard
@@ -369,6 +376,14 @@ struct StatsView: View {
                 }
             ),
             rows: totalsScopedRows,
+            formatSeconds: { BibleStatsStore.shared.format($0) }
+        )
+        .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
+    }
+
+    private var readingInsightsCard: some View {
+        ReadingInsightsCardView(
+            insights: model.readingInsights,
             formatSeconds: { BibleStatsStore.shared.format($0) }
         )
         .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
@@ -655,7 +670,9 @@ struct StatsView: View {
                 // Rebuild Date from key using calendar startOfDay
                 let comps = key.split(separator: "-").compactMap { Int($0) }
                 if comps.count == 3, let date = cal.date(from: DateComponents(year: comps[0], month: comps[1], day: comps[2])) {
-                    series.append((date, max(0, dailyMap[key, default: 0])))
+                    if date <= startOfToday {
+                        series.append((date, max(0, dailyMap[key, default: 0])))
+                    }
                 }
             }
             totalsDaily = series
@@ -729,16 +746,8 @@ struct StatsView: View {
             }
 
             if aggregation == .monthly {
-                let maxMonths = (monthsSpan <= 6) ? 6 : 12
-                if series.count > maxMonths {
-                    series = Array(series.suffix(maxMonths))
-                }
                 allTimeAggregation = .monthly
             } else {
-                let maxYears = 10
-                if series.count > maxYears {
-                    series = Array(series.suffix(maxYears))
-                }
                 allTimeAggregation = .yearly
             }
 
