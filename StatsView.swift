@@ -68,6 +68,7 @@ struct StatsView: View {
 
     // Size-class aware layout
     @Environment(\.horizontalSizeClass) private var hSizeClass
+    @Environment(\.verticalSizeClass) private var vSizeClass
     @Environment(\.colorScheme) private var colorScheme
 
     // OT/NT totals for the OTNT card — UI-only
@@ -228,10 +229,14 @@ struct StatsView: View {
 
     // MARK: - Mode-specific content
 
+    private var usesWideStatsLayout: Bool {
+        hSizeClass == .regular || vSizeClass == .compact
+    }
+
     private var bibleContent: some View {
         Group {
-            if hSizeClass == .regular {
-                // Two-column layout on iPad (Bible-only)
+            if usesWideStatsLayout {
+                // Two-column layout on iPad and landscape iPhone (Bible-only)
                 HStack(alignment: .top, spacing: 16) {
                     // Column 1
                     VStack(spacing: 16) {
@@ -273,7 +278,7 @@ struct StatsView: View {
 
     private var gameContent: some View {
         Group {
-            if hSizeClass == .regular {
+            if usesWideStatsLayout {
                 HStack(alignment: .top, spacing: 16) {
                     VStack(spacing: 16) {
                         GamesOverviewCardView()
