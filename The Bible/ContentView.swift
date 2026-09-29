@@ -17,6 +17,8 @@ struct ContentView: View {
     // Separate coordinators per tab to avoid path leakage/corruption
     @StateObject private var homeCoordinator = NavigationCoordinator()
     @StateObject private var bibleCoordinator = NavigationCoordinator()
+    @State private var favoritesPath = NavigationPath()
+    @State private var gamesPath = NavigationPath()
     @State private var morePath: [MoreDestination] = []
 
     @State private var selectedTab: AppTab = .home
@@ -86,14 +88,14 @@ struct ContentView: View {
                 .tag(AppTab.bible)
             }
 
-            NavigationStack {
+            NavigationStack(path: $favoritesPath) {
                 FavoritesView()
                     .appDestinations(readerFontSize: $readerFontSize, isPad: usesWideLayout)
             }
             .tabItem { Label("Favorites", systemImage: "heart") }
             .tag(AppTab.favorites)
 
-            NavigationStack {
+            NavigationStack(path: $gamesPath) {
                 GamesView()
             }
             .tabItem { Label("Games", systemImage: "gamecontroller") }
@@ -104,6 +106,12 @@ struct ContentView: View {
             }
             .tabItem { Label("More", systemImage: "ellipsis.circle") }
             .tag(AppTab.more)
+        }
+        .background {
+            TabReselectionObserver { tabIndex in
+                guard let tab = AppTab(rawValue: tabIndex), tab == selectedTab else { return }
+                handleTabReselection(tab)
+            }
         }
     }
 
@@ -433,6 +441,59 @@ struct ContentView: View {
         lastBackgroundedAt = 0
     }
 
+    // MARK: - Tab reselection
+
+    private func handleTabReselection(_ tab: AppTab) {
+        let returnedToRoot: Bool
+
+        switch tab {
+        case .home:
+            returnedToRoot = !homeCoordinator.path.isEmpty
+            homeCoordinator.reset()
+        case .bible:
+            returnedToRoot = !usesWideLayout && !bibleCoordinator.path.isEmpty
+            if !usesWideLayout {
+                bibleCoordinator.reset()
+            }
+        case .favorites:
+            returnedToRoot = !favoritesPath.isEmpty
+            if returnedToRoot {
+                favoritesPath.removeLast(favoritesPath.count)
+            }
+        case .games:
+            returnedToRoot = !gamesPath.isEmpty
+            if returnedToRoot {
+                gamesPath.removeLast(gamesPath.count)
+            }
+        case .more:
+            returnedToRoot = !morePath.isEmpty
+            morePath.removeAll()
+        }
+
+        guard !returnedToRoot else { return }
+
+        DispatchQueue.main.async {
+            scrollSelectedTabToTop()
+        }
+    }
+
+    private func scrollSelectedTabToTop() {
+        let tabController = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .compactMap(\.rootViewController)
+            .compactMap { $0.findTabBarController() }
+            .first
+
+        guard
+            let rootView = tabController?.selectedViewController?.view,
+            let scrollView = rootView.firstScrollableDescendant()
+        else { return }
+
+        let topOffset = CGPoint(x: scrollView.contentOffset.x, y: -scrollView.adjustedContentInset.top)
+        scrollView.setContentOffset(topOffset, animated: true)
+    }
+
     // MARK: - Helpers
 
     @MainActor
@@ -468,6 +529,130 @@ struct ContentView: View {
             let moreNav = tab.moreNavigationController
             MoreTabStyler.shared.install(on: moreNav)
         }
+    }
+}
+
+private struct TabReselectionObserver: UIViewControllerRepresentable {
+    let onReselect: (Int) -> Void
+
+    func makeUIViewController(context: Context) -> TabReselectionInstallerViewController {
+        TabReselectionInstallerViewController(onReselect: onReselect)
+    }
+
+    func updateUIViewController(
+        _ uiViewController: TabReselectionInstallerViewController,
+        context: Context
+    ) {
+        uiViewController.onReselect = onReselect
+        uiViewController.installIfNeeded()
+    }
+}
+
+private final class TabReselectionInstallerViewController: UIViewController {
+    var onReselect: (Int) -> Void
+    private var proxy: TabBarDelegateProxy?
+
+    init(onReselect: @escaping (Int) -> Void) {
+        self.onReselect = onReselect
+        super.init(nibName: nil, bundle: nil)
+        view.isUserInteractionEnabled = false
+        view.backgroundColor = .clear
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        installIfNeeded()
+    }
+
+    func installIfNeeded() {
+        DispatchQueue.main.async { [weak self] in
+            guard
+                let self,
+                let tabBarController = self.tabBarController
+            else { return }
+
+            if let proxy = self.proxy, tabBarController.delegate === proxy {
+                return
+            }
+
+            let proxy = TabBarDelegateProxy(
+                original: tabBarController.delegate,
+                onReselect: { [weak self] index in
+                    self?.onReselect(index)
+                }
+            )
+            self.proxy = proxy
+            tabBarController.delegate = proxy
+        }
+    }
+}
+
+private final class TabBarDelegateProxy: NSObject, UITabBarControllerDelegate {
+    weak var original: UITabBarControllerDelegate?
+    let onReselect: (Int) -> Void
+
+    init(
+        original: UITabBarControllerDelegate?,
+        onReselect: @escaping (Int) -> Void
+    ) {
+        self.original = original
+        self.onReselect = onReselect
+        super.init()
+    }
+
+    func tabBarController(
+        _ tabBarController: UITabBarController,
+        shouldSelect viewController: UIViewController
+    ) -> Bool {
+        let shouldSelect = original?.tabBarController?(
+            tabBarController,
+            shouldSelect: viewController
+        ) ?? true
+
+        if shouldSelect,
+           viewController === tabBarController.selectedViewController,
+           let index = tabBarController.viewControllers?.firstIndex(of: viewController) {
+            DispatchQueue.main.async { [onReselect] in
+                onReselect(index)
+            }
+        }
+
+        return shouldSelect
+    }
+
+    override func responds(to aSelector: Selector!) -> Bool {
+        super.responds(to: aSelector) || (original?.responds(to: aSelector) ?? false)
+    }
+
+    override func forwardingTarget(for aSelector: Selector!) -> Any? {
+        if let original, original.responds(to: aSelector) {
+            return original
+        }
+        return super.forwardingTarget(for: aSelector)
+    }
+}
+
+private extension UIView {
+    func firstScrollableDescendant() -> UIScrollView? {
+        if let scrollView = self as? UIScrollView,
+           scrollView.isScrollEnabled,
+           !scrollView.isHidden,
+           scrollView.alpha > 0 {
+            return scrollView
+        }
+
+        for subview in subviews {
+            if let scrollView = subview.firstScrollableDescendant() {
+                return scrollView
+            }
+        }
+
+        return nil
     }
 }
 

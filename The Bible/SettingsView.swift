@@ -354,4 +354,7 @@ private struct SettingsDetailForm<Content: View>: View {
 
 #Preview {
     NavigationStack { SettingsView() }
+        .environmentObject(
+            CloudKitManager(containerIdentifier: "iCloud.creecy.bible")
+        )
 }
