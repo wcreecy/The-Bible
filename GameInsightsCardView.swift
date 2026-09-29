@@ -11,12 +11,6 @@ struct GameInsightsCardView: View {
         entries.filter { $0.answered > 0 }
     }
 
-    private var balancedScore: Int? {
-        guard !playedEntries.isEmpty else { return nil }
-        let percentages = playedEntries.map { Double($0.correct) / Double($0.answered) * 100 }
-        return Int((percentages.reduce(0, +) / Double(percentages.count)).rounded())
-    }
-
     private var favoriteGame: String? {
         playedEntries.max { $0.answered < $1.answered }?.name
     }
@@ -83,14 +77,14 @@ struct GameInsightsCardView: View {
             VStack(alignment: .leading, spacing: 16) {
                 HStack(spacing: 8) {
                     MetricChip(
-                        title: "Balanced Gamer Score",
-                        value: balancedScore.map { "\($0)%" } ?? "—",
+                        title: "Games Explored",
+                        value: "\(playedEntries.count) of \(entries.count)",
                         tint: .purple,
                         fillsWidth: true
                     )
                     MetricChip(
                         title: "Next Milestone",
-                        value: "\(nextMilestone.remaining) to \(nextMilestone.target)",
+                        value: "\(nextMilestone.remaining) correct \(nextMilestone.remaining == 1 ? "answer" : "answers") to reach \(nextMilestone.target)",
                         tint: .orange,
                         fillsWidth: true
                     )

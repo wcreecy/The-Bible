@@ -82,13 +82,6 @@ struct GamesOverviewCardView: View {
             let totalAnswered = breakdown.totalAnswered
             let totalCorrect = breakdown.totalCorrect
             let overallPct = breakdown.percentage
-            let playedGamePercentages = entries.compactMap { entry -> Double? in
-                guard entry.answered > 0 else { return nil }
-                return Double(entry.correct) / Double(entry.answered) * 100
-            }
-            let balancedPct = playedGamePercentages.isEmpty
-                ? 0
-                : playedGamePercentages.reduce(0, +) / Double(playedGamePercentages.count)
             let isEmpty = (totalAnswered == 0)
 
             let availableNames = Array(Set(entries.map { $0.name }))
@@ -156,7 +149,7 @@ struct GamesOverviewCardView: View {
 
             let displayPct: Double = {
                 if selectedGame == "WORD", let scoped = wordScoped { return scoped.accPct }
-                return (selectedGame == "All Games") ? balancedPct : kpiAccuracyPct
+                return kpiAccuracyPct
             }()
             let displayTint: Color = Color.gamerScoreColor(for: displayPct)
 
