@@ -1,116 +1,103 @@
-import Foundation
 import Combine
-import SwiftUI
+import Foundation
 
-// Lightweight, battery-friendly tracker that only runs while a reading session is visible.
-// It batches writes to UserDefaults and stops when the app leaves the foreground.
+@MainActor
 final class ReadingTimeTracker: ObservableObject {
     static let shared = ReadingTimeTracker()
-    private init() {}
 
-    // Public read-only publisher for UI that wants to refresh when totals change
     @Published private(set) var lastTotalsVersion: Int = 0
 
+    private let clock = ContinuousClock()
+    private let persistInterval: TimeInterval = 15
+
     private var currentBook: String?
-    private var currentChapterNumber: Int? // new
-    private var sessionStart: Date?
-    private var accumulatedInSession: Int = 0 // seconds since start (plus any resumed accumulation)
+    private var currentChapterNumber: Int?
+    private var segmentStartDate: Date?
+    private var checkpointDate: Date?
+    private var checkpointInstant: ContinuousClock.Instant?
+    private var fractionalSeconds: Double = 0
+    private var segmentRecordedSeconds: Int = 0
     private var ticker: AnyCancellable?
     private var lastPersist: Date = .distantPast
 
-    // Debounce writes to at most once every 15 seconds
-    private let persistInterval: TimeInterval = 15
+    private(set) var isPaused = false
 
-    // Pause state
-    private(set) var isPaused: Bool = false
-
-    // MARK: - Public API
+    private init() {}
 
     func start(bookName: String, chapter: Int? = nil) {
-        // If already tracking same book and chapter (if provided), do nothing
-        if currentBook == bookName, ticker != nil || isPaused {
-            if let chapter { currentChapterNumber = chapter }
+        guard !bookName.isEmpty else { return }
+
+        if currentBook == bookName {
+            if let chapter, chapter != currentChapterNumber {
+                changeLocation(to: bookName, chapter: chapter)
+            }
             return
         }
 
-        // If switching from another book, flush first and close previous session
-        if let _ = currentBook {
-            closeCurrentSessionAndFlush(finalize: false) // close session segment
-        }
-
+        closeActiveSegment()
         currentBook = bookName
         currentChapterNumber = chapter
-        sessionStart = Date()
-        accumulatedInSession = 0
         isPaused = false
-        startTickerIfNeeded()
+        beginActiveSegment()
     }
 
     func changeBook(to bookName: String, chapter: Int? = nil) {
         guard !bookName.isEmpty else { return }
-        if currentBook == bookName {
-            if let chapter { currentChapterNumber = chapter }
-            return
-        }
-        // Close the current session segment and flush before switching
-        closeCurrentSessionAndFlush(finalize: false)
-        currentBook = bookName
-        currentChapterNumber = chapter
-        sessionStart = Date()
-        accumulatedInSession = 0
-        isPaused = false
-        startTickerIfNeeded()
+        changeLocation(to: bookName, chapter: chapter)
     }
 
-    // Allows the reader to update chapter without changing book
     func setCurrentLocation(bookName: String, chapter: Int) {
-        if currentBook != bookName {
-            changeBook(to: bookName, chapter: chapter)
-            return
-        }
-        currentChapterNumber = chapter
-        // No flush here; just update metadata for the next flush
+        guard currentBook != bookName || currentChapterNumber != chapter else { return }
+        changeLocation(to: bookName, chapter: chapter)
     }
 
     func stopAndFlush() {
-        // Close the current session with a final append and flush totals
-        closeCurrentSessionAndFlush(finalize: true)
+        closeActiveSegment()
         stopTicker()
-        self.currentBook = nil
-        self.currentChapterNumber = nil
-        self.sessionStart = nil
-        self.accumulatedInSession = 0
-        self.isPaused = false
+        currentBook = nil
+        currentChapterNumber = nil
+        isPaused = false
     }
-
-    // MARK: - Pause / Resume
 
     func pause() {
         guard !isPaused else { return }
-        // Close the ongoing segment and flush softly so elapsed so far is recorded
-        closeCurrentSessionAndFlush(finalize: false)
+        closeActiveSegment()
         stopTicker()
         isPaused = true
     }
 
     func resume() {
         guard isPaused, currentBook != nil else { return }
-        // Start a new segment from now
-        sessionStart = Date()
-        accumulatedInSession = 0
         isPaused = false
-        startTickerIfNeeded()
+        beginActiveSegment()
     }
 
-    // MARK: - Ticker
+    private func changeLocation(to bookName: String, chapter: Int?) {
+        let wasActive = !isPaused
+        closeActiveSegment()
+        currentBook = bookName
+        currentChapterNumber = chapter
+
+        if wasActive {
+            beginActiveSegment()
+        }
+    }
+
+    private func beginActiveSegment(at date: Date = Date()) {
+        guard currentBook != nil, !isPaused else { return }
+        segmentStartDate = date
+        checkpointDate = date
+        checkpointInstant = clock.now
+        fractionalSeconds = 0
+        segmentRecordedSeconds = 0
+        startTickerIfNeeded()
+    }
 
     private func startTickerIfNeeded() {
         guard ticker == nil, !isPaused else { return }
         ticker = Timer.publish(every: 1, on: .main, in: .common)
             .autoconnect()
-            .sink { [weak self] _ in
-                self?.tick()
-            }
+            .sink { [weak self] _ in self?.tick() }
     }
 
     private func stopTicker() {
@@ -119,57 +106,125 @@ final class ReadingTimeTracker: ObservableObject {
     }
 
     private func tick() {
-        guard sessionStart != nil, currentBook != nil, !isPaused else { return }
-        accumulatedInSession += 1
+        recordElapsed()
+    }
 
-        // Persist at most every persistInterval seconds
-        if Date().timeIntervalSince(lastPersist) >= persistInterval {
-            if let currentBook {
-                flush(bookName: currentBook, soft: true)
-            }
-            lastPersist = Date()
+    private func recordElapsed(nowDate: Date = Date()) {
+        guard let book = currentBook,
+              let previousDate = checkpointDate,
+              let previousInstant = checkpointInstant,
+              !isPaused else { return }
+
+        let nowInstant = clock.now
+        fractionalSeconds += Self.seconds(in: previousInstant.duration(to: nowInstant))
+        let wholeSeconds = Int(fractionalSeconds.rounded(.down))
+        fractionalSeconds -= Double(wholeSeconds)
+        checkpointDate = nowDate
+        checkpointInstant = nowInstant
+
+        guard wholeSeconds > 0 else { return }
+        segmentRecordedSeconds += wholeSeconds
+        persist(seconds: wholeSeconds, bookName: book, from: previousDate, to: nowDate)
+
+        if nowDate.timeIntervalSince(lastPersist) >= persistInterval {
+            lastPersist = nowDate
+            lastTotalsVersion &+= 1
         }
     }
 
-    // MARK: - Persistence
+    private func closeActiveSegment() {
+        guard let book = currentBook,
+              let chapter = currentChapterNumber,
+              let start = segmentStartDate else {
+            clearSegmentState()
+            return
+        }
 
-    private func flush(bookName: String, soft: Bool = false) {
-        guard accumulatedInSession > 0 else { return }
+        recordElapsed()
+        if segmentRecordedSeconds >= ReadingSessionsStore.minimumValidSessionSeconds {
+            let activeEnd = start.addingTimeInterval(TimeInterval(segmentRecordedSeconds))
+            for interval in Self.splitAtMidnight(from: start, to: activeEnd) {
+                ReadingSessionsStore.shared.appendSession(.init(
+                    start: interval.start,
+                    end: interval.end,
+                    book: book,
+                    chapter: chapter
+                ))
+            }
+        }
 
-        // Per-book totals (all-time)
+        if segmentRecordedSeconds > 0 {
+            BibleStatsStore.shared.saveLastRead(bookName: book, chapterNumber: chapter, date: Date())
+            lastTotalsVersion &+= 1
+        }
+        clearSegmentState()
+    }
+
+    private func clearSegmentState() {
+        segmentStartDate = nil
+        checkpointDate = nil
+        checkpointInstant = nil
+        fractionalSeconds = 0
+        segmentRecordedSeconds = 0
+    }
+
+    private func persist(seconds: Int, bookName: String, from start: Date, to end: Date) {
         var totals = BibleStatsStore.shared.loadTotals()
-        totals[bookName, default: 0] += accumulatedInSession
+        totals[bookName, default: 0] += seconds
         BibleStatsStore.shared.saveTotals(totals)
 
-        // Daily totals (overall)
-        BibleStatsStore.shared.addToToday(seconds: accumulatedInSession)
-
-        // Daily totals by book (for time-windowed top books)
-        BibleStatsStore.shared.addToToday(bookName: bookName, seconds: accumulatedInSession)
-
-        // Last read (do not mark chapter visited here; completion is verse-driven)
-        if let chap = currentChapterNumber {
-            BibleStatsStore.shared.saveLastRead(bookName: bookName, chapterNumber: chap, date: Date())
+        for allocation in Self.dailyAllocations(seconds: seconds, from: start, to: end) {
+            BibleStatsStore.shared.add(seconds: allocation.seconds, on: allocation.date)
+            BibleStatsStore.shared.add(bookName: bookName, seconds: allocation.seconds, on: allocation.date)
         }
-
-        accumulatedInSession = 0
-
-        // Bump a version so any listeners (like the Home card or Stats) can refresh
-        lastTotalsVersion &+= 1
     }
 
-    private func closeCurrentSessionAndFlush(finalize: Bool) {
-        guard let book = currentBook, let start = sessionStart else { return }
-        let end = Date()
-        let duration = Int(max(0, end.timeIntervalSince(start)))
-        if duration > 0 {
-            // Append session record
-            ReadingSessionsStore.shared.appendSession(.init(start: start, end: end, book: book, chapter: currentChapterNumber))
-            // DO NOT add `duration` to accumulatedInSession here — it would double-count
-            // Just flush whatever remainder is currently accumulated (seconds since last flush)
-            flush(bookName: book, soft: !finalize)
+    private static func seconds(in duration: Duration) -> Double {
+        let components = duration.components
+        return Double(components.seconds) + Double(components.attoseconds) / 1_000_000_000_000_000_000
+    }
+
+    static func dailyAllocations(
+        seconds: Int,
+        from start: Date,
+        to end: Date,
+        calendar: Calendar = .autoupdatingCurrent
+    ) -> [(date: Date, seconds: Int)] {
+        guard seconds > 0 else { return [] }
+        let intervals = splitAtMidnight(from: start, to: end, calendar: calendar)
+        guard intervals.count > 1 else { return [(start, seconds)] }
+
+        let wallDuration = max(end.timeIntervalSince(start), 0.001)
+        var remaining = seconds
+        return intervals.enumerated().map { index, interval in
+            let allocated: Int
+            if index == intervals.index(before: intervals.endIndex) {
+                allocated = remaining
+            } else {
+                let fraction = interval.end.timeIntervalSince(interval.start) / wallDuration
+                allocated = min(remaining, max(0, Int((Double(seconds) * fraction).rounded())))
+            }
+            remaining -= allocated
+            return (interval.start, allocated)
+        }.filter { $0.seconds > 0 }
+    }
+
+    static func splitAtMidnight(
+        from start: Date,
+        to end: Date,
+        calendar: Calendar = .autoupdatingCurrent
+    ) -> [(start: Date, end: Date)] {
+        guard end > start else { return [] }
+        var cal = calendar
+        cal.timeZone = .autoupdatingCurrent
+        var intervals: [(Date, Date)] = []
+        var cursor = start
+
+        while let nextDay = cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: cursor)), nextDay < end {
+            intervals.append((cursor, nextDay))
+            cursor = nextDay
         }
-        // Reset the sessionStart for subsequent segments
-        sessionStart = finalize ? nil : Date()
+        intervals.append((cursor, end))
+        return intervals
     }
 }
