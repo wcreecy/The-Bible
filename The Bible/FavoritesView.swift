@@ -6,6 +6,8 @@ struct FavoritesView: View {
     @Query(sort: [SortDescriptor(\Favorite.createdAt, order: .reverse)]) private var favorites: [Favorite]
 
     @State private var searchText: String = ""
+    @State private var removedFavorites: [RemovedFavorite] = []
+    @State private var showRemovalToast: Bool = false
 
     // Tokenize the search text into lowercase words
     private var tokens: [String] {
@@ -77,6 +79,14 @@ struct FavoritesView: View {
         .navigationTitle("Favorites")
         .toolbar { EditButton() }
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search favorites")
+        .appToast(
+            isPresented: $showRemovalToast,
+            symbol: "heart.slash",
+            text: removedFavorites.count == 1 ? "Favorite removed" : "Favorites removed",
+            tint: .secondary,
+            actionTitle: "Undo",
+            action: undoFavoriteRemoval
+        )
     }
 
     // Post a notification consumed by ContentView to switch to the Bible tab and navigate
@@ -91,10 +101,51 @@ struct FavoritesView: View {
     // Delete using indices from the filtered list to ensure correct items are removed
     private func deleteFiltered(at offsets: IndexSet) {
         let itemsToDelete = offsets.map { filteredFavorites[$0] }
+        removedFavorites = []
+        for item in itemsToDelete {
+            removedFavorites.append(RemovedFavorite(item))
+        }
         for item in itemsToDelete {
             modelContext.delete(item)
         }
         try? modelContext.save()
+        Haptics.selection()
+        showRemovalToast = true
+    }
+
+    private func undoFavoriteRemoval() {
+        for favorite in removedFavorites {
+            modelContext.insert(favorite.model)
+        }
+        try? modelContext.save()
+        removedFavorites = []
+        Haptics.success()
+    }
+}
+
+private struct RemovedFavorite {
+    let bookName: String
+    let chapterNumber: Int
+    let verseNumber: Int
+    let verseText: String
+    let createdAt: Date
+
+    init(_ favorite: Favorite) {
+        bookName = favorite.bookName
+        chapterNumber = favorite.chapterNumber
+        verseNumber = favorite.verseNumber
+        verseText = favorite.verseText
+        createdAt = favorite.createdAt
+    }
+
+    var model: Favorite {
+        Favorite(
+            bookName: bookName,
+            chapterNumber: chapterNumber,
+            verseNumber: verseNumber,
+            verseText: verseText,
+            createdAt: createdAt
+        )
     }
 }
 

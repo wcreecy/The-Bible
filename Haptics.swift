@@ -15,19 +15,30 @@ enum Haptics {
         #endif
     }()
 
-    @available(iOS 10.0, *)
-    static func notify(_ type: UINotificationFeedbackGenerator.FeedbackType) {
+    private static func notify(_ type: UINotificationFeedbackGenerator.FeedbackType) {
         guard supportsHaptics else { return }
         let gen = UINotificationFeedbackGenerator()
         gen.prepare()
         gen.notificationOccurred(type)
     }
 
-    @available(iOS 10.0, *)
     static func selection() {
         guard supportsHaptics else { return }
-        let gen = UISelectionFeedbackGenerator()
+        let gen = UIImpactFeedbackGenerator(style: .light)
         gen.prepare()
-        gen.selectionChanged()
+        gen.impactOccurred()
+    }
+
+    /// Reserve this for completed actions that have a meaningful user-visible result.
+    static func success() {
+        notify(.success)
+    }
+
+    static func warning() {
+        notify(.warning)
+    }
+
+    static func error() {
+        notify(.error)
     }
 }

@@ -21,6 +21,7 @@ struct SettingsResetDataSection: View {
                 Button("Reset", role: .destructive) {
                     // Full wipe: counters, daily maps (overall + per-game), last played
                     iCloudSyncCoordinator.shared.resetAllGameDataToZero()
+                    Haptics.success()
                 }
             } message: {
                 Text("This will remove all game-related data: all-time counters, daily activity, streaks, accuracy trends, per-game charts, and last played. This cannot be undone. Continue?")
@@ -38,6 +39,7 @@ struct SettingsResetDataSection: View {
                     // stamps a reset epoch to prevent older devices from repopulating,
                     // and performs synchronize off-main.
                     iCloudSyncCoordinator.shared.resetAllBibleStatsAndSessions()
+                    Haptics.success()
                 }
             } message: {
                 Text("All reading statistics, progress, and sessions will be removed. This cannot be undone. Do you want to continue?")

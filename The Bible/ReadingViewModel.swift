@@ -219,7 +219,7 @@ final class ReadingViewModel: ObservableObject {
             currentChapterIndex += 1
             currentVerse = 1
             topVisibleVerseID = rowID(for: 1)
-            playImpact(.light)
+            Haptics.selection()
             ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
             resetInitialMarkingAfterChapterChange()
             markActivity()
@@ -237,7 +237,7 @@ final class ReadingViewModel: ObservableObject {
         topVisibleVerseID = rowID(for: 1)
         ReadingTimeTracker.shared.changeBook(to: currentBook.name, chapter: currentChapter.number)
         resetInitialMarkingAfterChapterChange()
-        playImpact(.heavy)
+        Haptics.selection()
         markActivity()
     }
 
@@ -247,7 +247,7 @@ final class ReadingViewModel: ObservableObject {
             currentChapterIndex -= 1
             currentVerse = 1
             topVisibleVerseID = rowID(for: 1)
-            playImpact(.light)
+            Haptics.selection()
             ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
             resetInitialMarkingAfterChapterChange()
             markActivity()
@@ -265,7 +265,7 @@ final class ReadingViewModel: ObservableObject {
         topVisibleVerseID = rowID(for: 1)
         ReadingTimeTracker.shared.changeBook(to: currentBook.name, chapter: currentChapter.number)
         resetInitialMarkingAfterChapterChange()
-        playImpact(.heavy)
+        Haptics.selection()
         markActivity()
     }
 
@@ -426,12 +426,4 @@ final class ReadingViewModel: ObservableObject {
         DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
     }
 
-    // MARK: - Haptics
-
-    private func playImpact(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
-        #if canImport(UIKit)
-        let gen = UIImpactFeedbackGenerator(style: style)
-        gen.impactOccurred()
-        #endif
-    }
 }

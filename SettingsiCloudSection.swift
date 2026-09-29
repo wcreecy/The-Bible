@@ -3,6 +3,7 @@ import CloudKit
 import UIKit
 
 struct SettingsiCloudSection: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @EnvironmentObject private var cloudKitManager: CloudKitManager
     @State private var isRefreshingCloudStatus: Bool = false
     @State private var lastSyncActivity: Date?
@@ -65,8 +66,7 @@ struct SettingsiCloudSection: View {
                 .accessibilityIdentifier("icloudUserRecord")
             }
             Button {
-                let h = UIImpactFeedbackGenerator(style: .light)
-                h.impactOccurred()
+                Haptics.selection()
 
                 isRefreshingCloudStatus = true
                 Task {
@@ -81,7 +81,7 @@ struct SettingsiCloudSection: View {
                     Image(systemName: "arrow.clockwise")
                         .rotationEffect(isRefreshingCloudStatus ? .degrees(360) : .degrees(0))
                         .animation(
-                            isRefreshingCloudStatus
+                            isRefreshingCloudStatus && !reduceMotion
                             ? .linear(duration: 0.8).repeatForever(autoreverses: false)
                             : .default,
                             value: isRefreshingCloudStatus

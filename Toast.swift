@@ -4,11 +4,13 @@ public struct AppToast: View {
     public let symbol: String?
     public let text: String
     public let tint: Color
+    public let actionSpace: CGFloat
 
-    public init(symbol: String? = nil, text: String, tint: Color = .accentColor) {
+    public init(symbol: String? = nil, text: String, tint: Color = .accentColor, actionSpace: CGFloat = 0) {
         self.symbol = symbol
         self.text = text
         self.tint = tint
+        self.actionSpace = actionSpace
     }
 
     public var body: some View {
@@ -22,7 +24,8 @@ public struct AppToast: View {
                 .foregroundStyle(.primary)
                 .lineLimit(2)
         }
-        .padding(.horizontal, 16)
+        .padding(.leading, 16)
+        .padding(.trailing, 16 + actionSpace)
         .padding(.vertical, 12)
         .background(.regularMaterial, in: Capsule())
         .overlay(
@@ -37,6 +40,8 @@ public struct ToastPresenter: ViewModifier {
     let symbol: String?
     let text: String
     let tint: Color
+    let actionTitle: String?
+    let action: (() -> Void)?
 
     // Auto-dismiss task so we can cancel/reschedule when the toast is re-shown
     @State private var dismissTask: Task<Void, Never>? = nil
@@ -46,7 +51,22 @@ public struct ToastPresenter: ViewModifier {
         content
             .overlay(alignment: .bottom) {
                 if isPresented {
-                    AppToast(symbol: symbol, text: text, tint: tint)
+                    AppToast(
+                        symbol: symbol,
+                        text: text,
+                        tint: tint,
+                        actionSpace: actionTitle == nil ? 0 : 56
+                    )
+                        .overlay(alignment: .trailing) {
+                            if let actionTitle, let action {
+                                Button(actionTitle) {
+                                    action()
+                                    isPresented = false
+                                }
+                                .font(.subheadline.weight(.semibold))
+                                .padding(.trailing, 14)
+                            }
+                        }
                         .padding(.bottom, 20)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
@@ -85,7 +105,23 @@ public struct ToastPresenter: ViewModifier {
 }
 
 public extension View {
-    func appToast(isPresented: Binding<Bool>, symbol: String? = nil, text: String, tint: Color = .accentColor) -> some View {
-        self.modifier(ToastPresenter(isPresented: isPresented, symbol: symbol, text: text, tint: tint))
+    func appToast(
+        isPresented: Binding<Bool>,
+        symbol: String? = nil,
+        text: String,
+        tint: Color = .accentColor,
+        actionTitle: String? = nil,
+        action: (() -> Void)? = nil
+    ) -> some View {
+        self.modifier(
+            ToastPresenter(
+                isPresented: isPresented,
+                symbol: symbol,
+                text: text,
+                tint: tint,
+                actionTitle: actionTitle,
+                action: action
+            )
+        )
     }
 }

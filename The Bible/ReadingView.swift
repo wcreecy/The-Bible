@@ -30,6 +30,7 @@ struct ReadingView: View {
     @State private var favoriteToastText: String = "Added to Favorites"
     @State private var favoriteToastSymbol: String = "heart.fill"
     @State private var favoriteToastTint: Color = .pink
+    @State private var removedFavorite: RemovedReadingFavorite?
 
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
@@ -107,7 +108,14 @@ struct ReadingView: View {
                     viewModel.onTabChanged(tab)
                 }
             }
-            .appToast(isPresented: $showFavoriteToast, symbol: favoriteToastSymbol, text: favoriteToastText, tint: favoriteToastTint)
+            .appToast(
+                isPresented: $showFavoriteToast,
+                symbol: favoriteToastSymbol,
+                text: favoriteToastText,
+                tint: favoriteToastTint,
+                actionTitle: removedFavorite == nil ? nil : "Undo",
+                action: undoFavoriteRemoval
+            )
             .fullScreenCover(isPresented: $viewModel.isSearchPresented) {
                 ReadingSearchSheet(viewModel: viewModel)
             }
@@ -278,7 +286,7 @@ struct ReadingView: View {
                     Task { @MainActor in
                         await viewModel.pinnedStore.clear()
                     }
-                    let gen = UINotificationFeedbackGenerator(); gen.notificationOccurred(.success)
+                    Haptics.selection()
                     favoriteToastSymbol = "pin"
                     favoriteToastTint = .red
                     favoriteToastText = "Unpinned from Widget"
@@ -286,7 +294,7 @@ struct ReadingView: View {
                     Task { @MainActor in
                         _ = await viewModel.togglePin(verseNumber: verse.number, verseText: verse.text)
                     }
-                    let gen = UINotificationFeedbackGenerator(); gen.notificationOccurred(.success)
+                    Haptics.success()
                     favoriteToastSymbol = "pin.fill"
                     favoriteToastTint = .red
                     favoriteToastText = "Pinned to Widget"
@@ -310,7 +318,7 @@ struct ReadingView: View {
             let isBookmarked = (lastReadBook == bookName && lastReadChapter == chapterNumber && lastReadVerse == verse.number)
             Button(action: {
                 viewModel.bookmarkVerse(context: modelContext, verse: verse)
-                let gen = UINotificationFeedbackGenerator(); gen.notificationOccurred(.success)
+                Haptics.success()
                 favoriteToastSymbol = "bookmark.fill"
                 favoriteToastTint = .blue
                 favoriteToastText = "Set as Continue Reading"
@@ -345,12 +353,14 @@ struct ReadingView: View {
             $0.chapterNumber == viewModel.currentChapter.number &&
             $0.verseNumber == verse.number
         }) {
+            removedFavorite = RemovedReadingFavorite(existing)
             modelContext.delete(existing)
             try? modelContext.save()
             favoriteToastSymbol = "heart.slash"
             favoriteToastTint = .gray
             favoriteToastText = "Removed Favorite"
         } else {
+            removedFavorite = nil
             let fav = Favorite(
                 bookName: viewModel.currentBook.name,
                 chapterNumber: viewModel.currentChapter.number,
@@ -362,14 +372,49 @@ struct ReadingView: View {
             favoriteToastSymbol = "heart.fill"
             favoriteToastTint = .pink
             favoriteToastText = "Added to Favorites"
+            Haptics.success()
         }
         withAnimation(.spring()) { showFavoriteToast = true }
         viewModel.markActivity()
+    }
+
+    private func undoFavoriteRemoval() {
+        guard let removedFavorite else { return }
+        modelContext.insert(removedFavorite.model)
+        try? modelContext.save()
+        self.removedFavorite = nil
+        Haptics.success()
     }
 
     // MARK: - Share helper
 
     private func shareText(bookName: String, chapter: Int, verse: Int, text: String) -> String {
         "\(text)\n\(bookName) \(chapter):\(verse)"
+    }
+}
+
+private struct RemovedReadingFavorite {
+    let bookName: String
+    let chapterNumber: Int
+    let verseNumber: Int
+    let verseText: String
+    let createdAt: Date
+
+    init(_ favorite: Favorite) {
+        bookName = favorite.bookName
+        chapterNumber = favorite.chapterNumber
+        verseNumber = favorite.verseNumber
+        verseText = favorite.verseText
+        createdAt = favorite.createdAt
+    }
+
+    var model: Favorite {
+        Favorite(
+            bookName: bookName,
+            chapterNumber: chapterNumber,
+            verseNumber: verseNumber,
+            verseText: verseText,
+            createdAt: createdAt
+        )
     }
 }

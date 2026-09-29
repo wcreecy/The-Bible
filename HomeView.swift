@@ -226,8 +226,7 @@ struct HomeView: View {
             )
             .contentShape(Rectangle())
             .onTapGesture {
-                let generator = UIImpactFeedbackGenerator(style: .heavy)
-                generator.impactOccurred()
+                Haptics.selection()
                 guard let verse = votdVM.verse else { return }
                 openInBibleTab(verse)
             }
@@ -267,8 +266,7 @@ struct HomeView: View {
                     timerTintColor: timerTintColor,
                     formattedTime: { TimeFormatters.compactClock($0) },
                     onOpenSetup: {
-                        let generator = UIImpactFeedbackGenerator(style: .light)
-                        generator.impactOccurred()
+                        Haptics.selection()
                         showPrayerStudySheet = true
                     },
                     onStartPreset: { minutes in

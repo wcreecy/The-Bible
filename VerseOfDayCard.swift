@@ -116,8 +116,7 @@ struct VerseOfDayCard: View {
             .contentShape(Rectangle())
             .onTapGesture {
                 guard let v = verseOfDay else { return }
-                let generator = UIImpactFeedbackGenerator(style: .heavy)
-                generator.impactOccurred()
+                Haptics.selection()
                 onOpenReader(v)
             }
             .contextMenu {

@@ -70,10 +70,11 @@ struct PlayerStatSheetCardView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 } else {
-                    let nameWidth: CGFloat = 92
-                    let colWidth: CGFloat = 54
+                    let nameWidth: CGFloat = 88
+                    let percentageWidth: CGFloat = 60
+                    let streakWidth: CGFloat = 46
 
-                    HStack(spacing: 10) {
+                    HStack(spacing: 8) {
                         Text("Game")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.secondary)
@@ -82,15 +83,15 @@ struct PlayerStatSheetCardView: View {
                         Text("Played")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.secondary)
-                            .frame(width: colWidth, alignment: .center)
+                            .frame(width: percentageWidth, alignment: .center)
                         Text("Avg")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.secondary)
-                            .frame(width: colWidth, alignment: .center)
+                            .frame(width: percentageWidth, alignment: .center)
                         Text("Streak")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.secondary)
-                            .frame(width: colWidth, alignment: .center)
+                            .frame(width: streakWidth, alignment: .center)
                     }
 
                     let sortedIndices: [Int] = {
@@ -122,7 +123,7 @@ struct PlayerStatSheetCardView: View {
                         let avg = avgs[idx]
                         let best = streaks[idx]
 
-                        HStack(spacing: 10) {
+                        HStack(spacing: 8) {
                             Text(s.name)
                                 .font(.subheadline.weight(.semibold))
                                 .frame(width: nameWidth, alignment: .leading)
@@ -132,17 +133,17 @@ struct PlayerStatSheetCardView: View {
                             labeledValue("\(Int(round(share)))%",
                                          isBest: bestShareIndex == idx,
                                          isWorst: worstShareIndex == idx)
-                                .frame(width: colWidth, alignment: .center)
+                                .frame(width: percentageWidth, alignment: .center)
 
                             labeledValue("\(Int(round(avg)))%",
                                          isBest: bestAvgIndex == idx,
                                          isWorst: worstAvgIndex == idx)
-                                .frame(width: colWidth, alignment: .center)
+                                .frame(width: percentageWidth, alignment: .center)
 
                             labeledValue(s.bestStreak != nil && s.bestStreak! > 0 ? "\(best)" : "—",
                                          isBest: s.bestStreak != nil && s.bestStreak! > 0 && bestStreakIndex == idx,
                                          isWorst: s.bestStreak != nil && s.bestStreak! > 0 && worstStreakIndex == idx)
-                                .frame(width: colWidth, alignment: .center)
+                                .frame(width: streakWidth, alignment: .center)
                         }
                         .foregroundStyle(s.answered == 0 ? .secondary : .primary)
                         .accessibilityElement(children: .ignore)
@@ -188,6 +189,8 @@ struct PlayerStatSheetCardView: View {
             Text(text)
                 .font(.footnote)
                 .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
                 .foregroundStyle(isBest ? .green : (isWorst ? .red : .primary))
         }
     }
