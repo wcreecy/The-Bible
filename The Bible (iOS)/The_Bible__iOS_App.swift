@@ -12,8 +12,41 @@ import UserNotifications
 import CloudKit
 import Combine
 
+final class BibleAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    static let pendingVerseOfDayNotificationKey = "pendingVerseOfDayNotification"
+
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+        return true
+    }
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        let request = response.notification.request
+        let destination = request.content.userInfo["destination"] as? String
+        let isVerseOfDay = destination == "verseOfDay"
+            || request.identifier.hasPrefix("verse-of-day-refresh-")
+
+        if isVerseOfDay {
+            UserDefaults.standard.set(true, forKey: Self.pendingVerseOfDayNotificationKey)
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .openVerseOfDayNotification, object: nil)
+            }
+        }
+
+        completionHandler()
+    }
+}
+
 @main
 struct The_Bible__iOS_App: App {
+    @UIApplicationDelegateAdaptor(BibleAppDelegate.self) private var appDelegate
     @Environment(\.scenePhase) private var scenePhase
 
     // MARK: - SwiftData (CloudKit-backed with local fallback) + diagnostics

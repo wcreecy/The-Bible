@@ -265,6 +265,7 @@ enum VOTDNotificationScheduler {
             content.title = String(localized: "Verse of the Day")
             content.body = String(localized: "A fresh verse is ready for you.")
             content.sound = .default
+            content.userInfo = ["destination": "verseOfDay"]
 
             var components = DateComponents()
             components.hour = time.hour

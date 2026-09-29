@@ -32,6 +32,9 @@ extension Notification.Name {
     // userInfo: ["book": String, "chapter": Int, "verse": Int, "relayed": Bool?]
     static let openBibleReference = Notification.Name("OpenBibleReference")
 
+    // Posted after the user opens a Verse of the Day notification.
+    static let openVerseOfDayNotification = Notification.Name("OpenVerseOfDayNotification")
+
     // MARK: - Home layout
 
     // Posted when the Home layout order/visibility changes.

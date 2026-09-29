@@ -5,6 +5,7 @@
 //  Shows the Books list on launch.
 //
 
+import Combine
 import HealthKit
 import SwiftUI
 import UIKit
@@ -61,7 +62,7 @@ struct ContentView: View {
     // Track previous tab to detect leaving Games
     @State private var previousTab: AppTab = .home
     
-    var body: some View {
+    private var tabs: some View {
         TabView(selection: $selectedTab) {
             NavigationStack(path: $homeCoordinator.path) {
                 HomeView()
@@ -104,6 +105,10 @@ struct ContentView: View {
             .tabItem { Label("More", systemImage: "ellipsis.circle") }
             .tag(AppTab.more)
         }
+    }
+
+    var body: some View {
+        tabs
         .background(AppBackgroundView(tab: selectedTab))
         // Apply your preferred color scheme even on the Settings tab so it updates in place.
         .preferredColorScheme(preferredScheme)
@@ -144,6 +149,7 @@ struct ContentView: View {
 
             // Initialize previousTab at launch
             previousTab = selectedTab
+            handlePendingVerseOfDayNotification()
 
         }
         .onChange(of: selectedTab) { oldValue, newValue in
@@ -244,12 +250,16 @@ struct ContentView: View {
                 }
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .switchToTab)) { note in
-            // Backward compatibility: accept either Int index or a tab name
-            if let tabIndex = note.userInfo?["tab"] as? Int, let t = AppTab(rawValue: tabIndex) {
-                selectedTab = t
-            } else if let name = note.userInfo?["tabName"] as? String, let t = AppTab.from(name: name) {
-                selectedTab = t
+        .onReceive(
+            NotificationCenter.default.publisher(for: .switchToTab)
+                .merge(with: NotificationCenter.default.publisher(for: .openVerseOfDayNotification))
+        ) { note in
+            if note.name == .openVerseOfDayNotification {
+                handlePendingVerseOfDayNotification()
+            } else if let tabIndex = note.userInfo?["tab"] as? Int, let tab = AppTab(rawValue: tabIndex) {
+                selectedTab = tab
+            } else if let name = note.userInfo?["tabName"] as? String, let tab = AppTab.from(name: name) {
+                selectedTab = tab
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .openSettingsTab)) { _ in
@@ -316,6 +326,36 @@ struct ContentView: View {
         let comps = cal.dateComponents([.year, .month, .day], from: date)
         let y = comps.year ?? 0, m = comps.month ?? 0, d = comps.day ?? 0
         return String(format: "%04d-%02d-%02d", y, m, d)
+    }
+
+    private func handlePendingVerseOfDayNotification() {
+        let defaults = UserDefaults.standard
+        guard defaults.bool(forKey: "pendingVerseOfDayNotification") else { return }
+        defaults.set(false, forKey: "pendingVerseOfDayNotification")
+
+        let verseCardIsVisible = !HomeLayoutStore().load().hidden.contains(.verseOfDay)
+        if verseCardIsVisible {
+            homeCoordinator.reset()
+            selectedTab = .home
+            return
+        }
+
+        let book = defaults.string(forKey: "verseOfDayBook") ?? ""
+        let chapter = defaults.integer(forKey: "verseOfDayChapter")
+        let verse = defaults.integer(forKey: "verseOfDayNumber")
+        guard !book.isEmpty, chapter > 0, verse > 0 else {
+            homeCoordinator.reset()
+            selectedTab = .home
+            return
+        }
+
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(
+                name: .openBibleReference,
+                object: nil,
+                userInfo: ["book": book, "chapter": chapter, "verse": verse]
+            )
+        }
     }
 
     private func initializeUsageDayIfNeeded() {
