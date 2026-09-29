@@ -145,12 +145,22 @@ final class VerseOfDayViewModel: ObservableObject {
             }
         }
 
-        guard let book = books.randomElement(),
-              let chapter = book.chapters.randomElement(),
-              !chapter.verses.isEmpty,
-              let v = chapter.verses.randomElement() else { return }
+        let eligibleVerses = books.flatMap { book in
+            book.chapters.flatMap { chapter in
+                chapter.verses.map { verse in
+                    (book: book, chapter: chapter, verse: verse)
+                }
+            }
+        }
 
-        let ref = HomeVerseRef(bookName: book.name, chapterNumber: chapter.number, verseNumber: v.number, verseText: v.text)
+        guard let selection = eligibleVerses.randomElement() else { return }
+
+        let ref = HomeVerseRef(
+            bookName: selection.book.name,
+            chapterNumber: selection.chapter.number,
+            verseNumber: selection.verse.number,
+            verseText: selection.verse.text
+        )
         verse = ref
         storedVerseBook = ref.bookName
         storedVerseChapter = ref.chapterNumber

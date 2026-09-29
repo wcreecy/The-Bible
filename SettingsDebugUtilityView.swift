@@ -346,12 +346,23 @@ struct SettingsDebugUtilitiesView: View {
             books = allBooks
         }
 
-        guard let book = books.randomElement(),
-              let chapter = book.chapters.randomElement(),
-              let verse = chapter.verses.randomElement() else {
+        let eligibleVerses = books.flatMap { book in
+            book.chapters.flatMap { chapter in
+                chapter.verses.map { verse in
+                    (book: book, chapter: chapter, verse: verse)
+                }
+            }
+        }
+
+        guard let selection = eligibleVerses.randomElement() else {
             return ("", 0, 0, "")
         }
-        return (book.name, chapter.number, verse.number, verse.text)
+        return (
+            selection.book.name,
+            selection.chapter.number,
+            selection.verse.number,
+            selection.verse.text
+        )
     }
 }
 #endif
