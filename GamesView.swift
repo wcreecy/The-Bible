@@ -128,14 +128,16 @@ struct GamesView: View {
                 GameCollectionSection(
                     title: "Recently Played",
                     routes: recentRoutes,
-                    progress: progressText
+                    progress: progressText,
+                    onSelect: present
                 )
             }
 
             GameCollectionSection(
                 title: "All Games",
                 routes: allRoutes,
-                progress: progressText
+                progress: progressText,
+                onSelect: present
             )
         }
         .listStyle(.insetGrouped)
@@ -213,6 +215,11 @@ struct GamesView: View {
         return "\(accuracy)% · \(entry.answered) played"
     }
 
+    private func present(_ route: GameRoute) {
+        selection = route
+        isPresentingProgrammatic = true
+    }
+
     private func recordRecentlyPlayed(_ route: GameRoute) {
         var routes = recentRoutes.filter { $0 != route }
         routes.insert(route, at: 0)
@@ -241,52 +248,117 @@ private struct GameCollectionSection: View {
     let title: LocalizedStringResource
     let routes: [GameRoute]
     let progress: (GameRoute) -> String
+    let onSelect: (GameRoute) -> Void
 
     var body: some View {
         Section {
             ForEach(routes) { route in
                 GameNavigationRow(
                     route: route,
-                    progress: progress(route)
+                    progress: progress(route),
+                    onSelect: { onSelect(route) }
                 )
             }
         } header: {
             Text(title)
         }
-        .listRowBackground(HeroCardListRowBackground())
+        .listRowBackground(Color.clear)
     }
 }
 
 private struct GameNavigationRow: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    let route: GameRoute
+    let progress: String
+    let onSelect: () -> Void
+
+    var body: some View {
+        Button(action: onSelect) {
+            if dynamicTypeSize.isAccessibilitySize {
+                GameAccessibilityRow(route: route, progress: progress)
+            } else {
+                GameStandardRow(route: route, progress: progress)
+            }
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(.primary)
+        .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 8 : 4)
+        .contentShape(Rectangle())
+    }
+}
+
+private struct GameStandardRow: View {
     let route: GameRoute
     let progress: String
 
     var body: some View {
-        NavigationLink(value: route) {
-            HStack(spacing: 12) {
-                Image(systemName: route.systemImage)
-                    .font(.title3)
-                    .foregroundStyle(route.tint)
-                    .frame(width: 28)
+        HStack(alignment: .top, spacing: 12) {
+            GameRowIcon(route: route)
 
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(route.title)
-                        .font(.headline)
-                    Text(route.subtitle)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-
-                Spacer(minLength: 8)
-
-                Text(progress)
-                    .font(.caption.weight(.medium))
+            VStack(alignment: .leading, spacing: 3) {
+                Text(route.title)
+                    .font(.headline)
+                Text(route.subtitle)
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.trailing)
             }
-            .padding(.vertical, 4)
+            .fixedSize(horizontal: false, vertical: true)
+            .layoutPriority(1)
+
+            Spacer(minLength: 8)
+
+            Text(progress)
+                .font(.caption.weight(.medium))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.trailing)
+                .fixedSize(horizontal: true, vertical: false)
+
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.tertiary)
+                .accessibilityHidden(true)
         }
+    }
+}
+
+private struct GameAccessibilityRow: View {
+    let route: GameRoute
+    let progress: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .firstTextBaseline, spacing: 12) {
+                GameRowIcon(route: route)
+
+                Text(route.title)
+                    .font(.headline)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Text(route.subtitle)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(progress)
+                .font(.caption.weight(.medium))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct GameRowIcon: View {
+    let route: GameRoute
+
+    var body: some View {
+        Image(systemName: route.systemImage)
+            .font(.title3)
+            .foregroundStyle(route.tint)
+            .frame(minWidth: 28)
+            .accessibilityHidden(true)
     }
 }
 
