@@ -88,33 +88,6 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
     }
 }
 
-private enum GameCategory: String, CaseIterable, Identifiable {
-    case knowledge
-    case words
-    case memory
-    case speed
-
-    var id: String { rawValue }
-
-    var title: LocalizedStringResource {
-        switch self {
-        case .knowledge: "Knowledge"
-        case .words: "Words"
-        case .memory: "Memory"
-        case .speed: "Speed"
-        }
-    }
-
-    var routes: [GameRoute] {
-        switch self {
-        case .knowledge: [.quiz, .whoAmI]
-        case .words: [.wordle, .hangman, .wordSearch]
-        case .memory: [.verseMatch, .bookOrder, .favoritesFlashcards]
-        case .speed: [.beatTheClock]
-        }
-    }
-}
-
 private struct DailyWordResult: Codable {
     let won: Bool
     let guesses: Int
@@ -128,16 +101,20 @@ struct GamesView: View {
     @State private var todayWordResult: DailyWordResult?
     @State private var refreshToken = 0
 
-    @AppStorage("favoriteGameRoutes") private var favoriteRoutesRaw = ""
     @AppStorage("recentGameRoutes") private var recentRoutesRaw = ""
 
-    private var favoriteRoutes: [GameRoute] {
-        let favorites = Set(favoriteRoutesRaw.split(separator: ",").compactMap { GameRoute(rawValue: String($0)) })
-        return GameRoute.allCases.filter(favorites.contains)
+    private var allRoutes: [GameRoute] {
+        GameRoute.allCases.sorted {
+            $0.displayName.localizedStandardCompare($1.displayName) == .orderedAscending
+        }
     }
 
     private var recentRoutes: [GameRoute] {
-        recentRoutesRaw.split(separator: ",").compactMap { GameRoute(rawValue: String($0)) }
+        recentRoutesRaw
+            .split(separator: ",")
+            .compactMap { GameRoute(rawValue: String($0)) }
+            .prefix(2)
+            .map { $0 }
     }
 
     private var statsByName: [String: GameStats.GameBreakdown.Entry] {
@@ -146,39 +123,19 @@ struct GamesView: View {
 
     var body: some View {
         List {
-            DailyChallengeSection(
-                route: .wordle,
-                result: todayWordResult,
-                progress: progressText(for: .wordle)
-            )
-
-            GameCollectionSection(
-                title: "Recently Played",
-                emptyMessage: "Games you play will appear here.",
-                routes: recentRoutes,
-                favoriteRoutes: Set(favoriteRoutes),
-                progress: progressText,
-                toggleFavorite: toggleFavorite
-            )
-
-            GameCollectionSection(
-                title: "Favorites",
-                emptyMessage: "Tap a star to keep a game close at hand.",
-                routes: favoriteRoutes,
-                favoriteRoutes: Set(favoriteRoutes),
-                progress: progressText,
-                toggleFavorite: toggleFavorite
-            )
-
-            ForEach(GameCategory.allCases) { category in
+            if !recentRoutes.isEmpty {
                 GameCollectionSection(
-                    title: category.title,
-                    routes: category.routes,
-                    favoriteRoutes: Set(favoriteRoutes),
-                    progress: progressText,
-                    toggleFavorite: toggleFavorite
+                    title: "Recently Played",
+                    routes: recentRoutes,
+                    progress: progressText
                 )
             }
+
+            GameCollectionSection(
+                title: "All Games",
+                routes: allRoutes,
+                progress: progressText
+            )
         }
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
@@ -250,20 +207,10 @@ struct GamesView: View {
         return "\(accuracy)% · \(entry.answered) played"
     }
 
-    private func toggleFavorite(_ route: GameRoute) {
-        var favorites = Set(favoriteRoutesRaw.split(separator: ",").compactMap { GameRoute(rawValue: String($0)) })
-        if favorites.contains(route) {
-            favorites.remove(route)
-        } else {
-            favorites.insert(route)
-        }
-        favoriteRoutesRaw = GameRoute.allCases.filter(favorites.contains).map(\.rawValue).joined(separator: ",")
-    }
-
     private func recordRecentlyPlayed(_ route: GameRoute) {
         var routes = recentRoutes.filter { $0 != route }
         routes.insert(route, at: 0)
-        recentRoutesRaw = routes.prefix(3).map(\.rawValue).joined(separator: ",")
+        recentRoutesRaw = routes.prefix(2).map(\.rawValue).joined(separator: ",")
     }
 
     private func seedRecentGameIfNeeded() {
@@ -284,82 +231,18 @@ struct GamesView: View {
     }
 }
 
-private struct DailyChallengeSection: View {
-    let route: GameRoute
-    let result: DailyWordResult?
-    let progress: String
-
-    var body: some View {
-        Section("Daily Challenge") {
-            NavigationLink(value: route) {
-                HStack(spacing: 14) {
-                    Image(systemName: result == nil ? "sparkles" : "checkmark.seal.fill")
-                        .font(.title2)
-                        .foregroundStyle(result == nil ? .orange : .green)
-                        .frame(width: 36, height: 36)
-                        .background(.thinMaterial, in: Circle())
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(route.title)
-                            .font(.headline)
-                        Text(result == nil ? "A new Bible word is ready" : progress)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
-
-                    if result == nil {
-                        Text("Play")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.tint)
-                    }
-                }
-                .padding(.vertical, 8)
-            }
-        }
-    }
-}
-
 private struct GameCollectionSection: View {
     let title: LocalizedStringResource
-    var emptyMessage: LocalizedStringResource?
     let routes: [GameRoute]
-    let favoriteRoutes: Set<GameRoute>
     let progress: (GameRoute) -> String
-    let toggleFavorite: (GameRoute) -> Void
-
-    init(
-        title: LocalizedStringResource,
-        emptyMessage: LocalizedStringResource? = nil,
-        routes: [GameRoute],
-        favoriteRoutes: Set<GameRoute>,
-        progress: @escaping (GameRoute) -> String,
-        toggleFavorite: @escaping (GameRoute) -> Void
-    ) {
-        self.title = title
-        self.emptyMessage = emptyMessage
-        self.routes = routes
-        self.favoriteRoutes = favoriteRoutes
-        self.progress = progress
-        self.toggleFavorite = toggleFavorite
-    }
 
     var body: some View {
         Section {
-            if routes.isEmpty, let emptyMessage {
-                Text(emptyMessage)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            } else {
-                ForEach(routes) { route in
-                    GameNavigationRow(
-                        route: route,
-                        progress: progress(route),
-                        isFavorite: favoriteRoutes.contains(route),
-                        toggleFavorite: { toggleFavorite(route) }
-                    )
-                }
+            ForEach(routes) { route in
+                GameNavigationRow(
+                    route: route,
+                    progress: progress(route)
+                )
             }
         } header: {
             Text(title)
@@ -370,44 +253,32 @@ private struct GameCollectionSection: View {
 private struct GameNavigationRow: View {
     let route: GameRoute
     let progress: String
-    let isFavorite: Bool
-    let toggleFavorite: () -> Void
 
     var body: some View {
-        HStack(spacing: 8) {
-            NavigationLink(value: route) {
-                HStack(spacing: 12) {
-                    Image(systemName: route.systemImage)
-                        .font(.title3)
-                        .foregroundStyle(route.tint)
-                        .frame(width: 28)
+        NavigationLink(value: route) {
+            HStack(spacing: 12) {
+                Image(systemName: route.systemImage)
+                    .font(.title3)
+                    .foregroundStyle(route.tint)
+                    .frame(width: 28)
 
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(route.title)
-                            .font(.headline)
-                        Text(route.subtitle)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                    }
-
-                    Spacer(minLength: 8)
-
-                    Text(progress)
-                        .font(.caption.weight(.medium))
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(route.title)
+                        .font(.headline)
+                    Text(route.subtitle)
+                        .font(.subheadline)
                         .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.trailing)
+                        .lineLimit(1)
                 }
-                .padding(.vertical, 4)
-            }
 
-            Button(action: toggleFavorite) {
-                Image(systemName: isFavorite ? "star.fill" : "star")
-                    .foregroundStyle(isFavorite ? .yellow : .secondary)
-                    .contentShape(Rectangle())
+                Spacer(minLength: 8)
+
+                Text(progress)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.trailing)
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel(isFavorite ? "Remove from favorites" : "Add to favorites")
+            .padding(.vertical, 4)
         }
     }
 }
