@@ -19,6 +19,9 @@ struct ReadingView: View {
 
     // Reader-specific font size (independent from global app UI font)
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
+    @AppStorage("showReadVerseCheckmarks") private var showReadVerseCheckmarks: Bool = false
+    @State private var seenVerseNumbers: Set<Int> = []
+    @State private var seenVerseLocation: String = ""
 
     // Observe app-group "last read" to render bookmark icon state live
     @AppStorage("lastReadBook", store: UserDefaults(suiteName: "group.bible.app")!) private var lastReadBook: String = ""
@@ -88,11 +91,20 @@ struct ReadingView: View {
             }
             .onAppear {
                 viewModel.onAppear()
+                refreshSeenVerses()
                 // Ensure newest-only ReadingProgress row
                 ReadingProgressStore.dedupe(in: modelContext)
             }
             .onDisappear {
                 viewModel.onDisappear()
+            }
+            .onChange(of: showReadVerseCheckmarks) { _, isEnabled in
+                if isEnabled {
+                    refreshSeenVerses()
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
+                refreshSeenVerses()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 viewModel.onScenePhaseChanged(newPhase)
@@ -131,6 +143,12 @@ struct ReadingView: View {
                     ForEach(currentChapter.verses) { verse in
                         let bookName = viewModel.currentBook.name
                         let chapterNumber = viewModel.currentChapter.number
+                        let readUpdate = SeenVerseUpdate(
+                            bookName: bookName,
+                            chapter: chapterNumber,
+                            verse: verse.number,
+                            totalVerses: currentChapter.verses.count
+                        )
 
                         ReadingVerseRow(
                             verse: verse,
@@ -140,9 +158,12 @@ struct ReadingView: View {
                             isSelected: viewModel.selectedVerse == verse.number,
                             // Do not show any icon next to the verse when pinned
                             isPinned: false,
+                            isRead: showReadVerseCheckmarks &&
+                                seenVerseLocation == verseLocationKey &&
+                                seenVerseNumbers.contains(verse.number),
                             readerFontSize: readerFontSize,
-                            onAppear: { number in
-                                viewModel.markVerseSeenIfAllowed(verse: number, totalVerses: currentChapter.verses.count)
+                            onVisibilityChange: { isVisible in
+                                viewModel.verseVisibilityChanged(readUpdate, isVisible: isVisible)
                             },
                             onTap: { v in
                                 let generator = UISelectionFeedbackGenerator()
@@ -174,7 +195,10 @@ struct ReadingView: View {
                 .padding(.vertical)
                 .scrollTargetLayout()
                 .onChange(of: viewModel.currentChapterIndex) { _, _ in
-                    // No-op here; VM already updates state and tracker
+                    refreshSeenVerses()
+                }
+                .onChange(of: viewModel.currentBook.name) { _, _ in
+                    refreshSeenVerses()
                 }
                 .onAppear {
                     DispatchQueue.main.async {
@@ -214,6 +238,21 @@ struct ReadingView: View {
                     viewModel.markActivity()
                 }
         )
+    }
+
+    private var verseLocationKey: String {
+        "\(viewModel.currentBook.name):\(viewModel.currentChapter.number)"
+    }
+
+    private func refreshSeenVerses() {
+        guard showReadVerseCheckmarks else { return }
+        let bookName = viewModel.currentBook.name
+        let chapterNumber = viewModel.currentChapter.number
+        seenVerseNumbers = BibleStatsStore.shared.loadSeenVerses(
+            bookName: bookName,
+            chapter: chapterNumber
+        )
+        seenVerseLocation = "\(bookName):\(chapterNumber)"
     }
 
     // MARK: - Overlay Arrows

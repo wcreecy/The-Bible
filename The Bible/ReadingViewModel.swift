@@ -28,10 +28,11 @@ final class ReadingViewModel: ObservableObject {
     @Published var searchResults: [SearchResult] = []
     @Published var isSearching: Bool = false
 
-    // Initial marking guard
-    @Published var hasCompletedInitialAppear: Bool = false
-    @Published var suppressInitialMarking: Bool = false
+    // Reading progress
     @Published var highlightOnAppear: Bool = true
+    private lazy var verseReadingTracker = VerseReadingTracker { updates in
+        BibleStatsStore.shared.markVersesSeen(updates)
+    }
 
     // Services
     let pinnedStore: PinnedVerseStore
@@ -48,7 +49,6 @@ final class ReadingViewModel: ObservableObject {
             ReadingTimeTracker.shared.pause()
         }
 
-        self.suppressInitialMarking = (startVerse > 1)
         loadOrderedBookNames()
         Task { @MainActor in
             await pinnedStore.load()
@@ -82,40 +82,25 @@ final class ReadingViewModel: ObservableObject {
             highlightOnAppear = false
         }
 
-        // Inactivity arming
+        // Inactivity and reading-progress tracking
+        verseReadingTracker.setActive(true)
         markActivity()
-
-        // Configure initial mass-marking suppression
-        if suppressInitialMarking {
-            hasCompletedInitialAppear = false
-            Task { @MainActor in
-                await Task.yield()
-                try? await Task.sleep(nanoseconds: 150_000_000)
-                hasCompletedInitialAppear = true
-                let total = currentChapter.verses.count
-                BibleStatsStore.shared.markVerseSeen(
-                    bookName: currentBook.name,
-                    chapter: currentChapter.number,
-                    verse: currentVerse,
-                    totalVerses: total
-                )
-            }
-        } else {
-            hasCompletedInitialAppear = true
-        }
     }
 
     func onDisappear() {
         inactivityMonitor.cancel()
+        verseReadingTracker.stop()
         ReadingTimeTracker.shared.stopAndFlush()
     }
 
     func onScenePhaseChanged(_ phase: ScenePhase) {
         switch phase {
         case .active:
+            verseReadingTracker.setActive(true)
             ReadingTimeTracker.shared.resume()
             markActivity()
         case .inactive, .background:
+            verseReadingTracker.setActive(false)
             ReadingTimeTracker.shared.pause()
             inactivityMonitor.cancel()
         @unknown default:
@@ -125,9 +110,11 @@ final class ReadingViewModel: ObservableObject {
 
     func onTabChanged(_ tab: Int) {
         if tab == 1 {
+            verseReadingTracker.setActive(true)
             ReadingTimeTracker.shared.resume()
             markActivity()
         } else {
+            verseReadingTracker.setActive(false)
             ReadingTimeTracker.shared.pause()
             inactivityMonitor.cancel()
         }
@@ -140,16 +127,16 @@ final class ReadingViewModel: ObservableObject {
         inactivityMonitor.markActivity()
     }
 
-    // MARK: - Verse-seen marking
+    // MARK: - Verse reading progress
 
-    func markVerseSeenIfAllowed(verse: Int, totalVerses: Int) {
-        if suppressInitialMarking && !hasCompletedInitialAppear { return }
-        BibleStatsStore.shared.markVerseSeen(
-            bookName: currentBook.name,
-            chapter: currentChapter.number,
-            verse: verse,
-            totalVerses: totalVerses
-        )
+    func verseVisibilityChanged(_ update: SeenVerseUpdate, isVisible: Bool) {
+        guard update.bookName == currentBook.name,
+              update.chapter == currentChapter.number else { return }
+        verseReadingTracker.visibilityChanged(update, isVisible: isVisible)
+    }
+
+    func recordDirectEngagement(with update: SeenVerseUpdate) {
+        verseReadingTracker.recordDirectEngagement(update)
     }
 
     // MARK: - Verse interactions
@@ -162,12 +149,25 @@ final class ReadingViewModel: ObservableObject {
         // Update tracker location
         ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
 
+        recordDirectEngagement(with: SeenVerseUpdate(
+            bookName: currentBook.name,
+            chapter: currentChapter.number,
+            verse: verse.number,
+            totalVerses: currentChapter.verses.count
+        ))
+
         // Activity
         markActivity()
     }
 
     func handleVerseLongPress(verseNumber: Int) {
         menuVerse = verseNumber
+        recordDirectEngagement(with: SeenVerseUpdate(
+            bookName: currentBook.name,
+            chapter: currentChapter.number,
+            verse: verseNumber,
+            totalVerses: currentChapter.verses.count
+        ))
         markActivity()
     }
 
@@ -270,27 +270,10 @@ final class ReadingViewModel: ObservableObject {
     }
 
     private func resetInitialMarkingAfterChapterChange() {
+        verseReadingTracker.resetVisibility()
         menuVerse = nil
         highlightedVerse = nil
         selectedVerse = nil
-        suppressInitialMarking = (currentVerse > 1)
-        if suppressInitialMarking {
-            hasCompletedInitialAppear = false
-            Task { @MainActor in
-                await Task.yield()
-                try? await Task.sleep(nanoseconds: 150_000_000)
-                hasCompletedInitialAppear = true
-                let total = currentChapter.verses.count
-                BibleStatsStore.shared.markVerseSeen(
-                    bookName: currentBook.name,
-                    chapter: currentChapter.number,
-                    verse: currentVerse,
-                    totalVerses: total
-                )
-            }
-        } else {
-            hasCompletedInitialAppear = true
-        }
     }
 
     private func indexOfCurrentBookInCanonical() -> Int? {
@@ -374,6 +357,7 @@ final class ReadingViewModel: ObservableObject {
         let targetChapter = targetBook.chapters[targetChapterIndex]
         let clampedVerse = min(max(1, item.verseNumber), targetChapter.verses.count)
 
+        verseReadingTracker.resetVisibility()
         currentBook = targetBook
         if let idx = orderedBookNames.firstIndex(of: targetBook.name) {
             currentBookNameIndex = idx
@@ -381,8 +365,6 @@ final class ReadingViewModel: ObservableObject {
         currentChapterIndex = targetChapterIndex
         currentVerse = clampedVerse
 
-        suppressInitialMarking = (clampedVerse > 1)
-        hasCompletedInitialAppear = !suppressInitialMarking
         highlightOnAppear = false
 
         Task { @MainActor in
@@ -425,5 +407,124 @@ final class ReadingViewModel: ObservableObject {
         // Nudge widgets locally
         DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
     }
+}
 
+@MainActor
+final class VerseReadingTracker {
+    private let dwellNanoseconds: UInt64
+    private let batchNanoseconds: UInt64
+    private let commit: (Set<SeenVerseUpdate>) -> Void
+
+    private var isActive = false
+    private var visibleUpdates: Set<SeenVerseUpdate> = []
+    private var dwellTasks: [SeenVerseUpdate: Task<Void, Never>] = [:]
+    private var recognizedUpdates: Set<SeenVerseUpdate> = []
+    private var pendingUpdates: Set<SeenVerseUpdate> = []
+    private var batchTask: Task<Void, Never>?
+
+    init(
+        dwellDuration: TimeInterval = 1.25,
+        batchDuration: TimeInterval = 1,
+        commit: @escaping (Set<SeenVerseUpdate>) -> Void
+    ) {
+        dwellNanoseconds = Self.nanoseconds(for: dwellDuration)
+        batchNanoseconds = Self.nanoseconds(for: batchDuration)
+        self.commit = commit
+    }
+
+    func setActive(_ active: Bool) {
+        guard active != isActive else { return }
+        isActive = active
+
+        if active {
+            for update in visibleUpdates {
+                scheduleDwell(for: update)
+            }
+        } else {
+            cancelDwellTasks()
+            flush()
+        }
+    }
+
+    func visibilityChanged(_ update: SeenVerseUpdate, isVisible: Bool) {
+        if isVisible {
+            visibleUpdates.insert(update)
+            scheduleDwell(for: update)
+        } else {
+            visibleUpdates.remove(update)
+            dwellTasks.removeValue(forKey: update)?.cancel()
+        }
+    }
+
+    func recordDirectEngagement(_ update: SeenVerseUpdate) {
+        dwellTasks.removeValue(forKey: update)?.cancel()
+        enqueue(update)
+    }
+
+    func resetVisibility() {
+        visibleUpdates.removeAll()
+        cancelDwellTasks()
+        flush()
+    }
+
+    func stop() {
+        isActive = false
+        resetVisibility()
+    }
+
+    private func scheduleDwell(for update: SeenVerseUpdate) {
+        guard isActive,
+              visibleUpdates.contains(update),
+              recognizedUpdates.contains(update) == false,
+              dwellTasks[update] == nil else { return }
+
+        dwellTasks[update] = Task { [weak self] in
+            guard let self else { return }
+            do {
+                try await Task.sleep(nanoseconds: dwellNanoseconds)
+            } catch {
+                return
+            }
+
+            guard isActive, visibleUpdates.contains(update) else { return }
+            dwellTasks[update] = nil
+            enqueue(update)
+        }
+    }
+
+    private func enqueue(_ update: SeenVerseUpdate) {
+        guard recognizedUpdates.insert(update).inserted else { return }
+        pendingUpdates.insert(update)
+        guard batchTask == nil else { return }
+
+        batchTask = Task { [weak self] in
+            guard let self else { return }
+            do {
+                try await Task.sleep(nanoseconds: batchNanoseconds)
+            } catch {
+                return
+            }
+            flush()
+        }
+    }
+
+    private func flush() {
+        batchTask?.cancel()
+        batchTask = nil
+        guard pendingUpdates.isEmpty == false else { return }
+        let updates = pendingUpdates
+        pendingUpdates.removeAll()
+        commit(updates)
+    }
+
+    private func cancelDwellTasks() {
+        for task in dwellTasks.values {
+            task.cancel()
+        }
+        dwellTasks.removeAll()
+    }
+
+    private static func nanoseconds(for duration: TimeInterval) -> UInt64 {
+        UInt64(max(0, duration) * 1_000_000_000)
+    }
 }

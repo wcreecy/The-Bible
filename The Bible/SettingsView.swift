@@ -8,6 +8,7 @@ struct SettingsView: View {
         Form {
             SettingsPersonalizationLinksSection()
             SettingsDailyExperienceLinksSection()
+            SettingsReadingProgressSection()
             SettingsAppAndDataLinksSection()
             SettingsTipsSection()
             SettingsDataManagementLinksSection()
@@ -85,6 +86,33 @@ private struct SettingsDailyExperienceLinksSection: View {
                     systemImage: "timer"
                 )
             }
+        }
+    }
+}
+
+private struct SettingsReadingProgressSection: View {
+    @AppStorage("showReadVerseCheckmarks") private var showReadVerseCheckmarks = false
+
+    var body: some View {
+        Section {
+            Toggle(isOn: $showReadVerseCheckmarks) {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Read Verse Checkmarks")
+                        Text("Show a green checkmark on verses you have read")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "checkmark.circle")
+                        .foregroundStyle(.green)
+                }
+            }
+            .accessibilityIdentifier("readVerseCheckmarksToggle")
+        } header: {
+            Text("Bible Reader")
+        } footer: {
+            Text("Checkmarks reflect your reading progress and disappear when reading statistics are reset.")
         }
     }
 }

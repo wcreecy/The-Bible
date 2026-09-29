@@ -7,9 +7,10 @@ struct ReadingVerseRow: View {
     let isHighlighted: Bool
     let isSelected: Bool
     let isPinned: Bool
+    let isRead: Bool
     let readerFontSize: Double
 
-    let onAppear: (Int) -> Void
+    let onVisibilityChange: (Bool) -> Void
     let onTap: (Verse) -> Void
     let onLongPress: (Int) -> Void
 
@@ -25,6 +26,7 @@ struct ReadingVerseRow: View {
                     .foregroundStyle(.secondary)
             }
             .padding(.horizontal)
+            .padding(.trailing, isRead ? 20 : 0)
         }
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -38,7 +40,18 @@ struct ReadingVerseRow: View {
                     .opacity(0.9)
             }
         }
-        .onAppear { onAppear(verse.number) }
+        .overlay(alignment: .bottomTrailing) {
+            if isRead {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.caption)
+                    .foregroundStyle(.green)
+                    .padding(.trailing, 12)
+                    .padding(.bottom, 8)
+                    .accessibilityHidden(true)
+            }
+        }
+        .accessibilityValue(isRead ? "Read" : "")
+        .onScrollVisibilityChange(threshold: 0.6, onVisibilityChange)
         .onLongPressGesture(minimumDuration: 0.5) { onLongPress(verse.number) }
         .contentShape(Rectangle())
         .onTapGesture { onTap(verse) }
