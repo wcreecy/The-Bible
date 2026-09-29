@@ -338,7 +338,7 @@ private struct BackgroundEditor: View {
                     )
                     .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                 .disabled(isLoadingPhoto)
 
                 if isLoadingPhoto {
@@ -357,7 +357,7 @@ private struct BackgroundEditor: View {
                 Label("Apply to All Pages", systemImage: "rectangle.on.rectangle.angled")
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(ModernPillButtonStyle(tint: .purple))
             .accessibilityHint("Copies this page's background settings to every page")
         }
         .onChange(of: selectedPhoto) { _, newValue in

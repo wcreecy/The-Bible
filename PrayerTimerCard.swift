@@ -29,12 +29,6 @@ struct PrayerTimerCard: View {
 
     private func presetCircle(_ label: String) -> some View {
         Text(label)
-            .font(.subheadline.weight(.semibold))
-            .frame(width: 40, height: 40)
-            .foregroundStyle(.primary)
-            .background(Circle().fill(Color(.secondarySystemBackground)))
-            .overlay(Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1))
-            .buttonStyle(.plain)
     }
 
     var body: some View {
@@ -85,22 +79,14 @@ struct PrayerTimerCard: View {
                             HStack(spacing: 16) {
                                 Button(action: onAddOne) {
                                     Text("+1")
-                                        .font(.subheadline.weight(.semibold))
-                                        .frame(width: 40, height: 40)
-                                        .foregroundStyle(.white)
-                                        .background(Circle().fill(Color.accentColor))
                                 }
-                                .buttonStyle(.plain)
+                                .buttonStyle(ModernCircleButtonStyle(tint: .accentColor, isProminent: true))
                                 .accessibilityLabel("Add 1 minute")
 
                                 Button(action: onAddFive) {
                                     Text("+5")
-                                        .font(.subheadline.weight(.semibold))
-                                        .frame(width: 40, height: 40)
-                                        .foregroundStyle(.white)
-                                        .background(Circle().fill(Color.accentColor))
                                 }
-                                .buttonStyle(.plain)
+                                .buttonStyle(ModernCircleButtonStyle(tint: .accentColor, isProminent: true))
                                 .accessibilityLabel("Add 5 minutes")
                             }
                             .frame(maxWidth: .infinity, alignment: .trailing)
@@ -121,28 +107,28 @@ struct PrayerTimerCard: View {
                             HStack(spacing: 12) {
                                 Button(action: onOpenSetup) {
                                     Image(systemName: "slider.horizontal.3")
-                                        .font(.subheadline.weight(.semibold))
-                                        .frame(width: 40, height: 40)
-                                        .foregroundStyle(.primary)
-                                        .background(Circle().fill(Color(.secondarySystemBackground)))
-                                        .overlay(Circle().stroke(Color.gray.opacity(0.25), lineWidth: 1))
                                 }
-                                .buttonStyle(.plain)
+                                .buttonStyle(ModernCircleButtonStyle(tint: .blue))
                                 .accessibilityLabel("Custom duration")
 
                                 Button { onStartPreset(5) } label: { presetCircle("5") }
+                                    .buttonStyle(ModernCircleButtonStyle(tint: .blue))
                                     .accessibilityLabel("Start 5 minutes")
 
                                 Button { onStartPreset(10) } label: { presetCircle("10") }
+                                    .buttonStyle(ModernCircleButtonStyle(tint: .blue))
                                     .accessibilityLabel("Start 10 minutes")
 
                                 Button { onStartPreset(15) } label: { presetCircle("15") }
+                                    .buttonStyle(ModernCircleButtonStyle(tint: .blue, isProminent: true))
                                     .accessibilityLabel("Start 15 minutes")
 
                                 Button { onStartPreset(20) } label: { presetCircle("20") }
+                                    .buttonStyle(ModernCircleButtonStyle(tint: .blue))
                                     .accessibilityLabel("Start 20 minutes")
 
                                 Button { onStartPreset(30) } label: { presetCircle("30") }
+                                    .buttonStyle(ModernCircleButtonStyle(tint: .blue))
                                     .accessibilityLabel("Start 30 minutes")
                             }
                             .frame(maxWidth: .infinity)

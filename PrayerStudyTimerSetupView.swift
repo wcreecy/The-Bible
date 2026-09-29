@@ -50,7 +50,7 @@ struct PrayerStudyTimerSetupView: View {
                     Spacer()
                 }
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(GameProminentButtonStyle(tint: .blue))
             .controlSize(.large)
 
             Spacer()

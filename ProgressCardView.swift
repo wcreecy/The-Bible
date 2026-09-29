@@ -84,8 +84,7 @@ struct ProgressCardView: View {
                             .font(.footnote.weight(.semibold))
                             .labelStyle(.titleAndIcon)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.accentColor)
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                     .disabled(!hasLastRead)
 
                     Button(action: onOpenNextUnread) {
@@ -93,8 +92,7 @@ struct ProgressCardView: View {
                             .font(.footnote.weight(.semibold))
                             .labelStyle(.titleAndIcon)
                     }
-                    .buttonStyle(.bordered)
-                    .tint(.accentColor)
+                    .buttonStyle(ModernPillButtonStyle(tint: .purple))
                 }
 
                 Button {

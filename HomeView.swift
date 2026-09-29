@@ -437,8 +437,7 @@ struct HomeView: View {
                         .font(.subheadline.weight(.semibold))
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.accentColor)
+                .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
             }
             .padding(.horizontal, isPad ? 24 : 16)
         }

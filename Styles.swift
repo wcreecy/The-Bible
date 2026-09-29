@@ -77,17 +77,49 @@ public struct ModernPillButtonStyle: ButtonStyle {
 
         return configuration.label
             .font(.footnote.weight(.semibold))
-            .foregroundStyle(isEnabled ? .white : .secondary)
-            .padding(.vertical, 9)
-            .padding(.horizontal, 14)
+            .foregroundStyle(isEnabled ? .white : tint.opacity(0.78))
+            .padding(.horizontal, 16)
+            .frame(minHeight: 44)
             .glassEffect(
                 .regular
-                    .tint((isEnabled ? tint : .gray).opacity(pressed ? 0.72 : 0.9))
+                    .tint(tint.opacity(pressed ? 0.72 : (isEnabled ? 0.9 : 0.24)))
                     .interactive(isEnabled),
                 in: .capsule
             )
             .contentShape(Capsule(style: .continuous))
-            .scaleEffect(pressed ? 0.98 : 1.0)
+            .opacity(isEnabled ? 1 : 0.82)
+            .scaleEffect(pressed && isEnabled ? 0.98 : 1.0)
+            .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
+    }
+}
+
+/// A compact circular Liquid Glass style for icon-only and short numeric actions.
+public struct ModernCircleButtonStyle: ButtonStyle {
+    public var tint: Color = .accentColor
+    public var isProminent: Bool = false
+    @Environment(\.isEnabled) private var isEnabled
+
+    public init(tint: Color = .accentColor, isProminent: Bool = false) {
+        self.tint = tint
+        self.isProminent = isProminent
+    }
+
+    public func makeBody(configuration: Configuration) -> some View {
+        let pressed = configuration.isPressed
+
+        configuration.label
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(isProminent ? Color.white : tint)
+            .frame(width: 44, height: 44)
+            .glassEffect(
+                .regular
+                    .tint(tint.opacity(isProminent ? 0.9 : 0.2))
+                    .interactive(isEnabled),
+                in: .circle
+            )
+            .contentShape(Circle())
+            .opacity(isEnabled ? 1 : 0.72)
+            .scaleEffect(pressed && isEnabled ? 0.96 : 1)
             .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
     }
 }

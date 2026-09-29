@@ -70,7 +70,7 @@ struct DailyFocusCard: View {
                                     .multilineTextAlignment(.leading)
                                     .fixedSize(horizontal: false, vertical: true)
                                 Button("Got it") { showFocusInfoPopover = false }
-                                    .buttonStyle(.borderedProminent)
+                                    .buttonStyle(ModernPillButtonStyle(tint: .purple))
                             }
                             .padding()
                         }
@@ -123,7 +123,7 @@ struct DailyFocusCard: View {
                     .accessibilityHint("Saves your daily focus and shows it on the Dynamic Island")
                     .disabled(!hasTypedLetter)
 
-                    Button(action: onClear) {
+                    Button(role: .destructive, action: onClear) {
                         Label("Clear", systemImage: "xmark.circle.fill")
                     }
                     .buttonStyle(ModernPillButtonStyle(tint: .red))
@@ -185,9 +185,8 @@ struct DailyFocusCard: View {
                             .fixedSize(horizontal: false, vertical: true)
                         Spacer(minLength: 8)
                         Button("Enable", action: onEnableLiveActivities)
-                            .buttonStyle(.borderedProminent)
+                            .buttonStyle(ModernPillButtonStyle(tint: .purple))
                             .controlSize(.small)
-                            .tint(.purple)
                     }
                     .padding(.top, 6)
                 }

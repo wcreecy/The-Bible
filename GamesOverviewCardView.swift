@@ -220,14 +220,7 @@ struct GamesOverviewCardView: View {
                         .font(.caption2.weight(.semibold))
                         .padding(.vertical, hSizeClass == .compact ? 1 : 2)
                         .padding(.horizontal, 6)
-                        .background(
-                            Capsule(style: .continuous)
-                                .fill(Color(.secondarySystemBackground))
-                        )
-                        .overlay(
-                            Capsule(style: .continuous)
-                                .stroke(Color.black.opacity(0.08), lineWidth: 1)
-                        )
+                        .glassEffect(.regular.tint(Color.accentColor.opacity(0.14)), in: .capsule)
                         .contentShape(Capsule())
                         .accessibilityElement(children: .combine)
                         .accessibilityLabel("Select Game")
@@ -244,7 +237,7 @@ struct GamesOverviewCardView: View {
                             .font(.headline)
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
                     .controlSize(.regular)
                 }
 

@@ -83,9 +83,7 @@ struct HomeLayoutEditorView: View {
                 .lineLimit(2)
                 .minimumScaleFactor(0.85)
         }
-        .buttonStyle(.bordered)
-        .buttonBorderShape(.roundedRectangle(radius: 12))
-        .tint(.accentColor)
+        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
         .controlSize(.large)
         .font(.subheadline)
         .disabled(disabled)

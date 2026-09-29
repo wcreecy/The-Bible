@@ -43,16 +43,9 @@ struct GamesOverviewPlayButton: View {
             openAction?()
         } label: {
             Image(systemName: "play.fill")
-                .font(.headline)
                 .symbolRenderingMode(.hierarchical)
-                .padding(8)
         }
-        .buttonStyle(.plain)
-        .background(.ultraThinMaterial, in: Circle())
-        .overlay(
-            Circle().stroke(Color.black.opacity(0.08), lineWidth: 1)
-        )
-        .shadow(color: .black.opacity(0.08), radius: 2, x: 0, y: 1)
+        .buttonStyle(ModernCircleButtonStyle(tint: .accentColor, isProminent: true))
         .accessibilityLabel(
             Text(
                 {

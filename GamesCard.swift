@@ -134,17 +134,17 @@ struct GamesCard: View {
                         Button(action: onShufflePlay) {
                             Label("Random", systemImage: "shuffle")
                         }
-                        .buttonStyle(ModernPillButtonStyle(tint: .black))
+                        .buttonStyle(ModernPillButtonStyle(tint: .purple))
 
                         Button(action: onOpenGames) {
                             Label("Games", systemImage: "gamecontroller")
                         }
-                        .buttonStyle(ModernPillButtonStyle(tint: .black))
+                        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
 
                         Button(action: onOpenStats) {
                             Label("Stats", systemImage: "chart.bar")
                         }
-                        .buttonStyle(ModernPillButtonStyle(tint: .black))
+                        .buttonStyle(ModernPillButtonStyle(tint: .orange))
                     }
 
                     // Footer: Last played tag (moved under the 3 buttons)
