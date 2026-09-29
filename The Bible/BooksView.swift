@@ -57,22 +57,31 @@ struct BooksView: View {
             let otBooks = filteredBooks.filter { (indexMap[$0.name] ?? Int.max) < matthewIndex }
             let ntBooks = filteredBooks.filter { (indexMap[$0.name] ?? Int.max) >= matthewIndex }
 
-            LazyVStack(alignment: .leading, spacing: 0) {
+            LazyVStack(alignment: .leading, spacing: 16) {
                 if sortAlphabetically {
-                    bookRows(title: "All Books (\(azBooks.count))", books: azBooks)
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        bookRows(title: "All Books (\(azBooks.count))", books: azBooks)
+                    }
+                    .padding(AppDesignMetrics.cardPadding)
+                    .heroCardSurface()
                 } else {
-                    bookRows(title: "Old Testament (\(otBooks.count))", books: otBooks)
-
-                    if !otBooks.isEmpty && !ntBooks.isEmpty {
-                        Divider()
-                            .padding(.vertical, 4)
+                    if !otBooks.isEmpty {
+                        LazyVStack(alignment: .leading, spacing: 0) {
+                            bookRows(title: "Old Testament (\(otBooks.count))", books: otBooks)
+                        }
+                        .padding(AppDesignMetrics.cardPadding)
+                        .heroCardSurface()
                     }
 
-                    bookRows(title: "New Testament (\(ntBooks.count))", books: ntBooks)
+                    if !ntBooks.isEmpty {
+                        LazyVStack(alignment: .leading, spacing: 0) {
+                            bookRows(title: "New Testament (\(ntBooks.count))", books: ntBooks)
+                        }
+                        .padding(AppDesignMetrics.cardPadding)
+                        .heroCardSurface()
+                    }
                 }
             }
-            .padding(AppDesignMetrics.cardPadding)
-            .heroCardSurface()
             .padding(.horizontal, 16)
             .padding(.vertical)
         }
