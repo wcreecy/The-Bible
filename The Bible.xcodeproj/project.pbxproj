@@ -1636,7 +1636,6 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible (iOS)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Bible;
-				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app logs time in app as Mindful Minutes found in your Health app";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app logs time in app to Mindful Minutes found in your Health app";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
@@ -1649,7 +1648,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.creecy.bible;
 				PRODUCT_NAME = Bible;
 				SDKROOT = iphoneos;
@@ -1679,7 +1678,6 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The Bible (iOS)/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Bible;
-				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app logs time in app as Mindful Minutes found in your Health app";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app logs time in app to Mindful Minutes found in your Health app";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
@@ -1692,7 +1690,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.creecy.bible;
 				PRODUCT_NAME = Bible;
 				SDKROOT = iphoneos;
@@ -1821,7 +1819,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.creecy.bible.widgetsextension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -1854,7 +1852,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.creecy.bible.widgetsextension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;

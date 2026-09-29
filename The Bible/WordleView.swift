@@ -7,7 +7,7 @@ struct WordleView: View {
     // MARK: - Mode
     enum Mode: String, CaseIterable, Identifiable {
         case daily = "Daily"
-        case freePlay = "Free Play"
+        case practice = "Practice"
         var id: String { rawValue }
     }
 
@@ -35,7 +35,7 @@ struct WordleView: View {
 
     // MARK: - State
     @State private var started: Bool = false
-    @State private var mode: Mode = .freePlay
+    @State private var mode: Mode = .practice
     @State private var howToExpanded: Bool = false
     @State private var gameOptionsExpanded: Bool = false
 
@@ -437,8 +437,8 @@ struct WordleView: View {
                 GroupBox {
                     DisclosureGroup(isExpanded: $gameOptionsExpanded) {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("• Daily: Everyone gets the same word each day. It can normally be played once per day.")
-                            Text("• Free Play: Play unlimited rounds with a new word each time.")
+                            Text("• Daily: Daily results count toward your stats and streaks, and it can normally be played once per day.")
+                            Text("• Practice: Play unlimited rounds with a new word each time. Practice results do not affect your stats or streaks.")
                             Text("• Hard Mode: Green letters must stay fixed, and yellow letters must be used in later guesses.")
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -500,7 +500,7 @@ struct WordleView: View {
             }
 
             Button("Start") {
-                startNewRound(freePlay: mode == .freePlay)
+                startNewRound(practice: mode == .practice)
             }
             .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
             .controlSize(.large)
@@ -960,7 +960,7 @@ struct WordleView: View {
     }
 
     // MARK: - Rounds
-    private func startNewRound(freePlay: Bool) {
+    private func startNewRound(practice: Bool) {
         guesses = Array(repeating: "", count: 6)
         evaluations = Array(repeating: Array(repeating: .unknown, count: 5), count: 6)
         rowIndex = 0
@@ -979,7 +979,7 @@ struct WordleView: View {
         roundStartAt = Date()
         lastRoundElapsedSeconds = nil
 
-        if freePlay {
+        if practice {
             target = Self.filteredAnswerWords.randomElement() ?? "JESUS"
         } else {
             target = wordOfDay()
@@ -1002,52 +1002,45 @@ struct WordleView: View {
 
         lastRoundElapsedSeconds = elapsedSeconds
 
-        answered += 1
-        if win {
-            score += 1
+        message = win
+            ? (mode == .daily ? "You got it! See you tomorrow." : "You got it!")
+            : "The word was \(target)."
 
-            // Persistent streak: increment on win
-            let persisted = readPersistentStreak() + 1
-            writePersistentStreak(persisted)
-            currentStreak = persisted
+        if mode == .daily {
+            answered += 1
 
-            // Update persistent best if needed
-            let bestPersisted = readPersistentBest()
-            if persisted > bestPersisted {
-                writePersistentBest(persisted)
+            if win {
+                score += 1
+
+                let persisted = readPersistentStreak() + 1
+                writePersistentStreak(persisted)
+                currentStreak = persisted
+
+                let bestPersisted = readPersistentBest()
+                if persisted > bestPersisted {
+                    writePersistentBest(persisted)
+                }
+                currentBestStreak = max(currentBestStreak, persisted, readPersistentBest())
+            } else {
+                // A Daily loss, including Reveal, ends the tracked streak.
+                writePersistentStreak(0)
+                currentStreak = 0
             }
-            // Keep session best in sync
-            currentBestStreak = max(currentBestStreak, persisted, readPersistentBest())
 
-            message = (mode == .daily) ? "You got it! See you tomorrow." : "You got it!"
             GameStats.shared.recordWordleResult(
-                type: (mode == .daily ? .daily : .free),
-                mode: (hardModeEnabled ? .hard : .normal),
-                won: true,
+                type: .daily,
+                mode: hardModeEnabled ? .hard : .normal,
+                won: win,
                 guesses: rowIndex,
                 currentBestStreak: currentBestStreak
             )
-        } else {
-            // Persistent streak: reset on loss (includes Reveal)
-            writePersistentStreak(0)
-            currentStreak = 0
-
-            message = "The word was \(target)."
-            GameStats.shared.recordWordleResult(
-                type: (mode == .daily ? .daily : .free),
-                mode: (hardModeEnabled ? .hard : .normal),
-                won: false,
-                guesses: rowIndex,
-                currentBestStreak: currentBestStreak
+            GameStats.shared.recordWordleTime(
+                type: .daily,
+                mode: hardModeEnabled ? .hard : .normal,
+                won: win,
+                elapsedSeconds: elapsedSeconds
             )
         }
-
-        GameStats.shared.recordWordleTime(
-            type: (mode == .daily ? .daily : .free),
-            mode: (hardModeEnabled ? .hard : .normal),
-            won: win,
-            elapsedSeconds: elapsedSeconds
-        )
 
         if let ref = Self.verseIndex[target], Self.verseContainsWord(ref.text, word: target) {
             roundRef = ref
@@ -1222,8 +1215,8 @@ struct WordleView: View {
                 .accessibilityHidden(true)
             }
 
-            if mode == .freePlay {
-                Button("Next") { startNewRound(freePlay: true) }
+            if mode == .practice {
+                Button("Next") { startNewRound(practice: true) }
                     .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                     .controlSize(.large)
             } else {
@@ -1234,7 +1227,7 @@ struct WordleView: View {
                         .disabled(true)
                         .accessibilityLabel("Daily completed. Come back tomorrow.")
                 } else {
-                    Button("Play Daily") { startNewRound(freePlay: false) }
+                    Button("Play Daily") { startNewRound(practice: false) }
                         .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                         .controlSize(.large)
                 }

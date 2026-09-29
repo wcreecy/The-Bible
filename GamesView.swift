@@ -102,6 +102,7 @@ struct GamesView: View {
     @State private var refreshToken = 0
 
     @AppStorage("recentGameRoutes") private var recentRoutesRaw = ""
+    @AppStorage("favoritesFlashcardsPlayCount") private var favoritesFlashcardsPlayCount = 0
 
     private var allRoutes: [GameRoute] {
         GameRoute.allCases.sorted {
@@ -194,6 +195,11 @@ struct GamesView: View {
 
         if route == .wordle, let result = todayWordResult {
             return result.won ? "Solved in \(result.guesses)/6" : "Try again tomorrow"
+        }
+
+        if route == .favoritesFlashcards, favoritesFlashcardsPlayCount > 0 {
+            let unit = favoritesFlashcardsPlayCount == 1 ? "session" : "sessions"
+            return "\(favoritesFlashcardsPlayCount) \(unit)"
         }
 
         guard let entry = statsByName[route.displayName], entry.answered > 0 else {

@@ -16,6 +16,7 @@ struct FavoritesFlashcardsGameView: View {
     @State private var currentIndex = 0
     @State private var flipped = false
     @State private var shuffledFavorites: [Favorite] = []
+    @AppStorage("favoritesFlashcardsPlayCount") private var playCount = 0
     @Namespace private var flipNamespace
     
     var body: some View {
@@ -90,6 +91,8 @@ struct FavoritesFlashcardsGameView: View {
         currentIndex = 0
         flipped = false
         started = true
+        playCount += 1
+        NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
     
     private func nextCard() {
