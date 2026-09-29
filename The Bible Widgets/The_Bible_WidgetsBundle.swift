@@ -17,7 +17,7 @@ struct VerseWidget: Widget {
         }
         .configurationDisplayName("Verse of the Day")
         .description("Displays a daily Bible verse.")
-        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge])
     }
 }
 
@@ -30,7 +30,7 @@ struct LastReadWidget: Widget {
         }
         .configurationDisplayName("Last Read")
         .description("Shows the last verse you bookmarked/read.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge])
     }
 }
 

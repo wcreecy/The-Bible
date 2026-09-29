@@ -2,39 +2,45 @@ import SwiftUI
 import WidgetKit
 
 struct PinnedVerseWidgetEntryView: View {
+    @Environment(\.widgetFamily) private var widgetFamily
+
     var entry: PinnedVerseEntry
 
+    private var isExtraLarge: Bool { widgetFamily == .systemExtraLarge }
+    private var isLarge: Bool { widgetFamily == .systemLarge }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: isExtraLarge ? 18 : (isLarge ? 12 : 6)) {
             // Optional header to self-identify
             HStack(spacing: 6) {
                 Image(systemName: "pin.fill")
-                    .font(.caption2)
+                    .font(isExtraLarge ? .title2 : (isLarge ? .headline : .caption2))
                     .foregroundStyle(.red)
 
                 Text("Pinned Verse")
-                    .font(.caption2.weight(.semibold))
+                    .font(isExtraLarge ? .title2.weight(.semibold) : (isLarge ? .headline.weight(.semibold) : .caption2.weight(.semibold)))
                     .foregroundStyle(.white.opacity(0.7))
                     .lineLimit(1)
             }
 
             if !entry.text.isEmpty {
                 Text("“\(entry.text)”")
-                    .font(.footnote)
+                    .font(isExtraLarge ? .largeTitle : (isLarge ? .title2 : .footnote))
                     .foregroundStyle(.white)
-                    .lineLimit(5)
+                    .lineLimit(isExtraLarge || isLarge ? 6 : 5)
+                    .truncationMode(.tail)
                     .multilineTextAlignment(.leading)
 
                 Text("\(entry.book) \(entry.chapter):\(entry.verse)")
-                    .font(.caption2)
+                    .font(isExtraLarge ? .title3 : (isLarge ? .subheadline : .caption2))
                     .foregroundStyle(.white.opacity(0.7))
             } else {
                 Text("Long‑press a verse in the app to pin it here.")
-                    .font(.footnote)
+                    .font(isExtraLarge ? .largeTitle : (isLarge ? .title2 : .footnote))
                     .foregroundStyle(.white.opacity(0.7))
             }
         }
-        .padding()
+        .padding(isExtraLarge ? 28 : (isLarge ? 22 : 16))
         .widgetURL(deepLinkURL(book: entry.book, chapter: entry.chapter, verse: entry.verse))
         .containerBackground(Color.black, for: .widget)
         .accessibilityElement(children: .combine)
@@ -64,6 +70,6 @@ struct PinnedVerseWidget: Widget {
         }
         .configurationDisplayName("Pinned Verse")
         .description("Long‑press a verse in the app to pin it to this widget.")
-        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge])
     }
 }
