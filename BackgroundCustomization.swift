@@ -4,7 +4,6 @@ import UIKit
 
 enum AppBackgroundMode: String, CaseIterable, Identifiable {
     case defaultStyle
-    case builtIn
     case photo
     case color
 
@@ -13,23 +12,8 @@ enum AppBackgroundMode: String, CaseIterable, Identifiable {
     var title: LocalizedStringResource {
         switch self {
         case .defaultStyle: "Default"
-        case .builtIn: "Built-In"
         case .photo: "Photo"
         case .color: "Color"
-        }
-    }
-}
-
-private enum BuiltInBackground: String, CaseIterable, Identifiable {
-    case river = "river-bg"
-    case blackLeather = "blackleather"
-
-    var id: String { rawValue }
-
-    var title: LocalizedStringResource {
-        switch self {
-        case .river: "River"
-        case .blackLeather: "Black Leather"
         }
     }
 }
@@ -59,10 +43,6 @@ enum AppBackgroundStorage {
 
     static func photoKey(for tab: AppTab) -> String {
         "background.photo.\(tab.name)"
-    }
-
-    static func builtInKey(for tab: AppTab) -> String {
-        "background.builtIn.\(tab.name)"
     }
 
     static func savePhotoData(_ data: Data) throws -> String {
@@ -105,7 +85,6 @@ struct AppBackgroundView: View {
     @AppStorage private var modeRaw: String
     @AppStorage private var colorHex: String
     @AppStorage private var photoFileName: String
-    @AppStorage private var builtInAssetName: String
 
     init(
         tab: AppTab,
@@ -127,10 +106,6 @@ struct AppBackgroundView: View {
             wrappedValue: "",
             AppBackgroundStorage.photoKey(for: tab)
         )
-        _builtInAssetName = AppStorage(
-            wrappedValue: BuiltInBackground.river.rawValue,
-            AppBackgroundStorage.builtInKey(for: tab)
-        )
     }
 
     var body: some View {
@@ -139,10 +114,6 @@ struct AppBackgroundView: View {
                 switch AppBackgroundMode(rawValue: modeRaw) ?? .defaultStyle {
                 case .defaultStyle:
                     AppDefaultBackground()
-                case .builtIn:
-                    Image(builtInAssetName)
-                        .resizable()
-                        .scaledToFill()
                 case .photo:
                     if let image = AppBackgroundStorage.image(named: photoFileName) {
                         Image(uiImage: image)
@@ -202,7 +173,6 @@ private struct AdaptiveBackgroundForegroundModifier: ViewModifier {
     @AppStorage private var modeRaw: String
     @AppStorage private var colorHex: String
     @AppStorage private var photoFileName: String
-    @AppStorage private var builtInAssetName: String
 
     init(tab: AppTab, defaultImageName: String?) {
         self.defaultImageName = defaultImageName
@@ -218,10 +188,6 @@ private struct AdaptiveBackgroundForegroundModifier: ViewModifier {
             wrappedValue: "",
             AppBackgroundStorage.photoKey(for: tab)
         )
-        _builtInAssetName = AppStorage(
-            wrappedValue: BuiltInBackground.river.rawValue,
-            AppBackgroundStorage.builtInKey(for: tab)
-        )
     }
 
     func body(content: Content) -> some View {
@@ -231,16 +197,10 @@ private struct AdaptiveBackgroundForegroundModifier: ViewModifier {
     private var foregroundColorScheme: ColorScheme {
         let mode = AppBackgroundMode(rawValue: modeRaw) ?? .defaultStyle
 
-        if mode == .builtIn && builtInAssetName == BuiltInBackground.blackLeather.rawValue {
-            return .dark
-        }
-
         let luminance: CGFloat?
         switch mode {
         case .color:
             luminance = Self.relativeLuminance(hex: colorHex)
-        case .builtIn:
-            luminance = UIImage(named: builtInAssetName)?.averageRelativeLuminance
         case .photo:
             luminance = AppBackgroundStorage.image(named: photoFileName)?.averageRelativeLuminance
                 ?? defaultImageName.flatMap { UIImage(named: $0)?.averageRelativeLuminance }
@@ -336,7 +296,6 @@ private struct BackgroundEditor: View {
     @AppStorage private var modeRaw: String
     @AppStorage private var colorHex: String
     @AppStorage private var photoFileName: String
-    @AppStorage private var builtInAssetName: String
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var isLoadingPhoto = false
     @State private var errorMessage: String?
@@ -356,10 +315,6 @@ private struct BackgroundEditor: View {
             wrappedValue: "",
             AppBackgroundStorage.photoKey(for: tab)
         )
-        _builtInAssetName = AppStorage(
-            wrappedValue: BuiltInBackground.river.rawValue,
-            AppBackgroundStorage.builtInKey(for: tab)
-        )
     }
 
     var body: some View {
@@ -370,15 +325,6 @@ private struct BackgroundEditor: View {
                 }
             }
             .pickerStyle(.segmented)
-
-            if modeRaw == AppBackgroundMode.builtIn.rawValue {
-                BuiltInBackgroundPicker(
-                    selection: $builtInAssetName,
-                    onSelect: {
-                        modeRaw = AppBackgroundMode.builtIn.rawValue
-                    }
-                )
-            }
 
             if modeRaw == AppBackgroundMode.color.rawValue {
                 ColorPicker("Background Color", selection: colorBinding, supportsOpacity: false)
@@ -477,61 +423,11 @@ private struct BackgroundEditor: View {
             UserDefaults.standard.set(modeRaw, forKey: AppBackgroundStorage.modeKey(for: destinationTab))
             UserDefaults.standard.set(colorHex, forKey: AppBackgroundStorage.colorKey(for: destinationTab))
             UserDefaults.standard.set(photoFileName, forKey: AppBackgroundStorage.photoKey(for: destinationTab))
-            UserDefaults.standard.set(builtInAssetName, forKey: AppBackgroundStorage.builtInKey(for: destinationTab))
         }
     }
 
     private func defaultImageName(for tab: AppTab) -> String? {
         nil
-    }
-}
-
-private struct BuiltInBackgroundPicker: View {
-    @Binding var selection: String
-    let onSelect: () -> Void
-
-    private let columns = [
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12)
-    ]
-
-    var body: some View {
-        LazyVGrid(columns: columns, spacing: 12) {
-            ForEach(BuiltInBackground.allCases) { background in
-                Button {
-                    selection = background.rawValue
-                    onSelect()
-                } label: {
-                    VStack(spacing: 6) {
-                        Image(background.rawValue)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(height: 76)
-                            .frame(maxWidth: .infinity)
-                            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                            .allowsHitTesting(false)
-
-                        Text(background.title)
-                            .font(.caption)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(4)
-                    .contentShape(Rectangle())
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .strokeBorder(
-                                selection == background.rawValue ? Color.accentColor : Color.clear,
-                                lineWidth: 3
-                            )
-                            .allowsHitTesting(false)
-                    }
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(
-                    selection == background.rawValue ? .isSelected : []
-                )
-            }
-        }
     }
 }
 

@@ -466,7 +466,7 @@ struct ContentView: View {
 
             // Hook and style the system "More" navigation controller
             let moreNav = tab.moreNavigationController
-            MoreTabStyler.shared.install(on: moreNav, imageName: "river-bg")
+            MoreTabStyler.shared.install(on: moreNav)
         }
     }
 }
@@ -493,13 +493,10 @@ private extension UIViewController {
 private final class MoreTabStyler: NSObject, UINavigationControllerDelegate {
     static let shared = MoreTabStyler()
 
-    private var imageName: String = "river-bg"
-
     // Adjust this alpha to taste (0 = fully transparent, 1 = opaque)
     private let cellAlpha: CGFloat = 0.90
 
-    func install(on nav: UINavigationController, imageName: String) {
-        self.imageName = imageName
+    func install(on nav: UINavigationController) {
         nav.delegate = self
         // Kick off a series of styling passes so the very first visit is covered
         schedulePostShowStyling(on: nav)
@@ -528,24 +525,8 @@ private final class MoreTabStyler: NSObject, UINavigationControllerDelegate {
         // Ensure hierarchy is loaded
         _ = nav.topViewController?.view
 
-        // Insert a single background image view behind the nav controller's content
-        if nav.view.viewWithTag(987_654) == nil, let img = UIImage(named: imageName) {
-            let iv = UIImageView(image: img)
-            iv.translatesAutoresizingMaskIntoConstraints = false
-            iv.contentMode = .scaleAspectFill
-            iv.tag = 987_654
-            nav.view.insertSubview(iv, at: 0)
-            NSLayoutConstraint.activate([
-                iv.topAnchor.constraint(equalTo: nav.view.topAnchor),
-                iv.leadingAnchor.constraint(equalTo: nav.view.leadingAnchor),
-                iv.trailingAnchor.constraint(equalTo: nav.view.trailingAnchor),
-                iv.bottomAnchor.constraint(equalTo: nav.view.bottomAnchor)
-            ])
-        }
-
-        // Clear backgrounds so the image is visible
-        nav.view.backgroundColor = .clear
-        nav.topViewController?.view.backgroundColor = .clear
+        nav.view.backgroundColor = .systemGroupedBackground
+        nav.topViewController?.view.backgroundColor = .systemGroupedBackground
 
         // Style the More list table and its cells
         if let table = findTable(in: nav.view) {
