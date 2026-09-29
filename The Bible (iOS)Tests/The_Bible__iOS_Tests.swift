@@ -183,4 +183,24 @@ struct The_Bible__iOS_Tests {
         #expect(ReadingInsights(recentSeconds: 300, previousSeconds: 0).comparisonPercent == 100)
         #expect(ReadingInsights(recentSeconds: 0, previousSeconds: 0).comparisonPercent == nil)
     }
+
+    @Test
+    func cloudSessionPayloadIsBoundedAndKeepsRecentHistory() throws {
+        let sessions = (0..<3_000).map { index in
+            let start = Date(timeIntervalSince1970: TimeInterval(index * 60))
+            return ReadingSessionsStore.Session(
+                start: start,
+                end: start.addingTimeInterval(30),
+                book: "John",
+                chapter: 1
+            )
+        }
+
+        let payload = iCloudSyncCoordinator.cloudSessionPayload(from: sessions)
+        let decoded = try JSONDecoder().decode([ReadingSessionsStore.Session].self, from: payload)
+
+        #expect(payload.count <= iCloudSyncCoordinator.maximumCloudSessionBytes)
+        #expect(decoded.count <= iCloudSyncCoordinator.maximumCloudSessions)
+        #expect(decoded.first?.end == sessions.last?.end)
+    }
 }

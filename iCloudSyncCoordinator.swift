@@ -11,8 +11,24 @@ import UIKit
 final class iCloudSyncCoordinator {
     static let shared = iCloudSyncCoordinator()
 
+    enum SyncState: String {
+        case notStarted
+        case downloading
+        case ready
+        case unavailable
+        case quotaExceeded
+    }
+
     let kvs = NSUbiquitousKeyValueStore.default
     let defaults = UserDefaults.standard
+
+    private(set) var syncState: SyncState = .notStarted
+    private(set) var lastErrorMessage: String?
+    private(set) var lastSynchronizeSucceeded: Bool?
+    private(set) var approximateCloudBytes: Int = 0
+    private(set) var cloudKeyCount: Int = 0
+    private var initialSyncTask: Task<Void, Never>?
+    private var hasCompletedInitialDownload = false
 
     // One-time bootstrap flag so we push existing local values to KVS on first run after adding sync.
     let bootstrapFlagKey = "kvsBootstrapComplete_v1"
@@ -73,48 +89,68 @@ final class iCloudSyncCoordinator {
         )
         #endif
 
-        // Initial pull
-        kvs.synchronize()
     }
 
     // MARK: - Public API
 
     func start() {
         if didStart {
-            // Foreground callers use start() as an inexpensive catch-up point.
-            kvs.synchronize()
-            reconcileAllKeysFromKVS()
+            refreshNow()
             return
         }
         didStart = true
+        syncState = .downloading
+        recordSynchronizeResult(kvs.synchronize())
 
-        // Pull -> merge -> normalize -> push repairs (debounced)
+        // Apple recommends delaying writes while the initial KVS download is in
+        // progress. A notification normally completes this early; the fallback
+        // handles accounts whose cloud store is empty and produce no changed keys.
+        initialSyncTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(3))
+            guard !Task.isCancelled else { return }
+            self?.completeInitialDownload()
+        }
+    }
+
+    func refreshNow() {
+        guard didStart else {
+            start()
+            return
+        }
+        let succeeded = kvs.synchronize()
+        recordSynchronizeResult(succeeded)
+        guard succeeded else { return }
+        if hasCompletedInitialDownload {
+            reconcileAllKeysFromKVS()
+            updateStoreMetrics()
+        }
+    }
+
+    private func completeInitialDownload() {
+        guard !hasCompletedInitialDownload else { return }
+        initialSyncTask?.cancel()
+        initialSyncTask = nil
+        hasCompletedInitialDownload = true
+        syncState = .ready
+
+        // Cloud values are merged before any local value can be published.
         reconcileAllKeysFromKVS()
 
-        // One-time bootstrap: push local differences (no blind timestamp bumps) after initial pull/merge
         if !defaults.bool(forKey: bootstrapFlagKey) {
             pushLocalDifferencesToKVS()
             defaults.set(true, forKey: bootstrapFlagKey)
+        } else if !pendingKeys.isEmpty {
+            let queuedKeys = pendingKeys
+            pendingKeys.removeAll()
+            for key in queuedKeys { mirrorLocalKeyToKVS(key) }
+            enqueueKeysForSync(queuedKeys)
         }
 
-        // Normalize impossible pairs once at startup too (heals existing data even if no merge occurs this run)
         let repaired = normalizeGameCountersInvariant()
-        if !repaired.isEmpty {
-            enqueueKeysForSync(repaired)
-            // Post asynchronously to avoid interfering with any active keyboard session
-            DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
-            }
-        }
-
-        // NEW: Migrate legacy Reference Match -> Verse Match keys once if needed.
         let migrated = migrateRefMatchToVerseMatchIfNeeded()
-        if !migrated.isEmpty {
-            enqueueKeysForSync(migrated)
-            DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
-            }
-        }
+        enqueueKeysForSync(repaired.union(migrated))
+        updateStoreMetrics()
+        NotificationCenter.default.post(name: .iCloudSyncStatusChanged, object: nil)
     }
 
     // Call after local writes if you want to eagerly push a specific key.
@@ -127,6 +163,10 @@ final class iCloudSyncCoordinator {
             writeLocalTimestampNow(for: key)
         }
 
+        guard hasCompletedInitialDownload else {
+            pendingKeys.insert(key)
+            return
+        }
         mirrorLocalKeyToKVS(key)
         enqueueKeyForSync(key)
     }
@@ -134,14 +174,19 @@ final class iCloudSyncCoordinator {
     // Optional: push all known keys now (useful on app background)
     // Completion is invoked on the main actor after the immediate synchronize finishes.
     func pushAllNow(completion: (() -> Void)? = nil) {
+        guard hasCompletedInitialDownload else {
+            pendingKeys.formUnion(allKnownKeys)
+            completion?()
+            return
+        }
         for key in allKnownKeys {
             mirrorLocalKeyToKVS(key)
         }
         // Perform a single immediate synchronize off-main and stamp lastPushDate.
         let _ = Task.detached {
-            NSUbiquitousKeyValueStore.default.synchronize()
+            let succeeded = NSUbiquitousKeyValueStore.default.synchronize()
             await MainActor.run {
-                iCloudSyncCoordinator.shared.lastPushDate = Date()
+                iCloudSyncCoordinator.shared.recordSynchronizeResult(succeeded, isPush: true)
                 completion?()
             }
         }
@@ -251,16 +296,29 @@ final class iCloudSyncCoordinator {
 
         guard let userInfo = note.userInfo else { return }
 
-        // Refine: react only to server/initial sync changes; skip quota/account changes.
+        // Track failures explicitly; CloudKit account availability does not prove KVS health.
         let reasonRaw = userInfo[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int
         if let reason = reasonRaw {
             switch reason {
-            case NSUbiquitousKeyValueStoreServerChange,
-                 NSUbiquitousKeyValueStoreInitialSyncChange:
-                break // proceed
+            case NSUbiquitousKeyValueStoreServerChange:
+                break
+            case NSUbiquitousKeyValueStoreInitialSyncChange:
+                // This reason means the initial download is still in progress.
+                // Merge what arrived, then wait for a quiet period before writes.
+                reconcileAllKeysFromKVS()
+                initialSyncTask?.cancel()
+                initialSyncTask = Task { [weak self] in
+                    try? await Task.sleep(for: .seconds(2))
+                    guard !Task.isCancelled else { return }
+                    self?.completeInitialDownload()
+                }
             case NSUbiquitousKeyValueStoreQuotaViolationChange:
+                syncState = .quotaExceeded
+                lastErrorMessage = "iCloud key-value storage exceeded its quota."
+                NotificationCenter.default.post(name: .iCloudSyncStatusChanged, object: nil)
                 return
             case NSUbiquitousKeyValueStoreAccountChange:
+                restartForAccountChange()
                 return
             default:
                 break // unknown reason; proceed conservatively
@@ -340,6 +398,7 @@ final class iCloudSyncCoordinator {
 
         // Record last merge time
         lastMergeDate = Date()
+        updateStoreMetrics()
 
         // Special-case: Last Read widget keys are not in allKnownKeys (they live as raw KVS/app-group values for widgets).
         if keysToProcess.contains(where: { Self.lastReadWidgetKeys.contains($0) }) {
@@ -384,8 +443,7 @@ final class iCloudSyncCoordinator {
         }
 
         // Account changed: pull, merge, and repair. Do not blindly push local values first.
-        kvs.synchronize()
-        reconcileAllKeysFromKVS()
+        restartForAccountChange()
     }
 
     #if canImport(UIKit)
@@ -476,9 +534,9 @@ final class iCloudSyncCoordinator {
             // Perform synchronize off-main to avoid any chance of blocking UI.
             await withTaskCancellationHandler {
                 let _ = Task.detached {
-                    NSUbiquitousKeyValueStore.default.synchronize()
+                    let succeeded = NSUbiquitousKeyValueStore.default.synchronize()
                     await MainActor.run {
-                        iCloudSyncCoordinator.shared.lastPushDate = Date()
+                        iCloudSyncCoordinator.shared.recordSynchronizeResult(succeeded, isPush: true)
                     }
                 }
             } onCancel: {
@@ -521,7 +579,8 @@ final class iCloudSyncCoordinator {
     // MARK: - One-shot reconcile pass at startup/identity change
 
     func reconcileAllKeysFromKVS() {
-        // After a synchronize, merge keys that exist remotely, AND clear local for certain domains if absent remotely.
+        // Merge only values that actually exist remotely. Missing keys are ambiguous
+        // during downloads and outages; explicit reset epochs are the sole deletion signal.
         let remoteDict = kvs.dictionaryRepresentation
 
         var mergedGameKey = false
@@ -604,70 +663,6 @@ final class iCloudSyncCoordinator {
                 touchedAny = true
                 continue
             }
-
-            // Handle remote deletions for game daily maps and last played, per-book maps, per-game daily maps, and WORD daily keys.
-            if Self.gameDailyAndLastPlayedKeys.contains(key) {
-                if defaults.object(forKey: key) != nil {
-                    defaults.removeObject(forKey: key)
-                    touchedAny = true
-                    mergedGameKey = true
-
-                    if key == "gamesDailyAnswered" || key == "gamesDailyCorrect" {
-                        let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","word"]
-                        for g in perGameKeys {
-                            defaults.removeObject(forKey: "gamesDailyAnswered_\(g)")
-                            defaults.removeObject(forKey: "gamesDailyCorrect_\(g)")
-                        }
-                        for modeKey in ["word_normal", "word_hard"] {
-                            defaults.removeObject(forKey: "gamesDailyAnswered_\(modeKey)")
-                            defaults.removeObject(forKey: "gamesDailyCorrect_\(modeKey)")
-                        }
-                    }
-                }
-                continue
-            }
-
-            if Self.quizPerBookMapKeys.contains(key)
-                || Self.quizPerBookDailyMapKeys.contains(key)
-                || Self.verseMatchPerBookMapKeys.contains(key)
-                || Self.beatClockPerTypeMapKeys.contains(key)
-                || Self.hangmanPerCategoryMapKeys.contains(key) {
-                if defaults.object(forKey: key) != nil {
-                    defaults.removeObject(forKey: key)
-                    touchedAny = true
-                    mergedGameKey = true
-                }
-                continue
-            }
-
-            if Self.perGameDailyMapKeys.contains(key) {
-                if defaults.object(forKey: key) != nil {
-                    defaults.removeObject(forKey: key)
-                    touchedAny = true
-                    mergedGameKey = true
-                }
-                continue
-            }
-
-            if Self.wordleSolvedMapKeys.contains(key)
-                || Self.wordleDailyResultKeys.contains(key)
-                || Self.wordleDailyFlagKeys.contains(key) {
-                if defaults.object(forKey: key) != nil {
-                    defaults.removeObject(forKey: key)
-                    touchedAny = true
-                    mergedGameKey = true
-                }
-                continue
-            }
-
-            // Bible stats — treat absence remotely as deletion locally
-            if Self.bibleStatsKeys.contains(key) {
-                if defaults.object(forKey: key) != nil {
-                    defaults.removeObject(forKey: key)
-                    touchedAny = true
-                }
-                continue
-            }
         }
 
         if touchedAny {
@@ -696,6 +691,52 @@ final class iCloudSyncCoordinator {
         guard let d = data else { return nil }
         return try? JSONDecoder().decode(T.self, from: d)
     }
+
+    private func restartForAccountChange() {
+        initialSyncTask?.cancel()
+        hasCompletedInitialDownload = false
+        syncState = .downloading
+        lastErrorMessage = nil
+        // Do not re-bootstrap an established installation into a different
+        // account. A genuinely fresh install already has a false bootstrap flag.
+        pendingKeys.removeAll()
+        recordSynchronizeResult(kvs.synchronize())
+        initialSyncTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(3))
+            guard !Task.isCancelled else { return }
+            self?.completeInitialDownload()
+        }
+    }
+
+    private func recordSynchronizeResult(_ succeeded: Bool, isPush: Bool = false) {
+        lastSynchronizeSucceeded = succeeded
+        if succeeded {
+            if syncState == .unavailable { syncState = .downloading }
+            lastErrorMessage = nil
+            if isPush { lastPushDate = Date() }
+        } else {
+            syncState = .unavailable
+            lastErrorMessage = "iCloud key-value storage is unavailable for this build or account."
+        }
+        updateStoreMetrics()
+        NotificationCenter.default.post(name: .iCloudSyncStatusChanged, object: nil)
+    }
+
+    private func updateStoreMetrics() {
+        let representation = kvs.dictionaryRepresentation
+        cloudKeyCount = representation.count
+        approximateCloudBytes = representation.values.reduce(0) { partial, value in
+            partial + ((try? PropertyListSerialization.data(
+                fromPropertyList: value,
+                format: .binary,
+                options: 0
+            ).count) ?? 0)
+        }
+    }
+}
+
+extension Notification.Name {
+    static let iCloudSyncStatusChanged = Notification.Name("iCloudSyncStatusChanged")
 }
 
 // MARK: - Last Read widget keys (KVS/App Group)

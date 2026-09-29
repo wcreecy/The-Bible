@@ -4,6 +4,8 @@ import Foundation
 extension iCloudSyncCoordinator {
     // Reading sessions key(s)
     static let sessionKeys: [String] = ["readingSessions"]
+    static let maximumCloudSessions = 2_000
+    static let maximumCloudSessionBytes = 256 * 1_024
 
     // Cached formatter for stable session identity
     private static let isoFormatter: ISO8601DateFormatter = {
@@ -22,14 +24,14 @@ extension iCloudSyncCoordinator {
             return
         }
 
-        let localData = defaults.data(forKey: key)
+        let localSessions = decode(
+            defaults.data(forKey: key),
+            as: [ReadingSessionsStore.Session].self
+        ) ?? []
+        let localData = Self.cloudSessionPayload(from: localSessions)
         let remoteData = kvs.object(forKey: key) as? Data
         if localData != remoteData {
-            if let data = localData {
-                kvs.set(data, forKey: key)
-            } else if remoteData != nil {
-                kvs.removeObject(forKey: key)
-            }
+            kvs.set(localData, forKey: key)
         }
         if localTimestamp > 0 {
             kvs.set(localTimestamp, forKey: tsKey(for: key))
@@ -47,14 +49,17 @@ extension iCloudSyncCoordinator {
 
         merged = merged.filter(ReadingSessionsStore.isValid)
 
-        if let data = try? JSONEncoder().encode(merged) {
-            defaults.set(data, forKey: key)
+        if let localData = try? JSONEncoder().encode(merged) {
+            // Keep complete history on-device. Only the bounded recent window is
+            // mirrored through KVS; cumulative reading aggregates preserve totals.
+            defaults.set(localData, forKey: key)
 
             // Sessions are append-only history. Republish the union so opening a
             // stale device cannot replace sessions recorded on another device.
-            if data != (kvs.object(forKey: key) as? Data) {
+            let cloudData = Self.cloudSessionPayload(from: merged)
+            if cloudData != (kvs.object(forKey: key) as? Data) {
                 let timestamp = Date().timeIntervalSince1970
-                kvs.set(data, forKey: key)
+                kvs.set(cloudData, forKey: key)
                 kvs.set(timestamp, forKey: tsKey(for: key))
                 defaults.set(timestamp, forKey: tsKey(for: key))
                 enqueueKeyForSync(key)
@@ -88,5 +93,21 @@ extension iCloudSyncCoordinator {
         let endStr = Self.isoFormatter.string(from: s.end)
         let chapStr = s.chapter.map { String($0) } ?? "_"
         return "\(startStr)|\(endStr)|\(s.book)|\(chapStr)"
+    }
+
+    static func cloudSessionPayload(from sessions: [ReadingSessionsStore.Session]) -> Data {
+        var bounded = Array(
+            sessions
+                .filter(ReadingSessionsStore.isValid)
+                .sorted { $0.end > $1.end }
+                .prefix(maximumCloudSessions)
+        )
+        let encoder = JSONEncoder()
+        while !bounded.isEmpty {
+            let data = (try? encoder.encode(bounded)) ?? Data()
+            if data.count <= maximumCloudSessionBytes { return data }
+            bounded.removeLast(max(1, bounded.count / 10))
+        }
+        return (try? encoder.encode([ReadingSessionsStore.Session]())) ?? Data()
     }
 }
