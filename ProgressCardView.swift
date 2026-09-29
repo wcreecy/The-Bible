@@ -94,7 +94,7 @@ struct ProgressCardView: View {
                             .labelStyle(.titleAndIcon)
                     }
                     .buttonStyle(.bordered)
-                    .tint(.blue)
+                    .tint(.accentColor)
                 }
 
                 Button {

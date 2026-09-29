@@ -100,7 +100,7 @@ struct BooksView: View {
         .background(AppBackgroundView(tab: .bible))
         .navigationTitle("Books")
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search books")
-        .tint(.blue)
+        .tint(.accentColor)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {

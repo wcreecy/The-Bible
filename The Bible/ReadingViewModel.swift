@@ -177,9 +177,9 @@ final class ReadingViewModel: ObservableObject {
 
     // MARK: - Bookmark (Continue Reading / Last Read)
 
-    func bookmarkVerse(context: ModelContext, verse: Verse) {
-        // Persist Continue Reading
-        ReadingProgressStore.save(in: context, bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number)
+    func bookmarkVerse(context: ModelContext, verse: Verse) throws {
+        // Persist Continue Reading before updating its mirrors.
+        try ReadingProgressStore.save(in: context, bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number)
 
         // Mirror Last Read for widget (App Group + iCloud KVS)
         mirrorLastReadToAppGroup(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number, text: verse.text)

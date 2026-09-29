@@ -26,7 +26,7 @@ struct ScripturePreviewCard: View {
                 if let onCopy {
                     Button(action: onCopy) {
                         Image(systemName: "doc.on.doc")
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color.accentColor)
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Copy scripture")

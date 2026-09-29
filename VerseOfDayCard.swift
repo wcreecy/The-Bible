@@ -9,10 +9,7 @@ struct VerseOfDayCard: View {
 
     // Actions/closures provided by HomeView to keep behavior centralized
     let onRefresh: () -> Void
-    let onCopy: (HomeVerseRef) -> Void
-    let onShareText: (HomeVerseRef) -> String
-    let isFavorited: (HomeVerseRef) -> Bool
-    let onToggleFavorite: (HomeVerseRef) -> Void
+    let onVerseActionFeedback: (VerseActionFeedback) -> Void
     let onOpenReader: (HomeVerseRef) -> Void
     let onTogglePaused: () -> Void
     // Dynamic title/icon based on time of day
@@ -41,7 +38,7 @@ struct VerseOfDayCard: View {
                             .font(.title3)
                     }
                     .buttonStyle(.plain)
-                    .foregroundStyle(verseOfDayPaused ? Color.red : Color.blue)
+                    .foregroundStyle(verseOfDayPaused ? Color.red : Color.accentColor)
                     .accessibilityLabel(verseOfDayPaused ? "Unpause Verse Refresh" : "Pause Verse Refresh")
                     .help(verseOfDayPaused ? "Unpause Verse Refresh" : "Pause Verse Refresh")
                 }
@@ -69,25 +66,17 @@ struct VerseOfDayCard: View {
                         .help("Refresh")
                         .disabled(verseOfDayPaused)
 
-                        Button(action: { onCopy(v) }) {
-                            Label("Copy", systemImage: "doc.on.doc")
-                        }
-                        .labelStyle(.iconOnly)
-                        .font(.title3)
-                        .help("Copy")
-
-                        ShareLink(item: onShareText(v)) {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                        .font(.title3)
-                        .help("Share")
-
-                        Button(action: { onToggleFavorite(v) }) {
-                            Image(systemName: isFavorited(v) ? "heart.fill" : "heart")
-                                .foregroundStyle(.red)
-                        }
-                        .font(.title3)
-                        .help("Favorite")
+                        VerseActionMenu(
+                            verse: VerseActionReference(
+                                bookName: v.bookName,
+                                chapterNumber: v.chapterNumber,
+                                verseNumber: v.verseNumber,
+                                verseText: v.verseText
+                            ),
+                            presentation: .buttons,
+                            onFeedback: onVerseActionFeedback
+                        )
+                        .help("Verse actions")
                     }
                     .frame(maxWidth: .infinity)
 
@@ -119,19 +108,7 @@ struct VerseOfDayCard: View {
                 Haptics.selection()
                 onOpenReader(v)
             }
-            .contextMenu {
-                if let v = verseOfDay {
-                    Button {
-                        onCopy(v)
-                    } label: {
-                        Label("Copy", systemImage: "doc.on.doc")
-                    }
 
-                    ShareLink(item: onShareText(v)) {
-                        Label("Share", systemImage: "square.and.arrow.up")
-                    }
-                }
-            }
         }
     }
 }

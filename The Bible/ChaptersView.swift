@@ -23,7 +23,7 @@ struct ChaptersView: View {
             .foregroundStyle(.primary)
         }
         .navigationTitle(book.name)
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

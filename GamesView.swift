@@ -184,6 +184,7 @@ struct GamesView: View {
         .scrollContentBackground(.hidden)
         .background(AppBackgroundView(tab: .games))
         .navigationTitle("Games")
+        .navigationBarTitleDisplayMode(.large)
         .navigationDestination(for: GameRoute.self) { route in
             destination(for: route)
                 .onAppear { recordRecentlyPlayed(route) }

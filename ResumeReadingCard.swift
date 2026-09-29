@@ -25,7 +25,7 @@ struct ResumeReadingCard: View {
                         HStack(spacing: 8) {
                             Image(systemName: "bookmark.fill")
                                 .font(.title3)
-                                .foregroundStyle(.blue)
+                                .foregroundStyle(Color.accentColor)
                             Text("Continue Reading")
                                 .font(.headline)
                                 .bold()
@@ -60,7 +60,7 @@ struct ResumeReadingCard: View {
                     HStack(spacing: 8) {
                         Image(systemName: "bookmark.fill")
                             .font(.title3)
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color.accentColor)
                         Text("Continue Reading")
                             .font(.headline)
                             .bold()

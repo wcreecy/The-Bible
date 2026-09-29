@@ -296,7 +296,7 @@ struct BeatTheClockGameView: View {
                     }
                     if selectionLocked {
                         Button("Show answers (\(acceptableBooks.count))") { showAnswers = true }
-                            .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                     }
 
                     if debugAutoWinEnabled, started, !selectionLocked {

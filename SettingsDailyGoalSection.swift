@@ -22,7 +22,7 @@ struct SettingsDailyGoalSection: View {
                 } label: {
                     HStack {
                         Label("Daily Goal", systemImage: "target")
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color.accentColor)
                         Spacer()
                         Text("\(dailyGoalMinutes) min")
                             .foregroundStyle(.secondary)

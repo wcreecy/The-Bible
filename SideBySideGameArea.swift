@@ -65,7 +65,7 @@ struct SideBySideGameArea: View {
                 HStack(spacing: 10) {
                     if !roundOver {
                         Button("Reveal") { onReveal() }
-                            .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
 
                         if gameMode == .blind {
                             Button(healedOn ? "Hide" : "Word List") { onToggleHealed() }

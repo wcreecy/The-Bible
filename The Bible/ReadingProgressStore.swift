@@ -2,27 +2,28 @@ import Foundation
 import SwiftData
 
 enum ReadingProgressStore {
-    static func save(in context: ModelContext, bookName: String, chapter: Int, verse: Int) {
-        // Fetch newest record if any
+    static func save(in context: ModelContext, bookName: String, chapter: Int, verse: Int) throws {
+        // Fetch newest record if any.
         let sort = [SortDescriptor(\ReadingProgress.updatedAt, order: .reverse)]
         var fetch = FetchDescriptor<ReadingProgress>(sortBy: sort)
         fetch.fetchLimit = 1
-        if let existing = try? context.fetch(fetch).first {
+
+        if let existing = try context.fetch(fetch).first {
             existing.bookName = bookName
             existing.chapterNumber = chapter
             existing.verseNumber = verse
             existing.updatedAt = Date()
-            try? context.save()
         } else {
-            let p = ReadingProgress()
-            p.singletonKey = "global"
-            p.bookName = bookName
-            p.chapterNumber = chapter
-            p.verseNumber = verse
-            p.updatedAt = Date()
-            context.insert(p)
-            try? context.save()
+            let progress = ReadingProgress()
+            progress.singletonKey = "global"
+            progress.bookName = bookName
+            progress.chapterNumber = chapter
+            progress.verseNumber = verse
+            progress.updatedAt = Date()
+            context.insert(progress)
         }
+
+        try context.save()
     }
 
     static func dedupe(in context: ModelContext) {

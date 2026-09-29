@@ -15,7 +15,7 @@ struct ScriptureLinksList: View {
                         Text(displayString(for: ref))
                             .font(.subheadline)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color.accentColor)
                             .underline()
                     }
                     .buttonStyle(.plain)
@@ -24,7 +24,7 @@ struct ScriptureLinksList: View {
                         Image(systemName: "doc.on.doc")
                     }
                     .buttonStyle(.plain)
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.accentColor)
                     .accessibilityLabel("Copy reference")
                     .accessibilityHint("Copies the scripture reference")
                 }

@@ -371,7 +371,7 @@ struct HangmanGameView: View {
                     Text(ref)
                         .lineLimit(1)
                 }
-                .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                 .controlSize(.small)
             }
 
@@ -434,7 +434,7 @@ struct HangmanGameView: View {
                         Text(ref)
                             .lineLimit(1)
                     }
-                    .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                     .controlSize(.small)
                 }
                 Spacer()

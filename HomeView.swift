@@ -55,6 +55,9 @@ struct HomeView: View {
     @EnvironmentObject private var coordinator: NavigationCoordinator
 
     @State private var showCopyToast: Bool = false
+    @State private var verseActionToastSymbol: String = "doc.on.doc"
+    @State private var verseActionToastText: String = "Copied to Clipboard"
+    @State private var verseActionToastTint: Color = .accentColor
     @State private var showFocusSavedToast: Bool = false
     @State private var lastVerseAutoRefreshToken: String = ""
 
@@ -211,10 +214,7 @@ struct HomeView: View {
                 isBibleStoreReady: bibleStore.isReady,
                 nextRefreshDescription: votdVM.nextRefreshDescription,
                 onRefresh: { votdVM.refreshNow() },
-                onCopy: { v in copyVerse(v) },
-                onShareText: { v in shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText) },
-                isFavorited: { v in isFavorited(v) },
-                onToggleFavorite: { v in toggleFavorite(for: v) },
+                onVerseActionFeedback: handleVerseActionFeedback,
                 onOpenReader: { verse in
                     openInBibleTab(verse)
                 },
@@ -435,7 +435,12 @@ struct HomeView: View {
         }
         .background(AppBackgroundView(tab: .home))
         .navigationTitle("")
-        .appToast(isPresented: $showCopyToast, symbol: "doc.on.doc", text: "Copied to Clipboard", tint: .blue)
+        .appToast(
+            isPresented: $showCopyToast,
+            symbol: verseActionToastSymbol,
+            text: verseActionToastText,
+            tint: verseActionToastTint
+        )
         .appToast(isPresented: $showFocusSavedToast, symbol: "checkmark.seal.fill", text: "Focus Saved", tint: .green)
         .onAppear {
             loadHomeLayout()
@@ -514,6 +519,39 @@ struct HomeView: View {
             }
         } message: {
             Text("Your prayer/study timer has completed.")
+        }
+    }
+
+    private func handleVerseActionFeedback(_ feedback: VerseActionFeedback) {
+        switch feedback {
+        case .addedFavorite:
+            verseActionToastSymbol = "heart.fill"
+            verseActionToastText = "Added to Favorites"
+            verseActionToastTint = .pink
+        case .removedFavorite:
+            verseActionToastSymbol = "heart.slash"
+            verseActionToastText = "Removed Favorite"
+            verseActionToastTint = .secondary
+        case .bookmarked:
+            verseActionToastSymbol = "bookmark.fill"
+            verseActionToastText = "Set as Continue Reading"
+            verseActionToastTint = .accentColor
+        case .pinned:
+            verseActionToastSymbol = "pin.fill"
+            verseActionToastText = "Pinned to Widget"
+            verseActionToastTint = .red
+        case .unpinned:
+            verseActionToastSymbol = "pin"
+            verseActionToastText = "Unpinned from Widget"
+            verseActionToastTint = .red
+        case .copied:
+            verseActionToastSymbol = "doc.on.doc"
+            verseActionToastText = "Copied to Clipboard"
+            verseActionToastTint = .accentColor
+        }
+
+        withAnimation(.spring()) {
+            showCopyToast = true
         }
     }
 

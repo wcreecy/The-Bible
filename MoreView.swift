@@ -18,8 +18,10 @@ struct MoreView: View {
                 }
             }
         }
-        .background(Color(.systemGroupedBackground))
+        .scrollContentBackground(.hidden)
+        .background(AppBackgroundView(tab: .more))
         .navigationTitle("More")
+        .navigationBarTitleDisplayMode(.large)
         .navigationDestination(for: MoreDestination.self) { destination in
             switch destination {
             case .stats:

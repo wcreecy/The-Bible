@@ -88,7 +88,7 @@ struct PrayerTimerCard: View {
                                         .font(.subheadline.weight(.semibold))
                                         .frame(width: 40, height: 40)
                                         .foregroundStyle(.white)
-                                        .background(Circle().fill(Color.blue))
+                                        .background(Circle().fill(Color.accentColor))
                                 }
                                 .buttonStyle(.plain)
                                 .accessibilityLabel("Add 1 minute")
@@ -98,7 +98,7 @@ struct PrayerTimerCard: View {
                                         .font(.subheadline.weight(.semibold))
                                         .frame(width: 40, height: 40)
                                         .foregroundStyle(.white)
-                                        .background(Circle().fill(Color.blue))
+                                        .background(Circle().fill(Color.accentColor))
                                 }
                                 .buttonStyle(.plain)
                                 .accessibilityLabel("Add 5 minutes")

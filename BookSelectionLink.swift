@@ -31,6 +31,7 @@ struct BookSelectionLink: View {
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Select Book")
+            .navigationBarTitleDisplayMode(.inline)
             .task {
                 if bookNames.isEmpty {
                     // Load names asynchronously (fast, and uses per-book files if available).
@@ -63,6 +64,7 @@ private struct BookSelectionLinkPreviewWrapper: View {
                 BookSelectionLink(selectedBookName: $selectedBook)
             }
             .navigationTitle("Preview")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

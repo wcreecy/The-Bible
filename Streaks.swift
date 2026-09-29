@@ -105,7 +105,7 @@ struct StreaksCard: View {
                             .foregroundStyle(.secondary)
                     }
                     ProgressView(value: progress)
-                        .tint(goalMet ? .green : .blue)
+                        .tint(goalMet ? .green : .accentColor)
                     HStack {
                         if goalMet {
                             Label("Great job! You reached your goal today.", systemImage: "checkmark.seal.fill")
@@ -223,7 +223,7 @@ struct StreaksCard: View {
                 }
                 .buttonStyle(.plain)
             }
-            .foregroundStyle(.blue)
+            .foregroundStyle(Color.accentColor)
 
             HStack {
                 ForEach(weekdays, id: \.self) { w in

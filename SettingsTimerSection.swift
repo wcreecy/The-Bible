@@ -32,7 +32,7 @@ struct SettingsTimerSection: View {
                             .font(.title3)
                     }
                     .buttonStyle(.plain)
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.accentColor)
                     .accessibilityLabel("Play Preview")
                     .accessibilityHint("Plays the selected timer sound")
                 }

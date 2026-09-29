@@ -31,6 +31,7 @@ struct ReadingView: View {
     @State private var favoriteToastSymbol: String = "heart.fill"
     @State private var favoriteToastTint: Color = .pink
     @State private var removedFavorite: RemovedReadingFavorite?
+    @State private var persistenceFailure: PersistenceFailure?
 
     init(book: Book, chapter: Chapter, startVerse: Int) {
         self.book = book
@@ -119,6 +120,7 @@ struct ReadingView: View {
             .fullScreenCover(isPresented: $viewModel.isSearchPresented) {
                 ReadingSearchSheet(viewModel: viewModel)
             }
+            .persistenceFailureAlert(failure: $persistenceFailure)
     }
 
     @ViewBuilder
@@ -262,78 +264,54 @@ struct ReadingView: View {
     // Extracted to reduce type-checking complexity
     @ViewBuilder
     private func verseMenu(for verse: Verse, bookName: String, chapterNumber: Int) -> some View {
-        HStack(spacing: 24) {
-            Button(action: {
-                let share = shareText(bookName: bookName, chapter: chapterNumber, verse: verse.number, text: verse.text)
-                UIPasteboard.general.string = share
-                favoriteToastSymbol = "doc.on.doc"
-                favoriteToastTint = .blue
-                favoriteToastText = "Copied to Clipboard"
-                withAnimation(.spring()) { showFavoriteToast = true }
-                withAnimation(.easeInOut) { viewModel.menuVerse = nil }
-                viewModel.markActivity()
-            }) { Image(systemName: "doc.on.doc") }
-            .foregroundStyle(.blue)
-
-            let shareItem = shareText(bookName: bookName, chapter: chapterNumber, verse: verse.number, text: verse.text)
-            ShareLink(item: shareItem) {
-                Image(systemName: "square.and.arrow.up")
-            }
-            .foregroundStyle(.blue)
-
-            Button(action: {
-                if viewModel.isPinned(verse.number) {
-                    Task { @MainActor in
-                        await viewModel.pinnedStore.clear()
-                    }
-                    Haptics.selection()
-                    favoriteToastSymbol = "pin"
-                    favoriteToastTint = .red
-                    favoriteToastText = "Unpinned from Widget"
-                } else {
-                    Task { @MainActor in
-                        _ = await viewModel.togglePin(verseNumber: verse.number, verseText: verse.text)
-                    }
-                    Haptics.success()
-                    favoriteToastSymbol = "pin.fill"
-                    favoriteToastTint = .red
-                    favoriteToastText = "Pinned to Widget"
-                }
-                withAnimation(.spring()) { showFavoriteToast = true }
-                withAnimation(.easeInOut) { viewModel.menuVerse = nil }
-                viewModel.markActivity()
-            }) {
-                Image(systemName: viewModel.isPinned(verse.number) ? "pin.fill" : "pin")
-            }
-            .foregroundStyle(.red)
-
-            Button(action: {
-                toggleFavorite(for: verse)
-                withAnimation(.easeInOut) { viewModel.menuVerse = nil }
-                viewModel.markActivity()
-            }) { Image(systemName: isFavorited(verse) ? "heart.fill" : "heart") }
-            .foregroundStyle(.red)
-
-            // Bookmark (Continue Reading / Last Read)
-            let isBookmarked = (lastReadBook == bookName && lastReadChapter == chapterNumber && lastReadVerse == verse.number)
-            Button(action: {
-                viewModel.bookmarkVerse(context: modelContext, verse: verse)
-                Haptics.success()
-                favoriteToastSymbol = "bookmark.fill"
-                favoriteToastTint = .blue
-                favoriteToastText = "Set as Continue Reading"
-                withAnimation(.spring()) { showFavoriteToast = true }
-                withAnimation(.easeInOut) { viewModel.menuVerse = nil }
-                viewModel.markActivity()
-            }) {
-                Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-            }
-            .foregroundStyle(.blue)
-        }
-        .font(.title3)
+        VerseActionMenu(
+            verse: VerseActionReference(
+                bookName: bookName,
+                chapterNumber: chapterNumber,
+                verseNumber: verse.number,
+                verseText: verse.text
+            ),
+            presentation: .buttons,
+            onFeedback: handleVerseActionFeedback
+        )
         .frame(maxWidth: .infinity)
         .padding(.horizontal)
         .padding(.bottom, 6)
+    }
+
+    private func handleVerseActionFeedback(_ feedback: VerseActionFeedback) {
+        switch feedback {
+        case .addedFavorite:
+            favoriteToastSymbol = "heart.fill"
+            favoriteToastTint = .pink
+            favoriteToastText = "Added to Favorites"
+        case .removedFavorite:
+            favoriteToastSymbol = "heart.slash"
+            favoriteToastTint = .gray
+            favoriteToastText = "Removed Favorite"
+        case .bookmarked:
+            favoriteToastSymbol = "bookmark.fill"
+            favoriteToastTint = .accentColor
+            favoriteToastText = "Set as Continue Reading"
+        case .pinned:
+            favoriteToastSymbol = "pin.fill"
+            favoriteToastTint = .red
+            favoriteToastText = "Pinned to Widget"
+        case .unpinned:
+            favoriteToastSymbol = "pin"
+            favoriteToastTint = .red
+            favoriteToastText = "Unpinned from Widget"
+        case .copied:
+            favoriteToastSymbol = "doc.on.doc"
+            favoriteToastTint = .accentColor
+            favoriteToastText = "Copied to Clipboard"
+        }
+
+        withAnimation(.spring()) {
+            showFavoriteToast = true
+            viewModel.menuVerse = nil
+        }
+        viewModel.markActivity()
     }
 
     // MARK: - Favorites
@@ -346,44 +324,89 @@ struct ReadingView: View {
         }
     }
 
+    private func saveBookmark(for verse: Verse) {
+        ModelContextPersistence.perform(
+            in: modelContext,
+            operation: {
+                try viewModel.bookmarkVerse(context: modelContext, verse: verse)
+            },
+            onSuccess: {
+                Haptics.success()
+                favoriteToastSymbol = "bookmark.fill"
+                favoriteToastTint = .accentColor
+                favoriteToastText = "Set as Continue Reading"
+                withAnimation(.spring()) { showFavoriteToast = true }
+            },
+            onFailure: { persistenceFailure = $0 }
+        )
+    }
+
     private func toggleFavorite(for: Verse) {
         let verse = `for`
+
         if let existing = favorites.first(where: {
             $0.bookName == viewModel.currentBook.name &&
             $0.chapterNumber == viewModel.currentChapter.number &&
             $0.verseNumber == verse.number
         }) {
-            removedFavorite = RemovedReadingFavorite(existing)
-            modelContext.delete(existing)
-            try? modelContext.save()
-            favoriteToastSymbol = "heart.slash"
-            favoriteToastTint = .gray
-            favoriteToastText = "Removed Favorite"
-        } else {
-            removedFavorite = nil
-            let fav = Favorite(
-                bookName: viewModel.currentBook.name,
-                chapterNumber: viewModel.currentChapter.number,
-                verseNumber: verse.number,
-                verseText: verse.text
+            let removalSnapshot = RemovedReadingFavorite(existing)
+            ModelContextPersistence.perform(
+                in: modelContext,
+                operation: {
+                    modelContext.delete(existing)
+                    try modelContext.save()
+                },
+                onSuccess: {
+                    removedFavorite = removalSnapshot
+                    favoriteToastSymbol = "heart.slash"
+                    favoriteToastTint = .gray
+                    favoriteToastText = "Removed Favorite"
+                    withAnimation(.spring()) { showFavoriteToast = true }
+                },
+                onFailure: { persistenceFailure = $0 }
             )
-            modelContext.insert(fav)
-            try? modelContext.save()
-            favoriteToastSymbol = "heart.fill"
-            favoriteToastTint = .pink
-            favoriteToastText = "Added to Favorites"
-            Haptics.success()
+        } else {
+            ModelContextPersistence.perform(
+                in: modelContext,
+                operation: {
+                    let favorite = Favorite(
+                        bookName: viewModel.currentBook.name,
+                        chapterNumber: viewModel.currentChapter.number,
+                        verseNumber: verse.number,
+                        verseText: verse.text
+                    )
+                    modelContext.insert(favorite)
+                    try modelContext.save()
+                },
+                onSuccess: {
+                    removedFavorite = nil
+                    favoriteToastSymbol = "heart.fill"
+                    favoriteToastTint = .pink
+                    favoriteToastText = "Added to Favorites"
+                    Haptics.success()
+                    withAnimation(.spring()) { showFavoriteToast = true }
+                },
+                onFailure: { persistenceFailure = $0 }
+            )
         }
-        withAnimation(.spring()) { showFavoriteToast = true }
         viewModel.markActivity()
     }
 
     private func undoFavoriteRemoval() {
         guard let removedFavorite else { return }
-        modelContext.insert(removedFavorite.model)
-        try? modelContext.save()
-        self.removedFavorite = nil
-        Haptics.success()
+
+        ModelContextPersistence.perform(
+            in: modelContext,
+            operation: {
+                modelContext.insert(removedFavorite.model)
+                try modelContext.save()
+            },
+            onSuccess: {
+                self.removedFavorite = nil
+                Haptics.success()
+            },
+            onFailure: { persistenceFailure = $0 }
+        )
     }
 
     // MARK: - Share helper

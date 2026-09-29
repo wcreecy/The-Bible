@@ -32,7 +32,7 @@ struct ReadingVerseRow: View {
         .overlay(alignment: .trailing) {
             if isPinned {
                 Image(systemName: "bookmark.fill")
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.accentColor)
                     .padding(.trailing, 12)
                     .transition(.opacity)
                     .opacity(0.9)

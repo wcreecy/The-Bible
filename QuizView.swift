@@ -336,12 +336,14 @@ struct QuizView: View {
                                 Text("Correct answer: \(correctBookName) \(currentChapterNumber):\(currentVerseNumber)")
                                     .font(.footnote)
                                     .foregroundColor(.secondary)
-                                Button(action: { toggleFavoriteCurrent() }) {
-                                    Image(systemName: isCurrentFavorited() ? "heart.fill" : "heart")
-                                        .foregroundStyle(.red)
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel(isCurrentFavorited() ? "Remove Favorite" : "Add to Favorites")
+                                VerseActionMenu(
+                                    verse: VerseActionReference(
+                                        bookName: correctBookName,
+                                        chapterNumber: currentChapterNumber,
+                                        verseNumber: currentVerseNumber,
+                                        verseText: currentVerseText
+                                    )
+                                )
                             }
                             .padding(.top, 4)
                         }
@@ -382,6 +384,7 @@ struct QuizView: View {
             wasInRedZone = inRed
         }
         .navigationTitle("Bible Quiz")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             // Only show navigation buttons once the round has started
             if started {

@@ -1181,7 +1181,7 @@ struct WordleView: View {
                         .lineLimit(1)
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                 .controlSize(.large)
             } else {
                 Button { } label: {
@@ -1190,7 +1190,7 @@ struct WordleView: View {
                         .lineLimit(1)
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                 .controlSize(.large)
                 .disabled(true)
                 .opacity(0.6)

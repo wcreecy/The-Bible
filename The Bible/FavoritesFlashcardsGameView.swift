@@ -81,6 +81,7 @@ struct FavoritesFlashcardsGameView: View {
             }
         }
         .navigationTitle("Favorites Flashcards")
+        .navigationBarTitleDisplayMode(.inline)
         .padding()
     }
     

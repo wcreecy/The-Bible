@@ -52,6 +52,7 @@ struct VersesView: View {
                     .padding()
                 }
                 .navigationTitle("Verse Preview")
+                .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Done") { previewVerse = nil }
@@ -65,38 +66,54 @@ struct VersesView: View {
                             }
                         }
                     }
-                    ToolbarItemGroup(placement: .bottomBar) {
-                        // Copy
-                        Button {
-                            let share = "\"\(verse.text)\" — \(book.name) \(chapter.number):\(verse.number)"
-                            UIPasteboard.general.string = share
-                            toastSymbol = "doc.on.doc"
-                            toastTint = .blue
-                            toastText = "Copied to Clipboard"
-                            withAnimation(.spring()) { showToast = true }
-                        } label: {
-                            Image(systemName: "doc.on.doc")
-                        }
-
-                        // Share
-                        ShareLink(item: "\"\(verse.text)\" — \(book.name) \(chapter.number):\(verse.number)") {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-
-                        // Favorite toggle
-                        Button {
-                            toggleFavorite(for: verse)
-                        } label: {
-                            Image(systemName: isFavorited(verse) ? "heart.fill" : "heart")
-                                .foregroundStyle(.red)
-                        }
+                    ToolbarItem(placement: .bottomBar) {
+                        VerseActionMenu(
+                            verse: VerseActionReference(
+                                bookName: book.name,
+                                chapterNumber: chapter.number,
+                                verseNumber: verse.number,
+                                verseText: verse.text
+                            ),
+                            presentation: .buttons,
+                            onFeedback: handleVerseActionFeedback
+                        )
                     }
                 }
             }
             .appToast(isPresented: $showToast, symbol: toastSymbol, text: toastText, tint: toastTint)
         }
         .navigationTitle("\(book.name) \(chapter.number)")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func handleVerseActionFeedback(_ feedback: VerseActionFeedback) {
+        switch feedback {
+        case .addedFavorite:
+            toastSymbol = "heart.fill"
+            toastTint = .pink
+            toastText = "Added to Favorites"
+        case .removedFavorite:
+            toastSymbol = "heart.slash"
+            toastTint = .secondary
+            toastText = "Removed Favorite"
+        case .bookmarked:
+            toastSymbol = "bookmark.fill"
+            toastTint = .accentColor
+            toastText = "Set as Continue Reading"
+        case .pinned:
+            toastSymbol = "pin.fill"
+            toastTint = .red
+            toastText = "Pinned to Widget"
+        case .unpinned:
+            toastSymbol = "pin"
+            toastTint = .red
+            toastText = "Unpinned from Widget"
+        case .copied:
+            toastSymbol = "doc.on.doc"
+            toastTint = .accentColor
+            toastText = "Copied to Clipboard"
+        }
+        withAnimation(.spring()) { showToast = true }
     }
 
     private func isFavorited(_ verse: Verse) -> Bool {

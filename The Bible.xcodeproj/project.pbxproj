@@ -125,6 +125,8 @@
 		2C7EA8BB2EDE7AEA0073F01C /* iCloudSyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EA8BA2EDE7AEA0073F01C /* iCloudSyncCoordinator.swift */; };
 		2C9CD7852EE2FFB90073622F /* GameStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9CD7842EE2FFB90073622F /* GameStats.swift */; };
 		2CB309D32EC2CE2D0032CB7D /* BibleReferenceLinker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB309D22EC2CE2D0032CB7D /* BibleReferenceLinker.swift */; };
+		2CBD4223306B561D002E33CE /* PersistenceFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBD4222306B561D002E33CE /* PersistenceFeedback.swift */; };
+		2CBD4225306B575C002E33CE /* VerseActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBD4224306B575C002E33CE /* VerseActionMenu.swift */; };
 		2CBDF1DA2ED09F7E00CEE884 /* WordSearchGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBDF1D92ED09F7E00CEE884 /* WordSearchGameView.swift */; };
 		2CC5D6E92ED608E8009E4C0E /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC5D6E82ED608E8009E4C0E /* Haptics.swift */; };
 		2CC853AF2EF05DDB00753104 /* ScriptureRefExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC853AE2EF05DDB00753104 /* ScriptureRefExtractor.swift */; };
@@ -329,6 +331,8 @@
 		2CB677C32EB67F1400E609B5 /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
 		2CB677DA2EB680AE00E609B5 /* BibleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BibleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CB677E42EB680AE00E609B5 /* BibleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BibleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2CBD4222306B561D002E33CE /* PersistenceFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceFeedback.swift; sourceTree = "<group>"; };
+		2CBD4224306B575C002E33CE /* VerseActionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerseActionMenu.swift; sourceTree = "<group>"; };
 		2CBDF1D92ED09F7E00CEE884 /* WordSearchGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordSearchGameView.swift; sourceTree = "<group>"; };
 		2CC5D6E82ED608E8009E4C0E /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		2CC853AE2EF05DDB00753104 /* ScriptureRefExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptureRefExtractor.swift; sourceTree = "<group>"; };
@@ -664,6 +668,8 @@
 				2CD9C5DE306AE0D80077D777 /* GameStartScreenStyle.swift */,
 				2CD9C6C0306AEA860077D777 /* BackgroundCustomization.swift */,
 				2CD9C7A2306AEF6E0077D777 /* SettingsPermissionsSection.swift */,
+				2CBD4222306B561D002E33CE /* PersistenceFeedback.swift */,
+				2CBD4224306B575C002E33CE /* VerseActionMenu.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1132,6 +1138,7 @@
 				2C2764EA2EE8C20A00A321FE /* WeekRow.swift in Sources */,
 				2C2A44FA2EEE337A00FE8C2F /* SettingsAppearanceSection.swift in Sources */,
 				2C2764EC2EE8C20D00A321FE /* PrayerStudyTimerSetupView.swift in Sources */,
+				2CBD4225306B575C002E33CE /* VerseActionMenu.swift in Sources */,
 				2C2A44DC2EEE152900FE8C2F /* SideBySideGameArea.swift in Sources */,
 				2C3A48EB2EFC12EB0040AC67 /* AllGamesComparisonCardView.swift in Sources */,
 				2CF043692EE9F3D600DB1283 /* Canon.swift in Sources */,
@@ -1146,6 +1153,7 @@
 				2C4AAFBB2EF0D40C002EB4F0 /* GameStats+Debug.swift in Sources */,
 				2C2A44E42EEE153F00FE8C2F /* ControlsBar.swift in Sources */,
 				2C2A44D42EEE150B00FE8C2F /* Comparable+Clamp.swift in Sources */,
+				2CBD4223306B561D002E33CE /* PersistenceFeedback.swift in Sources */,
 				2C2A44E82EEE25E500FE8C2F /* iCloudSyncCoordinator+Settings.swift in Sources */,
 				2C2765722EE8D36A00A321FE /* Streaks.swift in Sources */,
 				2C2765002EE8C91700A321FE /* GamesCard.swift in Sources */,

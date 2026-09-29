@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct SearchView: View {
+    @EnvironmentObject private var coordinator: NavigationCoordinator
+
     // MARK: - Query & Results
     @State private var query: String = ""
     @State private var results: [SearchResult] = []
@@ -85,25 +87,49 @@ struct SearchView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                     } else {
                         List(results) { item in
-                            Button {
-                                openInBibleTab(item)
-                            } label: {
-                                VStack(alignment: .leading, spacing: 6) {
-                                    // Verse text snippet
-                                    Text(item.verse.text)
-                                        .font(.body)
-                                        .foregroundStyle(.primary) // adaptive text: black in light, white in dark
-                                        .lineLimit(3)
-                                    // Reference line
-                                    Text("\(item.book.name) \(item.chapter.number):\(item.verse.number)")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary) // adaptive secondary
+                            HStack(spacing: 12) {
+                                Button {
+                                    openInBibleTab(item)
+                                } label: {
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        if item.isReferenceMatch {
+                                            Label("Direct Reference", systemImage: "arrow.up.right.square")
+                                                .font(.caption.weight(.semibold))
+                                                .foregroundStyle(Color.accentColor)
+                                                .padding(.horizontal, 8)
+                                                .padding(.vertical, 4)
+                                                .background(Color.accentColor.opacity(0.12), in: Capsule())
+                                        }
+
+                                        Text(highlightedVerseText(item))
+                                            .font(.body)
+                                            .foregroundStyle(.primary)
+                                            .lineLimit(3)
+
+                                        Text("\(item.book.name) \(item.chapter.number):\(item.verse.number)")
+                                            .font(.caption)
+                                            .foregroundStyle(item.isReferenceMatch ? Color.accentColor : Color.secondary)
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                                 }
+                                .buttonStyle(.plain)
+
+                                VerseActionMenu(
+                                    verse: VerseActionReference(
+                                        bookName: item.book.name,
+                                        chapterNumber: item.chapter.number,
+                                        verseNumber: item.verse.number,
+                                        verseText: item.verse.text
+                                    )
+                                )
                             }
-                            .buttonStyle(.plain)
+                            .listRowBackground(
+                                item.isReferenceMatch
+                                    ? Color.accentColor.opacity(0.08)
+                                    : Color.clear
+                            )
                         }
-                        // Show the system-appropriate list background; keep content readable
-                        .scrollContentBackground(.automatic)
+                        .scrollContentBackground(.hidden)
                         .background(Color.clear)
                     }
                 } else {
@@ -111,12 +137,12 @@ struct SearchView: View {
                 }
             }
         }
-        .background(Color(.systemGroupedBackground))
+        .background(AppBackgroundView(tab: .bible))
         .navigationTitle("Search")
+        .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Words or a reference")
         .onSubmit(of: .search) {
-            saveRecentSearch(query)
-            performSearch()
+            submitSearch()
         }
         .onChange(of: query) { _, _ in
             debounceSearch()
@@ -187,7 +213,7 @@ struct SearchView: View {
                             Text(book.name)
                             if selectedBook?.name == book.name {
                                 Spacer()
-                                Image(systemName: "checkmark").foregroundStyle(.blue)
+                                Image(systemName: "checkmark").foregroundStyle(Color.accentColor)
                             }
                         }
                     }
@@ -308,12 +334,43 @@ struct SearchView: View {
 
     // MARK: - Open in Bible Tab
     private func openInBibleTab(_ item: SearchResult) {
-        // Post a notification consumed by ContentView to switch to the Bible tab and navigate
-        NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
-            "book": item.book.name,
-            "chapter": item.chapter.number,
-            "verse": item.verse.number
-        ])
+        coordinator.push(
+            .reader(
+                book: item.book,
+                chapter: item.chapter,
+                startVerse: item.verse.number
+            )
+        )
+    }
+
+    private func submitSearch() {
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        saveRecentSearch(trimmedQuery)
+
+        if let referenceResults = resultsForReference(trimmedQuery),
+           referenceResults.count == 1,
+           let directResult = referenceResults.first {
+            openInBibleTab(directResult)
+        } else {
+            performSearch()
+        }
+    }
+
+    private func highlightedVerseText(_ item: SearchResult) -> AttributedString {
+        var highlighted = AttributedString(item.verse.text)
+        guard !item.isReferenceMatch else { return highlighted }
+
+        for token in tokens {
+            if let range = highlighted.range(
+                of: token,
+                options: [.caseInsensitive, .diacriticInsensitive]
+            ) {
+                highlighted[range].backgroundColor = Color.accentColor.opacity(0.22)
+                highlighted[range].font = .body.bold()
+            }
+        }
+
+        return highlighted
     }
 
     // MARK: - Search Execution
@@ -439,10 +496,12 @@ struct SearchView: View {
 
         if let verseNumber {
             guard let verse = chapter.verses.first(where: { $0.number == verseNumber }) else { return [] }
-            return [SearchResult(book: book, chapter: chapter, verse: verse)]
+            return [SearchResult(book: book, chapter: chapter, verse: verse, isReferenceMatch: true)]
         }
 
-        return chapter.verses.map { SearchResult(book: book, chapter: chapter, verse: $0) }
+        return chapter.verses.map {
+            SearchResult(book: book, chapter: chapter, verse: $0, isReferenceMatch: true)
+        }
     }
 
     private func bookMatchingReference(_ reference: String) -> Book? {
@@ -499,8 +558,22 @@ private struct SearchResult: Identifiable, Hashable {
     let book: Book
     let chapter: Chapter
     let verse: Verse
+    let isReferenceMatch: Bool
+
+    init(
+        book: Book,
+        chapter: Chapter,
+        verse: Verse,
+        isReferenceMatch: Bool = false
+    ) {
+        self.book = book
+        self.chapter = chapter
+        self.verse = verse
+        self.isReferenceMatch = isReferenceMatch
+    }
 }
 
 #Preview {
     NavigationStack { SearchView() }
+        .environmentObject(NavigationCoordinator())
 }

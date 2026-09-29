@@ -163,7 +163,7 @@ struct BibleSplitView: View {
                                 Text(book.name)
                                 if selectedBook?.name == book.name {
                                     Spacer()
-                                    Image(systemName: "checkmark").foregroundStyle(.blue)
+                                    Image(systemName: "checkmark").foregroundStyle(Color.accentColor)
                                 }
                             }
                         }
@@ -188,7 +188,7 @@ struct BibleSplitView: View {
                                     Text(book.name)
                                     if selectedBook?.name == book.name {
                                         Spacer()
-                                        Image(systemName: "checkmark").foregroundStyle(.blue)
+                                        Image(systemName: "checkmark").foregroundStyle(Color.accentColor)
                                     }
                                 }
                             }
@@ -212,7 +212,7 @@ struct BibleSplitView: View {
                                     Text(book.name)
                                     if selectedBook?.name == book.name {
                                         Spacer()
-                                        Image(systemName: "checkmark").foregroundStyle(.blue)
+                                        Image(systemName: "checkmark").foregroundStyle(Color.accentColor)
                                     }
                                 }
                             }
@@ -225,6 +225,7 @@ struct BibleSplitView: View {
             }
         }
         .navigationTitle("Books")
+        .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
@@ -260,6 +261,7 @@ struct BibleSplitView: View {
                 }
             }
             .navigationTitle(book.name)
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
@@ -294,6 +296,7 @@ struct BibleSplitView: View {
                     .buttonStyle(.plain)
                 }
                 .navigationTitle("Search Results (\(results.count))")
+                .navigationBarTitleDisplayMode(.inline)
             }
         }
     }
@@ -331,6 +334,7 @@ struct BibleSplitView: View {
                             }
                         }
                         .navigationTitle("\(book.name) \(chapter.number)")
+                        .navigationBarTitleDisplayMode(.inline)
                     } else {
                         ContentUnavailableView("Chapter not found", systemImage: "exclamationmark.triangle")
                     }

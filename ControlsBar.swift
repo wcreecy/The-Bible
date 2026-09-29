@@ -14,7 +14,7 @@ struct WordSearchControlsBar: View {
         HStack(spacing: 12) {
             if !roundOver {
                 Button("Reveal") { onReveal() }
-                    .buttonStyle(ModernPillButtonStyle(tint: .blue))
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
 
                 if gameMode == .blind {
                     Button(healedOn ? "Hide" : "Word List") { onToggleHealed() }

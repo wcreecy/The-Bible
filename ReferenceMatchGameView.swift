@@ -195,14 +195,14 @@ struct VerseMatchGameView: View {
                                             .font(.caption)
                                             .foregroundStyle(.secondary)
                                         Spacer()
-                                        Button(action: {
-                                            toggleFavorite(bookName: opt.bookName, chapterNumber: opt.chapterNumber, verseNumber: opt.verseNumber, verseText: opt.verseText)
-                                        }) {
-                                            Image(systemName: isFavorited(bookName: opt.bookName, chapterNumber: opt.chapterNumber, verseNumber: opt.verseNumber) ? "heart.fill" : "heart")
-                                                .foregroundStyle(.red)
-                                        }
-                                        .buttonStyle(.plain)
-                                        .accessibilityLabel(isFavorited(bookName: opt.bookName, chapterNumber: opt.chapterNumber, verseNumber: opt.verseNumber) ? "Remove Favorite" : "Add to Favorites")
+                                        VerseActionMenu(
+                                            verse: VerseActionReference(
+                                                bookName: opt.bookName,
+                                                chapterNumber: opt.chapterNumber,
+                                                verseNumber: opt.verseNumber,
+                                                verseText: opt.verseText
+                                            )
+                                        )
                                     }
                                 }
                             }

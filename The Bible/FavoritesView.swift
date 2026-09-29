@@ -8,6 +8,7 @@ struct FavoritesView: View {
     @State private var searchText: String = ""
     @State private var removedFavorites: [RemovedFavorite] = []
     @State private var showRemovalToast: Bool = false
+    @State private var persistenceFailure: PersistenceFailure?
 
     // Tokenize the search text into lowercase words
     private var tokens: [String] {
@@ -77,6 +78,7 @@ struct FavoritesView: View {
         }
         .background(AppBackgroundView(tab: .favorites))
         .navigationTitle("Favorites")
+        .navigationBarTitleDisplayMode(.large)
         .toolbar { EditButton() }
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search favorites")
         .appToast(
@@ -87,6 +89,7 @@ struct FavoritesView: View {
             actionTitle: "Undo",
             action: undoFavoriteRemoval
         )
+        .persistenceFailureAlert(failure: $persistenceFailure)
     }
 
     // Post a notification consumed by ContentView to switch to the Bible tab and navigate
@@ -101,25 +104,42 @@ struct FavoritesView: View {
     // Delete using indices from the filtered list to ensure correct items are removed
     private func deleteFiltered(at offsets: IndexSet) {
         let itemsToDelete = offsets.map { filteredFavorites[$0] }
-        removedFavorites = []
-        for item in itemsToDelete {
-            removedFavorites.append(RemovedFavorite(item))
-        }
-        for item in itemsToDelete {
-            modelContext.delete(item)
-        }
-        try? modelContext.save()
-        Haptics.selection()
-        showRemovalToast = true
+        let removalSnapshot = itemsToDelete.map { RemovedFavorite($0) }
+
+        ModelContextPersistence.perform(
+            in: modelContext,
+            operation: {
+                for item in itemsToDelete {
+                    modelContext.delete(item)
+                }
+                try modelContext.save()
+            },
+            onSuccess: {
+                removedFavorites = removalSnapshot
+                Haptics.selection()
+                showRemovalToast = true
+            },
+            onFailure: { persistenceFailure = $0 }
+        )
     }
 
     private func undoFavoriteRemoval() {
-        for favorite in removedFavorites {
-            modelContext.insert(favorite.model)
-        }
-        try? modelContext.save()
-        removedFavorites = []
-        Haptics.success()
+        let favoritesToRestore = removedFavorites
+
+        ModelContextPersistence.perform(
+            in: modelContext,
+            operation: {
+                for favorite in favoritesToRestore {
+                    modelContext.insert(favorite.model)
+                }
+                try modelContext.save()
+            },
+            onSuccess: {
+                removedFavorites = []
+                Haptics.success()
+            },
+            onFailure: { persistenceFailure = $0 }
+        )
     }
 }
 
