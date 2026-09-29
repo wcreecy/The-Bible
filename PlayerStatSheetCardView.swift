@@ -6,7 +6,7 @@ struct PlayerStatSheetCardView: View {
 
     private enum Sort: String, CaseIterable, Identifiable {
         case name = "Game"
-        case share = "Attempts"
+        case attempts = "Attempts"
         case avg = "Avg"
         case streak = "Streak"
         var id: String { rawValue }
@@ -39,20 +39,19 @@ struct PlayerStatSheetCardView: View {
             let isEmpty = (totalAnswered == 0)
             let entries = breakdown.entries
 
-            let shares: [Double] = {
-                guard totalAnswered > 0 else { return Array(repeating: 0, count: entries.count) }
-                return entries.map { s in (Double(s.answered) / Double(totalAnswered)) * 100.0 }
-            }()
+            let attempts: [Int] = entries.map(\.answered)
             let avgs: [Double?] = entries.map { s in s.answered > 0 ? (Double(s.correct) / Double(s.answered)) * 100.0 : nil }
             let streaks: [Int] = entries.map { s in s.bestStreak ?? 0 }
 
-            let bestShareIndex = uniqueMaxIndex(shares)
+            let bestAttemptsIndex = uniqueMaxIndex(attempts)
+            let accuracyIndices = entries.indices.filter { avgs[$0] != nil }
+            let accuracies = accuracyIndices.map { avgs[$0] ?? 0 }
+            let bestAvgIndex = uniqueMaxIndex(accuracies).map { accuracyIndices[$0] }
             let rankedAccuracyIndices = entries.indices.filter { entries[$0].answered >= 5 }
             let rankedAccuracies = rankedAccuracyIndices.map { avgs[$0] ?? 0 }
-            let bestAvgIndex = uniqueMaxIndex(rankedAccuracies).map { rankedAccuracyIndices[$0] }
             let bestStreakIndex = uniqueMaxIndex(streaks)
 
-            let worstShareIndex = uniqueMinIndex(shares)
+            let worstAttemptsIndex = uniqueMinIndex(attempts)
             let worstAvgIndex = uniqueMinIndex(rankedAccuracies).map { rankedAccuracyIndices[$0] }
             let worstStreakIndex = uniqueMinIndex(streaks.map { $0 == 0 ? Int.max : $0 })
 
@@ -101,10 +100,10 @@ struct PlayerStatSheetCardView: View {
                         switch sort {
                         case .name:
                             return indices.sorted { entries[$0].name < entries[$1].name }
-                        case .share:
+                        case .attempts:
                             return indices.sorted {
-                                if shares[$0] == shares[$1] { return entries[$0].name < entries[$1].name }
-                                return shares[$0] > shares[$1]
+                                if attempts[$0] == attempts[$1] { return entries[$0].name < entries[$1].name }
+                                return attempts[$0] > attempts[$1]
                             }
                         case .avg:
                             return indices.sorted {
@@ -121,7 +120,7 @@ struct PlayerStatSheetCardView: View {
 
                     ForEach(sortedIndices, id: \.self) { idx in
                         let s = entries[idx]
-                        let share = shares[idx]
+                        let attemptCount = attempts[idx]
                         let avg = avgs[idx]
                         let best = streaks[idx]
 
@@ -132,9 +131,9 @@ struct PlayerStatSheetCardView: View {
 
                             Spacer(minLength: 0)
 
-                            labeledValue("\(Int(round(share)))%",
-                                         isBest: bestShareIndex == idx,
-                                         isWorst: worstShareIndex == idx)
+                            labeledValue("\(attemptCount)",
+                                         isBest: bestAttemptsIndex == idx,
+                                         isWorst: worstAttemptsIndex == idx)
                                 .frame(width: percentageWidth, alignment: .center)
 
                             labeledValue(avg.map { "\(Int(round($0)))%" } ?? "—",
@@ -152,7 +151,7 @@ struct PlayerStatSheetCardView: View {
                         .accessibilityLabel(
                             {
                                 var parts: [String] = [s.name]
-                                parts.append("Attempt share \(Int(round(share))) percent")
+                                parts.append("\(attemptCount) attempts")
                                 if let avg { parts.append("Accuracy \(Int(round(avg))) percent") }
                                 if let bs = s.bestStreak, bs > 0 {
                                     parts.append("Best streak \(bs)")
@@ -180,20 +179,11 @@ struct PlayerStatSheetCardView: View {
     }
 
     private func labeledValue(_ text: String, isBest: Bool, isWorst: Bool) -> some View {
-        HStack(spacing: 4) {
-            if isBest {
-                Image(systemName: "arrow.up.right")
-                    .foregroundStyle(.green)
-            } else if isWorst {
-                Image(systemName: "arrow.down.right")
-                    .foregroundStyle(.red)
-            }
-            Text(text)
-                .font(.footnote)
-                .monospacedDigit()
-                .lineLimit(1)
-                .minimumScaleFactor(0.85)
-                .foregroundStyle(isBest ? .green : (isWorst ? .red : .primary))
-        }
+        Text(text)
+            .font(.footnote)
+            .monospacedDigit()
+            .lineLimit(1)
+            .minimumScaleFactor(0.85)
+            .foregroundStyle(isBest ? .green : (isWorst ? .red : .primary))
     }
 }
