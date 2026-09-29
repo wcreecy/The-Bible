@@ -64,12 +64,13 @@ struct ReadingSearchSheet: View {
                                 }
                             }
                         }
-                        .background(Color(.systemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                        .padding(.horizontal, AppDesignMetrics.cardPadding)
+                        .heroCardSurface()
                     }
                 }
                 .padding(16)
             }
+            .background(AppBackgroundView(tab: .bible))
             .navigationTitle("Search")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
