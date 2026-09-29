@@ -11,9 +11,6 @@ struct SettingsView: View {
             SettingsAppAndDataLinksSection()
             SettingsDataManagementLinksSection()
 
-            #if DEBUG
-            SettingsDeveloperLinksSection()
-            #endif
 
             Section {
                 SettingsCloudSyncFooter()
@@ -133,24 +130,6 @@ private struct SettingsDataManagementLinksSection: View {
         }
     }
 }
-
-#if DEBUG
-private struct SettingsDeveloperLinksSection: View {
-    var body: some View {
-        Section("Developer") {
-            NavigationLink {
-                SettingsDebugDetailView()
-            } label: {
-                SettingsNavigationRow(
-                    title: "Debug Utilities",
-                    subtitle: "Development and diagnostic tools",
-                    systemImage: "wrench.and.screwdriver"
-                )
-            }
-        }
-    }
-}
-#endif
 
 private struct SettingsNavigationRow: View {
     let title: LocalizedStringResource
@@ -283,16 +262,6 @@ private struct SettingsResetDataDetailView: View {
         }
     }
 }
-
-#if DEBUG
-private struct SettingsDebugDetailView: View {
-    var body: some View {
-        SettingsDetailForm(title: "Debug Utilities") {
-            SettingsDebugUtilitiesView()
-        }
-    }
-}
-#endif
 
 private struct SettingsDetailForm<Content: View>: View {
     let title: LocalizedStringResource
