@@ -75,20 +75,13 @@ struct GameInsightsCardView: View {
         HeroCard(title: "Game Insights", icon: "sparkles", tint: .purple) {
             let _ = stats.version
             VStack(alignment: .leading, spacing: 16) {
-                HStack(spacing: 8) {
-                    MetricChip(
-                        title: "Games Explored",
-                        value: "\(playedEntries.count) of \(entries.count)",
-                        tint: .purple,
-                        fillsWidth: true
-                    )
-                    MetricChip(
-                        title: "Next Milestone",
-                        value: "\(nextMilestone.remaining) correct \(nextMilestone.remaining == 1 ? "answer" : "answers") to reach \(nextMilestone.target)",
-                        tint: .orange,
-                        fillsWidth: true
-                    )
-                }
+                MetricChip(
+                    title: "Next Milestone",
+                    value: "\(nextMilestone.remaining) correct \(nextMilestone.remaining == 1 ? "answer" : "answers") to reach \(nextMilestone.target)",
+                    tint: .orange,
+                    fillsWidth: true,
+                    scrollsValue: true
+                )
 
                 insightRow(icon: "scope", title: "Daily Challenge", detail: dailyChallenge)
                 if let favoriteGame {

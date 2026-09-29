@@ -7,6 +7,7 @@ struct MetricChip: View {
     let value: String
     let tint: Color
     var fillsWidth: Bool = false
+    var scrollsValue: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -14,12 +15,21 @@ struct MetricChip: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
-            Text(value)
-                .font(.footnote.weight(.semibold))
-                .monospacedDigit()
-                .lineLimit(1)
-                .minimumScaleFactor(0.65)
-                .allowsTightening(true)
+            if scrollsValue {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    Text(value)
+                        .font(.footnote.weight(.semibold))
+                        .monospacedDigit()
+                        .fixedSize(horizontal: true, vertical: false)
+                }
+            } else {
+                Text(value)
+                    .font(.footnote.weight(.semibold))
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.65)
+                    .allowsTightening(true)
+            }
         }
         .padding(.vertical, 10)
         .padding(.horizontal, 12)
