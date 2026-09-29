@@ -290,8 +290,9 @@ struct SettingsBackgroundSection: View {
     }
 }
 
-private struct BackgroundEditor: View {
+struct BackgroundEditor: View {
     let tab: AppTab
+    let showsApplyToAllPages: Bool
 
     @AppStorage private var modeRaw: String
     @AppStorage private var colorHex: String
@@ -301,8 +302,9 @@ private struct BackgroundEditor: View {
     @State private var errorMessage: String?
     @State private var isConfirmingApplyToAll = false
 
-    init(tab: AppTab) {
+    init(tab: AppTab, showsApplyToAllPages: Bool = true) {
         self.tab = tab
+        self.showsApplyToAllPages = showsApplyToAllPages
         _modeRaw = AppStorage(
             wrappedValue: AppBackgroundMode.defaultStyle.rawValue,
             AppBackgroundStorage.modeKey(for: tab)
@@ -351,14 +353,16 @@ private struct BackgroundEditor: View {
                 defaultImageName: defaultImageName(for: tab)
             )
 
-            Button {
-                isConfirmingApplyToAll = true
-            } label: {
-                Label("Apply to All Pages", systemImage: "rectangle.on.rectangle.angled")
-                    .frame(maxWidth: .infinity)
+            if showsApplyToAllPages {
+                Button {
+                    isConfirmingApplyToAll = true
+                } label: {
+                    Label("Apply to All Pages", systemImage: "rectangle.on.rectangle.angled")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(ModernPillButtonStyle(tint: .purple))
+                .accessibilityHint("Copies this page's background settings to every page")
             }
-            .buttonStyle(ModernPillButtonStyle(tint: .purple))
-            .accessibilityHint("Copies this page's background settings to every page")
         }
         .onChange(of: selectedPhoto) { _, newValue in
             guard let newValue else { return }

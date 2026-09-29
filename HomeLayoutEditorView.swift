@@ -133,6 +133,8 @@ struct HomeLayoutEditorView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+
+            HomeBackgroundSection()
         }
         .environment(\.editMode, $editMode)
         .navigationTitle("Home Layout")
@@ -143,6 +145,18 @@ struct HomeLayoutEditorView: View {
                     onSaveFavorite()
                 }
             }
+        }
+    }
+}
+
+private struct HomeBackgroundSection: View {
+    var body: some View {
+        Section {
+            BackgroundEditor(tab: .home, showsApplyToAllPages: false)
+        } header: {
+            Label("Home Background", systemImage: "photo.on.rectangle")
+        } footer: {
+            Text("Choose the default background, a photo, or a custom color for Home.")
         }
     }
 }
