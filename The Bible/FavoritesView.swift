@@ -72,6 +72,7 @@ struct FavoritesView: View {
                         .buttonStyle(.plain)
                     }
                     .onDelete(perform: deleteFiltered)
+                    .listRowBackground(HeroCardListRowBackground())
                 }
                 .scrollContentBackground(.hidden)
             }

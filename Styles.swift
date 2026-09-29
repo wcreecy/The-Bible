@@ -4,6 +4,36 @@ enum AppDesignMetrics {
     static let cardCornerRadius: CGFloat = 16
     static let cardPadding: CGFloat = 16
     static let compactControlCornerRadius: CGFloat = 12
+    static let selectionRowMinHeight: CGFloat = 40
+}
+
+private struct HeroCardSurfaceModifier: ViewModifier {
+    let cornerRadius: CGFloat
+
+    @Environment(\.colorSchemeContrast) private var colorSchemeContrast
+
+    func body(content: Content) -> some View {
+        content
+            .glassEffect(
+                .regular,
+                in: .rect(cornerRadius: cornerRadius)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .strokeBorder(
+                        .primary.opacity(colorSchemeContrast == .increased ? 0.32 : 0.14),
+                        lineWidth: 1
+                    )
+            }
+            .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 5)
+    }
+}
+
+struct HeroCardListRowBackground: View {
+    var body: some View {
+        Color.clear
+            .heroCardSurface()
+    }
 }
 
 private struct ImageOverlaySurfaceModifier: ViewModifier {
@@ -25,6 +55,10 @@ private struct ImageOverlaySurfaceModifier: ViewModifier {
 }
 
 extension View {
+    func heroCardSurface(cornerRadius: CGFloat = AppDesignMetrics.cardCornerRadius) -> some View {
+        modifier(HeroCardSurfaceModifier(cornerRadius: cornerRadius))
+    }
+
     func imageOverlaySurface(cornerRadius: CGFloat = AppDesignMetrics.cardCornerRadius) -> some View {
         modifier(ImageOverlaySurfaceModifier(cornerRadius: cornerRadius))
     }

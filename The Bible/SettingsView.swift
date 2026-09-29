@@ -7,18 +7,26 @@ struct SettingsView: View {
     var body: some View {
         Form {
             SettingsPersonalizationLinksSection()
+                .listRowBackground(HeroCardListRowBackground())
             SettingsDailyExperienceLinksSection()
+                .listRowBackground(HeroCardListRowBackground())
             SettingsReadingProgressSection()
+                .listRowBackground(HeroCardListRowBackground())
             SettingsAppAndDataLinksSection()
+                .listRowBackground(HeroCardListRowBackground())
             SettingsTipsSection()
+                .listRowBackground(HeroCardListRowBackground())
             SettingsDataManagementLinksSection()
+                .listRowBackground(HeroCardListRowBackground())
 
             Section {
                 SettingsCloudSyncFooter()
-                    .listRowBackground(Color.clear)
+                    .listRowBackground(HeroCardListRowBackground())
                     .listRowSeparator(.hidden)
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(AppBackgroundView(tab: .more))
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         .formStyle(.grouped)
@@ -333,7 +341,10 @@ private struct SettingsDetailForm<Content: View>: View {
     var body: some View {
         Form {
             content
+                .listRowBackground(HeroCardListRowBackground())
         }
+        .scrollContentBackground(.hidden)
+        .background(AppBackgroundView(tab: .more))
         .navigationTitle(Text(title))
         .navigationBarTitleDisplayMode(.inline)
         .formStyle(.grouped)

@@ -17,8 +17,6 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
     private let iconContent: (() -> AnyView)?
     @ViewBuilder var content: Content
 
-    @Environment(\.colorSchemeContrast) private var colorSchemeContrast
-
     init(
         title: String,
         subtitle: String? = nil,
@@ -312,17 +310,12 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
             RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
                 .fill(backgroundColor?.opacity(0.16) ?? .clear)
         }
-        .glassEffect(
-            .regular,
-            in: .rect(cornerRadius: AppDesignMetrics.cardCornerRadius)
-        )
+        .heroCardSurface()
         .overlay {
-            RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
-                .strokeBorder(
-                    strokeColor ?? .primary.opacity(colorSchemeContrast == .increased ? 0.32 : 0.14),
-                    lineWidth: 1
-                )
+            if let strokeColor {
+                RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+                    .strokeBorder(strokeColor, lineWidth: 1)
+            }
         }
-        .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 5)
     }
 }

@@ -17,85 +17,64 @@ struct BooksView: View {
         filteredBooks.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 
-    var body: some View {
-        Group {
-            if sortAlphabetically {
-                // Single A–Z section
-                List {
-                    Section {
-                        ForEach(azBooks) { book in
-                            Button { coordinator.push(.book(book)) } label: {
-                                HStack {
-                                    Text(book.name)
-                                    Spacer()
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .contentShape(Rectangle())
-                            }
-                            .buttonStyle(.plain)
-                            .foregroundStyle(.primary)
-                        }
-                    } header: {
-                        Text("All Books (\(azBooks.count))")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .listStyle(.insetGrouped)
-                .scrollContentBackground(.hidden)
-            } else {
-                // Canonical OT/NT grouping
-                let canon = BibleData.books
-                let indexMap = Dictionary(uniqueKeysWithValues: canon.enumerated().map { ($1.name, $0) })
-                let matthewIndex = indexMap["Matthew"] ?? Int.max
-                let otBooks = filteredBooks.filter { (indexMap[$0.name] ?? Int.max) < matthewIndex }
-                let ntBooks = filteredBooks.filter { (indexMap[$0.name] ?? Int.max) >= matthewIndex }
+    @ViewBuilder
+    private func bookRows(title: String, books: [Book]) -> some View {
+        if !books.isEmpty {
+            Text(title)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.bottom, 4)
 
-                List {
-                    if !otBooks.isEmpty {
-                        Section {
-                            ForEach(otBooks) { book in
-                                Button { coordinator.push(.book(book)) } label: {
-                                    HStack {
-                                        Text(book.name)
-                                        Spacer()
-                                    }
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .contentShape(Rectangle())
-                                }
-                                .buttonStyle(.plain)
-                                .foregroundStyle(.primary)
-                            }
-                        } header: {
-                            Text("Old Testament (\(otBooks.count))")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
+            ForEach(books) { book in
+                Button { coordinator.push(.book(book)) } label: {
+                    HStack {
+                        Text(book.name)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.tertiary)
                     }
-                    if !ntBooks.isEmpty {
-                        Section {
-                            ForEach(ntBooks) { book in
-                                Button { coordinator.push(.book(book)) } label: {
-                                    HStack {
-                                        Text(book.name)
-                                        Spacer()
-                                    }
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .contentShape(Rectangle())
-                                }
-                                .buttonStyle(.plain)
-                                .foregroundStyle(.primary)
-                            }
-                        } header: {
-                            Text("New Testament (\(ntBooks.count))")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(minHeight: AppDesignMetrics.selectionRowMinHeight)
+                    .contentShape(Rectangle())
                 }
-                .listStyle(.insetGrouped)
-                .scrollContentBackground(.hidden)
+                .buttonStyle(.plain)
+                .foregroundStyle(.primary)
+
+                if book.name != books.last?.name {
+                    Divider()
+                }
             }
+        }
+    }
+
+    var body: some View {
+        ScrollView {
+            let canon = BibleData.books
+            let indexMap = Dictionary(uniqueKeysWithValues: canon.enumerated().map { ($1.name, $0) })
+            let matthewIndex = indexMap["Matthew"] ?? Int.max
+            let otBooks = filteredBooks.filter { (indexMap[$0.name] ?? Int.max) < matthewIndex }
+            let ntBooks = filteredBooks.filter { (indexMap[$0.name] ?? Int.max) >= matthewIndex }
+
+            LazyVStack(alignment: .leading, spacing: 0) {
+                if sortAlphabetically {
+                    bookRows(title: "All Books (\(azBooks.count))", books: azBooks)
+                } else {
+                    bookRows(title: "Old Testament (\(otBooks.count))", books: otBooks)
+
+                    if !otBooks.isEmpty && !ntBooks.isEmpty {
+                        Divider()
+                            .padding(.vertical, 4)
+                    }
+
+                    bookRows(title: "New Testament (\(ntBooks.count))", books: ntBooks)
+                }
+            }
+            .padding(AppDesignMetrics.cardPadding)
+            .heroCardSurface()
+            .padding(.horizontal, 16)
+            .padding(.vertical)
         }
         .background(AppBackgroundView(tab: .bible))
         .navigationTitle("Books")

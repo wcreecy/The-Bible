@@ -556,7 +556,7 @@ private final class MoreTabStyler: NSObject, UINavigationControllerDelegate {
     }
 
     private func styleVisibleCells(in table: UITableView) {
-        let translucent = UIColor.secondarySystemBackground.withAlphaComponent(cellAlpha)
+        let translucent = UIColor.clear.withAlphaComponent(cellAlpha)
 
         // Ensure the table has laid out its cells before styling
         table.layoutIfNeeded()
@@ -651,7 +651,7 @@ private final class MoreTabStyler: NSObject, UINavigationControllerDelegate {
         let original = table.delegate
         let proxy = TableDelegateProxy(original: original) { [weak self, weak table] cell in
             guard let self, let table else { return }
-            let translucent = UIColor.secondarySystemBackground.withAlphaComponent(self.cellAlpha)
+            let translucent = UIColor.clear.withAlphaComponent(self.cellAlpha)
             self.applyTranslucency(to: cell, color: translucent, trait: table.traitCollection)
         }
         table.delegate = proxy

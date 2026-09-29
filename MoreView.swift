@@ -17,6 +17,7 @@ struct MoreView: View {
                     Label("Settings", systemImage: "gear")
                 }
             }
+            .listRowBackground(HeroCardListRowBackground())
         }
         .scrollContentBackground(.hidden)
         .background(AppBackgroundView(tab: .more))

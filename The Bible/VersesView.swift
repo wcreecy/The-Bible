@@ -21,39 +21,58 @@ struct VersesView: View {
     @State private var navStartVerse: Int = 1
 
     var body: some View {
-        List {
-            if contextualTipsEnabled {
-                ContextualTipView(
-                    title: "More verse actions",
-                    message: "Press and hold a verse to preview it, then favorite, bookmark, copy, or pin it to the Home Screen widget.",
-                    systemImage: "hand.tap"
-                )
-                .listRowSeparator(.hidden)
-            }
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                if contextualTipsEnabled {
+                    ContextualTipView(
+                        title: "More verse actions",
+                        message: "Press and hold a verse to preview it, then favorite, bookmark, copy, or pin it to the Home Screen widget.",
+                        systemImage: "hand.tap"
+                    )
+                    .padding(.bottom, 12)
 
-            ForEach(chapter.verses) { verse in
-                NavigationLink(
-                    value: Route.reader(book: book, chapter: chapter, startVerse: verse.number)
-                ) {
-                    HStack(spacing: 0) {
-                        Text("Verse \(verse.number)")
-                        Text(" of \(chapter.verses.count)")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
+                    Divider()
                 }
-                .simultaneousGesture(
-                    LongPressGesture(minimumDuration: 0.5)
-                        .onEnded { _ in
-                            let generator = UIImpactFeedbackGenerator(style: .heavy)
-                            generator.impactOccurred()
-                            previewVerse = verse
+
+                ForEach(chapter.verses) { verse in
+                    NavigationLink(
+                        value: Route.reader(book: book, chapter: chapter, startVerse: verse.number)
+                    ) {
+                        HStack(spacing: 0) {
+                            Text("Verse \(verse.number)")
+                            Text(" of \(chapter.verses.count)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.tertiary)
                         }
-                )
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(minHeight: AppDesignMetrics.selectionRowMinHeight)
+                        .contentShape(Rectangle())
+                    }
+                    .foregroundStyle(.primary)
+                    .simultaneousGesture(
+                        LongPressGesture(minimumDuration: 0.5)
+                            .onEnded { _ in
+                                let generator = UIImpactFeedbackGenerator(style: .heavy)
+                                generator.impactOccurred()
+                                previewVerse = verse
+                            }
+                    )
+
+                    if verse.number != chapter.verses.last?.number {
+                        Divider()
+                    }
+                }
             }
+            .padding(AppDesignMetrics.cardPadding)
+            .heroCardSurface()
+            .padding(.horizontal, 16)
+            .padding(.vertical)
         }
+        .background(AppBackgroundView(tab: .bible))
         .sheet(item: $previewVerse) { verse in
             NavigationStack {
                 ScrollView {
@@ -167,4 +186,3 @@ struct VersesView: View {
             .environmentObject(NavigationCoordinator())
     }
 }
-

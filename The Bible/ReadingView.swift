@@ -192,6 +192,9 @@ struct ReadingView: View {
                         }
                     }
                 }
+                .padding(AppDesignMetrics.cardPadding)
+                .heroCardSurface()
+                .padding(.horizontal, 16)
                 .padding(.vertical)
                 .scrollTargetLayout()
                 .onChange(of: viewModel.currentChapterIndex) { _, _ in
@@ -218,6 +221,7 @@ struct ReadingView: View {
             // Bottom corner navigation arrows overlay
             overlayArrows
         }
+        .background(AppBackgroundView(tab: .bible))
         .contentShape(Rectangle())
         .simultaneousGesture(
             DragGesture(minimumDistance: 5, coordinateSpace: .local)

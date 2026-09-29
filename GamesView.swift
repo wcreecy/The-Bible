@@ -247,6 +247,7 @@ private struct GameCollectionSection: View {
         } header: {
             Text(title)
         }
+        .listRowBackground(HeroCardListRowBackground())
     }
 }
 
