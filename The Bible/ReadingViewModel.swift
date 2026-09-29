@@ -423,7 +423,7 @@ final class VerseReadingTracker {
     private var batchTask: Task<Void, Never>?
 
     init(
-        dwellDuration: TimeInterval = 1.25,
+        dwellDuration: TimeInterval = 5,
         batchDuration: TimeInterval = 1,
         commit: @escaping (Set<SeenVerseUpdate>) -> Void
     ) {

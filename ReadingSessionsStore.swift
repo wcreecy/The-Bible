@@ -5,6 +5,7 @@ import Foundation
 @MainActor
 final class ReadingSessionsStore {
     static let shared = ReadingSessionsStore()
+    static let minimumValidSessionSeconds = 10
     private init() {
         // Invalidate cache when external merges happen (iCloud KVS or other writers)
         NotificationCenter.default.addObserver(
@@ -33,32 +34,43 @@ final class ReadingSessionsStore {
         static var provider: UserDefaults { UserDefaults.standard }
     }
 
-    // Keep a rolling window to prevent unbounded growth (raised to ~5 years for “All Time”)
-    private let maxRetentionDays: Int = 1825
-
     // In-memory cache, lazily loaded
     private var cacheAllSessions: [Session]?
 
     // MARK: - Public API
 
     func appendSession(_ session: Session) {
+        guard Self.isValid(session) else { return }
         var all = loadAll()
         all.append(session)
-        // Prune older than retention window using local calendar
-        let cutoff = Calendar.autoupdatingCurrent.date(byAdding: .day, value: -maxRetentionDays, to: Date()) ?? Date.distantPast
-        all = all.filter { $0.end >= cutoff }
         saveAll(all)
+    }
+
+    static func duration(of session: Session) -> Int {
+        Int(max(0, session.end.timeIntervalSince(session.start)))
+    }
+
+    static func isValid(_ session: Session) -> Bool {
+        duration(of: session) >= minimumValidSessionSeconds
+    }
+
+    func allSessions() -> [Session] {
+        loadAll()
     }
 
     // Normalize to local start-of-day boundaries for rolling day windows.
     func sessions(inLastDays days: Int, now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> [Session] {
         guard days > 0 else { return [] }
-        var cal = calendar
-        cal.timeZone = TimeZone.autoupdatingCurrent
-        // Compute cutoff at start of local day N days ago
-        let startOfToday = cal.startOfDay(for: now)
-        let cutoff = cal.date(byAdding: .day, value: -days, to: startOfToday) ?? .distantPast
+        let cutoff = Self.startDate(forLastDays: days, now: now, calendar: calendar)
         return loadAll().filter { $0.end >= cutoff }
+    }
+
+    static func startDate(forLastDays days: Int, now: Date, calendar: Calendar = .autoupdatingCurrent) -> Date {
+        guard days > 0 else { return .distantFuture }
+        let cal = calendar
+        // Include today and the preceding days - 1 local calendar dates.
+        let startOfToday = cal.startOfDay(for: now)
+        return cal.date(byAdding: .day, value: -(days - 1), to: startOfToday) ?? .distantPast
     }
 
     func sessions(inMonthContaining date: Date, calendar: Calendar = .autoupdatingCurrent) -> [Session] {
@@ -113,4 +125,3 @@ final class ReadingSessionsStore {
         NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 }
-

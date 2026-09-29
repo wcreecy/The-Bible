@@ -4,11 +4,10 @@ import SwiftUI
 struct StatsSeriesBuilder {
     enum Aggregation { case daily, weekly, monthly, yearly }
 
-    // Average length of sessions (seconds) with pre-filtering done by caller if needed.
-    static func averageSessionLength(sessions: [ReadingSessionsStore.Session], minSessionSeconds: Int) -> Int {
-        let filtered = sessions.filter { Int(max(0, $0.end.timeIntervalSince($0.start))) >= minSessionSeconds }
+    static func averageSessionLength(sessions: [ReadingSessionsStore.Session]) -> Int {
+        let filtered = sessions.filter(ReadingSessionsStore.isValid)
         guard !filtered.isEmpty else { return 0 }
-        let total = filtered.reduce(0) { $0 + Int(max(0, $1.end.timeIntervalSince($1.start))) }
+        let total = filtered.reduce(0) { $0 + ReadingSessionsStore.duration(of: $1) }
         return total / filtered.count
     }
 

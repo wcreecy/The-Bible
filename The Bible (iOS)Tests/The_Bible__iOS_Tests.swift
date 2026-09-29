@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import The_Bible__iOS_
 
@@ -96,5 +97,57 @@ struct The_Bible__iOS_Tests {
         tracker.stop()
 
         #expect(commits == [[firstVerse]])
+    }
+
+    @Test
+    func sevenDayWindowStartsSixDatesBeforeToday() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try #require(TimeZone(identifier: "America/New_York"))
+        let now = try #require(calendar.date(from: DateComponents(year: 2026, month: 9, day: 29, hour: 12)))
+        let expected = try #require(calendar.date(from: DateComponents(year: 2026, month: 9, day: 23)))
+
+        let cutoff = ReadingSessionsStore.startDate(forLastDays: 7, now: now, calendar: calendar)
+
+        #expect(cutoff == expected)
+    }
+
+    @Test
+    func elapsedSecondsAreAllocatedAcrossMidnight() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try #require(TimeZone(identifier: "America/New_York"))
+        let start = try #require(calendar.date(from: DateComponents(year: 2026, month: 9, day: 29, hour: 23, minute: 59, second: 50)))
+        let end = try #require(calendar.date(byAdding: .second, value: 20, to: start))
+
+        let allocations = ReadingTimeTracker.dailyAllocations(
+            seconds: 20,
+            from: start,
+            to: end,
+            calendar: calendar
+        )
+
+        #expect(allocations.count == 2)
+        #expect(allocations.map(\.seconds) == [10, 10])
+        #expect(allocations.reduce(0) { $0 + $1.seconds } == 20)
+    }
+
+    @Test
+    func sessionAnalyticsUseOneMinimumDuration() {
+        let start = Date(timeIntervalSince1970: 1_000)
+        let noise = ReadingSessionsStore.Session(
+            start: start,
+            end: start.addingTimeInterval(9),
+            book: "John",
+            chapter: 1
+        )
+        let valid = ReadingSessionsStore.Session(
+            start: start,
+            end: start.addingTimeInterval(70),
+            book: "John",
+            chapter: 1
+        )
+
+        #expect(!ReadingSessionsStore.isValid(noise))
+        #expect(ReadingSessionsStore.isValid(valid))
+        #expect(StatsSeriesBuilder.averageSessionLength(sessions: [noise, valid]) == 70)
     }
 }

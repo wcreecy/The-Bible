@@ -17,6 +17,8 @@ final class ReadingTimeTracker: ObservableObject {
     private var checkpointInstant: ContinuousClock.Instant?
     private var fractionalSeconds: Double = 0
     private var segmentRecordedSeconds: Int = 0
+    private var unpersistedSeconds: Int = 0
+    private var unpersistedStartDate: Date?
     private var ticker: AnyCancellable?
     private var lastPersist: Date = .distantPast
 
@@ -90,6 +92,9 @@ final class ReadingTimeTracker: ObservableObject {
         checkpointInstant = clock.now
         fractionalSeconds = 0
         segmentRecordedSeconds = 0
+        unpersistedSeconds = 0
+        unpersistedStartDate = date
+        lastPersist = date
         startTickerIfNeeded()
     }
 
@@ -111,7 +116,7 @@ final class ReadingTimeTracker: ObservableObject {
 
     private func recordElapsed(nowDate: Date = Date()) {
         guard let book = currentBook,
-              let previousDate = checkpointDate,
+              checkpointDate != nil,
               let previousInstant = checkpointInstant,
               !isPaused else { return }
 
@@ -124,9 +129,10 @@ final class ReadingTimeTracker: ObservableObject {
 
         guard wholeSeconds > 0 else { return }
         segmentRecordedSeconds += wholeSeconds
-        persist(seconds: wholeSeconds, bookName: book, from: previousDate, to: nowDate)
+        unpersistedSeconds += wholeSeconds
 
         if nowDate.timeIntervalSince(lastPersist) >= persistInterval {
+            persistPending(bookName: book, through: nowDate)
             lastPersist = nowDate
             lastTotalsVersion &+= 1
         }
@@ -134,13 +140,13 @@ final class ReadingTimeTracker: ObservableObject {
 
     private func closeActiveSegment() {
         guard let book = currentBook,
-              let chapter = currentChapterNumber,
               let start = segmentStartDate else {
             clearSegmentState()
             return
         }
 
         recordElapsed()
+        persistPending(bookName: book, through: checkpointDate ?? Date())
         if segmentRecordedSeconds >= ReadingSessionsStore.minimumValidSessionSeconds {
             let activeEnd = start.addingTimeInterval(TimeInterval(segmentRecordedSeconds))
             for interval in Self.splitAtMidnight(from: start, to: activeEnd) {
@@ -148,12 +154,12 @@ final class ReadingTimeTracker: ObservableObject {
                     start: interval.start,
                     end: interval.end,
                     book: book,
-                    chapter: chapter
+                    chapter: currentChapterNumber
                 ))
             }
         }
 
-        if segmentRecordedSeconds > 0 {
+        if segmentRecordedSeconds > 0, let chapter = currentChapterNumber {
             BibleStatsStore.shared.saveLastRead(bookName: book, chapterNumber: chapter, date: Date())
             lastTotalsVersion &+= 1
         }
@@ -166,6 +172,15 @@ final class ReadingTimeTracker: ObservableObject {
         checkpointInstant = nil
         fractionalSeconds = 0
         segmentRecordedSeconds = 0
+        unpersistedSeconds = 0
+        unpersistedStartDate = nil
+    }
+
+    private func persistPending(bookName: String, through end: Date) {
+        guard unpersistedSeconds > 0, let start = unpersistedStartDate else { return }
+        persist(seconds: unpersistedSeconds, bookName: bookName, from: start, to: end)
+        unpersistedSeconds = 0
+        unpersistedStartDate = end
     }
 
     private func persist(seconds: Int, bookName: String, from start: Date, to end: Date) {
@@ -215,8 +230,7 @@ final class ReadingTimeTracker: ObservableObject {
         calendar: Calendar = .autoupdatingCurrent
     ) -> [(start: Date, end: Date)] {
         guard end > start else { return [] }
-        var cal = calendar
-        cal.timeZone = .autoupdatingCurrent
+        let cal = calendar
         var intervals: [(Date, Date)] = []
         var cursor = start
 

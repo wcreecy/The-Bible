@@ -117,10 +117,10 @@ final class HomeBibleStatsViewModel: ObservableObject {
             lastReadRelativeTime = "—"
         }
 
-        // Last session length (seconds) — this is still sessions-based and can be device-local
-        let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: now, calendar: cal)
+        // Session analytics use the same validity rule as the Stats screen.
+        let allSessions = ReadingSessionsStore.shared.allSessions().filter(ReadingSessionsStore.isValid)
         if let last = allSessions.max(by: { $0.end < $1.end }) {
-            lastSessionSeconds = Int(max(0, last.end.timeIntervalSince(last.start)))
+            lastSessionSeconds = ReadingSessionsStore.duration(of: last)
         } else {
             lastSessionSeconds = 0
         }

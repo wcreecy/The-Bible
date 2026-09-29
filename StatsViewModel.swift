@@ -47,15 +47,8 @@ final class StatsViewModel: ObservableObject {
     // Last session length (seconds)
     @Published var lastSessionSeconds: Int = 0
 
-    // Config
-    private let minSessionSeconds: Int
-
     // Observers/subscriptions
     private var cancellables: Set<AnyCancellable> = []
-
-    init(minSessionSeconds: Int = 45) {
-        self.minSessionSeconds = minSessionSeconds
-    }
 
     func start() {
         // ReadingTimeTracker publisher
@@ -171,28 +164,19 @@ final class StatsViewModel: ObservableObject {
         }
 
         // Sessions-based cards (keep as session analytics)
-        let sessionsAll = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: Date(), calendar: cal)
-            .filter { Int(max(0, $0.end.timeIntervalSince($0.start))) >= minSessionSeconds }
-            .sorted { $0.end < $1.end }
-        let lastTwenty = Array(sessionsAll.suffix(20))
         let sessionsIn7Days = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: cal)
-            .filter { Int(max(0, $0.end.timeIntervalSince($0.start))) >= minSessionSeconds }
-        avgSessionSecondsLast7 = StatsSeriesBuilder.averageSessionLength(sessions: sessionsIn7Days, minSessionSeconds: minSessionSeconds)
-        sessionsLast7 = lastTwenty.enumerated().map { (idx, s) in
-            let durSec = Int(max(0, s.end.timeIntervalSince(s.start)))
+            .filter(ReadingSessionsStore.isValid)
+            .sorted { $0.end < $1.end }
+        avgSessionSecondsLast7 = StatsSeriesBuilder.averageSessionLength(sessions: sessionsIn7Days)
+        sessionsLast7 = sessionsIn7Days.enumerated().map { (idx, s) in
+            let durSec = ReadingSessionsStore.duration(of: s)
             let minutes = Int(round(Double(durSec) / 60.0))
             return (index: idx + 1, minutes: minutes)
         }
 
-        // Last session length (all sessions)
-        do {
-            let allSessions = ReadingSessionsStore.shared.sessions(inLastDays: 1825, now: Date(), calendar: cal)
-            if let last = allSessions.max(by: { $0.end < $1.end }) {
-                lastSessionSeconds = Int(max(0, last.end.timeIntervalSince(last.start)))
-            } else {
-                lastSessionSeconds = 0
-            }
-        }
+        let allSessions = ReadingSessionsStore.shared.allSessions().filter(ReadingSessionsStore.isValid)
+        lastSessionSeconds = allSessions.max(by: { $0.end < $1.end })
+            .map(ReadingSessionsStore.duration(of:)) ?? 0
 
         // Consistency: last 30 from synced daily totals
         do {

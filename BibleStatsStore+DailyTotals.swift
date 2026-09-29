@@ -20,10 +20,14 @@ extension BibleStatsStore {
     }
 
     func addToToday(seconds: Int, calendar: Calendar = .autoupdatingCurrent) {
+        add(seconds: seconds, on: Date(), calendar: calendar)
+    }
+
+    func add(seconds: Int, on date: Date, calendar: Calendar = .autoupdatingCurrent) {
         guard seconds > 0 else { return }
         var dict = loadDailyTotals()
-        let today = Self.isoDateString(Date(), calendar: calendar)
-        dict[today, default: 0] += seconds
+        let day = Self.isoDateString(date, calendar: calendar)
+        dict[day, default: 0] += seconds
         saveDailyTotals(dict)
     }
 
