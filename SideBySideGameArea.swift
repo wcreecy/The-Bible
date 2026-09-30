@@ -27,83 +27,104 @@ struct SideBySideGameArea: View {
     let healedOn: Bool
     let roundOver: Bool
 
-    private var splitColumns: (left: [String], right: [String]) {
-        if words.count > 8 {
-            let mid = (words.count + 1) / 2
-            return (Array(words.prefix(mid)), Array(words.suffix(from: mid)))
-        } else {
-            return ([], words)
+    var body: some View {
+        HStack(alignment: .top, spacing: 20) {
+            puzzlePanel
+                .frame(maxWidth: .infinity)
+
+            dashboardPanel
+                .frame(maxWidth: .infinity)
         }
+        .frame(maxWidth: 1_240, alignment: .top)
+        .frame(maxWidth: .infinity)
     }
 
-    var body: some View {
-        HStack(alignment: .top, spacing: 16) {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(spacing: 10) {
-                    if !roundOver {
-                        Button("Reveal") { onReveal() }
-                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+    private var puzzlePanel: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Puzzle", systemImage: "square.grid.3x3.fill")
+                .font(.headline.weight(.bold))
 
-                        if gameMode == .blind {
-                            Button(healedOn ? "Hide" : "Word List") { onToggleHealed() }
-                                .buttonStyle(ModernPillButtonStyle(tint: healedOn ? .green : .red))
-                        }
-                    } else {
-                        Button("New Puzzle") { onNewPuzzle() }
-                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                        Button("Change Settings") { onChangeDifficultyOrMode() }
-                            .buttonStyle(ModernPillButtonStyle(tint: .orange))
-                    }
-                }
-                .padding(.bottom, 4)
-
-                if !splitColumns.left.isEmpty {
-                    if gameMode == .blind && !showBlindWordList {
-                        let foundCount = words.filter { foundWords.contains($0) }.count
-                        SideBlindCountColumn(count: splitColumns.left.count, foundCount: foundCount)
-                            .frame(width: 220)
-                    } else {
-                        SideWordsColumn(words: splitColumns.left, found: foundWords, revealed: revealedWords)
-                            .frame(width: 220)
-                    }
-                }
-            }
-            .frame(width: 220)
-
-            ZStack(alignment: .trailing) {
-                Color.clear
-                GridBoard(
-                    size: size,
-                    grid: grid,
-                    selectionStart: selectionStart,
-                    selectionEnd: selectionEnd,
-                    foundCells: foundCells,
-                    revealedWords: revealedWords,
-                    placed: placed,
-                    backgroundColorForCell: backgroundColorForCell,
-                    onTapCell: onTapCell,
-                    onDragChanged: onDragChanged,
-                    onDragEnded: onDragEnded,
-                    dynamicGridHeight: dynamicGridHeight
-                )
-            }
+            GridBoard(
+                size: size,
+                grid: grid,
+                selectionStart: selectionStart,
+                selectionEnd: selectionEnd,
+                foundCells: foundCells,
+                revealedWords: revealedWords,
+                placed: placed,
+                backgroundColorForCell: backgroundColorForCell,
+                onTapCell: onTapCell,
+                onDragChanged: onDragChanged,
+                onDragEnded: onDragEnded,
+                dynamicGridHeight: min(dynamicGridHeight, 620)
+            )
             .frame(maxWidth: .infinity)
-            .padding(.top, 4)
+        }
+        .padding(AppDesignMetrics.cardPadding)
+        .heroCardSurface()
+    }
 
-            if !splitColumns.right.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    if gameMode == .blind && !showBlindWordList {
-                        let foundCount = words.filter { foundWords.contains($0) }.count
-                        SideBlindCountColumn(count: splitColumns.right.count, foundCount: foundCount)
-                            .frame(width: 220)
-                    } else {
-                        SideWordsColumn(words: splitColumns.right, found: foundWords, revealed: revealedWords)
-                            .frame(width: 220)
-                    }
+    private var dashboardPanel: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            progressHeader
+
+            if gameMode == .blind && !showBlindWordList {
+                SideBlindCountColumn(count: words.count, foundCount: foundCount)
+            } else {
+                SideWordsColumn(words: words, found: foundWords, revealed: revealedWords)
+            }
+
+            Spacer(minLength: 12)
+            controls
+        }
+        .padding(AppDesignMetrics.cardPadding)
+        .frame(minHeight: min(dynamicGridHeight, 620) + 57, alignment: .top)
+        .heroCardSurface()
+    }
+
+    private var foundCount: Int {
+        words.filter { foundWords.contains($0) }.count
+    }
+
+    private var progressHeader: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Label("Word List", systemImage: "text.magnifyingglass")
+                    .font(.headline.weight(.bold))
+
+                Spacer()
+
+                Text("\(foundCount) of \(words.count)")
+                    .font(.subheadline.weight(.semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
+            }
+
+            ProgressView(value: Double(foundCount), total: Double(max(words.count, 1)))
+                .tint(foundCount == words.count ? .green : .accentColor)
+        }
+        .padding(16)
+        .background(.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
+    }
+
+    private var controls: some View {
+        HStack(spacing: 12) {
+            if roundOver {
+                Button("New Puzzle", systemImage: "arrow.clockwise", action: onNewPuzzle)
+                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+
+                Button("Settings", systemImage: "slider.horizontal.3", action: onChangeDifficultyOrMode)
+                    .buttonStyle(GameProminentButtonStyle(tint: .orange))
+            } else {
+                Button("Reveal", systemImage: "eye.fill", action: onReveal)
+                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+
+                if gameMode == .blind {
+                    Button(healedOn ? "Hide List" : "Word List", systemImage: healedOn ? "eye.slash.fill" : "list.bullet", action: onToggleHealed)
+                        .buttonStyle(GameProminentButtonStyle(tint: healedOn ? .green : .red))
                 }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .center)
     }
 }
 

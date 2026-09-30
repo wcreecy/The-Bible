@@ -44,7 +44,7 @@ struct GridBoard: View {
         GeometryReader { geo in
             let isPad = horizontalSizeClass == .regular
             let spacing: CGFloat = isPad ? 6 : 4
-            let minCell: CGFloat = isPad ? 36 : 26
+            let minCell: CGFloat = isPad && size < 12 ? 34 : 26
             let maxCell: CGFloat = isPad ? 58 : 36
 
             // Use the actual container width; do NOT subtract a fixed padding budget here.
