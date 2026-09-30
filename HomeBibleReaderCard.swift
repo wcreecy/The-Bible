@@ -197,11 +197,7 @@ struct HomeBibleReaderCard: View {
         isLoading = true
         defer { isLoading = false }
 
-        do {
-            book = try await BibleRepository.shared.loadBook(named: selectedBookName)
-        } catch {
-            book = nil
-        }
+        book = await BibleRepository.shared.loadBook(named: selectedBookName)
 
         guard let book else { return }
         selectedChapterNumber = min(max(selectedChapterNumber, 1), book.chapters.count)
@@ -219,7 +215,7 @@ struct HomeBibleReaderCard: View {
             selectedChapterNumber -= 1
         } else if let selectedBookIndex, selectedBookIndex > canonicalBookNames.startIndex {
             let previousBookName = canonicalBookNames[selectedBookIndex - 1]
-            guard let previousBook = try? await BibleRepository.shared.loadBook(named: previousBookName) else {
+            guard let previousBook = await BibleRepository.shared.loadBook(named: previousBookName) else {
                 return
             }
             book = previousBook
@@ -240,7 +236,7 @@ struct HomeBibleReaderCard: View {
         } else if let selectedBookIndex,
                   selectedBookIndex < canonicalBookNames.index(before: canonicalBookNames.endIndex) {
             let nextBookName = canonicalBookNames[selectedBookIndex + 1]
-            guard let nextBook = try? await BibleRepository.shared.loadBook(named: nextBookName) else {
+            guard let nextBook = await BibleRepository.shared.loadBook(named: nextBookName) else {
                 return
             }
             self.book = nextBook

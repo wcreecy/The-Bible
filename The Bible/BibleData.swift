@@ -83,7 +83,7 @@ private struct KJVBookDTO: Decodable {
     let name: String?
 }
 
-private enum BookNames {
+private nonisolated enum BookNames {
     // Map common abbreviations to full names.
     static let map: [String: String] = [
         // Old Testament

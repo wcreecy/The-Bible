@@ -306,8 +306,7 @@ struct ScripturePickerView: View {
         let prevChapter = selectedChapter
         let prevVerse = selectedVerse
 
-        do {
-            if let b = try await BibleRepository.shared.loadBook(named: name) {
+        if let b = await BibleRepository.shared.loadBook(named: name) {
                 loadedBook = b
 
                 // Decide chapter:
@@ -349,11 +348,7 @@ struct ScripturePickerView: View {
                     selectedVerse = 1
                     previewText = ""
                 }
-            } else {
-                loadedBook = nil
-                loadError = true
-            }
-        } catch {
+        } else {
             loadedBook = nil
             loadError = true
         }
