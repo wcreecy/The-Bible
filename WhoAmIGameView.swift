@@ -1,8 +1,11 @@
 import SwiftUI
 
 struct WhoAmIGameView: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @StateObject private var vm = WhoAmIGameViewModel()
     @State private var maxChoiceHeight: CGFloat = 0
+    @State private var timerOnLeading = false
+    @State private var usesMutedTimerStyle = false
 
     // Sheet state for reference preview
     @State private var refSheetRequest: ReferenceSheetRequest?
@@ -91,6 +94,37 @@ struct WhoAmIGameView: View {
                         .controlSize(.large)
                         .frame(maxWidth: 240)
                     Spacer(minLength: 24)
+                } else if horizontalSizeClass == .regular {
+                    WhoAmIIPadGameBoard(
+                        score: vm.score,
+                        answered: vm.answered,
+                        streak: vm.currentStreak,
+                        promptTitle: vm.promptTitle,
+                        promptIsName: vm.mode == .names,
+                        choices: vm.choices,
+                        roundOver: vm.roundOver,
+                        correctChoice: vm.correctChoice,
+                        selectedChoice: vm.selectedChoice,
+                        choicesWithReferences: Set(vm.choices.filter(hasReference)),
+                        isTimed: vm.difficulty.timeLimit > 0,
+                        remainingSeconds: vm.remainingSeconds,
+                        timerTint: timerTint(vm.remainingSeconds),
+                        timerIsActive: whoAmITimerIsActive,
+                        timerIsPulsing: vm.pulseOn,
+                        timerOnLeading: $timerOnLeading,
+                        usesMutedTimerStyle: $usesMutedTimerStyle,
+                        showsDebugWin: debugAutoWinEnabled && vm.selectedChoice == nil,
+                        onChoose: { choice in
+                            if vm.roundOver {
+                                presentReferences(for: choice)
+                            } else {
+                                vm.select(choice)
+                            }
+                        },
+                        onSkip: { vm.skipOrTimeout() },
+                        onNext: { vm.nextRound() },
+                        onDebugWin: { vm.select(vm.correctChoice) }
+                    )
                 } else {
                     GameScoreboardCard(
                         currentCorrect: vm.score,
@@ -424,6 +458,322 @@ struct WhoAmIGameView: View {
         let n = refChoices.count
         let newIndex = (currentRefIndex + delta % n + n) % n
         setCurrentRefIndex(newIndex)
+    }
+}
+
+private struct WhoAmIIPadGameBoard: View {
+    let score: Int
+    let answered: Int
+    let streak: Int
+    let promptTitle: String
+    let promptIsName: Bool
+    let choices: [String]
+    let roundOver: Bool
+    let correctChoice: String
+    let selectedChoice: String?
+    let choicesWithReferences: Set<String>
+    let isTimed: Bool
+    let remainingSeconds: Int
+    let timerTint: Color
+    let timerIsActive: Bool
+    let timerIsPulsing: Bool
+    @Binding var timerOnLeading: Bool
+    @Binding var usesMutedTimerStyle: Bool
+    let showsDebugWin: Bool
+    let onChoose: (String) -> Void
+    let onSkip: () -> Void
+    let onNext: () -> Void
+    let onDebugWin: () -> Void
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 20) {
+            if timerOnLeading {
+                timerCard
+                playCard
+            } else {
+                playCard
+                timerCard
+            }
+        }
+        .frame(maxWidth: .infinity, minHeight: 620, alignment: .top)
+        .animation(.snappy, value: timerOnLeading)
+    }
+
+    private var playCard: some View {
+        WhoAmIPlayCard(
+            score: score,
+            answered: answered,
+            streak: streak,
+            promptTitle: promptTitle,
+            promptIsName: promptIsName,
+            choices: choices,
+            roundOver: roundOver,
+            correctChoice: correctChoice,
+            selectedChoice: selectedChoice,
+            choicesWithReferences: choicesWithReferences,
+            showsDebugWin: showsDebugWin,
+            onChoose: onChoose,
+            onSkip: onSkip,
+            onNext: onNext,
+            onDebugWin: onDebugWin
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var timerCard: some View {
+        WhoAmITimerCard(
+            isTimed: isTimed,
+            remainingSeconds: remainingSeconds,
+            tint: timerTint,
+            isActive: timerIsActive,
+            isPulsing: timerIsPulsing,
+            usesMutedStyle: $usesMutedTimerStyle,
+            onSwapSides: { timerOnLeading.toggle() }
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+private struct WhoAmIPlayCard: View {
+    let score: Int
+    let answered: Int
+    let streak: Int
+    let promptTitle: String
+    let promptIsName: Bool
+    let choices: [String]
+    let roundOver: Bool
+    let correctChoice: String
+    let selectedChoice: String?
+    let choicesWithReferences: Set<String>
+    let showsDebugWin: Bool
+    let onChoose: (String) -> Void
+    let onSkip: () -> Void
+    let onNext: () -> Void
+    let onDebugWin: () -> Void
+
+    var body: some View {
+        VStack(spacing: 16) {
+            GameScoreboardCard(
+                currentCorrect: score,
+                currentAnswered: answered,
+                currentStreak: streak,
+                game: .whoami
+            )
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(promptIsName ? "Name" : "Description")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                Text(promptTitle)
+                    .font(promptIsName ? .title.weight(.semibold) : .title3.weight(.medium))
+                    .lineLimit(7)
+                    .minimumScaleFactor(0.72)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            LazyVGrid(
+                columns: [
+                    GridItem(.flexible(), spacing: 12),
+                    GridItem(.flexible(), spacing: 12)
+                ],
+                spacing: 12
+            ) {
+                ForEach(choices, id: \.self) { choice in
+                    Button {
+                        onChoose(choice)
+                    } label: {
+                        Text(choice)
+                            .font(.subheadline)
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, minHeight: 88, alignment: .leading)
+                            .padding()
+                            .foregroundStyle(.primary)
+                            .underline(
+                                roundOver && choicesWithReferences.contains(choice),
+                                color: Color.blue.opacity(0.65)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .background(
+                        backgroundColor(for: choice),
+                        in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    )
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .strokeBorder(
+                                borderColor(for: choice),
+                                lineWidth: roundOver && choice == correctChoice ? 2 : 1
+                            )
+                    }
+                }
+            }
+
+            Spacer(minLength: 0)
+
+            HStack(spacing: 12) {
+                Button("Skip", action: onSkip)
+                    .buttonStyle(ModernPillButtonStyle(tint: .orange))
+                    .disabled(roundOver)
+
+                Button("Next", action: onNext)
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                    .disabled(!roundOver)
+            }
+
+            if roundOver {
+                Text("Tap answer to see references")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+
+            if showsDebugWin && !roundOver {
+                Button("WIN", action: onDebugWin)
+                    .buttonStyle(ModernPillButtonStyle(tint: .red))
+                    .accessibilityLabel("Win this round")
+            }
+        }
+        .padding(AppDesignMetrics.cardPadding)
+        .heroCardSurface()
+    }
+
+    private func backgroundColor(for choice: String) -> Color {
+        guard roundOver else {
+            return Color(.secondarySystemBackground)
+        }
+        if choice == correctChoice {
+            return .green.opacity(0.25)
+        }
+        if choice == selectedChoice, choice != correctChoice {
+            return .red.opacity(0.25)
+        }
+        return Color(.secondarySystemBackground)
+    }
+
+    private func borderColor(for choice: String) -> Color {
+        guard roundOver else {
+            return Color.primary.opacity(0.15)
+        }
+        if choice == correctChoice {
+            return .green
+        }
+        if choice == selectedChoice, choice != correctChoice {
+            return .red
+        }
+        return Color.primary.opacity(0.15)
+    }
+}
+
+private struct WhoAmITimerCard: View {
+    let isTimed: Bool
+    let remainingSeconds: Int
+    let tint: Color
+    let isActive: Bool
+    let isPulsing: Bool
+    @Binding var usesMutedStyle: Bool
+    let onSwapSides: () -> Void
+
+    private var usesVividStyle: Bool {
+        isTimed && !usesMutedStyle
+    }
+
+    private var timerTextColor: Color {
+        remainingSeconds > 5 && remainingSeconds <= 10 ? .black : .white
+    }
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Spacer(minLength: 0)
+
+            VStack(spacing: 24) {
+                Image(systemName: statusSystemImage)
+                    .font(.system(size: 72, weight: .semibold))
+                    .foregroundStyle(
+                        usesVividStyle
+                            ? timerTextColor.opacity(0.85)
+                            : statusTint
+                    )
+
+                Text(statusTitle)
+                    .font(.largeTitle.weight(.semibold))
+                    .foregroundStyle(
+                        usesVividStyle
+                            ? timerTextColor.opacity(0.85)
+                            : statusTint
+                    )
+
+                if isTimed && isActive {
+                    Text("\(remainingSeconds)s")
+                        .font(.system(size: 180, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
+                        .foregroundStyle(usesVividStyle ? timerTextColor : tint)
+                }
+            }
+            .scaleEffect(isPulsing ? 1.04 : 1)
+            .animation(.easeOut(duration: 0.18), value: isPulsing)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(statusTitle)
+            .accessibilityValue(isTimed && isActive ? "\(remainingSeconds) seconds" : "")
+
+            Spacer(minLength: 0)
+
+            HStack(spacing: 12) {
+                Button(
+                    "Swap card sides",
+                    systemImage: "arrow.left.arrow.right",
+                    action: onSwapSides
+                )
+
+                if isTimed {
+                    Button(
+                        usesMutedStyle ? "Use vivid timer background" : "Use muted timer background",
+                        systemImage: "circle.lefthalf.filled"
+                    ) {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            usesMutedStyle.toggle()
+                        }
+                    }
+                }
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.glass(.clear))
+            .controlSize(.small)
+            .tint(usesVividStyle ? timerTextColor : tint)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(32)
+        .background(
+            usesVividStyle ? tint : Color.clear,
+            in: RoundedRectangle(
+                cornerRadius: AppDesignMetrics.cardCornerRadius,
+                style: .continuous
+            )
+        )
+        .heroCardSurface()
+    }
+
+    private var statusTitle: LocalizedStringKey {
+        if !isTimed {
+            return "Untimed"
+        }
+        return isActive ? "Time Remaining" : "Round Complete"
+    }
+
+    private var statusSystemImage: String {
+        if !isTimed {
+            return "infinity"
+        }
+        return isActive ? "timer" : "checkmark.circle.fill"
+    }
+
+    private var statusTint: Color {
+        if !isTimed {
+            return .secondary
+        }
+        return isActive ? tint : .green
     }
 }
 

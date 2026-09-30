@@ -331,13 +331,6 @@ struct BeatTheClockGameView: View {
                     }
                     .padding()
                 }
-                .background {
-                    if usesSplitLayout {
-                        Color.clear
-                            .heroCardSurface()
-                            .padding(12)
-                    }
-                }
                 .frame(width: usesSplitLayout ? geometry.size.width / 2 : geometry.size.width)
                 .frame(
                     maxWidth: .infinity,
@@ -718,6 +711,7 @@ private struct BeatTheClockGameDashboard: View {
         .padding(.bottom, AppDesignMetrics.cardPadding)
         .padding(.top, AppDesignMetrics.cardPadding + 12)
         .frame(maxWidth: .infinity, minHeight: availableHeight, alignment: .top)
+        .heroCardSurface()
     }
 }
 
@@ -996,22 +990,14 @@ private struct BeatTheClockLargeTimerView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(32)
-        .background {
-            if usesMutedStyle {
-                Color.clear
-                    .heroCardSurface()
-            } else {
-                RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
-                    .fill(tint)
-            }
-        }
-        .overlay {
-            if !usesMutedStyle {
-                RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
-                    .strokeBorder(timerTextColor.opacity(0.22), lineWidth: 1)
-            }
-        }
-        .shadow(color: usesMutedStyle ? .clear : tint.opacity(0.25), radius: 12, x: 0, y: 5)
+        .background(
+            usesMutedStyle ? Color.clear : tint,
+            in: RoundedRectangle(
+                cornerRadius: AppDesignMetrics.cardCornerRadius,
+                style: .continuous
+            )
+        )
+        .heroCardSurface()
         .padding(12)
         .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
     }

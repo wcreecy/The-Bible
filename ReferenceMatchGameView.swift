@@ -668,41 +668,38 @@ private struct VerseMatchReferenceCard: View {
     let onSwap: () -> Void
 
     var body: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 20) {
-                HStack {
-                    Label("Reference", systemImage: "book.closed")
-                        .font(.headline)
-
-                    Spacer()
-
-                    if showsSwapButton {
-                        Button(action: onSwap) {
-                            Image(systemName: "arrow.left.arrow.right")
-                        }
-                        .buttonStyle(.bordered)
-                        .accessibilityLabel("Swap card sides")
-                        .accessibilityHint("Moves the reference and answers cards to opposite sides.")
-                    }
-                }
-
+        ZStack(alignment: .topTrailing) {
+            VStack {
                 Spacer(minLength: 12)
 
                 if let bookName, let chapterNumber, let verseNumber {
                     Text("\(bookName) \(chapterNumber):\(verseNumber)")
                         .font(.largeTitle.weight(.semibold))
+                        .multilineTextAlignment(.center)
                         .minimumScaleFactor(0.75)
+                        .frame(maxWidth: .infinity)
                 } else {
                     Text("No reference")
                         .font(.title2)
                         .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
                 }
 
                 Spacer(minLength: 12)
             }
-            .frame(maxWidth: .infinity, minHeight: 280, alignment: .topLeading)
-            .padding(4)
+
+            if showsSwapButton {
+                Button(action: onSwap) {
+                    Image(systemName: "arrow.left.arrow.right")
+                }
+                .buttonStyle(.bordered)
+                .accessibilityLabel("Swap card sides")
+                .accessibilityHint("Moves the reference and answers cards to opposite sides.")
+            }
         }
+        .frame(maxWidth: .infinity, minHeight: 280)
+        .padding(AppDesignMetrics.cardPadding)
+        .heroCardSurface()
     }
 }
 
@@ -713,8 +710,7 @@ private struct VerseMatchAnswersCard: View {
     let onSelect: (Int) -> Void
 
     var body: some View {
-        GroupBox {
-            VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
                 Label("Potential Answers", systemImage: "text.page")
                     .font(.headline)
 
@@ -770,9 +766,9 @@ private struct VerseMatchAnswersCard: View {
                         .padding(.top, 4)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(4)
-        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppDesignMetrics.cardPadding)
+        .heroCardSurface()
     }
 
     private func backgroundColor(for index: Int) -> Color {
