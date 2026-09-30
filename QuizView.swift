@@ -142,6 +142,8 @@ struct QuizView: View {
     @State private var remainingSeconds: Int = 0
     @State private var wasInRedZone: Bool = false
     @State private var pulseOn: Bool = false
+    @State private var timerOnLeft: Bool = false
+    @State private var usesMutedTimerStyle: Bool = false
     private let quizTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     // History / navigation
@@ -171,8 +173,12 @@ struct QuizView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
+        GeometryReader { geometry in
+            let usesSplitLayout = started && geometry.size.width >= 700
+
+            ZStack {
+                ScrollView {
+                    VStack(spacing: 16) {
                 if !started {
                     Text("Test your knowledge by guessing the book of the Bible from a given verse.")
                         .gameStartDescriptionStyle()
@@ -205,7 +211,7 @@ struct QuizView: View {
                         }
                     }
                     .gameStartOptionsStyle()
-                    .padding(.horizontal)
+                    .padding(.horizontal, usesSplitLayout ? 0 : 16)
                     
                     VStack(alignment: .center, spacing: 12) {
                         VStack(spacing: 6) {
@@ -246,6 +252,31 @@ struct QuizView: View {
                     .controlSize(.large)
                     .frame(maxWidth: 240)
                     Spacer(minLength: 48)
+                } else if usesSplitLayout {
+                    QuizGameDashboard(
+                        score: score,
+                        answered: sessionAnswered,
+                        streak: currentStreak,
+                        allTimeCorrect: allTimeCorrect,
+                        allTimeAnswered: allTimeAnswered,
+                        allTimeBestStreak: allTimeBestStreak,
+                        verseText: currentVerseText,
+                        options: options,
+                        selectedOption: selectedOption,
+                        correctBookName: correctBookName,
+                        chapterNumber: currentChapterNumber,
+                        verseNumber: currentVerseNumber,
+                        showAnswerReveal: showAnswerReveal,
+                        isViewingPrevious: isViewingPrevious,
+                        canGoPrevious: isPreviousEnabled,
+                        canGoNext: isNextEnabled,
+                        showsDebugWin: debugAutoWinEnabled && selectedOption == nil,
+                        availableHeight: geometry.size.height - 32,
+                        onSelectOption: selectOption,
+                        onPrevious: showPrevious,
+                        onNext: showNext,
+                        onDebugWin: { selectOption(correctBookName) }
+                    )
                 } else {
                     VStack(spacing: 16) {
                         // Scoreboard
@@ -355,9 +386,41 @@ struct QuizView: View {
                     }
                     .padding(.vertical)
                 }
+                    }
+                    .padding(.horizontal)
+                }
+                .background {
+                    if usesSplitLayout {
+                        Color.clear
+                            .heroCardSurface()
+                            .padding(12)
+                    }
+                }
+                .frame(width: usesSplitLayout ? geometry.size.width / 2 : geometry.size.width)
+                .frame(
+                    maxWidth: .infinity,
+                    alignment: usesSplitLayout && timerOnLeft ? .trailing : .leading
+                )
+
+                if usesSplitLayout {
+                    QuizLargeTimerView(
+                        remainingSeconds: remainingSeconds,
+                        tint: timerColor(for: remainingSeconds),
+                        isPulsing: pulseOn,
+                        isTimed: quizDifficulty == "normal" || quizDifficulty == "hard",
+                        usesMutedStyle: $usesMutedTimerStyle,
+                        onSwapSides: {
+                            withAnimation(.snappy) {
+                                timerOnLeft.toggle()
+                            }
+                        }
+                    )
+                    .frame(width: geometry.size.width / 2)
+                    .frame(maxWidth: .infinity, alignment: timerOnLeft ? .leading : .trailing)
+                }
             }
-            .padding(.horizontal)
         }
+        .background(AppBackgroundView(tab: .games))
         .onReceive(quizTimer) { _ in
             guard started else { return }
             guard selectedOption == nil else { return }
@@ -379,6 +442,10 @@ struct QuizView: View {
         .navigationTitle("Bible Quiz")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                QuizNavigationTitle()
+            }
+
             // Only show navigation buttons once the round has started
             if started {
                 ToolbarItemGroup(placement: .topBarTrailing) {
@@ -775,6 +842,366 @@ struct QuizView: View {
             modelContext.insert(fav)
             try? modelContext.save()
         }
+    }
+}
+
+private struct QuizGameDashboard: View {
+    let score: Int
+    let answered: Int
+    let streak: Int
+    let allTimeCorrect: Int
+    let allTimeAnswered: Int
+    let allTimeBestStreak: Int
+    let verseText: String
+    let options: [String]
+    let selectedOption: String?
+    let correctBookName: String
+    let chapterNumber: Int
+    let verseNumber: Int
+    let showAnswerReveal: Bool
+    let isViewingPrevious: Bool
+    let canGoPrevious: Bool
+    let canGoNext: Bool
+    let showsDebugWin: Bool
+    let availableHeight: CGFloat
+    let onSelectOption: (String) -> Void
+    let onPrevious: () -> Void
+    let onNext: () -> Void
+    let onDebugWin: () -> Void
+
+    var body: some View {
+        VStack(spacing: 18) {
+            QuizDashboardScoreboard(
+                score: score,
+                answered: answered,
+                streak: streak,
+                allTimeCorrect: allTimeCorrect,
+                allTimeAnswered: allTimeAnswered,
+                allTimeBestStreak: allTimeBestStreak
+            )
+
+            QuizDashboardQuestion(
+                verseText: verseText,
+                options: options,
+                selectedOption: selectedOption,
+                correctBookName: correctBookName,
+                chapterNumber: chapterNumber,
+                verseNumber: verseNumber,
+                showAnswerReveal: showAnswerReveal,
+                isViewingPrevious: isViewingPrevious,
+                onSelectOption: onSelectOption
+            )
+
+            Spacer(minLength: 0)
+
+            QuizDashboardActions(
+                canGoPrevious: canGoPrevious,
+                canGoNext: canGoNext,
+                showsDebugWin: showsDebugWin,
+                onPrevious: onPrevious,
+                onNext: onNext,
+                onDebugWin: onDebugWin
+            )
+        }
+        .padding(AppDesignMetrics.cardPadding)
+        .frame(maxWidth: .infinity, minHeight: availableHeight, alignment: .top)
+    }
+}
+
+private struct QuizDashboardScoreboard: View {
+    let score: Int
+    let answered: Int
+    let streak: Int
+    let allTimeCorrect: Int
+    let allTimeAnswered: Int
+    let allTimeBestStreak: Int
+
+    private var accuracy: Int {
+        guard answered > 0 else { return 0 }
+        return Int((Double(score) / Double(answered) * 100).rounded())
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label("This Game", systemImage: "chart.bar.fill")
+                    .font(.headline.weight(.bold))
+
+                Spacer()
+
+                Text("All time: \(allTimeCorrect)/\(allTimeAnswered)  •  Best streak \(allTimeBestStreak)")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.secondary)
+            }
+
+            HStack(spacing: 10) {
+                QuizScoreMetric(title: "Correct", value: "\(score)", systemImage: "checkmark.circle.fill", tint: .green)
+                QuizScoreMetric(title: "Questions", value: "\(answered)", systemImage: "questionmark.circle.fill", tint: .blue)
+                QuizScoreMetric(title: "Accuracy", value: "\(accuracy)%", systemImage: "percent", tint: .purple)
+                QuizScoreMetric(title: "Streak", value: "\(streak)", systemImage: "flame.fill", tint: .orange)
+            }
+        }
+        .padding(16)
+        .background(.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
+    }
+}
+
+private struct QuizScoreMetric: View {
+    let title: LocalizedStringKey
+    let value: String
+    let systemImage: String
+    let tint: Color
+
+    var body: some View {
+        VStack(spacing: 5) {
+            Image(systemName: systemImage)
+                .font(.headline)
+                .foregroundStyle(tint)
+
+            Text(value)
+                .font(.title2.weight(.bold))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+
+            Text(title)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(tint.opacity(0.09), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title)
+        .accessibilityValue(value)
+    }
+}
+
+private struct QuizDashboardQuestion: View {
+    let verseText: String
+    let options: [String]
+    let selectedOption: String?
+    let correctBookName: String
+    let chapterNumber: Int
+    let verseNumber: Int
+    let showAnswerReveal: Bool
+    let isViewingPrevious: Bool
+    let onSelectOption: (String) -> Void
+
+    var body: some View {
+        VStack(spacing: 16) {
+            VStack(spacing: 10) {
+                Label("Which book is this from?", systemImage: "text.book.closed.fill")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.tint)
+
+                Text("“\(verseText)”")
+                    .italic()
+                    .font(.title3)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(6)
+                    .minimumScaleFactor(0.8)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(20)
+            .background(.tint.opacity(0.08), in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                ForEach(options, id: \.self) { option in
+                    Button {
+                        onSelectOption(option)
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: optionIcon(for: option))
+                            Text(optionLabel(for: option))
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.8)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(minHeight: 52)
+                    }
+                    .buttonStyle(.glass(optionGlass(for: option)))
+                    .disabled(selectedOption != nil || isViewingPrevious)
+                }
+            }
+
+            if showAnswerReveal {
+                HStack(spacing: 12) {
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(.green)
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Correct Answer")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.secondary)
+
+                        Text("\(correctBookName) \(chapterNumber):\(verseNumber)")
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(.primary)
+                    }
+
+                    Spacer(minLength: 8)
+
+                    VerseActionMenu(
+                        verse: VerseActionReference(
+                            bookName: correctBookName,
+                            chapterNumber: chapterNumber,
+                            verseNumber: verseNumber,
+                            verseText: verseText
+                        )
+                    )
+                }
+                .padding(.horizontal, 16)
+                .frame(minHeight: 64)
+                .glassEffect(.regular.tint(.green), in: .rect(cornerRadius: AppDesignMetrics.compactControlCornerRadius))
+                .accessibilityElement(children: .combine)
+            }
+        }
+    }
+
+    private func optionLabel(for option: String) -> String {
+        showAnswerReveal && option == correctBookName
+            ? "\(correctBookName) \(chapterNumber):\(verseNumber)"
+            : option
+    }
+
+    private func optionGlass(for option: String) -> Glass {
+        guard let selectedOption else { return .clear }
+        if option == correctBookName { return .regular.tint(.green.opacity(0.28)) }
+        if option == selectedOption { return .regular.tint(.red.opacity(0.28)) }
+        return .clear
+    }
+
+    private func optionIcon(for option: String) -> String {
+        guard let selectedOption else { return "book.closed.fill" }
+        if option == correctBookName { return "checkmark.circle.fill" }
+        if option == selectedOption { return "xmark.circle.fill" }
+        return "book.closed.fill"
+    }
+}
+
+private struct QuizDashboardActions: View {
+    let canGoPrevious: Bool
+    let canGoNext: Bool
+    let showsDebugWin: Bool
+    let onPrevious: () -> Void
+    let onNext: () -> Void
+    let onDebugWin: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Button("Previous", systemImage: "arrow.left", action: onPrevious)
+                .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                .disabled(!canGoPrevious)
+
+            if showsDebugWin {
+                Button("Win", systemImage: "checkmark.seal.fill", action: onDebugWin)
+                    .buttonStyle(GameProminentButtonStyle(tint: .red))
+            }
+
+            Button("Next", systemImage: "arrow.right", action: onNext)
+                .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                .disabled(!canGoNext)
+        }
+    }
+}
+
+private struct QuizLargeTimerView: View {
+    let remainingSeconds: Int
+    let tint: Color
+    let isPulsing: Bool
+    let isTimed: Bool
+    @Binding var usesMutedStyle: Bool
+    let onSwapSides: () -> Void
+
+    private var timerTextColor: Color {
+        remainingSeconds > 5 && remainingSeconds <= 10 ? .black : .white
+    }
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Spacer(minLength: 0)
+
+            VStack(spacing: 24) {
+                Image(systemName: isTimed ? "timer" : "infinity")
+                    .font(.system(size: 72, weight: .semibold))
+                    .foregroundStyle(usesMutedStyle ? Color.secondary : timerTextColor.opacity(0.85))
+
+                Text(isTimed ? "Time Remaining" : "Untimed Mode")
+                    .font(.largeTitle.weight(.semibold))
+                    .foregroundStyle(usesMutedStyle ? tint : timerTextColor.opacity(0.85))
+
+                Text(isTimed ? "\(remainingSeconds)s" : "∞")
+                    .font(.system(size: 180, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .minimumScaleFactor(0.5)
+                    .lineLimit(1)
+                    .foregroundStyle(usesMutedStyle ? tint : timerTextColor)
+            }
+            .scaleEffect(isPulsing ? 1.04 : 1)
+            .animation(.easeOut(duration: 0.18), value: isPulsing)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(isTimed ? "Time remaining" : "Untimed mode")
+            .accessibilityValue(isTimed ? "\(remainingSeconds) seconds" : "No time limit")
+
+            Spacer(minLength: 0)
+
+            HStack(spacing: 12) {
+                Button("Swap card sides", systemImage: "arrow.left.arrow.right", action: onSwapSides)
+
+                Button(
+                    usesMutedStyle ? "Use vivid timer background" : "Use muted timer background",
+                    systemImage: "circle.lefthalf.filled"
+                ) {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        usesMutedStyle.toggle()
+                    }
+                }
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.glass(.clear))
+            .controlSize(.small)
+            .tint(usesMutedStyle ? tint : timerTextColor)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(32)
+        .background {
+            if usesMutedStyle {
+                Color.clear
+                    .heroCardSurface()
+            } else {
+                RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+                    .fill(tint)
+            }
+        }
+        .overlay {
+            if !usesMutedStyle {
+                RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+                    .strokeBorder(timerTextColor.opacity(0.22), lineWidth: 1)
+            }
+        }
+        .shadow(color: usesMutedStyle ? .clear : tint.opacity(0.25), radius: 12, x: 0, y: 5)
+        .padding(12)
+        .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
+    }
+}
+
+private struct QuizNavigationTitle: View {
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "questionmark.bubble.fill")
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(.white)
+                .frame(width: 28, height: 28)
+                .background(.tint, in: Circle())
+
+            Text("Bible Quiz")
+                .font(.headline.weight(.bold))
+                .fontDesign(.rounded)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Bible Quiz")
     }
 }
 

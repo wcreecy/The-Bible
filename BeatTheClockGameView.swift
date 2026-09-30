@@ -714,6 +714,9 @@ private struct BeatTheClockGameDashboard: View {
                 onDebugWin: onDebugWin
             )
         }
+        .padding(.horizontal, AppDesignMetrics.cardPadding)
+        .padding(.bottom, AppDesignMetrics.cardPadding)
+        .padding(.top, AppDesignMetrics.cardPadding + 12)
         .frame(maxWidth: .infinity, minHeight: availableHeight, alignment: .top)
     }
 }
