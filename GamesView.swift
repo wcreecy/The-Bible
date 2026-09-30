@@ -287,17 +287,19 @@ private struct GameNavigationRow: View {
 
     var body: some View {
         Button(action: onSelect) {
-            if dynamicTypeSize.isAccessibilitySize {
-                GameAccessibilityRow(route: route, progress: progress)
-            } else {
-                GameStandardRow(route: route, progress: progress)
+            Group {
+                if dynamicTypeSize.isAccessibilitySize {
+                    GameAccessibilityRow(route: route, progress: progress)
+                } else {
+                    GameStandardRow(route: route, progress: progress)
+                }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 8 : 4)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .foregroundStyle(.primary)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 8 : 4)
-        .contentShape(Rectangle())
     }
 }
 

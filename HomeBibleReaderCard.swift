@@ -13,13 +13,26 @@ struct HomeBibleReaderCard: View {
         book?.chapters.first(where: { $0.number == selectedChapterNumber })
     }
 
+    private var canonicalBookNames: [String] {
+        BibleCanon.canonicalOrder()
+    }
+
+    private var selectedBookIndex: Int? {
+        canonicalBookNames.firstIndex(of: selectedBookName)
+    }
+
     private var canShowPreviousChapter: Bool {
-        selectedChapterNumber > 1
+        guard let selectedBookIndex else { return selectedChapterNumber > 1 }
+        return selectedChapterNumber > 1 || selectedBookIndex > canonicalBookNames.startIndex
     }
 
     private var canShowNextChapter: Bool {
         guard let book else { return false }
-        return selectedChapterNumber < book.chapters.count
+        if selectedChapterNumber < book.chapters.count {
+            return true
+        }
+        guard let selectedBookIndex else { return false }
+        return selectedBookIndex < canonicalBookNames.index(before: canonicalBookNames.endIndex)
     }
 
     var body: some View {
@@ -93,7 +106,7 @@ struct HomeBibleReaderCard: View {
 
             HStack {
                 Button {
-                    showPreviousChapter()
+                    Task { await showPreviousChapter() }
                 } label: {
                     Label("Previous", systemImage: "chevron.left")
                 }
@@ -108,7 +121,7 @@ struct HomeBibleReaderCard: View {
                 Spacer()
 
                 Button {
-                    showNextChapter()
+                    Task { await showNextChapter() }
                 } label: {
                     Label("Next", systemImage: "chevron.right")
                         .labelStyle(.titleAndIcon)
@@ -172,9 +185,9 @@ struct HomeBibleReaderCard: View {
                 }
 
                 if value.translation.width < 0 {
-                    showNextChapter()
+                    Task { await showNextChapter() }
                 } else {
-                    showPreviousChapter()
+                    Task { await showPreviousChapter() }
                 }
             }
     }
@@ -198,16 +211,43 @@ struct HomeBibleReaderCard: View {
         }
     }
 
-    private func showPreviousChapter() {
+    @MainActor
+    private func showPreviousChapter() async {
         guard canShowPreviousChapter else { return }
-        selectedChapterNumber -= 1
+
+        if selectedChapterNumber > 1 {
+            selectedChapterNumber -= 1
+        } else if let selectedBookIndex, selectedBookIndex > canonicalBookNames.startIndex {
+            let previousBookName = canonicalBookNames[selectedBookIndex - 1]
+            guard let previousBook = try? await BibleLibrary.shared.loadBook(named: previousBookName) else {
+                return
+            }
+            book = previousBook
+            selectedBookName = previousBookName
+            selectedChapterNumber = previousBook.chapters.count
+        }
+
         selectedVerseNumber = 1
         Haptics.selection()
     }
 
-    private func showNextChapter() {
-        guard canShowNextChapter else { return }
-        selectedChapterNumber += 1
+    @MainActor
+    private func showNextChapter() async {
+        guard canShowNextChapter, let book else { return }
+
+        if selectedChapterNumber < book.chapters.count {
+            selectedChapterNumber += 1
+        } else if let selectedBookIndex,
+                  selectedBookIndex < canonicalBookNames.index(before: canonicalBookNames.endIndex) {
+            let nextBookName = canonicalBookNames[selectedBookIndex + 1]
+            guard let nextBook = try? await BibleLibrary.shared.loadBook(named: nextBookName) else {
+                return
+            }
+            self.book = nextBook
+            selectedBookName = nextBookName
+            selectedChapterNumber = 1
+        }
+
         selectedVerseNumber = 1
         Haptics.selection()
     }

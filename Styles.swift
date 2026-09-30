@@ -93,6 +93,38 @@ public struct ModernPillButtonStyle: ButtonStyle {
     }
 }
 
+/// A neutral secondary action that keeps the underlying surface visible through clear Liquid Glass.
+public struct ClearGlassPillButtonStyle: ButtonStyle {
+    public var tint: Color = .accentColor
+    @Environment(\.isEnabled) private var isEnabled
+
+    public init(tint: Color = .accentColor) {
+        self.tint = tint
+    }
+
+    public func makeBody(configuration: Configuration) -> some View {
+        let pressed = configuration.isPressed
+
+        configuration.label
+            .font(.footnote.weight(.semibold))
+            .foregroundStyle(isEnabled ? tint : .secondary)
+            .padding(.horizontal, 16)
+            .frame(minHeight: 44)
+            .glassEffect(
+                .clear.interactive(isEnabled),
+                in: .capsule
+            )
+            .overlay {
+                Capsule(style: .continuous)
+                    .stroke(tint.opacity(isEnabled ? 0.22 : 0.1), lineWidth: 1)
+            }
+            .contentShape(Capsule(style: .continuous))
+            .opacity(isEnabled ? 1 : 0.72)
+            .scaleEffect(pressed && isEnabled ? 0.98 : 1)
+            .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
+    }
+}
+
 /// A compact circular Liquid Glass style for icon-only and short numeric actions.
 public struct ModernCircleButtonStyle: ButtonStyle {
     public var tint: Color = .accentColor

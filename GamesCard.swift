@@ -134,18 +134,16 @@ struct GamesCard: View {
                         Button(action: onShufflePlay) {
                             Label("Random", systemImage: "shuffle")
                         }
-                        .buttonStyle(ModernPillButtonStyle(tint: .purple))
 
                         Button(action: onOpenGames) {
                             Label("Games", systemImage: "gamecontroller")
                         }
-                        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
 
                         Button(action: onOpenStats) {
                             Label("Stats", systemImage: "chart.bar")
                         }
-                        .buttonStyle(ModernPillButtonStyle(tint: .orange))
                     }
+                    .buttonStyle(ClearGlassPillButtonStyle())
 
                     // Footer: Last played tag (moved under the 3 buttons)
                     if let name = lastPlayedName, let rel = lastPlayedRelative {

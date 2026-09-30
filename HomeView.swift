@@ -357,15 +357,10 @@ struct HomeView: View {
     }
 
     private var dashboardCards: [HomeCardID] {
-        moreCards.filter { ![.streaks, .games].contains($0) }
-    }
-
-    private var featuredDashboardCards: [HomeCardID] {
-        [.resumeReading, .streaks, .games].filter { !hiddenCards.contains($0) }
-    }
-
-    private var showsFeaturedDashboard: Bool {
-        !hiddenCards.contains(.verseOfDay) || !featuredDashboardCards.isEmpty
+        let featuredCards = [HomeCardID.resumeReading, .streaks, .games]
+            .filter { !hiddenCards.contains($0) }
+        let remainingCards = moreCards.filter { ![.streaks, .games].contains($0) }
+        return featuredCards + remainingCards
     }
 
     @ViewBuilder
@@ -458,36 +453,19 @@ struct HomeView: View {
         contextualHomeTip
 
         HStack(alignment: .top, spacing: columnSpacing) {
-            VStack(spacing: 16) {
-                if showsFeaturedDashboard {
-                    if !hiddenCards.contains(.verseOfDay) {
-                        card(for: .verseOfDay)
-                    }
-
-                    if !featuredDashboardCards.isEmpty {
-                        LazyVGrid(
-                            columns: Array(
-                                repeating: GridItem(.flexible(), spacing: 16, alignment: .top),
-                                count: 2
-                            ),
-                            alignment: .leading,
-                            spacing: 16
-                        ) {
-                            ForEach(featuredDashboardCards) { cardID in
-                                card(for: cardID)
-                            }
-                        }
-                    }
+            VStack(spacing: 10) {
+                if !hiddenCards.contains(.verseOfDay) {
+                    card(for: .verseOfDay)
                 }
 
                 if !dashboardCards.isEmpty {
                     LazyVGrid(
                         columns: Array(
-                            repeating: GridItem(.flexible(), spacing: 16, alignment: .top),
+                            repeating: GridItem(.flexible(), spacing: 10, alignment: .top),
                             count: 2
                         ),
                         alignment: .leading,
-                        spacing: 16
+                        spacing: 10
                     ) {
                         ForEach(dashboardCards) { cardID in
                             card(for: cardID)

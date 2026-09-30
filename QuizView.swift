@@ -904,6 +904,7 @@ private struct QuizGameDashboard: View {
             )
         }
         .padding(AppDesignMetrics.cardPadding)
+        .padding(.top, 12)
         .frame(maxWidth: .infinity, minHeight: availableHeight, alignment: .top)
     }
 }
