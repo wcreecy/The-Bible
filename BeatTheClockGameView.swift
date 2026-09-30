@@ -171,6 +171,41 @@ struct BeatTheClockGameView: View {
                         .frame(maxWidth: 240)
                     Spacer(minLength: 32)
                 } else {
+                    if usesSplitLayout {
+                        BeatTheClockGameDashboard(
+                            score: score,
+                            answered: answered,
+                            streak: currentStreak,
+                            allTimeCorrect: allTimeCorrect,
+                            allTimeAnswered: allTimeAnswered,
+                            allTimeBestStreak: allTimeBestStreak,
+                            targetType: currentEntryIsPerson ? "Person" : "Place",
+                            targetLabel: targetLabel,
+                            timerColor: timerColor,
+                            selectionLocked: selectionLocked,
+                            searchText: $searchText,
+                            searchFieldFocused: $searchFieldFocused,
+                            filteredBooks: Array(filteredBooks.prefix(8)),
+                            acceptableBookCount: acceptableBooks.count,
+                            canSubmit: canSubmit,
+                            showsDebugWin: debugAutoWinEnabled,
+                            availableHeight: geometry.size.height - 32,
+                            onClear: {
+                                searchText = ""
+                                searchFieldFocused = true
+                            },
+                            onSelectBook: { name in
+                                searchText = name
+                                submit(bookName: name)
+                                searchFieldFocused = false
+                            },
+                            onSubmit: submitCurrentEntry,
+                            onSkip: { endRound(correct: false) },
+                            onNext: nextRound,
+                            onShowAnswers: { showAnswers = true },
+                            onDebugWin: { endRound(correct: true) }
+                        )
+                    } else {
                     GameScoreboardCard(
                         currentCorrect: score,
                         currentAnswered: answered,
@@ -290,6 +325,7 @@ struct BeatTheClockGameView: View {
                         .controlSize(.large)
                         .padding(.top, 6)
                         .accessibilityLabel("Win this round")
+                    }
                     }
                 }
                     }
@@ -607,6 +643,276 @@ struct BeatTheClockGameView: View {
         case .easy: return .easy
         case .normal: return .normal
         case .hard: return .hard
+        }
+    }
+}
+
+private struct BeatTheClockGameDashboard: View {
+    let score: Int
+    let answered: Int
+    let streak: Int
+    let allTimeCorrect: Int
+    let allTimeAnswered: Int
+    let allTimeBestStreak: Int
+    let targetType: String
+    let targetLabel: String
+    let timerColor: Color
+    let selectionLocked: Bool
+    @Binding var searchText: String
+    let searchFieldFocused: FocusState<Bool>.Binding
+    let filteredBooks: [String]
+    let acceptableBookCount: Int
+    let canSubmit: Bool
+    let showsDebugWin: Bool
+    let availableHeight: CGFloat
+    let onClear: () -> Void
+    let onSelectBook: (String) -> Void
+    let onSubmit: () -> Void
+    let onSkip: () -> Void
+    let onNext: () -> Void
+    let onShowAnswers: () -> Void
+    let onDebugWin: () -> Void
+
+    var body: some View {
+        VStack(spacing: 18) {
+            BeatTheClockDashboardScoreboard(
+                score: score,
+                answered: answered,
+                streak: streak,
+                allTimeCorrect: allTimeCorrect,
+                allTimeAnswered: allTimeAnswered,
+                allTimeBestStreak: allTimeBestStreak
+            )
+
+            BeatTheClockDashboardPrompt(
+                targetType: targetType,
+                targetLabel: targetLabel,
+                tint: timerColor,
+                isLocked: selectionLocked
+            )
+
+            BeatTheClockDashboardAnswer(
+                searchText: $searchText,
+                searchFieldFocused: searchFieldFocused,
+                filteredBooks: filteredBooks,
+                isLocked: selectionLocked,
+                onClear: onClear,
+                onSelectBook: onSelectBook
+            )
+
+            Spacer(minLength: 0)
+
+            BeatTheClockDashboardActions(
+                isLocked: selectionLocked,
+                canSubmit: canSubmit,
+                acceptableBookCount: acceptableBookCount,
+                showsDebugWin: showsDebugWin,
+                onSubmit: onSubmit,
+                onSkip: onSkip,
+                onNext: onNext,
+                onShowAnswers: onShowAnswers,
+                onDebugWin: onDebugWin
+            )
+        }
+        .frame(maxWidth: .infinity, minHeight: availableHeight, alignment: .top)
+    }
+}
+
+private struct BeatTheClockDashboardScoreboard: View {
+    let score: Int
+    let answered: Int
+    let streak: Int
+    let allTimeCorrect: Int
+    let allTimeAnswered: Int
+    let allTimeBestStreak: Int
+
+    private var accuracy: Int {
+        guard answered > 0 else { return 0 }
+        return Int((Double(score) / Double(answered) * 100).rounded())
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label("This Game", systemImage: "chart.bar.fill")
+                    .font(.headline.weight(.bold))
+
+                Spacer()
+
+                Text("All time: \(allTimeCorrect)/\(allTimeAnswered)  •  Best streak \(allTimeBestStreak)")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.secondary)
+            }
+
+            HStack(spacing: 10) {
+                BeatTheClockScoreMetric(title: "Correct", value: "\(score)", systemImage: "checkmark.circle.fill", tint: .green)
+                BeatTheClockScoreMetric(title: "Attempts", value: "\(answered)", systemImage: "scope", tint: .blue)
+                BeatTheClockScoreMetric(title: "Accuracy", value: "\(accuracy)%", systemImage: "percent", tint: .purple)
+                BeatTheClockScoreMetric(title: "Streak", value: "\(streak)", systemImage: "flame.fill", tint: .orange)
+            }
+        }
+        .padding(16)
+        .background(.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
+    }
+}
+
+private struct BeatTheClockScoreMetric: View {
+    let title: LocalizedStringKey
+    let value: String
+    let systemImage: String
+    let tint: Color
+
+    var body: some View {
+        VStack(spacing: 5) {
+            Image(systemName: systemImage)
+                .font(.headline)
+                .foregroundStyle(tint)
+
+            Text(value)
+                .font(.title2.weight(.bold))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+
+            Text(title)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(tint.opacity(0.09), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title)
+        .accessibilityValue(value)
+    }
+}
+
+private struct BeatTheClockDashboardPrompt: View {
+    let targetType: String
+    let targetLabel: String
+    let tint: Color
+    let isLocked: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(targetType, systemImage: targetType == "Person" ? "person.fill" : "mappin.and.ellipse")
+                .font(.caption.weight(.bold))
+                .foregroundStyle(tint)
+                .textCase(.uppercase)
+
+            Text(targetLabel)
+                .font(.system(size: 36, weight: .bold, design: .rounded))
+                .lineLimit(2)
+                .minimumScaleFactor(0.65)
+
+            Text("Name a Bible book that mentions this \(targetType.lowercased()).")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(20)
+        .background(tint.opacity(isLocked ? 0.05 : 0.11), in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+                .strokeBorder(isLocked ? Color.primary.opacity(0.12) : tint.opacity(0.8), lineWidth: isLocked ? 1 : 2)
+        }
+        .animation(.easeInOut(duration: 0.25), value: tint)
+    }
+}
+
+private struct BeatTheClockDashboardAnswer: View {
+    @Binding var searchText: String
+    let searchFieldFocused: FocusState<Bool>.Binding
+    let filteredBooks: [String]
+    let isLocked: Bool
+    let onClear: () -> Void
+    let onSelectBook: (String) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label("Your Answer", systemImage: "square.and.pencil")
+                .font(.headline.weight(.bold))
+
+            HStack(spacing: 10) {
+                Image(systemName: "book.closed.fill")
+                    .foregroundStyle(.tint)
+
+                TextField("Type a Bible book…", text: $searchText)
+                    .font(.title3.weight(.medium))
+                    .textInputAutocapitalization(.words)
+                    .disableAutocorrection(true)
+                    .textFieldStyle(.plain)
+                    .focused(searchFieldFocused)
+                    .disabled(isLocked)
+
+                if !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Button("Clear answer", systemImage: "xmark.circle.fill", action: onClear)
+                        .labelStyle(.iconOnly)
+                        .buttonStyle(.plain)
+                        .foregroundStyle(isLocked ? Color.secondary : Color.red)
+                        .disabled(isLocked)
+                }
+            }
+            .padding(.horizontal, 16)
+            .frame(minHeight: 58)
+            .glassEffect(.regular, in: .rect(cornerRadius: AppDesignMetrics.compactControlCornerRadius))
+
+            if !filteredBooks.isEmpty {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+                    ForEach(filteredBooks, id: \.self) { name in
+                        Button(name) {
+                            onSelectBook(name)
+                        }
+                        .font(.subheadline.weight(.semibold))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 14)
+                        .frame(minHeight: 42)
+                        .background(.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                        .buttonStyle(.plain)
+                        .disabled(isLocked)
+                    }
+                }
+            }
+        }
+    }
+}
+
+private struct BeatTheClockDashboardActions: View {
+    let isLocked: Bool
+    let canSubmit: Bool
+    let acceptableBookCount: Int
+    let showsDebugWin: Bool
+    let onSubmit: () -> Void
+    let onSkip: () -> Void
+    let onNext: () -> Void
+    let onShowAnswers: () -> Void
+    let onDebugWin: () -> Void
+
+    var body: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 12) {
+                Button("Skip", systemImage: "forward.fill", action: onSkip)
+                    .buttonStyle(GameProminentButtonStyle(tint: .orange))
+                    .disabled(isLocked)
+
+                Button("Submit", systemImage: "paperplane.fill", action: onSubmit)
+                    .buttonStyle(GameProminentButtonStyle(tint: .green))
+                    .disabled(!canSubmit)
+
+                Button("Next", systemImage: "arrow.right", action: onNext)
+                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                    .disabled(!isLocked)
+            }
+
+            if isLocked {
+                Button("Show \(acceptableBookCount) acceptable answers", systemImage: "books.vertical.fill", action: onShowAnswers)
+                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+            }
+
+            if showsDebugWin && !isLocked {
+                Button("Win this round", systemImage: "checkmark.seal.fill", action: onDebugWin)
+                    .buttonStyle(.glass(.regular.tint(.red)))
+            }
         }
     }
 }
