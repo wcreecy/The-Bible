@@ -23,6 +23,69 @@ import WidgetKit
 //     var id: String { rawValue }
 // }
 
+private struct HomeMasonryGrid: Layout {
+    let columnCount: Int
+    let spacing: CGFloat
+
+    func sizeThatFits(
+        proposal: ProposedViewSize,
+        subviews: Subviews,
+        cache: inout ()
+    ) -> CGSize {
+        let width = proposal.width ?? 0
+        let result = layoutResult(width: width, subviews: subviews)
+        return CGSize(width: width, height: result.height)
+    }
+
+    func placeSubviews(
+        in bounds: CGRect,
+        proposal: ProposedViewSize,
+        subviews: Subviews,
+        cache: inout ()
+    ) {
+        let result = layoutResult(width: bounds.width, subviews: subviews)
+
+        for (index, subview) in subviews.enumerated() {
+            let frame = result.frames[index]
+            subview.place(
+                at: CGPoint(x: bounds.minX + frame.minX, y: bounds.minY + frame.minY),
+                anchor: .topLeading,
+                proposal: ProposedViewSize(width: frame.width, height: frame.height)
+            )
+        }
+    }
+
+    private func layoutResult(width: CGFloat, subviews: Subviews) -> (frames: [CGRect], height: CGFloat) {
+        guard columnCount > 0, width > 0, !subviews.isEmpty else {
+            return ([], 0)
+        }
+
+        let totalSpacing = spacing * CGFloat(columnCount - 1)
+        let columnWidth = max(0, (width - totalSpacing) / CGFloat(columnCount))
+        let itemProposal = ProposedViewSize(width: columnWidth, height: nil)
+        var columnHeights = Array(repeating: CGFloat.zero, count: columnCount)
+        var frames: [CGRect] = []
+        frames.reserveCapacity(subviews.count)
+
+        for subview in subviews {
+            let column = columnHeights.indices.min {
+                columnHeights[$0] < columnHeights[$1]
+            } ?? 0
+            let top = columnHeights[column] == 0 ? 0 : columnHeights[column] + spacing
+            let size = subview.sizeThatFits(itemProposal)
+            let origin = CGPoint(
+                x: CGFloat(column) * (columnWidth + spacing),
+                y: top
+            )
+
+            frames.append(CGRect(origin: origin, size: CGSize(width: columnWidth, height: size.height)))
+            columnHeights[column] = top + size.height
+        }
+
+        return (frames, columnHeights.max() ?? 0)
+    }
+}
+
 struct HomeView: View {
     // Visibility widened so split cards can reference it
     enum PrayerMode: String { case timer, stopwatch, focus }
@@ -357,10 +420,9 @@ struct HomeView: View {
     }
 
     private var dashboardCards: [HomeCardID] {
-        let featuredCards = [HomeCardID.resumeReading, .streaks, .games]
-            .filter { !hiddenCards.contains($0) }
-        let remainingCards = moreCards.filter { ![.streaks, .games].contains($0) }
-        return featuredCards + remainingCards
+        layoutOrder.filter {
+            $0 != .verseOfDay && !hiddenCards.contains($0)
+        }
     }
 
     @ViewBuilder
@@ -459,18 +521,13 @@ struct HomeView: View {
                 }
 
                 if !dashboardCards.isEmpty {
-                    LazyVGrid(
-                        columns: Array(
-                            repeating: GridItem(.flexible(), spacing: 10, alignment: .top),
-                            count: 2
-                        ),
-                        alignment: .leading,
-                        spacing: 10
-                    ) {
+                    HomeMasonryGrid(columnCount: 2, spacing: 10) {
                         ForEach(dashboardCards) { cardID in
                             card(for: cardID)
+                                .frame(maxWidth: .infinity)
                         }
                     }
+                    .animation(.snappy, value: dashboardCards)
                 }
             }
             .frame(width: mainCardsWidth)
