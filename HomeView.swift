@@ -356,35 +356,123 @@ struct HomeView: View {
         }
     }
 
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                TitleCardView(
-                    isPad: isPad,
-                    goalMinutes: dailyGoalMinutes,
-                    todayReadingSeconds: bibleVM.todaySeconds,
-                    streak: StreakTracker.currentStreak,
-                    onSearch: {
-                        DispatchQueue.main.async {
-                            NotificationCenter.default.post(name: .openBibleSearch, object: nil)
-                        }
-                    },
-                    onRead: {
-                        DispatchQueue.main.async { switchTo(.bible) }
-                    },
-                    onFavorites: {
-                        DispatchQueue.main.async { switchTo(.favorites) }
-                    }
-                )
+    private var dashboardCards: [HomeCardID] {
+        moreCards.filter { $0 != .streaks }
+    }
 
-                if contextualTipsEnabled {
-                    ContextualTipView(
-                        title: "Explore more on Home",
-                        message: "Expand Show More for prayer timers and other cards. You can choose and reorder Home cards in Settings.",
-                        systemImage: "sparkles"
-                    )
+    private var showsFeaturedDashboard: Bool {
+        !hiddenCards.contains(.verseOfDay)
+            || !hiddenCards.contains(.resumeReading)
+            || !hiddenCards.contains(.streaks)
+    }
+
+    @ViewBuilder
+    private var homeHeader: some View {
+        TitleCardView(
+            isPad: isPad,
+            goalMinutes: dailyGoalMinutes,
+            todayReadingSeconds: bibleVM.todaySeconds,
+            streak: StreakTracker.currentStreak,
+            onSearch: {
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .openBibleSearch, object: nil)
                 }
+            },
+            onRead: {
+                DispatchQueue.main.async { switchTo(.bible) }
+            },
+            onFavorites: {
+                DispatchQueue.main.async { switchTo(.favorites) }
+            }
+        )
+    }
 
+    @ViewBuilder
+    private var contextualHomeTip: some View {
+        if contextualTipsEnabled {
+            ContextualTipView(
+                title: "Make Home your own",
+                message: isPad
+                    ? "Your visible cards fill this dashboard automatically. Choose and reorder them from Customize Home."
+                    : "Expand Show More for prayer timers and other cards. You can choose and reorder Home cards in Settings.",
+                systemImage: "sparkles"
+            )
+        }
+    }
+
+    @ViewBuilder
+    private var compactHomeContent: some View {
+        homeHeader
+        contextualHomeTip
+
+        if !hiddenCards.contains(.verseOfDay) {
+            card(for: .verseOfDay)
+        }
+
+        if !hiddenCards.contains(.resumeReading) {
+            card(for: .resumeReading)
+        }
+
+        if !moreCards.isEmpty {
+            Button {
+                withAnimation(.snappy) {
+                    showMoreCards.toggle()
+                }
+            } label: {
+                HStack {
+                    Label(
+                        showMoreCards ? "Show Less" : "Show More",
+                        systemImage: "square.grid.2x2"
+                    )
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .rotationEffect(.degrees(showMoreCards ? 180 : 0))
+                }
+                .font(.headline)
+                .padding(AppDesignMetrics.cardPadding)
+                .imageOverlaySurface()
+            }
+            .buttonStyle(.plain)
+            .accessibilityHint(showMoreCards ? "Hides additional Home cards" : "Shows additional Home cards")
+
+            if showMoreCards {
+                ForEach(moreCards) { cardID in
+                    card(for: cardID)
+                }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+
+        customizeHomeLink
+    }
+
+    @ViewBuilder
+    private func dashboardContent(width: CGFloat) -> some View {
+        homeHeader
+        contextualHomeTip
+
+        if showsFeaturedDashboard {
+            if width >= 1_000 {
+                HStack(alignment: .top, spacing: 16) {
+                    if !hiddenCards.contains(.verseOfDay) {
+                        card(for: .verseOfDay)
+                            .frame(maxWidth: .infinity)
+                    }
+
+                    if !hiddenCards.contains(.resumeReading) || !hiddenCards.contains(.streaks) {
+                        VStack(spacing: 16) {
+                            if !hiddenCards.contains(.resumeReading) {
+                                card(for: .resumeReading)
+                            }
+
+                            if !hiddenCards.contains(.streaks) {
+                                card(for: .streaks)
+                            }
+                        }
+                        .frame(width: min(370, width * 0.34))
+                    }
+                }
+            } else {
                 if !hiddenCards.contains(.verseOfDay) {
                     card(for: .verseOfDay)
                 }
@@ -393,56 +481,84 @@ struct HomeView: View {
                     card(for: .resumeReading)
                 }
 
-                if !moreCards.isEmpty {
-                    Button {
-                        withAnimation(.snappy) {
-                            showMoreCards.toggle()
-                        }
-                    } label: {
-                        HStack {
-                            Label(
-                                showMoreCards ? "Show Less" : "Show More",
-                                systemImage: "square.grid.2x2"
-                            )
-                            Spacer()
-                            Image(systemName: "chevron.down")
-                                .rotationEffect(.degrees(showMoreCards ? 180 : 0))
-                        }
-                        .font(.headline)
-                        .padding(AppDesignMetrics.cardPadding)
-                        .imageOverlaySurface()
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityHint(showMoreCards ? "Hides additional Home cards" : "Shows additional Home cards")
-
-                    if showMoreCards {
-                        ForEach(moreCards) { cardID in
-                            card(for: cardID)
-                        }
-                        .transition(.opacity.combined(with: .move(edge: .top)))
-                    }
+                if !hiddenCards.contains(.streaks) {
+                    card(for: .streaks)
                 }
-
-                NavigationLink {
-                    HomeLayoutEditorView(
-                        order: $layoutOrder,
-                        hiddenSet: $hiddenCards,
-                        onDone: saveHomeLayout,
-                        onSaveFavorite: saveFavoriteLayout,
-                        onResetToFavorite: applyFavoriteLayout,
-                        hasFavorite: hasFavoriteLayout
-                    )
-                } label: {
-                    Label("Customize Home", systemImage: "slider.horizontal.3")
-                        .font(.subheadline.weight(.semibold))
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
             }
-            .padding(.horizontal, isPad ? 24 : 16)
+        }
+
+        if !dashboardCards.isEmpty {
+            LazyVGrid(
+                columns: Array(
+                    repeating: GridItem(.flexible(), spacing: 16, alignment: .top),
+                    count: width >= 1_100 ? 3 : 2
+                ),
+                alignment: .leading,
+                spacing: 16
+            ) {
+                ForEach(dashboardCards) { cardID in
+                    card(for: cardID)
+                }
+            }
+        }
+    }
+
+    private var customizeHomeLink: some View {
+        NavigationLink {
+            HomeLayoutEditorView(
+                order: $layoutOrder,
+                hiddenSet: $hiddenCards,
+                onDone: saveHomeLayout,
+                onSaveFavorite: saveFavoriteLayout,
+                onResetToFavorite: applyFavoriteLayout,
+                hasFavorite: hasFavoriteLayout
+            )
+        } label: {
+            Label("Customize Home", systemImage: "slider.horizontal.3")
+                .font(.subheadline.weight(.semibold))
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+    }
+
+    var body: some View {
+        GeometryReader { proxy in
+            let availableWidth = proxy.size.width
+            let usesDashboard = availableWidth >= 700
+
+            ScrollView {
+                VStack(spacing: 16) {
+                    if usesDashboard {
+                        dashboardContent(width: min(availableWidth - 48, 1_200))
+                    } else {
+                        compactHomeContent
+                    }
+                }
+                .frame(maxWidth: usesDashboard ? 1_200 : .infinity)
+                .padding(.horizontal, usesDashboard ? 24 : 16)
+                .frame(maxWidth: .infinity)
+            }
         }
         .background(AppBackgroundView(tab: .home))
         .navigationTitle("")
+        .toolbar {
+            if isPad {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        HomeLayoutEditorView(
+                            order: $layoutOrder,
+                            hiddenSet: $hiddenCards,
+                            onDone: saveHomeLayout,
+                            onSaveFavorite: saveFavoriteLayout,
+                            onResetToFavorite: applyFavoriteLayout,
+                            hasFavorite: hasFavoriteLayout
+                        )
+                    } label: {
+                        Label("Customize Home", systemImage: "slider.horizontal.3")
+                    }
+                }
+            }
+        }
         .appToast(
             isPresented: $showCopyToast,
             symbol: verseActionToastSymbol,
