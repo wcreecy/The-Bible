@@ -252,17 +252,29 @@ private struct GameCollectionSection: View {
 
     var body: some View {
         Section {
-            ForEach(routes) { route in
-                GameNavigationRow(
-                    route: route,
-                    progress: progress(route),
-                    onSelect: { onSelect(route) }
-                )
+            VStack(alignment: .leading, spacing: 0) {
+                Text(title)
+                    .font(.headline)
+                    .padding(.bottom, 8)
+
+                ForEach(routes) { route in
+                    GameNavigationRow(
+                        route: route,
+                        progress: progress(route),
+                        onSelect: { onSelect(route) }
+                    )
+
+                    if route.id != routes.last?.id {
+                        Divider()
+                    }
+                }
             }
-        } header: {
-            Text(title)
+            .padding(AppDesignMetrics.cardPadding)
+            .heroCardSurface()
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
         }
-        .listRowBackground(Color.clear)
     }
 }
 
