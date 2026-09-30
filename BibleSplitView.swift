@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct BibleSplitView: View {
+    let searchRequestID: Int
+
+    @State private var handledSearchRequestID: Int = 0
     @State private var selectedBook: Book? = nil
     @State private var selectedChapter: Chapter? = nil
     @State private var navStartVerse: Int = 1
@@ -37,6 +40,8 @@ struct BibleSplitView: View {
         let chapterNumber: Int
         let verseNumber: Int
     }
+
+    private struct SearchRoute: Hashable {}
     
     private struct SearchHit: Identifiable, Hashable {
         let id: String
@@ -347,6 +352,9 @@ struct BibleSplitView: View {
                         ContentUnavailableView("Chapter not found", systemImage: "exclamationmark.triangle")
                     }
                 }
+                .navigationDestination(for: SearchRoute.self) { _ in
+                    SearchView()
+                }
                 .navigationDestination(for: ReadingRoute.self) { route in
                     if let book = BibleData.books.first(where: { $0.name == route.bookName }),
                        let chapter = book.chapters.first(where: { $0.number == route.chapterNumber }) {
@@ -398,6 +406,11 @@ struct BibleSplitView: View {
                 debouncedText = searchText
             }
         }
+        .task(id: searchRequestID) {
+            guard searchRequestID != 0, searchRequestID != handledSearchRequestID else { return }
+            handledSearchRequestID = searchRequestID
+            detailPath.append(SearchRoute())
+        }
         // Listen for deep links from ContentView (iPad path)
         .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { note in
             guard
@@ -428,5 +441,5 @@ struct BibleSplitView: View {
 }
 
 #Preview {
-    BibleSplitView()
+    BibleSplitView(searchRequestID: 0)
 }

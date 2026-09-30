@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct SearchView: View {
-    @EnvironmentObject private var coordinator: NavigationCoordinator
-
     // MARK: - Query & Results
     @State private var query: String = ""
     @State private var results: [SearchResult] = []
@@ -334,12 +332,14 @@ struct SearchView: View {
 
     // MARK: - Open in Bible Tab
     private func openInBibleTab(_ item: SearchResult) {
-        coordinator.push(
-            .reader(
-                book: item.book,
-                chapter: item.chapter,
-                startVerse: item.verse.number
-            )
+        NotificationCenter.default.post(
+            name: .openBibleReference,
+            object: nil,
+            userInfo: [
+                "book": item.book.name,
+                "chapter": item.chapter.number,
+                "verse": item.verse.number
+            ]
         )
     }
 
@@ -575,5 +575,4 @@ private struct SearchResult: Identifiable, Hashable {
 
 #Preview {
     NavigationStack { SearchView() }
-        .environmentObject(NavigationCoordinator())
 }

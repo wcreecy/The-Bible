@@ -5,7 +5,6 @@ import WidgetKit
 
 @MainActor
 struct ReadingView: View {
-    @EnvironmentObject private var coordinator: NavigationCoordinator
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
     @Environment(\.scenePhase) private var scenePhase
@@ -64,7 +63,7 @@ struct ReadingView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        coordinator.push(.search)
+                        NotificationCenter.default.post(name: .openBibleSearch, object: nil)
                     } label: {
                         Image(systemName: "magnifyingglass")
                     }

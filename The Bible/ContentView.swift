@@ -23,6 +23,7 @@ struct ContentView: View {
     @State private var morePath: [MoreDestination] = []
 
     @State private var selectedTab: AppTab = .home
+    @State private var bibleSearchRequestID: Int = 0
     @AppStorage("healthKitPrompted") private var healthKitPrompted: Bool = false
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
     
@@ -76,7 +77,7 @@ struct ContentView: View {
             .tag(AppTab.home)
 
             if usesWideLayout {
-                BibleSplitView()
+                BibleSplitView(searchRequestID: bibleSearchRequestID)
                     .tabItem { Label("Bible", systemImage: "book") }
                     .tag(AppTab.bible)
             } else {
@@ -283,13 +284,8 @@ struct ContentView: View {
                 morePath = [.stats]
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .openBibleSearch)) { _ in
-            selectedTab = .bible
-            guard !usesWideLayout else { return }
-            DispatchQueue.main.async {
-                bibleCoordinator.reset()
-                bibleCoordinator.push(.search)
-            }
+        .onReceive(NotificationCenter.default.publisher(for: .openBibleSearch)) { note in
+            handleOpenBibleSearch(note)
         }
         .onReceive(NotificationCenter.default.publisher(for: .resetBibleNavigation)) { _ in
             // Ensure Bible tab is visible, then reset the Bible nav stack to Books list
@@ -319,6 +315,22 @@ struct ContentView: View {
     }
 
     // MARK: - Daily usage tracking (unchanged)...
+
+    private func handleOpenBibleSearch(_ notification: Notification) {
+        if let relayed = notification.userInfo?["relayed"] as? Bool, relayed {
+            return
+        }
+
+        selectedTab = .bible
+        if usesWideLayout {
+            bibleSearchRequestID &+= 1
+        } else {
+            DispatchQueue.main.async {
+                bibleCoordinator.reset()
+                bibleCoordinator.push(.search)
+            }
+        }
+    }
 
     private func requestMindfulMinutesAuthorizationIfNeeded() {
         guard HealthKitManager.shared.isAvailable(),
