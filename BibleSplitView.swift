@@ -259,6 +259,7 @@ struct BibleSplitView: View {
                 NavigationLink(value: ChapterRoute(bookName: book.name, chapterNumber: chapter.number)) {
                     Text("Chapter \(chapter.number)")
                 }
+                .listRowBackground(HeroCardListRowBackground())
             }
             .scrollContentBackground(.hidden)
             .background(AppBackgroundView(tab: .bible))
@@ -336,6 +337,7 @@ struct BibleSplitView: View {
                                 }
                                 .padding(.vertical, 4)
                             }
+                            .listRowBackground(HeroCardListRowBackground())
                         }
                         .scrollContentBackground(.hidden)
                         .background(AppBackgroundView(tab: .bible))
