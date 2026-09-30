@@ -357,13 +357,15 @@ struct HomeView: View {
     }
 
     private var dashboardCards: [HomeCardID] {
-        moreCards.filter { $0 != .streaks }
+        moreCards.filter { ![.streaks, .games].contains($0) }
+    }
+
+    private var featuredDashboardCards: [HomeCardID] {
+        [.resumeReading, .streaks, .games].filter { !hiddenCards.contains($0) }
     }
 
     private var showsFeaturedDashboard: Bool {
-        !hiddenCards.contains(.verseOfDay)
-            || !hiddenCards.contains(.resumeReading)
-            || !hiddenCards.contains(.streaks)
+        !hiddenCards.contains(.verseOfDay) || !featuredDashboardCards.isEmpty
     }
 
     @ViewBuilder
@@ -448,58 +450,55 @@ struct HomeView: View {
 
     @ViewBuilder
     private func dashboardContent(width: CGFloat) -> some View {
+        let columnSpacing: CGFloat = 16
+        let columnWidth = (width - (columnSpacing * 2)) / 3
+        let mainCardsWidth = (columnWidth * 2) + columnSpacing
+
         homeHeader
         contextualHomeTip
 
-        if showsFeaturedDashboard {
-            if width >= 1_000 {
-                HStack(alignment: .top, spacing: 16) {
+        HStack(alignment: .top, spacing: columnSpacing) {
+            VStack(spacing: 16) {
+                if showsFeaturedDashboard {
                     if !hiddenCards.contains(.verseOfDay) {
                         card(for: .verseOfDay)
-                            .frame(maxWidth: .infinity)
                     }
 
-                    if !hiddenCards.contains(.resumeReading) || !hiddenCards.contains(.streaks) {
-                        VStack(spacing: 16) {
-                            if !hiddenCards.contains(.resumeReading) {
-                                card(for: .resumeReading)
-                            }
-
-                            if !hiddenCards.contains(.streaks) {
-                                card(for: .streaks)
+                    if !featuredDashboardCards.isEmpty {
+                        LazyVGrid(
+                            columns: Array(
+                                repeating: GridItem(.flexible(), spacing: 16, alignment: .top),
+                                count: 2
+                            ),
+                            alignment: .leading,
+                            spacing: 16
+                        ) {
+                            ForEach(featuredDashboardCards) { cardID in
+                                card(for: cardID)
                             }
                         }
-                        .frame(width: min(370, width * 0.34))
                     }
                 }
-            } else {
-                if !hiddenCards.contains(.verseOfDay) {
-                    card(for: .verseOfDay)
-                }
 
-                if !hiddenCards.contains(.resumeReading) {
-                    card(for: .resumeReading)
-                }
-
-                if !hiddenCards.contains(.streaks) {
-                    card(for: .streaks)
+                if !dashboardCards.isEmpty {
+                    LazyVGrid(
+                        columns: Array(
+                            repeating: GridItem(.flexible(), spacing: 16, alignment: .top),
+                            count: 2
+                        ),
+                        alignment: .leading,
+                        spacing: 16
+                    ) {
+                        ForEach(dashboardCards) { cardID in
+                            card(for: cardID)
+                        }
+                    }
                 }
             }
-        }
+            .frame(width: mainCardsWidth)
 
-        if !dashboardCards.isEmpty {
-            LazyVGrid(
-                columns: Array(
-                    repeating: GridItem(.flexible(), spacing: 16, alignment: .top),
-                    count: width >= 1_100 ? 3 : 2
-                ),
-                alignment: .leading,
-                spacing: 16
-            ) {
-                ForEach(dashboardCards) { cardID in
-                    card(for: cardID)
-                }
-            }
+            HomeBibleReaderCard()
+                .frame(width: columnWidth)
         }
     }
 
@@ -525,18 +524,19 @@ struct HomeView: View {
         GeometryReader { proxy in
             let availableWidth = proxy.size.width
             let usesDashboard = availableWidth >= 700
+            let dashboardWidth = availableWidth - 48
 
             ScrollView {
                 VStack(spacing: 16) {
                     if usesDashboard {
-                        dashboardContent(width: min(availableWidth - 48, 1_200))
+                        dashboardContent(width: dashboardWidth)
                     } else {
                         compactHomeContent
                     }
                 }
-                .frame(maxWidth: usesDashboard ? 1_200 : .infinity)
+                .frame(width: usesDashboard ? dashboardWidth : nil, alignment: .leading)
                 .padding(.horizontal, usesDashboard ? 24 : 16)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .background(AppBackgroundView(tab: .home))
