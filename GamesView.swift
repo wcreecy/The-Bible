@@ -295,6 +295,7 @@ private struct GameNavigationRow: View {
         }
         .buttonStyle(.plain)
         .foregroundStyle(.primary)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 8 : 4)
         .contentShape(Rectangle())
     }

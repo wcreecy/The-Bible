@@ -4,11 +4,14 @@ struct BookOrderGameView: View {
     @StateObject private var vm = BookOrderGameViewModel()
     @State private var howToExpanded: Bool = false
     @State private var difficultyExpanded: Bool = false
+    @State private var elapsedSeconds: Int = 0
+    @State private var isTimerHidden: Bool = false
 
     // Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
     var body: some View {
+        GeometryReader { geometry in
         VStack {
             if !vm.started {
                 VStack(spacing: 16) {
@@ -70,7 +73,7 @@ struct BookOrderGameView: View {
                     .padding(.horizontal)
 
                     Button("Start") {
-                        vm.startGame()
+                        startGame()
                     }
                     .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                     .controlSize(.large)
@@ -78,6 +81,8 @@ struct BookOrderGameView: View {
                 }
                 .padding()
                 Spacer()
+            } else if geometry.size.width >= 700 {
+                iPadGameBoard(availableHeight: geometry.size.height)
             } else {
                 VStack(spacing: 12) {
                     // Scoreboard (shared)
@@ -99,7 +104,7 @@ struct BookOrderGameView: View {
                     .environment(\.editMode, .constant(EditMode.active))
 
                     HStack(spacing: 16) {
-                        Button(action: { vm.checkOrder() }) {
+                        Button(action: checkOrder) {
                             HStack(spacing: 8) {
                                 Image(systemName: "checkmark.circle.fill")
                                 Text("Check")
@@ -111,11 +116,7 @@ struct BookOrderGameView: View {
                         .controlSize(.regular)
 
                         if vm.showResult {
-                            Button(action: {
-                                vm.showResult = false
-                                vm.showingCorrectOrder = false
-                                vm.nextRound()
-                            }) {
+                            Button(action: advanceToNextRound) {
                                 HStack(spacing: 8) {
                                     Image(systemName: "arrow.right.circle.fill")
                                     Text("Next")
@@ -177,7 +178,7 @@ struct BookOrderGameView: View {
                     if debugAutoWinEnabled, vm.started, !vm.showResult, !vm.correctOrder.isEmpty {
                         Button("WIN") {
                             vm.currentItems = vm.correctOrder
-                            vm.checkOrder()
+                            checkOrder()
                         }
                         .buttonStyle(ModernPillButtonStyle(tint: .red))
                         .controlSize(.large)
@@ -189,6 +190,7 @@ struct BookOrderGameView: View {
                 Spacer()
             }
         }
+        }
         .navigationTitle("Book Order")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -196,6 +198,302 @@ struct BookOrderGameView: View {
                 EditButton()
             }
         }
+        .task(id: vm.started && !vm.showResult) {
+            guard vm.started, !vm.showResult else { return }
+
+            while !Task.isCancelled, vm.started, !vm.showResult {
+                do {
+                    try await Task.sleep(for: .seconds(1))
+                } catch {
+                    return
+                }
+
+                guard !Task.isCancelled, vm.started, !vm.showResult else { return }
+                elapsedSeconds += 1
+            }
+        }
+    }
+
+    private func iPadGameBoard(availableHeight: CGFloat) -> some View {
+        VStack(spacing: 12) {
+            BookOrderDashboardScoreboard(
+                score: vm.score,
+                answered: vm.answered,
+                streak: vm.currentStreak,
+                allTimeCorrect: vm.allTimeCorrect,
+                allTimeAnswered: vm.allTimeAnswered,
+                allTimeBestStreak: vm.allTimeBestStreak
+            )
+
+            HStack(spacing: 12) {
+                iPadBookListCard
+
+                iPadTimerAndCanonCard
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, minHeight: availableHeight, alignment: .top)
+    }
+
+    private var iPadBookListCard: some View {
+        VStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Label("Arrange the Books", systemImage: "list.number")
+                    .font(.headline.weight(.bold))
+                Text("Drag the tiles into canonical order.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            List {
+                ForEach(vm.currentItems, id: \.self) { item in
+                    HStack(spacing: 10) {
+                        Image(systemName: "line.3.horizontal")
+                            .foregroundStyle(.secondary)
+                        Text(item)
+                            .font(.body.weight(.medium))
+                        Spacer()
+                    }
+                    .padding(.horizontal, 14)
+                    .frame(minHeight: 46)
+                    .glassEffect(answerGlass(for: item), in: .rect(cornerRadius: 12))
+                    .listRowInsets(EdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                }
+                .onMove(perform: vm.move)
+            }
+            .environment(\.editMode, .constant(EditMode.active))
+            .scrollContentBackground(.hidden)
+
+            HStack(spacing: 12) {
+                Button(action: checkOrder) {
+                    Label("Check", systemImage: "checkmark.circle.fill")
+                }
+                .frame(maxWidth: .infinity)
+                .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                .disabled(vm.showResult)
+
+                if vm.showResult {
+                    Button(action: advanceToNextRound) {
+                        Label("Next", systemImage: "arrow.right.circle.fill")
+                    }
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                }
+            }
+            .controlSize(.regular)
+
+            if vm.showResult {
+                Label(
+                    vm.wasCorrect ? "Correct!" : "Not quite.",
+                    systemImage: vm.wasCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"
+                )
+                .font(.headline)
+                .foregroundStyle(vm.wasCorrect ? Color.green : Color.red)
+            }
+
+            if debugAutoWinEnabled, !vm.showResult, !vm.correctOrder.isEmpty {
+                Button("WIN") {
+                    vm.currentItems = vm.correctOrder
+                    checkOrder()
+                }
+                .buttonStyle(ModernPillButtonStyle(tint: .red))
+                .accessibilityLabel("Win this round")
+            }
+        }
+        .padding(AppDesignMetrics.cardPadding)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .heroCardSurface()
+    }
+
+    private var iPadTimerAndCanonCard: some View {
+        VStack(spacing: 16) {
+            if vm.showResult {
+                HStack {
+                    Label("Books of the Bible", systemImage: "books.vertical.fill")
+                        .font(.headline.weight(.bold))
+
+                    Spacer()
+
+                    Label(formattedElapsedTime, systemImage: "stopwatch.fill")
+                        .font(.subheadline.monospacedDigit().weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(Array(canonicalBooks.enumerated()), id: \.element) { index, book in
+                            HStack(spacing: 12) {
+                                Text("\(index + 1)")
+                                    .font(.caption.monospacedDigit().weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                                    .frame(width: 28, alignment: .trailing)
+
+                                Text(book)
+                                    .font(.body.weight(.medium))
+
+                                Spacer()
+                            }
+                            .padding(.horizontal, 14)
+                            .frame(minHeight: 46)
+                            .glassEffect(canonGlass(for: book), in: .rect(cornerRadius: 12))
+                        }
+                    }
+                    .padding(4)
+                }
+            } else {
+                Spacer()
+
+                VStack(spacing: 14) {
+                    if isTimerHidden {
+                        Image(systemName: "eye.slash.fill")
+                            .font(.system(size: 38, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                        Text("Timer Hidden")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Image(systemName: "stopwatch.fill")
+                            .font(.system(size: 44, weight: .semibold))
+                            .foregroundStyle(.tint)
+
+                        Text(formattedElapsedTime)
+                            .font(.system(size: 64, weight: .bold, design: .rounded))
+                            .monospacedDigit()
+
+                        Text("Time Elapsed")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(isTimerHidden ? "Timer hidden" : "Time elapsed")
+                .accessibilityValue(isTimerHidden ? "" : formattedElapsedTime)
+
+                Spacer()
+
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isTimerHidden.toggle()
+                    }
+                } label: {
+                    Label(isTimerHidden ? "Show Timer" : "Hide Timer", systemImage: isTimerHidden ? "eye" : "eye.slash")
+                        .font(.caption.weight(.semibold))
+                }
+                .buttonStyle(.glass)
+                .controlSize(.small)
+            }
+        }
+        .padding(AppDesignMetrics.cardPadding)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .heroCardSurface()
+    }
+
+    private var formattedElapsedTime: String {
+        let minutes = elapsedSeconds / 60
+        let seconds = elapsedSeconds % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
+
+    private var canonicalBooks: [String] {
+        BibleCanon.canonicalOrder()
+    }
+
+    private func answerGlass(for book: String) -> Glass {
+        guard vm.showResult,
+              let submittedIndex = vm.currentItems.firstIndex(of: book),
+              vm.correctOrder.indices.contains(submittedIndex) else {
+            return .regular.interactive()
+        }
+
+        let tint: Color = vm.correctOrder[submittedIndex] == book
+            ? .green.opacity(0.3)
+            : .red.opacity(0.3)
+        return .regular.tint(tint).interactive()
+    }
+
+    private func canonGlass(for book: String) -> Glass {
+        guard vm.correctOrder.contains(book) else { return .regular }
+        return .regular.tint(.green.opacity(0.3))
+    }
+
+    private func startGame() {
+        elapsedSeconds = 0
+        vm.startGame()
+    }
+
+    private func checkOrder() {
+        vm.checkOrder()
+    }
+
+    private func advanceToNextRound() {
+        elapsedSeconds = 0
+        vm.showResult = false
+        vm.showingCorrectOrder = false
+        vm.nextRound()
+    }
+}
+
+private struct BookOrderDashboardScoreboard: View {
+    let score: Int
+    let answered: Int
+    let streak: Int
+    let allTimeCorrect: Int
+    let allTimeAnswered: Int
+    let allTimeBestStreak: Int
+
+    private var accuracy: Int {
+        guard answered > 0 else { return 0 }
+        return Int((Double(score) / Double(answered) * 100).rounded())
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label("This Game", systemImage: "chart.bar.fill")
+                    .font(.headline.weight(.bold))
+
+                Spacer()
+
+                Text("All time: \(allTimeCorrect)/\(allTimeAnswered)  •  Best streak \(allTimeBestStreak)")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.secondary)
+            }
+
+            HStack(spacing: 10) {
+                BookOrderScoreMetric(title: "Correct", value: "\(score)", systemImage: "checkmark.circle.fill", tint: .green)
+                BookOrderScoreMetric(title: "Attempts", value: "\(answered)", systemImage: "scope", tint: .blue)
+                BookOrderScoreMetric(title: "Accuracy", value: "\(accuracy)%", systemImage: "percent", tint: .purple)
+                BookOrderScoreMetric(title: "Streak", value: "\(streak)", systemImage: "flame.fill", tint: .orange)
+            }
+        }
+        .padding(AppDesignMetrics.cardPadding)
+        .heroCardSurface()
+    }
+}
+
+private struct BookOrderScoreMetric: View {
+    let title: String
+    let value: String
+    let systemImage: String
+    let tint: Color
+
+    var body: some View {
+        VStack(spacing: 5) {
+            Label(value, systemImage: systemImage)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(tint)
+            Text(title)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(tint.opacity(0.09), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title)
+        .accessibilityValue(value)
     }
 }
 
