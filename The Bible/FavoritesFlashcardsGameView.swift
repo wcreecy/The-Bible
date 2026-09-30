@@ -20,66 +20,80 @@ struct FavoritesFlashcardsGameView: View {
     @Namespace private var flipNamespace
     
     var body: some View {
-        VStack {
-            if favorites.isEmpty {
-                Spacer()
-                Text("You have no favorites yet.\nAdd favorites to start the flashcards game!")
-                    .font(.title3)
-                    .multilineTextAlignment(.center)
-                    .padding()
-                Spacer()
-            } else if !started {
-                Spacer()
-                Picker("Mode", selection: $mode) {
-                    ForEach(Mode.allCases) { mode in
-                        Text(mode.rawValue).tag(mode)
+        GeometryReader { geometry in
+            let usesSplitLayout = started && geometry.size.width >= 700
+
+            VStack {
+                if favorites.isEmpty {
+                    Spacer()
+                    Text("You have no favorites yet.\nAdd favorites to start the flashcards game!")
+                        .font(.title3)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                    Spacer()
+                } else if !started {
+                    Spacer()
+                    Picker("Mode", selection: $mode) {
+                        ForEach(Mode.allCases) { mode in
+                            Text(mode.rawValue).tag(mode)
+                        }
                     }
-                }
-                .pickerStyle(.segmented)
-                .padding(.horizontal, 40)
-                .padding(.bottom, 30)
-                
-                Text("Build & test your memorization of the Word. As you favorite scriptures, they'll be added to the game")
-                    .gameStartDescriptionStyle()
-                    .padding(.horizontal)
-                    .padding(.bottom, 16)
-                
-                Button("Start") {
-                    startGame()
-                }
-                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                .controlSize(.large)
-                .frame(maxWidth: 240)
-                Spacer()
-            } else {
-                Spacer()
-                flashcardView()
-                    .frame(width: 320, height: 220)
-                    .padding()
-                
-                Text(instructionText)
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal, 40)
                     .padding(.bottom, 30)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: 320)
-                
-                HStack(spacing: 12) {
-                    Button("Previous") {
-                        previousCard()
-                    }
-                    .buttonStyle(ModernPillButtonStyle())
-                    .frame(maxWidth: .infinity)
-                    .disabled(shuffledFavorites.count <= 1)
                     
-                    Button("Random") {
-                        randomCard()
+                    Text("Build & test your memorization of the Word. As you favorite scriptures, they'll be added to the game")
+                        .gameStartDescriptionStyle()
+                        .padding(.horizontal)
+                        .padding(.bottom, 16)
+                    
+                    Button("Start") {
+                        startGame()
                     }
-                    .buttonStyle(ModernPillButtonStyle())
-                    .frame(maxWidth: .infinity)
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                    .controlSize(.large)
+                    .frame(maxWidth: 240)
+                    Spacer()
+                } else {
+                    Spacer()
+
+                    if usesSplitLayout {
+                        splitFlashcardsView()
+                            .frame(maxWidth: 900, minHeight: 280, maxHeight: 360)
+                            .padding(.horizontal, 24)
+                    } else {
+                        flashcardView()
+                            .frame(width: 320, height: 220)
+                            .padding()
+                    }
+                    
+                    Text(usesSplitLayout ? splitInstructionText : instructionText)
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                        .padding(.bottom, 30)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: usesSplitLayout ? 600 : 320)
+                    
+                    HStack(spacing: 12) {
+                        Button("Previous") {
+                            previousCard()
+                        }
+                        .buttonStyle(ModernPillButtonStyle())
+                        .frame(maxWidth: .infinity)
+                        .disabled(shuffledFavorites.count <= 1)
+                        
+                        Button("Random") {
+                            randomCard()
+                        }
+                        .buttonStyle(ModernPillButtonStyle())
+                        .frame(maxWidth: .infinity)
+                    }
+                    .frame(maxWidth: usesSplitLayout ? 600 : .infinity)
+
+                    Spacer()
                 }
-                Spacer()
             }
+            .frame(maxWidth: .infinity, minHeight: geometry.size.height)
         }
         .navigationTitle("Favorites Flashcards")
         .navigationBarTitleDisplayMode(.inline)
@@ -137,6 +151,93 @@ struct FavoritesFlashcardsGameView: View {
         }
     }
     
+    private var splitInstructionText: String {
+        flipped ? "Tap the answer card to hide the answer." : "Tap the answer card to reveal the answer."
+    }
+
+    @ViewBuilder
+    private func splitFlashcardsView() -> some View {
+        let favorite = shuffledFavorites[currentIndex]
+
+        HStack(spacing: 24) {
+            notebookCard(title: "Question", systemImage: "questionmark.circle.fill") {
+                cardFrontView(favorite: favorite)
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Question. \(questionAccessibilityLabel(for: favorite))")
+
+            Button {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    flipped.toggle()
+                }
+            } label: {
+                notebookCard(title: "Answer", systemImage: flipped ? "eye.fill" : "eye.slash.fill") {
+                    if flipped {
+                        cardBackContent(favorite: favorite)
+                            .transition(.opacity.combined(with: .scale(scale: 0.98)))
+                    } else {
+                        VStack(spacing: 12) {
+                            Image(systemName: "hand.tap.fill")
+                                .font(.largeTitle)
+                                .foregroundStyle(.tint)
+
+                            Text("Tap to reveal the answer")
+                                .font(.headline)
+                                .multilineTextAlignment(.center)
+                        }
+                        .foregroundStyle(.primary)
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(flipped ? answerAccessibilityLabel(for: favorite) : "Reveal answer")
+            .accessibilityHint(flipped ? "Hides the answer" : "Shows the answer")
+        }
+    }
+
+    private func notebookCard<Content: View>(
+        title: LocalizedStringKey,
+        systemImage: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(spacing: 16) {
+            Label(title, systemImage: systemImage)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.tint)
+
+            Spacer(minLength: 0)
+            content()
+            Spacer(minLength: 0)
+        }
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(IndexCardBackground(cornerRadius: 20))
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(.primary.opacity(0.15), lineWidth: 1)
+        }
+        .shadow(color: .primary.opacity(0.1), radius: 4, x: 0, y: 2)
+    }
+
+    private func questionAccessibilityLabel(for favorite: Favorite) -> String {
+        switch mode {
+        case .referenceToVerse:
+            return "Reference: \(favorite.bookName) \(favorite.chapterNumber):\(favorite.verseNumber)"
+        case .verseToReference:
+            return "Verse: \(favorite.verseText)"
+        }
+    }
+
+    private func answerAccessibilityLabel(for favorite: Favorite) -> String {
+        switch mode {
+        case .referenceToVerse:
+            return "Answer. Verse: \(favorite.verseText)"
+        case .verseToReference:
+            return "Answer. Reference: \(favorite.bookName) \(favorite.chapterNumber):\(favorite.verseNumber)"
+        }
+    }
+
     @ViewBuilder
     private func flashcardView() -> some View {
         let favorite = shuffledFavorites[currentIndex]
@@ -195,23 +296,26 @@ struct FavoritesFlashcardsGameView: View {
     }
     
     private func cardBackView(favorite: Favorite) -> some View {
-        Group {
-            switch mode {
-            case .referenceToVerse:
-                Text(favorite.verseText)
-                    .font(.body)
-                    .multilineTextAlignment(.center)
-                    .padding(30)
-                    .foregroundColor(.primary)
-            case .verseToReference:
-                Text("\(favorite.bookName) \(favorite.chapterNumber):\(favorite.verseNumber)")
-                    .font(.title3.bold())
-                    .multilineTextAlignment(.center)
-                    .padding(30)
-                    .foregroundColor(.primary)
-            }
+        cardBackContent(favorite: favorite)
+            .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
+    }
+
+    @ViewBuilder
+    private func cardBackContent(favorite: Favorite) -> some View {
+        switch mode {
+        case .referenceToVerse:
+            Text(favorite.verseText)
+                .font(.body)
+                .multilineTextAlignment(.center)
+                .padding(30)
+                .foregroundColor(.primary)
+        case .verseToReference:
+            Text("\(favorite.bookName) \(favorite.chapterNumber):\(favorite.verseNumber)")
+                .font(.title3.bold())
+                .multilineTextAlignment(.center)
+                .padding(30)
+                .foregroundColor(.primary)
         }
-        .rotation3DEffect(.degrees(180), axis: (x: 0, y:1, z:0))
     }
     
     private func accessibilityLabel(for favorite: Favorite) -> String {
