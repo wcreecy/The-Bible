@@ -43,20 +43,32 @@ extension View {
 
                 // Games
                 case .gameQuiz:
-                    QuizView()
+                    GameBackgroundContainer { QuizView() }
                 case .gameBeatTheClock:
-                    BeatTheClockGameView()
+                    GameBackgroundContainer { BeatTheClockGameView() }
                 case .gameVerseMatch:
-                    VerseMatchGameView()
+                    GameBackgroundContainer { VerseMatchGameView() }
                 case .gameBookOrder:
-                    BookOrderGameView()
+                    GameBackgroundContainer { BookOrderGameView() }
                 case .gameHangman:
-                    HangmanGameView()
+                    GameBackgroundContainer { HangmanGameView() }
                 case .gameWhoAmI:
-                    WhoAmIGameView()
+                    GameBackgroundContainer { WhoAmIGameView() }
                 case .gameWordle:
-                    WordleView() // NEW
+                    GameBackgroundContainer { WordleView() }
                 }
             }
+    }
+}
+
+private struct GameBackgroundContainer<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        ZStack {
+            AppBackgroundView(tab: .games)
+            content
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
