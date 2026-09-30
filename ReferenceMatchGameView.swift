@@ -95,7 +95,7 @@ struct VerseMatchGameView: View {
                     Text("Choose the verse text that matches the reference.")
                         .gameStartDescriptionStyle()
 
-                    VStack(alignment: .leading, spacing: 10) {
+                    GameStartInfoLayout {
                         GroupBox {
                             DisclosureGroup(isExpanded: $howToExpanded) {
                                 VStack(alignment: .leading, spacing: 6) {
@@ -118,13 +118,18 @@ struct VerseMatchGameView: View {
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             } label: {
-                                Text("Difficulty Levels").font(.headline)
+                                Text("Difficulty Settings").font(.headline)
                             }
                         }
                     }
                     .gameStartOptionsStyle()
+                    .expandGameStartCardsOnIPad(
+                        howTo: $howToExpanded,
+                        difficulty: $difficultyExpanded
+                    )
                     .padding(.horizontal)
 
+                    VStack(spacing: 12) {
                     VStack(spacing: 6) {
                         Text("Verse Source")
                             .font(.caption)
@@ -146,6 +151,9 @@ struct VerseMatchGameView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .padding(.horizontal)
+                    }
+                    .gameStartSettingsStyle()
                     .padding(.horizontal)
 
                     Button("Start") { startGame() }

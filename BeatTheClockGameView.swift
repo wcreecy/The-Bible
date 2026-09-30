@@ -119,7 +119,7 @@ struct BeatTheClockGameView: View {
                     Text("Type a Bible book that mentions the shown person or place before the timer runs out.")
                         .gameStartDescriptionStyle()
 
-                    VStack(alignment: .leading, spacing: 10) {
+                    GameStartInfoLayout {
                         GroupBox {
                             DisclosureGroup(isExpanded: $howToExpanded) {
                                 VStack(alignment: .leading, spacing: 6) {
@@ -142,13 +142,18 @@ struct BeatTheClockGameView: View {
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             } label: {
-                                Text("Difficulty Levels").font(.headline)
+                                Text("Difficulty Settings").font(.headline)
                             }
                         }
                     }
                     .gameStartOptionsStyle()
+                    .expandGameStartCardsOnIPad(
+                        howTo: $howToExpanded,
+                        difficulty: $difficultyExpanded
+                    )
                     .padding(.horizontal)
 
+                    VStack(spacing: 12) {
                     Picker("Category", selection: $category) {
                         Text("People").tag(Category.people)
                         Text("Places").tag(Category.places)
@@ -163,6 +168,9 @@ struct BeatTheClockGameView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .padding(.horizontal)
+                    }
+                    .gameStartSettingsStyle()
                     .padding(.horizontal)
 
                     Button("Start") { startGame() }

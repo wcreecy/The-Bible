@@ -15,7 +15,7 @@ struct WordSearchStartScreen: View {
             Text("Find hidden words from a random Bible verse.")
                 .gameStartDescriptionStyle()
 
-            VStack(alignment: .leading, spacing: 10) {
+            GameStartInfoLayout {
                 GroupBox {
                     DisclosureGroup(isExpanded: $howToExpanded) {
                         VStack(alignment: .leading, spacing: 6) {
@@ -43,13 +43,18 @@ struct WordSearchStartScreen: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     } label: {
-                        Text("Difficulty Levels").font(.headline)
+                        Text("Difficulty Settings").font(.headline)
                     }
                 }
             }
             .gameStartOptionsStyle()
+            .expandGameStartCardsOnIPad(
+                howTo: $howToExpanded,
+                difficulty: $difficultyExpanded
+            )
             .padding(.horizontal)
 
+            VStack(spacing: 12) {
             Picker("Difficulty", selection: $difficulty) {
                 ForEach(WordSearchEngine.Difficulty.allCases) { d in
                     Text(displayName(for: d)).tag(d)
@@ -90,6 +95,9 @@ struct WordSearchStartScreen: View {
                     .foregroundStyle(.secondary)
                     .padding(.horizontal)
             }
+            }
+            .gameStartSettingsStyle()
+            .padding(.horizontal)
 
             Button("Start") { onStart() }
                 .buttonStyle(ModernPillButtonStyle(tint: .accentColor))

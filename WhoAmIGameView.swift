@@ -38,7 +38,7 @@ struct WhoAmIGameView: View {
                     Text("Match Bible names and descriptions.")
                         .gameStartDescriptionStyle()
 
-                    VStack(alignment: .leading, spacing: 10) {
+                    GameStartInfoLayout {
                         GroupBox {
                             DisclosureGroup(isExpanded: $vm.howToExpanded) {
                                 VStack(alignment: .leading, spacing: 6) {
@@ -62,13 +62,18 @@ struct WhoAmIGameView: View {
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             } label: {
-                                Text("Difficulty Levels").font(.headline)
+                                Text("Difficulty Settings").font(.headline)
                             }
                         }
                     }
                     .gameStartOptionsStyle()
+                    .expandGameStartCardsOnIPad(
+                        howTo: $vm.howToExpanded,
+                        difficulty: $vm.difficultyExpanded
+                    )
                     .padding(.horizontal)
 
+                    VStack(spacing: 12) {
                     Picker("Mode", selection: $vm.mode) {
                         ForEach(WhoAmIGameViewModel.Mode.allCases) { m in
                             Text(m.rawValue).tag(m)
@@ -87,6 +92,9 @@ struct WhoAmIGameView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .padding(.horizontal)
+                    }
+                    .gameStartSettingsStyle()
                     .padding(.horizontal)
 
                     Button("Start") { vm.startGame() }

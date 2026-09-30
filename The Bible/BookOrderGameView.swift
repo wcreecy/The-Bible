@@ -18,7 +18,7 @@ struct BookOrderGameView: View {
                     Text("Rearrange the books in the correct order.")
                         .gameStartDescriptionStyle()
 
-                    VStack(alignment: .leading, spacing: 10) {
+                    GameStartInfoLayout {
                         GroupBox {
                             DisclosureGroup(isExpanded: $howToExpanded) {
                                 VStack(alignment: .leading, spacing: 6) {
@@ -42,13 +42,18 @@ struct BookOrderGameView: View {
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             } label: {
-                                Text("Difficulty Levels").font(.headline)
+                                Text("Difficulty Settings").font(.headline)
                             }
                         }
                     }
                     .gameStartOptionsStyle()
+                    .expandGameStartCardsOnIPad(
+                        howTo: $howToExpanded,
+                        difficulty: $difficultyExpanded
+                    )
                     .padding(.horizontal)
 
+                    VStack(spacing: 12) {
                     // Source on top: OT/NT, OT, NT
                     Picker("Source", selection: $vm.source) {
                         Text("OT/NT").tag(BookSourceScope.both)
@@ -70,6 +75,9 @@ struct BookOrderGameView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .padding(.horizontal)
+                    }
+                    .gameStartSettingsStyle()
                     .padding(.horizontal)
 
                     Button("Start") {

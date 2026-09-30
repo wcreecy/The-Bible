@@ -460,7 +460,7 @@ struct WordleView: View {
             Text("Guess the 5‑letter word in 6 tries.\nUse the on‑screen keyboard or a connected keyboard.")
                 .gameStartDescriptionStyle()
 
-            VStack(alignment: .leading, spacing: 10) {
+            GameStartInfoLayout {
                 GroupBox {
                     DisclosureGroup(isExpanded: $howToExpanded) {
                         VStack(alignment: .leading, spacing: 6) {
@@ -485,13 +485,18 @@ struct WordleView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     } label: {
-                        Text("Game Options").font(.headline)
+                        Text("Difficulty Settings").font(.headline)
                     }
                 }
             }
             .gameStartOptionsStyle()
+            .expandGameStartCardsOnIPad(
+                howTo: $howToExpanded,
+                difficulty: $gameOptionsExpanded
+            )
             .padding(.horizontal)
 
+            VStack(spacing: 12) {
             Picker("Mode", selection: $mode) {
                 ForEach(Mode.allCases) { m in
                     Text(m.rawValue).tag(m)
@@ -540,6 +545,9 @@ struct WordleView: View {
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel("Daily completed. You’ve completed today’s daily. Come back tomorrow.")
             }
+            }
+            .gameStartSettingsStyle()
+            .padding(.horizontal)
 
             Button("Start") {
                 startNewRound(practice: mode == .practice)

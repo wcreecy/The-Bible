@@ -32,28 +32,50 @@ struct FavoritesFlashcardsGameView: View {
                         .padding()
                     Spacer()
                 } else if !started {
-                    Spacer()
-                    Picker("Mode", selection: $mode) {
-                        ForEach(Mode.allCases) { mode in
-                            Text(mode.rawValue).tag(mode)
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            Text("Build & test your memorization of the Word. As you favorite scriptures, they'll be added to the game")
+                                .gameStartDescriptionStyle()
+
+                            GameStartInfoLayout {
+                                GroupBox("How to Play") {
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        Text("• Choose which side of the flashcard you want to see first.")
+                                        Text("• Think of the answer, then tap the card to reveal it.")
+                                        Text("• Use Previous or Random to move through your saved verses.")
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+
+                                GroupBox("Difficulty Settings") {
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        Text("• Reference → Verse: See the scripture reference first.")
+                                        Text("• Verse → Reference: Read the verse first and recall its location.")
+                                        Text("• Every favorited scripture is included in the deck.")
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                            }
+                            .gameStartOptionsStyle()
+
+                            Picker("Mode", selection: $mode) {
+                                ForEach(Mode.allCases) { mode in
+                                    Text(mode.rawValue).tag(mode)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                            .padding(.horizontal)
+                            .gameStartSettingsStyle()
+
+                            Button("Start") {
+                                startGame()
+                            }
+                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                            .controlSize(.large)
+                            .frame(maxWidth: 240)
                         }
+                        .gameStartScreenStyle()
                     }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal, 40)
-                    .padding(.bottom, 30)
-                    
-                    Text("Build & test your memorization of the Word. As you favorite scriptures, they'll be added to the game")
-                        .gameStartDescriptionStyle()
-                        .padding(.horizontal)
-                        .padding(.bottom, 16)
-                    
-                    Button("Start") {
-                        startGame()
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                    .controlSize(.large)
-                    .frame(maxWidth: 240)
-                    Spacer()
                 } else {
                     Spacer()
 

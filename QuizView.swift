@@ -183,7 +183,7 @@ struct QuizView: View {
                     Text("Test your knowledge by guessing the book of the Bible from a given verse.")
                         .gameStartDescriptionStyle()
                     
-                    VStack(alignment: .leading, spacing: 10) {
+                    GameStartInfoLayout {
                         GroupBox {
                             DisclosureGroup(isExpanded: $howToExpanded) {
                                 VStack(alignment: .leading, spacing: 6) {
@@ -206,11 +206,15 @@ struct QuizView: View {
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             } label: {
-                                Text("Difficulty Levels").font(.headline)
+                                Text("Difficulty Settings").font(.headline)
                             }
                         }
                     }
                     .gameStartOptionsStyle()
+                    .expandGameStartCardsOnIPad(
+                        howTo: $howToExpanded,
+                        difficulty: $difficultyExpanded
+                    )
                     .padding(.horizontal, usesSplitLayout ? 0 : 16)
                     
                     VStack(alignment: .center, spacing: 12) {
@@ -243,6 +247,7 @@ struct QuizView: View {
                             .pickerStyle(.segmented)
                         }
                     }
+                    .gameStartSettingsStyle()
                     .padding(.horizontal)
                     
                     Button("Start") {

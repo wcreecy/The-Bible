@@ -253,7 +253,7 @@ struct HangmanGameView: View {
         Text("Guess the person, place or book from the Bible")
             .gameStartDescriptionStyle()
 
-        VStack(alignment: .leading, spacing: 8) {
+        GameStartInfoLayout {
             GroupBox {
                 DisclosureGroup(isExpanded: $howToExpanded) {
                     VStack(alignment: .leading, spacing: 6) {
@@ -276,13 +276,18 @@ struct HangmanGameView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 } label: {
-                    Text("Difficulty Levels").font(.headline)
+                    Text("Difficulty Settings").font(.headline)
                 }
             }
         }
         .gameStartOptionsStyle()
+        .expandGameStartCardsOnIPad(
+            howTo: $howToExpanded,
+            difficulty: $difficultyExpanded
+        )
         .padding(.horizontal)
 
+        VStack(spacing: 12) {
         Picker("Theme", selection: $theme) {
             ForEach(Theme.allCases) { t in
                 Text(t.rawValue).tag(t)
@@ -297,6 +302,9 @@ struct HangmanGameView: View {
             }
         }
         .pickerStyle(.segmented)
+        .padding(.horizontal)
+        }
+        .gameStartSettingsStyle()
         .padding(.horizontal)
 
         Button("Start") { startGame() }
