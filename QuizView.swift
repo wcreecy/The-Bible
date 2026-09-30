@@ -217,37 +217,29 @@ struct QuizView: View {
                     )
                     .padding(.horizontal, usesSplitLayout ? 0 : 16)
                     
-                    VStack(alignment: .center, spacing: 12) {
-                        VStack(spacing: 6) {
-                            Text("Verse Source")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Picker("Verse Source", selection: Binding<String>(get: { quizScopeRaw }, set: { new in
+                    GameStartSettingsLayout {
+                        GameStartPickerCard(
+                            title: "Verse Source",
+                            selection: Binding<String>(get: { quizScopeRaw }, set: { new in
                                 quizScopeRaw = new
                                 rebuildPools()
-                            })) {
-                                Text("OT/NT").tag("whole")
-                                Text("OT").tag("old")
-                                Text("NT").tag("new")
-                            }
-                            .pickerStyle(.segmented)
+                            }),
+                            options: ["whole", "old", "new"]
+                        ) { source in
+                            Text(source == "whole" ? "Old & New Testaments" : source == "old" ? "Old Testament" : "New Testament")
                         }
-                        VStack(spacing: 6) {
-                            Text("Difficulty")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Picker("Difficulty", selection: Binding<String>(get: { quizDifficulty }, set: { new in
+
+                        GameStartPickerCard(
+                            title: "Difficulty",
+                            selection: Binding<String>(get: { quizDifficulty }, set: { new in
                                 quizDifficulty = new
                                 rebuildPools()
-                            })) {
-                                Text("Easy").tag("easy")
-                                Text("Medium").tag("normal")
-                                Text("Hard").tag("hard")
-                            }
-                            .pickerStyle(.segmented)
+                            }),
+                            options: ["easy", "normal", "hard"]
+                        ) { difficulty in
+                            Text(difficulty == "normal" ? "Medium" : difficulty.capitalized)
                         }
                     }
-                    .gameStartSettingsStyle()
                     .padding(.horizontal)
                     
                     Button("Start") {

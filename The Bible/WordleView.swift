@@ -496,26 +496,30 @@ struct WordleView: View {
             )
             .padding(.horizontal)
 
-            VStack(spacing: 12) {
-            Picker("Mode", selection: $mode) {
-                ForEach(Mode.allCases) { m in
-                    Text(m.rawValue).tag(m)
+            GameStartSettingsLayout {
+                GameStartPickerCard(
+                    title: "Game Mode",
+                    selection: $mode,
+                    options: Mode.allCases
+                ) { mode in
+                    Text(mode.rawValue)
                 }
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal)
 
-            Toggle(isOn: $hardModeEnabled) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Hard Mode")
-                        .font(.headline)
-                    Text("Must keep green letters fixed and include yellow letters in later guesses.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
+                GameStartSettingCard(title: "Challenge") {
+                    Toggle(isOn: $hardModeEnabled) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Hard Mode")
+                                .font(.headline)
+                            Text("Keep green letters fixed and use yellow letters in later guesses.")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                    .tint(.orange)
+                    .padding(.horizontal)
                 }
             }
-            .tint(.orange)
             .padding(.horizontal)
 
             if mode == .daily && dailyCompletedToday && !wordleAllowDailyReplay {
@@ -545,9 +549,6 @@ struct WordleView: View {
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel("Daily completed. You’ve completed today’s daily. Come back tomorrow.")
             }
-            }
-            .gameStartSettingsStyle()
-            .padding(.horizontal)
 
             Button("Start") {
                 startNewRound(practice: mode == .practice)

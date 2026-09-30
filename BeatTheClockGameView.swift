@@ -153,24 +153,23 @@ struct BeatTheClockGameView: View {
                     )
                     .padding(.horizontal)
 
-                    VStack(spacing: 12) {
-                    Picker("Category", selection: $category) {
-                        Text("People").tag(Category.people)
-                        Text("Places").tag(Category.places)
-                        Text("Both").tag(Category.both)
-                    }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal)
+                    GameStartSettingsLayout {
+                        GameStartPickerCard(
+                            title: "Category",
+                            selection: $category,
+                            options: Category.allCases
+                        ) { category in
+                            Text(category.rawValue)
+                        }
 
-                    Picker("Difficulty", selection: $difficulty) {
-                        ForEach(Difficulty.allCases) { d in
-                            Text(d.rawValue.capitalized).tag(d)
+                        GameStartPickerCard(
+                            title: "Difficulty",
+                            selection: $difficulty,
+                            options: Difficulty.allCases
+                        ) { difficulty in
+                            Text(difficulty.rawValue.capitalized)
                         }
                     }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal)
-                    }
-                    .gameStartSettingsStyle()
                     .padding(.horizontal)
 
                     Button("Start") { startGame() }

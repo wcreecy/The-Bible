@@ -73,28 +73,27 @@ struct WhoAmIGameView: View {
                     )
                     .padding(.horizontal)
 
-                    VStack(spacing: 12) {
-                    Picker("Mode", selection: $vm.mode) {
-                        ForEach(WhoAmIGameViewModel.Mode.allCases) { m in
-                            Text(m.rawValue).tag(m)
+                    GameStartSettingsLayout {
+                        GameStartPickerCard(
+                            title: "Question Type",
+                            selection: $vm.mode,
+                            options: WhoAmIGameViewModel.Mode.allCases
+                        ) { mode in
+                            Text(mode.rawValue)
                         }
-                    }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal)
 
-                    Picker("Difficulty", selection: $vm.difficulty) {
-                        ForEach(WhoAmIGameViewModel.Difficulty.allCases) { d in
-                            switch d {
-                            case .easy: Text("Easy").tag(d)
-                            case .normal: Text("Normal").tag(d)
-                            case .hard: Text("Hard").tag(d)
+                        GameStartPickerCard(
+                            title: "Difficulty",
+                            selection: $vm.difficulty,
+                            options: WhoAmIGameViewModel.Difficulty.allCases
+                        ) { difficulty in
+                            switch difficulty {
+                            case .easy: Text("Easy")
+                            case .normal: Text("Normal")
+                            case .hard: Text("Hard")
                             }
                         }
                     }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal)
-                    }
-                    .gameStartSettingsStyle()
                     .padding(.horizontal)
 
                     Button("Start") { vm.startGame() }

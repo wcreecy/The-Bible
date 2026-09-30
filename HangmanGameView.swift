@@ -287,24 +287,23 @@ struct HangmanGameView: View {
         )
         .padding(.horizontal)
 
-        VStack(spacing: 12) {
-        Picker("Theme", selection: $theme) {
-            ForEach(Theme.allCases) { t in
-                Text(t.rawValue).tag(t)
+        GameStartSettingsLayout {
+            GameStartPickerCard(
+                title: "Theme",
+                selection: $theme,
+                options: Theme.allCases
+            ) { theme in
+                Text(theme.rawValue)
             }
-        }
-        .pickerStyle(.segmented)
-        .padding(.horizontal)
 
-        Picker("Difficulty", selection: $difficulty) {
-            ForEach(Difficulty.allCases) { d in
-                Text(d.rawValue).tag(d)
+            GameStartPickerCard(
+                title: "Difficulty",
+                selection: $difficulty,
+                options: Difficulty.allCases
+            ) { difficulty in
+                Text(difficulty.rawValue)
             }
         }
-        .pickerStyle(.segmented)
-        .padding(.horizontal)
-        }
-        .gameStartSettingsStyle()
         .padding(.horizontal)
 
         Button("Start") { startGame() }

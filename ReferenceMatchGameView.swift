@@ -129,31 +129,26 @@ struct VerseMatchGameView: View {
                     )
                     .padding(.horizontal)
 
-                    VStack(spacing: 12) {
-                    VStack(spacing: 6) {
-                        Text("Verse Source")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Picker("Verse Source", selection: Binding<String>(
+                    GameStartSettingsLayout {
+                        GameStartPickerCard(
+                            title: "Verse Source",
+                            selection: Binding<String>(
                             get: { verseScopeRaw },
                             set: { verseScopeRaw = $0 }
-                        )) {
-                            Text("OT/NT").tag("whole")
-                            Text("OT").tag("old")
-                            Text("NT").tag("new")
+                            ),
+                            options: ["whole", "old", "new"]
+                        ) { source in
+                            Text(source == "whole" ? "Old & New Testaments" : source == "old" ? "Old Testament" : "New Testament")
                         }
-                        .pickerStyle(.segmented)
-                    }
 
-                    Picker("Difficulty", selection: $difficulty) {
-                        ForEach(Difficulty.allCases) { d in
-                            Text(d.rawValue.capitalized).tag(d)
+                        GameStartPickerCard(
+                            title: "Difficulty",
+                            selection: $difficulty,
+                            options: Difficulty.allCases
+                        ) { difficulty in
+                            Text(difficulty.rawValue.capitalized)
                         }
                     }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal)
-                    }
-                    .gameStartSettingsStyle()
                     .padding(.horizontal)
 
                     Button("Start") { startGame() }

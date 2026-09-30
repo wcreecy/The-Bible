@@ -195,6 +195,7 @@ struct GamesOverviewCardView: View {
                     .controlSize(.mini)
                     .animation(.easeInOut(duration: 0.2), value: selectedGame)
                 }
+                .padding(.bottom, hSizeClass == .compact ? 8 : 0)
 
                 Divider()
 

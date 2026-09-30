@@ -53,31 +53,32 @@ struct BookOrderGameView: View {
                     )
                     .padding(.horizontal)
 
-                    VStack(spacing: 12) {
-                    // Source on top: OT/NT, OT, NT
-                    Picker("Source", selection: $vm.source) {
-                        Text("OT/NT").tag(BookSourceScope.both)
-                        Text("OT").tag(BookSourceScope.ot)
-                        Text("NT").tag(BookSourceScope.nt)
-                    }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal)
+                    GameStartSettingsLayout {
+                        GameStartPickerCard(
+                            title: "Book Source",
+                            selection: $vm.source,
+                            options: [.both, .ot, .nt]
+                        ) { source in
+                            switch source {
+                            case .both: Text("Old & New Testaments")
+                            case .ot: Text("Old Testament")
+                            case .nt: Text("New Testament")
+                            }
+                        }
 
-                    // Difficulty below: Easy, Normal, Hard, All Books
-                    Picker("Difficulty", selection: $vm.difficulty) {
-                        ForEach(BookOrderDifficulty.allCases) { difficulty in
+                        GameStartPickerCard(
+                            title: "Difficulty",
+                            selection: $vm.difficulty,
+                            options: BookOrderDifficulty.allCases
+                        ) { difficulty in
                             switch difficulty {
-                            case .easy: Text("Easy").tag(difficulty)
-                            case .normal: Text("Normal").tag(difficulty)
-                            case .hard: Text("Hard").tag(difficulty)
-                            case .all: Text("All Books").tag(difficulty)
+                            case .easy: Text("Easy")
+                            case .normal: Text("Normal")
+                            case .hard: Text("Hard")
+                            case .all: Text("All Books")
                             }
                         }
                     }
-                    .pickerStyle(.segmented)
-                    .padding(.horizontal)
-                    }
-                    .gameStartSettingsStyle()
                     .padding(.horizontal)
 
                     Button("Start") {

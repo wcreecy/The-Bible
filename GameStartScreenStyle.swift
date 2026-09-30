@@ -115,6 +115,86 @@ struct GameStartSettingsStyle: ViewModifier {
     }
 }
 
+struct GameStartSettingsLayout<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        GameStartInfoLayout(spacing: 16) {
+            content
+        }
+    }
+}
+
+struct GameStartSettingCard<Content: View>: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    let title: LocalizedStringKey
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        if horizontalSizeClass == .regular {
+            GroupBox(title) {
+                content
+                    .padding(.top, 8)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+            }
+        } else {
+            content
+        }
+    }
+}
+
+struct GameStartPickerCard<Value: Hashable, Label: View>: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    let title: LocalizedStringKey
+    @Binding var selection: Value
+    let options: [Value]
+    @ViewBuilder let label: (Value) -> Label
+
+    var body: some View {
+        if horizontalSizeClass == .regular {
+            GroupBox(title) {
+                VStack(spacing: 8) {
+                    ForEach(options, id: \.self) { option in
+                        Button {
+                            selection = option
+                        } label: {
+                            HStack(spacing: 12) {
+                                label(option)
+                                    .font(.body.weight(selection == option ? .semibold : .regular))
+                                    .foregroundStyle(.primary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                                Image(systemName: selection == option ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(selection == option ? Color.accentColor : Color.secondary)
+                            }
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 11)
+                            .background(
+                                selection == option ? Color.accentColor.opacity(0.12) : Color.secondary.opacity(0.06),
+                                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityAddTraits(selection == option ? .isSelected : [])
+                    }
+                }
+                .padding(.top, 8)
+                .frame(maxWidth: .infinity, alignment: .top)
+            }
+        } else {
+            Picker(title, selection: $selection) {
+                ForEach(options, id: \.self) { option in
+                    label(option).tag(option)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+        }
+    }
+}
+
 struct ExpandGameStartCardsOnIPad: ViewModifier {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Binding var howToExpanded: Bool

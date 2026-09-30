@@ -58,14 +58,16 @@ struct FavoritesFlashcardsGameView: View {
                             }
                             .gameStartOptionsStyle()
 
-                            Picker("Mode", selection: $mode) {
-                                ForEach(Mode.allCases) { mode in
-                                    Text(mode.rawValue).tag(mode)
+                            GameStartSettingsLayout {
+                                GameStartPickerCard(
+                                    title: "Study Mode",
+                                    selection: $mode,
+                                    options: Mode.allCases
+                                ) { mode in
+                                    Text(mode.rawValue)
                                 }
                             }
-                            .pickerStyle(.segmented)
                             .padding(.horizontal)
-                            .gameStartSettingsStyle()
 
                             Button("Start") {
                                 startGame()

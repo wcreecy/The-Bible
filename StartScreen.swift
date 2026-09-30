@@ -54,21 +54,23 @@ struct WordSearchStartScreen: View {
             )
             .padding(.horizontal)
 
-            VStack(spacing: 12) {
-            Picker("Difficulty", selection: $difficulty) {
-                ForEach(WordSearchEngine.Difficulty.allCases) { d in
-                    Text(displayName(for: d)).tag(d)
+            GameStartSettingsLayout {
+                GameStartPickerCard(
+                    title: "Difficulty",
+                    selection: $difficulty,
+                    options: WordSearchEngine.Difficulty.allCases
+                ) { difficulty in
+                    Text(displayName(for: difficulty))
                 }
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal)
 
-            Picker("Mode", selection: $gameMode) {
-                ForEach(WordSearchViewModel.GameMode.allCases) { m in
-                    Text(m.displayName).tag(m)
+                GameStartPickerCard(
+                    title: "Game Mode",
+                    selection: $gameMode,
+                    options: WordSearchViewModel.GameMode.allCases
+                ) { mode in
+                    Text(mode.displayName)
                 }
             }
-            .pickerStyle(.segmented)
             .padding(.horizontal)
 
             HStack(spacing: 10) {
@@ -95,9 +97,6 @@ struct WordSearchStartScreen: View {
                     .foregroundStyle(.secondary)
                     .padding(.horizontal)
             }
-            }
-            .gameStartSettingsStyle()
-            .padding(.horizontal)
 
             Button("Start") { onStart() }
                 .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
