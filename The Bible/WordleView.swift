@@ -1,4 +1,5 @@
 import SwiftUI
+import GameController
 #if canImport(UIKit)
 import UIKit
 #endif
@@ -84,6 +85,8 @@ struct WordleView: View {
 
     // Toggle for keyboard layout
     @State private var useABCLayout: Bool = false
+    @State private var showsOnScreenKeyboard: Bool = true
+    @State private var hardwareKeyboardConnected: Bool = false
 
     // NEW: timing for each round
     @State private var roundStartAt: Date? = nil
@@ -269,7 +272,11 @@ struct WordleView: View {
 
             WordGameResponsiveLayout(
               usesWideLayout: usesWideLayout,
-              availableHeight: geometry.size.height - 24
+              availableHeight: geometry.size.height - 24,
+              showsKeyboardCard: roundOver || showsOnScreenKeyboard,
+              toggleKeyboardCard: {
+                showsOnScreenKeyboard.toggle()
+              }
             ) {
               GameScoreboardCard(
                 currentCorrect: score,
@@ -352,6 +359,22 @@ struct WordleView: View {
     }
     .navigationTitle("WORD")
     .navigationBarTitleDisplayMode(.inline)
+    .task {
+      hardwareKeyboardConnected = GCKeyboard.coalesced != nil
+      showsOnScreenKeyboard = !hardwareKeyboardConnected
+    }
+    .task {
+      for await _ in NotificationCenter.default.notifications(named: .GCKeyboardDidConnect) {
+        hardwareKeyboardConnected = true
+        showsOnScreenKeyboard = false
+      }
+    }
+    .task {
+      for await _ in NotificationCenter.default.notifications(named: .GCKeyboardDidDisconnect) {
+        hardwareKeyboardConnected = false
+        showsOnScreenKeyboard = true
+      }
+    }
     .sheet(
       isPresented: $showRefSheet,
       onDismiss: {
@@ -1259,6 +1282,8 @@ private struct WordGameResponsiveLayout<
 >: View {
   let usesWideLayout: Bool
   let availableHeight: CGFloat
+  let showsKeyboardCard: Bool
+  let toggleKeyboardCard: () -> Void
   let scoreboard: Scoreboard
   let board: Board
   let feedback: Feedback
@@ -1268,6 +1293,8 @@ private struct WordGameResponsiveLayout<
   init(
     usesWideLayout: Bool,
     availableHeight: CGFloat,
+    showsKeyboardCard: Bool,
+    toggleKeyboardCard: @escaping () -> Void,
     @ViewBuilder scoreboard: () -> Scoreboard,
     @ViewBuilder board: () -> Board,
     @ViewBuilder feedback: () -> Feedback,
@@ -1276,6 +1303,8 @@ private struct WordGameResponsiveLayout<
   ) {
     self.usesWideLayout = usesWideLayout
     self.availableHeight = availableHeight
+    self.showsKeyboardCard = showsKeyboardCard
+    self.toggleKeyboardCard = toggleKeyboardCard
     self.scoreboard = scoreboard()
     self.board = board()
     self.feedback = feedback()
@@ -1285,12 +1314,30 @@ private struct WordGameResponsiveLayout<
 
   var body: some View {
     if usesWideLayout {
+      let mainCardHeight = showsKeyboardCard
+        ? max(360, availableHeight * 0.56)
+        : max(600, availableHeight * 0.92)
+
       VStack(spacing: 18) {
         HStack(alignment: .top, spacing: 18) {
           VStack(spacing: 16) {
-            Label("WORD Board", systemImage: "square.grid.3x3.fill")
-              .font(.headline.weight(.bold))
-              .frame(maxWidth: .infinity, alignment: .leading)
+            HStack {
+              Label("WORD Board", systemImage: "square.grid.3x3.fill")
+                .font(.headline.weight(.bold))
+
+              Spacer()
+
+              Button(action: toggleKeyboardCard) {
+                if showsKeyboardCard {
+                  Label("Hide Keyboard", systemImage: "keyboard.chevron.compact.down")
+                } else {
+                  Label("Show Keyboard", systemImage: "keyboard")
+                }
+              }
+              .labelStyle(.iconOnly)
+              .buttonStyle(.bordered)
+              .controlSize(.small)
+            }
 
             Spacer(minLength: 0)
             board
@@ -1298,7 +1345,7 @@ private struct WordGameResponsiveLayout<
             Spacer(minLength: 0)
           }
           .padding(AppDesignMetrics.cardPadding)
-          .frame(maxWidth: .infinity, minHeight: max(360, availableHeight * 0.56))
+          .frame(maxWidth: .infinity, minHeight: mainCardHeight)
           .heroCardSurface()
 
           VStack(spacing: 16) {
@@ -1307,20 +1354,22 @@ private struct WordGameResponsiveLayout<
             scoreboard
           }
           .padding(AppDesignMetrics.cardPadding)
-          .frame(maxWidth: .infinity, minHeight: max(360, availableHeight * 0.56))
+          .frame(maxWidth: .infinity, minHeight: mainCardHeight)
           .heroCardSurface()
         }
 
-        VStack(spacing: 14) {
-          Label("Keyboard", systemImage: "keyboard")
-            .font(.headline.weight(.bold))
-            .frame(maxWidth: .infinity, alignment: .leading)
+        if showsKeyboardCard {
+          VStack(spacing: 14) {
+            Label("Keyboard", systemImage: "keyboard")
+              .font(.headline.weight(.bold))
+              .frame(maxWidth: .infinity, alignment: .leading)
 
-          inputControls
+            inputControls
+          }
+          .padding(AppDesignMetrics.cardPadding)
+          .frame(maxWidth: .infinity, minHeight: max(250, availableHeight * 0.32), alignment: .top)
+          .heroCardSurface()
         }
-        .padding(AppDesignMetrics.cardPadding)
-        .frame(maxWidth: .infinity, minHeight: max(250, availableHeight * 0.32), alignment: .top)
-        .heroCardSurface()
       }
       .frame(maxWidth: 1_180)
       .frame(maxWidth: .infinity)
