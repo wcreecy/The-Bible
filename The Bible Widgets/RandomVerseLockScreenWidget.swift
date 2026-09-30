@@ -17,20 +17,25 @@ struct RandomVerseProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
-        completion(randomEntry())
+        Task {
+            let books = await BibleRepository.shared.loadAllBooks()
+            completion(randomEntry(from: books))
+        }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        let entry = randomEntry()
-        // Refresh hourly by default; adjust if you want daily at midnight instead.
-        let next = Calendar.current.date(byAdding: .hour, value: 1, to: Date()) ?? Date().addingTimeInterval(3600)
-        completion(Timeline(entries: [entry], policy: .after(next)))
+        Task {
+            let books = await BibleRepository.shared.loadAllBooks()
+            let entry = randomEntry(from: books)
+            // Refresh hourly by default; adjust if you want daily at midnight instead.
+            let next = Calendar.current.date(byAdding: .hour, value: 1, to: Date()) ?? Date().addingTimeInterval(3600)
+            completion(Timeline(entries: [entry], policy: .after(next)))
+        }
     }
 
     // MARK: - Helpers
 
-    private func randomEntry() -> RandomVerseEntry {
-        let books = BibleData.books
+    private func randomEntry(from books: [Book]) -> RandomVerseEntry {
         guard !books.isEmpty else {
             return RandomVerseEntry(date: Date(), book: "", chapter: 0, verse: 0, text: "")
         }

@@ -105,7 +105,6 @@ struct WhoAmIGameView: View {
                         roundOver: vm.roundOver,
                         correctChoice: vm.correctChoice,
                         selectedChoice: vm.selectedChoice,
-                        choicesWithReferences: Set(vm.choices.filter(hasReference)),
                         isTimed: vm.difficulty.timeLimit > 0,
                         remainingSeconds: vm.remainingSeconds,
                         timerTint: timerTint(vm.remainingSeconds),
@@ -167,7 +166,6 @@ struct WhoAmIGameView: View {
                             .font(.headline)
                         LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
                             ForEach(vm.choices, id: \.self) { choice in
-                                let hasRef = vm.roundOver && hasReference(for: choice)
                                 Button {
                                     if vm.roundOver {
                                         presentReferences(for: choice)
@@ -182,13 +180,12 @@ struct WhoAmIGameView: View {
                                         .fixedSize(horizontal: false, vertical: true)
                                         .frame(
                                             maxWidth: .infinity,
-                                            minHeight: max(maxChoiceHeight, 78),
-                                            maxHeight: max(maxChoiceHeight, 78),
+                                            minHeight: max(maxChoiceHeight, 96),
+                                            maxHeight: max(maxChoiceHeight, 96),
                                             alignment: .leading
                                         )
                                         .padding()
                                         .foregroundStyle(.primary)
-                                        .underline(hasRef, color: Color.blue.opacity(0.65))
                                         .background(
                                             GeometryReader { geo in
                                                 Color.clear
@@ -196,6 +193,7 @@ struct WhoAmIGameView: View {
                                             }
                                         )
                                 }
+                                .buttonStyle(.plain)
                                 .background(
                                     RoundedRectangle(cornerRadius: 12, style: .continuous)
                                         .fill(backgroundColor(for: choice))
@@ -224,10 +222,13 @@ struct WhoAmIGameView: View {
                     }
 
                     if vm.roundOver {
-                        Text("Tap answer to see references")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+                        Label("Tap an answer to see its references", systemImage: "hand.tap.fill")
+                            .font(.headline)
+                            .foregroundStyle(.tint)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
                             .frame(maxWidth: .infinity, alignment: .center)
+                            .background(.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
 
                     if debugAutoWinEnabled, vm.started, !vm.roundOver, vm.selectedChoice == nil {
@@ -471,7 +472,6 @@ private struct WhoAmIIPadGameBoard: View {
     let roundOver: Bool
     let correctChoice: String
     let selectedChoice: String?
-    let choicesWithReferences: Set<String>
     let isTimed: Bool
     let remainingSeconds: Int
     let timerTint: Color
@@ -510,7 +510,6 @@ private struct WhoAmIIPadGameBoard: View {
             roundOver: roundOver,
             correctChoice: correctChoice,
             selectedChoice: selectedChoice,
-            choicesWithReferences: choicesWithReferences,
             showsDebugWin: showsDebugWin,
             onChoose: onChoose,
             onSkip: onSkip,
@@ -544,7 +543,6 @@ private struct WhoAmIPlayCard: View {
     let roundOver: Bool
     let correctChoice: String
     let selectedChoice: String?
-    let choicesWithReferences: Set<String>
     let showsDebugWin: Bool
     let onChoose: (String) -> Void
     let onSkip: () -> Void
@@ -590,10 +588,6 @@ private struct WhoAmIPlayCard: View {
                             .frame(maxWidth: .infinity, minHeight: 88, alignment: .leading)
                             .padding()
                             .foregroundStyle(.primary)
-                            .underline(
-                                roundOver && choicesWithReferences.contains(choice),
-                                color: Color.blue.opacity(0.65)
-                            )
                     }
                     .buttonStyle(.plain)
                     .background(
@@ -623,9 +617,13 @@ private struct WhoAmIPlayCard: View {
             }
 
             if roundOver {
-                Text("Tap answer to see references")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                Label("Tap an answer to see its references", systemImage: "hand.tap.fill")
+                    .font(.headline)
+                    .foregroundStyle(.tint)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .frame(maxWidth: .infinity)
+                    .background(.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
 
             if showsDebugWin && !roundOver {

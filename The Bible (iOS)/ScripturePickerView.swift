@@ -120,7 +120,7 @@ struct ScripturePickerView: View {
             Task {
                 // Load book names
                 isLoadingBooks = true
-                let names = await BibleLibrary.shared.bookNames()
+                let names = await BibleRepository.shared.bookNames()
                 isLoadingBooks = false
                 allBookNames = names
 
@@ -307,7 +307,7 @@ struct ScripturePickerView: View {
         let prevVerse = selectedVerse
 
         do {
-            if let b = try await BibleLibrary.shared.loadBook(named: name) {
+            if let b = try await BibleRepository.shared.loadBook(named: name) {
                 loadedBook = b
 
                 // Decide chapter:

@@ -17,6 +17,7 @@ struct ContentView: View {
     // Separate coordinators per tab to avoid path leakage/corruption
     @StateObject private var homeCoordinator = NavigationCoordinator()
     @StateObject private var bibleCoordinator = NavigationCoordinator()
+    @StateObject private var bibleStore = BibleStore.shared
     @State private var favoritesPath = NavigationPath()
     @State private var gamesPath = NavigationPath()
     @State private var morePath: [MoreDestination] = []
@@ -80,7 +81,7 @@ struct ContentView: View {
                     .tag(AppTab.bible)
             } else {
                 NavigationStack(path: $bibleCoordinator.path) {
-                    BooksView(books: BibleData.books)
+                    BooksView(books: bibleStore.books)
                         .appDestinations(readerFontSize: $readerFontSize, isPad: usesWideLayout)
                 }
                 .environmentObject(bibleCoordinator)
@@ -138,10 +139,10 @@ struct ContentView: View {
                 didCleanupKeepScreenOnKey = true
             }
 
-            // Prewarm Bible book names for reference lookups.
+            bibleStore.ensureLoaded()
+
             Task.detached {
                 _ = await BibleReferenceLinker.linkify("")
-                _ = await BibleLibrary.shared.bookNames()
             }
 
             Task { @MainActor in
@@ -243,7 +244,7 @@ struct ContentView: View {
             } else {
                 // iPhone: push a Route.reader on the Bible NavigationStack
                 guard
-                    let book = BibleData.books.first(where: { $0.name == bookName }),
+                    let book = bibleStore.books.first(where: { $0.name == bookName }),
                     let chapter = book.chapters.first(where: { $0.number == chapterNum })
                 else { return }
 

@@ -126,7 +126,7 @@ struct StatsView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
                 // Ensure the mode picker is always above scroll content and captures taps
-                .background(Color(.systemBackground))
+                .background(.clear)
                 .zIndex(10)
 
                 // Mode-specific content
@@ -137,6 +137,8 @@ struct StatsView: View {
                 }
             }
         }
+        .groupBoxStyle(StatsHeroGroupBoxStyle())
+        .background(AppBackgroundView(tab: .more))
         .navigationTitle("Stats")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
@@ -773,6 +775,17 @@ struct StatsView: View {
         } else {
             topBookInScope = "—"
         }
+    }
+}
+
+private struct StatsHeroGroupBoxStyle: GroupBoxStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            configuration.label
+            configuration.content
+        }
+        .padding(AppDesignMetrics.cardPadding)
+        .heroCardSurface()
     }
 }
 

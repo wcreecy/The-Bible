@@ -127,6 +127,7 @@ struct PlayerStatSheetCardView: View {
                         HStack(spacing: 8) {
                             Text(s.name)
                                 .font(.subheadline.weight(.semibold))
+                                .padding(.leading, 8)
                                 .frame(width: nameWidth, alignment: .leading)
 
                             Spacer(minLength: 0)

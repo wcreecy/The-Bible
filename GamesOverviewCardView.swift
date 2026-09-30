@@ -50,29 +50,6 @@ struct GamesOverviewCardView: View {
     @State private var showGenreDrill: Bool = false
     @State private var selectedGenre: String? = nil
 
-    private func postSwitchToGamesTab() {
-        NotificationCenter.default.post(
-            name: .switchToTab,
-            object: nil,
-            userInfo: ["tabName": "games"]
-        )
-    }
-
-    private func openSelectedGame() {
-        guard selectedGame != "All Games" else {
-            postSwitchToGamesTab()
-            return
-        }
-        postSwitchToGamesTab()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            NotificationCenter.default.post(
-                name: .openGameStart,
-                object: nil,
-                userInfo: ["gameName": selectedGame]
-            )
-        }
-    }
-
     var body: some View {
         HeroCard(title: "Games", icon: "gamecontroller", tint: .purple) {
             let _ = stats.version
@@ -187,11 +164,6 @@ struct GamesOverviewCardView: View {
                         .font(.headline)
                         .lineLimit(1)
 
-                    if hSizeClass != .compact {
-                        GamesOverviewPlayButton(openAction: openSelectedGame, selectedGame: selectedGame)
-                            .padding(.leading, 10)
-                    }
-
                     Spacer(minLength: 8)
 
                     Picker(selection: $selectedGame) {
@@ -222,16 +194,6 @@ struct GamesOverviewCardView: View {
                     .pickerStyle(.menu)
                     .controlSize(.mini)
                     .animation(.easeInOut(duration: 0.2), value: selectedGame)
-                }
-
-                if hSizeClass == .compact {
-                    Button(action: openSelectedGame) {
-                        Label("Play", systemImage: "play.fill")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-                    .controlSize(.regular)
                 }
 
                 Divider()

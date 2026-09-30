@@ -1,5 +1,60 @@
 import Foundation
 
+private nonisolated final class BibleCorpusCache: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storage: [Book] = []
+
+    var books: [Book] {
+        lock.withLock { storage }
+    }
+
+    func store(_ books: [Book]) {
+        lock.withLock { storage = books }
+    }
+}
+
+actor BibleRepository {
+    static let shared = BibleRepository()
+
+    private nonisolated let cache = BibleCorpusCache()
+    private var loadTask: Task<[Book], Never>?
+
+    nonisolated var cachedBooks: [Book] {
+        cache.books
+    }
+
+    func loadAllBooks() async -> [Book] {
+        let cached = cache.books
+        if !cached.isEmpty { return cached }
+        if let loadTask { return await loadTask.value }
+
+        let resourceURL = Bundle.main.url(forResource: "kjv", withExtension: "json")
+        let task = Task.detached(priority: .userInitiated) {
+            guard let resourceURL else { return BibleData.fallbackBooks }
+            do {
+                let data = try Data(contentsOf: resourceURL, options: .mappedIfSafe)
+                return try BibleData.decodeBooks(from: data)
+            } catch {
+                print("Failed to load kjv.json: \(error)")
+                return BibleData.fallbackBooks
+            }
+        }
+        loadTask = task
+        let books = await task.value
+        cache.store(books)
+        loadTask = nil
+        return books
+    }
+
+    func loadBook(named name: String) async -> Book? {
+        await loadAllBooks().first { $0.name == name }
+    }
+
+    func bookNames() async -> [String] {
+        await loadAllBooks().map(\.name)
+    }
+}
+
 struct Verse: Identifiable, Hashable, Sendable {
     // Stable, allocation-free ID derived from verse number within a chapter
     var id: String { "\(number)" }
@@ -63,35 +118,31 @@ private enum BookNames {
 }
 
 enum BibleData {
-    static let books: [Book] = {
-        // Try to load kjv.json from the app bundle
-        if let url = Bundle.main.url(forResource: "kjv", withExtension: "json") {
-            do {
-                let data = try Data(contentsOf: url)
-                let decoder = JSONDecoder()
-                let dtoBooks = try decoder.decode([KJVBookDTO].self, from: data)
-                return dtoBooks.map { dto in
-                    let fullName = dto.name ?? BookNames.fullName(for: dto.abbrev)
-                    return Book(
-                        name: fullName,
-                        chapters: dto.chapters.enumerated().map { (chapterIndex, versesArray) in
-                            Chapter(
-                                number: chapterIndex + 1,
-                                verses: versesArray.enumerated().map { (verseIndex, text) in
-                                    Verse(number: verseIndex + 1, text: text)
-                                }
-                            )
+    // Compatibility view for synchronous call sites. It never performs I/O or decoding;
+    // the repository is the sole owner of the corpus and publishes this snapshot.
+    static var books: [Book] {
+        BibleRepository.shared.cachedBooks
+    }
+
+    nonisolated static func decodeBooks(from data: Data) throws -> [Book] {
+        let dtoBooks = try JSONDecoder().decode([KJVBookDTO].self, from: data)
+        return dtoBooks.map { dto in
+            let fullName = dto.name ?? BookNames.fullName(for: dto.abbrev)
+            return Book(
+                name: fullName,
+                chapters: dto.chapters.enumerated().map { chapterIndex, versesArray in
+                    Chapter(
+                        number: chapterIndex + 1,
+                        verses: versesArray.enumerated().map { verseIndex, text in
+                            Verse(number: verseIndex + 1, text: text)
                         }
                     )
                 }
-            } catch {
-                // If decoding fails, fall back to sample
-                print("Failed to load kjv.json: \(error)")
-            }
+            )
         }
+    }
 
-        // Minimal sample data to demonstrate the flow if kjv.json isn't available.
-        return [
+    nonisolated static let fallbackBooks: [Book] = [
             Book(
                 name: "Genesis",
                 chapters: [
@@ -114,6 +165,5 @@ enum BibleData {
                     Chapter(number: 2, verses: (1...23).map { Verse(number: $0, text: "Matthew 2:\($0) text") })
                 ]
             )
-        ]
-    }()
+    ]
 }

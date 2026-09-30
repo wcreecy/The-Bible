@@ -36,12 +36,7 @@ struct BookSelectionLink: View {
                 if bookNames.isEmpty {
                     // Load names asynchronously (fast, and uses per-book files if available).
                     let names = await bibleStore.bookNames()
-                    // Fallback to static order if async result is empty
-                    if names.isEmpty {
-                        bookNames = BibleData.books.map { $0.name }
-                    } else {
-                        bookNames = names
-                    }
+                    bookNames = names
                 }
             }
         } label: {

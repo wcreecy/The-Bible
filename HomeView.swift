@@ -164,7 +164,7 @@ struct HomeView: View {
     private func mirrorLastReadToAppGroup() {
         guard let shared = sharedDefaults else { return }
         guard let p = progress else { return }
-        if let book = BibleData.books.first(where: { $0.name == p.bookName }),
+        if let book = bibleStore.books.first(where: { $0.name == p.bookName }),
            let chapter = book.chapters.first(where: { $0.number == p.chapterNumber }),
            let verse = chapter.verses.first(where: { $0.number == p.verseNumber }) {
             shared.set(p.bookName, forKey: "lastReadBook")
@@ -603,7 +603,6 @@ struct HomeView: View {
         .appToast(isPresented: $showFocusSavedToast, symbol: "checkmark.seal.fill", text: "Focus Saved", tint: .green)
         .onAppear {
             loadHomeLayout()
-            Task { _ = await BibleLibrary.shared.bookNames() }
             bibleStore.ensureLoaded()
 
             if prayerMode == .focus { prayerMode = .timer }
