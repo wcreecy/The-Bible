@@ -260,6 +260,8 @@ struct BibleSplitView: View {
                     Text("Chapter \(chapter.number)")
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(AppBackgroundView(tab: .bible))
             .navigationTitle(book.name)
             .navigationBarTitleDisplayMode(.inline)
         }
@@ -295,6 +297,8 @@ struct BibleSplitView: View {
                     }
                     .buttonStyle(.plain)
                 }
+                .scrollContentBackground(.hidden)
+                .background(AppBackgroundView(tab: .bible))
                 .navigationTitle("Search Results (\(results.count))")
                 .navigationBarTitleDisplayMode(.inline)
             }
@@ -333,6 +337,8 @@ struct BibleSplitView: View {
                                 .padding(.vertical, 4)
                             }
                         }
+                        .scrollContentBackground(.hidden)
+                        .background(AppBackgroundView(tab: .bible))
                         .navigationTitle("\(book.name) \(chapter.number)")
                         .navigationBarTitleDisplayMode(.inline)
                     } else {
@@ -375,6 +381,7 @@ struct BibleSplitView: View {
                     }
                 }
         }
+        .background(AppBackgroundView(tab: .bible))
         .id(selectedBook?.name ?? "__no_book__")
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search Bible text")
         .searchScopes($searchScope) {

@@ -179,16 +179,20 @@ struct GamesView: View {
 
     @ViewBuilder
     private func destination(for route: GameRoute) -> some View {
-        switch route {
-        case .quiz: QuizView()
-        case .hangman: HangmanGameView()
-        case .beatTheClock: BeatTheClockGameView()
-        case .verseMatch: VerseMatchGameView()
-        case .favoritesFlashcards: FavoritesFlashcardsGameView()
-        case .bookOrder: BookOrderGameView()
-        case .wordSearch: WordSearchGameView()
-        case .whoAmI: WhoAmIGameView()
-        case .wordle: WordleView()
+        ZStack {
+            AppBackgroundView(tab: .games)
+
+            switch route {
+            case .quiz: QuizView()
+            case .hangman: HangmanGameView()
+            case .beatTheClock: BeatTheClockGameView()
+            case .verseMatch: VerseMatchGameView()
+            case .favoritesFlashcards: FavoritesFlashcardsGameView()
+            case .bookOrder: BookOrderGameView()
+            case .wordSearch: WordSearchGameView()
+            case .whoAmI: WhoAmIGameView()
+            case .wordle: WordleView()
+            }
         }
     }
 

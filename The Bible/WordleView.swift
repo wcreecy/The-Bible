@@ -247,9 +247,10 @@ struct WordleView: View {
   var body: some View {
     GeometryReader { geometry in
       let usesWideLayout = started && geometry.size.width >= 900
-      let correctLetters = Self.alphabet.filter { keyboardStates[$0] == .correct }
-      let presentLetters = Self.alphabet.filter { keyboardStates[$0] == .present }
-      let absentLetters = Self.alphabet.filter { keyboardStates[$0] == .absent }
+      let correctLetters = Self.alphabet.filter {
+        keyboardStates[$0] == .correct || keyboardStates[$0] == .present
+      }
+      let otherTriedLetters = Self.alphabet.filter { keyboardStates[$0] == .absent }
 
       ScrollView(.vertical) {
         VStack(spacing: 12) {
@@ -274,8 +275,12 @@ struct WordleView: View {
               usesWideLayout: usesWideLayout,
               availableHeight: geometry.size.height - 24,
               showsKeyboardCard: roundOver || showsOnScreenKeyboard,
+              canRevealWord: !roundOver,
               toggleKeyboardCard: {
                 showsOnScreenKeyboard.toggle()
+              },
+              revealWord: {
+                confirmReveal = true
               }
             ) {
               GameScoreboardCard(
@@ -286,7 +291,9 @@ struct WordleView: View {
                 wordMode: hardModeEnabled ? .hard : .normal
               )
             } board: {
-              boardView()
+              boardView(
+                tileSize: usesWideLayout && !(roundOver || showsOnScreenKeyboard) ? 68 : 48
+              )
             } feedback: {
               VStack(spacing: 10) {
                 if !roundOver, let msg = message {
@@ -303,15 +310,14 @@ struct WordleView: View {
             } letterTray: {
               WordTriedLettersCard(
                 correctLetters: correctLetters,
-                presentLetters: presentLetters,
-                absentLetters: absentLetters
+                otherTriedLetters: otherTriedLetters
               )
             } inputControls: {
               VStack(spacing: 10) {
                 if roundOver {
                   endOfRoundActionArea()
                 } else {
-                  keyboardView()
+                  keyboardView(keyHeight: usesWideLayout ? 60 : 48)
 
                   Button(action: submitGuess) {
                     Label("Enter", systemImage: "return")
@@ -323,19 +329,21 @@ struct WordleView: View {
                   .disabled(!isCurrentRowFull())
                   .accessibilityLabel("Enter")
 
-                  Button(
-                    role: .destructive,
-                    action: {
-                      confirmReveal = true
+                  if !usesWideLayout {
+                    Button(
+                      role: .destructive,
+                      action: {
+                        confirmReveal = true
+                      }
+                    ) {
+                      Label("Reveal Word", systemImage: "eye")
+                        .labelStyle(.titleAndIcon)
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
                     }
-                  ) {
-                    Label("Reveal Word", systemImage: "eye")
-                      .labelStyle(.titleAndIcon)
-                      .font(.headline)
-                      .frame(maxWidth: .infinity)
+                    .buttonStyle(GameKeyButtonStyle(tint: .red))
+                    .accessibilityLabel("Reveal Word. Counts as a loss.")
                   }
-                  .buttonStyle(GameKeyButtonStyle(tint: .red))
-                  .accessibilityLabel("Reveal Word. Counts as a loss.")
 
                   if debugAutoWinEnabled {
                     Button("WIN") {
@@ -607,10 +615,12 @@ struct WordleView: View {
 
     // MARK: - Board
     @ViewBuilder
-    private func boardView() -> some View {
-        VStack(spacing: 6) {
+    private func boardView(tileSize: CGFloat) -> some View {
+        let spacing: CGFloat = tileSize > 48 ? 9 : 6
+
+        VStack(spacing: spacing) {
             ForEach(0..<6, id: \.self) { r in
-                HStack(spacing: 6) {
+                HStack(spacing: spacing) {
                     ForEach(0..<5, id: \.self) { c in
                         let ch: String = {
                             if r < rowIndex {
@@ -628,7 +638,7 @@ struct WordleView: View {
                             }
                         }()
                         let state: KeyState = (r < rowIndex) ? evaluations[r][c] : .unknown
-                        tile(letter: ch, state: state, row: r, col: c)
+                        tile(letter: ch, state: state, row: r, col: c, size: tileSize)
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 guard !roundOver, r == rowIndex else { return }
@@ -650,7 +660,13 @@ struct WordleView: View {
         }
     }
 
-    private func tile(letter: String, state: KeyState, row: Int, col: Int) -> some View {
+    private func tile(
+        letter: String,
+        state: KeyState,
+        row: Int,
+        col: Int,
+        size: CGFloat
+    ) -> some View {
         let isPinnedHere: Bool = (row < pinned.count && col < pinned[row].count) ? (pinned[row][col] != nil) : false
         let isSelected: Bool = (selectedCell?.row == row && selectedCell?.col == col)
 
@@ -676,10 +692,10 @@ struct WordleView: View {
 
         return ZStack(alignment: .topTrailing) {
             Text(letter)
-                .font(.title2.weight(.bold))
-                .frame(width: 48, height: 48)
-                .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(bg))
-                .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).stroke(border, lineWidth: isSelected ? 2 : 1))
+                .font((size > 48 ? Font.title : Font.title2).weight(.bold))
+                .frame(width: size, height: size)
+                .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(bg))
+                .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(border, lineWidth: isSelected ? 2 : 1))
 
             // Show small 'x' to clear only for pinned cells in the active row during play
             if row == rowIndex, !roundOver, isPinnedHere {
@@ -703,7 +719,7 @@ struct WordleView: View {
 
     // MARK: - On-screen keyboard
     @ViewBuilder
-    private func keyboardView() -> some View {
+    private func keyboardView(keyHeight: CGFloat) -> some View {
         let row1 = Array(useABCLayout ? "ABCDEFGHIJ" : "QWERTYUIOP")
         let row2 = Array(useABCLayout ? "KLMNOPQRS" : "ASDFGHJKL")
         let row3 = Array(useABCLayout ? "TUVWXYZ" : "ZXCVBNM")
@@ -711,13 +727,13 @@ struct WordleView: View {
         VStack(spacing: 8) {
             HStack(spacing: 6) {
                 ForEach(row1, id: \.self) { ch in
-                    keyButton(for: ch)
+                    keyButton(for: ch, minimumHeight: keyHeight)
                         .disabled(roundOver || isCurrentRowFull())
                 }
             }
             HStack(spacing: 6) {
                 ForEach(row2, id: \.self) { ch in
-                    keyButton(for: ch)
+                    keyButton(for: ch, minimumHeight: keyHeight)
                         .disabled(roundOver || isCurrentRowFull())
                 }
             }
@@ -725,21 +741,21 @@ struct WordleView: View {
                 Button(action: { useABCLayout.toggle() }) {
                     Image(systemName: "arrow.uturn.backward.circle")
                         .font(.headline)
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity, minHeight: keyHeight)
                 }
                 .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
                 .disabled(roundOver)
                 .accessibilityLabel(useABCLayout ? "Switch to QWERTY layout" : "Switch to ABC layout")
 
                 ForEach(row3, id: \.self) { ch in
-                    keyButton(for: ch)
+                    keyButton(for: ch, minimumHeight: keyHeight)
                         .disabled(roundOver || isCurrentRowFull())
                 }
 
                 Button(action: { deleteLetter() }) {
                     Image(systemName: "delete.left")
                         .font(.headline)
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity, minHeight: keyHeight)
                 }
                 .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
                 .disabled(roundOver || currentInput.isEmpty && !hasAnyTypedInCurrentRow())
@@ -756,7 +772,7 @@ struct WordleView: View {
     }
 
     @ViewBuilder
-    private func keyButton(for ch: Character) -> some View {
+    private func keyButton(for ch: Character, minimumHeight: CGFloat) -> some View {
         let state = keyboardStates[ch] ?? .unknown
 
         switch state {
@@ -764,7 +780,7 @@ struct WordleView: View {
                 Button(action: { tapLetter(ch) }) {
                     Text(String(ch))
                         .font(.headline.weight(.semibold))
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity, minHeight: minimumHeight)
                 }
                 .buttonStyle(GameKeyButtonStyle(tint: state.tint))
 
@@ -772,7 +788,7 @@ struct WordleView: View {
                 Button(action: { tapLetter(ch) }) {
                     Text(String(ch))
                         .font(.headline.weight(.semibold))
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity, minHeight: minimumHeight)
                 }
                 .buttonStyle(FilledGameKeyButtonStyle(fill: .gray, foreground: .white))
 
@@ -780,7 +796,7 @@ struct WordleView: View {
                 Button(action: { tapLetter(ch) }) {
                     Text(String(ch))
                         .font(.headline.weight(.semibold))
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity, minHeight: minimumHeight)
                 }
                 .buttonStyle(FilledGameKeyButtonStyle(fill: .yellow, foreground: .black))
 
@@ -788,7 +804,7 @@ struct WordleView: View {
                 Button(action: { tapLetter(ch) }) {
                     Text(String(ch))
                         .font(.headline.weight(.semibold))
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity, minHeight: minimumHeight)
                 }
                 .buttonStyle(FilledGameKeyButtonStyle(fill: .green, foreground: .white))
         }
@@ -1283,7 +1299,9 @@ private struct WordGameResponsiveLayout<
   let usesWideLayout: Bool
   let availableHeight: CGFloat
   let showsKeyboardCard: Bool
+  let canRevealWord: Bool
   let toggleKeyboardCard: () -> Void
+  let revealWord: () -> Void
   let scoreboard: Scoreboard
   let board: Board
   let feedback: Feedback
@@ -1294,7 +1312,9 @@ private struct WordGameResponsiveLayout<
     usesWideLayout: Bool,
     availableHeight: CGFloat,
     showsKeyboardCard: Bool,
+    canRevealWord: Bool,
     toggleKeyboardCard: @escaping () -> Void,
+    revealWord: @escaping () -> Void,
     @ViewBuilder scoreboard: () -> Scoreboard,
     @ViewBuilder board: () -> Board,
     @ViewBuilder feedback: () -> Feedback,
@@ -1304,7 +1324,9 @@ private struct WordGameResponsiveLayout<
     self.usesWideLayout = usesWideLayout
     self.availableHeight = availableHeight
     self.showsKeyboardCard = showsKeyboardCard
+    self.canRevealWord = canRevealWord
     self.toggleKeyboardCard = toggleKeyboardCard
+    self.revealWord = revealWord
     self.scoreboard = scoreboard()
     self.board = board()
     self.feedback = feedback()
@@ -1322,10 +1344,17 @@ private struct WordGameResponsiveLayout<
         HStack(alignment: .top, spacing: 18) {
           VStack(spacing: 16) {
             HStack {
-              Label("WORD Board", systemImage: "square.grid.3x3.fill")
-                .font(.headline.weight(.bold))
-
               Spacer()
+
+              if canRevealWord {
+                Button(role: .destructive, action: revealWord) {
+                  Label("Reveal Word", systemImage: "eye")
+                }
+                .labelStyle(.iconOnly)
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .accessibilityHint("Counts as a loss")
+              }
 
               Button(action: toggleKeyboardCard) {
                 if showsKeyboardCard {
@@ -1360,10 +1389,6 @@ private struct WordGameResponsiveLayout<
 
         if showsKeyboardCard {
           VStack(spacing: 14) {
-            Label("Keyboard", systemImage: "keyboard")
-              .font(.headline.weight(.bold))
-              .frame(maxWidth: .infinity, alignment: .leading)
-
             inputControls
           }
           .padding(AppDesignMetrics.cardPadding)
@@ -1390,38 +1415,63 @@ private struct WordGameResponsiveLayout<
 
 private struct WordTriedLettersCard: View {
   let correctLetters: [Character]
-  let presentLetters: [Character]
-  let absentLetters: [Character]
+  let otherTriedLetters: [Character]
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 18) {
-      Label("Letters Tried", systemImage: "textformat.abc")
-        .font(.headline.weight(.bold))
-
-      WordLetterGroup(title: "Correct", letters: correctLetters, tint: .green)
-      WordLetterGroup(title: "In the Word", letters: presentLetters, tint: .yellow)
-      WordLetterGroup(title: "Not in the Word", letters: absentLetters, tint: .gray)
+    VStack(alignment: .leading, spacing: 16) {
+      WordLetterBox(
+        title: "Correct Letters",
+        letters: correctLetters,
+        allowsShuffle: true
+      )
+      WordLetterBox(
+        title: "Other Tried Letters",
+        letters: otherTriedLetters,
+        allowsShuffle: false
+      )
     }
     .frame(maxWidth: .infinity, alignment: .leading)
   }
 }
 
-private struct WordLetterGroup: View {
-  let title: LocalizedStringKey
+private struct WordLetterBox: View {
+  let title: LocalizedStringResource
   let letters: [Character]
-  let tint: Color
+  let allowsShuffle: Bool
+
+  @State private var shuffledOrder: [Character] = []
 
   private let columns = [GridItem(.adaptive(minimum: 42), spacing: 8)]
 
+  private var displayedLetters: [Character] {
+    let retained = shuffledOrder.filter { letters.contains($0) }
+    let additions = letters.filter { !retained.contains($0) }
+    return retained + additions
+  }
+
   var body: some View {
-    VStack(alignment: .leading, spacing: 8) {
+    VStack(alignment: .leading, spacing: 10) {
       HStack {
         Text(title)
           .font(.subheadline.weight(.semibold))
+
         Spacer()
+
         Text(letters.count, format: .number)
           .font(.caption.monospacedDigit())
           .foregroundStyle(.secondary)
+
+        if allowsShuffle {
+          Button {
+            shuffledOrder = letters.shuffled()
+          } label: {
+            Label("Shuffle Correct Letters", systemImage: "shuffle")
+          }
+          .labelStyle(.iconOnly)
+          .buttonStyle(.bordered)
+          .controlSize(.small)
+          .disabled(letters.count < 2)
+        }
       }
 
       if letters.isEmpty {
@@ -1431,16 +1481,17 @@ private struct WordLetterGroup: View {
           .frame(maxWidth: .infinity, minHeight: 42, alignment: .leading)
       } else {
         LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
-          ForEach(letters, id: \.self) { letter in
+          ForEach(displayedLetters, id: \.self) { letter in
             Text(String(letter))
               .font(.headline.monospaced().weight(.bold))
               .frame(maxWidth: .infinity, minHeight: 42)
               .background(
-                tint.opacity(0.22), in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                Color.secondary.opacity(0.12),
+                in: RoundedRectangle(cornerRadius: 10, style: .continuous)
               )
               .overlay {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                  .stroke(tint.opacity(0.65), lineWidth: 1)
+                  .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
               }
               .accessibilityLabel("Letter \(String(letter))")
           }
