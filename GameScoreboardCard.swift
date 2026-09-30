@@ -2,31 +2,12 @@ import SwiftUI
 
 struct GameScoreboardCard: View {
     @ObservedObject private var stats = GameStats.shared
-    // Current session (live)
+
     let currentCorrect: Int
     let currentAnswered: Int
     let currentStreak: Int
     let game: GameStats.GameID
     let wordMode: GameStats.WordMode?
-
-    @Environment(\.horizontalSizeClass) private var hSize
-
-    // Treat iPad (or any regular width) as “roomier” for bigger UI
-    private var isPadLike: Bool {
-        UIDevice.current.userInterfaceIdiom == .pad || hSize == .regular
-    }
-
-    // Typography and layout metrics that scale on iPad
-    private var sectionLabelFont: Font { isPadLike ? .headline : .caption }
-    private var pillTitleFont: Font { isPadLike ? .footnote : .caption2 }
-    private var pillValueFont: Font { isPadLike ? .title3.weight(.semibold) : .subheadline.weight(.semibold) }
-    private var rowSpacing: CGFloat { isPadLike ? 16 : 10 }
-    private var containerPadding: CGFloat { isPadLike ? 14 : 8 }
-    private var pillPadding: CGFloat { isPadLike ? 10 : 6 }
-    private var sectionLabelWidth: CGFloat { isPadLike ? 90 : 60 }
-    private var pillCornerRadius: CGFloat { isPadLike ? 14 : 12 }
-    private var cardCornerRadius: CGFloat { isPadLike ? 18 : 16 }
-    private var cardStrokeOpacity: Double { 0.06 }
 
     init(
         currentCorrect: Int,
@@ -42,116 +23,122 @@ struct GameScoreboardCard: View {
         self.wordMode = wordMode
     }
 
-    public var body: some View {
+    var body: some View {
         let allTime = stats.scorecardStats(for: game, wordMode: wordMode)
-        VStack {
-            VStack(alignment: .leading, spacing: rowSpacing) {
-                // Current session stats
-                HStack(spacing: rowSpacing) {
-                    Text("Current")
-                        .font(sectionLabelFont)
-                        .foregroundStyle(.secondary)
-                        .frame(width: sectionLabelWidth, alignment: .leading)
-                    statPill(title: "Correct", value: "\(currentCorrect)")
-                    statPill(title: "Attempts", value: "\(currentAnswered)")
-                    streakPill(title: "Streak", current: currentStreak, allTimeBest: allTime.bestStreak)
-                    statPill(title: "Percent", value: percentString(correct: currentCorrect, answered: currentAnswered))
-                }
-                // All-time stats
-                HStack(spacing: rowSpacing) {
-                    Text("All-time")
-                        .font(sectionLabelFont)
-                        .foregroundStyle(.secondary)
-                        .frame(width: sectionLabelWidth, alignment: .leading)
-                    statPill(title: "Correct", value: "\(allTime.correct)")
-                    statPill(title: "Attempts", value: "\(allTime.attempts)")
-                    statPill(title: "Streak", value: allTime.bestStreak > 0 ? "\(allTime.bestStreak)" : "—")
-                    statPill(title: "Percent", value: percentString(correct: allTime.correct, answered: allTime.attempts))
-                }
-            }
-            .padding(containerPadding)
+
+        VStack(spacing: 14) {
+            scoreSection(
+                title: "This Game",
+                systemImage: "play.circle.fill",
+                correct: currentCorrect,
+                attempts: currentAnswered,
+                streak: currentStreak,
+                percent: percentString(correct: currentCorrect, answered: currentAnswered),
+                highlightedStreak: currentStreak >= max(1, allTime.bestStreak)
+            )
+
+            Divider()
+
+            scoreSection(
+                title: "All Time",
+                systemImage: "trophy.fill",
+                correct: allTime.correct,
+                attempts: allTime.attempts,
+                streak: allTime.bestStreak,
+                percent: percentString(correct: allTime.correct, answered: allTime.attempts),
+                usesPlaceholderForEmptyStreak: true
+            )
         }
+        .padding(16)
         .background(
-            RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [Color(UIColor.systemBackground), Color(UIColor.secondarySystemBackground)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+        )
+    }
+
+    private func scoreSection(
+        title: LocalizedStringKey,
+        systemImage: String,
+        correct: Int,
+        attempts: Int,
+        streak: Int,
+        percent: String,
+        highlightedStreak: Bool = false,
+        usesPlaceholderForEmptyStreak: Bool = false
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(title, systemImage: systemImage)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+
+            HStack(spacing: 0) {
+                stat(title: "Correct", value: "\(correct)")
+
+                metricDivider
+
+                stat(title: "Attempts", value: "\(attempts)")
+
+                metricDivider
+
+                stat(
+                    title: "Streak",
+                    value: usesPlaceholderForEmptyStreak && streak == 0 ? "—" : "\(streak)",
+                    valueColor: highlightedStreak ? .green : .primary
                 )
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
-                .stroke(Color.black.opacity(cardStrokeOpacity), lineWidth: 1)
-        )
+
+                metricDivider
+
+                stat(title: "Percent", value: percent)
+            }
+        }
     }
 
-    // Neutral stat pill (no per-category color)
-    @ViewBuilder
-    private func statPill(title: String, value: String) -> some View {
-        VStack(spacing: 3) {
-            Text(title)
-                .font(pillTitleFont)
-                .foregroundStyle(.secondary)
+    private func stat(
+        title: LocalizedStringKey,
+        value: String,
+        valueColor: Color = .primary
+    ) -> some View {
+        VStack(spacing: 4) {
             Text(value)
-                .font(pillValueFont)
-                .foregroundStyle(.primary)
+                .font(.title3.weight(.bold))
+                .monospacedDigit()
+                .foregroundStyle(valueColor)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
         }
-        .padding(pillPadding)
-        .background(
-            RoundedRectangle(cornerRadius: pillCornerRadius, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: pillCornerRadius, style: .continuous)
-                .stroke(Color.primary.opacity(0.08), lineWidth: 1)
-        )
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
     }
 
-    // Current streak pill with special green highlight when tying/exceeding all-time best streak
-    @ViewBuilder
-    private func streakPill(title: String, current: Int, allTimeBest: Int) -> some View {
-        let highlightThreshold = max(1, allTimeBest)
-        let isHighlighted = current >= highlightThreshold
-        VStack(spacing: 3) {
-            Text(title)
-                .font(pillTitleFont)
-                .foregroundStyle(.secondary)
-            Text("\(current)")
-                .font(pillValueFont)
-                .foregroundStyle(isHighlighted ? Color.green : Color.primary)
-                .animation(.default, value: isHighlighted)
-        }
-        .padding(pillPadding)
-        .background(
-            RoundedRectangle(cornerRadius: pillCornerRadius, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: pillCornerRadius, style: .continuous)
-                .stroke(Color.primary.opacity(0.08), lineWidth: 1)
-        )
-        .accessibilityHint(isHighlighted ? "Tied or exceeded all-time best streak" : "")
+    private var metricDivider: some View {
+        Divider()
+            .frame(height: 34)
     }
 
     private func percentString(correct: Int, answered: Int) -> String {
         guard answered > 0 else { return "—" }
         let raw = (Double(correct) / Double(answered)) * 100.0
         let clamped = min(100.0, max(0.0, raw))
-        let pct = Int(round(clamped))
-        return "\(pct)%"
+        return "\(Int(round(clamped)))%"
     }
 }
 
 #Preview {
-    VStack(spacing: 20) {
-        GameScoreboardCard(
-            currentCorrect: 7,
-            currentAnswered: 10,
-            currentStreak: 9,
-            game: .quiz
-        )
-        .padding()
-    }
+    GameScoreboardCard(
+        currentCorrect: 7,
+        currentAnswered: 10,
+        currentStreak: 9,
+        game: .quiz
+    )
+    .padding()
 }

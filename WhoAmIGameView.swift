@@ -106,17 +106,6 @@ struct WhoAmIGameView: View {
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                 Spacer()
-                                if vm.difficulty.timeLimit > 0 && !vm.roundOver && vm.selectedChoice == nil {
-                                    HStack(spacing: 6) {
-                                        Image(systemName: "timer")
-                                        Text("\(vm.remainingSeconds)s")
-                                            .monospacedDigit()
-                                    }
-                                    .font(.title3.weight(.semibold))
-                                    .foregroundStyle(timerTint(vm.remainingSeconds))
-                                    .scaleEffect(vm.pulseOn ? 1.12 : 1.0)
-                                    .animation(.easeInOut(duration: 0.25), value: vm.pulseOn)
-                                }
                             }
                             Text(vm.promptTitle)
                                 .font(vm.mode == .names ? .title2.weight(.semibold) : .body)
@@ -124,6 +113,19 @@ struct WhoAmIGameView: View {
                                 .minimumScaleFactor(0.8)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .strokeBorder(whoAmIQuestionBorderColor, lineWidth: whoAmIQuestionBorderWidth)
+                    )
+                    .animation(.easeInOut(duration: 0.25), value: vm.remainingSeconds)
+
+                    if whoAmITimerIsActive {
+                        GameTimerCard(
+                            remainingSeconds: vm.remainingSeconds,
+                            tint: timerTint(vm.remainingSeconds),
+                            isPulsing: vm.pulseOn
+                        )
                     }
 
                     VStack(alignment: .leading, spacing: 8) {
@@ -323,6 +325,18 @@ struct WhoAmIGameView: View {
         if choice == vm.correctChoice { return .green }
         if let sel = vm.selectedChoice, sel == choice, choice != vm.correctChoice { return .red }
         return Color.primary.opacity(0.15)
+    }
+
+    private var whoAmITimerIsActive: Bool {
+        vm.difficulty.timeLimit > 0 && !vm.roundOver && vm.selectedChoice == nil
+    }
+
+    private var whoAmIQuestionBorderColor: Color {
+        whoAmITimerIsActive ? timerTint(vm.remainingSeconds) : Color.primary.opacity(0.12)
+    }
+
+    private var whoAmIQuestionBorderWidth: CGFloat {
+        whoAmITimerIsActive ? 2 : 1
     }
 
     private func timerTint(_ secs: Int) -> Color {

@@ -20,12 +20,6 @@ struct SideBySideGameArea: View {
     let gameMode: WordSearchViewModel.GameMode
     let showBlindWordList: Bool
 
-    let isTimedMode: Bool
-    let timeUp: Bool
-    let remainingSeconds: Int
-    let pulseOn: Bool
-    let timerTint: (Int) -> Color
-
     let onNewPuzzle: () -> Void
     let onReveal: () -> Void
     let onChangeDifficultyOrMode: () -> Void
@@ -42,26 +36,9 @@ struct SideBySideGameArea: View {
         }
     }
 
-    private func formattedTime(_ secs: Int) -> String {
-        let m = secs / 60
-        let s = secs % 60
-        return String(format: "%d:%02d", m, s)
-    }
-
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
             VStack(alignment: .leading, spacing: 10) {
-                if isTimedMode && !timeUp {
-                    HStack(spacing: 8) {
-                        Image(systemName: "timer")
-                        Text(formattedTime(remainingSeconds)).monospacedDigit()
-                    }
-                    .font(.title2.weight(.semibold))
-                    .foregroundStyle(timerTint(remainingSeconds))
-                    .scaleEffect(pulseOn ? 1.08 : 1.0)
-                    .animation(.easeInOut(duration: 0.25), value: pulseOn)
-                }
-
                 HStack(spacing: 10) {
                     if !roundOver {
                         Button("Reveal") { onReveal() }

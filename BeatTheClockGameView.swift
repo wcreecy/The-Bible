@@ -58,9 +58,9 @@ struct BeatTheClockGameView: View {
 
     private var roundTime: Int {
         switch difficulty {
-        case .easy: return 45
-        case .normal: return 30
-        case .hard: return 15
+        case .easy: return 25
+        case .normal: return 15
+        case .hard: return 8
         }
     }
 
@@ -68,13 +68,6 @@ struct BeatTheClockGameView: View {
         let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         return !selectionLocked && !trimmed.isEmpty
     }
-
-    @Environment(\.horizontalSizeClass) private var hSizeClass
-    private var isCompact: Bool { hSizeClass == .compact }
-
-    private var timerIconSize: CGFloat { isCompact ? 14 : 24 }
-    private var timerTextSize: CGFloat { isCompact ? 22 : 34 }
-    private var timerWidth: CGFloat { isCompact ? 64 : 90 }
 
     // MARK: - Persistent streak helpers (per difficulty)
     private func persistentSuffix() -> String {
@@ -137,9 +130,9 @@ struct BeatTheClockGameView: View {
                         GroupBox {
                             DisclosureGroup(isExpanded: $difficultyExpanded) {
                                 VStack(alignment: .leading, spacing: 6) {
-                                    Text("• Easy: 45 seconds per round.")
-                                    Text("• Normal: 30 seconds per round.")
-                                    Text("• Hard: 15 seconds per round.")
+                                    Text("• Easy: 25 seconds per round.")
+                                    Text("• Normal: 15 seconds per round.")
+                                    Text("• Hard: 8 seconds per round.")
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             } label: {
@@ -172,40 +165,12 @@ struct BeatTheClockGameView: View {
                         .frame(maxWidth: 240)
                     Spacer(minLength: 32)
                 } else {
-                    if isCompact {
-                        ZStack(alignment: .topTrailing) {
-                            GameScoreboardCard(
-                                currentCorrect: score,
-                                currentAnswered: answered,
-                                currentStreak: currentStreak,
-                                game: .beatclock
-                            )
-                            .frame(maxWidth: .infinity)
-                            .multilineTextAlignment(.center)
-                            .padding(.trailing, timerWidth + 12)
-
-                            timerView
-                                .frame(width: timerWidth)
-                                .padding(.top, 4)
-                        }
-                    } else {
-                        HStack(alignment: .center, spacing: 16) {
-                            GameScoreboardCard(
-                                currentCorrect: score,
-                                currentAnswered: answered,
-                                currentStreak: currentStreak,
-                                game: .beatclock
-                            )
-                            .frame(maxWidth: .infinity)
-                            .multilineTextAlignment(.center)
-                            .layoutPriority(1)
-
-                            timerView
-                                .frame(width: timerWidth)
-                                .layoutPriority(0)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .center)
-                    }
+                    GameScoreboardCard(
+                        currentCorrect: score,
+                        currentAnswered: answered,
+                        currentStreak: currentStreak,
+                        game: .beatclock
+                    )
 
                     GroupBox {
                         VStack(alignment: .leading, spacing: 6) {
@@ -220,6 +185,20 @@ struct BeatTheClockGameView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .strokeBorder(
+                                selectionLocked ? Color.primary.opacity(0.12) : timerColor,
+                                lineWidth: selectionLocked ? 1 : 2
+                            )
+                    )
+                    .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
+
+                    GameTimerCard(
+                        remainingSeconds: remainingSeconds,
+                        tint: timerColor,
+                        isPulsing: pulse
+                    )
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Type a Bible book")
@@ -374,29 +353,6 @@ struct BeatTheClockGameView: View {
         if remainingSeconds <= 5 { return .red }
         if remainingSeconds <= 10 { return .yellow }
         return .green
-    }
-
-    private var timerView: some View {
-        VStack(spacing: 6) {
-            Image(systemName: "timer")
-                .font(.system(size: timerIconSize, weight: .semibold))
-                .foregroundStyle(timerColor)
-            Text("\(remainingSeconds)s")
-                .font(.system(size: timerTextSize, weight: .bold, design: .rounded))
-                .monospacedDigit()
-                .foregroundStyle(timerColor)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-                .scaleEffect(pulse ? 1.15 : 1.0)
-                .animation(.easeOut(duration: 0.18), value: pulse)
-                .shadow(color: timerColor.opacity(pulse ? 0.7 : 0.35), radius: pulse ? 10 : 4)
-        }
-        .padding(.vertical, isCompact ? 6 : 8)
-        .padding(.horizontal, isCompact ? 8 : 10)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
-        )
     }
 
     private func startGame() {

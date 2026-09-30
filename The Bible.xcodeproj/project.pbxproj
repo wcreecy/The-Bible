@@ -130,6 +130,7 @@
 		2CB929AD306BEBD900B03AB0 /* ReadingInsightsCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB929AC306BEBD900B03AB0 /* ReadingInsightsCardView.swift */; };
 		2CB929AF306BEBD900B03AB0 /* BibleStatsStore+Contributions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB929AE306BEBD900B03AB0 /* BibleStatsStore+Contributions.swift */; };
 		2CB929B1306BF01F00B03AB0 /* GameInsightsCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB929B0306BF01F00B03AB0 /* GameInsightsCardView.swift */; };
+		2CB92A97306C884700B03AB0 /* GameTimerCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB92A96306C884700B03AB0 /* GameTimerCard.swift */; };
 		2CBD4223306B561D002E33CE /* PersistenceFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBD4222306B561D002E33CE /* PersistenceFeedback.swift */; };
 		2CBD4225306B575C002E33CE /* VerseActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBD4224306B575C002E33CE /* VerseActionMenu.swift */; };
 		2CBDF1DA2ED09F7E00CEE884 /* WordSearchGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBDF1D92ED09F7E00CEE884 /* WordSearchGameView.swift */; };
@@ -341,6 +342,7 @@
 		2CB929AC306BEBD900B03AB0 /* ReadingInsightsCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingInsightsCardView.swift; sourceTree = "<group>"; };
 		2CB929AE306BEBD900B03AB0 /* BibleStatsStore+Contributions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BibleStatsStore+Contributions.swift"; sourceTree = "<group>"; };
 		2CB929B0306BF01F00B03AB0 /* GameInsightsCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInsightsCardView.swift; sourceTree = "<group>"; };
+		2CB92A96306C884700B03AB0 /* GameTimerCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameTimerCard.swift; sourceTree = "<group>"; };
 		2CBD4222306B561D002E33CE /* PersistenceFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceFeedback.swift; sourceTree = "<group>"; };
 		2CBD4224306B575C002E33CE /* VerseActionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerseActionMenu.swift; sourceTree = "<group>"; };
 		2CBDF1D92ED09F7E00CEE884 /* WordSearchGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordSearchGameView.swift; sourceTree = "<group>"; };
@@ -685,6 +687,7 @@
 				2CB929AC306BEBD900B03AB0 /* ReadingInsightsCardView.swift */,
 				2CB929AE306BEBD900B03AB0 /* BibleStatsStore+Contributions.swift */,
 				2CB929B0306BF01F00B03AB0 /* GameInsightsCardView.swift */,
+				2CB92A96306C884700B03AB0 /* GameTimerCard.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1150,6 +1153,7 @@
 				2C6BB64B2EF1FF2A0010D769 /* BibleStatsStore+Totals.swift in Sources */,
 				2CB929A9306BD98000B03AB0 /* ContextualTipView.swift in Sources */,
 				2C49CF552EBE10310006FF79 /* TimerSound.swift in Sources */,
+				2CB92A97306C884700B03AB0 /* GameTimerCard.swift in Sources */,
 				2C2A44DE2EEE152E00FE8C2F /* StartScreen.swift in Sources */,
 				2C27657A2EE8EABD00A321FE /* StopwatchController.swift in Sources */,
 				2C2764EA2EE8C20A00A321FE /* WeekRow.swift in Sources */,

@@ -44,17 +44,23 @@ struct WordSearchGameView: View {
                         )
                     } else {
                         WordSearchHeaderBox(
-                            isTimedMode: vm.isTimedMode,
-                            timeUp: vm.timeUp,
-                            didWin: vm.didWin,
-                            remainingSeconds: vm.remainingSeconds,
-                            pulseOn: vm.pulseOn,
                             verseRef: vm.verseRef,
                             verseText: vm.verseText,
                             isFavorited: vm.isCurrentFavorited(),
                             onToggleFavorite: { vm.toggleFavoriteCurrent() },
-                            timerTint: vm.timerTint(for:)
+                            timerTint: vm.isTimedMode && !vm.roundOver
+                                ? vm.timerTint(for: vm.remainingSeconds)
+                                : nil
                         )
+
+                        if vm.isTimedMode && !vm.roundOver {
+                            GameTimerCard(
+                                remainingSeconds: vm.remainingSeconds,
+                                tint: vm.timerTint(for: vm.remainingSeconds),
+                                isPulsing: vm.pulseOn,
+                                formattedTime: formattedTime(vm.remainingSeconds)
+                            )
+                        }
 
                         WordSearchStatusBanner(timeUp: vm.timeUp, didWin: vm.didWin)
 
@@ -78,12 +84,6 @@ struct WordSearchGameView: View {
                                 foundWords: vm.foundWords,
                                 gameMode: vm.gameMode,
                                 showBlindWordList: vm.showBlindWordList,
-
-                                isTimedMode: vm.isTimedMode,
-                                timeUp: vm.timeUp,
-                                remainingSeconds: vm.remainingSeconds,
-                                pulseOn: vm.pulseOn,
-                                timerTint: vm.timerTint(for:),
 
                                 onNewPuzzle: { vm.newPuzzle() },
                                 onReveal: { vm.reveal() },
@@ -211,6 +211,12 @@ struct WordSearchGameView: View {
     }
 
     // MARK: - Helpers
+
+    private func formattedTime(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        return String(format: "%d:%02d", minutes, remainingSeconds)
+    }
 
     // Height that matches the grid’s actual size for the given container width (phone).
     // If availableWidth is nil (iPad side layout), we fall back to the previous “target cell” approach.

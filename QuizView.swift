@@ -195,8 +195,8 @@ struct QuizView: View {
                             DisclosureGroup(isExpanded: $difficultyExpanded) {
                                 VStack(alignment: .leading, spacing: 6) {
                                     Text("• Easy: No timer; options from the whole scope.")
-                                    Text("• Medium: 30 seconds per question.")
-                                    Text("• Hard: 20 seconds; wrong options are from the same testament to increase challenge.")
+                                    Text("• Medium: 15 seconds per question.")
+                                    Text("• Hard: 8 seconds; wrong options are from the same testament to increase challenge.")
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             } label: {
@@ -280,23 +280,18 @@ struct QuizView: View {
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .stroke(Color.black.opacity(0.06), lineWidth: 1)
+                                .strokeBorder(quizQuestionBorderColor, lineWidth: quizQuestionBorderWidth)
                         )
+                        .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
                         .padding(.horizontal)
                         
                         if (quizDifficulty == "normal" || quizDifficulty == "hard") && selectedOption == nil {
-                            HStack(spacing: 6) {
-                                Image(systemName: "timer")
-                                Text("Time left: \(remainingSeconds)s")
-                                    .monospacedDigit()
-                            }
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(timerColor(for: remainingSeconds))
-                            .scaleEffect(pulseOn ? 1.12 : 1.0)
-                            .animation(.easeInOut(duration: 0.25), value: pulseOn)
-                            .frame(maxWidth: .infinity)
-                            .padding(.top, 4)
+                            GameTimerCard(
+                                remainingSeconds: remainingSeconds,
+                                tint: timerColor(for: remainingSeconds),
+                                isPulsing: pulseOn
+                            )
+                            .padding(.horizontal)
                         }
                         
                         Text("Which book is this from?")
@@ -540,8 +535,8 @@ struct QuizView: View {
         showAnswerReveal = false
         
         switch quizDifficulty {
-        case "normal": remainingSeconds = 30
-        case "hard": remainingSeconds = 20
+        case "normal": remainingSeconds = 15
+        case "hard": remainingSeconds = 8
         default: remainingSeconds = 0
         }
         
@@ -562,8 +557,8 @@ struct QuizView: View {
         currentIndex = history.count - 1
         loadQuestion(from: q)
         switch quizDifficulty {
-        case "normal": remainingSeconds = 30
-        case "hard": remainingSeconds = 20
+        case "normal": remainingSeconds = 15
+        case "hard": remainingSeconds = 8
         default: remainingSeconds = 0
         }
         wasInRedZone = false
@@ -688,6 +683,20 @@ struct QuizView: View {
         return option
     }
 
+    private var quizTimerIsActive: Bool {
+        started &&
+        selectedOption == nil &&
+        (quizDifficulty == "normal" || quizDifficulty == "hard")
+    }
+
+    private var quizQuestionBorderColor: Color {
+        quizTimerIsActive ? timerColor(for: remainingSeconds) : Color.primary.opacity(0.12)
+    }
+
+    private var quizQuestionBorderWidth: CGFloat {
+        quizTimerIsActive ? 2 : 1
+    }
+
     private func timerColor(for seconds: Int) -> Color {
         switch quizDifficulty {
         case "normal":
@@ -695,8 +704,8 @@ struct QuizView: View {
             else if seconds >= 5 { return .yellow }
             else { return .red }
         case "hard":
-            if seconds > 8 { return .green }
-            else if seconds >= 4 { return .yellow }
+            if seconds > 5 { return .green }
+            else if seconds >= 3 { return .yellow }
             else { return .red }
         default:
             return .secondary
@@ -706,7 +715,7 @@ struct QuizView: View {
     private func isInRedZone(_ seconds: Int) -> Bool {
         switch quizDifficulty {
         case "normal": return seconds < 5
-        case "hard": return seconds < 4
+        case "hard": return seconds < 3
         default: return false
         }
     }
