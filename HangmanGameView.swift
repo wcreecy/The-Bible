@@ -97,6 +97,8 @@ struct HangmanGameView: View {
 
     // Keyboard layout toggle: false = QWERTY, true = A-Z
     @State private var useAlphabeticalLayout: Bool = false
+    @State private var showsOnScreenKeyboard: Bool = true
+    @State private var showsHangmanCardFirst: Bool = false
 
     // MARK: - Persistent streak helpers (per difficulty)
     private func persistentKeys() -> (current: String, best: String) {
@@ -133,45 +135,52 @@ struct HangmanGameView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 12) {
-                if !started {
-                    startSection
-                } else {
-                    #if canImport(UIKit)
-                    KeyCaptureRepresentable(
-                        onKey: { ch in
-                            if !roundOver {
-                                guess(ch)
-                            }
-                        },
-                        onBackspace: {},
-                        onEnter: {
-                            if roundOver {
-                                nextRound()
-                            }
-                        }
-                    )
-                    .frame(width: 0, height: 0)
-                    .accessibilityHidden(true)
-                    #endif
+        GeometryReader { geometry in
+            let usesWideLayout = started && geometry.size.width >= 900
 
-                    inGameSection
+            ScrollView {
+                VStack(spacing: 12) {
+                    if !started {
+                        startSection
+                    } else {
+                        #if canImport(UIKit)
+                        KeyCaptureRepresentable(
+                            onKey: { ch in
+                                if !roundOver {
+                                    guess(ch)
+                                }
+                            },
+                            onBackspace: {},
+                            onEnter: {
+                                if roundOver {
+                                    nextRound()
+                                }
+                            }
+                        )
+                        .frame(width: 0, height: 0)
+                        .accessibilityHidden(true)
+                        #endif
 
-                    if debugAutoWinEnabled, started, !roundOver {
-                        Button("WIN") {
-                            endRound(win: true)
+                        inGameSection(
+                            usesWideLayout: usesWideLayout,
+                            availableHeight: geometry.size.height - 24
+                        )
+
+                        if debugAutoWinEnabled, started, !roundOver {
+                            Button("WIN") {
+                                endRound(win: true)
+                            }
+                            .buttonStyle(ModernPillButtonStyle(tint: .red))
+                            .controlSize(.large)
+                            .padding(.top, 6)
+                            .accessibilityLabel("Win this round")
                         }
-                        .buttonStyle(ModernPillButtonStyle(tint: .red))
-                        .controlSize(.large)
-                        .padding(.top, 6)
-                        .accessibilityLabel("Win this round")
                     }
                 }
+                .padding(.horizontal)
+                .padding(.top, 8)
+                .padding(.bottom, 12)
             }
-            .padding(.horizontal)
-            .padding(.top, 8)
-            .padding(.bottom, 12)
         }
         .fontDesign(appFontDesign)
         .navigationTitle("Hangman")
@@ -297,45 +306,53 @@ struct HangmanGameView: View {
         Spacer(minLength: 24)
     }
 
-    @ViewBuilder
-    private var inGameSection: some View {
-        roundHeader
-            .padding(.horizontal, 4) // nudge header in a bit more on iPhone
+    private func inGameSection(usesWideLayout: Bool, availableHeight: CGFloat) -> some View {
+        HangmanResponsiveLayout(
+            usesWideLayout: usesWideLayout,
+            availableHeight: availableHeight,
+            showsKeyboardCard: showsOnScreenKeyboard,
+            showsHangmanCardFirst: showsHangmanCardFirst,
+            toggleKeyboardCard: { showsOnScreenKeyboard.toggle() },
+            swapCards: { showsHangmanCardFirst.toggle() }
+        ) {
+            roundHeader
+                .padding(.horizontal, 4)
+        } word: {
+            VStack(spacing: 12) {
+                Text(spacedDisplayWord())
+                    .font(.system(size: usesWideLayout ? 34 : 28, weight: .semibold, design: .monospaced))
+                    .fontDesign(appFontDesign)
+                    .multilineTextAlignment(.center)
+                    .accessibilityLabel("Word to guess")
 
-        GameScoreboardCard(
-            currentCorrect: score,
-            currentAnswered: answered,
-            currentStreak: currentStreak,
-            game: .hangman
-        )
+                Text("Mistakes: \(wrongGuesses)/\(maxWrong)")
+                    .font(.subheadline)
+                    .foregroundStyle(wrongGuesses >= maxWrong - 1 ? .red : .secondary)
 
-        HangmanDrawing(
-            revealedCount: piecesRevealed(),
-            totalPieces: 10
-        )
-        .frame(height: drawingHeight)
-        .padding(.horizontal, 12) // inset the board so it doesn’t touch the device edges
-        .padding(.top, 0)
-
-        Text(spacedDisplayWord())
-            .font(.system(size: 28, weight: .semibold, design: .monospaced))
-            .fontDesign(appFontDesign)
-            .padding(.top, 4)
-            .accessibilityLabel("Word to guess")
-
-        Text("Mistakes: \(wrongGuesses)/\(maxWrong)")
-            .font(.subheadline)
-            .foregroundStyle(wrongGuesses >= maxWrong - 1 ? .red : .secondary)
-
-        keyboardView()
-            .padding(.horizontal, 6) // pull keys (Q/P columns) in from the edges
-            .padding(.top, 8)
-
-        if roundOver {
-            Text(didWin ? "You got it!" : "Out of guesses: \(targetWord.uppercased())")
-                .font(.headline)
-                .foregroundStyle(didWin ? .green : .red)
-                .padding(.top, 6)
+                if roundOver {
+                    Text(didWin ? "You got it!" : "Out of guesses: \(targetWord.uppercased())")
+                        .font(.headline)
+                        .foregroundStyle(didWin ? .green : .red)
+                }
+            }
+        } drawing: {
+            HangmanDrawing(
+                revealedCount: piecesRevealed(),
+                totalPieces: 10
+            )
+            .frame(height: usesWideLayout ? 280 : drawingHeight)
+            .padding(.horizontal, 12)
+        } scoreboard: {
+            GameScoreboardCard(
+                currentCorrect: score,
+                currentAnswered: answered,
+                currentStreak: currentStreak,
+                game: .hangman
+            )
+        } keyboard: {
+            keyboardView(keyHeight: usesWideLayout ? 60 : 42)
+                .padding(.horizontal, 6)
+                .padding(.top, 8)
         }
     }
 
@@ -780,15 +797,7 @@ struct HangmanGameView: View {
 
     // MARK: - On-screen keyboard
 
-    private func keyboardView() -> some View {
-        let keyFontSize: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 22 : 18
-        // Slightly narrower keys on iPhone to make room for edge padding
-        let keyMinWidth: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 44 : 34
-        let keyMinHeight: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 48 : 42
-        // Tighten spacing a touch on iPhone so the keyboard fits well with the added insets
-        let keySpacing: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 10 : 8
-        let rowSpacing: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 12 : 9
-
+    private func keyboardView(keyHeight: CGFloat) -> some View {
         let qwertyRows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
         let alphaRows = ["ABCDEFG", "HIJKLMN", "OPQRSTU", "VWXYZ"]
 
@@ -800,36 +809,32 @@ struct HangmanGameView: View {
             }
         }()
 
-        return VStack(spacing: rowSpacing) {
+        return VStack(spacing: 8) {
             ForEach(rows.indices, id: \.self) { rowIndex in
                 let rowChars = rows[rowIndex]
-                HStack(spacing: keySpacing) {
+                HStack(spacing: 6) {
                     ForEach(rowChars, id: \.self) { ch in
                         let upper = Character(String(ch).uppercased())
                         let isGuessed = guessedLetters.contains(upper)
-                        let tint: Color = {
-                            if correctLetters.contains(upper) { return .green }
-                            if wrongLetters.contains(upper) { return .red }
-                            return .accentColor
-                        }()
+                        let tint: Color = correctLetters.contains(upper)
+                            ? .green
+                            : wrongLetters.contains(upper) ? .red : .accentColor
 
                         Button(action: { guess(upper) }) {
                             Text(String(ch))
-                                .font(.system(size: keyFontSize, weight: .semibold))
-                                .frame(minWidth: keyMinWidth, minHeight: keyMinHeight)
+                                .font(.headline.weight(.semibold))
+                                .frame(maxWidth: .infinity, minHeight: keyHeight)
                                 .accessibilityLabel("Letter \(String(ch))")
                         }
-                        .buttonStyle(SolidKeyButtonStyle(tint: tint))
-                        .disabled(isGuessed || roundOver)
+                        .buttonStyle(GameKeyButtonStyle(tint: tint))
+                        .allowsHitTesting(!isGuessed && !roundOver)
                         .opacity(roundOver ? 0.6 : 1.0)
 
                         if !useAlphabeticalLayout {
                             if rowIndex == rows.count - 1, ch == "M" {
                                 layoutToggleButton(
                                     title: "A-Z",
-                                    keyFontSize: keyFontSize,
-                                    keyMinWidth: keyMinWidth,
-                                    keyMinHeight: keyMinHeight
+                                    keyHeight: keyHeight
                                 )
                             }
                         }
@@ -839,9 +844,7 @@ struct HangmanGameView: View {
                         if rowIndex == rows.count - 1 {
                             layoutToggleButton(
                                 title: "QWERTY",
-                                keyFontSize: keyFontSize,
-                                keyMinWidth: keyMinWidth,
-                                keyMinHeight: keyMinHeight
+                                keyHeight: keyHeight
                             )
                         }
                     }
@@ -851,38 +854,158 @@ struct HangmanGameView: View {
     }
 
     @ViewBuilder
-    private func layoutToggleButton(title: String, keyFontSize: CGFloat, keyMinWidth: CGFloat, keyMinHeight: CGFloat) -> some View {
+    private func layoutToggleButton(title: String, keyHeight: CGFloat) -> some View {
         Button(action: { useAlphabeticalLayout.toggle() }) {
             Text(title)
-                .font(.system(size: keyFontSize - 2, weight: .semibold))
-                .frame(minWidth: keyMinWidth + 6, minHeight: keyMinHeight)
+                .font(.subheadline.weight(.semibold))
+                .frame(maxWidth: .infinity, minHeight: keyHeight)
                 .accessibilityLabel("Toggle keyboard layout")
         }
-        .buttonStyle(SolidKeyButtonStyle(tint: .secondary))
+        .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
         .disabled(roundOver)
         .opacity(roundOver ? 0.6 : 1.0)
     }
 }
 
-// MARK: - Solid key style for Hangman (filled color keys)
-private struct SolidKeyButtonStyle: ButtonStyle {
-    var tint: Color
+private struct HangmanResponsiveLayout<
+    Header: View,
+    Word: View,
+    Drawing: View,
+    Scoreboard: View,
+    Keyboard: View
+>: View {
+    let usesWideLayout: Bool
+    let availableHeight: CGFloat
+    let showsKeyboardCard: Bool
+    let showsHangmanCardFirst: Bool
+    let toggleKeyboardCard: () -> Void
+    let swapCards: () -> Void
+    let header: Header
+    let word: Word
+    let drawing: Drawing
+    let scoreboard: Scoreboard
+    let keyboard: Keyboard
 
-    func makeBody(configuration: Configuration) -> some View {
-        let pressed = configuration.isPressed
-        configuration.label
-            .foregroundStyle(.white)
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(tint)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(.white.opacity(0.12), lineWidth: 1)
-            )
-            .shadow(color: .black.opacity(pressed ? 0.06 : 0.12), radius: pressed ? 1 : 2, x: 0, y: pressed ? 0 : 1)
-            .scaleEffect(pressed ? 0.98 : 1.0)
-            .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
+    init(
+        usesWideLayout: Bool,
+        availableHeight: CGFloat,
+        showsKeyboardCard: Bool,
+        showsHangmanCardFirst: Bool,
+        toggleKeyboardCard: @escaping () -> Void,
+        swapCards: @escaping () -> Void,
+        @ViewBuilder header: () -> Header,
+        @ViewBuilder word: () -> Word,
+        @ViewBuilder drawing: () -> Drawing,
+        @ViewBuilder scoreboard: () -> Scoreboard,
+        @ViewBuilder keyboard: () -> Keyboard
+    ) {
+        self.usesWideLayout = usesWideLayout
+        self.availableHeight = availableHeight
+        self.showsKeyboardCard = showsKeyboardCard
+        self.showsHangmanCardFirst = showsHangmanCardFirst
+        self.toggleKeyboardCard = toggleKeyboardCard
+        self.swapCards = swapCards
+        self.header = header()
+        self.word = word()
+        self.drawing = drawing()
+        self.scoreboard = scoreboard()
+        self.keyboard = keyboard()
+    }
+
+    var body: some View {
+        if usesWideLayout {
+            let mainCardHeight = showsKeyboardCard
+                ? max(360, availableHeight * 0.56)
+                : max(600, availableHeight * 0.92)
+
+            VStack(spacing: 18) {
+                HStack(alignment: .top, spacing: 18) {
+                    if showsHangmanCardFirst {
+                        hangmanCard(height: mainCardHeight)
+                        gameCard(height: mainCardHeight)
+                    } else {
+                        gameCard(height: mainCardHeight)
+                        hangmanCard(height: mainCardHeight)
+                    }
+                }
+
+                if showsKeyboardCard {
+                    VStack(spacing: 14) {
+                        keyboard
+                    }
+                    .padding(AppDesignMetrics.cardPadding)
+                    .frame(
+                        maxWidth: .infinity,
+                        minHeight: max(250, availableHeight * 0.32),
+                        alignment: .top
+                    )
+                    .heroCardSurface()
+                }
+            }
+            .frame(maxWidth: 1_180)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 4)
+        } else {
+            VStack(spacing: 12) {
+                header
+                scoreboard
+                drawing
+                word
+                keyboard
+            }
+            .frame(maxWidth: 680)
+            .frame(maxWidth: .infinity)
+        }
+    }
+
+    private func gameCard(height: CGFloat) -> some View {
+        VStack(spacing: 16) {
+            HStack(spacing: 12) {
+                header
+                Spacer(minLength: 8)
+                Button(action: toggleKeyboardCard) {
+                    Label(
+                        showsKeyboardCard ? "Hide Keyboard" : "Show Keyboard",
+                        systemImage: showsKeyboardCard
+                            ? "keyboard.chevron.compact.down"
+                            : "keyboard"
+                    )
+                }
+                .labelStyle(.iconOnly)
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+            }
+
+            Spacer(minLength: 0)
+            word
+            Spacer(minLength: 0)
+            scoreboard
+        }
+        .padding(AppDesignMetrics.cardPadding)
+        .frame(maxWidth: .infinity, minHeight: height)
+        .heroCardSurface()
+    }
+
+    private func hangmanCard(height: CGFloat) -> some View {
+        VStack(spacing: 16) {
+            HStack {
+                Spacer()
+                Button(action: swapCards) {
+                    Label("Swap Cards", systemImage: "arrow.left.arrow.right")
+                }
+                .labelStyle(.iconOnly)
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .accessibilityHint("Switches the game and hangman cards to opposite sides")
+            }
+
+            Spacer(minLength: 0)
+            drawing
+            Spacer(minLength: 0)
+        }
+        .padding(AppDesignMetrics.cardPadding)
+        .frame(maxWidth: .infinity, minHeight: height)
+        .heroCardSurface()
     }
 }
 

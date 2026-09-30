@@ -86,6 +86,7 @@ struct WordleView: View {
     // Toggle for keyboard layout
     @State private var useABCLayout: Bool = false
     @State private var showsOnScreenKeyboard: Bool = true
+    @State private var showsBoardCardSecond: Bool = false
     @State private var hardwareKeyboardConnected: Bool = false
 
     // NEW: timing for each round
@@ -275,12 +276,16 @@ struct WordleView: View {
               usesWideLayout: usesWideLayout,
               availableHeight: geometry.size.height - 24,
               showsKeyboardCard: roundOver || showsOnScreenKeyboard,
+              showsBoardCardSecond: showsBoardCardSecond,
               canRevealWord: !roundOver,
               toggleKeyboardCard: {
                 showsOnScreenKeyboard.toggle()
               },
               revealWord: {
                 confirmReveal = true
+              },
+              swapCards: {
+                showsBoardCardSecond.toggle()
               }
             ) {
               GameScoreboardCard(
@@ -1299,9 +1304,11 @@ private struct WordGameResponsiveLayout<
   let usesWideLayout: Bool
   let availableHeight: CGFloat
   let showsKeyboardCard: Bool
+  let showsBoardCardSecond: Bool
   let canRevealWord: Bool
   let toggleKeyboardCard: () -> Void
   let revealWord: () -> Void
+  let swapCards: () -> Void
   let scoreboard: Scoreboard
   let board: Board
   let feedback: Feedback
@@ -1312,9 +1319,11 @@ private struct WordGameResponsiveLayout<
     usesWideLayout: Bool,
     availableHeight: CGFloat,
     showsKeyboardCard: Bool,
+    showsBoardCardSecond: Bool,
     canRevealWord: Bool,
     toggleKeyboardCard: @escaping () -> Void,
     revealWord: @escaping () -> Void,
+    swapCards: @escaping () -> Void,
     @ViewBuilder scoreboard: () -> Scoreboard,
     @ViewBuilder board: () -> Board,
     @ViewBuilder feedback: () -> Feedback,
@@ -1324,9 +1333,11 @@ private struct WordGameResponsiveLayout<
     self.usesWideLayout = usesWideLayout
     self.availableHeight = availableHeight
     self.showsKeyboardCard = showsKeyboardCard
+    self.showsBoardCardSecond = showsBoardCardSecond
     self.canRevealWord = canRevealWord
     self.toggleKeyboardCard = toggleKeyboardCard
     self.revealWord = revealWord
+    self.swapCards = swapCards
     self.scoreboard = scoreboard()
     self.board = board()
     self.feedback = feedback()
@@ -1342,49 +1353,13 @@ private struct WordGameResponsiveLayout<
 
       VStack(spacing: 18) {
         HStack(alignment: .top, spacing: 18) {
-          VStack(spacing: 16) {
-            HStack {
-              Spacer()
-
-              if canRevealWord {
-                Button(role: .destructive, action: revealWord) {
-                  Label("Reveal Word", systemImage: "eye")
-                }
-                .labelStyle(.iconOnly)
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-                .accessibilityHint("Counts as a loss")
-              }
-
-              Button(action: toggleKeyboardCard) {
-                if showsKeyboardCard {
-                  Label("Hide Keyboard", systemImage: "keyboard.chevron.compact.down")
-                } else {
-                  Label("Show Keyboard", systemImage: "keyboard")
-                }
-              }
-              .labelStyle(.iconOnly)
-              .buttonStyle(.bordered)
-              .controlSize(.small)
-            }
-
-            Spacer(minLength: 0)
-            board
-            feedback
-            Spacer(minLength: 0)
+          if showsBoardCardSecond {
+            letterTrayCard(height: mainCardHeight)
+            boardCard(height: mainCardHeight)
+          } else {
+            boardCard(height: mainCardHeight)
+            letterTrayCard(height: mainCardHeight)
           }
-          .padding(AppDesignMetrics.cardPadding)
-          .frame(maxWidth: .infinity, minHeight: mainCardHeight)
-          .heroCardSurface()
-
-          VStack(spacing: 16) {
-            letterTray
-            Spacer(minLength: 0)
-            scoreboard
-          }
-          .padding(AppDesignMetrics.cardPadding)
-          .frame(maxWidth: .infinity, minHeight: mainCardHeight)
-          .heroCardSurface()
         }
 
         if showsKeyboardCard {
@@ -1410,6 +1385,62 @@ private struct WordGameResponsiveLayout<
       .frame(maxWidth: .infinity)
       .padding(.horizontal, 16)
     }
+  }
+
+  private func boardCard(height: CGFloat) -> some View {
+    VStack(spacing: 16) {
+      HStack {
+        Spacer()
+
+        if canRevealWord {
+          Button(role: .destructive, action: revealWord) {
+            Label("Reveal Word", systemImage: "eye")
+          }
+          .labelStyle(.iconOnly)
+          .buttonStyle(.bordered)
+          .controlSize(.small)
+          .accessibilityHint("Counts as a loss")
+        }
+
+        Button(action: swapCards) {
+          Label("Swap Cards", systemImage: "arrow.left.arrow.right")
+        }
+        .labelStyle(.iconOnly)
+        .buttonStyle(.bordered)
+        .controlSize(.small)
+        .accessibilityHint("Switches the game board and letter tray cards to opposite sides")
+
+        Button(action: toggleKeyboardCard) {
+          if showsKeyboardCard {
+            Label("Hide Keyboard", systemImage: "keyboard.chevron.compact.down")
+          } else {
+            Label("Show Keyboard", systemImage: "keyboard")
+          }
+        }
+        .labelStyle(.iconOnly)
+        .buttonStyle(.bordered)
+        .controlSize(.small)
+      }
+
+      Spacer(minLength: 0)
+      board
+      feedback
+      Spacer(minLength: 0)
+    }
+    .padding(AppDesignMetrics.cardPadding)
+    .frame(maxWidth: .infinity, minHeight: height)
+    .heroCardSurface()
+  }
+
+  private func letterTrayCard(height: CGFloat) -> some View {
+    VStack(spacing: 16) {
+      letterTray
+      Spacer(minLength: 0)
+      scoreboard
+    }
+    .padding(AppDesignMetrics.cardPadding)
+    .frame(maxWidth: .infinity, minHeight: height)
+    .heroCardSurface()
   }
 }
 
