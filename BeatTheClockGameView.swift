@@ -47,6 +47,8 @@ struct BeatTheClockGameView: View {
     @State private var acceptableBooks: Set<String> = []
     @State private var showAnswers: Bool = false
     @State private var pulse: Bool = false
+    @State private var timerOnLeft: Bool = false
+    @State private var usesMutedTimerStyle: Bool = false
 
     private var allBookNames: [String] { BibleData.books.map { $0.name } }
 
@@ -106,8 +108,12 @@ struct BeatTheClockGameView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
+        GeometryReader { geometry in
+            let usesSplitLayout = started && geometry.size.width >= 700
+
+            ZStack {
+                ScrollView {
+                    VStack(spacing: 16) {
                 if !started {
                     Spacer(minLength: 32)
                     Text("Type a Bible book that mentions the shown person or place before the timer runs out.")
@@ -194,11 +200,13 @@ struct BeatTheClockGameView: View {
                     )
                     .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
 
-                    GameTimerCard(
-                        remainingSeconds: remainingSeconds,
-                        tint: timerColor,
-                        isPulsing: pulse
-                    )
+                    if !usesSplitLayout {
+                        GameTimerCard(
+                            remainingSeconds: remainingSeconds,
+                            tint: timerColor,
+                            isPulsing: pulse
+                        )
+                    }
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Type a Bible book")
@@ -284,11 +292,47 @@ struct BeatTheClockGameView: View {
                         .accessibilityLabel("Win this round")
                     }
                 }
+                    }
+                    .padding()
+                }
+                .background {
+                    if usesSplitLayout {
+                        Color.clear
+                            .heroCardSurface()
+                            .padding(12)
+                    }
+                }
+                .frame(width: usesSplitLayout ? geometry.size.width / 2 : geometry.size.width)
+                .frame(
+                    maxWidth: .infinity,
+                    alignment: usesSplitLayout && timerOnLeft ? .trailing : .leading
+                )
+
+                if usesSplitLayout {
+                    BeatTheClockLargeTimerView(
+                        remainingSeconds: remainingSeconds,
+                        tint: timerColor,
+                        isPulsing: pulse,
+                        usesMutedStyle: $usesMutedTimerStyle,
+                        onSwapSides: {
+                            withAnimation(.snappy) {
+                                timerOnLeft.toggle()
+                            }
+                        }
+                    )
+                    .frame(width: geometry.size.width / 2)
+                    .frame(maxWidth: .infinity, alignment: timerOnLeft ? .leading : .trailing)
+                }
             }
-            .padding()
         }
+        .background(AppBackgroundView(tab: .games))
         .navigationTitle("Beat the Clock")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                BeatTheClockNavigationTitle()
+            }
+        }
         .task {
             if loadedPeople.isEmpty {
                 let people = await GameDataLoaders.loadNamesAsync()
@@ -564,5 +608,102 @@ struct BeatTheClockGameView: View {
         case .normal: return .normal
         case .hard: return .hard
         }
+    }
+}
+
+private struct BeatTheClockNavigationTitle: View {
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "timer")
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(.white)
+                .frame(width: 28, height: 28)
+                .background(.tint, in: Circle())
+
+            Text("Beat the Clock")
+                .font(.headline.weight(.bold))
+                .fontDesign(.rounded)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Beat the Clock")
+    }
+}
+
+private struct BeatTheClockLargeTimerView: View {
+    let remainingSeconds: Int
+    let tint: Color
+    let isPulsing: Bool
+    @Binding var usesMutedStyle: Bool
+    let onSwapSides: () -> Void
+
+    private var timerTextColor: Color {
+        remainingSeconds > 5 && remainingSeconds <= 10 ? .black : .white
+    }
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Spacer(minLength: 0)
+
+            VStack(spacing: 24) {
+                Image(systemName: "timer")
+                    .font(.system(size: 72, weight: .semibold))
+                    .foregroundStyle(usesMutedStyle ? Color.secondary : timerTextColor.opacity(0.85))
+
+                Text("Time Remaining")
+                    .font(.largeTitle.weight(.semibold))
+                    .foregroundStyle(usesMutedStyle ? tint : timerTextColor.opacity(0.85))
+
+                Text("\(remainingSeconds)s")
+                    .font(.system(size: 180, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .minimumScaleFactor(0.5)
+                    .lineLimit(1)
+                    .foregroundStyle(usesMutedStyle ? tint : timerTextColor)
+            }
+            .scaleEffect(isPulsing ? 1.04 : 1.0)
+            .animation(.easeOut(duration: 0.18), value: isPulsing)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Time remaining")
+            .accessibilityValue("\(remainingSeconds) seconds")
+
+            Spacer(minLength: 0)
+
+            HStack(spacing: 12) {
+                Button("Swap card sides", systemImage: "arrow.left.arrow.right", action: onSwapSides)
+
+                Button(
+                    usesMutedStyle ? "Use vivid timer background" : "Use muted timer background",
+                    systemImage: "circle.lefthalf.filled"
+                ) {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        usesMutedStyle.toggle()
+                    }
+                }
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.glass(.clear))
+            .controlSize(.small)
+            .tint(usesMutedStyle ? tint : timerTextColor)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(32)
+        .background {
+            if usesMutedStyle {
+                Color.clear
+                    .heroCardSurface()
+            } else {
+                RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+                    .fill(tint)
+            }
+        }
+        .overlay {
+            if !usesMutedStyle {
+                RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+                    .strokeBorder(timerTextColor.opacity(0.22), lineWidth: 1)
+            }
+        }
+        .shadow(color: usesMutedStyle ? .clear : tint.opacity(0.25), radius: 12, x: 0, y: 5)
+        .padding(12)
+        .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
     }
 }
