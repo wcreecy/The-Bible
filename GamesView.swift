@@ -96,8 +96,8 @@ private struct DailyWordResult: Codable {
 }
 
 struct GamesView: View {
-    @State private var selection: GameRoute?
-    @State private var isPresentingProgrammatic = false
+    @Binding var path: NavigationPath
+
     @State private var todayWordResult: DailyWordResult?
     @State private var refreshToken = 0
 
@@ -149,23 +149,14 @@ struct GamesView: View {
             destination(for: route)
                 .onAppear { recordRecentlyPlayed(route) }
         }
-        .navigationDestination(isPresented: $isPresentingProgrammatic) {
-            if let selection {
-                destination(for: selection)
-                    .onAppear { recordRecentlyPlayed(selection) }
-                    .onDisappear { self.selection = nil }
-            }
-        }
         .onAppear {
-            selection = nil
             loadTodayWordResult()
             seedRecentGameIfNeeded()
         }
         .onReceive(NotificationCenter.default.publisher(for: .openGameStart)) { note in
             guard let name = note.userInfo?["gameName"] as? String,
                   let route = GameRoute.allCases.first(where: { $0.displayName == name }) else { return }
-            selection = route
-            isPresentingProgrammatic = true
+            path.append(route)
         }
         .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
             refreshToken &+= 1
@@ -220,8 +211,7 @@ struct GamesView: View {
     }
 
     private func present(_ route: GameRoute) {
-        selection = route
-        isPresentingProgrammatic = true
+        path.append(route)
     }
 
     private func recordRecentlyPlayed(_ route: GameRoute) {
@@ -382,5 +372,7 @@ private struct GameRowIcon: View {
 }
 
 #Preview {
-    NavigationStack { GamesView() }
+    NavigationStack {
+        GamesView(path: .constant(NavigationPath()))
+    }
 }

@@ -123,8 +123,10 @@ struct HomeBibleReaderCard: View {
                 Button {
                     Task { await showNextChapter() }
                 } label: {
-                    Label("Next", systemImage: "chevron.right")
-                        .labelStyle(.titleAndIcon)
+                    HStack(spacing: 4) {
+                        Text("Next")
+                        Image(systemName: "chevron.right")
+                    }
                 }
                 .disabled(!canShowNextChapter)
             }

@@ -98,7 +98,7 @@ struct ContentView: View {
             .tag(AppTab.favorites)
 
             NavigationStack(path: $gamesPath) {
-                GamesView()
+                GamesView(path: $gamesPath)
             }
             .tabItem { Label("Games", systemImage: "gamecontroller") }
             .tag(AppTab.games)
