@@ -48,6 +48,7 @@ struct WordleView: View {
     @State private var roundOver: Bool = false
     @State private var message: String? = nil
     @State private var keyboardStates: [Character: KeyState] = [:]
+    private static let alphabet = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
     // NEW: selected tile (row, col) for pinning — active row only
     @State private var selectedCell: (row: Int, col: Int)? = nil
@@ -240,119 +241,124 @@ struct WordleView: View {
     @State private var selectedRef: ScriptureRef? = nil
     @State private var loadedPreview: (title: String, verses: [Verse])? = nil
 
-    var body: some View {
-        ScrollView(.vertical) {
-            VStack(spacing: 12) {
-                if !started {
-                    startScreen()
-                } else {
-                    #if canImport(UIKit)
-                    KeyCaptureRepresentable(
-                        onKey: { ch in tapLetter(ch) },
-                        onBackspace: { deleteLetter() },
-                        onEnter: {
-                            if !roundOver, isCurrentRowFull() {
-                                submitGuess()
-                            }
-                        }
-                    )
-                    .frame(width: 0, height: 0)
-                    .accessibilityHidden(true)
-                    #endif
+  var body: some View {
+    GeometryReader { geometry in
+      let usesWideLayout = started && geometry.size.width >= 900
+      let correctLetters = Self.alphabet.filter { keyboardStates[$0] == .correct }
+      let presentLetters = Self.alphabet.filter { keyboardStates[$0] == .present }
+      let absentLetters = Self.alphabet.filter { keyboardStates[$0] == .absent }
 
-                    GameScoreboardCard(
-                        currentCorrect: score,
-                        currentAnswered: answered,
-                        currentStreak: currentStreak,
-                        game: .wordle,
-                        wordMode: hardModeEnabled ? .hard : .normal
-                    )
-                    .padding(.horizontal)
-
-                    boardView()
-                        .padding(.horizontal)
-
-                    if !roundOver, let msg = message {
-                        Text(msg)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.red)
-                            .padding(.top, 4)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
-                    }
-
-                    if roundOver {
-                        answerHighlightView()
-                            .padding(.horizontal)
-                            .padding(.top, 4)
-                    }
-
-                    if roundOver {
-                        endOfRoundActionArea()
-                            .padding(.horizontal)
-                            .padding(.top, 6)
-                    } else {
-                        keyboardView()
-                            .padding(.horizontal)
-
-                        HStack {
-                            Button(action: {
-                                submitGuess()
-                            }) {
-                                Label("Enter", systemImage: "return")
-                                    .labelStyle(.titleAndIcon)
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
-                            .disabled(roundOver || !isCurrentRowFull())
-                            .accessibilityLabel("Enter")
-                        }
-                        .padding(.horizontal)
-                        .padding(.top, 4)
-
-                        HStack {
-                            Button(role: .destructive, action: {
-                                guard !roundOver else { return }
-                                confirmReveal = true
-                            }) {
-                                Label("Reveal Word", systemImage: "eye")
-                                    .labelStyle(.titleAndIcon)
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(GameKeyButtonStyle(tint: .red))
-                            .disabled(roundOver)
-                            .accessibilityLabel("Reveal Word. Counts as a loss.")
-                        }
-                        .padding(.horizontal)
-                        .padding(.top, 2)
-
-                        // DEBUG: WIN button
-                        if debugAutoWinEnabled, started, !roundOver {
-                            Button("WIN") {
-                                endRound(win: true)
-                            }
-                            .buttonStyle(ModernPillButtonStyle(tint: .red))
-                            .controlSize(.large)
-                            .padding(.top, 6)
-                            .accessibilityLabel("Win this round")
-                        }
-                    }
+      ScrollView(.vertical) {
+        VStack(spacing: 12) {
+          if !started {
+            startScreen()
+          } else {
+            #if canImport(UIKit)
+              KeyCaptureRepresentable(
+                onKey: { ch in tapLetter(ch) },
+                onBackspace: { deleteLetter() },
+                onEnter: {
+                  if !roundOver, isCurrentRowFull() {
+                    submitGuess()
+                  }
                 }
+              )
+              .frame(width: 0, height: 0)
+              .accessibilityHidden(true)
+            #endif
+
+            WordGameResponsiveLayout(
+              usesWideLayout: usesWideLayout,
+              availableHeight: geometry.size.height - 24
+            ) {
+              GameScoreboardCard(
+                currentCorrect: score,
+                currentAnswered: answered,
+                currentStreak: currentStreak,
+                game: .wordle,
+                wordMode: hardModeEnabled ? .hard : .normal
+              )
+            } board: {
+              boardView()
+            } feedback: {
+              VStack(spacing: 10) {
+                if !roundOver, let msg = message {
+                  Text(msg)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.red)
+                    .multilineTextAlignment(.center)
+                }
+
+                if roundOver {
+                  answerHighlightView()
+                }
+              }
+            } letterTray: {
+              WordTriedLettersCard(
+                correctLetters: correctLetters,
+                presentLetters: presentLetters,
+                absentLetters: absentLetters
+              )
+            } inputControls: {
+              VStack(spacing: 10) {
+                if roundOver {
+                  endOfRoundActionArea()
+                } else {
+                  keyboardView()
+
+                  Button(action: submitGuess) {
+                    Label("Enter", systemImage: "return")
+                      .labelStyle(.titleAndIcon)
+                      .font(.headline)
+                      .frame(maxWidth: .infinity)
+                  }
+                  .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
+                  .disabled(!isCurrentRowFull())
+                  .accessibilityLabel("Enter")
+
+                  Button(
+                    role: .destructive,
+                    action: {
+                      confirmReveal = true
+                    }
+                  ) {
+                    Label("Reveal Word", systemImage: "eye")
+                      .labelStyle(.titleAndIcon)
+                      .font(.headline)
+                      .frame(maxWidth: .infinity)
+                  }
+                  .buttonStyle(GameKeyButtonStyle(tint: .red))
+                  .accessibilityLabel("Reveal Word. Counts as a loss.")
+
+                  if debugAutoWinEnabled {
+                    Button("WIN") {
+                      endRound(win: true)
+                    }
+                    .buttonStyle(ModernPillButtonStyle(tint: .red))
+                    .controlSize(.large)
+                    .accessibilityLabel("Win this round")
+                  }
+                }
+              }
             }
-            .padding(.top, 8)
-            .padding(.bottom, 16)
+          }
         }
-        .safeAreaInset(edge: .bottom) {
-            Color.clear.frame(height: 6)
-        }
-        .navigationTitle("WORD")
-        .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $showRefSheet, onDismiss: {
-            selectedRef = nil
-            loadedPreview = nil
-        }) {
+        .padding(.top, 8)
+        .padding(.bottom, 16)
+      }
+    }
+    .safeAreaInset(edge: .bottom) {
+      Color.clear.frame(height: 6)
+    }
+    .navigationTitle("WORD")
+    .navigationBarTitleDisplayMode(.inline)
+    .sheet(
+      isPresented: $showRefSheet,
+      onDismiss: {
+        selectedRef = nil
+        loadedPreview = nil
+      }
+    ) {
             NavigationStack {
                 VStack(alignment: .leading, spacing: 12) {
                     if let preview = loadedPreview {
@@ -1227,70 +1233,224 @@ struct WordleView: View {
                         .disabled(true)
                         .accessibilityLabel("Daily completed. Come back tomorrow.")
                 } else {
-                    Button("Play Daily") { startNewRound(practice: false) }
-                        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                        .controlSize(.large)
-                }
-            }
+          Button("Play Daily") { startNewRound(practice: false) }
+            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+            .controlSize(.large)
         }
+      }
     }
+  }
 
-    private func formatElapsed(_ s: Int) -> String {
-        let seconds = max(0, s)
-        let h = seconds / 3600
-        let m = (seconds % 3600) / 60
-        let sec = seconds % 60
-        if h > 0 {
-            return String(format: "%d:%02d:%02d", h, m, sec)
-        } else {
-            return String(format: "%d:%02d", m, sec)
-        }
+  private func formatElapsed(_ s: Int) -> String {
+    let seconds = max(0, s)
+    let h = seconds / 3600
+    let m = (seconds % 3600) / 60
+    let sec = seconds % 60
+    if h > 0 {
+      return String(format: "%d:%02d:%02d", h, m, sec)
+    } else {
+      return String(format: "%d:%02d", m, sec)
     }
+  }
+}
+
+private struct WordGameResponsiveLayout<
+  Scoreboard: View, Board: View, Feedback: View, LetterTray: View, InputControls: View
+>: View {
+  let usesWideLayout: Bool
+  let availableHeight: CGFloat
+  let scoreboard: Scoreboard
+  let board: Board
+  let feedback: Feedback
+  let letterTray: LetterTray
+  let inputControls: InputControls
+
+  init(
+    usesWideLayout: Bool,
+    availableHeight: CGFloat,
+    @ViewBuilder scoreboard: () -> Scoreboard,
+    @ViewBuilder board: () -> Board,
+    @ViewBuilder feedback: () -> Feedback,
+    @ViewBuilder letterTray: () -> LetterTray,
+    @ViewBuilder inputControls: () -> InputControls
+  ) {
+    self.usesWideLayout = usesWideLayout
+    self.availableHeight = availableHeight
+    self.scoreboard = scoreboard()
+    self.board = board()
+    self.feedback = feedback()
+    self.letterTray = letterTray()
+    self.inputControls = inputControls()
+  }
+
+  var body: some View {
+    if usesWideLayout {
+      VStack(spacing: 18) {
+        HStack(alignment: .top, spacing: 18) {
+          VStack(spacing: 16) {
+            Label("WORD Board", systemImage: "square.grid.3x3.fill")
+              .font(.headline.weight(.bold))
+              .frame(maxWidth: .infinity, alignment: .leading)
+
+            Spacer(minLength: 0)
+            board
+            feedback
+            Spacer(minLength: 0)
+          }
+          .padding(AppDesignMetrics.cardPadding)
+          .frame(maxWidth: .infinity, minHeight: max(360, availableHeight * 0.56))
+          .heroCardSurface()
+
+          VStack(spacing: 16) {
+            letterTray
+            Spacer(minLength: 0)
+            scoreboard
+          }
+          .padding(AppDesignMetrics.cardPadding)
+          .frame(maxWidth: .infinity, minHeight: max(360, availableHeight * 0.56))
+          .heroCardSurface()
+        }
+
+        VStack(spacing: 14) {
+          Label("Keyboard", systemImage: "keyboard")
+            .font(.headline.weight(.bold))
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+          inputControls
+        }
+        .padding(AppDesignMetrics.cardPadding)
+        .frame(maxWidth: .infinity, minHeight: max(250, availableHeight * 0.32), alignment: .top)
+        .heroCardSurface()
+      }
+      .frame(maxWidth: 1_180)
+      .frame(maxWidth: .infinity)
+      .padding(.horizontal, 20)
+    } else {
+      VStack(spacing: 12) {
+        scoreboard
+        board
+        feedback
+        inputControls
+      }
+      .frame(maxWidth: 680)
+      .frame(maxWidth: .infinity)
+      .padding(.horizontal, 16)
+    }
+  }
+}
+
+private struct WordTriedLettersCard: View {
+  let correctLetters: [Character]
+  let presentLetters: [Character]
+  let absentLetters: [Character]
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 18) {
+      Label("Letters Tried", systemImage: "textformat.abc")
+        .font(.headline.weight(.bold))
+
+      WordLetterGroup(title: "Correct", letters: correctLetters, tint: .green)
+      WordLetterGroup(title: "In the Word", letters: presentLetters, tint: .yellow)
+      WordLetterGroup(title: "Not in the Word", letters: absentLetters, tint: .gray)
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+  }
+}
+
+private struct WordLetterGroup: View {
+  let title: LocalizedStringKey
+  let letters: [Character]
+  let tint: Color
+
+  private let columns = [GridItem(.adaptive(minimum: 42), spacing: 8)]
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      HStack {
+        Text(title)
+          .font(.subheadline.weight(.semibold))
+        Spacer()
+        Text(letters.count, format: .number)
+          .font(.caption.monospacedDigit())
+          .foregroundStyle(.secondary)
+      }
+
+      if letters.isEmpty {
+        Text("No letters yet")
+          .font(.footnote)
+          .foregroundStyle(.tertiary)
+          .frame(maxWidth: .infinity, minHeight: 42, alignment: .leading)
+      } else {
+        LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+          ForEach(letters, id: \.self) { letter in
+            Text(String(letter))
+              .font(.headline.monospaced().weight(.bold))
+              .frame(maxWidth: .infinity, minHeight: 42)
+              .background(
+                tint.opacity(0.22), in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+              )
+              .overlay {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                  .stroke(tint.opacity(0.65), lineWidth: 1)
+              }
+              .accessibilityLabel("Letter \(String(letter))")
+          }
+        }
+      }
+    }
+    .padding(12)
+    .background(.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+  }
 }
 
 #if canImport(UIKit)
-private struct KeyCaptureRepresentable: UIViewRepresentable {
+  private struct KeyCaptureRepresentable: UIViewRepresentable {
     var onKey: (Character) -> Void
     var onBackspace: () -> Void
     var onEnter: () -> Void
 
     final class KeyView: UIView {
-        var onKey: ((Character) -> Void)?
-        var onBackspace: (() -> Void)?
-        var onEnter: (() -> Void)?
+      var onKey: ((Character) -> Void)?
+      var onBackspace: (() -> Void)?
+      var onEnter: (() -> Void)?
 
-        override var canBecomeFirstResponder: Bool { true }
+      override var canBecomeFirstResponder: Bool { true }
 
-        override var keyCommands: [UIKeyCommand]? {
-            var cmds: [UIKeyCommand] = []
-            let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            for ch in letters {
-                cmds.append(UIKeyCommand(input: String(ch), modifierFlags: [], action: #selector(handleKey(_:))))
-                cmds.append(UIKeyCommand(input: String(ch.lowercased()), modifierFlags: [], action: #selector(handleKey(_:))))
-            }
-            cmds.append(UIKeyCommand(input: UIKeyCommand.inputDelete, modifierFlags: [], action: #selector(handleDelete)))
-            cmds.append(UIKeyCommand(input: "\r", modifierFlags: [], action: #selector(handleEnter)))
-            cmds.append(UIKeyCommand(input: "\n", modifierFlags: [], action: #selector(handleEnter)))
-            return cmds
+      override var keyCommands: [UIKeyCommand]? {
+        var cmds: [UIKeyCommand] = []
+        let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        for ch in letters {
+          cmds.append(
+            UIKeyCommand(input: String(ch), modifierFlags: [], action: #selector(handleKey(_:))))
+          cmds.append(
+            UIKeyCommand(
+              input: String(ch.lowercased()), modifierFlags: [], action: #selector(handleKey(_:))))
         }
+        cmds.append(
+          UIKeyCommand(
+            input: UIKeyCommand.inputDelete, modifierFlags: [], action: #selector(handleDelete)))
+        cmds.append(UIKeyCommand(input: "\r", modifierFlags: [], action: #selector(handleEnter)))
+        cmds.append(UIKeyCommand(input: "\n", modifierFlags: [], action: #selector(handleEnter)))
+        return cmds
+      }
 
-        @objc private func handleKey(_ sender: UIKeyCommand) {
-            guard let s = sender.input, let first = s.uppercased().first, first.isLetter else { return }
-            onKey?(first)
-        }
+      @objc private func handleKey(_ sender: UIKeyCommand) {
+        guard let s = sender.input, let first = s.uppercased().first, first.isLetter else { return }
+        onKey?(first)
+      }
 
-        @objc private func handleDelete() { onBackspace?() }
-        @objc private func handleEnter() { onEnter?() }
+      @objc private func handleDelete() { onBackspace?() }
+      @objc private func handleEnter() { onEnter?() }
     }
 
     func makeUIView(context: Context) -> KeyView {
-        let v = KeyView()
-        v.isUserInteractionEnabled = false
-        v.onKey = onKey
-        v.onBackspace = onBackspace
-        v.onEnter = onEnter
-        DispatchQueue.main.async { v.becomeFirstResponder() }
-        return v
+      let v = KeyView()
+      v.isUserInteractionEnabled = false
+      v.onKey = onKey
+      v.onBackspace = onBackspace
+      v.onEnter = onEnter
+      DispatchQueue.main.async { v.becomeFirstResponder() }
+      return v
     }
 
     func updateUIView(_ uiView: KeyView, context: Context) {
