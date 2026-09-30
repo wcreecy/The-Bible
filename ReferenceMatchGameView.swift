@@ -1,18 +1,19 @@
 import SwiftUI
 import SwiftData
 
+private struct MatchChoice: Hashable, Identifiable {
+    let id = UUID()
+    let snippet: String
+    let bookName: String
+    let chapterNumber: Int
+    let verseNumber: Int
+    let verseText: String
+}
+
 struct VerseMatchGameView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Query private var favorites: [Favorite]
-
-    private struct AnswerOption: Hashable, Identifiable {
-        let id = UUID()
-        let snippet: String
-        let bookName: String
-        let chapterNumber: Int
-        let verseNumber: Int
-        let verseText: String
-    }
 
     enum Difficulty: String, CaseIterable, Identifiable { case easy, normal, hard; var id: String { rawValue } }
     @State private var difficulty: Difficulty = .normal
@@ -33,7 +34,7 @@ struct VerseMatchGameView: View {
     @State private var currentBestStreak: Int = 0
 
     // History of questions to support Previous/Next navigation
-    @State private var history: [(book: Book, chapter: Chapter, verse: Verse, options: [AnswerOption], correctIndex: Int, selectedIndex: Int?)] = []
+    @State private var history: [(book: Book, chapter: Chapter, verse: Verse, options: [MatchChoice], correctIndex: Int, selectedIndex: Int?)] = []
     @State private var currentIndex: Int = -1
 
     // Aggregated all-time stats across all difficulties (use combined “_all” keys)
@@ -45,9 +46,10 @@ struct VerseMatchGameView: View {
     @State private var refChapter: Chapter? = nil
     @State private var refVerse: Verse? = nil
 
-    @State private var options: [AnswerOption] = []
+    @State private var options: [MatchChoice] = []
     @State private var correctIndex: Int = -1
     @State private var selectedIndex: Int? = nil
+    @State private var referenceOnLeading = true
 
     // MARK: - Persistent streak helpers (per difficulty)
     private func persistentSuffix() -> String {
@@ -159,72 +161,17 @@ struct VerseMatchGameView: View {
                         game: .versematch
                     )
 
-                    GroupBox {
-                        VStack(alignment: .leading, spacing: 8) {
-                            if let b = refBook, let c = refChapter, let v = refVerse {
-                                Text("Reference")
-                                    .font(.headline)
-                                HStack(spacing: 8) {
-                                    Text("\(b.name) \(c.number):\(v.number)")
-                                        .font(.title3)
-                                        .fontWeight(.semibold)
-                                }
-                            } else {
-                                Text("No reference")
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-
-                    Text("Which verse matches this reference?")
-                        .font(.headline)
-                        .padding(.top, 4)
-
-                    VStack(spacing: 12) {
-                        ForEach(Array(options.enumerated()), id: \.element.id) { (idx, opt) in
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(opt.snippet)
-                                    .font(.body)
-                                    .multilineTextAlignment(.leading)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                if selectedIndex != nil {
-                                    HStack(spacing: 8) {
-                                        Text("\(opt.bookName) \(opt.chapterNumber):\(opt.verseNumber)")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                        Spacer()
-                                        VerseActionMenu(
-                                            verse: VerseActionReference(
-                                                bookName: opt.bookName,
-                                                chapterNumber: opt.chapterNumber,
-                                                verseNumber: opt.verseNumber,
-                                                verseText: opt.verseText
-                                            )
-                                        )
-                                    }
-                                }
-                            }
-                            .padding()
-                            .background(buttonBackground(forIndex: idx))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .stroke(buttonBorder(forIndex: idx), lineWidth: 1)
-                            )
-                            .cornerRadius(12)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                if selectedIndex == nil { select(idx) }
-                            }
-                        }
-                    }
-
-                    if let sel = selectedIndex {
-                        let correct = sel == correctIndex
-                        Text(correct ? "Correct!" : "Not quite.")
-                            .font(.headline)
-                            .foregroundStyle(correct ? .green : .red)
-                            .padding(.top, 8)
-                    }
+                    VerseMatchBoard(
+                        referenceBookName: refBook?.name,
+                        referenceChapterNumber: refChapter?.number,
+                        referenceVerseNumber: refVerse?.number,
+                        options: options,
+                        selectedIndex: selectedIndex,
+                        correctIndex: correctIndex,
+                        usesSideBySideLayout: horizontalSizeClass == .regular,
+                        referenceOnLeading: $referenceOnLeading,
+                        onSelect: select
+                    )
 
                     // DEBUG: WIN button
                     if debugAutoWinEnabled, started, selectedIndex == nil, correctIndex >= 0 {
@@ -365,7 +312,7 @@ struct VerseMatchGameView: View {
             else { return }
 
             // Build correct option
-            let correct = AnswerOption(
+            let correct = MatchChoice(
                 snippet: snippet(for: verse.text),
                 bookName: book.name,
                 chapterNumber: chapter.number,
@@ -375,7 +322,7 @@ struct VerseMatchGameView: View {
 
             // Build distractors according to difficulty rules
             let neededDistractors = 3 // 4 options total
-            var distractors: [AnswerOption] = []
+            var distractors: [MatchChoice] = []
 
             switch difficulty {
             case .easy:
@@ -555,7 +502,7 @@ struct VerseMatchGameView: View {
     private func makeDistinctBookDistractorsAcrossAll(
         excluding target: (book: String, chapter: Int, verse: Int),
         count: Int
-    ) -> [AnswerOption]? {
+    ) -> [MatchChoice]? {
         let allBooks = BibleData.books
         return makeDistinctBookDistractors(
             from: allBooks,
@@ -571,9 +518,9 @@ struct VerseMatchGameView: View {
         excludingBookName: String,
         excludingReference: (book: String, chapter: Int, verse: Int),
         count: Int
-    ) -> [AnswerOption]? {
+    ) -> [MatchChoice]? {
         var usedBooks = Set<String>()
-        var out: [AnswerOption] = []
+        var out: [MatchChoice] = []
 
         // Shuffle book order first to encourage wide spread
         for b in books.shuffled() {
@@ -581,13 +528,13 @@ struct VerseMatchGameView: View {
             if usedBooks.contains(b.name) { continue }
 
             // Find any verse in this book that isn't the exact reference (book/chapter/verse)
-            var foundOption: AnswerOption? = nil
+            var foundOption: MatchChoice? = nil
             outer: for c in b.chapters.shuffled() {
                 for v in c.verses.shuffled() {
                     if b.name == excludingReference.book && c.number == excludingReference.chapter && v.number == excludingReference.verse {
                         continue
                     }
-                    foundOption = AnswerOption(
+                    foundOption = MatchChoice(
                         snippet: snippet(for: v.text),
                         bookName: b.name,
                         chapterNumber: c.number,
@@ -614,16 +561,16 @@ struct VerseMatchGameView: View {
         book: Book,
         excluding target: (chapter: Int, verse: Int),
         count: Int
-    ) -> [AnswerOption]? {
+    ) -> [MatchChoice]? {
         var picks: Set<String> = []
-        var out: [AnswerOption] = []
+        var out: [MatchChoice] = []
         for c in book.chapters.shuffled() {
             for v in c.verses.shuffled() {
                 if c.number == target.chapter && v.number == target.verse { continue }
                 let key = "\(c.number)-\(v.number)"
                 if picks.contains(key) { continue }
                 picks.insert(key)
-                out.append(AnswerOption(
+                out.append(MatchChoice(
                     snippet: snippet(for: v.text),
                     bookName: book.name,
                     chapterNumber: c.number,
@@ -657,5 +604,200 @@ struct VerseMatchGameView: View {
         case .normal: return .normal
         case .hard: return .hard
         }
+    }
+}
+
+private struct VerseMatchBoard: View {
+    let referenceBookName: String?
+    let referenceChapterNumber: Int?
+    let referenceVerseNumber: Int?
+    let options: [MatchChoice]
+    let selectedIndex: Int?
+    let correctIndex: Int
+    let usesSideBySideLayout: Bool
+    @Binding var referenceOnLeading: Bool
+    let onSelect: (Int) -> Void
+
+    var body: some View {
+        if usesSideBySideLayout {
+            HStack(alignment: .top, spacing: 20) {
+                if referenceOnLeading {
+                    referenceCard
+                    answersCard
+                } else {
+                    answersCard
+                    referenceCard
+                }
+            }
+            .animation(.easeInOut(duration: 0.2), value: referenceOnLeading)
+        } else {
+            VStack(spacing: 16) {
+                referenceCard
+                answersCard
+            }
+        }
+    }
+
+    private var referenceCard: some View {
+        VerseMatchReferenceCard(
+            bookName: referenceBookName,
+            chapterNumber: referenceChapterNumber,
+            verseNumber: referenceVerseNumber,
+            showsSwapButton: usesSideBySideLayout,
+            onSwap: { referenceOnLeading.toggle() }
+        )
+        .frame(maxWidth: .infinity)
+    }
+
+    private var answersCard: some View {
+        VerseMatchAnswersCard(
+            options: options,
+            selectedIndex: selectedIndex,
+            correctIndex: correctIndex,
+            onSelect: onSelect
+        )
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private struct VerseMatchReferenceCard: View {
+    let bookName: String?
+    let chapterNumber: Int?
+    let verseNumber: Int?
+    let showsSwapButton: Bool
+    let onSwap: () -> Void
+
+    var body: some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 20) {
+                HStack {
+                    Label("Reference", systemImage: "book.closed")
+                        .font(.headline)
+
+                    Spacer()
+
+                    if showsSwapButton {
+                        Button(action: onSwap) {
+                            Image(systemName: "arrow.left.arrow.right")
+                        }
+                        .buttonStyle(.bordered)
+                        .accessibilityLabel("Swap card sides")
+                        .accessibilityHint("Moves the reference and answers cards to opposite sides.")
+                    }
+                }
+
+                Spacer(minLength: 12)
+
+                if let bookName, let chapterNumber, let verseNumber {
+                    Text("\(bookName) \(chapterNumber):\(verseNumber)")
+                        .font(.largeTitle.weight(.semibold))
+                        .minimumScaleFactor(0.75)
+                } else {
+                    Text("No reference")
+                        .font(.title2)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer(minLength: 12)
+            }
+            .frame(maxWidth: .infinity, minHeight: 280, alignment: .topLeading)
+            .padding(4)
+        }
+    }
+}
+
+private struct VerseMatchAnswersCard: View {
+    let options: [MatchChoice]
+    let selectedIndex: Int?
+    let correctIndex: Int
+    let onSelect: (Int) -> Void
+
+    var body: some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 12) {
+                Label("Potential Answers", systemImage: "text.page")
+                    .font(.headline)
+
+                Text("Which verse matches this reference?")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+
+                ForEach(Array(options.enumerated()), id: \.element.id) { index, option in
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(option.snippet)
+                            .font(.body)
+                            .multilineTextAlignment(.leading)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                        if selectedIndex != nil {
+                            HStack(spacing: 8) {
+                                Text("\(option.bookName) \(option.chapterNumber):\(option.verseNumber)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+
+                                Spacer()
+
+                                VerseActionMenu(
+                                    verse: VerseActionReference(
+                                        bookName: option.bookName,
+                                        chapterNumber: option.chapterNumber,
+                                        verseNumber: option.verseNumber,
+                                        verseText: option.verseText
+                                    )
+                                )
+                            }
+                        }
+                    }
+                    .padding()
+                    .background(backgroundColor(for: index))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .stroke(borderColor(for: index), lineWidth: 1)
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        if selectedIndex == nil {
+                            onSelect(index)
+                        }
+                    }
+                }
+
+                if let selectedIndex {
+                    Text(selectedIndex == correctIndex ? "Correct!" : "Not quite.")
+                        .font(.headline)
+                        .foregroundStyle(selectedIndex == correctIndex ? .green : .red)
+                        .padding(.top, 4)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(4)
+        }
+    }
+
+    private func backgroundColor(for index: Int) -> Color {
+        guard let selectedIndex else {
+            return Color(.secondarySystemBackground)
+        }
+        if index == correctIndex {
+            return Color.green.opacity(0.18)
+        }
+        if index == selectedIndex, selectedIndex != correctIndex {
+            return Color.red.opacity(0.18)
+        }
+        return Color(.secondarySystemBackground)
+    }
+
+    private func borderColor(for index: Int) -> Color {
+        guard let selectedIndex else {
+            return Color.black.opacity(0.12)
+        }
+        if index == correctIndex {
+            return Color.green.opacity(0.6)
+        }
+        if index == selectedIndex, selectedIndex != correctIndex {
+            return Color.red.opacity(0.6)
+        }
+        return Color.black.opacity(0.12)
     }
 }
