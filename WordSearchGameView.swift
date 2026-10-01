@@ -103,6 +103,11 @@ struct WordSearchGameView: View {
             }
             .navigationTitle("Word Search")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    GameNavigationTitle(title: "Word Search", systemImage: "square.grid.3x3.topleft.filled")
+                }
+            }
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 if vm.started && vm.roundOver && !isPad {
                     completionActionsPhone

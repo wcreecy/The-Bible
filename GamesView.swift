@@ -1,5 +1,26 @@
 import SwiftUI
 
+struct GameNavigationTitle: View {
+    let title: LocalizedStringKey
+    let systemImage: String
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: systemImage)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(.white)
+                .frame(width: 28, height: 28)
+                .background(.tint, in: Circle())
+
+            Text(title)
+                .font(.headline.weight(.bold))
+                .fontDesign(.rounded)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(title))
+    }
+}
+
 extension Notification.Name {
     static let openGameStart = Notification.Name("openGameStart")
 }

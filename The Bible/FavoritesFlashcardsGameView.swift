@@ -121,6 +121,14 @@ struct FavoritesFlashcardsGameView: View {
         }
         .navigationTitle("Favorites Flashcards")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                GameNavigationTitle(
+                    title: "Favorites Flashcards",
+                    systemImage: "rectangle.portrait.on.rectangle.portrait"
+                )
+            }
+        }
         .padding()
     }
     

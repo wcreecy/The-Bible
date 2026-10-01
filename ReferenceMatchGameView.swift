@@ -193,6 +193,10 @@ struct VerseMatchGameView: View {
         .navigationTitle("Verse Match")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                GameNavigationTitle(title: "Verse Match", systemImage: "text.quote")
+            }
+
             ToolbarItem(placement: .topBarLeading) {
                 if started && currentIndex > 0 {
                     Button("Previous") { currentIndex -= 1; loadFromHistory() }

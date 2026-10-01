@@ -185,6 +185,11 @@ struct HangmanGameView: View {
         .fontDesign(appFontDesign)
         .navigationTitle("Hangman")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                GameNavigationTitle(title: "Hangman", systemImage: "text.word.spacing")
+            }
+        }
         .onAppear {
             Task {
                 if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadNamesAsync() }

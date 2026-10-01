@@ -372,6 +372,11 @@ struct WordleView: View {
     }
     .navigationTitle("WORD")
     .navigationBarTitleDisplayMode(.inline)
+    .toolbar {
+      ToolbarItem(placement: .principal) {
+        GameNavigationTitle(title: "WORD", systemImage: "square.grid.3x3.fill")
+      }
+    }
     .task {
       hardwareKeyboardConnected = GCKeyboard.coalesced != nil
       showsOnScreenKeyboard = !hardwareKeyboardConnected

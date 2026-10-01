@@ -203,8 +203,14 @@ struct BookOrderGameView: View {
         .navigationTitle("Book Order")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                GameNavigationTitle(title: "Book Order", systemImage: "list.number")
+            }
+
             if vm.started {
-                EditButton()
+                ToolbarItem(placement: .topBarTrailing) {
+                    EditButton()
+                }
             }
         }
         .task(id: vm.started && !vm.showResult) {

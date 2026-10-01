@@ -253,6 +253,11 @@ struct WhoAmIGameView: View {
         }
         .navigationTitle("Who am I?")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                GameNavigationTitle(title: "Who am I?", systemImage: "person.text.rectangle")
+            }
+        }
         .onAppear { vm.onAppear() }
         .onChange(of: vm.choices) { _, _ in
             maxChoiceHeight = 0
