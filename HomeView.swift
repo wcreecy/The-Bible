@@ -264,12 +264,13 @@ struct HomeView: View {
 
     @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
     @State private var hiddenCards: Set<HomeCardID> = HomeLayoutStore.baselineHidden
+    @State private var mainCards: Set<HomeCardID> = HomeLayoutStore.baselineMain
     @State private var showMoreCards: Bool = false
     @State private var hasFavoriteLayout: Bool = false
 
     private var moreCards: [HomeCardID] {
         layoutOrder.filter {
-            ![.verseOfDay, .resumeReading].contains($0) && !hiddenCards.contains($0)
+            !mainCards.contains($0) && !hiddenCards.contains($0)
         }
     }
 
@@ -278,15 +279,16 @@ struct HomeView: View {
         let loaded = store.load()
         layoutOrder = loaded.order
         hiddenCards = loaded.hidden
+        mainCards = loaded.main
         hasFavoriteLayout = store.hasFavorite
     }
 
     private func saveHomeLayout() {
-        HomeLayoutStore().save(order: layoutOrder, hidden: hiddenCards)
+        HomeLayoutStore().save(order: layoutOrder, hidden: hiddenCards, main: mainCards)
     }
 
     private func saveFavoriteLayout() {
-        HomeLayoutStore().saveFavorite(order: layoutOrder, hidden: hiddenCards)
+        HomeLayoutStore().saveFavorite(order: layoutOrder, hidden: hiddenCards, main: mainCards)
         hasFavoriteLayout = true
     }
 
@@ -514,12 +516,8 @@ struct HomeView: View {
         homeHeader
         contextualHomeTip
 
-        if !hiddenCards.contains(.verseOfDay) {
-            card(for: .verseOfDay)
-        }
-
-        if !hiddenCards.contains(.resumeReading) {
-            card(for: .resumeReading)
+        ForEach(layoutOrder.filter { mainCards.contains($0) && !hiddenCards.contains($0) }) { cardID in
+            card(for: cardID)
         }
 
         if !moreCards.isEmpty {
@@ -595,6 +593,8 @@ struct HomeView: View {
             HomeLayoutEditorView(
                 order: $layoutOrder,
                 hiddenSet: $hiddenCards,
+                mainSet: $mainCards,
+                allowsShowMore: !isPad,
                 onDone: saveHomeLayout,
                 onSaveFavorite: saveFavoriteLayout,
                 onResetToFavorite: applyFavoriteLayout,
@@ -636,6 +636,8 @@ struct HomeView: View {
                         HomeLayoutEditorView(
                             order: $layoutOrder,
                             hiddenSet: $hiddenCards,
+                            mainSet: $mainCards,
+                            allowsShowMore: false,
                             onDone: saveHomeLayout,
                             onSaveFavorite: saveFavoriteLayout,
                             onResetToFavorite: applyFavoriteLayout,

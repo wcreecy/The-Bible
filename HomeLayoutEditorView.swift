@@ -3,6 +3,8 @@ import SwiftUI
 struct HomeLayoutEditorView: View {
     @Binding var order: [HomeCardID]
     @Binding var hiddenSet: Set<HomeCardID>
+    @Binding var mainSet: Set<HomeCardID>
+    let allowsShowMore: Bool
     var onDone: () -> Void
 
     var onSaveFavorite: () -> Void
@@ -12,10 +14,12 @@ struct HomeLayoutEditorView: View {
     @State private var editMode: EditMode = .active
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
-    private let mainCards: [HomeCardID] = [.verseOfDay, .resumeReading]
+    private var mainCards: [HomeCardID] {
+        order.filter { mainSet.contains($0) }
+    }
 
     private var showMoreCards: [HomeCardID] {
-        order.filter { !mainCards.contains($0) }
+        order.filter { !mainSet.contains($0) }
     }
 
     private func isVisible(_ id: HomeCardID) -> Bool {
@@ -34,6 +38,7 @@ struct HomeLayoutEditorView: View {
     private func resetToDefault() {
         order = HomeCardID.allCases
         hiddenSet = HomeLayoutStore.baselineHidden
+        mainSet = HomeLayoutStore.baselineMain
         onDone()
     }
 
@@ -49,6 +54,28 @@ struct HomeLayoutEditorView: View {
         onDone()
     }
 
+    private func moveMainCards(from offsets: IndexSet, to destination: Int) {
+        var reorderedCards = mainCards
+        reorderedCards.move(fromOffsets: offsets, toOffset: destination)
+        order = reorderedCards + showMoreCards
+        onDone()
+    }
+
+    private func moveAllCards(from offsets: IndexSet, to destination: Int) {
+        order.move(fromOffsets: offsets, toOffset: destination)
+        onDone()
+    }
+
+    private func moveToOtherSection(_ id: HomeCardID) {
+        if mainSet.contains(id) {
+            mainSet.remove(id)
+        } else {
+            mainSet.insert(id)
+        }
+        order = mainCards + showMoreCards
+        onDone()
+    }
+
     private func layoutRow(for id: HomeCardID) -> some View {
         HStack {
             Image(systemName: id.systemImage)
@@ -58,6 +85,20 @@ struct HomeLayoutEditorView: View {
             Text(id.title)
 
             Spacer()
+
+            if allowsShowMore {
+                Button {
+                    moveToOtherSection(id)
+                } label: {
+                    Label(
+                        mainSet.contains(id) ? "Move to Show More" : "Move to Main Home",
+                        systemImage: mainSet.contains(id) ? "arrow.down.square" : "arrow.up.square"
+                    )
+                    .labelStyle(.iconOnly)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(mainSet.contains(id) ? "Move to Show More" : "Move to Main Home")
+            }
 
             Button {
                 toggleVisibility(id)
@@ -94,33 +135,44 @@ struct HomeLayoutEditorView: View {
             if contextualTipsEnabled {
                 ContextualTipView(
                     title: "Make Home yours",
-                    message: "Use the eye buttons to show or hide cards, and drag items in Show More to reorder them.",
+                    message: allowsShowMore
+                        ? "Use the arrow buttons to move cards between Main Home and Show More. Drag to reorder cards."
+                        : "Use the eye buttons to show or hide cards, and drag to reorder them.",
                     systemImage: "rectangle.grid.1x2"
                 )
                 .listRowSeparator(.hidden)
             }
 
             Section {
-                ForEach(mainCards) { id in
+                ForEach(allowsShowMore ? mainCards : order) { id in
                     layoutRow(for: id)
+                        .moveDisabled(id == .verseOfDay)
                 }
+                .onMove(perform: allowsShowMore ? moveMainCards : moveAllCards)
             } header: {
-                Label("Main Home", systemImage: "house")
+                Label(allowsShowMore ? "Main Home" : "Home Cards", systemImage: "house")
             } footer: {
-                Text("Shown cards appear directly on Home. These are not part of the collapsed Show More section.")
+                Text(allowsShowMore
+                    ? "Shown cards appear directly on Home. Use the arrow button to move a card to Show More."
+                    : "Shown cards appear on Home. Drag to choose their order.")
+            }
+
+            if allowsShowMore {
+                Section {
+                    ForEach(showMoreCards) { id in
+                        layoutRow(for: id)
+                            .moveDisabled(id == .verseOfDay)
+                    }
+                    .onMove(perform: moveShowMoreCards)
+                } header: {
+                    Label("Inside Show More", systemImage: "square.grid.2x2")
+                } footer: {
+                    Text("Shown cards become visible only after Show More is expanded. Use the arrow button to move a card to Main Home.")
+                }
             }
 
             Section {
-                ForEach(showMoreCards) { id in
-                    layoutRow(for: id)
-                }
-                .onMove(perform: moveShowMoreCards)
-            } header: {
-                Label("Inside Show More", systemImage: "square.grid.2x2")
-            } footer: {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Shown cards become visible only after Show More is expanded. Drag to choose their order.")
-
                     footerButton(title: "Reset Layout", systemImage: "arrow.counterclockwise") {
                         resetToDefault()
                     }
