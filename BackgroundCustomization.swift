@@ -25,7 +25,7 @@ extension AppTab: Identifiable {
         switch self {
         case .home: "Home"
         case .bible: "Bible"
-        case .favorites: "Favorites"
+        case .notes: "Notes"
         case .games: "Games"
         case .more: "More"
         }

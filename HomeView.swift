@@ -485,7 +485,13 @@ struct HomeView: View {
                 DispatchQueue.main.async { switchTo(.bible) }
             },
             onFavorites: {
-                DispatchQueue.main.async { switchTo(.favorites) }
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(
+                        name: .switchToTab,
+                        object: nil,
+                        userInfo: ["tabName": "favorites"]
+                    )
+                }
             }
         )
     }

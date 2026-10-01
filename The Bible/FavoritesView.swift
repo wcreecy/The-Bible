@@ -77,7 +77,7 @@ struct FavoritesView: View {
                 .scrollContentBackground(.hidden)
             }
         }
-        .background(AppBackgroundView(tab: .favorites))
+        .background(AppBackgroundView(tab: .more))
         .navigationTitle("Favorites")
         .navigationBarTitleDisplayMode(.large)
         .toolbar { EditButton() }

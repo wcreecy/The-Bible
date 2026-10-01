@@ -18,7 +18,7 @@ struct ContentView: View {
     @StateObject private var homeCoordinator = NavigationCoordinator()
     @StateObject private var bibleCoordinator = NavigationCoordinator()
     @StateObject private var bibleStore = BibleStore.shared
-    @State private var favoritesPath = NavigationPath()
+    @State private var notesPath = NavigationPath()
     @State private var gamesPath = NavigationPath()
     @State private var morePath: [MoreDestination] = []
 
@@ -90,12 +90,11 @@ struct ContentView: View {
                 .tag(AppTab.bible)
             }
 
-            NavigationStack(path: $favoritesPath) {
-                FavoritesView()
-                    .appDestinations(readerFontSize: $readerFontSize, isPad: usesWideLayout)
+            NavigationStack(path: $notesPath) {
+                NotesAndHighlightsView()
             }
-            .tabItem { Label("Favorites", systemImage: "heart") }
-            .tag(AppTab.favorites)
+            .tabItem { Label("Notes", systemImage: "highlighter") }
+            .tag(AppTab.notes)
 
             NavigationStack(path: $gamesPath) {
                 GamesView(path: $gamesPath)
@@ -264,13 +263,7 @@ struct ContentView: View {
             NotificationCenter.default.publisher(for: .switchToTab)
                 .merge(with: NotificationCenter.default.publisher(for: .openVerseOfDayNotification))
         ) { note in
-            if note.name == .openVerseOfDayNotification {
-                handlePendingVerseOfDayNotification()
-            } else if let tabIndex = note.userInfo?["tab"] as? Int, let tab = AppTab(rawValue: tabIndex) {
-                selectedTab = tab
-            } else if let name = note.userInfo?["tabName"] as? String, let tab = AppTab.from(name: name) {
-                selectedTab = tab
-            }
+            handleTabNotification(note)
         }
         .onReceive(NotificationCenter.default.publisher(for: .openSettingsTab)) { _ in
             selectedTab = .more
@@ -315,6 +308,29 @@ struct ContentView: View {
     }
 
     // MARK: - Daily usage tracking (unchanged)...
+
+    private func handleTabNotification(_ notification: Notification) {
+        if notification.name == .openVerseOfDayNotification {
+            handlePendingVerseOfDayNotification()
+            return
+        }
+
+        if let tabIndex = notification.userInfo?["tab"] as? Int,
+           let tab = AppTab(rawValue: tabIndex) {
+            selectedTab = tab
+            return
+        }
+
+        guard let name = notification.userInfo?["tabName"] as? String,
+              let tab = AppTab.from(name: name) else { return }
+
+        selectedTab = tab
+        if name.lowercased() == "favorites" {
+            DispatchQueue.main.async {
+                morePath = [.favorites]
+            }
+        }
+    }
 
     private func handleOpenBibleSearch(_ notification: Notification) {
         if let relayed = notification.userInfo?["relayed"] as? Bool, relayed {
@@ -468,10 +484,10 @@ struct ContentView: View {
             if !usesWideLayout {
                 bibleCoordinator.reset()
             }
-        case .favorites:
-            returnedToRoot = !favoritesPath.isEmpty
+        case .notes:
+            returnedToRoot = !notesPath.isEmpty
             if returnedToRoot {
-                favoritesPath.removeLast(favoritesPath.count)
+                notesPath.removeLast(notesPath.count)
             }
         case .games:
             returnedToRoot = !gamesPath.isEmpty

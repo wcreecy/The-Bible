@@ -34,19 +34,21 @@ enum VerseHighlightColor: String, CaseIterable, Identifiable {
 @MainActor
 struct VerseNoteEditorView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.fontResolutionContext) private var fontResolutionContext
     @Environment(\.modelContext) private var modelContext
 
     let verse: VerseActionReference
     let existingNote: VerseNote?
 
-    @State private var noteText: String
+    @State private var noteText: AttributedString
+    @State private var noteSelection = AttributedTextSelection()
     @State private var selectedColor: VerseHighlightColor?
     @State private var persistenceFailure: PersistenceFailure?
 
     init(verse: VerseActionReference, existingNote: VerseNote?) {
         self.verse = verse
         self.existingNote = existingNote
-        _noteText = State(initialValue: existingNote?.content ?? "")
+        _noteText = State(initialValue: Self.loadFormattedContent(from: existingNote))
         _selectedColor = State(
             initialValue: existingNote.flatMap { VerseHighlightColor(rawValue: $0.highlightColor) }
         )
@@ -60,10 +62,18 @@ struct VerseNoteEditorView: View {
                 HighlightColorPicker(selection: $selectedColor)
             }
 
-            Section("Private Note") {
-                TextEditor(text: $noteText)
+            Section("Note") {
+                NoteFormattingBar(
+                    toggleBold: { toggleFontTrait(\.isBold) },
+                    toggleUnderline: toggleUnderline,
+                    toggleItalic: { toggleFontTrait(\.isItalic) },
+                    toggleStrikethrough: toggleStrikethrough,
+                    insertBullet: insertBullet
+                )
+
+                TextEditor(text: $noteText, selection: $noteSelection)
                     .frame(minHeight: 140)
-                    .accessibilityLabel("Private note")
+                    .accessibilityLabel("Note")
             }
 
             if existingNote != nil {
@@ -87,7 +97,48 @@ struct VerseNoteEditorView: View {
     }
 
     private var trimmedNote: String {
-        noteText.trimmingCharacters(in: .whitespacesAndNewlines)
+        String(noteText.characters).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func loadFormattedContent(from note: VerseNote?) -> AttributedString {
+        guard let note else { return AttributedString() }
+        if let data = note.formattedContent,
+           let formatted = try? JSONDecoder().decode(AttributedString.self, from: data) {
+            return formatted
+        }
+        return AttributedString(note.content)
+    }
+
+    private func toggleFontTrait(_ trait: KeyPath<Font.Resolved, Bool>) {
+        let resolvedFont = (noteSelection.typingAttributes(in: noteText).font ?? .body)
+            .resolve(in: fontResolutionContext)
+        let shouldEnable = !resolvedFont[keyPath: trait]
+        noteText.transformAttributes(in: &noteSelection) {
+            let font = $0.font ?? .body
+            if trait == \.isBold {
+                $0.font = font.bold(shouldEnable)
+            } else {
+                $0.font = font.italic(shouldEnable)
+            }
+        }
+    }
+
+    private func toggleUnderline() {
+        let shouldEnable = noteSelection.typingAttributes(in: noteText).underlineStyle == nil
+        noteText.transformAttributes(in: &noteSelection) {
+            $0.underlineStyle = shouldEnable ? .single : nil
+        }
+    }
+
+    private func toggleStrikethrough() {
+        let shouldEnable = noteSelection.typingAttributes(in: noteText).strikethroughStyle == nil
+        noteText.transformAttributes(in: &noteSelection) {
+            $0.strikethroughStyle = shouldEnable ? .single : nil
+        }
+    }
+
+    private func insertBullet() {
+        noteText.replaceSelection(&noteSelection, withCharacters: "• ")
     }
 
     private func save() {
@@ -107,6 +158,7 @@ struct VerseNoteEditorView: View {
                     verseText: verse.verseText
                 )
                 note.content = trimmedNote
+                note.formattedContent = try JSONEncoder().encode(noteText)
                 note.highlightColor = selectedColor?.rawValue ?? ""
                 note.updatedAt = Date()
                 if existingNote == nil {
@@ -136,6 +188,39 @@ struct VerseNoteEditorView: View {
             },
             onFailure: { persistenceFailure = $0 }
         )
+    }
+}
+
+private struct NoteFormattingBar: View {
+    let toggleBold: () -> Void
+    let toggleUnderline: () -> Void
+    let toggleItalic: () -> Void
+    let toggleStrikethrough: () -> Void
+    let insertBullet: () -> Void
+
+    var body: some View {
+        HStack(spacing: 6) {
+            formattingButton("Bold", systemImage: "bold", action: toggleBold)
+            formattingButton("Underline", systemImage: "underline", action: toggleUnderline)
+            formattingButton("Italic", systemImage: "italic", action: toggleItalic)
+            formattingButton("Strikethrough", systemImage: "strikethrough", action: toggleStrikethrough)
+            formattingButton("Bulleted list", systemImage: "list.bullet", action: insertBullet)
+            Spacer(minLength: 0)
+        }
+    }
+
+    private func formattingButton(
+        _ accessibilityLabel: LocalizedStringKey,
+        systemImage: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .frame(width: 30, height: 30)
+                .contentShape(.rect)
+        }
+        .buttonStyle(.borderless)
+        .accessibilityLabel(accessibilityLabel)
     }
 }
 
@@ -260,7 +345,7 @@ struct NotesAndHighlightsView: View {
                         NoteHighlightRow(
                             reference: "\(note.bookName) \(note.chapterNumber):\(note.verseNumber)",
                             verseText: note.verseText,
-                            noteText: note.content,
+                            noteText: formattedContent(for: note),
                             highlight: VerseHighlightColor(rawValue: note.highlightColor),
                             createdAt: note.createdAt,
                             updatedAt: note.updatedAt
@@ -279,7 +364,7 @@ struct NotesAndHighlightsView: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .background(AppBackgroundView(tab: .more))
+        .background(AppBackgroundView(tab: .notes))
         .navigationTitle("Notes")
         .searchable(text: $searchText, prompt: "Search notes and verses")
         .toolbar {
@@ -376,6 +461,14 @@ struct NotesAndHighlightsView: View {
         return left.verseNumber < right.verseNumber
     }
 
+    private func formattedContent(for note: VerseNote) -> AttributedString {
+        if let data = note.formattedContent,
+           let formatted = try? JSONDecoder().decode(AttributedString.self, from: data) {
+            return formatted
+        }
+        return AttributedString(note.content)
+    }
+
     private func open(_ note: VerseNote) {
         NotificationCenter.default.post(
             name: .openBibleReference,
@@ -401,7 +494,7 @@ struct NotesAndHighlightsView: View {
 private struct NoteHighlightRow: View {
     let reference: String
     let verseText: String
-    let noteText: String
+    let noteText: AttributedString
     let highlight: VerseHighlightColor?
     let createdAt: Date?
     let updatedAt: Date?
@@ -426,8 +519,11 @@ private struct NoteHighlightRow: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .lineLimit(3)
-                if !noteText.isEmpty {
-                    Label(noteText, systemImage: "note.text")
+                if !noteText.characters.isEmpty {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Image(systemName: "note.text")
+                        Text(noteText)
+                    }
                         .font(.subheadline)
                         .foregroundStyle(.primary)
                         .lineLimit(3)

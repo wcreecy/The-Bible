@@ -8,6 +8,8 @@ final class VerseNote {
     var verseNumber: Int = 0
     var verseText: String = ""
     var content: String = ""
+    /// Encoded `AttributedString` data. `content` remains the searchable plain-text copy.
+    var formattedContent: Data?
     /// Raw value of `VerseHighlightColor`. An empty value means no highlight.
     var highlightColor: String = ""
     // Optionals for CloudKit schema

@@ -1,8 +1,8 @@
 import SwiftUI
 
 enum MoreDestination: Hashable {
+    case favorites
     case stats
-    case notesAndHighlights
     case settings
 }
 
@@ -10,12 +10,12 @@ struct MoreView: View {
     var body: some View {
         List {
             Section {
-                NavigationLink(value: MoreDestination.stats) {
-                    Label("Stats", systemImage: "chart.bar")
+                NavigationLink(value: MoreDestination.favorites) {
+                    Label("Favorites", systemImage: "heart")
                 }
 
-                NavigationLink(value: MoreDestination.notesAndHighlights) {
-                    Label("Notes", systemImage: "highlighter")
+                NavigationLink(value: MoreDestination.stats) {
+                    Label("Stats", systemImage: "chart.bar")
                 }
 
                 NavigationLink(value: MoreDestination.settings) {
@@ -30,10 +30,10 @@ struct MoreView: View {
         .navigationBarTitleDisplayMode(.large)
         .navigationDestination(for: MoreDestination.self) { destination in
             switch destination {
+            case .favorites:
+                FavoritesView()
             case .stats:
                 StatsView()
-            case .notesAndHighlights:
-                NotesAndHighlightsView()
             case .settings:
                 SettingsView()
                     .environment(\.font, nil)
