@@ -49,19 +49,17 @@ struct PrayerTimerCard<ModePickerContent: View>: View {
                         HStack(alignment: .center, spacing: 16) {
                             HStack(spacing: 16) {
                                 Button(action: onTogglePause) {
-                                    Image(systemName: isPaused ? "play.circle.fill" : "pause.circle.fill")
-                                        .font(.system(size: 44))
-                                        .foregroundStyle(isPaused ? Color.green : timerTintColor)
+                                    Image(systemName: isPaused ? "play.fill" : "pause.fill")
                                 }
-                                .buttonStyle(.plain)
+                                .buttonStyle(.glass(.regular.tint(isPaused ? .green : timerTintColor)))
+                                .controlSize(.large)
                                 .accessibilityLabel(isPaused ? "Resume" : "Pause")
 
                                 Button(action: onStop) {
-                                    Image(systemName: "stop.circle.fill")
-                                        .font(.system(size: 44))
-                                        .foregroundStyle(.red)
+                                    Image(systemName: "stop.fill")
                                 }
-                                .buttonStyle(.plain)
+                                .buttonStyle(.glass(.regular.tint(.red)))
+                                .controlSize(.large)
                                 .accessibilityLabel("Stop")
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -80,13 +78,17 @@ struct PrayerTimerCard<ModePickerContent: View>: View {
                                 Button(action: onAddOne) {
                                     Text("+1")
                                 }
-                                .buttonStyle(ModernCircleButtonStyle(tint: .accentColor, isProminent: true))
+                                .buttonStyle(.glass)
+                                .tint(.accentColor)
+                                .controlSize(.large)
                                 .accessibilityLabel("Add 1 minute")
 
                                 Button(action: onAddFive) {
                                     Text("+5")
                                 }
-                                .buttonStyle(ModernCircleButtonStyle(tint: .accentColor, isProminent: true))
+                                .buttonStyle(.glass)
+                                .tint(.accentColor)
+                                .controlSize(.large)
                                 .accessibilityLabel("Add 5 minutes")
                             }
                             .frame(maxWidth: .infinity, alignment: .trailing)
@@ -109,7 +111,7 @@ struct PrayerTimerCard<ModePickerContent: View>: View {
                                     Image(systemName: "slider.horizontal.3")
                                 }
                                 .buttonStyle(ModernCircleButtonStyle(tint: .blue))
-                                .accessibilityLabel("Custom duration")
+                                .accessibilityLabel("Custom timer duration")
 
                                 Button { onStartPreset(5) } label: { presetCircle("5") }
                                     .buttonStyle(ModernCircleButtonStyle(tint: .blue))
@@ -120,7 +122,7 @@ struct PrayerTimerCard<ModePickerContent: View>: View {
                                     .accessibilityLabel("Start 10 minutes")
 
                                 Button { onStartPreset(15) } label: { presetCircle("15") }
-                                    .buttonStyle(ModernCircleButtonStyle(tint: .blue, isProminent: true))
+                                    .buttonStyle(ModernCircleButtonStyle(tint: .blue))
                                     .accessibilityLabel("Start 15 minutes")
 
                                 Button { onStartPreset(20) } label: { presetCircle("20") }

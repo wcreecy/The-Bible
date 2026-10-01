@@ -1,12 +1,11 @@
 import SwiftUI
 
 struct StreaksCard: View {
-    // Match TitleCard: use current @AppStorage minutes (not history-aware here)
+    // The current setting is the source of truth for today's homepage goal.
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
 
     @StateObject private var vm = StreaksViewModel()
 
-    // Goal seconds computed exactly like TitleCard
     private var goalSeconds: Int {
         max(1, dailyGoalMinutes) * 60
     }
@@ -24,9 +23,9 @@ struct StreaksCard: View {
         return min(1.0, Double(todayTotal) / Double(g))
     }
 
-    // Whether goal met today using the same synced source (and history-aware goal)
+    // Keep today's completion state aligned with the current Settings goal.
     private var goalMet: Bool {
-        StreakTracker.isGoalMet(on: Date())
+        todayTotal >= goalSeconds
     }
 
     private func goalMinutesString(_ minutes: Int) -> String {
@@ -99,8 +98,7 @@ struct StreaksCard: View {
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.secondary)
                         Spacer()
-                        // Show the current goal minutes (current setting)
-                        Text("Goal: \(goalMinutesString(dailyGoalMinutes))")
+                        Text("Goal: \(goalMinutesString(goalSeconds / 60))")
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(.secondary)
                     }
