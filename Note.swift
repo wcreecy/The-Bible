@@ -1,6 +1,20 @@
 import SwiftData
 import Foundation
 
+enum NoteCategory: String, CaseIterable, Identifiable {
+    case sermon
+    case personal
+
+    var id: String { rawValue }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .sermon: "Sermon Notes"
+        case .personal: "Personal"
+        }
+    }
+}
+
 @Model
 final class VerseNote {
     var bookName: String = ""
@@ -12,6 +26,7 @@ final class VerseNote {
     var formattedContent: Data?
     /// Raw value of `VerseHighlightColor`. An empty value means no highlight.
     var highlightColor: String = ""
+    var categoryRawValue: String = NoteCategory.sermon.rawValue
     // Optionals for CloudKit schema
     var createdAt: Date?
     var updatedAt: Date?
@@ -45,6 +60,7 @@ final class UserNote {
     var content: String = ""
     /// Encoded `AttributedString` data. `content` remains the searchable plain-text copy.
     var formattedContent: Data?
+    var categoryRawValue: String = NoteCategory.personal.rawValue
     // Optionals keep the model compatible with the app's CloudKit-backed store.
     var createdAt: Date?
     var updatedAt: Date?
