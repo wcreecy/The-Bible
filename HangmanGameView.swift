@@ -368,7 +368,8 @@ struct HangmanGameView: View {
                 currentCorrect: score,
                 currentAnswered: answered,
                 currentStreak: currentStreak,
-                game: .hangman
+                game: .hangman,
+                style: usesWideLayout ? .dashboard : .compact
             )
         } keyboard: {
             keyboardView(keyHeight: usesWideLayout ? 60 : 42)
@@ -1027,7 +1028,6 @@ private struct HangmanResponsiveLayout<
             Spacer(minLength: 0)
             word
             Spacer(minLength: 0)
-            scoreboard
         }
         .padding(AppDesignMetrics.cardPadding)
         .frame(maxWidth: .infinity, minHeight: height)
@@ -1036,6 +1036,8 @@ private struct HangmanResponsiveLayout<
 
     private func hangmanCard(height: CGFloat) -> some View {
         VStack(spacing: 16) {
+            scoreboard
+
             HStack {
                 Spacer()
                 Button(action: swapCards) {

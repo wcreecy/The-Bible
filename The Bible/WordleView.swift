@@ -291,7 +291,8 @@ struct WordleView: View {
                 currentAnswered: answered,
                 currentStreak: currentStreak,
                 game: .wordle,
-                wordMode: hardModeEnabled ? .hard : .normal
+                wordMode: hardModeEnabled ? .hard : .normal,
+                style: usesWideLayout ? .dashboard : .compact
               )
             } board: {
               boardView(

@@ -510,13 +510,23 @@ private struct WhoAmIIPadGameBoard: View {
     let onDebugWin: () -> Void
 
     var body: some View {
-        HStack(alignment: .top, spacing: 20) {
-            if timerOnLeading {
-                timerCard
-                playCard
-            } else {
-                playCard
-                timerCard
+        VStack(spacing: 20) {
+            GameScoreboardCard(
+                currentCorrect: score,
+                currentAnswered: answered,
+                currentStreak: streak,
+                game: .whoami,
+                style: .dashboard
+            )
+
+            HStack(alignment: .top, spacing: 20) {
+                if timerOnLeading {
+                    timerCard
+                    playCard
+                } else {
+                    playCard
+                    timerCard
+                }
             }
         }
         .frame(maxWidth: .infinity, minHeight: 620, alignment: .top)
@@ -525,9 +535,6 @@ private struct WhoAmIIPadGameBoard: View {
 
     private var playCard: some View {
         WhoAmIPlayCard(
-            score: score,
-            answered: answered,
-            streak: streak,
             promptTitle: promptTitle,
             promptIsName: promptIsName,
             choices: choices,
@@ -558,9 +565,6 @@ private struct WhoAmIIPadGameBoard: View {
 }
 
 private struct WhoAmIPlayCard: View {
-    let score: Int
-    let answered: Int
-    let streak: Int
     let promptTitle: String
     let promptIsName: Bool
     let choices: [String]
@@ -575,13 +579,6 @@ private struct WhoAmIPlayCard: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            GameScoreboardCard(
-                currentCorrect: score,
-                currentAnswered: answered,
-                currentStreak: streak,
-                game: .whoami
-            )
-
             VStack(alignment: .leading, spacing: 6) {
                 Text(promptIsName ? "Name" : "Description")
                     .font(.caption.weight(.semibold))

@@ -1,6 +1,11 @@
 import SwiftUI
 
 struct GameScoreboardCard: View {
+    enum Style {
+        case compact
+        case dashboard
+    }
+
     @ObservedObject private var stats = GameStats.shared
 
     let currentCorrect: Int
@@ -8,24 +13,35 @@ struct GameScoreboardCard: View {
     let currentStreak: Int
     let game: GameStats.GameID
     let wordMode: GameStats.WordMode?
+    let style: Style
 
     init(
         currentCorrect: Int,
         currentAnswered: Int,
         currentStreak: Int,
         game: GameStats.GameID,
-        wordMode: GameStats.WordMode? = nil
+        wordMode: GameStats.WordMode? = nil,
+        style: Style = .compact
     ) {
         self.currentCorrect = currentCorrect
         self.currentAnswered = currentAnswered
         self.currentStreak = currentStreak
         self.game = game
         self.wordMode = wordMode
+        self.style = style
     }
 
     var body: some View {
         let allTime = stats.scorecardStats(for: game, wordMode: wordMode)
 
+        if style == .dashboard {
+            dashboardScoreboard(allTime: allTime)
+        } else {
+            compactScoreboard(allTime: allTime)
+        }
+    }
+
+    private func compactScoreboard(allTime: GameStats.ScorecardStats) -> some View {
         VStack(spacing: 0) {
             scoreSection(
                 title: "This Game",
@@ -52,6 +68,59 @@ struct GameScoreboardCard: View {
         }
         .padding(.horizontal, 12)
         .heroCardSurface()
+    }
+
+    private func dashboardScoreboard(allTime: GameStats.ScorecardStats) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label("This Game", systemImage: "chart.bar.fill")
+                    .font(.headline.weight(.bold))
+
+                Spacer()
+
+                Text("All time: \(allTime.correct)/\(allTime.attempts)  •  Best streak \(allTime.bestStreak)")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.secondary)
+            }
+
+            HStack(spacing: 10) {
+                dashboardMetric(title: "Correct", value: "\(currentCorrect)", systemImage: "checkmark.circle.fill", tint: .green)
+                dashboardMetric(title: "Attempts", value: "\(currentAnswered)", systemImage: "scope", tint: .blue)
+                dashboardMetric(title: "Accuracy", value: percentString(correct: currentCorrect, answered: currentAnswered), systemImage: "percent", tint: .purple)
+                dashboardMetric(title: "Streak", value: "\(currentStreak)", systemImage: "flame.fill", tint: .orange)
+            }
+        }
+        .padding(16)
+        .background(.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
+    }
+
+    private func dashboardMetric(
+        title: LocalizedStringKey,
+        value: String,
+        systemImage: String,
+        tint: Color
+    ) -> some View {
+        VStack(spacing: 5) {
+            Image(systemName: systemImage)
+                .font(.headline)
+                .foregroundStyle(tint)
+
+            Text(value)
+                .font(.title2.weight(.bold))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+
+            Text(title)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(tint.opacity(0.09), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title)
+        .accessibilityValue(value)
     }
 
     private func scoreSection(

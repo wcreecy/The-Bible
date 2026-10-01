@@ -176,7 +176,8 @@ struct VerseMatchGameView: View {
                         currentCorrect: score,
                         currentAnswered: answered,
                         currentStreak: currentStreak,
-                        game: .versematch
+                        game: .versematch,
+                        style: horizontalSizeClass == .regular ? .dashboard : .compact
                     )
 
                     VerseMatchBoard(
