@@ -200,9 +200,9 @@ struct QuizView: View {
                         GroupBox {
                             DisclosureGroup(isExpanded: $difficultyExpanded) {
                                 VStack(alignment: .leading, spacing: 6) {
-                                    Text("• Easy: No timer; options from the whole scope.")
-                                    Text("• Medium: 15 seconds per question.")
-                                    Text("• Hard: 8 seconds; wrong options are from the same testament to increase challenge.")
+                                    Text("• Easy: No timer; two options from each testament.")
+                                    Text("• Medium: 15 seconds; options are completely random.")
+                                    Text("• Hard: 8 seconds; all options are from the same testament.")
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             } label: {
@@ -497,7 +497,9 @@ struct QuizView: View {
         default:
             books = BibleData.books
         }
-        let names = books.map { $0.name }
+        // The selected scope controls which verses can be asked, while difficulty
+        // independently controls the composition of the four answer choices.
+        let names = BibleData.books.map { $0.name }
         let old = names.filter { Self.oldTestamentSet.contains($0) }
         let new = names.filter { Self.newTestamentSet.contains($0) }
         pools = Pools(books: books, allNames: names, oldNames: old, newNames: new)
@@ -563,17 +565,26 @@ struct QuizView: View {
         let correctName = bookName
         let isOld = Self.oldTestamentSet.contains(correctName)
 
-        var wrongPool: [String]
+        var wrongBooks: [String]
         switch quizDifficulty {
-        case "hard":
-            wrongPool = isOld ? pools.oldNames : pools.newNames
-        default:
-            wrongPool = pools.allNames
-        }
-        wrongPool.removeAll { $0 == correctName }
+        case "easy":
+            var sameTestamentNames = isOld ? pools.oldNames : pools.newNames
+            sameTestamentNames.removeAll { $0 == correctName }
+            let otherTestamentNames = isOld ? pools.newNames : pools.oldNames
 
-        var wrongBooks = wrongPool.shuffled()
-        if wrongBooks.count > 3 { wrongBooks = Array(wrongBooks.prefix(3)) }
+            guard let sameTestamentWrong = sameTestamentNames.randomElement() else {
+                return nil
+            }
+            wrongBooks = [sameTestamentWrong] + Array(otherTestamentNames.shuffled().prefix(2))
+        case "hard":
+            var sameTestamentNames = isOld ? pools.oldNames : pools.newNames
+            sameTestamentNames.removeAll { $0 == correctName }
+            wrongBooks = Array(sameTestamentNames.shuffled().prefix(3))
+        default:
+            var allNames = pools.allNames
+            allNames.removeAll { $0 == correctName }
+            wrongBooks = Array(allNames.shuffled().prefix(3))
+        }
         let opts = (wrongBooks + [correctName]).shuffled()
 
         return QuizQuestion(
