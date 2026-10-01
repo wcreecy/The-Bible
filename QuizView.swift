@@ -116,7 +116,16 @@ struct QuizView: View {
         let oldNames: [String]         // intersection with OT
         let newNames: [String]         // intersection with NT
     }
+
+    private struct VerseCandidate {
+        let text: String
+        let bookName: String
+        let chapter: Int
+        let verse: Int
+    }
+
     @State private var pools: Pools = .init(books: [], allNames: [], oldNames: [], newNames: [])
+    @State private var questionBag: [VerseCandidate] = []
 
     private var isViewingPrevious: Bool {
         currentIndex >= 0 && currentIndex < history.count - 1
@@ -503,6 +512,23 @@ struct QuizView: View {
         let old = names.filter { Self.oldTestamentSet.contains($0) }
         let new = names.filter { Self.newTestamentSet.contains($0) }
         pools = Pools(books: books, allNames: names, oldNames: old, newNames: new)
+        rebuildQuestionBag()
+    }
+
+    private func rebuildQuestionBag() {
+        questionBag = pools.books.flatMap { book in
+            book.chapters.flatMap { chapter in
+                chapter.verses.map { verse in
+                    VerseCandidate(
+                        text: verse.text,
+                        bookName: book.name,
+                        chapter: chapter.number,
+                        verse: verse.number
+                    )
+                }
+            }
+        }
+        .shuffled()
     }
 
     // MARK: - Buffer management
@@ -549,18 +575,18 @@ struct QuizView: View {
         return makeQuestion()
     }
 
-    // Pure generator using current pools/difficulty; no UI side-effects.
+    // Consumes the next unique verse from the shuffled bag and builds its choices.
     private func makeQuestion() -> QuizQuestion? {
-        guard let randomBook = pools.books.randomElement(),
-              let randomChapter = randomBook.chapters.randomElement(),
-              let randomVerse = randomChapter.verses.randomElement() else {
-            return nil
+        if questionBag.isEmpty {
+            rebuildQuestionBag()
         }
 
-        let verseText = randomVerse.text
-        let bookName = randomBook.name
-        let chapterNum = randomChapter.number
-        let verseNum = randomVerse.number
+        guard let candidate = questionBag.popLast() else { return nil }
+
+        let verseText = candidate.text
+        let bookName = candidate.bookName
+        let chapterNum = candidate.chapter
+        let verseNum = candidate.verse
 
         let correctName = bookName
         let isOld = Self.oldTestamentSet.contains(correctName)
@@ -611,6 +637,7 @@ struct QuizView: View {
         showAnswerReveal = false
 
         questionBuffer.removeAll()
+        rebuildQuestionBag()
         refillBuffer()
         if let q = popBufferedQuestion() {
             appendAndLoad(q)
