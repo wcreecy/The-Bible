@@ -276,9 +276,21 @@ private struct ScriptureReferencePreview: View {
                         ProgressView("Loading scripture…")
                             .frame(maxWidth: .infinity, alignment: .center)
                     } else if let passage, !passage.verses.isEmpty {
-                        Text(passage.verses.map(\.text).joined(separator: " "))
-                            .font(.body)
-                            .textSelection(.enabled)
+                        LazyVStack(alignment: .leading, spacing: 12) {
+                            ForEach(passage.verses) { verse in
+                                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                                    Text(verse.number, format: .number)
+                                        .font(.caption.bold())
+                                        .foregroundStyle(.secondary)
+                                        .frame(minWidth: 24, alignment: .trailing)
+
+                                    Text(verse.text)
+                                        .font(.body)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                            }
+                        }
+                        .textSelection(.enabled)
                     } else {
                         ContentUnavailableView(
                             "Scripture Unavailable",
