@@ -8,6 +8,7 @@ struct ReadingVerseRow: View {
     let isSelected: Bool
     let isPinned: Bool
     let isRead: Bool
+    let savedHighlightColor: Color?
     let readerFontSize: Double
 
     let onVisibilityChange: (Bool) -> Void
@@ -30,7 +31,7 @@ struct ReadingVerseRow: View {
         }
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background((isHighlighted || isSelected) ? Color.yellow.opacity(0.25) : Color.clear)
+        .background(rowBackground)
         .overlay(alignment: .trailing) {
             if isPinned {
                 Image(systemName: "bookmark.fill")
@@ -56,5 +57,11 @@ struct ReadingVerseRow: View {
         .contentShape(Rectangle())
         .onTapGesture { onTap(verse) }
     }
-}
 
+    private var rowBackground: Color {
+        if isHighlighted || isSelected {
+            return Color.yellow.opacity(0.25)
+        }
+        return savedHighlightColor?.opacity(0.24) ?? .clear
+    }
+}

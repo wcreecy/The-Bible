@@ -31,9 +31,11 @@ enum VerseActionFeedback {
 struct VerseActionMenu: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
+    @Query private var notes: [VerseNote]
     @StateObject private var pinnedStore = PinnedVerseStore()
     @State private var persistenceFailure: PersistenceFailure?
     @State private var isBookmarked: Bool = false
+    @State private var isShowingNoteEditor = false
 
     let verse: VerseActionReference
     var presentation: VerseActionPresentation = .menu
@@ -55,6 +57,14 @@ struct VerseActionMenu: View {
         )
     }
 
+    private var existingNote: VerseNote? {
+        notes.first {
+            $0.bookName == verse.bookName &&
+            $0.chapterNumber == verse.chapterNumber &&
+            $0.verseNumber == verse.verseNumber
+        }
+    }
+
     var body: some View {
         actionPresentation
             .task(id: verse) {
@@ -65,13 +75,24 @@ struct VerseActionMenu: View {
                     defaults?.integer(forKey: "lastReadVerse") == verse.verseNumber
             }
             .persistenceFailureAlert(failure: $persistenceFailure)
+            .sheet(isPresented: $isShowingNoteEditor) {
+                NavigationStack {
+                    VerseNoteEditorView(verse: verse, existingNote: existingNote)
+                }
+            }
     }
 
     @ViewBuilder
     private var actionPresentation: some View {
         switch presentation {
         case .buttons:
-            HStack(spacing: 24) {
+            HStack(spacing: 20) {
+                Button(action: { isShowingNoteEditor = true }) {
+                    Image(systemName: "highlighter")
+                        .foregroundStyle(existingNote == nil ? AnyShapeStyle(.primary) : AnyShapeStyle(Color.accentColor))
+                }
+                .accessibilityLabel(existingNote == nil ? "Add Note or Highlight" : "Edit Note or Highlight")
+
                 Button(action: toggleFavorite) {
                     Image(systemName: isFavorite ? "heart.fill" : "heart")
                         .foregroundStyle(isFavorite ? AnyShapeStyle(.red) : AnyShapeStyle(.primary))
@@ -107,6 +128,13 @@ struct VerseActionMenu: View {
 
         case .menu:
             Menu {
+                Button(action: { isShowingNoteEditor = true }) {
+                    Label(
+                        existingNote == nil ? "Add Note or Highlight" : "Edit Note or Highlight",
+                        systemImage: "highlighter"
+                    )
+                }
+
                 Button(action: toggleFavorite) {
                     Label(
                         isFavorite ? "Remove from Favorites" : "Add to Favorites",

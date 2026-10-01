@@ -7,6 +7,7 @@ import WidgetKit
 struct ReadingView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
+    @Query private var verseNotes: [VerseNote]
     @Environment(\.scenePhase) private var scenePhase
 
     let book: Book
@@ -138,7 +139,7 @@ struct ReadingView: View {
                     if contextualTipsEnabled {
                         ContextualTipView(
                             title: "Reader shortcuts",
-                            message: "Swipe left or right to change chapters. Press and hold a verse for favorite, bookmark, copy, and widget actions.",
+                            message: "Swipe left or right to change chapters. Press and hold a verse for notes, highlights, favorites, and more.",
                             systemImage: "hand.draw"
                         )
                         .padding(.bottom, 12)
@@ -167,6 +168,7 @@ struct ReadingView: View {
                             isRead: showReadVerseCheckmarks &&
                                 seenVerseLocation == verseLocationKey &&
                                 seenVerseNumbers.contains(verse.number),
+                            savedHighlightColor: highlightColor(for: verse.number),
                             readerFontSize: readerFontSize,
                             onVisibilityChange: { isVisible in
                                 viewModel.verseVisibilityChanged(readUpdate, isVisible: isVisible)
@@ -263,6 +265,15 @@ struct ReadingView: View {
             chapter: chapterNumber
         )
         seenVerseLocation = "\(bookName):\(chapterNumber)"
+    }
+
+    private func highlightColor(for verseNumber: Int) -> Color? {
+        verseNotes.first {
+            $0.bookName == viewModel.currentBook.name &&
+            $0.chapterNumber == viewModel.currentChapter.number &&
+            $0.verseNumber == verseNumber
+        }
+        .flatMap { VerseHighlightColor(rawValue: $0.highlightColor)?.color }
     }
 
     // MARK: - Overlay Arrows

@@ -2,6 +2,7 @@ import SwiftUI
 
 enum MoreDestination: Hashable {
     case stats
+    case notesAndHighlights
     case settings
 }
 
@@ -11,6 +12,10 @@ struct MoreView: View {
             Section {
                 NavigationLink(value: MoreDestination.stats) {
                     Label("Stats", systemImage: "chart.bar")
+                }
+
+                NavigationLink(value: MoreDestination.notesAndHighlights) {
+                    Label("Notes & Highlights", systemImage: "highlighter")
                 }
 
                 NavigationLink(value: MoreDestination.settings) {
@@ -27,6 +32,8 @@ struct MoreView: View {
             switch destination {
             case .stats:
                 StatsView()
+            case .notesAndHighlights:
+                NotesAndHighlightsView()
             case .settings:
                 SettingsView()
                     .environment(\.font, nil)
