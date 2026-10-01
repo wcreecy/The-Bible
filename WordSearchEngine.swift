@@ -4,12 +4,14 @@ public struct WordSearchEngine {
     public struct PlacedWord: Identifiable, Hashable, Sendable {
         public let id = UUID()
         public let word: String
+        public let originalWord: String
         public let startRow: Int
         public let startCol: Int
         public let dr: Int
         public let dc: Int
-        public init(word: String, startRow: Int, startCol: Int, dr: Int, dc: Int) {
+        public init(word: String, originalWord: String? = nil, startRow: Int, startCol: Int, dr: Int, dc: Int) {
             self.word = word
+            self.originalWord = originalWord ?? word
             self.startRow = startRow
             self.startCol = startCol
             self.dr = dr
@@ -78,7 +80,7 @@ public struct WordSearchEngine {
         let target = Array(fitting.prefix(countRange.upperBound))
 
         // Multi-attempt placement
-        let maxAttempts = 10
+        let maxAttempts = 20
         var bestPlaced: [PlacedWord] = []
         var bestGrid: [[Character]] = grid
         var bestScore: (count: Int, variety: Int, spread: Double) = (0, 0, 0)
@@ -106,14 +108,17 @@ public struct WordSearchEngine {
                 bestGrid = grid
             }
 
-            if count == target.count && variety >= 5 { break }
+            let desiredVariety = min(baseAllowedDirections.count, target.count)
+            if count == target.count && variety >= desiredVariety { break }
         }
 
         grid = bestGrid
         placed = bestPlaced
-        fillRandom(into: &grid)
+        fillRandom(into: &grid, avoidingAccidentalMatchesFor: placed)
 
-        return (grid, placed, target)
+        // Only advertise words that actually made it onto the board. This keeps
+        // unusually dense puzzles from becoming impossible to complete.
+        return (grid, placed, placed.map(\.originalWord))
     }
 
     public func validateSelection(grid: [[Character]], placed: [PlacedWord], start: (row: Int, col: Int), end: (row: Int, col: Int)) -> ValidationResult {
@@ -129,9 +134,9 @@ public struct WordSearchEngine {
             let pwBackward = String(pwForward.reversed())
 
             switch difficulty {
-            case .easy:
+            case .easy, .medium:
                 return (forward == pwForward && sequenceEquals(cells, pwCells))
-            case .medium, .hard:
+            case .hard:
                 return (forward == pwForward && sequenceEquals(cells, pwCells))
                     || (backward == pwForward && sequenceEquals(cells.reversed(), pwCells))
                     || (forward == pwBackward && sequenceEquals(cells, pwCells.reversed()))
@@ -141,8 +146,7 @@ public struct WordSearchEngine {
                     || (backward == pwBackward && sequenceEquals(cells.reversed(), pwCells.reversed()))
             }
         }) {
-            let original = (difficulty == .expert) ? String(match.word.reversed()) : match.word
-            return ValidationResult(matchedWordOriginal: original, matchedPath: cells)
+            return ValidationResult(matchedWordOriginal: match.originalWord, matchedPath: cells)
         }
 
         return .noMatch
@@ -240,9 +244,12 @@ public struct WordSearchEngine {
                  + jitter
         }
 
-        if let best = candidates.min(by: { score($0) < score($1) }) {
+        // Score once per candidate. Calling random from inside the comparator can
+        // make the comparison inconsistent and bias the selected placement.
+        let scoredCandidates = candidates.map { (candidate: $0, score: score($0)) }
+        if let best = scoredCandidates.min(by: { $0.score < $1.score })?.candidate {
             write(toPlace, atRow: best.row, col: best.col, dr: best.dr, dc: best.dc, into: &grid)
-            placed.append(PlacedWord(word: toPlace, startRow: best.row, startCol: best.col, dr: best.dr, dc: best.dc))
+            placed.append(PlacedWord(word: toPlace, originalWord: word, startRow: best.row, startCol: best.col, dr: best.dr, dc: best.dc))
             let key = "\(best.dr),\(best.dc)"
             dirUsage[key, default: 0] += 1
             return true
@@ -296,19 +303,15 @@ public struct WordSearchEngine {
     }
 
     private func canPlaceAt(word: String, row: Int, col: Int, dr: Int, dc: Int, grid: [[Character]]) -> (fits: Bool, overlap: Int) {
-        var overlap = 0
+        let overlap = 0
         for i in 0..<word.count {
             let r = row + dr * i
             let c = col + dc * i
             guard r >= 0, r < size, c >= 0, c < size else { return (false, 0) }
             let ch = grid[r][c]
-            if ch == " " { continue }
-            let wi = word.index(word.startIndex, offsetBy: i)
-            if ch == word[wi] {
-                overlap += 1
-            } else {
-                return (false, 0)
-            }
+            // Target words must occupy distinct cells. Filler letters are added
+            // only after placement, so any non-space cell belongs to another word.
+            if ch != " " { return (false, 0) }
         }
         return (true, overlap)
     }
@@ -339,14 +342,59 @@ public struct WordSearchEngine {
         }
     }
 
-    private func fillRandom(into grid: inout [[Character]]) {
+    private func fillRandom(into grid: inout [[Character]], avoidingAccidentalMatchesFor placed: [PlacedWord]) {
         for r in 0..<size {
             for c in 0..<size {
                 if grid[r][c] == " " {
-                    grid[r][c] = alphabet.randomElement() ?? "A"
+                    let candidates = alphabet.shuffled()
+                    if let safeLetter = candidates.first(where: { letter in
+                        grid[r][c] = letter
+                        return !createsAccidentalMatch(in: grid, atRow: r, col: c, placed: placed)
+                    }) {
+                        grid[r][c] = safeLetter
+                    } else {
+                        // With a normal alphabet this is extraordinarily unlikely,
+                        // but always leave the grid fully populated.
+                        grid[r][c] = candidates.first ?? "A"
+                    }
                 }
             }
         }
+    }
+
+    private func createsAccidentalMatch(in grid: [[Character]], atRow row: Int, col: Int, placed: [PlacedWord]) -> Bool {
+        let directions = [
+            (dr: 0, dc: 1), (dr: 1, dc: 0), (dr: 0, dc: -1), (dr: -1, dc: 0),
+            (dr: 1, dc: 1), (dr: 1, dc: -1), (dr: -1, dc: 1), (dr: -1, dc: -1)
+        ]
+
+        for target in placed {
+            let answer = Array(target.originalWord)
+            guard !answer.isEmpty else { continue }
+
+            // Try every position the newly filled cell could occupy in the word.
+            for index in answer.indices {
+                for direction in directions {
+                    let startRow = row - direction.dr * index
+                    let startCol = col - direction.dc * index
+                    let cells = answer.indices.map { offset in
+                        (row: startRow + direction.dr * offset, col: startCol + direction.dc * offset)
+                    }
+                    guard cells.allSatisfy({ cell in
+                        cell.row >= 0 && cell.row < size && cell.col >= 0 && cell.col < size
+                    }) else { continue }
+
+                    let letters = cells.map { grid[$0.row][$0.col] }
+                    guard letters == answer else { continue }
+
+                    let actualCells = cellsForPlacedWord(target)
+                    let isIntendedPath = sequenceEquals(cells, actualCells)
+                        || sequenceEquals(cells, actualCells.reversed())
+                    if !isIntendedPath { return true }
+                }
+            }
+        }
+        return false
     }
 
     // MARK: - Selection helpers (pure)

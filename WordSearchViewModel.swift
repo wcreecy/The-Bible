@@ -320,9 +320,8 @@ final class WordSearchViewModel {
     private func revealOverlay() {
         var newRevealed = revealedWords
         for pw in placed {
-            if !foundWords.contains(pw.word) {
-                let original = (difficulty == .expert) ? String(pw.word.reversed()) : pw.word
-                newRevealed.insert(original)
+            if !foundWords.contains(pw.originalWord) {
+                newRevealed.insert(pw.originalWord)
             }
         }
         revealedWords = newRevealed

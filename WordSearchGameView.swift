@@ -250,8 +250,7 @@ struct WordSearchGameView: View {
         if vm.foundCells.contains(key) { return Color.green.opacity(0.45) }
         // Revealed cells (red)
         if vm.placed.contains(where: { pw in
-            let original = (vm.difficulty == .expert) ? String(pw.word.reversed()) : pw.word
-            return vm.revealedWords.contains(original) && WordSearchEngine(size: vm.size, difficulty: vm.difficulty).cellsForPlacedWord(pw).contains(where: { $0.row == row && $0.col == col })
+            return vm.revealedWords.contains(pw.originalWord) && WordSearchEngine(size: vm.size, difficulty: vm.difficulty).cellsForPlacedWord(pw).contains(where: { $0.row == row && $0.col == col })
         }) {
             return Color.red.opacity(0.35)
         }
