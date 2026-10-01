@@ -200,9 +200,44 @@ private struct HighlightColorPicker: View {
     }
 }
 
+private enum NotesHighlightsSort: String, CaseIterable, Identifiable {
+    case modifiedNewest
+    case modifiedOldest
+    case addedNewest
+    case addedOldest
+    case bibleOrder
+    case highlightColor
+    case reference
+
+    var id: String { rawValue }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .modifiedNewest: "Modified: Newest First"
+        case .modifiedOldest: "Modified: Oldest First"
+        case .addedNewest: "Added: Newest First"
+        case .addedOldest: "Added: Oldest First"
+        case .bibleOrder: "Bible Order"
+        case .highlightColor: "Highlight Color"
+        case .reference: "Reference A–Z"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .modifiedNewest, .modifiedOldest: "pencil.and.list.clipboard"
+        case .addedNewest, .addedOldest: "calendar"
+        case .bibleOrder: "book"
+        case .highlightColor: "paintpalette"
+        case .reference: "textformat.abc"
+        }
+    }
+}
+
 @MainActor
 struct NotesAndHighlightsView: View {
     @Query(sort: \VerseNote.updatedAt, order: .reverse) private var notes: [VerseNote]
+    @AppStorage("notesHighlightsSort") private var sortRawValue = NotesHighlightsSort.modifiedNewest.rawValue
     @State private var searchText = ""
     @State private var selectedNote: VerseNote?
 
@@ -226,7 +261,9 @@ struct NotesAndHighlightsView: View {
                             reference: "\(note.bookName) \(note.chapterNumber):\(note.verseNumber)",
                             verseText: note.verseText,
                             noteText: note.content,
-                            highlight: VerseHighlightColor(rawValue: note.highlightColor)
+                            highlight: VerseHighlightColor(rawValue: note.highlightColor),
+                            createdAt: note.createdAt,
+                            updatedAt: note.updatedAt
                         )
                     }
                     .buttonStyle(.plain)
@@ -243,8 +280,23 @@ struct NotesAndHighlightsView: View {
         }
         .scrollContentBackground(.hidden)
         .background(AppBackgroundView(tab: .more))
-        .navigationTitle("Notes & Highlights")
+        .navigationTitle("Notes")
         .searchable(text: $searchText, prompt: "Search notes and verses")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Picker("Sort By", selection: $sortRawValue) {
+                        ForEach(NotesHighlightsSort.allCases) { option in
+                            Label(option.title, systemImage: option.systemImage)
+                                .tag(option.rawValue)
+                        }
+                    }
+                } label: {
+                    Label("Sort", systemImage: "arrow.up.arrow.down")
+                }
+                .accessibilityLabel("Sort notes and highlights")
+            }
+        }
         .sheet(item: $selectedNote) { note in
             NavigationStack {
                 VerseNoteEditorView(
@@ -269,13 +321,59 @@ struct NotesAndHighlightsView: View {
     }
 
     private var visibleNotes: [VerseNote] {
-        guard !searchText.isEmpty else { return notes }
-        return notes.filter {
-            $0.bookName.localizedCaseInsensitiveContains(searchText) ||
-            $0.verseText.localizedCaseInsensitiveContains(searchText) ||
-            $0.content.localizedCaseInsensitiveContains(searchText) ||
-            "\($0.chapterNumber):\($0.verseNumber)".localizedCaseInsensitiveContains(searchText)
+        let filteredNotes: [VerseNote]
+        if searchText.isEmpty {
+            filteredNotes = notes
+        } else {
+            filteredNotes = notes.filter {
+                $0.bookName.localizedCaseInsensitiveContains(searchText) ||
+                $0.verseText.localizedCaseInsensitiveContains(searchText) ||
+                $0.content.localizedCaseInsensitiveContains(searchText) ||
+                "\($0.chapterNumber):\($0.verseNumber)".localizedCaseInsensitiveContains(searchText)
+            }
         }
+
+        let selectedSort = NotesHighlightsSort(rawValue: sortRawValue) ?? .modifiedNewest
+        switch selectedSort {
+        case .modifiedNewest:
+            return filteredNotes.sorted { ($0.updatedAt ?? .distantPast) > ($1.updatedAt ?? .distantPast) }
+        case .modifiedOldest:
+            return filteredNotes.sorted { ($0.updatedAt ?? .distantPast) < ($1.updatedAt ?? .distantPast) }
+        case .addedNewest:
+            return filteredNotes.sorted { ($0.createdAt ?? .distantPast) > ($1.createdAt ?? .distantPast) }
+        case .addedOldest:
+            return filteredNotes.sorted { ($0.createdAt ?? .distantPast) < ($1.createdAt ?? .distantPast) }
+        case .bibleOrder:
+            let bookPositions = Dictionary(
+                uniqueKeysWithValues: BibleData.books.enumerated().map { ($0.element.name, $0.offset) }
+            )
+            return filteredNotes.sorted {
+                let left = bookPositions[$0.bookName] ?? .max
+                let right = bookPositions[$1.bookName] ?? .max
+                if left != right { return left < right }
+                if $0.chapterNumber != $1.chapterNumber { return $0.chapterNumber < $1.chapterNumber }
+                return $0.verseNumber < $1.verseNumber
+            }
+        case .highlightColor:
+            let colorPositions = Dictionary(
+                uniqueKeysWithValues: VerseHighlightColor.allCases.enumerated().map { ($0.element.rawValue, $0.offset) }
+            )
+            return filteredNotes.sorted {
+                let left = colorPositions[$0.highlightColor] ?? .max
+                let right = colorPositions[$1.highlightColor] ?? .max
+                if left != right { return left < right }
+                return referencePrecedes($0, $1)
+            }
+        case .reference:
+            return filteredNotes.sorted(by: referencePrecedes)
+        }
+    }
+
+    private func referencePrecedes(_ left: VerseNote, _ right: VerseNote) -> Bool {
+        let comparison = left.bookName.localizedStandardCompare(right.bookName)
+        if comparison != .orderedSame { return comparison == .orderedAscending }
+        if left.chapterNumber != right.chapterNumber { return left.chapterNumber < right.chapterNumber }
+        return left.verseNumber < right.verseNumber
     }
 
     private func open(_ note: VerseNote) {
@@ -305,6 +403,8 @@ private struct NoteHighlightRow: View {
     let verseText: String
     let noteText: String
     let highlight: VerseHighlightColor?
+    let createdAt: Date?
+    let updatedAt: Date?
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -332,8 +432,43 @@ private struct NoteHighlightRow: View {
                         .foregroundStyle(.primary)
                         .lineLimit(3)
                 }
+                NoteTimestampView(createdAt: createdAt, updatedAt: updatedAt)
             }
         }
         .padding(.vertical, 4)
+    }
+}
+
+private struct NoteTimestampView: View {
+    let createdAt: Date?
+    let updatedAt: Date?
+
+    var body: some View {
+        if let displayDate {
+            Group {
+                if wasModified {
+                    Text(
+                        "Modified \(displayDate, format: .dateTime.month(.abbreviated).day().year().hour().minute())",
+                        comment: "Timestamp beneath a saved Bible note."
+                    )
+                } else {
+                    Text(
+                        "Added \(displayDate, format: .dateTime.month(.abbreviated).day().year().hour().minute())",
+                        comment: "Timestamp beneath a newly added Bible note."
+                    )
+                }
+            }
+            .font(.caption2)
+            .foregroundStyle(.tertiary)
+        }
+    }
+
+    private var wasModified: Bool {
+        guard let createdAt, let updatedAt else { return false }
+        return updatedAt.timeIntervalSince(createdAt) > 1
+    }
+
+    private var displayDate: Date? {
+        wasModified ? updatedAt : (createdAt ?? updatedAt)
     }
 }

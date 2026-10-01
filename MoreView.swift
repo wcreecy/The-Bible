@@ -15,7 +15,7 @@ struct MoreView: View {
                 }
 
                 NavigationLink(value: MoreDestination.notesAndHighlights) {
-                    Label("Notes & Highlights", systemImage: "highlighter")
+                    Label("Notes", systemImage: "highlighter")
                 }
 
                 NavigationLink(value: MoreDestination.settings) {
