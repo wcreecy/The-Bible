@@ -1,34 +1,36 @@
 import Foundation
 import SwiftUI
 import Combine
+import Observation
 import WidgetKit
 
 @MainActor
-final class VerseOfDayViewModel: ObservableObject {
+@Observable
+final class VerseOfDayViewModel {
     // Published UI state
-    @Published var verse: HomeVerseRef?
-    @Published var paused: Bool = false
-    @Published var nextRefreshDescription: String = ""
+    var verse: HomeVerseRef?
+    var paused: Bool = false
+    var nextRefreshDescription: String = ""
 
     // AppStorage-backed settings/state (same keys as HomeView used)
-    @AppStorage("verseOfDayPaused") private var verseOfDayPaused: Bool = false
-    @AppStorage("verseOfDayBook") private var storedVerseBook: String = ""
-    @AppStorage("verseOfDayChapter") private var storedVerseChapter: Int = 0
-    @AppStorage("verseOfDayNumber") private var storedVerseNumber: Int = 0
-    @AppStorage("verseOfDayText") private var storedVerseText: String = ""
-    @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
-    @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
+    @ObservationIgnored @AppStorage("verseOfDayPaused") private var verseOfDayPaused: Bool = false
+    @ObservationIgnored @AppStorage("verseOfDayBook") private var storedVerseBook: String = ""
+    @ObservationIgnored @AppStorage("verseOfDayChapter") private var storedVerseChapter: Int = 0
+    @ObservationIgnored @AppStorage("verseOfDayNumber") private var storedVerseNumber: Int = 0
+    @ObservationIgnored @AppStorage("verseOfDayText") private var storedVerseText: String = ""
+    @ObservationIgnored @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
+    @ObservationIgnored @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
 
     // Refresh schedule (same keys)
-    @AppStorage("votdRefreshFrequency") private var refreshFrequencyRaw: String = VOTDRefreshFrequency.custom.rawValue
-    @AppStorage("votdRefresh1Hour") private var votdRefresh1Hour: Int = 6
-    @AppStorage("votdRefresh1Minute") private var votdRefresh1Minute: Int = 0
-    @AppStorage("votdRefresh2Hour") private var votdRefresh2Hour: Int = 18
-    @AppStorage("votdRefresh2Minute") private var votdRefresh2Minute: Int = 0
-    @AppStorage("votdRefreshNotificationsEnabled") private var refreshNotificationsEnabled: Bool = false
+    @ObservationIgnored @AppStorage("votdRefreshFrequency") private var refreshFrequencyRaw: String = VOTDRefreshFrequency.custom.rawValue
+    @ObservationIgnored @AppStorage("votdRefresh1Hour") private var votdRefresh1Hour: Int = 6
+    @ObservationIgnored @AppStorage("votdRefresh1Minute") private var votdRefresh1Minute: Int = 0
+    @ObservationIgnored @AppStorage("votdRefresh2Hour") private var votdRefresh2Hour: Int = 18
+    @ObservationIgnored @AppStorage("votdRefresh2Minute") private var votdRefresh2Minute: Int = 0
+    @ObservationIgnored @AppStorage("votdRefreshNotificationsEnabled") private var refreshNotificationsEnabled: Bool = false
 
     // One-shot timer for next auto refresh
-    private var nextRefreshTimer: Timer?
+    @ObservationIgnored nonisolated(unsafe) private var nextRefreshTimer: Timer?
 
     // App group mirror
     private var sharedDefaults: UserDefaults? { UserDefaults(suiteName: "group.bible.app") }

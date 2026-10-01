@@ -35,6 +35,65 @@ enum StreakTracker {
         dailyTotalsSeconds(on: date) >= dailyGoalSeconds(on: date)
     }
 
+    static func isGoalMet(
+        on date: Date,
+        dailyTotals: [String: Int],
+        calendar: Calendar = .autoupdatingCurrent
+    ) -> Bool {
+        let key = BibleStatsStore.isoDateString(date, calendar: calendar)
+        return max(0, dailyTotals[key, default: 0]) >= dailyGoalSeconds(on: date)
+    }
+
+    static func currentStreak(
+        dailyTotals: [String: Int],
+        now: Date = Date(),
+        calendar: Calendar = .autoupdatingCurrent
+    ) -> Int {
+        var cal = calendar
+        cal.timeZone = TimeZone.autoupdatingCurrent
+        var count = 0
+        var day = cal.startOfDay(for: now)
+
+        if !isGoalMet(on: day, dailyTotals: dailyTotals, calendar: cal),
+           let yesterday = cal.date(byAdding: .day, value: -1, to: day) {
+            day = yesterday
+        }
+
+        for _ in 0..<1825 {
+            guard isGoalMet(on: day, dailyTotals: dailyTotals, calendar: cal) else { break }
+            count += 1
+            guard let previous = cal.date(byAdding: .day, value: -1, to: day) else { break }
+            day = previous
+        }
+        return count
+    }
+
+    static func bestStreak(
+        dailyTotals: [String: Int],
+        now: Date = Date(),
+        calendar: Calendar = .autoupdatingCurrent
+    ) -> Int {
+        var cal = calendar
+        cal.timeZone = TimeZone.autoupdatingCurrent
+        let today = cal.startOfDay(for: now)
+        guard let start = cal.date(byAdding: .day, value: -1825, to: today) else { return 0 }
+
+        var best = 0
+        var current = 0
+        var cursor = start
+        while cursor <= today {
+            if isGoalMet(on: cursor, dailyTotals: dailyTotals, calendar: cal) {
+                current += 1
+                best = max(best, current)
+            } else {
+                current = 0
+            }
+            guard let next = cal.date(byAdding: .day, value: 1, to: cursor) else { break }
+            cursor = next
+        }
+        return best
+    }
+
     /// The most recent local day for which the goal was met (or nil if never), totals-based.
     static var lastVisitDate: Date? {
         let cal = calendar

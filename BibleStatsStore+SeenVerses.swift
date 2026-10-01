@@ -40,6 +40,11 @@ extension BibleStatsStore {
         return cacheSeenVersesByChapter?["\(bookName):\(chapter)"] ?? []
     }
 
+    func loadSeenVersesByChapter() -> SeenMap {
+        ensureSeenVerseCacheLoaded()
+        return cacheSeenVersesByChapter ?? [:]
+    }
+
     func saveSeenVerses(_ verses: [Int], bookName: String, chapter: Int) {
         ensureSeenVerseCacheLoaded()
         var map = cacheSeenVersesByChapter ?? [:]

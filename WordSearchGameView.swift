@@ -6,7 +6,7 @@ struct WordSearchGameView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Query private var favorites: [Favorite]
-    @StateObject private var vm: WordSearchViewModel
+    @State private var vm: WordSearchViewModel
     @State private var didBindVM = false
 
     // Reuse a single in-memory placeholder container across instances to avoid store churn.
@@ -18,8 +18,8 @@ struct WordSearchGameView: View {
     }()
 
     init() {
-        _vm = StateObject(
-            wrappedValue: WordSearchViewModel(
+        _vm = State(
+            initialValue: WordSearchViewModel(
                 modelContext: ModelContext(Self.placeholderContainer),
                 favoritesFetch: { [] }
             )
@@ -29,6 +29,8 @@ struct WordSearchGameView: View {
     private var isPad: Bool { horizontalSizeClass == .regular }
 
     var body: some View {
+        @Bindable var vm = vm
+
         ScrollViewReader { _ in
             ScrollView {
                 VStack(spacing: 16) {

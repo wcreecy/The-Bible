@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct BookOrderGameView: View {
-    @StateObject private var vm = BookOrderGameViewModel()
+    @State private var vm = BookOrderGameViewModel()
     @State private var howToExpanded: Bool = false
     @State private var difficultyExpanded: Bool = false
     @State private var elapsedSeconds: Int = 0

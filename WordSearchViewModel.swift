@@ -1,46 +1,48 @@
 import Foundation
 import SwiftUI
 import Combine
+import Observation
 import SwiftData
 
 @MainActor
-final class WordSearchViewModel: ObservableObject {
+@Observable
+final class WordSearchViewModel {
     // Public UI state
-    @Published var started: Bool = false
-    @Published var howToExpanded: Bool = false
-    @Published var difficultyExpanded: Bool = false
-    @Published var difficulty: WordSearchEngine.Difficulty = .medium
+    var started: Bool = false
+    var howToExpanded: Bool = false
+    var difficultyExpanded: Bool = false
+    var difficulty: WordSearchEngine.Difficulty = .medium
     enum GameMode: String, CaseIterable, Identifiable { case normal, blind, favorites; var id: String { rawValue }; var displayName: String { switch self { case .normal: return "Normal"; case .blind: return "Blind"; case .favorites: return "Favorites" } } }
-    @Published var gameMode: GameMode = .normal
+    var gameMode: GameMode = .normal
 
     // Timer
-    @Published var isTimedMode: Bool = false
-    @Published var remainingSeconds: Int = 0
-    @Published var timeUp: Bool = false
-    @Published var didWin: Bool = false
-    @Published var pulseOn: Bool = false
-    @Published var roundOver: Bool = false
+    var isTimedMode: Bool = false
+    var remainingSeconds: Int = 0
+    var timeUp: Bool = false
+    var didWin: Bool = false
+    var pulseOn: Bool = false
+    var roundOver: Bool = false
 
     // Grid
-    @Published var grid: [[Character]] = Array(repeating: Array(repeating: " ", count: 10), count: 10)
-    @Published var targetWords: [String] = []
-    @Published var placed: [WordSearchEngine.PlacedWord] = []
-    @Published var verseRef: String = ""
-    @Published var verseText: String = ""
+    var grid: [[Character]] = Array(repeating: Array(repeating: " ", count: 10), count: 10)
+    var targetWords: [String] = []
+    var placed: [WordSearchEngine.PlacedWord] = []
+    var verseRef: String = ""
+    var verseText: String = ""
 
     // Selection/found
-    @Published var selectionStart: (row: Int, col: Int)? = nil
-    @Published var selectionEnd: (row: Int, col: Int)? = nil
-    @Published var foundCells: Set<String> = []
-    @Published var foundWords: Set<String> = []
-    @Published var revealedWords: Set<String> = []
-    @Published var showBlindWordList: Bool = false
-    @Published var tapStart: (row: Int, col: Int)? = nil
+    var selectionStart: (row: Int, col: Int)? = nil
+    var selectionEnd: (row: Int, col: Int)? = nil
+    var foundCells: Set<String> = []
+    var foundWords: Set<String> = []
+    var revealedWords: Set<String> = []
+    var showBlindWordList: Bool = false
+    var tapStart: (row: Int, col: Int)? = nil
 
     // Favorites resolution context
-    @Published var favBookName: String = ""
-    @Published var favChapterNumber: Int = 0
-    @Published var favVerseNumber: Int = 0
+    var favBookName: String = ""
+    var favChapterNumber: Int = 0
+    var favVerseNumber: Int = 0
 
     // Dependencies
     private var modelContext: ModelContext

@@ -4,6 +4,95 @@ import SwiftUI
 import Combine
 import Charts
 
+private struct ReadingStatsSections<
+    Progress: View,
+    Insights: View,
+    Totals: View,
+    Testament: View,
+    Genre: View,
+    AverageSession: View,
+    TopBooks: View
+>: View {
+    let usesWideLayout: Bool
+    let progress: Progress
+    let insights: Insights
+    let totals: Totals
+    let testament: Testament
+    let genre: Genre
+    let averageSession: AverageSession
+    let topBooks: TopBooks
+
+    var body: some View {
+        Group {
+            if usesWideLayout {
+                HStack(alignment: .top, spacing: 16) {
+                    VStack(spacing: 16) {
+                        progress
+                        insights
+                        topBooks
+                        genre
+                    }
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+
+                    VStack(spacing: 16) {
+                        totals
+                        testament
+                        averageSession
+                    }
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                }
+            } else {
+                VStack(spacing: 16) {
+                    progress
+                    insights
+                    totals
+                    testament
+                    genre
+                    averageSession
+                    topBooks
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 8)
+    }
+}
+
+private struct GameStatsSections: View {
+    let usesWideLayout: Bool
+
+    var body: some View {
+        Group {
+            if usesWideLayout {
+                HStack(alignment: .top, spacing: 16) {
+                    VStack(spacing: 16) {
+                        GamesOverviewCardView()
+                        GameInsightsCardView()
+                    }
+                    .frame(maxWidth: 560, alignment: .topLeading)
+
+                    VStack(spacing: 16) {
+                        AllGamesComparisonCardView()
+                        PlayerStatSheetCardView()
+                    }
+                    .frame(maxWidth: 560, alignment: .topLeading)
+                }
+                .frame(maxWidth: .infinity, alignment: .top)
+            } else {
+                VStack(spacing: 16) {
+                    GamesOverviewCardView()
+                    GameInsightsCardView()
+                    AllGamesComparisonCardView()
+                    PlayerStatSheetCardView()
+                }
+                .frame(maxWidth: 560)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 8)
+    }
+}
+
 struct StatsView: View {
     private enum SortMode: String, CaseIterable, Identifiable {
         case canonical = "Canonical"
@@ -32,7 +121,7 @@ struct StatsView: View {
     }
 
     // View model
-    @StateObject private var model = StatsViewModel()
+    @State private var model = StatsViewModel()
 
     // Independent scopes per card (Totals, OT/NT, Genre) — UI-only
     @State private var timeScopeTotals: TimeScope = .allTime
@@ -236,77 +325,20 @@ struct StatsView: View {
     }
 
     private var bibleContent: some View {
-        Group {
-            if usesWideStatsLayout {
-                // Two-column layout on iPad and landscape iPhone (Bible-only)
-                HStack(alignment: .top, spacing: 16) {
-                    // Column 1
-                    VStack(spacing: 16) {
-                        progressCard
-                        readingInsightsCard
-                        topBooksThisMonthCard
-                        // Moved Genre Distribution under Top Books This Month in the first column
-                        genreCard
-                    }
-                    .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
-
-                    // Column 2
-                    VStack(spacing: 16) {
-                        totalsCard
-                        otntCard
-                        // Removed genreCard from column 2
-                        avgSessionCard
-                    }
-                    .frame(maxWidth: CGFloat.infinity, alignment: Alignment.topLeading)
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-            } else {
-                // Single-column layout on iPhone (Bible-only)
-                VStack(spacing: 16) {
-                    progressCard
-                    readingInsightsCard
-                    totalsCard
-                    otntCard
-                    genreCard
-                    avgSessionCard
-                    topBooksThisMonthCard
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-            }
-        }
+        ReadingStatsSections(
+            usesWideLayout: usesWideStatsLayout,
+            progress: progressCard,
+            insights: readingInsightsCard,
+            totals: totalsCard,
+            testament: otntCard,
+            genre: genreCard,
+            averageSession: avgSessionCard,
+            topBooks: topBooksThisMonthCard
+        )
     }
 
     private var gameContent: some View {
-        Group {
-            if usesWideStatsLayout {
-                HStack(alignment: .top, spacing: 16) {
-                    VStack(spacing: 16) {
-                        GamesOverviewCardView()
-                        GameInsightsCardView()
-                    }
-                    .frame(maxWidth: 560, alignment: .topLeading)
-
-                    VStack(spacing: 16) {
-                        AllGamesComparisonCardView()
-                        PlayerStatSheetCardView()
-                    }
-                    .frame(maxWidth: 560, alignment: .topLeading)
-                }
-                .frame(maxWidth: .infinity, alignment: .top)
-            } else {
-                VStack(spacing: 16) {
-                    GamesOverviewCardView()
-                    GameInsightsCardView()
-                    AllGamesComparisonCardView()
-                    PlayerStatSheetCardView()
-                }
-                .frame(maxWidth: 560)
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
+        GameStatsSections(usesWideLayout: usesWideStatsLayout)
     }
 
     // Extracted card views for reuse in both layouts

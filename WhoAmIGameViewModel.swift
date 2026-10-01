@@ -1,9 +1,11 @@
 import Foundation
 import SwiftUI
 import Combine
+import Observation
 
 @MainActor
-final class WhoAmIGameViewModel: ObservableObject {
+@Observable
+final class WhoAmIGameViewModel {
     enum Mode: String, CaseIterable, Identifiable {
         case names = "Names"     // prompt: name -> choices: descriptions
         case reverse = "Reverse" // prompt: description -> choices: names
@@ -40,33 +42,33 @@ final class WhoAmIGameViewModel: ObservableObject {
     }
 
     // Start screen state
-    @Published var started: Bool = false
-    @Published var mode: Mode = .names
-    @Published var difficulty: Difficulty = .normal {
+    var started: Bool = false
+    var mode: Mode = .names
+    var difficulty: Difficulty = .normal {
         didSet { seedStreakFromPersistence() }
     }
-    @Published var howToExpanded: Bool = false
-    @Published var difficultyExpanded: Bool = false
+    var howToExpanded: Bool = false
+    var difficultyExpanded: Bool = false
 
     // Data
     private(set) var entries: [Entry] = []
 
     // Current round
-    @Published var promptTitle: String = ""
-    @Published var choices: [String] = []
-    @Published var correctChoice: String = ""
-    @Published var selectedChoice: String? = nil
+    var promptTitle: String = ""
+    var choices: [String] = []
+    var correctChoice: String = ""
+    var selectedChoice: String? = nil
 
     // Timer
-    @Published var remainingSeconds: Int = 0
+    var remainingSeconds: Int = 0
     private var timerCancellable: AnyCancellable? = nil
-    @Published var pulseOn: Bool = false
+    var pulseOn: Bool = false
 
     // Scoring
-    @Published var score: Int = 0
-    @Published var answered: Int = 0
-    @Published var currentStreak: Int = 0
-    @Published var currentBestStreak: Int = 0
+    var score: Int = 0
+    var answered: Int = 0
+    var currentStreak: Int = 0
+    var currentBestStreak: Int = 0
 
     // All-time (combined across difficulties)
     private var allTimeCorrectKey: String { "whoamiAllTimeCorrect_all" }
@@ -78,11 +80,11 @@ final class WhoAmIGameViewModel: ObservableObject {
     var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: allTimeBestStreakKey) }
 
     // UI flags
-    @Published var roundOver: Bool = false
-    @Published var showReveal: Bool = false
+    var roundOver: Bool = false
+    var showReveal: Bool = false
 
     // NEW: Jesus bonus alert flag (bound in view)
-    @Published var showJesusBonusAlert: Bool = false
+    var showJesusBonusAlert: Bool = false
 
     // MARK: - Persistent streak helpers (per difficulty)
     private var persistentStreakKey: String { "whoamiPersistentStreak_\(difficulty.rawValue)" }

@@ -20,7 +20,7 @@ final class ReadingTimeTracker: ObservableObject {
     private var segmentRecordedSeconds: Int = 0
     private var unpersistedSeconds: Int = 0
     private var unpersistedStartDate: Date?
-    private var ticker: AnyCancellable?
+    private var tickerTask: Task<Void, Never>?
     private var lastPersist: Date = .distantPast
 
     private(set) var isPaused = false
@@ -102,15 +102,25 @@ final class ReadingTimeTracker: ObservableObject {
     }
 
     private func startTickerIfNeeded() {
-        guard ticker == nil, !isPaused else { return }
-        ticker = Timer.publish(every: 1, on: .main, in: .common)
-            .autoconnect()
-            .sink { [weak self] _ in self?.tick() }
+        guard tickerTask == nil, !isPaused else { return }
+        let clock = clock
+        tickerTask = Task { [weak self] in
+            while !Task.isCancelled {
+                do {
+                    try await clock.sleep(for: .seconds(1))
+                } catch {
+                    return
+                }
+
+                guard let self else { return }
+                self.tick()
+            }
+        }
     }
 
     private func stopTicker() {
-        ticker?.cancel()
-        ticker = nil
+        tickerTask?.cancel()
+        tickerTask = nil
     }
 
     private func tick() {

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct StopwatchCard: View {
+struct StopwatchCard<ModePickerContent: View>: View {
     @Binding var prayerMode: HomeView.PrayerMode
 
     let stopwatchRunning: Bool
@@ -12,7 +12,7 @@ struct StopwatchCard: View {
     let onStop: () -> Void
 
     let isTimerRunning: Bool
-    let modePicker: (_ disabled: Bool) -> AnyView
+    @ViewBuilder let modePicker: (_ disabled: Bool) -> ModePickerContent
 
     var body: some View {
         HeroCard(

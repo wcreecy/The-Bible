@@ -86,6 +86,46 @@ private struct HomeMasonryGrid: Layout {
     }
 }
 
+private struct HomeDashboardColumns<Header: View, Tip: View, Main: View, Sidebar: View>: View {
+    let columnSpacing: CGFloat
+    let mainWidth: CGFloat
+    let sidebarWidth: CGFloat
+    let header: Header
+    let tip: Tip
+    let main: Main
+    let sidebar: Sidebar
+
+    init(
+        columnSpacing: CGFloat,
+        mainWidth: CGFloat,
+        sidebarWidth: CGFloat,
+        @ViewBuilder header: () -> Header,
+        @ViewBuilder tip: () -> Tip,
+        @ViewBuilder main: () -> Main,
+        @ViewBuilder sidebar: () -> Sidebar
+    ) {
+        self.columnSpacing = columnSpacing
+        self.mainWidth = mainWidth
+        self.sidebarWidth = sidebarWidth
+        self.header = header()
+        self.tip = tip()
+        self.main = main()
+        self.sidebar = sidebar()
+    }
+
+    var body: some View {
+        header
+        tip
+
+        HStack(alignment: .top, spacing: columnSpacing) {
+            main
+                .frame(width: mainWidth)
+            sidebar
+                .frame(width: sidebarWidth)
+        }
+    }
+}
+
 struct HomeView: View {
     // Visibility widened so split cards can reference it
     enum PrayerMode: String { case timer, stopwatch, focus }
@@ -215,9 +255,9 @@ struct HomeView: View {
 
     // MARK: - Dynamic body using saved layout
 
-    @StateObject private var votdVM = VerseOfDayViewModel()
-    @StateObject private var focusVM = FocusViewModel()
-    @StateObject private var bibleVM = HomeBibleStatsViewModel()
+    @State private var votdVM = VerseOfDayViewModel()
+    @State private var focusVM = FocusViewModel()
+    @State private var bibleVM = HomeBibleStatsViewModel()
 
     // NEW: Bind Live Activities setting directly so Home tracks Settings in real time.
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
@@ -342,7 +382,9 @@ struct HomeView: View {
                     onAddTen: { timerController.addTen() },
                     onStop: { timerController.stop() },
                     stopwatchRunning: stopwatchController.isRunning,
-                    modePicker: { disabled in AnyView(ModePicker(prayerMode: $prayerMode, disabled: disabled)) }
+                    modePicker: { disabled in
+                        ModePicker(prayerMode: $prayerMode, disabled: disabled)
+                    }
                 )
             } else {
                 StopwatchCard(
@@ -354,7 +396,9 @@ struct HomeView: View {
                     onPause: { stopwatchController.pause() },
                     onStop: { stopwatchController.stop() },
                     isTimerRunning: timerController.isRunning,
-                    modePicker: { disabled in AnyView(ModePicker(prayerMode: $prayerMode, disabled: disabled)) }
+                    modePicker: { disabled in
+                        ModePicker(prayerMode: $prayerMode, disabled: disabled)
+                    }
                 )
             }
         case .resumeReading:
@@ -511,10 +555,15 @@ struct HomeView: View {
         let columnWidth = (width - (columnSpacing * 2)) / 3
         let mainCardsWidth = (columnWidth * 2) + columnSpacing
 
-        homeHeader
-        contextualHomeTip
-
-        HStack(alignment: .top, spacing: columnSpacing) {
+        HomeDashboardColumns(
+            columnSpacing: columnSpacing,
+            mainWidth: mainCardsWidth,
+            sidebarWidth: columnWidth
+        ) {
+            homeHeader
+        } tip: {
+            contextualHomeTip
+        } main: {
             VStack(spacing: 10) {
                 if !hiddenCards.contains(.verseOfDay) {
                     card(for: .verseOfDay)
@@ -530,10 +579,8 @@ struct HomeView: View {
                     .animation(.snappy, value: dashboardCards)
                 }
             }
-            .frame(width: mainCardsWidth)
-
+        } sidebar: {
             HomeBibleReaderCard()
-                .frame(width: columnWidth)
         }
     }
 
@@ -625,7 +672,8 @@ struct HomeView: View {
             stopwatchController.onAppear()
             _ = stopwatchController.handlePendingActionIfAny()
 
-            // Initial load of Bible Stats
+            // Initial load of Bible Stats. The view model intentionally waits for
+            // appearance so construction and appearance do not refresh twice.
             bibleVM.refresh()
 
             // Initialize GameStats and bind to its version for immediate refresh

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct PrayerTimerCard: View {
+struct PrayerTimerCard<ModePickerContent: View>: View {
     enum Mode { case timer, stopwatch }
 
     @Binding var prayerMode: HomeView.PrayerMode
@@ -25,7 +25,7 @@ struct PrayerTimerCard: View {
     let stopwatchRunning: Bool
 
     // ModePicker provider (so HomeView can host the Picker bound to its own storage)
-    let modePicker: (_ disabled: Bool) -> AnyView
+    @ViewBuilder let modePicker: (_ disabled: Bool) -> ModePickerContent
 
     private func presetCircle(_ label: String) -> some View {
         Text(label)

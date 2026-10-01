@@ -1,53 +1,55 @@
 import Foundation
 import Combine
+import Observation
 
 @MainActor
-final class StatsViewModel: ObservableObject {
+@Observable
+final class StatsViewModel {
     // Session-derived scoped datasets
-    @Published var perBookAllTimeSessionTotals: [String: Int] = [:] // sessions within retention
-    @Published var perBookMonthTotals: [String: Int] = [:]           // sessions in current month
-    @Published var perBookLast7Totals: [String: Int] = [:]           // sessions in last 7 days
+    var perBookAllTimeSessionTotals: [String: Int] = [:] // sessions within retention
+    var perBookMonthTotals: [String: Int] = [:]           // sessions in current month
+    var perBookLast7Totals: [String: Int] = [:]           // sessions in last 7 days
 
     // Derived
-    @Published var todaySeconds: Int = 0
-    @Published var thisWeekSeconds: Int = 0
-    @Published var lastWeekSeconds: Int = 0
-    @Published var lastReadBookChapter: String = "—"
-    @Published var lastReadTimeText: String = "—"
-    @Published var lastReadEntry: BibleStatsStore.LastRead? = nil
+    var todaySeconds: Int = 0
+    var thisWeekSeconds: Int = 0
+    var lastWeekSeconds: Int = 0
+    var lastReadBookChapter: String = "—"
+    var lastReadTimeText: String = "—"
+    var lastReadEntry: BibleStatsStore.LastRead? = nil
 
-    @Published var visitedCount: Int = 0
-    @Published var booksCompleted: Int = 0
-    @Published var totalBooks: Int = 0
-    @Published var bibleCompletionPercent: Int = 0
-    @Published var totalChapters: Int = 0
+    var visitedCount: Int = 0
+    var booksCompleted: Int = 0
+    var totalBooks: Int = 0
+    var bibleCompletionPercent: Int = 0
+    var totalChapters: Int = 0
 
     // Verse-level overall progress
-    @Published var totalVerses: Int = 0
-    @Published var completedVerses: Int = 0
+    var totalVerses: Int = 0
+    var completedVerses: Int = 0
 
     // Per-book progress (chapters read / total)
-    @Published var bookProgress: [String: (read: Int, total: Int, fraction: Double)] = [:]
+    var bookProgress: [String: (read: Int, total: Int, fraction: Double)] = [:]
 
     // Charts datasets and consistency
-    @Published var last7Daily: [(date: Date, seconds: Int)] = []
-    @Published var sessionsLast7: [(index: Int, seconds: Int)] = []
-    @Published private(set) var refreshRevision: Int = 0
-    @Published var avgSessionSecondsLast7: Int = 0
-    @Published var last30Daily: [(date: Date, seconds: Int)] = []
+    var last7Daily: [(date: Date, seconds: Int)] = []
+    var sessionsLast7: [(index: Int, seconds: Int)] = []
+    private(set) var refreshRevision: Int = 0
+    var avgSessionSecondsLast7: Int = 0
+    var last30Daily: [(date: Date, seconds: Int)] = []
 
     // This Month metrics
-    @Published var monthTotalSeconds: Int = 0
-    @Published var monthChaptersCompleted: Int = 0
-    @Published var monthTop3Books: [(book: String, seconds: Int)] = []
+    var monthTotalSeconds: Int = 0
+    var monthChaptersCompleted: Int = 0
+    var monthTop3Books: [(book: String, seconds: Int)] = []
 
     // Summary glance additions
-    @Published var totalSecondsAllTime: Int = 0
-    @Published var lastMonthSeconds: Int = 0
+    var totalSecondsAllTime: Int = 0
+    var lastMonthSeconds: Int = 0
 
     // Last session length (seconds)
-    @Published var lastSessionSeconds: Int = 0
-    @Published var readingInsights = ReadingInsights()
+    var lastSessionSeconds: Int = 0
+    var readingInsights = ReadingInsights()
 
     // Observers/subscriptions
     private var cancellables: Set<AnyCancellable> = []
@@ -86,34 +88,45 @@ final class StatsViewModel: ObservableObject {
     // MARK: - Public refresh entry point
 
     func refreshAll() {
-        refreshTotals()
-        refreshChartsAndMonth()
-        refreshSessionScopedPerBook()
-        computeCompletionMetricsVerseComplete()
-        computePerBookProgressVerseComplete()
-        computeVerseTotalsAndCompleted()
-        readingInsights = ReadingInsightsCalculator.calculate()
+        var calendar = Calendar.autoupdatingCurrent
+        calendar.timeZone = TimeZone.autoupdatingCurrent
+        let now = Date()
+        let snapshot = BibleStatsStore.shared.statisticsSnapshot()
+        let sessions = ReadingSessionsStore.shared.allSessions().filter(ReadingSessionsStore.isValid)
+
+        refreshTotals(snapshot: snapshot, now: now, calendar: calendar)
+        refreshChartsAndMonth(snapshot: snapshot, sessions: sessions, now: now, calendar: calendar)
+        refreshSessionScopedPerBook(snapshot: snapshot, now: now, calendar: calendar)
+        computeBibleProgress(snapshot: snapshot)
+        readingInsights = ReadingInsightsCalculator.calculate(
+            dailyTotals: snapshot.dailyTotals,
+            sessions: sessions,
+            now: now,
+            calendar: calendar
+        )
         refreshRevision &+= 1
     }
 
     // MARK: - Data refresh internals
 
-    private func refreshTotals() {
-        var cal = Calendar.autoupdatingCurrent
-        cal.timeZone = TimeZone.autoupdatingCurrent
-
+    private func refreshTotals(
+        snapshot: BibleStatsStore.StatisticsSnapshot,
+        now: Date,
+        calendar: Calendar
+    ) {
+        let dailyTotals = snapshot.dailyTotals
+        let startOfToday = calendar.startOfDay(for: now)
         // Today from synced totals
-        todaySeconds = BibleStatsStore.shared.totalForLast(days: 1)
+        let todayKey = BibleStatsStore.isoDateString(startOfToday, calendar: calendar)
+        todaySeconds = max(0, dailyTotals[todayKey, default: 0])
 
         // This week (rolling 7 local days including today) from synced daily totals
         do {
-            let map = BibleStatsStore.shared.loadDailyTotals()
-            let startOfToday = cal.startOfDay(for: Date())
             var total = 0
             for i in 0..<7 {
-                if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
-                    let key = BibleStatsStore.isoDateString(d, calendar: cal)
-                    total += max(0, map[key, default: 0])
+                if let d = calendar.date(byAdding: .day, value: -i, to: startOfToday) {
+                    let key = BibleStatsStore.isoDateString(d, calendar: calendar)
+                    total += max(0, dailyTotals[key, default: 0])
                 }
             }
             thisWeekSeconds = total
@@ -121,19 +134,17 @@ final class StatsViewModel: ObservableObject {
 
         // Last week rolling window (7 days immediately prior)
         do {
-            let map = BibleStatsStore.shared.loadDailyTotals()
-            let startOfToday = cal.startOfDay(for: Date())
             var total = 0
             for i in 7..<14 {
-                if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
-                    let key = BibleStatsStore.isoDateString(d, calendar: cal)
-                    total += max(0, map[key, default: 0])
+                if let d = calendar.date(byAdding: .day, value: -i, to: startOfToday) {
+                    let key = BibleStatsStore.isoDateString(d, calendar: calendar)
+                    total += max(0, dailyTotals[key, default: 0])
                 }
             }
             lastWeekSeconds = total
         }
 
-        if let last = BibleStatsStore.shared.loadLastRead() {
+        if let last = snapshot.lastRead {
             lastReadEntry = last
             lastReadBookChapter = "\(last.bookName) \(last.chapterNumber)"
             lastReadTimeText = timeOnlyString(last.date)
@@ -143,75 +154,73 @@ final class StatsViewModel: ObservableObject {
             lastReadTimeText = "—"
         }
 
-        // Overall counts used by progress
-        computeCompletionMetricsVerseComplete()
-        computePerBookProgressVerseComplete()
-        computeVerseTotalsAndCompleted()
     }
 
-    private func refreshChartsAndMonth() {
-        var cal = Calendar.autoupdatingCurrent
-        cal.timeZone = TimeZone.autoupdatingCurrent
-
+    private func refreshChartsAndMonth(
+        snapshot: BibleStatsStore.StatisticsSnapshot,
+        sessions: [ReadingSessionsStore.Session],
+        now: Date,
+        calendar: Calendar
+    ) {
+        let dailyTotals = snapshot.dailyTotals
+        let startOfToday = calendar.startOfDay(for: now)
         // Last 7 days daily bars from synced daily totals
         do {
-            let map = BibleStatsStore.shared.loadDailyTotals()
-            let startOfToday = cal.startOfDay(for: Date())
             var days: [(Date, Int)] = []
             for i in stride(from: 6, through: 0, by: -1) {
-                if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
-                    let key = BibleStatsStore.isoDateString(d, calendar: cal)
-                    days.append((d, max(0, map[key, default: 0])))
+                if let d = calendar.date(byAdding: .day, value: -i, to: startOfToday) {
+                    let key = BibleStatsStore.isoDateString(d, calendar: calendar)
+                    days.append((d, max(0, dailyTotals[key, default: 0])))
                 }
             }
             last7Daily = days
         }
 
         // Sessions-based cards (keep as session analytics)
-        let sessionsIn7Days = ReadingSessionsStore.shared.sessions(inLastDays: 7, now: Date(), calendar: cal)
-            .filter(ReadingSessionsStore.isValid)
+        let cutoff = ReadingSessionsStore.startDate(forLastDays: 7, now: now, calendar: calendar)
+        let sessionsIn7Days = sessions.filter { $0.end >= cutoff }
             .sorted { $0.end < $1.end }
         avgSessionSecondsLast7 = StatsSeriesBuilder.averageSessionLength(sessions: sessionsIn7Days)
         sessionsLast7 = StatsSeriesBuilder.sessionDurations(sessions: sessionsIn7Days).enumerated().map { (idx, durSec) in
             return (index: idx + 1, seconds: durSec)
         }
 
-        let allSessions = ReadingSessionsStore.shared.allSessions().filter(ReadingSessionsStore.isValid)
-        lastSessionSeconds = allSessions.max(by: { $0.end < $1.end })
+        lastSessionSeconds = sessions.max(by: { $0.end < $1.end })
             .map(ReadingSessionsStore.duration(of:)) ?? 0
 
         // Consistency: last 30 from synced daily totals
         do {
-            let map = BibleStatsStore.shared.loadDailyTotals()
-            let startOfToday = cal.startOfDay(for: Date())
             var days: [(Date, Int)] = []
             for i in stride(from: 29, through: 0, by: -1) {
-                if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
-                    let key = BibleStatsStore.isoDateString(d, calendar: cal)
-                    days.append((d, max(0, map[key, default: 0])))
+                if let d = calendar.date(byAdding: .day, value: -i, to: startOfToday) {
+                    let key = BibleStatsStore.isoDateString(d, calendar: calendar)
+                    days.append((d, max(0, dailyTotals[key, default: 0])))
                 }
             }
             last30Daily = days
         }
 
         // This Month (totals and chapters from BibleStatsStore)
-        let now = Date()
-        let comps = BibleStatsStore.shared.chapterCompletions(inMonth: now)
-        monthChaptersCompleted = comps.count
-        monthTotalSeconds = BibleStatsStore.shared.totalForMonth(containing: now)
+        let monthComponents = calendar.dateComponents([.year, .month], from: now)
+        monthChaptersCompleted = snapshot.chapterCompletionDates.values.filter {
+            calendar.dateComponents([.year, .month], from: $0) == monthComponents
+        }.count
+        let monthKeys = BibleStatsStore.isoKeysForMonth(containing: now, calendar: calendar)
+        monthTotalSeconds = monthKeys.reduce(0) { total, key in
+            total + max(0, dailyTotals[key, default: 0])
+        }
     }
 
-    private func refreshSessionScopedPerBook() {
+    private func refreshSessionScopedPerBook(
+        snapshot: BibleStatsStore.StatisticsSnapshot,
+        now: Date,
+        calendar: Calendar
+    ) {
         // REVISED: Build per-book maps from BibleStatsStore daily totals (not sessions)
-        var cal = Calendar.autoupdatingCurrent
-        cal.timeZone = .autoupdatingCurrent
-        let now = Date()
-        let startOfToday = cal.startOfDay(for: now)
-
-        let store = BibleStatsStore.shared
+        let startOfToday = calendar.startOfDay(for: now)
 
         // Daily per-book map: ["yyyy-MM-dd": [book: seconds]]
-        let dailyByBook: [String: [String: Int]] = store.loadDailyTotalsByBook()
+        let dailyByBook = snapshot.dailyTotalsByBook
 
         func sumPerBook(for keys: [String]) -> [String: Int] {
             var map: [String: Int] = [:]
@@ -240,14 +249,14 @@ final class StatsViewModel: ObservableObject {
         // Last 7 days (including today)
         var last7Keys: [String] = []
         for i in 0..<7 {
-            if let d = cal.date(byAdding: .day, value: -i, to: startOfToday) {
-                last7Keys.append(BibleStatsStore.isoDateString(d, calendar: cal))
+            if let d = calendar.date(byAdding: .day, value: -i, to: startOfToday) {
+                last7Keys.append(BibleStatsStore.isoDateString(d, calendar: calendar))
             }
         }
         perBookLast7Totals = sumPerBook(for: last7Keys)
 
         // This month
-        let monthKeys = BibleStatsStore.isoKeysForMonth(containing: now, calendar: cal)
+        let monthKeys = BibleStatsStore.isoKeysForMonth(containing: now, calendar: calendar)
         perBookMonthTotals = sumPerBook(for: monthKeys)
 
         // Top 3 books for this month (based on daily totals by book)
@@ -260,26 +269,46 @@ final class StatsViewModel: ObservableObject {
 
     // MARK: - Compute helpers
 
-    private func computeCompletionMetricsVerseComplete() {
+    private func computeBibleProgress(snapshot: BibleStatsStore.StatisticsSnapshot) {
         let books = BibleData.books
         totalBooks = books.count
         totalChapters = books.reduce(0) { $0 + $1.chapters.count }
 
         var completedBooks = 0
         var completedChapters = 0
+        var verseCount = 0
+        var completedVerseCount = 0
+        var progress: [String: (read: Int, total: Int, fraction: Double)] = [:]
 
         for book in books {
             var allChaptersComplete = true
+            var completedChaptersInBook = 0
             for chap in book.chapters {
-                let totalVerses = chap.verses.count
-                let isComplete = totalVerses > 0 && BibleStatsStore.shared.isChapterComplete(bookName: book.name, chapter: chap.number, totalVerses: totalVerses)
+                let chapterVerseCount = chap.verses.count
+                let key = "\(book.name):\(chap.number)"
+                let seen = snapshot.seenVersesByChapter[key, default: []]
+                let validSeenCount = chapterVerseCount > 0
+                    ? seen.filter { (1...chapterVerseCount).contains($0) }.count
+                    : 0
+                let isComplete = chapterVerseCount > 0 && validSeenCount >= chapterVerseCount
+
+                verseCount += chapterVerseCount
+                completedVerseCount += min(chapterVerseCount, validSeenCount)
                 if isComplete {
                     completedChapters += 1
+                    completedChaptersInBook += 1
                 } else {
                     allChaptersComplete = false
                 }
             }
             if allChaptersComplete { completedBooks += 1 }
+
+            let chapterCount = max(1, book.chapters.count)
+            progress[book.name] = (
+                completedChaptersInBook,
+                chapterCount,
+                Double(completedChaptersInBook) / Double(chapterCount)
+            )
         }
 
         visitedCount = completedChapters
@@ -288,21 +317,7 @@ final class StatsViewModel: ObservableObject {
         let denom = max(1, totalChapters)
         let pct = Int(round((Double(completedChapters) / Double(denom)) * 100.0))
         bibleCompletionPercent = pct
-    }
 
-    private func computePerBookProgressVerseComplete() {
-        var progress: [String: (read: Int, total: Int, fraction: Double)] = [:]
-        let books = BibleData.books
-        for book in books {
-            let total = max(1, book.chapters.count)
-            let read = book.chapters.reduce(0) { acc, chap in
-                let totalVerses = chap.verses.count
-                let complete = totalVerses > 0 && BibleStatsStore.shared.isChapterComplete(bookName: book.name, chapter: chap.number, totalVerses: totalVerses)
-                return acc + (complete ? 1 : 0)
-            }
-            let fraction = Double(read) / Double(total)
-            progress[book.name] = (read, total, fraction)
-        }
         // Ensure placeholder entries for any missing books
         let orderedAllBooks: [String] = {
             if !BibleData.books.isEmpty { return BibleData.books.map { $0.name } }
@@ -314,24 +329,8 @@ final class StatsViewModel: ObservableObject {
             }
         }
         bookProgress = progress
-    }
-
-    private func computeVerseTotalsAndCompleted() {
-        let books = BibleData.books
-        var total = 0
-        var completed = 0
-        for book in books {
-            for chap in book.chapters {
-                let versesCount = chap.verses.count
-                total += versesCount
-                if versesCount > 0 {
-                    let seen = BibleStatsStore.shared.loadSeenVerses(bookName: book.name, chapter: chap.number)
-                    completed += min(versesCount, seen.count)
-                }
-            }
-        }
-        totalVerses = total
-        completedVerses = completed
+        totalVerses = verseCount
+        completedVerses = completedVerseCount
     }
 
     private func timeOnlyString(_ date: Date) -> String {

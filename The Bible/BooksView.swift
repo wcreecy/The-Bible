@@ -1,20 +1,57 @@
 import SwiftUI
 
 struct BooksView: View {
+    private static let canonicalIndexByName = Dictionary(
+        uniqueKeysWithValues: BibleData.books.enumerated().map { ($1.name, $0) }
+    )
+    private static let matthewIndex = canonicalIndexByName["Matthew"] ?? Int.max
+
     @EnvironmentObject private var coordinator: NavigationCoordinator
     let books: [Book]
+    private let oldTestamentBooks: [Book]
+    private let newTestamentBooks: [Book]
     @State private var searchText: String = ""
+    @State private var displayedBooks: [Book]
+    @State private var displayedOldTestamentBooks: [Book]
+    @State private var displayedNewTestamentBooks: [Book]
     // Shared preference across devices
     @AppStorage("bibleBooksSortAlphabetical") private var sortAlphabetically: Bool = false
 
-    private var filteredBooks: [Book] {
-        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !query.isEmpty else { return books }
-        return books.filter { $0.name.localizedCaseInsensitiveContains(query) }
+    init(books: [Book]) {
+        self.books = books
+        let oldTestamentBooks = books.filter {
+            (Self.canonicalIndexByName[$0.name] ?? Int.max) < Self.matthewIndex
+        }
+        let newTestamentBooks = books.filter {
+            (Self.canonicalIndexByName[$0.name] ?? Int.max) >= Self.matthewIndex
+        }
+        self.oldTestamentBooks = oldTestamentBooks
+        self.newTestamentBooks = newTestamentBooks
+        _displayedBooks = State(initialValue: books)
+        _displayedOldTestamentBooks = State(initialValue: oldTestamentBooks)
+        _displayedNewTestamentBooks = State(initialValue: newTestamentBooks)
     }
 
     private var azBooks: [Book] {
-        filteredBooks.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        displayedBooks.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+    }
+
+    private func updateDisplayedBooks(for searchText: String) {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else {
+            displayedBooks = books
+            displayedOldTestamentBooks = oldTestamentBooks
+            displayedNewTestamentBooks = newTestamentBooks
+            return
+        }
+
+        displayedBooks = books.filter { $0.name.localizedCaseInsensitiveContains(query) }
+        displayedOldTestamentBooks = oldTestamentBooks.filter {
+            $0.name.localizedCaseInsensitiveContains(query)
+        }
+        displayedNewTestamentBooks = newTestamentBooks.filter {
+            $0.name.localizedCaseInsensitiveContains(query)
+        }
     }
 
     @ViewBuilder
@@ -51,12 +88,6 @@ struct BooksView: View {
 
     var body: some View {
         ScrollView {
-            let canon = BibleData.books
-            let indexMap = Dictionary(uniqueKeysWithValues: canon.enumerated().map { ($1.name, $0) })
-            let matthewIndex = indexMap["Matthew"] ?? Int.max
-            let otBooks = filteredBooks.filter { (indexMap[$0.name] ?? Int.max) < matthewIndex }
-            let ntBooks = filteredBooks.filter { (indexMap[$0.name] ?? Int.max) >= matthewIndex }
-
             LazyVStack(alignment: .leading, spacing: 16) {
                 if sortAlphabetically {
                     LazyVStack(alignment: .leading, spacing: 0) {
@@ -65,17 +96,23 @@ struct BooksView: View {
                     .padding(AppDesignMetrics.cardPadding)
                     .heroCardSurface()
                 } else {
-                    if !otBooks.isEmpty {
+                    if !displayedOldTestamentBooks.isEmpty {
                         LazyVStack(alignment: .leading, spacing: 0) {
-                            bookRows(title: "Old Testament (\(otBooks.count))", books: otBooks)
+                            bookRows(
+                                title: "Old Testament (\(displayedOldTestamentBooks.count))",
+                                books: displayedOldTestamentBooks
+                            )
                         }
                         .padding(AppDesignMetrics.cardPadding)
                         .heroCardSurface()
                     }
 
-                    if !ntBooks.isEmpty {
+                    if !displayedNewTestamentBooks.isEmpty {
                         LazyVStack(alignment: .leading, spacing: 0) {
-                            bookRows(title: "New Testament (\(ntBooks.count))", books: ntBooks)
+                            bookRows(
+                                title: "New Testament (\(displayedNewTestamentBooks.count))",
+                                books: displayedNewTestamentBooks
+                            )
                         }
                         .padding(AppDesignMetrics.cardPadding)
                         .heroCardSurface()
@@ -88,6 +125,9 @@ struct BooksView: View {
         .background(AppBackgroundView(tab: .bible))
         .navigationTitle("Books")
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search books")
+        .onChange(of: searchText) { _, newValue in
+            updateDisplayedBooks(for: newValue)
+        }
         .tint(.accentColor)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {

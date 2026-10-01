@@ -628,49 +628,129 @@ struct WordleView: View {
     }
 
     // MARK: - Board
-    @ViewBuilder
     private func boardView(tileSize: CGFloat) -> some View {
-        let spacing: CGFloat = tileSize > 48 ? 9 : 6
+        WordleBoardView(
+            guesses: guesses,
+            evaluations: evaluations,
+            activeRow: composedCurrentRow(),
+            rowIndex: rowIndex,
+            isRoundOver: roundOver,
+            pinned: $pinned,
+            selectedCell: $selectedCell,
+            tileSize: tileSize
+        )
+    }
 
-        VStack(spacing: spacing) {
-            ForEach(0..<6, id: \.self) { r in
-                HStack(spacing: spacing) {
-                    ForEach(0..<5, id: \.self) { c in
-                        let ch: String = {
-                            if r < rowIndex {
-                                let g = guesses[r]
-                                return c < g.count ? String(g[g.index(g.startIndex, offsetBy: c)]) : ""
-                            } else if r == rowIndex && !roundOver {
-                                let row = composedCurrentRow()
-                                if let letter = row[c] {
-                                    return String(letter)
-                                } else {
-                                    return ""
-                                }
-                            } else {
-                                return ""
-                            }
-                        }()
-                        let state: KeyState = (r < rowIndex) ? evaluations[r][c] : .unknown
-                        tile(letter: ch, state: state, row: r, col: c, size: tileSize)
+    private struct WordleBoardView: View {
+        let guesses: [String]
+        let evaluations: [[KeyState]]
+        let activeRow: [Character?]
+        let rowIndex: Int
+        let isRoundOver: Bool
+        @Binding var pinned: [[Character?]]
+        @Binding var selectedCell: (row: Int, col: Int)?
+        let tileSize: CGFloat
+
+        private var spacing: CGFloat {
+            tileSize > 48 ? 9 : 6
+        }
+
+        var body: some View {
+            VStack(spacing: spacing) {
+                ForEach(0..<6, id: \.self) { row in
+                    HStack(spacing: spacing) {
+                        ForEach(0..<5, id: \.self) { column in
+                            tile(
+                                letter: letter(atRow: row, column: column),
+                                state: row < rowIndex ? evaluations[row][column] : .unknown,
+                                row: row,
+                                column: column
+                            )
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                guard !roundOver, r == rowIndex else { return }
-                                // Toggle off if tapping the same selected cell
-                                if let sel = selectedCell, sel.row == r, sel.col == c {
-                                    selectedCell = nil
-                                    return
-                                }
-                                // If any selection exists and this tapped cell is blank, exit locked mode
-                                if selectedCell != nil, ch.isEmpty {
-                                    selectedCell = nil
-                                    return
-                                }
-                                selectedCell = (row: r, col: c)
+                                select(row: row, column: column)
                             }
+                        }
                     }
                 }
             }
+        }
+
+        private func letter(atRow row: Int, column: Int) -> String {
+            if row < rowIndex {
+                let guess = guesses[row]
+                guard column < guess.count else { return "" }
+                return String(guess[guess.index(guess.startIndex, offsetBy: column)])
+            }
+            guard row == rowIndex, !isRoundOver, let letter = activeRow[column] else {
+                return ""
+            }
+            return String(letter)
+        }
+
+        private func select(row: Int, column: Int) {
+            guard !isRoundOver, row == rowIndex else { return }
+            if selectedCell?.row == row, selectedCell?.col == column {
+                selectedCell = nil
+            } else if selectedCell != nil, letter(atRow: row, column: column).isEmpty {
+                selectedCell = nil
+            } else {
+                selectedCell = (row, column)
+            }
+        }
+
+        private func tile(
+            letter: String,
+            state: KeyState,
+            row: Int,
+            column: Int
+        ) -> some View {
+            let isPinned = pinned[row][column] != nil
+            let isSelected = selectedCell?.row == row && selectedCell?.col == column
+            let background: Color = switch state {
+            case .unknown: Color(.secondarySystemBackground)
+            case .absent: .gray.opacity(0.35)
+            case .present: .yellow.opacity(0.45)
+            case .correct: .green.opacity(0.45)
+            }
+            let border: Color = {
+                if row == rowIndex, !isRoundOver, isSelected {
+                    return Color.accentColor.opacity(0.9)
+                }
+                switch state {
+                case .unknown: return Color.primary.opacity(0.08)
+                case .absent: return .gray.opacity(0.55)
+                case .present: return .yellow.opacity(0.65)
+                case .correct: return .green.opacity(0.65)
+                }
+            }()
+
+            return ZStack(alignment: .topTrailing) {
+                Text(letter)
+                    .font((tileSize > 48 ? Font.title : Font.title2).weight(.bold))
+                    .frame(width: tileSize, height: tileSize)
+                    .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(background))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .stroke(border, lineWidth: isSelected ? 2 : 1)
+                    )
+
+                if row == rowIndex, !isRoundOver, isPinned {
+                    Button {
+                        pinned[row][column] = nil
+                        selectedCell = (row, column)
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(.secondary)
+                            .padding(4)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Clear pinned letter")
+                }
+            }
+            .foregroundStyle(.primary)
+            .monospaced()
         }
     }
 
@@ -732,52 +812,112 @@ struct WordleView: View {
     }
 
     // MARK: - On-screen keyboard
-    @ViewBuilder
     private func keyboardView(keyHeight: CGFloat) -> some View {
-        let row1 = Array(useABCLayout ? "ABCDEFGHIJ" : "QWERTYUIOP")
-        let row2 = Array(useABCLayout ? "KLMNOPQRS" : "ASDFGHJKL")
-        let row3 = Array(useABCLayout ? "TUVWXYZ" : "ZXCVBNM")
+        WordleKeyboardView(
+            usesABCLayout: $useABCLayout,
+            keyStates: keyboardStates,
+            isRoundOver: roundOver,
+            isCurrentRowFull: isCurrentRowFull(),
+            canDelete: !currentInput.isEmpty || hasAnyTypedInCurrentRow(),
+            keyHeight: keyHeight,
+            onLetter: tapLetter,
+            onDelete: deleteLetter
+        )
+    }
 
-        VStack(spacing: 8) {
-            HStack(spacing: 6) {
-                ForEach(row1, id: \.self) { ch in
-                    keyButton(for: ch, minimumHeight: keyHeight)
-                        .disabled(roundOver || isCurrentRowFull())
+    private struct WordleKeyboardView: View {
+        @Binding var usesABCLayout: Bool
+        let keyStates: [Character: KeyState]
+        let isRoundOver: Bool
+        let isCurrentRowFull: Bool
+        let canDelete: Bool
+        let keyHeight: CGFloat
+        let onLetter: (Character) -> Void
+        let onDelete: () -> Void
+
+        private var rows: [[Character]] {
+            if usesABCLayout {
+                return [Array("ABCDEFGHIJ"), Array("KLMNOPQRS"), Array("TUVWXYZ")]
+            }
+            return [Array("QWERTYUIOP"), Array("ASDFGHJKL"), Array("ZXCVBNM")]
+        }
+
+        var body: some View {
+            VStack(spacing: 8) {
+                keyboardRow(rows[0])
+                keyboardRow(rows[1])
+
+                HStack(spacing: 6) {
+                    Button {
+                        usesABCLayout.toggle()
+                    } label: {
+                        Image(systemName: "arrow.uturn.backward.circle")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, minHeight: keyHeight)
+                    }
+                    .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
+                    .disabled(isRoundOver)
+                    .accessibilityLabel(usesABCLayout ? "Switch to QWERTY layout" : "Switch to ABC layout")
+
+                    ForEach(rows[2], id: \.self) { character in
+                        keyButton(for: character)
+                    }
+
+                    Button(action: onDelete) {
+                        Image(systemName: "delete.left")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, minHeight: keyHeight)
+                    }
+                    .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
+                    .disabled(isRoundOver || !canDelete)
+                    .accessibilityLabel("Backspace")
                 }
             }
-            HStack(spacing: 6) {
-                ForEach(row2, id: \.self) { ch in
-                    keyButton(for: ch, minimumHeight: keyHeight)
-                        .disabled(roundOver || isCurrentRowFull())
-                }
-            }
-            HStack(spacing: 6) {
-                Button(action: { useABCLayout.toggle() }) {
-                    Image(systemName: "arrow.uturn.backward.circle")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, minHeight: keyHeight)
-                }
-                .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
-                .disabled(roundOver)
-                .accessibilityLabel(useABCLayout ? "Switch to QWERTY layout" : "Switch to ABC layout")
+            .accessibilityElement(children: .contain)
+            .padding(.top, 6)
+        }
 
-                ForEach(row3, id: \.self) { ch in
-                    keyButton(for: ch, minimumHeight: keyHeight)
-                        .disabled(roundOver || isCurrentRowFull())
+        private func keyboardRow(_ characters: [Character]) -> some View {
+            HStack(spacing: 6) {
+                ForEach(characters, id: \.self) { character in
+                    keyButton(for: character)
                 }
-
-                Button(action: { deleteLetter() }) {
-                    Image(systemName: "delete.left")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, minHeight: keyHeight)
-                }
-                .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
-                .disabled(roundOver || currentInput.isEmpty && !hasAnyTypedInCurrentRow())
-                .accessibilityLabel("Backspace")
             }
         }
-        .accessibilityElement(children: .contain)
-        .padding(.top, 6)
+
+        @ViewBuilder
+        private func keyButton(for character: Character) -> some View {
+            let state = keyStates[character] ?? .unknown
+
+            switch state {
+            case .unknown:
+                keyLabel(character)
+                    .buttonStyle(GameKeyButtonStyle(tint: state.tint))
+                    .disabled(isRoundOver || isCurrentRowFull)
+            case .absent:
+                keyLabel(character)
+                    .buttonStyle(FilledGameKeyButtonStyle(fill: .gray, foreground: .white))
+                    .disabled(isRoundOver || isCurrentRowFull)
+            case .present:
+                keyLabel(character)
+                    .buttonStyle(FilledGameKeyButtonStyle(fill: .yellow, foreground: .black))
+                    .disabled(isRoundOver || isCurrentRowFull)
+            case .correct:
+                keyLabel(character)
+                    .buttonStyle(FilledGameKeyButtonStyle(fill: .green, foreground: .white))
+                    .disabled(isRoundOver || isCurrentRowFull)
+            }
+        }
+
+        private func keyLabel(_ character: Character) -> some View {
+            Button {
+                onLetter(character)
+            } label: {
+                Text(String(character))
+                    .font(.headline.weight(.semibold))
+                    .frame(maxWidth: .infinity, minHeight: keyHeight)
+            }
+        }
     }
 
     private func hasAnyTypedInCurrentRow() -> Bool {

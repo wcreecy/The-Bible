@@ -805,59 +805,15 @@ struct HangmanGameView: View {
     // MARK: - On-screen keyboard
 
     private func keyboardView(keyHeight: CGFloat) -> some View {
-        let qwertyRows = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
-        let alphaRows = ["ABCDEFG", "HIJKLMN", "OPQRSTU", "VWXYZ"]
-
-        let rows: [[Character]] = {
-            if useAlphabeticalLayout {
-                return alphaRows.map { Array($0) }
-            } else {
-                return qwertyRows.map { Array($0) }
-            }
-        }()
-
-        return VStack(spacing: 8) {
-            ForEach(rows.indices, id: \.self) { rowIndex in
-                let rowChars = rows[rowIndex]
-                HStack(spacing: 6) {
-                    ForEach(rowChars, id: \.self) { ch in
-                        let upper = Character(String(ch).uppercased())
-                        let isGuessed = guessedLetters.contains(upper)
-                        let tint: Color = correctLetters.contains(upper)
-                            ? .green
-                            : wrongLetters.contains(upper) ? .red : .accentColor
-
-                        Button(action: { guess(upper) }) {
-                            Text(String(ch))
-                                .font(.headline.weight(.semibold))
-                                .frame(maxWidth: .infinity, minHeight: keyHeight)
-                                .accessibilityLabel("Letter \(String(ch))")
-                        }
-                        .buttonStyle(GameKeyButtonStyle(tint: tint))
-                        .allowsHitTesting(!isGuessed && !roundOver)
-                        .opacity(roundOver ? 0.6 : 1.0)
-
-                        if !useAlphabeticalLayout {
-                            if rowIndex == rows.count - 1, ch == "M" {
-                                layoutToggleButton(
-                                    title: "A-Z",
-                                    keyHeight: keyHeight
-                                )
-                            }
-                        }
-                    }
-
-                    if useAlphabeticalLayout {
-                        if rowIndex == rows.count - 1 {
-                            layoutToggleButton(
-                                title: "QWERTY",
-                                keyHeight: keyHeight
-                            )
-                        }
-                    }
-                }
-            }
-        }
+        HangmanKeyboardView(
+            usesAlphabeticalLayout: $useAlphabeticalLayout,
+            guessedLetters: guessedLetters,
+            correctLetters: correctLetters,
+            wrongLetters: wrongLetters,
+            isRoundOver: roundOver,
+            keyHeight: keyHeight,
+            onGuess: guess
+        )
     }
 
     @ViewBuilder
@@ -871,6 +827,77 @@ struct HangmanGameView: View {
         .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
         .disabled(roundOver)
         .opacity(roundOver ? 0.6 : 1.0)
+    }
+}
+
+private struct HangmanKeyboardView: View {
+    @Binding var usesAlphabeticalLayout: Bool
+    let guessedLetters: Set<Character>
+    let correctLetters: Set<Character>
+    let wrongLetters: Set<Character>
+    let isRoundOver: Bool
+    let keyHeight: CGFloat
+    let onGuess: (Character) -> Void
+
+    private var rows: [[Character]] {
+        let layout = usesAlphabeticalLayout
+            ? ["ABCDEFG", "HIJKLMN", "OPQRSTU", "VWXYZ"]
+            : ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
+        return layout.map(Array.init)
+    }
+
+    var body: some View {
+        VStack(spacing: 8) {
+            ForEach(rows.indices, id: \.self) { rowIndex in
+                HStack(spacing: 6) {
+                    ForEach(rows[rowIndex], id: \.self) { character in
+                        let upper = Character(String(character).uppercased())
+                        Button {
+                            onGuess(upper)
+                        } label: {
+                            Text(String(character))
+                                .font(.headline.weight(.semibold))
+                                .frame(maxWidth: .infinity, minHeight: keyHeight)
+                                .accessibilityLabel("Letter \(String(character))")
+                        }
+                        .buttonStyle(GameKeyButtonStyle(tint: tint(for: upper)))
+                        .allowsHitTesting(!guessedLetters.contains(upper) && !isRoundOver)
+                        .opacity(isRoundOver ? 0.6 : 1)
+
+                        if !usesAlphabeticalLayout,
+                           rowIndex == rows.count - 1,
+                           character == "M" {
+                            layoutToggle(title: "A-Z")
+                        }
+                    }
+
+                    if usesAlphabeticalLayout, rowIndex == rows.count - 1 {
+                        layoutToggle(title: "QWERTY")
+                    }
+                }
+            }
+        }
+    }
+
+    private func tint(for character: Character) -> Color {
+        if correctLetters.contains(character) {
+            return .green
+        }
+        return wrongLetters.contains(character) ? .red : .accentColor
+    }
+
+    private func layoutToggle(title: String) -> some View {
+        Button {
+            usesAlphabeticalLayout.toggle()
+        } label: {
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+                .frame(maxWidth: .infinity, minHeight: keyHeight)
+                .accessibilityLabel("Toggle keyboard layout")
+        }
+        .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
+        .disabled(isRoundOver)
+        .opacity(isRoundOver ? 0.6 : 1)
     }
 }
 

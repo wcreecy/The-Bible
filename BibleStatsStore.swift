@@ -34,6 +34,23 @@ final class BibleStatsStore {
         let date: Date
     }
 
+    struct StatisticsSnapshot {
+        let dailyTotals: [String: Int]
+        let dailyTotalsByBook: [String: [String: Int]]
+        let perBookTotals: [String: Int]
+        let visitedChapters: Set<String>
+        let lastRead: LastRead?
+        let seenVersesByChapter: SeenMap
+        let chapterCompletionDates: [String: Date]
+    }
+
+    struct HomeStatisticsSnapshot {
+        let dailyTotals: [String: Int]
+        let perBookTotals: [String: Int]
+        let visitedChapters: Set<String>
+        let lastRead: LastRead?
+    }
+
     // MARK: - In-memory caches
 
     // All caches are loaded lazily on first read and kept in memory.
@@ -59,6 +76,27 @@ final class BibleStatsStore {
         cacheSeenVersesByChapter = nil
         cacheChapterCompletionDates = nil
         cacheReadingContributions = nil
+    }
+
+    func statisticsSnapshot() -> StatisticsSnapshot {
+        StatisticsSnapshot(
+            dailyTotals: loadDailyTotals(),
+            dailyTotalsByBook: loadDailyTotalsByBook(),
+            perBookTotals: loadTotals(),
+            visitedChapters: loadVisitedChapters(),
+            lastRead: loadLastRead(),
+            seenVersesByChapter: loadSeenVersesByChapter(),
+            chapterCompletionDates: loadChapterCompletionDates()
+        )
+    }
+
+    func homeStatisticsSnapshot() -> HomeStatisticsSnapshot {
+        HomeStatisticsSnapshot(
+            dailyTotals: loadDailyTotals(),
+            perBookTotals: loadTotals(),
+            visitedChapters: loadVisitedChapters(),
+            lastRead: loadLastRead()
+        )
     }
 
     // Clear all local Bible stats data (does not touch iCloud; coordinator handles that).

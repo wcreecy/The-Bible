@@ -1,40 +1,69 @@
 import Foundation
 import Combine
-import SwiftUI
+import Observation
 
 @MainActor
-final class HomeBibleStatsViewModel: ObservableObject {
-    @Published var todaySeconds: Int = 0
-    @Published var thisWeekSeconds: Int = 0
-    @Published var lastWeekSeconds: Int = 0
-    @Published var totalSeconds: Int = 0
+@Observable
+final class HomeBibleStatsViewModel {
+    struct Snapshot {
+        let todaySeconds: Int
+        let yesterdaySeconds: Int
+        let thisWeekSeconds: Int
+        let lastWeekSeconds: Int
+        let totalSeconds: Int
+        let lastReadBookChapter: String
+        let lastReadRelativeTime: String
+        let otSeconds: Int
+        let ntSeconds: Int
+        let visitedCount: Int
+        let totalChapters: Int
+        let completionPercent: Int
+        let topBooks: [(book: String, seconds: Int)]
+        let maxTopSeconds: Int
+        let topBooksScopeLabel: String
+        let lastSessionSeconds: Int
 
-    @Published var lastReadBookChapter: String = "—"
-    @Published var lastReadRelativeTime: String = "—"
+        static let empty = Snapshot(
+            todaySeconds: 0,
+            yesterdaySeconds: 0,
+            thisWeekSeconds: 0,
+            lastWeekSeconds: 0,
+            totalSeconds: 0,
+            lastReadBookChapter: "—",
+            lastReadRelativeTime: "—",
+            otSeconds: 0,
+            ntSeconds: 0,
+            visitedCount: 0,
+            totalChapters: 0,
+            completionPercent: 0,
+            topBooks: [],
+            maxTopSeconds: 1,
+            topBooksScopeLabel: "All Time",
+            lastSessionSeconds: 0
+        )
+    }
 
-    @Published var otSeconds: Int = 0
-    @Published var ntSeconds: Int = 0
+    private(set) var snapshot = Snapshot.empty
 
-    @Published var visitedCount: Int = 0
-    @Published var totalChapters: Int = 0
-    @Published var completionPercent: Int = 0
-
-    @Published var topBooks: [(book: String, seconds: Int)] = []
-    @Published var maxTopSeconds: Int = 1
-
-    // Label to indicate timeframe for Top Books (kept for compatibility)
-    @Published var topBooksScopeLabel: String = "All Time"
-
-    // Last session length (seconds) — computed from ReadingSessionsStore
-    @Published var lastSessionSeconds: Int = 0
+    var todaySeconds: Int { snapshot.todaySeconds }
+    var thisWeekSeconds: Int { snapshot.thisWeekSeconds }
+    var lastWeekSeconds: Int { snapshot.lastWeekSeconds }
+    var totalSeconds: Int { snapshot.totalSeconds }
+    var lastReadBookChapter: String { snapshot.lastReadBookChapter }
+    var lastReadRelativeTime: String { snapshot.lastReadRelativeTime }
+    var otSeconds: Int { snapshot.otSeconds }
+    var ntSeconds: Int { snapshot.ntSeconds }
+    var visitedCount: Int { snapshot.visitedCount }
+    var totalChapters: Int { snapshot.totalChapters }
+    var completionPercent: Int { snapshot.completionPercent }
+    var topBooks: [(book: String, seconds: Int)] { snapshot.topBooks }
+    var maxTopSeconds: Int { snapshot.maxTopSeconds }
+    var topBooksScopeLabel: String { snapshot.topBooksScopeLabel }
+    var lastSessionSeconds: Int { snapshot.lastSessionSeconds }
 
     private var externalUpdateCancellable: AnyCancellable?
 
-    // Cache yesterday’s seconds for delta
-    private var yesterdaySecondsLocal: Int = 0
-
     init() {
-        refresh()
         // Refresh on incoming iCloud merges or local writes
         externalUpdateCancellable = NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)
             .receive(on: RunLoop.main)
@@ -50,21 +79,18 @@ final class HomeBibleStatsViewModel: ObservableObject {
         let startOfToday = cal.startOfDay(for: now)
 
         let store = BibleStatsStore.shared
-        let dailyMap: [String: Int] = store.loadDailyTotals()
+        let snapshot = store.homeStatisticsSnapshot()
+        let dailyMap = snapshot.dailyTotals
 
         func key(for date: Date) -> String {
             BibleStatsStore.isoDateString(date, calendar: cal)
         }
 
-        // Today
-        todaySeconds = max(0, dailyMap[key(for: startOfToday), default: 0])
+        let todaySeconds = max(0, dailyMap[key(for: startOfToday), default: 0])
 
         // Yesterday (for delta)
-        if let y = cal.date(byAdding: .day, value: -1, to: startOfToday) {
-            yesterdaySecondsLocal = max(0, dailyMap[key(for: y), default: 0])
-        } else {
-            yesterdaySecondsLocal = 0
-        }
+        let yesterdaySeconds = cal.date(byAdding: .day, value: -1, to: startOfToday)
+            .map { max(0, dailyMap[key(for: $0), default: 0]) } ?? 0
 
         // This week (rolling last 7 local days including today)
         var weekTotal = 0
@@ -73,7 +99,6 @@ final class HomeBibleStatsViewModel: ObservableObject {
                 weekTotal += max(0, dailyMap[key(for: d), default: 0])
             }
         }
-        thisWeekSeconds = weekTotal
 
         // Last week rolling window (the 7 days immediately before the current rolling week)
         var prevWeekTotal = 0
@@ -82,56 +107,57 @@ final class HomeBibleStatsViewModel: ObservableObject {
                 prevWeekTotal += max(0, dailyMap[key(for: d), default: 0])
             }
         }
-        lastWeekSeconds = prevWeekTotal
 
         // All-time: align with Today/Week source — sum the synced daily totals map
-        totalSeconds = dailyMap.values.reduce(0) { $0 + max(0, $1) }
+        let totalSeconds = dailyMap.values.reduce(0) { $0 + max(0, $1) }
 
         // OT/NT split and top books from synced per-book totals
-        do {
-            let perBookAllTime = store.loadTotals()
-            let split = store.splitOTNT(totals: perBookAllTime)
-            otSeconds = split.ot
-            ntSeconds = split.nt
-
-            let sortedTop = perBookAllTime.sorted { lhs, rhs in
-                if lhs.value == rhs.value { return lhs.key < rhs.key }
-                return lhs.value > rhs.value
-            }
-            topBooks = Array(sortedTop.prefix(5)).map { ($0.key, $0.value) }
-            maxTopSeconds = max(1, topBooks.map { $0.seconds }.max() ?? 1)
-            topBooksScopeLabel = "All Time"
+        let perBookAllTime = snapshot.perBookTotals
+        let split = store.splitOTNT(totals: perBookAllTime)
+        let sortedTop = perBookAllTime.sorted { lhs, rhs in
+            if lhs.value == rhs.value { return lhs.key < rhs.key }
+            return lhs.value > rhs.value
         }
+        let topBooks = Array(sortedTop.prefix(5)).map { (book: $0.key, seconds: $0.value) }
 
         // Visited and completion (progress still from BibleStatsStore)
-        let visited = store.loadVisitedChapters()
-        visitedCount = visited.count
-        computeCompletionMetrics(visitedChapters: visited)
+        let visited = snapshot.visitedChapters
+        let completion = completionMetrics(visitedChapters: visited)
 
         // Last read
-        if let last = store.loadLastRead() {
-            lastReadBookChapter = "\(last.bookName) \(last.chapterNumber)"
-            lastReadRelativeTime = relativeTimeString(from: last.date, to: now)
-        } else {
-            lastReadBookChapter = "—"
-            lastReadRelativeTime = "—"
-        }
+        let lastReadBookChapter = snapshot.lastRead.map { "\($0.bookName) \($0.chapterNumber)" } ?? "—"
+        let lastReadRelativeTime = snapshot.lastRead.map { relativeTimeString(from: $0.date, to: now) } ?? "—"
 
         // Session analytics use the same validity rule as the Stats screen.
         let allSessions = ReadingSessionsStore.shared.allSessions().filter(ReadingSessionsStore.isValid)
-        if let last = allSessions.max(by: { $0.end < $1.end }) {
-            lastSessionSeconds = ReadingSessionsStore.duration(of: last)
-        } else {
-            lastSessionSeconds = 0
-        }
+        let lastSessionSeconds = allSessions.max(by: { $0.end < $1.end })
+            .map(ReadingSessionsStore.duration(of:)) ?? 0
+
+        self.snapshot = Snapshot(
+            todaySeconds: todaySeconds,
+            yesterdaySeconds: yesterdaySeconds,
+            thisWeekSeconds: weekTotal,
+            lastWeekSeconds: prevWeekTotal,
+            totalSeconds: totalSeconds,
+            lastReadBookChapter: lastReadBookChapter,
+            lastReadRelativeTime: lastReadRelativeTime,
+            otSeconds: split.ot,
+            ntSeconds: split.nt,
+            visitedCount: visited.count,
+            totalChapters: completion.total,
+            completionPercent: completion.percent,
+            topBooks: topBooks,
+            maxTopSeconds: max(1, topBooks.map(\.seconds).max() ?? 1),
+            topBooksScopeLabel: "All Time",
+            lastSessionSeconds: lastSessionSeconds
+        )
     }
 
-    private func computeCompletionMetrics(visitedChapters: Set<String>) {
+    private func completionMetrics(visitedChapters: Set<String>) -> (total: Int, percent: Int) {
         let books = BibleData.books
-        let total = books.reduce(0) { $0 + $1.chapters.count }
-        totalChapters = max(1, total)
-        let pct = Int(round((Double(visitedChapters.count) / Double(totalChapters)) * 100.0))
-        completionPercent = max(0, min(100, pct))
+        let total = max(1, books.reduce(0) { $0 + $1.chapters.count })
+        let percent = Int(round((Double(visitedChapters.count) / Double(total)) * 100.0))
+        return (total, max(0, min(100, percent)))
     }
 
     // Compact formatter for Home Bible Stats card:
@@ -162,7 +188,7 @@ final class HomeBibleStatsViewModel: ObservableObject {
 
     // Today vs Yesterday delta (totals-based)
     var todayDeltaOnlyValue: String {
-        let delta = todaySeconds - yesterdaySecondsLocal
+        let delta = todaySeconds - snapshot.yesterdaySeconds
         if delta == 0 { return "—" }
         let sign = delta > 0 ? "+" : "−"
         return "\(sign)\(formatted(abs(delta)))"

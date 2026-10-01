@@ -50,12 +50,6 @@ struct SearchView: View {
         Dictionary(uniqueKeysWithValues: canon.enumerated().map { ($1.name, $0) })
     }
     private var matthewIndex: Int { indexMap["Matthew"] ?? Int.max }
-    private var otBooks: [Book] {
-        canon.filter { (indexMap[$0.name] ?? Int.max) < matthewIndex }
-    }
-    private var ntBooks: [Book] {
-        canon.filter { (indexMap[$0.name] ?? Int.max) >= matthewIndex }
-    }
 
     // Books for the popover list (filtered by bookQuery)
     private var filteredBooksForPicker: [Book] {
@@ -85,46 +79,10 @@ struct SearchView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                     } else {
                         List(results) { item in
-                            HStack(spacing: 12) {
-                                Button {
-                                    openInBibleTab(item)
-                                } label: {
-                                    VStack(alignment: .leading, spacing: 6) {
-                                        if item.isReferenceMatch {
-                                            Label("Direct Reference", systemImage: "arrow.up.right.square")
-                                                .font(.caption.weight(.semibold))
-                                                .foregroundStyle(Color.accentColor)
-                                                .padding(.horizontal, 8)
-                                                .padding(.vertical, 4)
-                                                .background(Color.accentColor.opacity(0.12), in: Capsule())
-                                        }
-
-                                        Text(highlightedVerseText(item))
-                                            .font(.body)
-                                            .foregroundStyle(.primary)
-                                            .lineLimit(3)
-
-                                        Text("\(item.book.name) \(item.chapter.number):\(item.verse.number)")
-                                            .font(.caption)
-                                            .foregroundStyle(item.isReferenceMatch ? Color.accentColor : Color.secondary)
-                                    }
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                }
-                                .buttonStyle(.plain)
-
-                                VerseActionMenu(
-                                    verse: VerseActionReference(
-                                        bookName: item.book.name,
-                                        chapterNumber: item.chapter.number,
-                                        verseNumber: item.verse.number,
-                                        verseText: item.verse.text
-                                    )
-                                )
-                            }
-                            .listRowBackground(
-                                item.isReferenceMatch
-                                    ? Color.accentColor.opacity(0.08)
-                                    : Color.clear
+                            SearchResultRow(
+                                item: item,
+                                highlightedText: highlightedVerseText(item),
+                                onOpen: { openInBibleTab(item) }
                             )
                         }
                         .scrollContentBackground(.hidden)
@@ -336,9 +294,9 @@ struct SearchView: View {
             name: .openBibleReference,
             object: nil,
             userInfo: [
-                "book": item.book.name,
-                "chapter": item.chapter.number,
-                "verse": item.verse.number
+                "book": item.bookName,
+                "chapter": item.chapterNumber,
+                "verse": item.verseNumber
             ]
         )
     }
@@ -357,7 +315,7 @@ struct SearchView: View {
     }
 
     private func highlightedVerseText(_ item: SearchResult) -> AttributedString {
-        var highlighted = AttributedString(item.verse.text)
+        var highlighted = AttributedString(item.verseText)
         guard !item.isReferenceMatch else { return highlighted }
 
         for token in tokens {
@@ -393,7 +351,9 @@ struct SearchView: View {
         let currentScope = scope
         let currentSelectedBook = selectedBook
         isSearching = !current.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        Task { await performSearchAsync(for: current, scope: currentScope, selectedBook: currentSelectedBook) }
+        searchTask = Task {
+            await performSearchAsync(for: current, scope: currentScope, selectedBook: currentSelectedBook)
+        }
     }
 
     @MainActor
@@ -418,18 +378,19 @@ struct SearchView: View {
             return
         }
 
-        // Decide which books to search based on scope
-        let booksToSearch: [Book]
+        // Restrict the immutable index without copying Book or Chapter values.
+        let allowedBookIndices: Range<Int>?
         switch scope {
         case .all:
-            booksToSearch = canon
+            allowedBookIndices = nil
         case .ot:
-            booksToSearch = otBooks
+            allowedBookIndices = 0..<matthewIndex
         case .nt:
-            booksToSearch = ntBooks
+            allowedBookIndices = matthewIndex..<canon.count
         case .specific:
-            if let b = selectedBook {
-                booksToSearch = [b]
+            if let selectedBook,
+               let bookIndex = indexMap[selectedBook.name] {
+                allowedBookIndices = bookIndex..<(bookIndex + 1)
             } else {
                 // No specific book selected yet
                 results = []
@@ -438,31 +399,14 @@ struct SearchView: View {
             }
         }
 
-        // Offload heavy work off the main thread
-        let maxResults = 200
-        let found: [SearchResult] = await withCheckedContinuation { continuation in
-            DispatchQueue.global(qos: .userInitiated).async {
-                var temp: [SearchResult] = []
-                outer: for book in booksToSearch {
-                    for chapter in book.chapters {
-                        for verse in chapter.verses {
-                            let lower = verse.text.lowercased()
-                            var matchesAll = true
-                            for t in tokens {
-                                if !lower.contains(t) { matchesAll = false; break }
-                            }
-                            if matchesAll {
-                                temp.append(SearchResult(book: book, chapter: chapter, verse: verse))
-                                if temp.count >= maxResults { break outer }
-                            }
-                        }
-                    }
-                }
-                continuation.resume(returning: temp)
-            }
-        }
+        let found = await BibleSearchIndex.shared.search(
+            tokens: tokens,
+            allowedBookIndices: allowedBookIndices,
+            maxResults: 200
+        )
 
         // Update UI on main actor
+        guard !Task.isCancelled else { return }
         results = found
         isSearching = false
         saveRecentSearch(trimmedQuery)
@@ -496,11 +440,25 @@ struct SearchView: View {
 
         if let verseNumber {
             guard let verse = chapter.verses.first(where: { $0.number == verseNumber }) else { return [] }
-            return [SearchResult(book: book, chapter: chapter, verse: verse, isReferenceMatch: true)]
+            return [SearchResult(
+                bookIndex: indexMap[book.name] ?? 0,
+                bookName: book.name,
+                chapterNumber: chapter.number,
+                verseNumber: verse.number,
+                verseText: verse.text,
+                isReferenceMatch: true
+            )]
         }
 
-        return chapter.verses.map {
-            SearchResult(book: book, chapter: chapter, verse: $0, isReferenceMatch: true)
+        return chapter.verses.map { verse in
+            SearchResult(
+                bookIndex: indexMap[book.name] ?? 0,
+                bookName: book.name,
+                chapterNumber: chapter.number,
+                verseNumber: verse.number,
+                verseText: verse.text,
+                isReferenceMatch: true
+            )
         }
     }
 
@@ -553,23 +511,159 @@ struct SearchView: View {
     }
 }
 
-private struct SearchResult: Identifiable, Hashable {
-    let id = UUID()
-    let book: Book
-    let chapter: Chapter
-    let verse: Verse
+private struct SearchResultRow: View {
+    let item: SearchResult
+    let highlightedText: AttributedString
+    let onOpen: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Button(action: onOpen) {
+                VStack(alignment: .leading, spacing: 6) {
+                    if item.isReferenceMatch {
+                        Label("Direct Reference", systemImage: "arrow.up.right.square")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color.accentColor)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.accentColor.opacity(0.12), in: Capsule())
+                    }
+
+                    Text(highlightedText)
+                        .font(.body)
+                        .foregroundStyle(.primary)
+                        .lineLimit(3)
+
+                    Text("\(item.bookName) \(item.chapterNumber):\(item.verseNumber)")
+                        .font(.caption)
+                        .foregroundStyle(item.isReferenceMatch ? Color.accentColor : Color.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.plain)
+
+            VerseActionMenu(
+                verse: VerseActionReference(
+                    bookName: item.bookName,
+                    chapterNumber: item.chapterNumber,
+                    verseNumber: item.verseNumber,
+                    verseText: item.verseText
+                )
+            )
+        }
+        .listRowBackground(
+            item.isReferenceMatch
+                ? Color.accentColor.opacity(0.08)
+                : Color.clear
+        )
+    }
+}
+
+private struct SearchResult: Identifiable, Hashable, Sendable {
+    let bookIndex: Int
+    let bookName: String
+    let chapterNumber: Int
+    let verseNumber: Int
+    let verseText: String
     let isReferenceMatch: Bool
 
-    init(
-        book: Book,
-        chapter: Chapter,
-        verse: Verse,
-        isReferenceMatch: Bool = false
-    ) {
-        self.book = book
-        self.chapter = chapter
-        self.verse = verse
-        self.isReferenceMatch = isReferenceMatch
+    var id: String {
+        "\(bookIndex):\(chapterNumber):\(verseNumber)"
+    }
+}
+
+private actor BibleSearchIndex {
+    static let shared = BibleSearchIndex()
+
+    private struct SourceEntry: Sendable {
+        let bookIndex: Int
+        let bookName: String
+        let chapterNumber: Int
+        let verseNumber: Int
+        let verseText: String
+    }
+
+    private struct Entry: Sendable {
+        let bookIndex: Int
+        let bookName: String
+        let chapterNumber: Int
+        let verseNumber: Int
+        let verseText: String
+        let normalizedText: String
+    }
+
+    private var entries: [Entry]?
+    private var sourceTask: Task<[SourceEntry], Never>?
+
+    func search(
+        tokens: [String],
+        allowedBookIndices: Range<Int>?,
+        maxResults: Int
+    ) async -> [SearchResult] {
+        let entries = await indexedVerses()
+        let searchTokens = Array(Set(tokens)).sorted { $0.count > $1.count }
+        var results: [SearchResult] = []
+        results.reserveCapacity(min(maxResults, 32))
+
+        for entry in entries {
+            if Task.isCancelled { return [] }
+            if let allowedBookIndices, !allowedBookIndices.contains(entry.bookIndex) {
+                continue
+            }
+            guard searchTokens.allSatisfy(entry.normalizedText.contains) else { continue }
+
+            results.append(SearchResult(
+                bookIndex: entry.bookIndex,
+                bookName: entry.bookName,
+                chapterNumber: entry.chapterNumber,
+                verseNumber: entry.verseNumber,
+                verseText: entry.verseText,
+                isReferenceMatch: false
+            ))
+            if results.count == maxResults { break }
+        }
+        return results
+    }
+
+    private func indexedVerses() async -> [Entry] {
+        if let entries { return entries }
+
+        let task: Task<[SourceEntry], Never>
+        if let sourceTask {
+            task = sourceTask
+        } else {
+            let newTask = Task { @MainActor in
+                BibleData.books.enumerated().flatMap { bookIndex, book in
+                    book.chapters.flatMap { chapter in
+                        chapter.verses.map { verse in
+                            SourceEntry(
+                                bookIndex: bookIndex,
+                                bookName: book.name,
+                                chapterNumber: chapter.number,
+                                verseNumber: verse.number,
+                                verseText: verse.text
+                            )
+                        }
+                    }
+                }
+            }
+            sourceTask = newTask
+            task = newTask
+        }
+
+        let source = await task.value
+        let built = source.map { source in
+            Entry(
+                bookIndex: source.bookIndex,
+                bookName: source.bookName,
+                chapterNumber: source.chapterNumber,
+                verseNumber: source.verseNumber,
+                verseText: source.verseText,
+                normalizedText: source.verseText.lowercased()
+            )
+        }
+        entries = built
+        return built
     }
 }
 

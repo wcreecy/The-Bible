@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct BibleStatsCard: View {
-    @ObservedObject var bibleVM: HomeBibleStatsViewModel
+    let bibleVM: HomeBibleStatsViewModel
     let scenePhase: ScenePhase
     let onOpenStats: () -> Void
 

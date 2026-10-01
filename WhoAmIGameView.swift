@@ -2,7 +2,7 @@ import SwiftUI
 
 struct WhoAmIGameView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @StateObject private var vm = WhoAmIGameViewModel()
+    @State private var vm = WhoAmIGameViewModel()
     @State private var maxChoiceHeight: CGFloat = 0
     @State private var timerOnLeading = false
     @State private var usesMutedTimerStyle = false

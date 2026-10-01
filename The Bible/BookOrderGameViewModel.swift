@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import Observation
 import SwiftUI
 
 enum BookOrderDifficulty: String, CaseIterable, Identifiable {
@@ -39,13 +40,14 @@ struct BibleCanon {
 }
 
 @MainActor
-final class BookOrderGameViewModel: ObservableObject {
-    @Published var started: Bool = false
-    @Published var currentItems: [String] = []
-    @Published var correctOrder: [String] = []
-    @Published var score: Int = 0
-    @Published var answered: Int = 0
-    @Published var currentStreak: Int = 0
+@Observable
+final class BookOrderGameViewModel {
+    var started: Bool = false
+    var currentItems: [String] = []
+    var correctOrder: [String] = []
+    var score: Int = 0
+    var answered: Int = 0
+    var currentStreak: Int = 0
 
     private var keySuffix: String {
         switch difficulty {
@@ -55,16 +57,16 @@ final class BookOrderGameViewModel: ObservableObject {
         case .all: return "all"
         }
     }
-    @Published var currentBestStreak: Int = 0
-    @Published var showResult: Bool = false
-    @Published var wasCorrect: Bool = false
-    @Published var showingCorrectOrder: Bool = false
-    @Published var lastSubmittedOrder: [String]? = nil
+    var currentBestStreak: Int = 0
+    var showResult: Bool = false
+    var wasCorrect: Bool = false
+    var showingCorrectOrder: Bool = false
+    var lastSubmittedOrder: [String]? = nil
     
-    @Published var difficulty: BookOrderDifficulty = .normal {
+    var difficulty: BookOrderDifficulty = .normal {
         didSet { seedStreakFromPersistence() }
     }
-    @Published var source: BookSourceScope = .both
+    var source: BookSourceScope = .both
     
     private var sliceFirst: String? = nil
     private var sliceLast: String? = nil

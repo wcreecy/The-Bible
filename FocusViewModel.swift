@@ -1,14 +1,16 @@
 import Foundation
 import SwiftUI
 import Combine
+import Observation
 
 @MainActor
-final class FocusViewModel: ObservableObject {
+@Observable
+final class FocusViewModel {
     // Published UI state
-    @Published var title: String = ""
-    @Published var body: String = ""
-    @Published var hasSaved: Bool = false
-    @Published var savedAt: Date? = nil
+    var title: String = ""
+    var body: String = ""
+    var hasSaved: Bool = false
+    var savedAt: Date? = nil
 
     // App Group storage (match existing behavior)
     private var sharedDefaults: UserDefaults? { UserDefaults(suiteName: "group.bible.app") }
