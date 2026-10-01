@@ -599,7 +599,10 @@ struct NotesAndHighlightsView: View {
         }
         .fullScreenCover(isPresented: $isCreatingNote) {
             NavigationStack {
-                UserNoteEditorView(existingNote: nil)
+                UserNoteEditorView(
+                    existingNote: nil,
+                    defaultCategory: selectedFilter == .scripture ? .sermon : .personal
+                )
             }
         }
         .fullScreenCover(item: $selectedScriptureNote) { note in
@@ -1239,12 +1242,12 @@ private struct UserNoteEditorView: View {
     @State private var persistenceFailure: PersistenceFailure?
     @State private var selectedScriptureReference: ScriptureRef?
 
-    init(existingNote: UserNote?) {
+    init(existingNote: UserNote?, defaultCategory: NoteCategory = .personal) {
         self.existingNote = existingNote
         _title = State(initialValue: existingNote?.title ?? "")
         _noteText = State(initialValue: Self.loadFormattedContent(from: existingNote))
         _selectedCategory = State(
-            initialValue: existingNote.flatMap { NoteCategory(rawValue: $0.categoryRawValue) } ?? .personal
+            initialValue: existingNote.flatMap { NoteCategory(rawValue: $0.categoryRawValue) } ?? defaultCategory
         )
     }
 
