@@ -80,7 +80,7 @@ struct VerseNoteEditorView: View {
             }
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save", action: save)
-                    .disabled(trimmedNote.isEmpty && selectedColor == nil)
+                    .disabled(existingNote == nil && trimmedNote.isEmpty && selectedColor == nil)
             }
         }
         .persistenceFailureAlert(failure: $persistenceFailure)
@@ -94,6 +94,12 @@ struct VerseNoteEditorView: View {
         ModelContextPersistence.perform(
             in: modelContext,
             operation: {
+                if let existingNote, trimmedNote.isEmpty, selectedColor == nil {
+                    modelContext.delete(existingNote)
+                    try modelContext.save()
+                    return
+                }
+
                 let note = existingNote ?? VerseNote(
                     bookName: verse.bookName,
                     chapterNumber: verse.chapterNumber,
@@ -151,22 +157,6 @@ private struct HighlightColorPicker: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            Button {
-                selection = nil
-            } label: {
-                Image(systemName: "slash.circle")
-                    .font(.title2)
-                    .foregroundStyle(.secondary)
-                    .frame(width: 36, height: 36)
-                    .overlay {
-                        if selection == nil {
-                            Circle().stroke(Color.accentColor, lineWidth: 3)
-                        }
-                    }
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("No highlight")
-
             ForEach(VerseHighlightColor.allCases) { highlight in
                 Button {
                     selection = highlight
@@ -184,6 +174,27 @@ private struct HighlightColorPicker: View {
                 .accessibilityLabel(Text(highlight.name))
                 .accessibilityAddTraits(selection == highlight ? .isSelected : [])
             }
+
+            Button {
+                selection = nil
+            } label: {
+                Circle()
+                    .fill(Color.secondary.opacity(0.16))
+                    .frame(width: 32, height: 32)
+                    .overlay {
+                        Image(systemName: "xmark")
+                            .font(.caption.bold())
+                            .foregroundStyle(.secondary)
+                    }
+                    .overlay {
+                        if selection == nil {
+                            Circle().stroke(.primary, lineWidth: 3)
+                        }
+                    }
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Clear highlight")
+            .accessibilityAddTraits(selection == nil ? .isSelected : [])
         }
         .frame(maxWidth: .infinity)
     }
