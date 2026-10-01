@@ -63,7 +63,6 @@ struct VerseNoteEditorView: View {
     var body: some View {
         Form {
             VerseNotePassageSection(reference: verse)
-            NoteCategorySection(selection: $selectedCategory)
 
             Section("Highlight") {
                 HighlightColorPicker(selection: $selectedColor)
@@ -71,6 +70,7 @@ struct VerseNoteEditorView: View {
 
             Section("Note") {
                 NoteFormattingBar(
+                    category: $selectedCategory,
                     toggleBold: { toggleFontTrait(\.isBold) },
                     toggleUnderline: toggleUnderline,
                     toggleItalic: { toggleFontTrait(\.isItalic) },
@@ -333,6 +333,8 @@ private struct ScriptureReferencePreview: View {
 }
 
 private struct NoteFormattingBar: View {
+    @Binding var category: NoteCategory
+
     let toggleBold: () -> Void
     let toggleUnderline: () -> Void
     let toggleItalic: () -> Void
@@ -347,6 +349,27 @@ private struct NoteFormattingBar: View {
             formattingButton("Strikethrough", systemImage: "strikethrough", action: toggleStrikethrough)
             formattingButton("Bulleted list", systemImage: "list.bullet", action: insertBullet)
             Spacer(minLength: 0)
+
+            Menu {
+                Picker("Category", selection: $category) {
+                    ForEach(NoteCategory.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+            } label: {
+                ViewThatFits(in: .horizontal) {
+                    Label(category.title, systemImage: "tag")
+                    Image(systemName: "tag")
+                }
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.tint)
+                .padding(.horizontal, 8)
+                .frame(minHeight: 30)
+                .background(.tint.opacity(0.12), in: Capsule())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Note category")
+            .accessibilityValue(Text(category.title))
         }
     }
 
@@ -423,21 +446,6 @@ private struct HighlightColorPicker: View {
             .accessibilityAddTraits(selection == nil ? .isSelected : [])
         }
         .frame(maxWidth: .infinity)
-    }
-}
-
-private struct NoteCategorySection: View {
-    @Binding var selection: NoteCategory
-
-    var body: some View {
-        Section("Category") {
-            Picker("Category", selection: $selection) {
-                ForEach(NoteCategory.allCases) { category in
-                    Text(category.title).tag(category)
-                }
-            }
-            .pickerStyle(.segmented)
-        }
     }
 }
 
@@ -1242,8 +1250,6 @@ private struct UserNoteEditorView: View {
 
     var body: some View {
         Form {
-            NoteCategorySection(selection: $selectedCategory)
-
             Section("Title") {
                 TextField("Note title", text: $title)
                     .font(.title3.weight(.semibold))
@@ -1252,6 +1258,7 @@ private struct UserNoteEditorView: View {
 
             Section("Note") {
                 NoteFormattingBar(
+                    category: $selectedCategory,
                     toggleBold: { toggleFontTrait(\.isBold) },
                     toggleUnderline: toggleUnderline,
                     toggleItalic: { toggleFontTrait(\.isItalic) },
