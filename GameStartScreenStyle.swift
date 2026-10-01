@@ -99,6 +99,54 @@ struct GameStartInfoLayout: Layout {
     }
 }
 
+struct GameStartCurrentGameCard<Content: View>: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @State private var isExpanded = true
+
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        GroupBox {
+            DisclosureGroup(isExpanded: $isExpanded) {
+                VStack(alignment: .leading, spacing: 10) {
+                    content
+                }
+                .padding(.top, 4)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            } label: {
+                Text("Current Game")
+                    .font(.headline)
+            }
+        }
+        .onAppear(perform: expandIfNeeded)
+        .onChange(of: horizontalSizeClass) { _, _ in
+            expandIfNeeded()
+        }
+    }
+
+    private func expandIfNeeded() {
+        guard horizontalSizeClass == .regular else { return }
+        isExpanded = true
+    }
+}
+
+struct GameStartCurrentGameRow: View {
+    let label: LocalizedStringKey
+    let value: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.body.weight(.semibold))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+    }
+}
+
 struct GameStartSettingsStyle: ViewModifier {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 

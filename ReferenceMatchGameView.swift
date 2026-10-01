@@ -121,6 +121,21 @@ struct VerseMatchGameView: View {
                                 Text("Difficulty Settings").font(.headline)
                             }
                         }
+
+                        GameStartCurrentGameCard {
+                            GameStartCurrentGameRow(
+                                label: "Source",
+                                value: verseScopeRaw == "whole" ? "Old & New Testaments" : verseScopeRaw == "old" ? "Old Testament" : "New Testament"
+                            )
+                            GameStartCurrentGameRow(
+                                label: "Difficulty",
+                                value: difficulty.rawValue.capitalized
+                            )
+                            GameStartCurrentGameRow(
+                                label: "Answer Pool",
+                                value: difficulty == .easy ? "Whole Bible" : difficulty == .normal ? "Same testament" : "Same book"
+                            )
+                        }
                     }
                     .gameStartOptionsStyle()
                     .expandGameStartCardsOnIPad(
@@ -138,7 +153,7 @@ struct VerseMatchGameView: View {
                             ),
                             options: ["whole", "old", "new"]
                         ) { source in
-                            Text(source == "whole" ? "Old & New Testaments" : source == "old" ? "Old Testament" : "New Testament")
+                            Text(source == "whole" ? "OT & NT" : source == "old" ? "OT" : "NT")
                         }
 
                         GameStartPickerCard(

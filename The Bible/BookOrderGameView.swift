@@ -45,6 +45,21 @@ struct BookOrderGameView: View {
                                 Text("Difficulty Settings").font(.headline)
                             }
                         }
+
+                        GameStartCurrentGameCard {
+                            GameStartCurrentGameRow(
+                                label: "Source",
+                                value: vm.source == .both ? "Old & New Testaments" : vm.source == .ot ? "Old Testament" : "New Testament"
+                            )
+                            GameStartCurrentGameRow(
+                                label: "Difficulty",
+                                value: vm.difficulty == .easy ? "Easy" : vm.difficulty == .normal ? "Normal" : vm.difficulty == .hard ? "Hard" : "All Books"
+                            )
+                            GameStartCurrentGameRow(
+                                label: "Books per Round",
+                                value: vm.difficulty == .easy ? "5" : vm.difficulty == .normal ? "10" : vm.difficulty == .hard ? "15" : "Entire selected canon"
+                            )
+                        }
                     }
                     .gameStartOptionsStyle()
                     .expandGameStartCardsOnIPad(
@@ -60,9 +75,9 @@ struct BookOrderGameView: View {
                             options: [.both, .ot, .nt]
                         ) { source in
                             switch source {
-                            case .both: Text("Old & New Testaments")
-                            case .ot: Text("Old Testament")
-                            case .nt: Text("New Testament")
+                            case .both: Text("OT & NT")
+                            case .ot: Text("OT")
+                            case .nt: Text("NT")
                             }
                         }
 

@@ -284,6 +284,15 @@ struct HangmanGameView: View {
                     Text("Difficulty Settings").font(.headline)
                 }
             }
+
+            GameStartCurrentGameCard {
+                GameStartCurrentGameRow(label: "Theme", value: theme.rawValue)
+                GameStartCurrentGameRow(label: "Difficulty", value: difficulty.rawValue)
+                GameStartCurrentGameRow(
+                    label: "Round",
+                    value: difficulty == .easy ? "10 mistakes · Reference shown" : difficulty == .normal ? "7 mistakes · Reference after 3 misses" : "6 mistakes · Reference after round"
+                )
+            }
         }
         .gameStartOptionsStyle()
         .expandGameStartCardsOnIPad(

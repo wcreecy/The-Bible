@@ -209,6 +209,21 @@ struct QuizView: View {
                                 Text("Difficulty Settings").font(.headline)
                             }
                         }
+
+                        GameStartCurrentGameCard {
+                            GameStartCurrentGameRow(
+                                label: "Source",
+                                value: quizScopeRaw == "whole" ? "Old & New Testaments" : quizScopeRaw == "old" ? "Old Testament" : "New Testament"
+                            )
+                            GameStartCurrentGameRow(
+                                label: "Difficulty",
+                                value: quizDifficulty == "normal" ? "Medium" : quizDifficulty.capitalized
+                            )
+                            GameStartCurrentGameRow(
+                                label: "Time Limit",
+                                value: quizDifficulty == "easy" ? "No timer" : quizDifficulty == "normal" ? "15 seconds per question" : "8 seconds per question"
+                            )
+                        }
                     }
                     .gameStartOptionsStyle()
                     .expandGameStartCardsOnIPad(
@@ -226,7 +241,7 @@ struct QuizView: View {
                             }),
                             options: ["whole", "old", "new"]
                         ) { source in
-                            Text(source == "whole" ? "Old & New Testaments" : source == "old" ? "Old Testament" : "New Testament")
+                            Text(source == "whole" ? "OT & NT" : source == "old" ? "OT" : "NT")
                         }
 
                         GameStartPickerCard(

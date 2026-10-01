@@ -145,6 +145,18 @@ struct BeatTheClockGameView: View {
                                 Text("Difficulty Settings").font(.headline)
                             }
                         }
+
+                        GameStartCurrentGameCard {
+                            GameStartCurrentGameRow(label: "Category", value: category.rawValue)
+                            GameStartCurrentGameRow(
+                                label: "Difficulty",
+                                value: difficulty.rawValue.capitalized
+                            )
+                            GameStartCurrentGameRow(
+                                label: "Time Limit",
+                                value: "\(roundTime) seconds per round"
+                            )
+                        }
                     }
                     .gameStartOptionsStyle()
                     .expandGameStartCardsOnIPad(

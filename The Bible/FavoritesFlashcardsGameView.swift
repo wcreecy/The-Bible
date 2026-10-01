@@ -12,6 +12,8 @@ struct FavoritesFlashcardsGameView: View {
     }
     
     @State private var mode: Mode = .referenceToVerse
+    @State private var howToExpanded = false
+    @State private var difficultyExpanded = false
     @State private var started = false
     @State private var currentIndex = 0
     @State private var flipped = false
@@ -38,22 +40,40 @@ struct FavoritesFlashcardsGameView: View {
                                 .gameStartDescriptionStyle()
 
                             GameStartInfoLayout {
-                                GroupBox("How to Play") {
-                                    VStack(alignment: .leading, spacing: 6) {
-                                        Text("• Choose which side of the flashcard you want to see first.")
-                                        Text("• Think of the answer, then tap the card to reveal it.")
-                                        Text("• Use Previous or Random to move through your saved verses.")
+                                GroupBox {
+                                    DisclosureGroup(isExpanded: $howToExpanded) {
+                                        VStack(alignment: .leading, spacing: 6) {
+                                            Text("• Choose which side of the flashcard you want to see first.")
+                                            Text("• Think of the answer, then tap the card to reveal it.")
+                                            Text("• Use Previous or Random to move through your saved verses.")
+                                        }
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    } label: {
+                                        Text("How to Play")
+                                            .font(.headline)
                                     }
-                                    .frame(maxWidth: .infinity, alignment: .leading)
                                 }
 
-                                GroupBox("Difficulty Settings") {
-                                    VStack(alignment: .leading, spacing: 6) {
-                                        Text("• Reference → Verse: See the scripture reference first.")
-                                        Text("• Verse → Reference: Read the verse first and recall its location.")
-                                        Text("• Every favorited scripture is included in the deck.")
+                                GroupBox {
+                                    DisclosureGroup(isExpanded: $difficultyExpanded) {
+                                        VStack(alignment: .leading, spacing: 6) {
+                                            Text("• Reference → Verse: See the scripture reference first.")
+                                            Text("• Verse → Reference: Read the verse first and recall its location.")
+                                            Text("• Every favorited scripture is included in the deck.")
+                                        }
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    } label: {
+                                        Text("Difficulty Settings")
+                                            .font(.headline)
                                     }
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+
+                                GameStartCurrentGameCard {
+                                    GameStartCurrentGameRow(label: "Study Mode", value: mode.rawValue)
+                                    GameStartCurrentGameRow(
+                                        label: "Deck",
+                                        value: "All favorited scriptures"
+                                    )
                                 }
                             }
                             .gameStartOptionsStyle()

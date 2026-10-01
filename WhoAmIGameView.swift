@@ -65,6 +65,18 @@ struct WhoAmIGameView: View {
                                 Text("Difficulty Settings").font(.headline)
                             }
                         }
+
+                        GameStartCurrentGameCard {
+                            GameStartCurrentGameRow(label: "Question Type", value: vm.mode.rawValue)
+                            GameStartCurrentGameRow(
+                                label: "Difficulty",
+                                value: vm.difficulty.rawValue.capitalized
+                            )
+                            GameStartCurrentGameRow(
+                                label: "Time Limit",
+                                value: vm.difficulty == .easy ? "No timer" : vm.difficulty == .normal ? "30 seconds per question" : "15 seconds per question"
+                            )
+                        }
                     }
                     .gameStartOptionsStyle()
                     .expandGameStartCardsOnIPad(

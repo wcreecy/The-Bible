@@ -493,6 +493,14 @@ struct WordleView: View {
                         Text("Difficulty Settings").font(.headline)
                     }
                 }
+
+                GameStartCurrentGameCard {
+                    GameStartCurrentGameRow(label: "Game Mode", value: mode.rawValue)
+                    GameStartCurrentGameRow(
+                        label: "Hard Mode",
+                        value: hardModeEnabled ? "On" : "Off"
+                    )
+                }
             }
             .gameStartOptionsStyle()
             .expandGameStartCardsOnIPad(

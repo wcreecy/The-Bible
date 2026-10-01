@@ -46,6 +46,18 @@ struct WordSearchStartScreen: View {
                         Text("Difficulty Settings").font(.headline)
                     }
                 }
+
+                GameStartCurrentGameCard {
+                    GameStartCurrentGameRow(
+                        label: "Difficulty",
+                        value: displayName(for: difficulty)
+                    )
+                    GameStartCurrentGameRow(label: "Game Mode", value: gameMode.displayName)
+                    GameStartCurrentGameRow(
+                        label: "Timer",
+                        value: isTimedMode ? timeLimitString : "Off"
+                    )
+                }
             }
             .gameStartOptionsStyle()
             .expandGameStartCardsOnIPad(
