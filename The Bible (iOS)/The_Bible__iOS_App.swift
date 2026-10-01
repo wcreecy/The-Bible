@@ -231,6 +231,13 @@ struct The_Bible__iOS_App: App {
                 }
                 // Handle widget deep links here too, and broadcast a tab switch.
                 .onOpenURL { url in
+                    if BibleReferenceLinker.parse(url: url) != nil {
+                        NotificationCenter.default.post(
+                            name: .openScripturePreview,
+                            object: url
+                        )
+                        return
+                    }
                     guard url.scheme?.lowercased() == "thebible" else { return }
                     let host = url.host?.lowercased() ?? ""
                     if host == "home" {

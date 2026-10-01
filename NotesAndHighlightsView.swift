@@ -1,5 +1,6 @@
 import SwiftData
 import SwiftUI
+import UIKit
 
 enum VerseHighlightColor: String, CaseIterable, Identifiable {
     case yellow
@@ -44,6 +45,7 @@ struct VerseNoteEditorView: View {
     @State private var noteSelection = AttributedTextSelection()
     @State private var selectedColor: VerseHighlightColor?
     @State private var persistenceFailure: PersistenceFailure?
+    @State private var selectedScriptureReference: ScriptureRef?
 
     init(verse: VerseActionReference, existingNote: VerseNote?) {
         self.verse = verse
@@ -74,6 +76,13 @@ struct VerseNoteEditorView: View {
                 TextEditor(text: $noteText, selection: $noteSelection)
                     .frame(minHeight: 140)
                     .accessibilityLabel("Note")
+                    .environment(\.openURL, OpenURLAction { url in
+                        guard let reference = BibleReferenceLinker.parse(url: url) else {
+                            return .systemAction(url)
+                        }
+                        selectedScriptureReference = reference
+                        return .handled
+                    })
             }
 
             if existingNote != nil {
@@ -94,6 +103,27 @@ struct VerseNoteEditorView: View {
             }
         }
         .persistenceFailureAlert(failure: $persistenceFailure)
+        .onAppear(perform: linkScriptureReferences)
+        .onChange(of: String(noteText.characters)) { _, _ in
+            linkScriptureReferences()
+        }
+        .onChange(of: noteSelection) { _, _ in
+            openScriptureLinkFromSelection()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .openScripturePreview)) { notification in
+            guard let url = notification.object as? URL,
+                  let reference = BibleReferenceLinker.parse(url: url) else { return }
+            selectedScriptureReference = reference
+        }
+        .sheet(item: $selectedScriptureReference) { reference in
+            ScriptureReferencePreview(
+                reference: reference,
+                copyAction: { copyScripture(reference) },
+                openAction: { openScripture(reference) }
+            )
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+        }
     }
 
     private var trimmedNote: String {
@@ -107,6 +137,44 @@ struct VerseNoteEditorView: View {
             return formatted
         }
         return AttributedString(note.content)
+    }
+
+    private func linkScriptureReferences() {
+        let linked = BibleReferenceLinker.linkify(noteText)
+        guard linked != noteText else { return }
+        noteText = linked
+    }
+
+    private func openScriptureLinkFromSelection() {
+        for url in noteSelection.attributes(in: noteText)[\.link] {
+            guard let url, let reference = BibleReferenceLinker.parse(url: url) else { continue }
+            selectedScriptureReference = reference
+            return
+        }
+    }
+
+    private func copyScripture(_ reference: ScriptureRef) {
+        guard let passage = BibleReferenceLinker.loadVerses(for: reference),
+              !passage.verses.isEmpty else { return }
+        let text = passage.verses.map(\.text).joined(separator: " ")
+        UIPasteboard.general.string = "\(text)\n\(passage.title)"
+        Haptics.success()
+    }
+
+    private func openScripture(_ reference: ScriptureRef) {
+        selectedScriptureReference = nil
+        dismiss()
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(
+                name: .openBibleReference,
+                object: nil,
+                userInfo: [
+                    "book": reference.bookName,
+                    "chapter": reference.chapter,
+                    "verse": reference.startVerse
+                ]
+            )
+        }
     }
 
     private func toggleFontTrait(_ trait: KeyPath<Font.Resolved, Bool>) {
@@ -188,6 +256,72 @@ struct VerseNoteEditorView: View {
             },
             onFailure: { persistenceFailure = $0 }
         )
+    }
+}
+
+private struct ScriptureReferencePreview: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var passage: (title: String, verses: [Verse])?
+    @State private var isLoading = true
+
+    let reference: ScriptureRef
+    let copyAction: () -> Void
+    let openAction: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    if isLoading {
+                        ProgressView("Loading scripture…")
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    } else if let passage, !passage.verses.isEmpty {
+                        Text(passage.verses.map(\.text).joined(separator: " "))
+                            .font(.body)
+                            .textSelection(.enabled)
+                    } else {
+                        ContentUnavailableView(
+                            "Scripture Unavailable",
+                            systemImage: "book.closed",
+                            description: Text("The referenced passage could not be loaded.")
+                        )
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+            }
+            .navigationTitle(passage?.title ?? "Scripture")
+            .navigationBarTitleDisplayMode(.inline)
+            .task(id: reference.id) {
+                isLoading = true
+                passage = await BibleReferenceLinker.loadVersesEnsuringLoaded(for: reference)
+                isLoading = false
+            }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                    .accessibilityLabel("Close scripture")
+                }
+
+                ToolbarItemGroup(placement: .confirmationAction) {
+                    Button(action: copyAction) {
+                        Image(systemName: "doc.on.doc")
+                    }
+                    .accessibilityLabel("Copy scripture")
+                    .disabled(passage?.verses.isEmpty != false)
+
+                    Button(action: openAction) {
+                        Image(systemName: "arrow.right.circle")
+                    }
+                    .accessibilityLabel("Go to scripture")
+                    .disabled(passage?.verses.isEmpty != false)
+                }
+            }
+        }
     }
 }
 
@@ -532,6 +666,8 @@ private struct NoteHighlightRow: View {
             }
         }
         .padding(.vertical, 4)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(.rect)
     }
 }
 

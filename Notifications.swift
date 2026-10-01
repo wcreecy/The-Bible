@@ -32,6 +32,10 @@ extension Notification.Name {
     // userInfo: ["book": String, "chapter": Int, "verse": Int, "relayed": Bool?]
     static let openBibleReference = Notification.Name("OpenBibleReference")
 
+    /// Relays a tapped scripture URL back to an active in-app scripture preview.
+    /// The notification object is the URL that was selected.
+    static let openScripturePreview = Notification.Name("OpenScripturePreview")
+
     // Posted after the user opens a Verse of the Day notification.
     static let openVerseOfDayNotification = Notification.Name("OpenVerseOfDayNotification")
 

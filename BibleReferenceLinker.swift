@@ -1,10 +1,14 @@
 import Foundation
 
-struct ScriptureRef: Equatable {
+struct ScriptureRef: Equatable, Identifiable {
     let bookName: String
     let chapter: Int
     let startVerse: Int
     let endVerse: Int?
+
+    var id: String {
+        "\(bookName)|\(chapter)|\(startVerse)|\(endVerse ?? startVerse)"
+    }
 }
 
 enum BibleReferenceLinker {
@@ -16,10 +20,10 @@ enum BibleReferenceLinker {
         if debugEnabled { print("[Linkify] \(msg())") }
     }
 
-    private static let scheme = "thebible-ref"
+    private static let scheme = "thebible"
 
     private static let cachedRegex: NSRegularExpression? = {
-        let pattern = "(^|[^A-Za-z0-9])((?:[1-3]\\s*)?[A-Za-z][A-Za-z.]*?(?:\\s+[A-Za-z.]+){0,2})\\s+(\\d+):(\\d+)(?:[\\-\\u2013\\u2014](\\d+))?"
+        let pattern = "(^|[^A-Za-z0-9])((?:[1-3]\\s*)?[A-Za-z][A-Za-z.]*?(?:\\s+[A-Za-z.]+){0,2})\\s+(\\d+)[:.](\\d+)(?:[\\-\\u2013\\u2014](\\d+))?"
         return try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
     }()
 
@@ -268,8 +272,15 @@ enum BibleReferenceLinker {
     }
 
     static func linkify(_ text: String) -> AttributedString {
+        linkify(AttributedString(text))
+    }
+
+    /// Adds scripture links while preserving the caller's existing rich-text formatting.
+    static func linkify(_ source: AttributedString) -> AttributedString {
+        let text = String(source.characters)
         debugLog("Input: “\(text)”")
-        var attributed = AttributedString(text)
+        var attributed = source
+        attributed[attributed.startIndex..<attributed.endIndex].link = nil
         guard let regex = cachedRegex else {
             debugLog("No regex compiled.")
             return attributed
@@ -376,5 +387,10 @@ enum BibleReferenceLinker {
         let selected = chapter.verses.filter { $0.number >= lo && $0.number <= hi }
         let title = "\(book.name) \(chapter.number):\(lo)\(hi != lo ? "-\(hi)" : "")"
         return (title, selected)
+    }
+
+    static func loadVersesEnsuringLoaded(for ref: ScriptureRef) async -> (title: String, verses: [Verse])? {
+        _ = await BibleRepository.shared.loadAllBooks()
+        return loadVerses(for: ref)
     }
 }
