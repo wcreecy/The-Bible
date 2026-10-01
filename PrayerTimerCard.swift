@@ -4,6 +4,7 @@ struct PrayerTimerCard<ModePickerContent: View>: View {
     enum Mode { case timer, stopwatch }
 
     @Binding var prayerMode: HomeView.PrayerMode
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     // Timer state
     let isTimerRunning: Bool
@@ -51,7 +52,8 @@ struct PrayerTimerCard<ModePickerContent: View>: View {
                                 Button(action: onTogglePause) {
                                     Image(systemName: isPaused ? "play.fill" : "pause.fill")
                                 }
-                                .buttonStyle(.glass(.regular.tint(isPaused ? .green : timerTintColor)))
+                                .buttonStyle(.glass(.regular.tint(isPaused ? .green : .yellow)))
+                                .buttonBorderShape(.circle)
                                 .controlSize(.large)
                                 .accessibilityLabel(isPaused ? "Resume" : "Pause")
 
@@ -59,13 +61,20 @@ struct PrayerTimerCard<ModePickerContent: View>: View {
                                     Image(systemName: "stop.fill")
                                 }
                                 .buttonStyle(.glass(.regular.tint(.red)))
+                                .buttonBorderShape(.circle)
                                 .controlSize(.large)
                                 .accessibilityLabel("Stop")
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
 
                             Text(formattedTime(remainingSeconds))
-                                .font(.system(size: 36, weight: .semibold, design: .monospaced))
+                                .font(.system(
+                                    size: horizontalSizeClass == .compact ? 28 : 36,
+                                    weight: .semibold,
+                                    design: .monospaced
+                                ))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
                                 .foregroundStyle(timerTintColor)
                                 .frame(maxWidth: .infinity, alignment: .center)
                                 .contentShape(Rectangle())
@@ -77,17 +86,23 @@ struct PrayerTimerCard<ModePickerContent: View>: View {
                             HStack(spacing: 16) {
                                 Button(action: onAddOne) {
                                     Text("+1")
+                                        .font(.caption.weight(.semibold))
+                                        .lineLimit(1)
+                                        .fixedSize()
                                 }
-                                .buttonStyle(.glass)
-                                .tint(.accentColor)
+                                .buttonStyle(.glass(.clear))
+                                .buttonBorderShape(.circle)
                                 .controlSize(.large)
                                 .accessibilityLabel("Add 1 minute")
 
                                 Button(action: onAddFive) {
                                     Text("+5")
+                                        .font(.caption.weight(.semibold))
+                                        .lineLimit(1)
+                                        .fixedSize()
                                 }
-                                .buttonStyle(.glass)
-                                .tint(.accentColor)
+                                .buttonStyle(.glass(.clear))
+                                .buttonBorderShape(.circle)
                                 .controlSize(.large)
                                 .accessibilityLabel("Add 5 minutes")
                             }
