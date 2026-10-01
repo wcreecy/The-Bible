@@ -11,7 +11,6 @@ struct HomeLayoutEditorView: View {
     var onResetToFavorite: () -> Void
     var hasFavorite: Bool
 
-    @State private var editMode: EditMode = .active
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     private var mainCards: [HomeCardID] {
@@ -47,33 +46,43 @@ struct HomeLayoutEditorView: View {
         onDone()
     }
 
-    private func moveShowMoreCards(from offsets: IndexSet, to destination: Int) {
-        var reorderedCards = showMoreCards
-        reorderedCards.move(fromOffsets: offsets, toOffset: destination)
-        order = mainCards + reorderedCards
-        onDone()
-    }
+    private func moveDroppedCards(_ rawIDs: [String], before target: HomeCardID?, inMain: Bool) -> Bool {
+        let movedCards = rawIDs.compactMap(HomeCardID.init(rawValue:)).filter { $0 != .verseOfDay }
+        guard !movedCards.isEmpty else { return false }
 
-    private func moveMainCards(from offsets: IndexSet, to destination: Int) {
-        var reorderedCards = mainCards
-        reorderedCards.move(fromOffsets: offsets, toOffset: destination)
-        order = reorderedCards + showMoreCards
-        onDone()
-    }
+        var destinationCards = inMain ? mainCards : showMoreCards
+        destinationCards.removeAll { movedCards.contains($0) }
 
-    private func moveAllCards(from offsets: IndexSet, to destination: Int) {
-        order.move(fromOffsets: offsets, toOffset: destination)
-        onDone()
-    }
+        let insertionIndex = target.flatMap { destinationCards.firstIndex(of: $0) } ?? destinationCards.endIndex
+        destinationCards.insert(contentsOf: movedCards, at: insertionIndex)
 
-    private func moveToOtherSection(_ id: HomeCardID) {
-        if mainSet.contains(id) {
-            mainSet.remove(id)
+        if inMain {
+            mainSet.formUnion(movedCards)
         } else {
-            mainSet.insert(id)
+            mainSet.subtract(movedCards)
         }
-        order = mainCards + showMoreCards
+
+        let reorderedMain = inMain ? destinationCards : mainCards
+        let reorderedShowMore = inMain ? showMoreCards : destinationCards
+        order = reorderedMain + reorderedShowMore
         onDone()
+        return true
+    }
+
+    @ViewBuilder
+    private func reorderableRow(for id: HomeCardID, inMain: Bool) -> some View {
+        if id == .verseOfDay {
+            layoutRow(for: id)
+                .dropDestination(for: String.self) { rawIDs, _ in
+                    _ = moveDroppedCards(rawIDs, before: id, inMain: inMain)
+                }
+        } else {
+            layoutRow(for: id)
+                .draggable(id.rawValue)
+                .dropDestination(for: String.self) { rawIDs, _ in
+                    _ = moveDroppedCards(rawIDs, before: id, inMain: inMain)
+                }
+        }
     }
 
     private func layoutRow(for id: HomeCardID) -> some View {
@@ -85,20 +94,6 @@ struct HomeLayoutEditorView: View {
             Text(id.title)
 
             Spacer()
-
-            if allowsShowMore {
-                Button {
-                    moveToOtherSection(id)
-                } label: {
-                    Label(
-                        mainSet.contains(id) ? "Move to Show More" : "Move to Main Home",
-                        systemImage: mainSet.contains(id) ? "arrow.down.square" : "arrow.up.square"
-                    )
-                    .labelStyle(.iconOnly)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(mainSet.contains(id) ? "Move to Show More" : "Move to Main Home")
-            }
 
             Button {
                 toggleVisibility(id)
@@ -136,7 +131,7 @@ struct HomeLayoutEditorView: View {
                 ContextualTipView(
                     title: "Make Home yours",
                     message: allowsShowMore
-                        ? "Use the arrow buttons to move cards between Main Home and Show More. Drag to reorder cards."
+                        ? "Drag cards to reorder them or move them between Main Home and Show More."
                         : "Use the eye buttons to show or hide cards, and drag to reorder them.",
                     systemImage: "rectangle.grid.1x2"
                 )
@@ -145,29 +140,32 @@ struct HomeLayoutEditorView: View {
 
             Section {
                 ForEach(allowsShowMore ? mainCards : order) { id in
-                    layoutRow(for: id)
-                        .moveDisabled(id == .verseOfDay)
+                    reorderableRow(for: id, inMain: true)
                 }
-                .onMove(perform: allowsShowMore ? moveMainCards : moveAllCards)
             } header: {
                 Label(allowsShowMore ? "Main Home" : "Home Cards", systemImage: "house")
             } footer: {
                 Text(allowsShowMore
-                    ? "Shown cards appear directly on Home. Use the arrow button to move a card to Show More."
+                    ? "Shown cards appear directly on Home. Drag a card here to move it from Show More."
                     : "Shown cards appear on Home. Drag to choose their order.")
             }
 
             if allowsShowMore {
                 Section {
-                    ForEach(showMoreCards) { id in
-                        layoutRow(for: id)
-                            .moveDisabled(id == .verseOfDay)
+                    if showMoreCards.isEmpty {
+                        Label("Drag cards here", systemImage: "square.and.arrow.down")
+                            .foregroundStyle(.secondary)
+                            .dropDestination(for: String.self) { rawIDs, _ in
+                                _ = moveDroppedCards(rawIDs, before: nil, inMain: false)
+                            }
                     }
-                    .onMove(perform: moveShowMoreCards)
+                    ForEach(showMoreCards) { id in
+                        reorderableRow(for: id, inMain: false)
+                    }
                 } header: {
                     Label("Inside Show More", systemImage: "square.grid.2x2")
                 } footer: {
-                    Text("Shown cards become visible only after Show More is expanded. Use the arrow button to move a card to Main Home.")
+                    Text("Shown cards become visible only after Show More is expanded. Drag a card here to move it from Main Home.")
                 }
             }
 
@@ -188,7 +186,6 @@ struct HomeLayoutEditorView: View {
 
             HomeBackgroundSection()
         }
-        .environment(\.editMode, $editMode)
         .navigationTitle("Home Layout")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
