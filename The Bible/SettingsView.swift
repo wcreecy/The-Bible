@@ -173,7 +173,7 @@ private struct SettingsTipsSection: View {
         } header: {
             Text("Help")
         } footer: {
-            Text("Tips appear near features such as verse actions, widgets, timers, Health, and Home customization.")
+            Text("Tips appear near features such as game favorites, reader gestures, verse actions, widgets, timers, Health, and Home customization.")
         }
     }
 }

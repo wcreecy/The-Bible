@@ -121,9 +121,11 @@ struct GamesView: View {
 
     @State private var todayWordResult: DailyWordResult?
     @State private var refreshToken = 0
+    @State private var isFavoriteLimitAlertPresented = false
 
-    @AppStorage("recentGameRoutes") private var recentRoutesRaw = ""
+    @AppStorage("favoriteGameRoutes") private var favoriteRoutesRaw = ""
     @AppStorage("favoritesFlashcardsPlayCount") private var favoritesFlashcardsPlayCount = 0
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     private var allRoutes: [GameRoute] {
         GameRoute.allCases.sorted {
@@ -131,11 +133,11 @@ struct GamesView: View {
         }
     }
 
-    private var recentRoutes: [GameRoute] {
-        recentRoutesRaw
+    private var favoriteRoutes: [GameRoute] {
+        favoriteRoutesRaw
             .split(separator: ",")
             .compactMap { GameRoute(rawValue: String($0)) }
-            .prefix(2)
+            .prefix(3)
             .map { $0 }
     }
 
@@ -145,20 +147,33 @@ struct GamesView: View {
 
     var body: some View {
         List {
-            if !recentRoutes.isEmpty {
-                GameCollectionSection(
-                    title: "Recently Played",
-                    routes: recentRoutes,
-                    progress: progressText,
-                    onSelect: present
+            if contextualTipsEnabled {
+                ContextualTipView(
+                    title: "Favorite your games",
+                    message: "Swipe a game left or right to add it to Favorites. Swipe a favorite to remove it, or drag its handle to reorder.",
+                    systemImage: "hand.draw"
                 )
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
             }
+
+            GameCollectionSection(
+                title: "Favorites",
+                routes: favoriteRoutes,
+                emptyMessage: "Swipe a game in All Games to add up to three favorites.",
+                progress: progressText,
+                onSelect: present,
+                onToggleFavorite: toggleFavorite,
+                onMove: moveFavorite
+            )
 
             GameCollectionSection(
                 title: "All Games",
                 routes: allRoutes,
+                favoriteRoutes: Set(favoriteRoutes),
                 progress: progressText,
-                onSelect: present
+                onSelect: present,
+                onToggleFavorite: toggleFavorite
             )
         }
         .listStyle(.insetGrouped)
@@ -168,11 +183,14 @@ struct GamesView: View {
         .navigationBarTitleDisplayMode(.large)
         .navigationDestination(for: GameRoute.self) { route in
             destination(for: route)
-                .onAppear { recordRecentlyPlayed(route) }
         }
         .onAppear {
             loadTodayWordResult()
-            seedRecentGameIfNeeded()
+        }
+        .alert("Favorite Limit Reached", isPresented: $isFavoriteLimitAlertPresented) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("You can select up to three favorite games. Remove one before adding another.")
         }
         .onReceive(NotificationCenter.default.publisher(for: .openGameStart)) { note in
             guard let name = note.userInfo?["gameName"] as? String,
@@ -235,17 +253,34 @@ struct GamesView: View {
         path.append(route)
     }
 
-    private func recordRecentlyPlayed(_ route: GameRoute) {
-        var routes = recentRoutes.filter { $0 != route }
-        routes.insert(route, at: 0)
-        recentRoutesRaw = routes.prefix(2).map(\.rawValue).joined(separator: ",")
+    private func toggleFavorite(_ route: GameRoute) {
+        var routes = favoriteRoutes
+
+        if let index = routes.firstIndex(of: route) {
+            routes.remove(at: index)
+        } else {
+            guard routes.count < 3 else {
+                isFavoriteLimitAlertPresented = true
+                return
+            }
+            routes.append(route)
+        }
+
+        favoriteRoutesRaw = routes.map(\.rawValue).joined(separator: ",")
     }
 
-    private func seedRecentGameIfNeeded() {
-        guard recentRoutes.isEmpty,
-              let lastPlayedName = GameStats.shared.lastPlayedGameName,
-              let route = GameRoute.allCases.first(where: { $0.displayName == lastPlayedName }) else { return }
-        recentRoutesRaw = route.rawValue
+    private func moveFavorite(_ route: GameRoute, to destinationIndex: Int) {
+        guard let sourceIndex = favoriteRoutes.firstIndex(of: route),
+              sourceIndex != destinationIndex else { return }
+
+        var routes = favoriteRoutes
+        let movedRoute = routes.remove(at: sourceIndex)
+        let safeDestinationIndex = min(max(destinationIndex, routes.startIndex), routes.endIndex)
+        routes.insert(movedRoute, at: safeDestinationIndex)
+
+        withAnimation {
+            favoriteRoutesRaw = routes.map(\.rawValue).joined(separator: ",")
+        }
     }
 
     private func loadTodayWordResult() {
@@ -262,8 +297,12 @@ struct GamesView: View {
 private struct GameCollectionSection: View {
     let title: LocalizedStringResource
     let routes: [GameRoute]
+    var emptyMessage: LocalizedStringResource?
+    var favoriteRoutes: Set<GameRoute> = []
     let progress: (GameRoute) -> String
     let onSelect: (GameRoute) -> Void
+    var onToggleFavorite: ((GameRoute) -> Void)?
+    var onMove: ((GameRoute, Int) -> Void)?
 
     var body: some View {
         Section {
@@ -272,15 +311,41 @@ private struct GameCollectionSection: View {
                     .font(.headline)
                     .padding(.bottom, 8)
 
-                ForEach(routes) { route in
-                    GameNavigationRow(
-                        route: route,
-                        progress: progress(route),
-                        onSelect: { onSelect(route) }
-                    )
+                if routes.isEmpty, let emptyMessage {
+                    GameFavoritesEmptyView(message: emptyMessage)
+                } else {
+                    ForEach(routes) { route in
+                        VStack(spacing: 0) {
+                            if let onMove {
+                                ReorderableFavoriteRow(
+                                    route: route,
+                                    routes: routes,
+                                    progress: progress(route),
+                                    onSelect: { onSelect(route) },
+                                    onRemove: { onToggleFavorite?(route) },
+                                    onMove: onMove
+                                )
+                            } else {
+                                GameNavigationRow(
+                                    route: route,
+                                    progress: progress(route),
+                                    onSelect: { onSelect(route) }
+                                )
+                                .modifier(
+                                    GameFavoriteSwipeModifier(
+                                        isEnabled: !favoriteRoutes.contains(route),
+                                        actionLabel: "Add to Favorites",
+                                        systemImage: "star.fill",
+                                        tint: .yellow,
+                                        action: { onToggleFavorite?(route) }
+                                    )
+                                )
+                            }
 
-                    if route.id != routes.last?.id {
-                        Divider()
+                            if route.id != routes.last?.id {
+                                Divider()
+                            }
+                        }
                     }
                 }
             }
@@ -293,6 +358,191 @@ private struct GameCollectionSection: View {
     }
 }
 
+private struct ReorderableFavoriteRow: View {
+    @State private var dragOriginIndex: Int?
+    @State private var lastDestinationIndex: Int?
+    @State private var rowHeight: CGFloat = 64
+    @State private var isDragging = false
+
+    let route: GameRoute
+    let routes: [GameRoute]
+    let progress: String
+    let onSelect: () -> Void
+    let onRemove: () -> Void
+    let onMove: (GameRoute, Int) -> Void
+
+    var body: some View {
+        HStack(spacing: 4) {
+            GameNavigationRow(
+                route: route,
+                progress: progress,
+                onSelect: onSelect
+            )
+            .modifier(
+                GameFavoriteSwipeModifier(
+                    isEnabled: true,
+                    actionLabel: "Remove from Favorites",
+                    systemImage: "star.slash.fill",
+                    tint: .red,
+                    action: onRemove
+                )
+            )
+
+            Image(systemName: "line.3.horizontal")
+                .font(.body.weight(.semibold))
+                .foregroundStyle(isDragging ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
+                .scaleEffect(isDragging ? 1.15 : 1)
+                .highPriorityGesture(reorderGesture)
+                .accessibilityHidden(true)
+        }
+        .onGeometryChange(for: CGFloat.self) { proxy in
+            proxy.size.height
+        } action: { newHeight in
+            rowHeight = max(newHeight, 44)
+        }
+        .accessibilityAction(named: "Move Up") {
+            guard let index = routes.firstIndex(of: route), index > routes.startIndex else { return }
+            onMove(route, routes.index(before: index))
+        }
+        .accessibilityAction(named: "Move Down") {
+            guard let index = routes.firstIndex(of: route),
+                  routes.index(after: index) < routes.endIndex else { return }
+            onMove(route, routes.index(after: index))
+        }
+    }
+
+    private var reorderGesture: some Gesture {
+        DragGesture(minimumDistance: 1)
+            .onChanged { value in
+                if dragOriginIndex == nil {
+                    dragOriginIndex = routes.firstIndex(of: route)
+                    lastDestinationIndex = dragOriginIndex
+                    isDragging = true
+                }
+
+                guard let dragOriginIndex else { return }
+                let indexOffset = Int((value.translation.height / rowHeight).rounded())
+                let destinationIndex = min(
+                    max(dragOriginIndex + indexOffset, routes.startIndex),
+                    routes.index(before: routes.endIndex)
+                )
+
+                guard destinationIndex != lastDestinationIndex else { return }
+                lastDestinationIndex = destinationIndex
+                onMove(route, destinationIndex)
+            }
+            .onEnded { _ in
+                dragOriginIndex = nil
+                lastDestinationIndex = nil
+                isDragging = false
+            }
+    }
+}
+
+private struct GameFavoritesEmptyView: View {
+    let message: LocalizedStringResource
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "star")
+                .font(.title3)
+                .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
+
+            Text(message)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.vertical, 8)
+    }
+}
+
+private struct GameFavoriteSwipeModifier: ViewModifier {
+    @GestureState private var horizontalTranslation: CGFloat = 0
+    @State private var isSuppressingTap = false
+
+    let isEnabled: Bool
+    let actionLabel: LocalizedStringResource
+    let systemImage: String
+    let tint: Color
+    let action: () -> Void
+
+    private var displayedTranslation: CGFloat {
+        guard isEnabled else { return 0 }
+        return min(max(horizontalTranslation, -96), 96)
+    }
+
+    func body(content: Content) -> some View {
+        ZStack {
+            if displayedTranslation != 0 {
+                tint.opacity(0.9)
+
+                HStack {
+                    if displayedTranslation > 0 {
+                        swipeActionLabel
+                    }
+
+                    Spacer()
+
+                    if displayedTranslation < 0 {
+                        swipeActionLabel
+                    }
+                }
+                .padding(.horizontal, 18)
+            }
+
+            content
+                .allowsHitTesting(!isSuppressingTap)
+                .offset(x: displayedTranslation)
+        }
+        .clipped()
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 20)
+                .updating($horizontalTranslation) { value, state, _ in
+                    guard isEnabled,
+                          abs(value.translation.width) > abs(value.translation.height) else { return }
+                    state = value.translation.width
+                }
+                .onChanged { value in
+                    guard isEnabled,
+                          abs(value.translation.width) > 8,
+                          abs(value.translation.width) > abs(value.translation.height) else { return }
+                    isSuppressingTap = true
+                }
+                .onEnded { value in
+                    if isEnabled,
+                       abs(value.translation.width) > 72,
+                       abs(value.translation.width) > abs(value.translation.height) {
+                        action()
+                    }
+
+                    Task {
+                        try? await Task.sleep(for: .milliseconds(150))
+                        isSuppressingTap = false
+                    }
+                }
+        )
+        .accessibilityAction(named: Text(actionLabel)) {
+            guard isEnabled else { return }
+            action()
+        }
+    }
+
+    private var swipeActionLabel: some View {
+        VStack(spacing: 2) {
+            Image(systemName: systemImage)
+                .font(.headline)
+            Text(actionLabel)
+                .font(.caption2.weight(.semibold))
+        }
+        .foregroundStyle(.white)
+        .accessibilityHidden(true)
+    }
+}
+
 private struct GameNavigationRow: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
@@ -301,20 +551,25 @@ private struct GameNavigationRow: View {
     let onSelect: () -> Void
 
     var body: some View {
-        Button(action: onSelect) {
-            Group {
-                if dynamicTypeSize.isAccessibilitySize {
-                    GameAccessibilityRow(route: route, progress: progress)
-                } else {
-                    GameStandardRow(route: route, progress: progress)
-                }
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                GameAccessibilityRow(route: route, progress: progress)
+            } else {
+                GameStandardRow(route: route, progress: progress)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 8 : 4)
-            .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 8 : 4)
+        .contentShape(Rectangle())
         .foregroundStyle(.primary)
+        .onTapGesture {
+            onSelect()
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityAction {
+            onSelect()
+        }
     }
 }
 
@@ -330,7 +585,7 @@ private struct GameStandardRow: View {
                 Text(route.title)
                     .font(.headline)
                 Text(route.subtitle)
-                    .font(.subheadline)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
             }
             .fixedSize(horizontal: false, vertical: true)
@@ -367,7 +622,7 @@ private struct GameAccessibilityRow: View {
             }
 
             Text(route.subtitle)
-                .font(.subheadline)
+                .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 

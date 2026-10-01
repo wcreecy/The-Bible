@@ -20,6 +20,7 @@ struct ReadingView: View {
     // Reader-specific font size (independent from global app UI font)
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
     @AppStorage("showReadVerseCheckmarks") private var showReadVerseCheckmarks: Bool = false
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @State private var seenVerseNumbers: Set<Int> = []
     @State private var seenVerseLocation: String = ""
 
@@ -134,6 +135,17 @@ struct ReadingView: View {
         ZStack {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
+                    if contextualTipsEnabled {
+                        ContextualTipView(
+                            title: "Reader shortcuts",
+                            message: "Swipe left or right to change chapters. Press and hold a verse for favorite, bookmark, copy, and widget actions.",
+                            systemImage: "hand.draw"
+                        )
+                        .padding(.bottom, 12)
+
+                        Divider()
+                    }
+
                     ForEach(currentChapter.verses) { verse in
                         let bookName = viewModel.currentBook.name
                         let chapterNumber = viewModel.currentChapter.number
