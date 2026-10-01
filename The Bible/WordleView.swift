@@ -51,9 +51,7 @@ struct WordleView: View {
     @State private var keyboardStates: [Character: KeyState] = [:]
     private static let alphabet = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-    // NEW: selected tile (row, col) for pinning — active row only
-    @State private var selectedCell: (row: Int, col: Int)? = nil
-    // NEW: pinned letters (locked) per row/col; non-nil means locked until cleared via 'x'
+    // Pinned letters stay fixed in the active row until cleared with the × button.
     @State private var pinned: [[Character?]] = Array(repeating: Array(repeating: nil, count: 5), count: 6)
 
     // Session stats (for the scoreboard’s Current section)
@@ -473,6 +471,8 @@ struct WordleView: View {
                             Text("• Green letters are correct and in the right position.")
                             Text("• Yellow letters are in the word but in a different position.")
                             Text("• Gray letters are not in the word.")
+                            Text("• The softly highlighted tile shows where the next letter will go.")
+                            Text("• Tap a green letter from an earlier guess to place and lock it in the same spot of your current guess.")
                             Text("• Solve the word in six guesses or fewer.")
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -593,7 +593,7 @@ struct WordleView: View {
         return row.allSatisfy { $0 != nil }
     }
 
-    // Find next empty non-pinned column (left to right) for typing when nothing is selected
+    // Find the next empty, unlocked column for normal left-to-right typing.
     private func nextAvailableColumn() -> Int? {
         let row = composedCurrentRow()
         for c in 0..<5 {
@@ -604,32 +604,9 @@ struct WordleView: View {
         return nil
     }
 
-    // Remove the last non-pinned typed letter (right to left)
+    // Remove the last non-pinned typed letter; locked letters stay in place.
     private func removeLastNonPinnedTypedLetter() {
-        // Build which indices are filled by typed letters (not pinned)
-        let pins = pinned[rowIndex]
-        var typedIndices: [Int] = []
-        var typed = Array(currentInput)
-        // Walk columns left to right; when not pinned and slot is empty -> will be filled by next typed char
-        // To reverse-map which columns are typed, we reconstruct composition and track where typed landed.
-        var result: [Character?] = Array(repeating: nil, count: 5)
-        for c in 0..<5 {
-            if let p = pins[c] {
-                result[c] = p
-            } else if !typed.isEmpty {
-                result[c] = typed.removeFirst()
-                typedIndices.append(c)
-            }
-        }
-        guard let lastTypedCol = typedIndices.last else { return }
-        // Remove the last typed char from currentInput (popLast)
-        if !currentInput.isEmpty {
-            _ = currentInput.popLast()
-        }
-        // If the selection is on a pinned cell, keep it; otherwise update selection to the removed cell for clarity
-        if selectedCell?.row == rowIndex, let sel = selectedCell, pinned[rowIndex][sel.col] == nil {
-            selectedCell = (rowIndex, lastTypedCol)
-        }
+        _ = currentInput.popLast()
     }
 
     // MARK: - Board
@@ -641,8 +618,9 @@ struct WordleView: View {
             rowIndex: rowIndex,
             isRoundOver: roundOver,
             pinned: $pinned,
-            selectedCell: $selectedCell,
-            tileSize: tileSize
+            nextInputColumn: nextAvailableColumn(),
+            tileSize: tileSize,
+            onReuseCorrectLetter: reuseCorrectLetter
         )
     }
 
@@ -653,8 +631,9 @@ struct WordleView: View {
         let rowIndex: Int
         let isRoundOver: Bool
         @Binding var pinned: [[Character?]]
-        @Binding var selectedCell: (row: Int, col: Int)?
+        let nextInputColumn: Int?
         let tileSize: CGFloat
+        let onReuseCorrectLetter: (Character, Int) -> Void
 
         private var spacing: CGFloat {
             tileSize > 48 ? 9 : 6
@@ -673,7 +652,7 @@ struct WordleView: View {
                             )
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                select(row: row, column: column)
+                                reuseCorrectLetter(fromRow: row, column: column)
                             }
                         }
                     }
@@ -693,15 +672,13 @@ struct WordleView: View {
             return String(letter)
         }
 
-        private func select(row: Int, column: Int) {
-            guard !isRoundOver, row == rowIndex else { return }
-            if selectedCell?.row == row, selectedCell?.col == column {
-                selectedCell = nil
-            } else if selectedCell != nil, letter(atRow: row, column: column).isEmpty {
-                selectedCell = nil
-            } else {
-                selectedCell = (row, column)
-            }
+        private func reuseCorrectLetter(fromRow row: Int, column: Int) {
+            guard !isRoundOver,
+                  row < rowIndex,
+                  evaluations[row][column] == .correct,
+                  let letter = letter(atRow: row, column: column).first else { return }
+
+            onReuseCorrectLetter(letter, column)
         }
 
         private func tile(
@@ -711,17 +688,15 @@ struct WordleView: View {
             column: Int
         ) -> some View {
             let isPinned = pinned[row][column] != nil
-            let isSelected = selectedCell?.row == row && selectedCell?.col == column
+            let isNextInput = row == rowIndex && column == nextInputColumn && !isRoundOver
             let background: Color = switch state {
+            case .unknown where isNextInput: Color.accentColor.opacity(0.10)
             case .unknown: Color(.secondarySystemBackground)
             case .absent: .gray.opacity(0.35)
             case .present: .yellow.opacity(0.45)
             case .correct: .green.opacity(0.45)
             }
             let border: Color = {
-                if row == rowIndex, !isRoundOver, isSelected {
-                    return Color.accentColor.opacity(0.9)
-                }
                 switch state {
                 case .unknown: return Color.primary.opacity(0.08)
                 case .absent: return .gray.opacity(0.55)
@@ -737,13 +712,12 @@ struct WordleView: View {
                     .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(background))
                     .overlay(
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .stroke(border, lineWidth: isSelected ? 2 : 1)
+                            .stroke(border, lineWidth: 1)
                     )
 
                 if row == rowIndex, !isRoundOver, isPinned {
                     Button {
                         pinned[row][column] = nil
-                        selectedCell = (row, column)
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.system(size: 12, weight: .bold))
@@ -756,64 +730,22 @@ struct WordleView: View {
             }
             .foregroundStyle(.primary)
             .monospaced()
+            .accessibilityLabel(accessibilityLabel(letter: letter, row: row, column: column, isPinned: isPinned, isNextInput: isNextInput))
+            .accessibilityHint(state == .correct && row < rowIndex && !isRoundOver ? "Tap to place and lock this letter in the current guess." : "")
         }
-    }
 
-    private func tile(
-        letter: String,
-        state: KeyState,
-        row: Int,
-        col: Int,
-        size: CGFloat
-    ) -> some View {
-        let isPinnedHere: Bool = (row < pinned.count && col < pinned[row].count) ? (pinned[row][col] != nil) : false
-        let isSelected: Bool = (selectedCell?.row == row && selectedCell?.col == col)
-
-        let bg: Color = {
-            switch state {
-            case .unknown: return Color(.secondarySystemBackground)
-            case .absent:  return .gray.opacity(0.35)
-            case .present: return .yellow.opacity(0.45)
-            case .correct: return .green.opacity(0.45)
-            }
-        }()
-        let border: Color = {
-            if row == rowIndex && !roundOver && isSelected {
-                return Color.accentColor.opacity(0.9)
-            }
-            switch state {
-            case .unknown: return Color.primary.opacity(0.08)
-            case .absent:  return .gray.opacity(0.55)
-            case .present: return .yellow.opacity(0.65)
-            case .correct: return .green.opacity(0.65)
-            }
-        }()
-
-        return ZStack(alignment: .topTrailing) {
-            Text(letter)
-                .font((size > 48 ? Font.title : Font.title2).weight(.bold))
-                .frame(width: size, height: size)
-                .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(bg))
-                .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(border, lineWidth: isSelected ? 2 : 1))
-
-            // Show small 'x' to clear only for pinned cells in the active row during play
-            if row == rowIndex, !roundOver, isPinnedHere {
-                Button(action: {
-                    pinned[row][col] = nil
-                    // Keep selection on this cell to make it easy to type a replacement
-                    selectedCell = (row, col)
-                }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundStyle(.secondary)
-                        .padding(4)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Clear pinned letter")
-            }
+        private func accessibilityLabel(
+            letter: String,
+            row: Int,
+            column: Int,
+            isPinned: Bool,
+            isNextInput: Bool
+        ) -> String {
+            var parts = ["Row \(row + 1), column \(column + 1)", letter.isEmpty ? "empty" : letter]
+            if isPinned { parts.append("locked") }
+            if isNextInput { parts.append("next letter") }
+            return parts.joined(separator: ", ")
         }
-        .foregroundStyle(.primary)
-        .monospaced()
     }
 
     // MARK: - On-screen keyboard
@@ -969,38 +901,30 @@ struct WordleView: View {
         }
     }
 
-    // MARK: - Input helpers (respect pinned/selection)
+    // MARK: - Input helpers
 
     private func tapLetter(_ ch: Character) {
         guard !roundOver else { return }
         let up = Character(String(ch).uppercased())
         guard up.isLetter else { return }
 
-        // If a cell is selected in the active row, handle pinning without staying in "pin mode"
-        if let sel = selectedCell, sel.row == rowIndex {
-            let isPinnedAtSel = pinned[rowIndex][sel.col] != nil
-            if !isPinnedAtSel {
-                // Pin here, then EXIT pin mode (clear selection) so subsequent typing is normal
-                pinned[rowIndex][sel.col] = up
-                message = nil
-                selectedCell = nil
-                return
-            } else {
-                // Already pinned: do NOT overwrite. Exit pin mode, then type normally into next free slot
-                selectedCell = nil
-                if let _ = nextAvailableColumn() {
-                    currentInput.append(up)
-                    message = nil
-                }
-                return
-            }
-        }
-
-        // No active selection: fill the next available non-pinned empty slot left-to-right
-        if let _ = nextAvailableColumn() {
+        if nextAvailableColumn() != nil {
             currentInput.append(up)
             message = nil
         }
+    }
+
+    private func reuseCorrectLetter(_ letter: Character, at column: Int) {
+        guard !roundOver, rowIndex < pinned.count, pinned[rowIndex].indices.contains(column) else { return }
+
+        // Preserve letters already typed in their visible positions while replacing this column.
+        let rowBeforePinning = composedCurrentRow()
+        pinned[rowIndex][column] = letter
+        currentInput = String(rowBeforePinning.indices.compactMap { index in
+            guard pinned[rowIndex][index] == nil else { return nil }
+            return rowBeforePinning[index]
+        })
+        message = nil
     }
 
     private func deleteLetter() {
@@ -1057,9 +981,8 @@ struct WordleView: View {
             endRound(win: false)
             return
         }
-        // Prepare next row input and clear selection/pins for next row only
+        // Prepare the next row and ensure its locked-letter slots are empty.
         currentInput = ""
-        selectedCell = nil
         // Do not clear previous row pins; they’re irrelevant now. Ensure next row pins are empty.
         if rowIndex < pinned.count {
             pinned[rowIndex] = Array(repeating: nil, count: 5)
@@ -1175,9 +1098,8 @@ struct WordleView: View {
         keyboardStates.removeAll()
         roundRef = nil
 
-        // Reset pinning/selection
+        // Reset locked letters.
         pinned = Array(repeating: Array(repeating: nil, count: 5), count: 6)
-        selectedCell = nil
 
         // Start timing
         roundStartAt = Date()
@@ -1194,9 +1116,8 @@ struct WordleView: View {
 
     private func endRound(win: Bool) {
         roundOver = true
-        // Clear current input and selection to avoid duplicate rendering
+        // Clear current input to avoid duplicate rendering.
         currentInput = ""
-        selectedCell = nil
 
         let elapsedSeconds: Int = {
             let start = roundStartAt ?? Date()
