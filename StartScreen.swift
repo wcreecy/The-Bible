@@ -18,7 +18,7 @@ struct WordSearchStartScreen: View {
             GameStartInfoLayout {
                 GroupBox {
                     DisclosureGroup(isExpanded: $howToExpanded) {
-                        VStack(alignment: .leading, spacing: 6) {
+                        VStack(alignment: .leading, spacing: 12) {
                             Text("• Tap Start to generate a new puzzle.")
                             Text("• Drag across letters to select a word.")
                             Text("• Easy/Normal: words can be horizontal, vertical, or diagonal (forward only).")
@@ -35,7 +35,7 @@ struct WordSearchStartScreen: View {
 
                 GroupBox {
                     DisclosureGroup(isExpanded: $difficultyExpanded) {
-                        VStack(alignment: .leading, spacing: 6) {
+                        VStack(alignment: .leading, spacing: 12) {
                             Text("• Easy: 10×10 grid; words go horizontal, vertical, or diagonal (forward only).")
                             Text("• Normal: 12×12 grid; words go horizontal, vertical, or diagonal (forward only).")
                             Text("• Hard: 14×14 grid; words can be in any direction, including backwards.")

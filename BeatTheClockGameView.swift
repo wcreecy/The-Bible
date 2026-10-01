@@ -122,7 +122,7 @@ struct BeatTheClockGameView: View {
                     GameStartInfoLayout {
                         GroupBox {
                             DisclosureGroup(isExpanded: $howToExpanded) {
-                                VStack(alignment: .leading, spacing: 6) {
+                                VStack(alignment: .leading, spacing: 12) {
                                     Text("• Choose a category and difficulty, then tap Start.")
                                     Text("• You'll see a person or place; type a Bible book that mentions it.")
                                     Text("• Submit before the timer hits zero. Suggestions appear as you type.")
@@ -135,7 +135,7 @@ struct BeatTheClockGameView: View {
 
                         GroupBox {
                             DisclosureGroup(isExpanded: $difficultyExpanded) {
-                                VStack(alignment: .leading, spacing: 6) {
+                                VStack(alignment: .leading, spacing: 12) {
                                     Text("• Easy: 25 seconds per round.")
                                     Text("• Normal: 15 seconds per round.")
                                     Text("• Hard: 8 seconds per round.")

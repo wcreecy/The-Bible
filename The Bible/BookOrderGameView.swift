@@ -21,7 +21,7 @@ struct BookOrderGameView: View {
                     GameStartInfoLayout {
                         GroupBox {
                             DisclosureGroup(isExpanded: $howToExpanded) {
-                                VStack(alignment: .leading, spacing: 6) {
+                                VStack(alignment: .leading, spacing: 12) {
                                     Text("• Choose a source (OT/NT) and difficulty, then tap Start.")
                                     Text("• Drag the rows to arrange the books in canonical order.")
                                     Text("• Tap Check to see results; then tap Next for a new round.")
@@ -34,7 +34,7 @@ struct BookOrderGameView: View {
 
                         GroupBox {
                             DisclosureGroup(isExpanded: $difficultyExpanded) {
-                                VStack(alignment: .leading, spacing: 6) {
+                                VStack(alignment: .leading, spacing: 12) {
                                     Text("• Easy: Arrange 5 books.")
                                     Text("• Normal: Arrange 10 books.")
                                     Text("• Hard: Arrange 15 books.")

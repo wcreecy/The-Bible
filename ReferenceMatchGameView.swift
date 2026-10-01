@@ -98,7 +98,7 @@ struct VerseMatchGameView: View {
                     GameStartInfoLayout {
                         GroupBox {
                             DisclosureGroup(isExpanded: $howToExpanded) {
-                                VStack(alignment: .leading, spacing: 6) {
+                                VStack(alignment: .leading, spacing: 12) {
                                     Text("• Choose a verse source and difficulty, then tap Start.")
                                     Text("• You'll see a reference; pick the verse text that matches it.")
                                     Text("• Review your answer, then tap Next for a new question.")
@@ -111,7 +111,7 @@ struct VerseMatchGameView: View {
 
                         GroupBox {
                             DisclosureGroup(isExpanded: $difficultyExpanded) {
-                                VStack(alignment: .leading, spacing: 6) {
+                                VStack(alignment: .leading, spacing: 12) {
                                     Text("• Easy: Possible answers can come from any book of the Bible.")
                                     Text("• Normal: Possible answers are limited to the same testament (Old or New) as the reference.")
                                     Text("• Hard: Possible answers all come from the same book as the reference.")

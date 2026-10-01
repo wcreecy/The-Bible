@@ -42,7 +42,7 @@ struct FavoritesFlashcardsGameView: View {
                             GameStartInfoLayout {
                                 GroupBox {
                                     DisclosureGroup(isExpanded: $howToExpanded) {
-                                        VStack(alignment: .leading, spacing: 6) {
+                                        VStack(alignment: .leading, spacing: 12) {
                                             Text("• Choose which side of the flashcard you want to see first.")
                                             Text("• Think of the answer, then tap the card to reveal it.")
                                             Text("• Use Previous or Random to move through your saved verses.")
@@ -56,7 +56,7 @@ struct FavoritesFlashcardsGameView: View {
 
                                 GroupBox {
                                     DisclosureGroup(isExpanded: $difficultyExpanded) {
-                                        VStack(alignment: .leading, spacing: 6) {
+                                        VStack(alignment: .leading, spacing: 12) {
                                             Text("• Reference → Verse: See the scripture reference first.")
                                             Text("• Verse → Reference: Read the verse first and recall its location.")
                                             Text("• Every favorited scripture is included in the deck.")

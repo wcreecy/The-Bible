@@ -454,7 +454,7 @@ struct WordleView: View {
             GameStartInfoLayout {
                 GroupBox {
                     DisclosureGroup(isExpanded: $howToExpanded) {
-                        VStack(alignment: .leading, spacing: 6) {
+                        VStack(alignment: .leading, spacing: 12) {
                             Text("• Enter a five-letter word, then submit your guess.")
                             Text("• Green letters are correct and in the right position.")
                             Text("• Yellow letters are in the word but in a different position.")

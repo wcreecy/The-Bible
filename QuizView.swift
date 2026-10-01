@@ -195,7 +195,7 @@ struct QuizView: View {
                     GameStartInfoLayout {
                         GroupBox {
                             DisclosureGroup(isExpanded: $howToExpanded) {
-                                VStack(alignment: .leading, spacing: 6) {
+                                VStack(alignment: .leading, spacing: 12) {
                                     Text("• Pick a verse source and difficulty, then tap Start.")
                                     Text("• Read the verse, then choose the correct book from the options.")
                                     Text("• In timed modes, answer before the clock runs out.")
@@ -208,7 +208,7 @@ struct QuizView: View {
 
                         GroupBox {
                             DisclosureGroup(isExpanded: $difficultyExpanded) {
-                                VStack(alignment: .leading, spacing: 6) {
+                                VStack(alignment: .leading, spacing: 12) {
                                     Text("• Easy: No timer; two options from each testament.")
                                     Text("• Medium: 15 seconds; options are completely random.")
                                     Text("• Hard: 8 seconds; all options are from the same testament.")

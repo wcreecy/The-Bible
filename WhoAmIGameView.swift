@@ -41,7 +41,7 @@ struct WhoAmIGameView: View {
                     GameStartInfoLayout {
                         GroupBox {
                             DisclosureGroup(isExpanded: $vm.howToExpanded) {
-                                VStack(alignment: .leading, spacing: 6) {
+                                VStack(alignment: .leading, spacing: 12) {
                                     Text("• Choose a mode and difficulty, then tap Start.")
                                     Text("• Names: You’ll see a name; pick the correct description.")
                                     Text("• Reverse: You’ll see a description; pick the correct name.")
@@ -55,7 +55,7 @@ struct WhoAmIGameView: View {
 
                         GroupBox {
                             DisclosureGroup(isExpanded: $vm.difficultyExpanded) {
-                                VStack(alignment: .leading, spacing: 6) {
+                                VStack(alignment: .leading, spacing: 12) {
                                     Text("• Easy: No timer.")
                                     Text("• Normal: 30 seconds per question.")
                                     Text("• Hard: 15 seconds per question.")

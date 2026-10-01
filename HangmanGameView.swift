@@ -261,7 +261,7 @@ struct HangmanGameView: View {
         GameStartInfoLayout {
             GroupBox {
                 DisclosureGroup(isExpanded: $howToExpanded) {
-                    VStack(alignment: .leading, spacing: 6) {
+                    VStack(alignment: .leading, spacing: 12) {
                         Text("• Pick a theme and difficulty, then tap Start.")
                         Text("• Tap letters on the on‑screen keyboard to guess.")
                         Text("• You have a limited number of mistakes. Reveal the word before you run out!")
@@ -274,7 +274,7 @@ struct HangmanGameView: View {
 
             GroupBox {
                 DisclosureGroup(isExpanded: $difficultyExpanded) {
-                    VStack(alignment: .leading, spacing: 6) {
+                    VStack(alignment: .leading, spacing: 12) {
                         Text("• Easy: Up to 10 mistakes. A scripture reference is shown right away to help.")
                         Text("• Normal: Up to 7 mistakes. The reference appears after 3 wrong guesses.")
                         Text("• Hard: Up to 6 mistakes. The reference is shown only after the round ends.")
