@@ -583,8 +583,10 @@ struct WordleView: View {
     // with the typed letters (currentInput) in the remaining slots, left-to-right.
     private func composedCurrentRow() -> [Character?] {
         var result: [Character?] = Array(repeating: nil, count: 5)
+        guard pinned.indices.contains(rowIndex) else { return result }
+
         let pins = pinned[rowIndex]
-        for c in 0..<5 {
+        for c in result.indices where pins.indices.contains(c) {
             result[c] = pins[c]
         }
         var typed = Array(currentInput)
@@ -604,8 +606,10 @@ struct WordleView: View {
 
     // Find the next empty, unlocked column for normal left-to-right typing.
     private func nextAvailableColumn() -> Int? {
+        guard pinned.indices.contains(rowIndex) else { return nil }
+
         let row = composedCurrentRow()
-        for c in 0..<5 {
+        for c in row.indices where pinned[rowIndex].indices.contains(c) {
             if pinned[rowIndex][c] == nil && row[c] == nil {
                 return c
             }
@@ -699,13 +703,14 @@ struct WordleView: View {
             let isPinned = pinned[row][column] != nil
             let isNextInput = row == rowIndex && column == nextInputColumn && !isRoundOver
             let background: Color = switch state {
-            case .unknown where isNextInput: Color.accentColor.opacity(0.10)
             case .unknown: Color(.secondarySystemBackground)
             case .absent: .gray.opacity(0.35)
             case .present: .yellow.opacity(0.45)
             case .correct: .green.opacity(0.45)
             }
             let border: Color = {
+                if isNextInput { return .blue.opacity(0.85) }
+
                 switch state {
                 case .unknown: return Color.primary.opacity(0.08)
                 case .absent: return .gray.opacity(0.55)
@@ -721,7 +726,7 @@ struct WordleView: View {
                     .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(background))
                     .overlay(
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .stroke(border, lineWidth: 1)
+                            .stroke(border, lineWidth: isNextInput ? 2 : 1)
                     )
 
                 if row == rowIndex, !isRoundOver, isPinned {
