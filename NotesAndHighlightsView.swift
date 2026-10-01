@@ -107,9 +107,6 @@ struct VerseNoteEditorView: View {
         .onChange(of: String(noteText.characters)) { _, _ in
             linkScriptureReferences()
         }
-        .onChange(of: noteSelection) { _, _ in
-            openScriptureLinkFromSelection()
-        }
         .onReceive(NotificationCenter.default.publisher(for: .openScripturePreview)) { notification in
             guard let url = notification.object as? URL,
                   let reference = BibleReferenceLinker.parse(url: url) else { return }
@@ -143,14 +140,6 @@ struct VerseNoteEditorView: View {
         let linked = BibleReferenceLinker.linkify(noteText)
         guard linked != noteText else { return }
         noteText = linked
-    }
-
-    private func openScriptureLinkFromSelection() {
-        for url in noteSelection.attributes(in: noteText)[\.link] {
-            guard let url, let reference = BibleReferenceLinker.parse(url: url) else { continue }
-            selectedScriptureReference = reference
-            return
-        }
     }
 
     private func copyScripture(_ reference: ScriptureRef) {
@@ -467,6 +456,110 @@ private enum NotesHighlightsSort: String, CaseIterable, Identifiable {
 
 @MainActor
 struct NotesAndHighlightsView: View {
+    @Query private var scriptureNotes: [VerseNote]
+    @Query private var userNotes: [UserNote]
+    @State private var isCreatingNote = false
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                NotesCategoryCard(
+                    title: "Scripture Notes & Highlights",
+                    subtitle: "Notes and highlights saved from Bible verses",
+                    systemImage: "text.book.closed",
+                    count: scriptureNotes.count,
+                    tint: .orange
+                ) {
+                    ScriptureNotesView()
+                }
+
+                NotesCategoryCard(
+                    title: "My Notes",
+                    subtitle: "Personal notes, reflections, and study thoughts",
+                    systemImage: "note.text",
+                    count: userNotes.count,
+                    tint: .blue
+                ) {
+                    UserNotesView()
+                }
+            }
+            .padding()
+        }
+        .background(AppBackgroundView(tab: .notes))
+        .navigationTitle("Notes")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    isCreatingNote = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+                .accessibilityLabel("Create note")
+            }
+        }
+        .fullScreenCover(isPresented: $isCreatingNote) {
+            NavigationStack {
+                UserNoteEditorView(existingNote: nil)
+            }
+        }
+    }
+}
+
+private struct NotesCategoryCard<Destination: View>: View {
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
+    let systemImage: String
+    let count: Int
+    let tint: Color
+    @ViewBuilder let destination: () -> Destination
+
+    var body: some View {
+        NavigationLink(destination: destination) {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack {
+                    Image(systemName: systemImage)
+                        .font(.title)
+                        .foregroundStyle(tint)
+                        .frame(width: 52, height: 52)
+                        .background(tint.opacity(0.14), in: RoundedRectangle(cornerRadius: 14))
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.headline)
+                        .foregroundStyle(.tertiary)
+                }
+
+                Spacer(minLength: 0)
+
+                Text(title)
+                    .font(.title2.bold())
+                    .foregroundStyle(.primary)
+
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+
+                Text("\(count) \(count == 1 ? "note" : "notes")")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(tint)
+            }
+            .padding(20)
+            .frame(maxWidth: .infinity, minHeight: 210, alignment: .leading)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24))
+            .overlay {
+                RoundedRectangle(cornerRadius: 24)
+                    .stroke(tint.opacity(0.18), lineWidth: 1)
+            }
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+@MainActor
+private struct ScriptureNotesView: View {
     @Query(sort: \VerseNote.updatedAt, order: .reverse) private var notes: [VerseNote]
     @AppStorage("notesHighlightsSort") private var sortRawValue = NotesHighlightsSort.modifiedNewest.rawValue
     @State private var searchText = ""
@@ -714,5 +807,324 @@ private struct NoteTimestampView: View {
 
     private var displayDate: Date? {
         wasModified ? updatedAt : (createdAt ?? updatedAt)
+    }
+}
+
+@MainActor
+private struct UserNotesView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \UserNote.updatedAt, order: .reverse) private var notes: [UserNote]
+    @State private var searchText = ""
+    @State private var selectedNote: UserNote?
+    @State private var isCreatingNote = false
+
+    var body: some View {
+        List {
+            if visibleNotes.isEmpty {
+                ContentUnavailableView(
+                    searchText.isEmpty ? "No Personal Notes" : "No Results",
+                    systemImage: searchText.isEmpty ? "note.text" : "magnifyingglass",
+                    description: Text(searchText.isEmpty
+                        ? "Tap the plus button to create your first note."
+                        : "Try searching for a note title or its contents.")
+                )
+                .listRowBackground(Color.clear)
+            } else {
+                ForEach(visibleNotes) { note in
+                    Button {
+                        selectedNote = note
+                    } label: {
+                        UserNoteRow(
+                            title: note.title,
+                            content: formattedContent(for: note),
+                            createdAt: note.createdAt,
+                            updatedAt: note.updatedAt
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+                .onDelete(perform: delete)
+                .listRowBackground(HeroCardListRowBackground())
+            }
+        }
+        .scrollContentBackground(.hidden)
+        .background(AppBackgroundView(tab: .notes))
+        .navigationTitle("My Notes")
+        .searchable(text: $searchText, prompt: "Search personal notes")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    isCreatingNote = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+                .accessibilityLabel("Create note")
+            }
+        }
+        .fullScreenCover(isPresented: $isCreatingNote) {
+            NavigationStack {
+                UserNoteEditorView(existingNote: nil)
+            }
+        }
+        .fullScreenCover(item: $selectedNote) { note in
+            NavigationStack {
+                UserNoteEditorView(existingNote: note)
+            }
+        }
+    }
+
+    private var visibleNotes: [UserNote] {
+        guard !searchText.isEmpty else { return notes }
+        return notes.filter {
+            $0.title.localizedCaseInsensitiveContains(searchText) ||
+            $0.content.localizedCaseInsensitiveContains(searchText)
+        }
+    }
+
+    private func formattedContent(for note: UserNote) -> AttributedString {
+        if let data = note.formattedContent,
+           let formatted = try? JSONDecoder().decode(AttributedString.self, from: data) {
+            return formatted
+        }
+        return AttributedString(note.content)
+    }
+
+    private func delete(at offsets: IndexSet) {
+        for index in offsets {
+            modelContext.delete(visibleNotes[index])
+        }
+        try? modelContext.save()
+    }
+}
+
+private struct UserNoteRow: View {
+    let title: String
+    let content: AttributedString
+    let createdAt: Date?
+    let updatedAt: Date?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title.isEmpty ? "Untitled Note" : title)
+                .font(.headline)
+                .foregroundStyle(.primary)
+
+            if !content.characters.isEmpty {
+                Text(content)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(4)
+            }
+
+            NoteTimestampView(createdAt: createdAt, updatedAt: updatedAt)
+        }
+        .padding(.vertical, 6)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(.rect)
+    }
+}
+
+@MainActor
+private struct UserNoteEditorView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.fontResolutionContext) private var fontResolutionContext
+    @Environment(\.modelContext) private var modelContext
+
+    let existingNote: UserNote?
+
+    @State private var title: String
+    @State private var noteText: AttributedString
+    @State private var noteSelection = AttributedTextSelection()
+    @State private var persistenceFailure: PersistenceFailure?
+    @State private var selectedScriptureReference: ScriptureRef?
+
+    init(existingNote: UserNote?) {
+        self.existingNote = existingNote
+        _title = State(initialValue: existingNote?.title ?? "")
+        _noteText = State(initialValue: Self.loadFormattedContent(from: existingNote))
+    }
+
+    var body: some View {
+        Form {
+            Section("Title") {
+                TextField("Note title", text: $title)
+                    .font(.title3.weight(.semibold))
+                    .accessibilityLabel("Note title")
+            }
+
+            Section("Note") {
+                NoteFormattingBar(
+                    toggleBold: { toggleFontTrait(\.isBold) },
+                    toggleUnderline: toggleUnderline,
+                    toggleItalic: { toggleFontTrait(\.isItalic) },
+                    toggleStrikethrough: toggleStrikethrough,
+                    insertBullet: insertBullet
+                )
+
+                TextEditor(text: $noteText, selection: $noteSelection)
+                    .frame(minHeight: 380)
+                    .accessibilityLabel("Note")
+                    .environment(\.openURL, OpenURLAction { url in
+                        guard let reference = BibleReferenceLinker.parse(url: url) else {
+                            return .systemAction(url)
+                        }
+                        selectedScriptureReference = reference
+                        return .handled
+                    })
+            }
+
+            if existingNote != nil {
+                Section {
+                    Button("Delete Note", role: .destructive, action: deleteNote)
+                }
+            }
+        }
+        .navigationTitle(existingNote == nil ? "New Note" : "Edit Note")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") { dismiss() }
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Save", action: save)
+                    .disabled(trimmedTitle.isEmpty && trimmedNote.isEmpty)
+            }
+        }
+        .persistenceFailureAlert(failure: $persistenceFailure)
+        .onAppear(perform: linkScriptureReferences)
+        .onChange(of: String(noteText.characters)) { _, _ in
+            linkScriptureReferences()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .openScripturePreview)) { notification in
+            guard let url = notification.object as? URL,
+                  let reference = BibleReferenceLinker.parse(url: url) else { return }
+            selectedScriptureReference = reference
+        }
+        .sheet(item: $selectedScriptureReference) { reference in
+            ScriptureReferencePreview(
+                reference: reference,
+                copyAction: { copyScripture(reference) },
+                openAction: { openScripture(reference) }
+            )
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+        }
+    }
+
+    private var trimmedTitle: String {
+        title.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var trimmedNote: String {
+        String(noteText.characters).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func loadFormattedContent(from note: UserNote?) -> AttributedString {
+        guard let note else { return AttributedString() }
+        if let data = note.formattedContent,
+           let formatted = try? JSONDecoder().decode(AttributedString.self, from: data) {
+            return formatted
+        }
+        return AttributedString(note.content)
+    }
+
+    private func linkScriptureReferences() {
+        let linked = BibleReferenceLinker.linkify(noteText)
+        guard linked != noteText else { return }
+        noteText = linked
+    }
+
+    private func copyScripture(_ reference: ScriptureRef) {
+        guard let passage = BibleReferenceLinker.loadVerses(for: reference),
+              !passage.verses.isEmpty else { return }
+        let text = passage.verses.map(\.text).joined(separator: " ")
+        UIPasteboard.general.string = "\(text)\n\(passage.title)"
+        Haptics.success()
+    }
+
+    private func openScripture(_ reference: ScriptureRef) {
+        selectedScriptureReference = nil
+        dismiss()
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(
+                name: .openBibleReference,
+                object: nil,
+                userInfo: [
+                    "book": reference.bookName,
+                    "chapter": reference.chapter,
+                    "verse": reference.startVerse
+                ]
+            )
+        }
+    }
+
+    private func toggleFontTrait(_ trait: KeyPath<Font.Resolved, Bool>) {
+        let resolvedFont = (noteSelection.typingAttributes(in: noteText).font ?? .body)
+            .resolve(in: fontResolutionContext)
+        let shouldEnable = !resolvedFont[keyPath: trait]
+        noteText.transformAttributes(in: &noteSelection) {
+            let font = $0.font ?? .body
+            if trait == \.isBold {
+                $0.font = font.bold(shouldEnable)
+            } else {
+                $0.font = font.italic(shouldEnable)
+            }
+        }
+    }
+
+    private func toggleUnderline() {
+        let shouldEnable = noteSelection.typingAttributes(in: noteText).underlineStyle == nil
+        noteText.transformAttributes(in: &noteSelection) {
+            $0.underlineStyle = shouldEnable ? .single : nil
+        }
+    }
+
+    private func toggleStrikethrough() {
+        let shouldEnable = noteSelection.typingAttributes(in: noteText).strikethroughStyle == nil
+        noteText.transformAttributes(in: &noteSelection) {
+            $0.strikethroughStyle = shouldEnable ? .single : nil
+        }
+    }
+
+    private func insertBullet() {
+        noteText.replaceSelection(&noteSelection, withCharacters: "• ")
+    }
+
+    private func save() {
+        ModelContextPersistence.perform(
+            in: modelContext,
+            operation: {
+                let note = existingNote ?? UserNote()
+                note.title = trimmedTitle
+                note.content = trimmedNote
+                note.formattedContent = try JSONEncoder().encode(noteText)
+                note.updatedAt = Date()
+                if existingNote == nil {
+                    modelContext.insert(note)
+                }
+                try modelContext.save()
+            },
+            onSuccess: {
+                Haptics.success()
+                dismiss()
+            },
+            onFailure: { persistenceFailure = $0 }
+        )
+    }
+
+    private func deleteNote() {
+        guard let existingNote else { return }
+        ModelContextPersistence.perform(
+            in: modelContext,
+            operation: {
+                modelContext.delete(existingNote)
+                try modelContext.save()
+            },
+            onSuccess: {
+                Haptics.selection()
+                dismiss()
+            },
+            onFailure: { persistenceFailure = $0 }
+        )
     }
 }

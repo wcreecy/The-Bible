@@ -38,3 +38,19 @@ final class VerseNote {
         self.highlightColor = highlightColor
     }
 }
+
+@Model
+final class UserNote {
+    var title: String = ""
+    var content: String = ""
+    /// Encoded `AttributedString` data. `content` remains the searchable plain-text copy.
+    var formattedContent: Data?
+    // Optionals keep the model compatible with the app's CloudKit-backed store.
+    var createdAt: Date?
+    var updatedAt: Date?
+
+    init() {
+        createdAt = Date()
+        updatedAt = Date()
+    }
+}
