@@ -246,6 +246,7 @@ struct WordleView: View {
   var body: some View {
     GeometryReader { geometry in
       let usesWideLayout = started && geometry.size.width >= 900
+      let usesCompactPhoneLayout = started && geometry.size.width < 600
       let correctLetters = Self.alphabet.filter {
         keyboardStates[$0] == .correct || keyboardStates[$0] == .present
       }
@@ -296,7 +297,9 @@ struct WordleView: View {
               )
             } board: {
               boardView(
-                tileSize: usesWideLayout && !(roundOver || showsOnScreenKeyboard) ? 68 : 48
+                tileSize: usesWideLayout && !(roundOver || showsOnScreenKeyboard)
+                  ? 68
+                  : (usesCompactPhoneLayout ? 42 : 48)
               )
             } feedback: {
               VStack(spacing: 10) {
@@ -317,36 +320,25 @@ struct WordleView: View {
                 otherTriedLetters: otherTriedLetters
               )
             } inputControls: {
-              VStack(spacing: 10) {
+              VStack(spacing: usesCompactPhoneLayout ? 6 : 10) {
                 if roundOver {
                   endOfRoundActionArea()
                 } else {
-                  keyboardView(keyHeight: usesWideLayout ? 60 : 48)
+                  keyboardView(
+                    keyHeight: usesWideLayout ? 60 : (usesCompactPhoneLayout ? 40 : 48)
+                  )
 
-                  Button(action: submitGuess) {
-                    Label("Enter", systemImage: "return")
-                      .labelStyle(.titleAndIcon)
-                      .font(.headline)
-                      .frame(maxWidth: .infinity)
-                  }
-                  .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
-                  .disabled(!isCurrentRowFull())
-                  .accessibilityLabel("Enter")
-
-                  if !usesWideLayout {
-                    Button(
-                      role: .destructive,
-                      action: {
-                        confirmReveal = true
-                      }
-                    ) {
-                      Label("Reveal Word", systemImage: "eye")
-                        .labelStyle(.titleAndIcon)
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
+                  if usesCompactPhoneLayout {
+                    HStack(spacing: 8) {
+                      enterButton()
+                      revealButton()
                     }
-                    .buttonStyle(GameKeyButtonStyle(tint: .red))
-                    .accessibilityLabel("Reveal Word. Counts as a loss.")
+                  } else {
+                    enterButton()
+
+                    if !usesWideLayout {
+                      revealButton()
+                    }
                   }
 
                   if debugAutoWinEnabled {
@@ -760,6 +752,34 @@ struct WordleView: View {
             if isNextInput { parts.append("next letter") }
             return parts.joined(separator: ", ")
         }
+    }
+
+    private func enterButton() -> some View {
+        Button(action: submitGuess) {
+            Label("Enter", systemImage: "return")
+                .labelStyle(.titleAndIcon)
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
+        .disabled(!isCurrentRowFull())
+        .accessibilityLabel("Enter")
+    }
+
+    private func revealButton() -> some View {
+        Button(
+            role: .destructive,
+            action: {
+                confirmReveal = true
+            }
+        ) {
+            Label("Reveal Word", systemImage: "eye")
+                .labelStyle(.titleAndIcon)
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(GameKeyButtonStyle(tint: .red))
+        .accessibilityLabel("Reveal Word. Counts as a loss.")
     }
 
     // MARK: - On-screen keyboard
