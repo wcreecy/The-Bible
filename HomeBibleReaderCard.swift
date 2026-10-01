@@ -4,10 +4,14 @@ struct HomeBibleReaderCard: View {
     @AppStorage("homeBibleReaderBook") private var selectedBookName: String = "Genesis"
     @AppStorage("homeBibleReaderChapter") private var selectedChapterNumber: Int = 1
     @AppStorage("homeBibleReaderVerse") private var selectedVerseNumber: Int = 1
+    @AppStorage("homeBibleReaderContentHeight") private var preferredContentHeight: Double = 0
 
     @State private var book: Book?
     @State private var isLoading = true
     @State private var showsScripturePicker = false
+    @State private var currentContentHeight: CGFloat = 0
+    @State private var resizeStartHeight: CGFloat?
+    @State private var liveResizeHeight: CGFloat?
 
     private var chapter: Chapter? {
         book?.chapters.first(where: { $0.number == selectedChapterNumber })
@@ -98,9 +102,29 @@ struct HomeBibleReaderCard: View {
                     )
                 }
             }
-            .frame(minHeight: 520, maxHeight: 720)
+            .containerRelativeFrame(.vertical, alignment: .top) { availableHeight, _ in
+                readerContentHeight(availableHeight: availableHeight)
+            }
+            .onGeometryChange(for: CGFloat.self) { proxy in
+                proxy.size.height
+            } action: { height in
+                currentContentHeight = height
+            }
             .contentShape(Rectangle())
             .simultaneousGesture(chapterSwipeGesture)
+
+            Image(systemName: "line.3.horizontal")
+                .font(.body.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity)
+                .frame(height: 28)
+                .contentShape(Rectangle())
+                .gesture(resizeGesture)
+                .accessibilityLabel("Resize Bible reader")
+                .accessibilityHint("Drag up or down to change the reader height")
+                .accessibilityAdjustableAction { direction in
+                    resizeReader(for: direction)
+                }
 
             Divider()
 
@@ -176,6 +200,64 @@ struct HomeBibleReaderCard: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Verse \(verse.number). \(verse.text)")
         .accessibilityHint("Long press to open this verse in the Bible tab")
+    }
+
+    private static let minimumContentHeight: CGFloat = 240
+    private static let maximumContentHeight: CGFloat = 900
+
+    private func readerContentHeight(availableHeight: CGFloat) -> CGFloat {
+        if let liveResizeHeight {
+            return clampedContentHeight(liveResizeHeight)
+        }
+
+        if preferredContentHeight > 0 {
+            return clampedContentHeight(CGFloat(preferredContentHeight))
+        }
+
+        // The default adapts to the window so the chapter controls remain visible.
+        return clampedContentHeight(min(520, availableHeight - 392))
+    }
+
+    private func clampedContentHeight(_ height: CGFloat) -> CGFloat {
+        min(Self.maximumContentHeight, max(Self.minimumContentHeight, height))
+    }
+
+    private var resizeGesture: some Gesture {
+        DragGesture(minimumDistance: 1)
+            .onChanged { value in
+                let startHeight = resizeStartHeight ?? currentContentHeight
+                if resizeStartHeight == nil {
+                    resizeStartHeight = startHeight
+                }
+                liveResizeHeight = clampedContentHeight(startHeight + value.translation.height)
+            }
+            .onEnded { value in
+                let startHeight = resizeStartHeight ?? currentContentHeight
+                let finalHeight = clampedContentHeight(startHeight + value.translation.height)
+                preferredContentHeight = Double(finalHeight)
+                resizeStartHeight = nil
+                liveResizeHeight = nil
+                Haptics.selection()
+            }
+    }
+
+    private func resizeReader(for direction: AccessibilityAdjustmentDirection) {
+        let startingHeight = preferredContentHeight > 0
+            ? CGFloat(preferredContentHeight)
+            : currentContentHeight
+        let adjustment: CGFloat
+
+        switch direction {
+        case .increment:
+            adjustment = 60
+        case .decrement:
+            adjustment = -60
+        @unknown default:
+            return
+        }
+
+        preferredContentHeight = Double(clampedContentHeight(startingHeight + adjustment))
+        Haptics.selection()
     }
 
     private var chapterSwipeGesture: some Gesture {
