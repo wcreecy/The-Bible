@@ -46,43 +46,66 @@ struct HomeLayoutEditorView: View {
         onDone()
     }
 
-    private func moveDroppedCards(_ rawIDs: [String], before target: HomeCardID?, inMain: Bool) -> Bool {
-        let movedCards = rawIDs.compactMap(HomeCardID.init(rawValue:)).filter { $0 != .verseOfDay }
-        guard !movedCards.isEmpty else { return false }
-
-        var destinationCards = inMain ? mainCards : showMoreCards
-        destinationCards.removeAll { movedCards.contains($0) }
-
-        let insertionIndex = target.flatMap { destinationCards.firstIndex(of: $0) } ?? destinationCards.endIndex
-        destinationCards.insert(contentsOf: movedCards, at: insertionIndex)
-
-        if inMain {
-            mainSet.formUnion(movedCards)
-        } else {
-            mainSet.subtract(movedCards)
+    private func moveCard(_ id: HomeCardID, by offset: Int) {
+        if !allowsShowMore {
+            guard id != .verseOfDay else { return }
+            var cards = [.verseOfDay] + order.filter { $0 != .verseOfDay }
+            guard let index = cards.firstIndex(of: id) else { return }
+            let destination = index + offset
+            guard destination > 0, cards.indices.contains(destination) else { return }
+            cards.swapAt(index, destination)
+            order = cards
+            onDone()
+            return
         }
 
-        let reorderedMain = inMain ? destinationCards : mainCards
-        let reorderedShowMore = inMain ? showMoreCards : destinationCards
-        order = reorderedMain + reorderedShowMore
+        var main = mainCards
+        var more = showMoreCards
+        if let index = main.firstIndex(of: id) {
+            let destination = index + offset
+            if main.indices.contains(destination) {
+                main.swapAt(index, destination)
+            } else if offset > 0 && index == main.index(before: main.endIndex) {
+                main.remove(at: index)
+                more.insert(id, at: more.startIndex)
+                mainSet.remove(id)
+            } else {
+                return
+            }
+        } else if let index = more.firstIndex(of: id) {
+            let destination = index + offset
+            if more.indices.contains(destination) {
+                more.swapAt(index, destination)
+            } else if offset < 0 && index == more.startIndex {
+                more.remove(at: index)
+                main.append(id)
+                mainSet.insert(id)
+            } else {
+                return
+            }
+        } else {
+            return
+        }
+        order = main + more
         onDone()
-        return true
     }
 
-    @ViewBuilder
-    private func reorderableRow(for id: HomeCardID, inMain: Bool) -> some View {
-        if id == .verseOfDay {
-            layoutRow(for: id)
-                .dropDestination(for: String.self) { rawIDs, _ in
-                    _ = moveDroppedCards(rawIDs, before: id, inMain: inMain)
-                }
-        } else {
-            layoutRow(for: id)
-                .draggable(id.rawValue)
-                .dropDestination(for: String.self) { rawIDs, _ in
-                    _ = moveDroppedCards(rawIDs, before: id, inMain: inMain)
-                }
+    private func canMoveUp(_ id: HomeCardID) -> Bool {
+        if !allowsShowMore {
+            let cards = [.verseOfDay] + order.filter { $0 != .verseOfDay }
+            return id != .verseOfDay && cards.firstIndex(of: id).map { $0 > 1 } == true
         }
+        if let index = mainCards.firstIndex(of: id) { return index > 0 }
+        return showMoreCards.contains(id)
+    }
+
+    private func canMoveDown(_ id: HomeCardID) -> Bool {
+        if !allowsShowMore {
+            let cards = [.verseOfDay] + order.filter { $0 != .verseOfDay }
+            return id != .verseOfDay && cards.firstIndex(of: id).map { $0 < cards.count - 1 } == true
+        }
+        if let index = mainCards.firstIndex(of: id) { return index < mainCards.count - 1 || allowsShowMore }
+        return showMoreCards.firstIndex(of: id).map { $0 < showMoreCards.count - 1 } == true
     }
 
     private func layoutRow(for id: HomeCardID) -> some View {
@@ -108,6 +131,27 @@ struct HomeLayoutEditorView: View {
             .buttonStyle(.plain)
             .accessibilityLabel("\(isVisible(id) ? "Hide" : "Show") \(id.title)")
             .accessibilityHint("Changes whether this card is available on Home")
+
+            HStack(spacing: 4) {
+                Button {
+                    moveCard(id, by: -1)
+                } label: {
+                    Image(systemName: "chevron.up")
+                        .frame(width: 28, height: 32)
+                }
+                .disabled(!canMoveUp(id))
+                .accessibilityLabel("Move \(id.title) up")
+
+                Button {
+                    moveCard(id, by: 1)
+                } label: {
+                    Image(systemName: "chevron.down")
+                        .frame(width: 28, height: 32)
+                }
+                .disabled(!canMoveDown(id))
+                .accessibilityLabel("Move \(id.title) down")
+            }
+            .buttonStyle(.plain)
         }
     }
 
@@ -131,41 +175,34 @@ struct HomeLayoutEditorView: View {
                 ContextualTipView(
                     title: "Make Home yours",
                     message: allowsShowMore
-                        ? "Drag cards to reorder them or move them between Main Home and Show More."
-                        : "Use the eye buttons to show or hide cards, and drag to reorder them.",
+                        ? "Use the arrow buttons to reorder cards or move them between Main Home and Show More."
+                        : "Use the eye buttons to show or hide cards, and the arrows to reorder them.",
                     systemImage: "rectangle.grid.1x2"
                 )
                 .listRowSeparator(.hidden)
             }
 
             Section {
-                ForEach(allowsShowMore ? mainCards : order) { id in
-                    reorderableRow(for: id, inMain: true)
+                ForEach(allowsShowMore ? mainCards : [.verseOfDay] + order.filter { $0 != .verseOfDay }) { id in
+                    layoutRow(for: id)
                 }
             } header: {
                 Label(allowsShowMore ? "Main Home" : "Home Cards", systemImage: "house")
             } footer: {
                 Text(allowsShowMore
-                    ? "Shown cards appear directly on Home. Drag a card here to move it from Show More."
-                    : "Shown cards appear on Home. Drag to choose their order.")
+                    ? "Shown cards appear directly on Home. Use the arrows to arrange them."
+                    : "Shown cards appear on Home. Use the arrows to choose their order.")
             }
 
             if allowsShowMore {
                 Section {
-                    if showMoreCards.isEmpty {
-                        Label("Drag cards here", systemImage: "square.and.arrow.down")
-                            .foregroundStyle(.secondary)
-                            .dropDestination(for: String.self) { rawIDs, _ in
-                                _ = moveDroppedCards(rawIDs, before: nil, inMain: false)
-                            }
-                    }
                     ForEach(showMoreCards) { id in
-                        reorderableRow(for: id, inMain: false)
+                        layoutRow(for: id)
                     }
                 } header: {
                     Label("Inside Show More", systemImage: "square.grid.2x2")
                 } footer: {
-                    Text("Shown cards become visible only after Show More is expanded. Drag a card here to move it from Main Home.")
+                    Text("Shown cards become visible only after Show More is expanded. Use the arrows to arrange them.")
                 }
             }
 
