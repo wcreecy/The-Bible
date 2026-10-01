@@ -98,6 +98,8 @@ struct WordleView: View {
     // MARK: - Persistent WORD streak helpers (overall, survives app relaunch)
     private let persistentStreakKey = "wordlePersistentStreak"
     private let persistentBestStreakKey = "wordlePersistentBestStreak"
+    private let practiceWordBagKey = "wordlePracticeWordBag"
+    private let lastPracticeWordKey = "wordleLastPracticeWord"
 
     private func readPersistentStreak() -> Int {
         return max(0, UserDefaults.standard.integer(forKey: persistentStreakKey))
@@ -147,6 +149,19 @@ struct WordleView: View {
     }
 
     // MARK: - Answer pool from KJV (5-letter A–Z words, filtered by spell checker when available)
+    #if canImport(UIKit)
+    private static var spellCheckLanguage: String {
+        let languages = UITextChecker.availableLanguages
+
+        return languages.first {
+            $0.replacingOccurrences(of: "-", with: "_")
+                .caseInsensitiveCompare("en_US") == .orderedSame
+        } ?? languages.first {
+            $0.lowercased().hasPrefix("en")
+        } ?? "en_US"
+    }
+    #endif
+
     private static let kjvAnswerWords: [String] = {
         var set = Set<String>() // uppercase tokens
         for book in BibleData.books {
@@ -161,7 +176,7 @@ struct WordleView: View {
         }
 
         #if canImport(UIKit)
-        let lang = UITextChecker.availableLanguages.first(where: { $0.hasPrefix("en") }) ?? "en_US"
+        let lang = spellCheckLanguage
         let checker = UITextChecker()
         func passesSpellCheck(_ upper: String) -> Bool {
             let lower = upper.lowercased()
@@ -276,12 +291,8 @@ struct WordleView: View {
               availableHeight: geometry.size.height - 24,
               showsKeyboardCard: roundOver || showsOnScreenKeyboard,
               showsBoardCardSecond: showsBoardCardSecond,
-              canRevealWord: !roundOver,
               toggleKeyboardCard: {
                 showsOnScreenKeyboard.toggle()
-              },
-              revealWord: {
-                confirmReveal = true
               },
               swapCards: {
                 showsBoardCardSecond.toggle()
@@ -325,21 +336,8 @@ struct WordleView: View {
                   endOfRoundActionArea()
                 } else {
                   keyboardView(
-                    keyHeight: usesWideLayout ? 60 : (usesCompactPhoneLayout ? 40 : 48)
+                    keyHeight: usesWideLayout ? 60 : (usesCompactPhoneLayout ? 32 : 48)
                   )
-
-                  if usesCompactPhoneLayout {
-                    HStack(spacing: 8) {
-                      enterButton()
-                      revealButton()
-                    }
-                  } else {
-                    enterButton()
-
-                    if !usesWideLayout {
-                      revealButton()
-                    }
-                  }
 
                   if debugAutoWinEnabled {
                     Button("WIN") {
@@ -355,11 +353,8 @@ struct WordleView: View {
           }
         }
         .padding(.top, 8)
-        .padding(.bottom, 16)
+        .padding(.bottom, usesCompactPhoneLayout ? 0 : 16)
       }
-    }
-    .safeAreaInset(edge: .bottom) {
-      Color.clear.frame(height: 6)
     }
     .navigationTitle("WORD")
     .navigationBarTitleDisplayMode(.inline)
@@ -754,34 +749,6 @@ struct WordleView: View {
         }
     }
 
-    private func enterButton() -> some View {
-        Button(action: submitGuess) {
-            Label("Enter", systemImage: "return")
-                .labelStyle(.titleAndIcon)
-                .font(.headline)
-                .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
-        .disabled(!isCurrentRowFull())
-        .accessibilityLabel("Enter")
-    }
-
-    private func revealButton() -> some View {
-        Button(
-            role: .destructive,
-            action: {
-                confirmReveal = true
-            }
-        ) {
-            Label("Reveal Word", systemImage: "eye")
-                .labelStyle(.titleAndIcon)
-                .font(.headline)
-                .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(GameKeyButtonStyle(tint: .red))
-        .accessibilityLabel("Reveal Word. Counts as a loss.")
-    }
-
     // MARK: - On-screen keyboard
     private func keyboardView(keyHeight: CGFloat) -> some View {
         WordleKeyboardView(
@@ -792,7 +759,9 @@ struct WordleView: View {
             canDelete: !currentInput.isEmpty || hasAnyTypedInCurrentRow(),
             keyHeight: keyHeight,
             onLetter: tapLetter,
-            onDelete: deleteLetter
+            onDelete: deleteLetter,
+            onEnter: submitGuess,
+            onReveal: { confirmReveal = true }
         )
     }
 
@@ -805,6 +774,8 @@ struct WordleView: View {
         let keyHeight: CGFloat
         let onLetter: (Character) -> Void
         let onDelete: () -> Void
+        let onEnter: () -> Void
+        let onReveal: () -> Void
 
         private var rows: [[Character]] {
             if usesABCLayout {
@@ -813,12 +784,20 @@ struct WordleView: View {
             return [Array("QWERTYUIOP"), Array("ASDFGHJKL"), Array("ZXCVBNM")]
         }
 
+        private var rowSpacing: CGFloat {
+            keyHeight <= 32 ? 5 : 8
+        }
+
+        private var keySpacing: CGFloat {
+            keyHeight <= 32 ? 4 : 6
+        }
+
         var body: some View {
-            VStack(spacing: 8) {
+            VStack(spacing: rowSpacing) {
                 keyboardRow(rows[0])
                 keyboardRow(rows[1])
 
-                HStack(spacing: 6) {
+                HStack(spacing: keySpacing) {
                     Button {
                         usesABCLayout.toggle()
                     } label: {
@@ -839,17 +818,46 @@ struct WordleView: View {
                             .font(.headline)
                             .frame(maxWidth: .infinity, minHeight: keyHeight)
                     }
-                    .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
+                    .buttonStyle(.glass(.regular.tint(.orange)))
                     .disabled(isRoundOver || !canDelete)
                     .accessibilityLabel("Backspace")
                 }
+
+                GeometryReader { geometry in
+                    let keyWidth = (geometry.size.width - (8 * keySpacing)) / 9
+
+                    HStack(spacing: keySpacing) {
+                        Button(action: onReveal) {
+                            Image(systemName: "eye")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity, minHeight: keyHeight)
+                        }
+                        .buttonStyle(GameKeyButtonStyle(tint: .red))
+                        .frame(width: keyWidth)
+                        .disabled(isRoundOver)
+                        .accessibilityLabel("Reveal Word. Counts as a loss.")
+
+                        Button(action: onEnter) {
+                            Label("Enter", systemImage: "return")
+                                .labelStyle(.titleAndIcon)
+                                .font(.headline)
+                                .frame(maxWidth: .infinity, minHeight: keyHeight)
+                        }
+                        .buttonStyle(
+                            GameKeyButtonStyle(tint: isCurrentRowFull ? .green : .gray)
+                        )
+                        .disabled(isRoundOver || !isCurrentRowFull)
+                        .accessibilityLabel("Enter")
+                    }
+                }
+                .frame(height: keyHeight + 16)
             }
             .accessibilityElement(children: .contain)
             .padding(.top, 6)
         }
 
         private func keyboardRow(_ characters: [Character]) -> some View {
-            HStack(spacing: 6) {
+            HStack(spacing: keySpacing) {
                 ForEach(characters, id: \.self) { character in
                     keyButton(for: character)
                 }
@@ -1121,6 +1129,31 @@ struct WordleView: View {
     }
 
     // MARK: - Rounds
+    private func nextPracticeWord() -> String {
+        let pool = Self.filteredAnswerWords
+        guard !pool.isEmpty else { return "JESUS" }
+
+        let defaults = UserDefaults.standard
+        let eligibleWords = Set(pool)
+        var bag = (defaults.stringArray(forKey: practiceWordBagKey) ?? [])
+            .filter { eligibleWords.contains($0) }
+
+        if bag.isEmpty {
+            bag = pool.shuffled()
+
+            if bag.count > 1,
+               let lastWord = defaults.string(forKey: lastPracticeWordKey),
+               bag.last == lastWord {
+                bag.swapAt(0, bag.count - 1)
+            }
+        }
+
+        let nextWord = bag.removeLast()
+        defaults.set(bag, forKey: practiceWordBagKey)
+        defaults.set(nextWord, forKey: lastPracticeWordKey)
+        return nextWord
+    }
+
     private func startNewRound(practice: Bool) {
         guesses = Array(repeating: "", count: 6)
         evaluations = Array(repeating: Array(repeating: .unknown, count: 5), count: 6)
@@ -1140,7 +1173,7 @@ struct WordleView: View {
         lastRoundElapsedSeconds = nil
 
         if practice {
-            target = Self.filteredAnswerWords.randomElement() ?? "JESUS"
+            target = nextPracticeWord()
         } else {
             target = wordOfDay()
         }
@@ -1245,7 +1278,7 @@ struct WordleView: View {
             return false
         }
         #if canImport(UIKit)
-        let lang = UITextChecker.availableLanguages.first(where: { $0.hasPrefix("en") }) ?? "en_US"
+        let lang = Self.spellCheckLanguage
         let checker = UITextChecker()
         let range = NSRange(location: 0, length: lower.utf16.count)
         let misspelled = checker.rangeOfMisspelledWord(in: lower, range: range, startingAt: 0, wrap: false, language: lang)
@@ -1414,9 +1447,7 @@ private struct WordGameResponsiveLayout<
   let availableHeight: CGFloat
   let showsKeyboardCard: Bool
   let showsBoardCardSecond: Bool
-  let canRevealWord: Bool
   let toggleKeyboardCard: () -> Void
-  let revealWord: () -> Void
   let swapCards: () -> Void
   let scoreboard: Scoreboard
   let board: Board
@@ -1429,9 +1460,7 @@ private struct WordGameResponsiveLayout<
     availableHeight: CGFloat,
     showsKeyboardCard: Bool,
     showsBoardCardSecond: Bool,
-    canRevealWord: Bool,
     toggleKeyboardCard: @escaping () -> Void,
-    revealWord: @escaping () -> Void,
     swapCards: @escaping () -> Void,
     @ViewBuilder scoreboard: () -> Scoreboard,
     @ViewBuilder board: () -> Board,
@@ -1443,9 +1472,7 @@ private struct WordGameResponsiveLayout<
     self.availableHeight = availableHeight
     self.showsKeyboardCard = showsKeyboardCard
     self.showsBoardCardSecond = showsBoardCardSecond
-    self.canRevealWord = canRevealWord
     self.toggleKeyboardCard = toggleKeyboardCard
-    self.revealWord = revealWord
     self.swapCards = swapCards
     self.scoreboard = scoreboard()
     self.board = board()
@@ -1500,16 +1527,6 @@ private struct WordGameResponsiveLayout<
     VStack(spacing: 16) {
       HStack {
         Spacer()
-
-        if canRevealWord {
-          Button(role: .destructive, action: revealWord) {
-            Label("Reveal Word", systemImage: "eye")
-          }
-          .labelStyle(.iconOnly)
-          .buttonStyle(.bordered)
-          .controlSize(.small)
-          .accessibilityHint("Counts as a loss")
-        }
 
         Button(action: swapCards) {
           Label("Swap Cards", systemImage: "arrow.left.arrow.right")
