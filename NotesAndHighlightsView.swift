@@ -58,7 +58,7 @@ struct VerseNoteEditorView: View {
             initialValue: existingNote.flatMap { VerseHighlightColor(rawValue: $0.highlightColor) }
         )
         _selectedCategory = State(
-            initialValue: existingNote.flatMap { NoteCategory(rawValue: $0.categoryRawValue) } ?? .sermon
+            initialValue: existingNote.flatMap { NoteCategory(rawValue: $0.categoryRawValue) } ?? .scripture
         )
     }
 
@@ -503,17 +503,41 @@ private enum NotesTabSort: String, CaseIterable, Identifiable {
 }
 
 private enum NotesFilter: String, CaseIterable, Identifiable {
-    case scripture
+    case sermon
     case personal
-    case all
+    case scripture
 
     var id: String { rawValue }
 
     var title: LocalizedStringResource {
         switch self {
-        case .scripture: "Sermon Notes"
-        case .personal: "Personal"
-        case .all: "All Notes"
+        case .sermon: "Sermon Notes"
+        case .personal: "Personal Notes"
+        case .scripture: "Scripture Notes"
+        }
+    }
+}
+
+private enum NotesHighlightFilter: String, CaseIterable, Identifiable {
+    case all
+    case none
+    case yellow
+    case green
+    case blue
+    case pink
+    case purple
+
+    var id: String { rawValue }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .all: "All Highlight Colors"
+        case .none: "No Highlight"
+        case .yellow: "Yellow"
+        case .green: "Green"
+        case .blue: "Blue"
+        case .pink: "Pink"
+        case .purple: "Purple"
         }
     }
 }
@@ -524,50 +548,39 @@ struct NotesAndHighlightsView: View {
     @Query(sort: \UserNote.updatedAt, order: .reverse) private var userNotes: [UserNote]
 
     @AppStorage("notesTabSort") private var sortRawValue = NotesTabSort.modifiedNewest.rawValue
-    @State private var selectedFilter = NotesFilter.all
+    @State private var selectedFilter = NotesFilter.scripture
+    @State private var highlightFilter = NotesHighlightFilter.all
     @State private var searchText = ""
     @State private var selectedScriptureNote: VerseNote?
     @State private var selectedUserNote: UserNote?
     @State private var isCreatingNote = false
+    @State private var isEditingSelection = false
 
     var body: some View {
         VStack(spacing: 12) {
             NotesFilterPicker(selection: $selectedFilter)
 
-            if selectedFilter == .all {
-                VStack(spacing: 12) {
-                    NotesCollectionCard(
-                        filter: .scripture,
-                        scriptureNotes: visibleScriptureNotes.filter {
-                            $0.categoryRawValue == NoteCategory.sermon.rawValue
-                        },
-                        userNotes: visibleUserNotes.filter {
-                            $0.categoryRawValue == NoteCategory.sermon.rawValue
-                        },
+            GeometryReader { proxy in
+                HStack(spacing: 16) {
+                    NotesListCard(
+                        scriptureNotes: visibleScriptureNotes,
+                        userNotes: visibleUserNotes,
                         selectedScriptureNote: $selectedScriptureNote,
                         selectedUserNote: $selectedUserNote
                     )
+                    .frame(width: max(240, (proxy.size.width - 16) / 3))
 
-                    NotesCollectionCard(
-                        filter: .personal,
-                        scriptureNotes: visibleScriptureNotes.filter {
-                            $0.categoryRawValue == NoteCategory.personal.rawValue
-                        },
-                        userNotes: visibleUserNotes.filter {
-                            $0.categoryRawValue == NoteCategory.personal.rawValue
-                        },
-                        selectedScriptureNote: $selectedScriptureNote,
-                        selectedUserNote: $selectedUserNote
+                    NoteDetailCard(
+                        scriptureNote: selectedScriptureNote,
+                        userNote: selectedUserNote,
+                        editAction: { isEditingSelection = true },
+                        openInBibleAction: {
+                            guard let selectedScriptureNote else { return }
+                            open(selectedScriptureNote)
+                        }
                     )
+                    .frame(maxWidth: .infinity)
                 }
-            } else {
-                NotesCollectionCard(
-                    filter: selectedFilter,
-                    scriptureNotes: visibleScriptureNotes,
-                    userNotes: visibleUserNotes,
-                    selectedScriptureNote: $selectedScriptureNote,
-                    selectedUserNote: $selectedUserNote
-                )
             }
         }
         .padding(.horizontal)
@@ -578,6 +591,14 @@ struct NotesAndHighlightsView: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Menu {
+                    Picker("Highlight Color", selection: $highlightFilter) {
+                        ForEach(NotesHighlightFilter.allCases) { option in
+                            Text(option.title).tag(option)
+                        }
+                    }
+
+                    Divider()
+
                     Picker("Sort By", selection: $sortRawValue) {
                         ForEach(NotesTabSort.allCases) { option in
                             Text(option.title).tag(option.rawValue)
@@ -586,7 +607,7 @@ struct NotesAndHighlightsView: View {
                 } label: {
                     Label("Sort", systemImage: "arrow.up.arrow.down")
                 }
-                .accessibilityLabel("Sort notes")
+                .accessibilityLabel("Filter and sort notes")
 
                 Button {
                     isCreatingNote = true
@@ -600,41 +621,38 @@ struct NotesAndHighlightsView: View {
             NavigationStack {
                 UserNoteEditorView(
                     existingNote: nil,
-                    defaultCategory: selectedFilter == .scripture ? .sermon : .personal
+                    defaultCategory: noteCategory
                 )
             }
         }
-        .fullScreenCover(item: $selectedScriptureNote) { note in
+        .fullScreenCover(isPresented: $isEditingSelection) {
             NavigationStack {
-                VerseNoteEditorView(
-                    verse: VerseActionReference(
-                        bookName: note.bookName,
-                        chapterNumber: note.chapterNumber,
-                        verseNumber: note.verseNumber,
-                        verseText: note.verseText
-                    ),
-                    existingNote: note
-                )
-                .toolbar {
-                    ToolbarItem(placement: .bottomBar) {
-                        Button("Open in Bible", systemImage: "book") {
-                            selectedScriptureNote = nil
-                            open(note)
-                        }
-                    }
+                if let selectedScriptureNote {
+                    VerseNoteEditorView(
+                        verse: VerseActionReference(
+                            bookName: selectedScriptureNote.bookName,
+                            chapterNumber: selectedScriptureNote.chapterNumber,
+                            verseNumber: selectedScriptureNote.verseNumber,
+                            verseText: selectedScriptureNote.verseText
+                        ),
+                        existingNote: selectedScriptureNote
+                    )
+                } else if let selectedUserNote {
+                    UserNoteEditorView(existingNote: selectedUserNote)
                 }
             }
         }
-        .fullScreenCover(item: $selectedUserNote) { note in
-            NavigationStack {
-                UserNoteEditorView(existingNote: note)
-            }
-        }
+        .onAppear(perform: selectFirstVisibleNoteIfNeeded)
+        .onChange(of: selectedFilter) { _, _ in selectFirstVisibleNote() }
+        .onChange(of: highlightFilter) { _, _ in selectFirstVisibleNote() }
+        .onChange(of: sortRawValue) { _, _ in selectFirstVisibleNoteIfNeeded() }
+        .onChange(of: searchText) { _, _ in selectFirstVisibleNoteIfNeeded() }
     }
 
     private var visibleScriptureNotes: [VerseNote] {
         let filtered = scriptureNotes.filter { note in
             matchesSelectedCategory(note.categoryRawValue) &&
+            matchesHighlight(note.highlightColor) &&
             (searchText.isEmpty ||
              note.title.localizedCaseInsensitiveContains(searchText) ||
              note.bookName.localizedCaseInsensitiveContains(searchText) ||
@@ -648,6 +666,7 @@ struct NotesAndHighlightsView: View {
     private var visibleUserNotes: [UserNote] {
         let filtered = userNotes.filter { note in
             matchesSelectedCategory(note.categoryRawValue) &&
+            (highlightFilter == .all || highlightFilter == .none) &&
             (searchText.isEmpty ||
              note.title.localizedCaseInsensitiveContains(searchText) ||
              note.content.localizedCaseInsensitiveContains(searchText))
@@ -656,13 +675,22 @@ struct NotesAndHighlightsView: View {
     }
 
     private func matchesSelectedCategory(_ rawValue: String) -> Bool {
+        rawValue == noteCategory.rawValue
+    }
+
+    private var noteCategory: NoteCategory {
         switch selectedFilter {
-        case .scripture:
-            rawValue == NoteCategory.sermon.rawValue
-        case .personal:
-            rawValue == NoteCategory.personal.rawValue
-        case .all:
-            true
+        case .sermon: .sermon
+        case .personal: .personal
+        case .scripture: .scripture
+        }
+    }
+
+    private func matchesHighlight(_ rawValue: String) -> Bool {
+        switch highlightFilter {
+        case .all: true
+        case .none: rawValue.isEmpty
+        default: rawValue == highlightFilter.rawValue
         }
     }
 
@@ -709,6 +737,24 @@ struct NotesAndHighlightsView: View {
             ]
         )
     }
+
+    private func selectFirstVisibleNoteIfNeeded() {
+        let scriptureSelectionIsVisible = selectedScriptureNote.map { selected in
+            visibleScriptureNotes.contains { $0 === selected }
+        } ?? false
+        let userSelectionIsVisible = selectedUserNote.map { selected in
+            visibleUserNotes.contains { $0 === selected }
+        } ?? false
+
+        if !scriptureSelectionIsVisible && !userSelectionIsVisible {
+            selectFirstVisibleNote()
+        }
+    }
+
+    private func selectFirstVisibleNote() {
+        selectedScriptureNote = visibleScriptureNotes.first
+        selectedUserNote = selectedScriptureNote == nil ? visibleUserNotes.first : nil
+    }
 }
 
 private struct NotesFilterPicker: View {
@@ -725,10 +771,9 @@ private struct NotesFilterPicker: View {
     }
 }
 
-private struct NotesCollectionCard: View {
+private struct NotesListCard: View {
     @Environment(\.modelContext) private var modelContext
 
-    let filter: NotesFilter
     let scriptureNotes: [VerseNote]
     let userNotes: [UserNote]
     @Binding var selectedScriptureNote: VerseNote?
@@ -736,129 +781,189 @@ private struct NotesCollectionCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(cardTitle)
+            Text("Notes")
                 .font(.headline)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, 16)
                 .padding(.top, 16)
-                .padding(.bottom, 4)
+                .padding(.bottom, 8)
 
-            List {
+            ScrollView {
+                LazyVStack(spacing: 4) {
                 if scriptureNotes.isEmpty && userNotes.isEmpty {
                     ContentUnavailableView(
                         "No Notes",
-                        systemImage: filter == .scripture ? "highlighter" : "note.text",
-                        description: Text(emptyStateDescription)
+                        systemImage: "note.text",
+                        description: Text("Try another category, color, date order, or search.")
                     )
-                    .listRowBackground(Color.clear)
+                    .padding(.top, 40)
                 } else {
-                    if !scriptureNotes.isEmpty {
-                        Section {
-                        ForEach(scriptureNotes) { note in
-                            Button {
-                                selectedScriptureNote = note
-                            } label: {
-                                NoteHighlightRow(
-                                    title: note.title,
-                                    reference: "\(note.bookName) \(note.chapterNumber):\(note.verseNumber)",
-                                    verseText: note.verseText,
-                                    noteText: formattedContent(for: note),
-                                    highlight: VerseHighlightColor(rawValue: note.highlightColor),
-                                    createdAt: note.createdAt,
-                                    updatedAt: note.updatedAt
-                                )
-                            }
-                            .buttonStyle(.plain)
-                            .swipeActions {
-                                Button("Delete", systemImage: "trash", role: .destructive) {
-                                    delete(note)
-                                }
-                            }
+                    ForEach(scriptureNotes) { note in
+                        NotesTitleButton(
+                            title: note.title.isEmpty
+                                ? "\(note.bookName) \(note.chapterNumber):\(note.verseNumber)"
+                                : note.title,
+                            highlight: VerseHighlightColor(rawValue: note.highlightColor),
+                            isSelected: selectedScriptureNote === note
+                        ) {
+                            selectedScriptureNote = note
+                            selectedUserNote = nil
+                        }
+                        .contextMenu {
+                            Button("Delete", systemImage: "trash", role: .destructive) { delete(note) }
                         }
                     }
-                }
 
-                    if !userNotes.isEmpty {
-                        Section {
-                        ForEach(userNotes) { note in
-                            Button {
-                                selectedUserNote = note
-                            } label: {
-                                UserNoteRow(
-                                    title: note.title,
-                                    content: formattedContent(for: note),
-                                    createdAt: note.createdAt,
-                                    updatedAt: note.updatedAt
-                                )
-                            }
-                            .buttonStyle(.plain)
-                            .swipeActions {
-                                Button("Delete", systemImage: "trash", role: .destructive) {
-                                    delete(note)
-                                }
-                            }
+                    ForEach(userNotes) { note in
+                        NotesTitleButton(
+                            title: note.title.isEmpty ? "Untitled Note" : note.title,
+                            highlight: nil,
+                            isSelected: selectedUserNote === note
+                        ) {
+                            selectedUserNote = note
+                            selectedScriptureNote = nil
                         }
-                    }
+                        .contextMenu {
+                            Button("Delete", systemImage: "trash", role: .destructive) { delete(note) }
+                        }
                     }
                 }
             }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
+            .padding(.horizontal, 8)
+            .padding(.bottom, 8)
+            }
         }
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24))
-        .overlay {
-            RoundedRectangle(cornerRadius: 24)
-                .stroke(Color.primary.opacity(0.08), lineWidth: 1)
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 24))
+        .heroCardSurface()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private var cardTitle: LocalizedStringKey {
-        switch filter {
-        case .scripture:
-            "Sermon Notes"
-        case .personal:
-            "Personal"
-        case .all:
-            "All Notes"
-        }
-    }
-
-    private var emptyStateDescription: LocalizedStringKey {
-        switch filter {
-        case .scripture:
-            "Press and hold a verse in the Bible tab to add a note or highlight."
-        case .personal:
-            "Tap the plus button to create your first personal note."
-        case .all:
-            "Your scripture and personal notes will appear here."
-        }
-    }
-
-    private func formattedContent(for note: VerseNote) -> AttributedString {
-        if let data = note.formattedContent,
-           let formatted = try? JSONDecoder().decode(AttributedString.self, from: data) {
-            return formatted
-        }
-        return AttributedString(note.content)
-    }
-
-    private func formattedContent(for note: UserNote) -> AttributedString {
-        if let data = note.formattedContent,
-           let formatted = try? JSONDecoder().decode(AttributedString.self, from: data) {
-            return formatted
-        }
-        return AttributedString(note.content)
-    }
-
     private func delete(_ note: VerseNote) {
+        if selectedScriptureNote === note {
+            selectedScriptureNote = nil
+        }
         modelContext.delete(note)
         try? modelContext.save()
     }
 
     private func delete(_ note: UserNote) {
+        if selectedUserNote === note {
+            selectedUserNote = nil
+        }
         modelContext.delete(note)
         try? modelContext.save()
+    }
+}
+
+private struct NotesTitleButton: View {
+    let title: String
+    let highlight: VerseHighlightColor?
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Circle()
+                    .fill(highlight?.color ?? .secondary.opacity(0.25))
+                    .frame(width: 8, height: 8)
+
+                Text(title)
+                    .font(.subheadline.weight(isSelected ? .semibold : .regular))
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 10)
+            .frame(minHeight: 44)
+            .background(isSelected ? Color.accentColor.opacity(0.16) : .clear)
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct NoteDetailCard: View {
+    let scriptureNote: VerseNote?
+    let userNote: UserNote?
+    let editAction: () -> Void
+    let openInBibleAction: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            if let scriptureNote {
+                NoteDetailHeader(
+                    title: scriptureNote.title.isEmpty ? "Scripture Note" : scriptureNote.title,
+                    subtitle: "\(scriptureNote.bookName) \(scriptureNote.chapterNumber):\(scriptureNote.verseNumber)",
+                    editAction: editAction
+                )
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text(scriptureNote.verseText)
+                            .font(.title3)
+                            .foregroundStyle(.secondary)
+                        Text(formattedContent(data: scriptureNote.formattedContent, fallback: scriptureNote.content))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        NoteTimestampView(createdAt: scriptureNote.createdAt, updatedAt: scriptureNote.updatedAt)
+                        Button("Open in Bible", systemImage: "book", action: openInBibleAction)
+                            .buttonStyle(.borderedProminent)
+                    }
+                }
+            } else if let userNote {
+                NoteDetailHeader(
+                    title: userNote.title.isEmpty ? "Untitled Note" : userNote.title,
+                    subtitle: nil,
+                    editAction: editAction
+                )
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text(formattedContent(data: userNote.formattedContent, fallback: userNote.content))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        NoteTimestampView(createdAt: userNote.createdAt, updatedAt: userNote.updatedAt)
+                    }
+                }
+            } else {
+                ContentUnavailableView(
+                    "Select a Note",
+                    systemImage: "note.text",
+                    description: Text("Choose a note from the card on the left to read it here.")
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .padding(AppDesignMetrics.cardPadding)
+        .heroCardSurface()
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    private func formattedContent(data: Data?, fallback: String) -> AttributedString {
+        if let data, let formatted = try? JSONDecoder().decode(AttributedString.self, from: data) {
+            return formatted
+        }
+        return AttributedString(fallback)
+    }
+}
+
+private struct NoteDetailHeader: View {
+    let title: String
+    let subtitle: String?
+    let editAction: () -> Void
+
+    var body: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.title2.bold())
+                if let subtitle {
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            Spacer()
+            Button("Edit", systemImage: "pencil", action: editAction)
+                .buttonStyle(.bordered)
+        }
     }
 }
 

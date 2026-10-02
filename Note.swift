@@ -4,13 +4,15 @@ import Foundation
 enum NoteCategory: String, CaseIterable, Identifiable {
     case sermon
     case personal
+    case scripture
 
     var id: String { rawValue }
 
     var title: LocalizedStringResource {
         switch self {
         case .sermon: "Sermon Notes"
-        case .personal: "Personal"
+        case .personal: "Personal Notes"
+        case .scripture: "Scripture Notes"
         }
     }
 }
@@ -27,7 +29,7 @@ final class VerseNote {
     var formattedContent: Data?
     /// Raw value of `VerseHighlightColor`. An empty value means no highlight.
     var highlightColor: String = ""
-    var categoryRawValue: String = NoteCategory.sermon.rawValue
+    var categoryRawValue: String = NoteCategory.scripture.rawValue
     // Optionals for CloudKit schema
     var createdAt: Date?
     var updatedAt: Date?
