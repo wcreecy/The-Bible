@@ -13,7 +13,7 @@ struct WordSearchStartScreen: View {
         VStack(spacing: 16) {
             Spacer(minLength: 24)
             Text("Find hidden words from a random Bible verse.")
-                .gameStartDescriptionStyle()
+                .gameStartDescriptionStyle(systemImage: "square.grid.3x3.topleft.filled", tint: .green)
 
             GameStartInfoLayout {
                 GroupBox {
@@ -106,10 +106,7 @@ struct WordSearchStartScreen: View {
                     .padding(.horizontal)
             }
 
-            Button("Start") { onStart() }
-                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                .controlSize(.large)
-                .frame(maxWidth: 240)
+            GameStartActionBar(action: onStart)
 
             Spacer(minLength: 24)
         }

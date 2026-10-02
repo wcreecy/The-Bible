@@ -459,7 +459,7 @@ struct WordleView: View {
         VStack(spacing: 16) {
             Spacer(minLength: 24)
             Text("Guess the 5‑letter word in 6 tries.\nUse the on‑screen keyboard or a connected keyboard.")
-                .gameStartDescriptionStyle()
+                .gameStartDescriptionStyle(systemImage: "square.grid.3x3.fill", tint: .mint)
 
             GameStartInfoLayout {
                 GroupBox {
@@ -557,12 +557,10 @@ struct WordleView: View {
                 .accessibilityLabel("Daily completed. You’ve completed today’s daily. Come back tomorrow.")
             }
 
-            Button("Start") {
-                startNewRound(practice: mode == .practice)
-            }
-            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-            .controlSize(.large)
-            .frame(maxWidth: 240)
+            GameStartActionBar(
+                isEnabled: mode != .daily || !dailyCompletedToday || wordleAllowDailyReplay,
+                action: { startNewRound(practice: mode == .practice) }
+            )
             .disabled(mode == .daily && dailyCompletedToday && !wordleAllowDailyReplay)
 
             Spacer(minLength: 24)

@@ -36,7 +36,7 @@ struct WhoAmIGameView: View {
                 if !vm.started {
                     Spacer(minLength: 24)
                     Text("Match Bible names and descriptions.")
-                        .gameStartDescriptionStyle()
+                        .gameStartDescriptionStyle(systemImage: "person.text.rectangle", tint: .brown)
 
                     GameStartInfoLayout {
                         GroupBox {
@@ -104,10 +104,7 @@ struct WhoAmIGameView: View {
                     }
                     .padding(.horizontal)
 
-                    Button("Start") { vm.startGame() }
-                        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                        .controlSize(.large)
-                        .frame(maxWidth: 240)
+                    GameStartActionBar(action: vm.startGame)
                     Spacer(minLength: 24)
                 } else if horizontalSizeClass == .regular {
                     WhoAmIIPadGameBoard(

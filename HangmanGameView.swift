@@ -34,8 +34,8 @@ struct HangmanGameView: View {
     @State private var howToExpanded: Bool = false
     @State private var difficultyExpanded: Bool = false
 
-    @State private var theme: Theme = .all
-    @State private var difficulty: Difficulty = .normal
+    @AppStorage("hangmanTheme") private var theme: Theme = .all
+    @AppStorage("hangmanDifficulty") private var difficulty: Difficulty = .normal
 
     @State private var targetWord: String = ""
     @State private var displayWord: String = ""
@@ -256,7 +256,7 @@ struct HangmanGameView: View {
     private var startSection: some View {
         Spacer(minLength: 24)
         Text("Guess the person, place or book from the Bible")
-            .gameStartDescriptionStyle()
+            .gameStartDescriptionStyle(systemImage: "text.word.spacing", tint: .teal)
 
         GameStartInfoLayout {
             GroupBox {
@@ -316,10 +316,7 @@ struct HangmanGameView: View {
         }
         .padding(.horizontal)
 
-        Button("Start") { startGame() }
-            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-            .controlSize(.large)
-            .frame(maxWidth: 240)
+        GameStartActionBar(action: startGame)
         Spacer(minLength: 24)
     }
 

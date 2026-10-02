@@ -13,12 +13,25 @@ struct GameStartScreenStyle: ViewModifier {
 }
 
 struct GameStartDescriptionStyle: ViewModifier {
+    let systemImage: String
+    let tint: Color
+
     func body(content: Content) -> some View {
-        content
-            .font(.title3)
-            .foregroundStyle(.secondary)
-            .multilineTextAlignment(.center)
-            .frame(maxWidth: 520)
+        VStack(spacing: 14) {
+            Image(systemName: systemImage)
+                .font(.system(size: 34, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 72, height: 72)
+                .background(tint.gradient, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .shadow(color: tint.opacity(0.24), radius: 12, y: 7)
+
+            content
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 520)
+        }
+        .padding(.top, 8)
     }
 }
 
@@ -41,92 +54,87 @@ struct GameStartOptionsStyle: ViewModifier {
     }
 }
 
-struct GameStartInfoLayout: Layout {
+struct GameStartInfoLayout<Content: View>: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @State private var showsHelp = false
+
     let spacing: CGFloat
+    @ViewBuilder let content: Content
 
-    init(spacing: CGFloat = 16) {
+    init(spacing: CGFloat = 16, @ViewBuilder content: () -> Content) {
         self.spacing = spacing
+        self.content = content()
     }
 
-    func sizeThatFits(
-        proposal: ProposedViewSize,
-        subviews: Subviews,
-        cache: inout ()
-    ) -> CGSize {
-        guard !subviews.isEmpty else { return .zero }
-        let availableWidth = proposal.width ?? 620
-
-        if availableWidth >= 700 {
-            let itemWidth = (availableWidth - spacing * CGFloat(subviews.count - 1)) / CGFloat(subviews.count)
-            let sizes = subviews.map { $0.sizeThatFits(.init(width: itemWidth, height: proposal.height)) }
-            return CGSize(width: availableWidth, height: sizes.map(\.height).max() ?? 0)
+    var body: some View {
+        Button {
+            showsHelp = true
+        } label: {
+            Label("How to Play", systemImage: "questionmark.circle")
+                .font(.subheadline.weight(.semibold))
         }
-
-        let sizes = subviews.map { $0.sizeThatFits(.init(width: availableWidth, height: nil)) }
-        return CGSize(
-            width: availableWidth,
-            height: sizes.map(\.height).reduce(0, +) + spacing * CGFloat(max(0, subviews.count - 1))
-        )
-    }
-
-    func placeSubviews(
-        in bounds: CGRect,
-        proposal: ProposedViewSize,
-        subviews: Subviews,
-        cache: inout ()
-    ) {
-        if bounds.width >= 700 {
-            let itemWidth = (bounds.width - spacing * CGFloat(subviews.count - 1)) / CGFloat(subviews.count)
-            for (index, subview) in subviews.enumerated() {
-                subview.place(
-                    at: CGPoint(x: bounds.minX + CGFloat(index) * (itemWidth + spacing), y: bounds.minY),
-                    anchor: .topLeading,
-                    proposal: .init(width: itemWidth, height: bounds.height)
-                )
+        .buttonStyle(.bordered)
+        .sheet(isPresented: $showsHelp) {
+            NavigationStack {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: spacing) {
+                        content
+                    }
+                    .padding()
+                    .frame(maxWidth: 620)
+                    .frame(maxWidth: .infinity)
+                }
+                .navigationTitle("How to Play")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") { showsHelp = false }
+                    }
+                }
             }
-        } else {
-            var y = bounds.minY
-            for subview in subviews {
-                let size = subview.sizeThatFits(.init(width: bounds.width, height: nil))
-                subview.place(
-                    at: CGPoint(x: bounds.minX, y: y),
-                    anchor: .topLeading,
-                    proposal: .init(width: bounds.width, height: size.height)
-                )
-                y += size.height + spacing
-            }
+            .presentationDetents(horizontalSizeClass == .regular ? [.large] : [.medium, .large])
         }
+        .accessibilityHint("Opens game instructions and difficulty details")
     }
 }
 
 struct GameStartCurrentGameCard<Content: View>: View {
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @State private var isExpanded = true
-
     @ViewBuilder let content: Content
 
     var body: some View {
-        GroupBox {
-            DisclosureGroup(isExpanded: $isExpanded) {
-                VStack(alignment: .leading, spacing: 10) {
-                    content
-                }
-                .padding(.top, 4)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            } label: {
-                Text("Current Game")
-                    .font(.headline)
-            }
-        }
-        .onAppear(perform: expandIfNeeded)
-        .onChange(of: horizontalSizeClass) { _, _ in
-            expandIfNeeded()
-        }
+        EmptyView()
+    }
+}
+
+struct GameStartActionBar: View {
+    let title: LocalizedStringKey
+    let isEnabled: Bool
+    let action: () -> Void
+
+    init(
+        _ title: LocalizedStringKey = "Start Game",
+        isEnabled: Bool = true,
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.isEnabled = isEnabled
+        self.action = action
     }
 
-    private func expandIfNeeded() {
-        guard horizontalSizeClass == .regular else { return }
-        isExpanded = true
+    var body: some View {
+        Button(action: action) {
+            Label(title, systemImage: "play.fill")
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 4)
+        }
+        .buttonStyle(.borderedProminent)
+        .buttonBorderShape(.roundedRectangle(radius: 16))
+        .controlSize(.large)
+        .disabled(!isEnabled)
+        .padding(.horizontal)
+        .padding(.vertical, 10)
+        .background(.bar)
     }
 }
 
@@ -305,8 +313,11 @@ extension View {
         modifier(GameStartScreenStyle())
     }
 
-    func gameStartDescriptionStyle() -> some View {
-        modifier(GameStartDescriptionStyle())
+    func gameStartDescriptionStyle(
+        systemImage: String = "gamecontroller.fill",
+        tint: Color = .accentColor
+    ) -> some View {
+        modifier(GameStartDescriptionStyle(systemImage: systemImage, tint: tint))
     }
 
     func gameStartOptionsStyle() -> some View {

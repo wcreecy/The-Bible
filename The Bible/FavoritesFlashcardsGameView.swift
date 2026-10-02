@@ -11,7 +11,7 @@ struct FavoritesFlashcardsGameView: View {
         var id: String { rawValue }
     }
     
-    @State private var mode: Mode = .referenceToVerse
+    @AppStorage("favoritesFlashcardsMode") private var mode: Mode = .referenceToVerse
     @State private var howToExpanded = false
     @State private var difficultyExpanded = false
     @State private var started = false
@@ -46,7 +46,7 @@ struct FavoritesFlashcardsGameView: View {
                     ScrollView {
                         VStack(spacing: 16) {
                             Text("Build & test your memorization of the Word. As you favorite scriptures, they'll be added to the game")
-                                .gameStartDescriptionStyle()
+                                .gameStartDescriptionStyle(systemImage: "rectangle.portrait.on.rectangle.portrait", tint: .pink)
 
                             GameStartInfoLayout {
                                 GroupBox {
@@ -98,12 +98,7 @@ struct FavoritesFlashcardsGameView: View {
                             }
                             .padding(.horizontal)
 
-                            Button("Start") {
-                                startGame()
-                            }
-                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                            .controlSize(.large)
-                            .frame(maxWidth: 240)
+                            GameStartActionBar(action: startGame)
                         }
                         .gameStartScreenStyle()
                     }

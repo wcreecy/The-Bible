@@ -265,7 +265,7 @@ struct QuizView: View {
                     VStack(spacing: 16) {
                 if !started {
                     Text("Test your knowledge by guessing the book of the Bible from a given verse.")
-                        .gameStartDescriptionStyle()
+                        .gameStartDescriptionStyle(systemImage: "questionmark.circle.fill", tint: .blue)
                     
                     GameStartInfoLayout {
                         GroupBox {
@@ -358,12 +358,7 @@ struct QuizView: View {
                     }
                     .padding(.horizontal)
                     
-                    Button("Start") {
-                        startQuiz()
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                    .controlSize(.large)
-                    .frame(maxWidth: 240)
+                    GameStartActionBar(action: startQuiz)
                     Spacer(minLength: 48)
                 } else if usesSplitLayout {
                     QuizGameDashboard(

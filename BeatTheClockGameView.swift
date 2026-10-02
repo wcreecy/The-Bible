@@ -9,8 +9,8 @@ struct BeatTheClockGameView: View {
     @State private var started: Bool = false
     @State private var howToExpanded: Bool = false
     @State private var difficultyExpanded: Bool = false
-    @State private var difficulty: Difficulty = .normal
-    @State private var category: Category = .people
+    @AppStorage("beatTheClockDifficulty") private var difficulty: Difficulty = .normal
+    @AppStorage("beatTheClockCategory") private var category: Category = .people
 
     // Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
@@ -117,7 +117,7 @@ struct BeatTheClockGameView: View {
                 if !started {
                     Spacer(minLength: 32)
                     Text("Type a Bible book that mentions the shown person or place before the timer runs out.")
-                        .gameStartDescriptionStyle()
+                        .gameStartDescriptionStyle(systemImage: "hourglass", tint: .indigo)
 
                     GameStartInfoLayout {
                         GroupBox {
@@ -180,10 +180,7 @@ struct BeatTheClockGameView: View {
                     }
                     .padding(.horizontal)
 
-                    Button("Start") { startGame() }
-                        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                        .controlSize(.large)
-                        .frame(maxWidth: 240)
+                    GameStartActionBar(action: startGame)
                     Spacer(minLength: 32)
                 } else {
                     if usesSplitLayout {

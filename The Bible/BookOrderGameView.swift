@@ -16,7 +16,7 @@ struct BookOrderGameView: View {
             if !vm.started {
                 VStack(spacing: 16) {
                     Text("Rearrange the books in the correct order.")
-                        .gameStartDescriptionStyle()
+                    .gameStartDescriptionStyle(systemImage: "list.number", tint: .purple)
 
                     GameStartInfoLayout {
                         GroupBox {
@@ -92,12 +92,7 @@ struct BookOrderGameView: View {
                     }
                     .padding(.horizontal)
 
-                    Button("Start") {
-                        startGame()
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                    .controlSize(.large)
-                    .frame(maxWidth: 240)
+                    GameStartActionBar(action: startGame)
                 }
                 .padding()
                 Spacer()

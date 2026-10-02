@@ -67,7 +67,7 @@ struct VerseMatchGameView: View {
             }
         }
     }
-    @State private var difficulty: Difficulty = .normal
+    @AppStorage("verseMatchDifficulty") private var difficulty: Difficulty = .normal
 
     @State private var howToExpanded: Bool = false
     @State private var difficultyExpanded: Bool = false
@@ -215,7 +215,7 @@ struct VerseMatchGameView: View {
                 if !started {
                     Spacer(minLength: 32)
                     Text("Choose the verse text that matches the reference.")
-                        .gameStartDescriptionStyle()
+                        .gameStartDescriptionStyle(systemImage: "text.quote", tint: .orange)
 
                     GameStartInfoLayout {
                         GroupBox {
@@ -308,10 +308,7 @@ struct VerseMatchGameView: View {
                     }
                     .padding(.horizontal)
 
-                    Button("Start") { startGame() }
-                        .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                        .controlSize(.large)
-                        .frame(maxWidth: 240)
+                    GameStartActionBar(action: startGame)
                     Spacer(minLength: 32)
                 } else {
                     GameScoreboardCard(
