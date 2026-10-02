@@ -8,6 +8,7 @@ struct VerseToRememberCard: View {
     let onOpenFavorites: () -> Void
 
     @State private var revealedWordCount = 0
+    @State private var hiddenWordIndices: [Int] = []
 
     private var verseID: String {
         guard let verse else { return "empty" }
@@ -16,18 +17,6 @@ struct VerseToRememberCard: View {
 
     private var words: [Substring] {
         verse?.verseText.split(separator: " ") ?? []
-    }
-
-    private var hiddenWordIndices: [Int] {
-        let preferred = words.indices.filter { shouldHide(word: words[$0], at: $0) }
-        if !preferred.isEmpty {
-            return preferred
-        }
-
-        if let fallback = words.firstIndex(where: { $0.filter(\.isLetter).count >= 4 }) {
-            return [fallback]
-        }
-        return []
     }
 
     private var allWordsRevealed: Bool {
@@ -124,9 +113,22 @@ struct VerseToRememberCard: View {
                 }
             }
         }
-        .onChange(of: verseID) { _, _ in
-            revealedWordCount = 0
+        .onAppear {
+            randomizeHiddenWords()
         }
+        .onChange(of: verseID) { _, _ in
+            randomizeHiddenWords()
+        }
+    }
+
+    private func randomizeHiddenWords() {
+        let eligibleIndices = words.indices.filter {
+            words[$0].filter(\.isLetter).count >= 4
+        }
+        let desiredCount = max(1, (words.count + 1) / 4)
+
+        hiddenWordIndices = Array(eligibleIndices.shuffled().prefix(desiredCount)).sorted()
+        revealedWordCount = 0
     }
 
     private func actionButton(
@@ -152,10 +154,5 @@ struct VerseToRememberCard: View {
         .buttonStyle(.plain)
         .disabled(disabled)
         .opacity(disabled ? 0.55 : 1)
-    }
-
-    private func shouldHide(word: Substring, at index: Int) -> Bool {
-        let letterCount = word.filter(\.isLetter).count
-        return letterCount >= 4 && index % 4 == 2
     }
 }
