@@ -611,6 +611,7 @@ private enum NotesHighlightFilter: String, CaseIterable, Identifiable {
 
 @MainActor
 struct NotesAndHighlightsView: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Query(sort: \VerseNote.updatedAt, order: .reverse) private var scriptureNotes: [VerseNote]
     @Query(sort: \UserNote.updatedAt, order: .reverse) private var userNotes: [UserNote]
 
@@ -622,26 +623,40 @@ struct NotesAndHighlightsView: View {
     @State private var selectedUserNote: UserNote?
     @State private var isCreatingNote = false
     @State private var isEditingSelection = false
+    @State private var isShowingCompactDetail = false
 
     var body: some View {
         VStack(spacing: 12) {
             GeometryReader { proxy in
-                HStack(spacing: 16) {
+                if horizontalSizeClass == .compact {
                     NotesListCard(
                         notes: visibleNotes,
                         selectedScriptureNote: $selectedScriptureNote,
                         selectedUserNote: $selectedUserNote,
                         selectedFilter: $selectedFilter,
-                        highlightFilter: $highlightFilter
-                    )
-                    .frame(width: max(240, (proxy.size.width - 16) / 3))
-
-                    NoteDetailCard(
-                        scriptureNote: selectedScriptureNote,
-                        userNote: selectedUserNote,
-                        editAction: { isEditingSelection = true }
+                        highlightFilter: $highlightFilter,
+                        selectionAction: { isShowingCompactDetail = true }
                     )
                     .frame(maxWidth: .infinity)
+                } else {
+                    HStack(spacing: 16) {
+                        NotesListCard(
+                            notes: visibleNotes,
+                            selectedScriptureNote: $selectedScriptureNote,
+                            selectedUserNote: $selectedUserNote,
+                            selectedFilter: $selectedFilter,
+                            highlightFilter: $highlightFilter,
+                            selectionAction: {}
+                        )
+                        .frame(width: max(240, (proxy.size.width - 16) / 3))
+
+                        NoteDetailCard(
+                            scriptureNote: selectedScriptureNote,
+                            userNote: selectedUserNote,
+                            editAction: { isEditingSelection = true }
+                        )
+                        .frame(maxWidth: .infinity)
+                    }
                 }
             }
         }
@@ -649,6 +664,22 @@ struct NotesAndHighlightsView: View {
         .padding(.bottom)
         .background(AppBackgroundView(tab: .notes))
         .navigationTitle("Notes")
+        .navigationDestination(isPresented: $isShowingCompactDetail) {
+            NoteDetailCard(
+                scriptureNote: selectedScriptureNote,
+                userNote: selectedUserNote,
+                editAction: {
+                    isShowingCompactDetail = false
+                    DispatchQueue.main.async {
+                        isEditingSelection = true
+                    }
+                }
+            )
+            .padding()
+            .background(AppBackgroundView(tab: .notes))
+            .navigationTitle("Note")
+            .navigationBarTitleDisplayMode(.inline)
+        }
         .searchable(text: $searchText, prompt: "Search all notes")
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -809,6 +840,7 @@ private struct NotesListCard: View {
     @Binding var selectedUserNote: UserNote?
     @Binding var selectedFilter: NotesFilter
     @Binding var highlightFilter: NotesHighlightFilter
+    let selectionAction: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -848,6 +880,7 @@ private struct NotesListCard: View {
                             ) {
                                 selectedScriptureNote = note
                                 selectedUserNote = nil
+                                selectionAction()
                             }
                             .contextMenu {
                                 Button("Delete", systemImage: "trash", role: .destructive) { delete(note) }
@@ -861,6 +894,7 @@ private struct NotesListCard: View {
                             ) {
                                 selectedUserNote = note
                                 selectedScriptureNote = nil
+                                selectionAction()
                             }
                             .contextMenu {
                                 Button("Delete", systemImage: "trash", role: .destructive) { delete(note) }
