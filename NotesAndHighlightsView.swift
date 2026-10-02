@@ -488,6 +488,7 @@ private enum NotesTabSort: String, CaseIterable, Identifiable {
     case createdNewest
     case createdOldest
     case highlightColor
+    case tag
     case titleAscending
     case titleDescending
 
@@ -499,7 +500,8 @@ private enum NotesTabSort: String, CaseIterable, Identifiable {
         case .modifiedOldest: "Modified: Oldest First"
         case .createdNewest: "Created: Newest First"
         case .createdOldest: "Created: Oldest First"
-        case .highlightColor: "Highlight Color"
+        case .highlightColor: "Color"
+        case .tag: "Tag"
         case .titleAscending: "Title: A–Z"
         case .titleDescending: "Title: Z–A"
         }
@@ -638,18 +640,16 @@ struct NotesAndHighlightsView: View {
                     NotesListCard(
                         notes: visibleNotes,
                         selectedScriptureNote: $selectedScriptureNote,
-                        selectedUserNote: $selectedUserNote
+                        selectedUserNote: $selectedUserNote,
+                        selectedFilter: $selectedFilter,
+                        highlightFilter: $highlightFilter
                     )
                     .frame(width: max(240, (proxy.size.width - 16) / 3))
 
                     NoteDetailCard(
                         scriptureNote: selectedScriptureNote,
                         userNote: selectedUserNote,
-                        editAction: { isEditingSelection = true },
-                        openInBibleAction: {
-                            guard let selectedScriptureNote else { return }
-                            open(selectedScriptureNote)
-                        }
+                        editAction: { isEditingSelection = true }
                     )
                     .frame(maxWidth: .infinity)
                 }
@@ -663,31 +663,15 @@ struct NotesAndHighlightsView: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Menu {
-                    Picker("Tag", selection: $selectedFilter) {
-                        ForEach(NotesFilter.allCases) { option in
-                            Text(option.title).tag(option)
-                        }
-                    }
-
-                    Divider()
-
-                    Picker("Highlight Color", selection: $highlightFilter) {
-                        ForEach(NotesHighlightFilter.allCases) { option in
-                            Text(option.title).tag(option)
-                        }
-                    }
-
-                    Divider()
-
                     Picker("Sort By", selection: $sortRawValue) {
                         ForEach(NotesTabSort.allCases) { option in
                             Text(option.title).tag(option.rawValue)
                         }
                     }
                 } label: {
-                    Label("Filter and Sort", systemImage: "line.3.horizontal.decrease.circle")
+                    Label("Sort", systemImage: "arrow.up.arrow.down")
                 }
-                .accessibilityLabel("Filter and sort notes")
+                .accessibilityLabel("Sort notes")
 
                 Button {
                     isCreatingNote = true
@@ -762,24 +746,24 @@ struct NotesAndHighlightsView: View {
         case .createdOldest:
             return notes.sorted { ($0.createdAt ?? .distantPast) < ($1.createdAt ?? .distantPast) }
         case .highlightColor:
-            return notes.sorted { $0.highlightColor < $1.highlightColor }
+            return notes.sorted {
+                if $0.highlightColor != $1.highlightColor {
+                    return $0.highlightColor < $1.highlightColor
+                }
+                return $0.title.localizedStandardCompare($1.title) == .orderedAscending
+            }
+        case .tag:
+            return notes.sorted {
+                if $0.categoryRawValue != $1.categoryRawValue {
+                    return $0.categoryRawValue.localizedStandardCompare($1.categoryRawValue) == .orderedAscending
+                }
+                return $0.title.localizedStandardCompare($1.title) == .orderedAscending
+            }
         case .titleAscending:
             return notes.sorted { $0.title.localizedStandardCompare($1.title) == .orderedAscending }
         case .titleDescending:
             return notes.sorted { $0.title.localizedStandardCompare($1.title) == .orderedDescending }
         }
-    }
-
-    private func open(_ note: VerseNote) {
-        NotificationCenter.default.post(
-            name: .openBibleReference,
-            object: nil,
-            userInfo: [
-                "book": note.bookName,
-                "chapter": note.chapterNumber,
-                "verse": note.verseNumber
-            ]
-        )
     }
 
     private func selectFirstVisibleNoteIfNeeded() {
@@ -833,14 +817,25 @@ private struct NotesListCard: View {
     let notes: [NotesListItem]
     @Binding var selectedScriptureNote: VerseNote?
     @Binding var selectedUserNote: UserNote?
+    @Binding var selectedFilter: NotesFilter
+    @Binding var highlightFilter: NotesHighlightFilter
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Notes")
-                .font(.headline)
-                .padding(.horizontal, 16)
-                .padding(.top, 16)
-                .padding(.bottom, 8)
+            HStack {
+                Text("Notes")
+                    .font(.headline)
+
+                Spacer()
+
+                NotesFilterMenu(
+                    selectedFilter: $selectedFilter,
+                    highlightFilter: $highlightFilter
+                )
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
+            .padding(.bottom, 8)
 
             ScrollView {
                 LazyVStack(spacing: 4) {
@@ -909,6 +904,35 @@ private struct NotesListCard: View {
     }
 }
 
+private struct NotesFilterMenu: View {
+    @Binding var selectedFilter: NotesFilter
+    @Binding var highlightFilter: NotesHighlightFilter
+
+    var body: some View {
+        Menu {
+            Picker("Tag", selection: $selectedFilter) {
+                ForEach(NotesFilter.allCases) { option in
+                    Text(option.title).tag(option)
+                }
+            }
+
+            Divider()
+
+            Picker("Highlight Color", selection: $highlightFilter) {
+                ForEach(NotesHighlightFilter.allCases) { option in
+                    Text(option.title).tag(option)
+                }
+            }
+
+        } label: {
+            Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.small)
+        .accessibilityLabel("Filter and sort notes")
+    }
+}
+
 private struct NotesTitleButton: View {
     let title: String
     let tag: LocalizedStringResource?
@@ -948,10 +972,11 @@ private struct NotesTitleButton: View {
 }
 
 private struct NoteDetailCard: View {
+    @State private var selectedScriptureReference: ScriptureRef?
+
     let scriptureNote: VerseNote?
     let userNote: UserNote?
     let editAction: () -> Void
-    let openInBibleAction: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -969,8 +994,6 @@ private struct NoteDetailCard: View {
                         Text(formattedContent(data: scriptureNote.formattedContent, fallback: scriptureNote.content))
                             .frame(maxWidth: .infinity, alignment: .leading)
                         NoteTimestampView(createdAt: scriptureNote.createdAt, updatedAt: scriptureNote.updatedAt)
-                        Button("Open in Bible", systemImage: "book", action: openInBibleAction)
-                            .buttonStyle(.borderedProminent)
                     }
                 }
             } else if let userNote {
@@ -998,13 +1021,50 @@ private struct NoteDetailCard: View {
         .padding(AppDesignMetrics.cardPadding)
         .heroCardSurface()
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .environment(\.openURL, OpenURLAction { url in
+            guard let reference = BibleReferenceLinker.parse(url: url) else {
+                return .systemAction(url)
+            }
+            selectedScriptureReference = reference
+            return .handled
+        })
+        .sheet(item: $selectedScriptureReference) { reference in
+            ScriptureReferencePreview(
+                reference: reference,
+                copyAction: { copyScripture(reference) },
+                openAction: { openScripture(reference) }
+            )
+        }
     }
 
     private func formattedContent(data: Data?, fallback: String) -> AttributedString {
         if let data, let formatted = try? JSONDecoder().decode(AttributedString.self, from: data) {
-            return formatted
+            return BibleReferenceLinker.linkify(formatted)
         }
-        return AttributedString(fallback)
+        return BibleReferenceLinker.linkify(AttributedString(fallback))
+    }
+
+    private func copyScripture(_ reference: ScriptureRef) {
+        guard let passage = BibleReferenceLinker.loadVerses(for: reference),
+              !passage.verses.isEmpty else { return }
+        let text = passage.verses.map(\.text).joined(separator: " ")
+        UIPasteboard.general.string = "\(text)\n\(passage.title)"
+        Haptics.success()
+    }
+
+    private func openScripture(_ reference: ScriptureRef) {
+        selectedScriptureReference = nil
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(
+                name: .openBibleReference,
+                object: nil,
+                userInfo: [
+                    "book": reference.bookName,
+                    "chapter": reference.chapter,
+                    "verse": reference.startVerse
+                ]
+            )
+        }
     }
 }
 
