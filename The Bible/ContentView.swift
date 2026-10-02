@@ -39,6 +39,8 @@ struct ContentView: View {
     // Daily usage tracking (per local day)
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds: Int = 0
+    @AppStorage("dailyUsageReadingSeconds") private var dailyUsageReadingSeconds: Int = 0
+    @AppStorage("dailyUsageGameSeconds") private var dailyUsageGameSeconds: Int = 0
     @AppStorage("dailyUsageTodayKey") private var dailyUsageTodayKey: String = ""
     @State private var usageTimer: Timer? = nil
     @State private var nextMidnightTimer: Timer? = nil
@@ -400,6 +402,8 @@ struct ContentView: View {
         if dailyUsageTodayKey != key {
             dailyUsageTodayKey = key
             dailyUsageTodaySeconds = 0
+            dailyUsageReadingSeconds = 0
+            dailyUsageGameSeconds = 0
         }
     }
 
@@ -413,6 +417,8 @@ struct ContentView: View {
             // Rollover day
             dailyUsageTodayKey = todayKey()
             dailyUsageTodaySeconds = 0
+            dailyUsageReadingSeconds = 0
+            dailyUsageGameSeconds = 0
             // Reschedule for next midnight
             scheduleMidnightRollover()
         }
@@ -429,8 +435,22 @@ struct ContentView: View {
             if key != dailyUsageTodayKey {
                 dailyUsageTodayKey = key
                 dailyUsageTodaySeconds = 0
+                dailyUsageReadingSeconds = 0
+                dailyUsageGameSeconds = 0
             }
+
             dailyUsageTodaySeconds += 1
+
+            switch selectedTab {
+            case .games:
+                dailyUsageGameSeconds += 1
+            case .home, .bible, .notes:
+                dailyUsageReadingSeconds += 1
+            case .more:
+                if case .favorites? = morePath.last {
+                    dailyUsageReadingSeconds += 1
+                }
+            }
         }
         if let t = usageTimer {
             RunLoop.main.add(t, forMode: .common)

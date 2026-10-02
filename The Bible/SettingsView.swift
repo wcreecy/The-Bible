@@ -19,6 +19,11 @@ struct SettingsView: View {
             SettingsDataManagementLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
 
+            #if DEBUG
+            SettingsDeveloperSection()
+                .listRowBackground(HeroCardListRowBackground())
+            #endif
+
             Section {
                 SettingsCloudSyncFooter()
                     .listRowBackground(HeroCardListRowBackground())
@@ -193,6 +198,56 @@ private struct SettingsDataManagementLinksSection: View {
         }
     }
 }
+
+#if DEBUG
+private struct SettingsDeveloperSection: View {
+    @State private var showingConfirmation = false
+    @State private var showingCompletion = false
+
+    var body: some View {
+        Section {
+            Button {
+                showingConfirmation = true
+            } label: {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Generate Sample Stats")
+                        Text("Fill reading and game charts with randomized data")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "wand.and.stars")
+                        .foregroundStyle(.purple)
+                }
+            }
+            .accessibilityIdentifier("generateDeveloperSampleStatsButton")
+            .confirmationDialog(
+                "Generate Sample Statistics?",
+                isPresented: $showingConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Generate Data") {
+                    DeveloperSampleData.generate()
+                    showingCompletion = true
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This adds about 90 days of randomized reading and game activity. You can remove it later from Reset Data.")
+            }
+            .alert("Sample Data Created", isPresented: $showingCompletion) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("The Home and Stats views now have randomized reading and game activity to display.")
+            }
+        } header: {
+            Label("Developer", systemImage: "hammer")
+        } footer: {
+            Text("Debug builds only. This section is not included in App Store builds.")
+        }
+    }
+}
+#endif
 
 private struct SettingsNavigationRow: View {
     let title: LocalizedStringResource

@@ -456,9 +456,12 @@ struct HomeView: View {
             BibleStatsCard(
                 bibleVM: bibleVM,
                 scenePhase: scenePhase,
-                onOpenStats: {
-                    // Force StatsView to open on the Reading Stats tab
+                onOpenReadingStats: {
                     UserDefaults.standard.set("Reading Stats", forKey: "statsSelectedMode")
+                    NotificationCenter.default.post(name: .openStats, object: nil)
+                },
+                onOpenGameStats: {
+                    UserDefaults.standard.set("Game Stats", forKey: "statsSelectedMode")
                     NotificationCenter.default.post(name: .openStats, object: nil)
                 }
             )
