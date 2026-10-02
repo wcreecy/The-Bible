@@ -938,6 +938,7 @@ private struct NotesListCard: View {
                             }
                             .listRowBackground(Color.clear)
                             .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 1, leading: 0, bottom: 1, trailing: 0))
                         case .user(let note):
                             NotesTitleButton(
                                 title: item.title,
@@ -972,12 +973,14 @@ private struct NotesListCard: View {
                             }
                             .listRowBackground(Color.clear)
                             .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 1, leading: 0, bottom: 1, trailing: 0))
                         }
                     }
                 }
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
+            .contentMargins(.vertical, 0, for: .scrollContent)
             .padding(.horizontal, 8)
             .padding(.bottom, 8)
         }
@@ -1059,7 +1062,7 @@ private struct NotesTitleButton: View {
                     .fill(highlight?.color ?? .secondary.opacity(0.25))
                     .frame(width: 8, height: 8)
 
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: 1) {
                     Text(title)
                         .font(.subheadline.weight(isSelected ? .semibold : .regular))
                         .foregroundStyle(.primary)
