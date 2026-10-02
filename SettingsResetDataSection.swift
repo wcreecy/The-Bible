@@ -21,6 +21,7 @@ struct SettingsResetDataSection: View {
                 Button("Reset", role: .destructive) {
                     // Full wipe: counters, daily maps (overall + per-game), last played
                     iCloudSyncCoordinator.shared.resetAllGameDataToZero()
+                    resetAppActivity(category: .games)
                     Haptics.success()
                 }
             } message: {
@@ -39,6 +40,7 @@ struct SettingsResetDataSection: View {
                     // stamps a reset epoch to prevent older devices from repopulating,
                     // and performs synchronize off-main.
                     iCloudSyncCoordinator.shared.resetAllBibleStatsAndSessions()
+                    resetAppActivity(category: .reading)
                     Haptics.success()
                 }
             } message: {
@@ -47,4 +49,22 @@ struct SettingsResetDataSection: View {
         }
         .headerProminence(.increased)
     }
+
+    private func resetAppActivity(category: AppActivityCategory) {
+        let defaults = UserDefaults.standard
+
+        switch category {
+        case .reading:
+            defaults.set(0, forKey: "dailyUsageReadingSeconds")
+            defaults.set(0, forKey: "allTimeUsageReadingSeconds")
+        case .games:
+            defaults.set(0, forKey: "dailyUsageGameSeconds")
+            defaults.set(0, forKey: "allTimeUsageGameSeconds")
+        }
+    }
+}
+
+private enum AppActivityCategory {
+    case reading
+    case games
 }

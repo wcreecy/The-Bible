@@ -41,6 +41,8 @@ struct ContentView: View {
     @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds: Int = 0
     @AppStorage("dailyUsageReadingSeconds") private var dailyUsageReadingSeconds: Int = 0
     @AppStorage("dailyUsageGameSeconds") private var dailyUsageGameSeconds: Int = 0
+    @AppStorage("allTimeUsageReadingSeconds") private var allTimeUsageReadingSeconds: Int = 0
+    @AppStorage("allTimeUsageGameSeconds") private var allTimeUsageGameSeconds: Int = 0
     @AppStorage("dailyUsageTodayKey") private var dailyUsageTodayKey: String = ""
     @State private var usageTimer: Timer? = nil
     @State private var nextMidnightTimer: Timer? = nil
@@ -405,6 +407,10 @@ struct ContentView: View {
             dailyUsageReadingSeconds = 0
             dailyUsageGameSeconds = 0
         }
+
+        // Existing installs may already have today's usage but no cumulative counters.
+        allTimeUsageReadingSeconds = max(allTimeUsageReadingSeconds, dailyUsageReadingSeconds)
+        allTimeUsageGameSeconds = max(allTimeUsageGameSeconds, dailyUsageGameSeconds)
     }
 
     private func scheduleMidnightRollover() {
@@ -444,12 +450,26 @@ struct ContentView: View {
             switch selectedTab {
             case .games:
                 dailyUsageGameSeconds += 1
-            case .home, .bible, .notes:
+                allTimeUsageGameSeconds = max(
+                    allTimeUsageGameSeconds + 1,
+                    dailyUsageGameSeconds
+                )
+            case .bible, .notes:
                 dailyUsageReadingSeconds += 1
+                allTimeUsageReadingSeconds = max(
+                    allTimeUsageReadingSeconds + 1,
+                    dailyUsageReadingSeconds
+                )
             case .more:
                 if case .favorites? = morePath.last {
                     dailyUsageReadingSeconds += 1
+                    allTimeUsageReadingSeconds = max(
+                        allTimeUsageReadingSeconds + 1,
+                        dailyUsageReadingSeconds
+                    )
                 }
+            case .home:
+                break
             }
         }
         if let t = usageTimer {

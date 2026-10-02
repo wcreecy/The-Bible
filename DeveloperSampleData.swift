@@ -153,13 +153,33 @@ enum DeveloperSampleData {
 
     private static func generateAppUsageSplit() {
         let defaults = UserDefaults.standard
-        let readingSeconds = Int.random(in: 35...150) * 60
-        let gameSeconds = Int.random(in: 15...90) * 60
+        let calendar = Calendar.autoupdatingCurrent
+        var readingByDay: [String: Int] = [:]
+        var gamesByDay: [String: Int] = [:]
+
+        // Seed a month of activity so today's values are a true subset of all-time.
+        for dayOffset in 0..<30 {
+            guard let date = calendar.date(byAdding: .day, value: -dayOffset, to: Date()) else {
+                continue
+            }
+
+            let dayKey = BibleStatsStore.isoDateString(date, calendar: calendar)
+            readingByDay[dayKey] = Int.random(in: 35...150) * 60
+            gamesByDay[dayKey] = Int.random(in: 15...90) * 60
+        }
+
+        let todayKey = BibleStatsStore.isoDateString(Date(), calendar: calendar)
+        let readingSeconds = readingByDay[todayKey, default: 0]
+        let gameSeconds = gamesByDay[todayKey, default: 0]
+        let allTimeReadingSeconds = readingByDay.values.reduce(0, +)
+        let allTimeGameSeconds = gamesByDay.values.reduce(0, +)
 
         defaults.set(readingSeconds, forKey: "dailyUsageReadingSeconds")
         defaults.set(gameSeconds, forKey: "dailyUsageGameSeconds")
+        defaults.set(allTimeReadingSeconds, forKey: "allTimeUsageReadingSeconds")
+        defaults.set(allTimeGameSeconds, forKey: "allTimeUsageGameSeconds")
         defaults.set(readingSeconds + gameSeconds, forKey: "dailyUsageTodaySeconds")
-        defaults.set(BibleStatsStore.isoDateString(Date()), forKey: "dailyUsageTodayKey")
+        defaults.set(todayKey, forKey: "dailyUsageTodayKey")
     }
 
     private static func loadMap(_ key: String) -> [String: Int] {

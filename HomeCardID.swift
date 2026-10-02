@@ -14,7 +14,7 @@ enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
         case .resumeReading: return "Continue Reading"
         case .games: return "Games"
         case .streaks: return "Daily Bible Streak"
-        case .bibleStats: return "Bible Stats"
+        case .bibleStats: return "App Activity"
         }
     }
 

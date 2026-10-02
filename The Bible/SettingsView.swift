@@ -55,7 +55,7 @@ private struct SettingsPersonalizationLinksSection: View {
             }
 
             NavigationLink {
-                SettingsHomeLayoutDetailView()
+                SettingsHomeLayoutSection()
             } label: {
                 SettingsNavigationRow(
                     title: "Home Layout",
@@ -321,14 +321,6 @@ private struct SettingsAppearanceDetailView: View {
         SettingsDetailForm(title: "Appearance") {
             SettingsAppearanceSection()
             SettingsBackgroundSection()
-        }
-    }
-}
-
-private struct SettingsHomeLayoutDetailView: View {
-    var body: some View {
-        SettingsDetailForm(title: "Home Layout") {
-            SettingsHomeLayoutSection()
         }
     }
 }

@@ -27,8 +27,11 @@ struct BibleStatsCard: View {
 
                 ActivityTimeGraph(
                     title: "All-Time App Time",
-                    readingSeconds: allTimeReadingSeconds,
-                    gameSeconds: allTimeGameSeconds
+                    readingSeconds: max(
+                        allTimeReadingSeconds,
+                        max(readingUsageSeconds, bibleVM.totalSeconds)
+                    ),
+                    gameSeconds: max(allTimeGameSeconds, gameUsageSeconds)
                 )
 
                 HStack(spacing: 10) {
@@ -46,10 +49,18 @@ struct BibleStatsCard: View {
             }
             .onAppear {
                 bibleVM.refresh()
+                allTimeReadingSeconds = max(
+                    allTimeReadingSeconds,
+                    max(readingUsageSeconds, bibleVM.totalSeconds)
+                )
             }
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active {
                     bibleVM.refresh()
+                    allTimeReadingSeconds = max(
+                        allTimeReadingSeconds,
+                        max(readingUsageSeconds, bibleVM.totalSeconds)
+                    )
                 }
             }
         }

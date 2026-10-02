@@ -35,31 +35,16 @@ struct SettingsHomeLayoutSection: View {
     }
 
     var body: some View {
-        Section(
-            header: Text("Home Layout").foregroundStyle(.primary),
-            footer: Text(UIDevice.current.userInterfaceIdiom == .pad
-                ? "Choose which cards appear on Home and arrange their order."
-                : "Choose what appears directly on Home and what is available inside the collapsed Show More section.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        ) {
-
-            NavigationLink {
-                HomeLayoutEditorView(
-                    order: $layoutOrder,
-                    hiddenSet: $hiddenSet,
-                    mainSet: $mainSet,
-                    allowsShowMore: UIDevice.current.userInterfaceIdiom != .pad,
-                    onDone: { saveHomeLayout() },
-                    onSaveFavorite: { saveFavoriteLayout() },
-                    onResetToFavorite: { applyFavoriteLayout() },
-                    hasFavorite: hasFavoriteLayout
-                )
-            } label: {
-                Label("Customize Home Content", systemImage: "slider.horizontal.3")
-            }
-        }
-        .headerProminence(.increased)
+        HomeLayoutEditorView(
+            order: $layoutOrder,
+            hiddenSet: $hiddenSet,
+            mainSet: $mainSet,
+            allowsShowMore: UIDevice.current.userInterfaceIdiom != .pad,
+            onDone: saveHomeLayout,
+            onSaveFavorite: saveFavoriteLayout,
+            onResetToFavorite: applyFavoriteLayout,
+            hasFavorite: hasFavoriteLayout
+        )
         .onAppear(perform: loadHomeLayout)
     }
 }
