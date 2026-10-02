@@ -552,6 +552,7 @@ private struct WhoAmIIPadGameBoard: View {
             tint: timerTint,
             isActive: timerIsActive,
             isPulsing: timerIsPulsing,
+            resultIsCorrect: roundOver ? selectedChoice == correctChoice : nil,
             usesMutedStyle: $usesMutedTimerStyle,
             onSwapSides: { timerOnLeading.toggle() }
         )
@@ -685,6 +686,7 @@ private struct WhoAmITimerCard: View {
     let tint: Color
     let isActive: Bool
     let isPulsing: Bool
+    let resultIsCorrect: Bool?
     @Binding var usesMutedStyle: Bool
     let onSwapSides: () -> Void
 
@@ -696,6 +698,15 @@ private struct WhoAmITimerCard: View {
         remainingSeconds > 5 && remainingSeconds <= 10 ? .black : .white
     }
 
+    private var displayTint: Color {
+        guard !isActive, let resultIsCorrect else { return tint }
+        return resultIsCorrect ? .green : .red
+    }
+
+    private var vividTextColor: Color {
+        isActive ? timerTextColor : .white
+    }
+
     var body: some View {
         VStack(spacing: 16) {
             Spacer(minLength: 0)
@@ -705,7 +716,7 @@ private struct WhoAmITimerCard: View {
                     .font(.system(size: 72, weight: .semibold))
                     .foregroundStyle(
                         usesVividStyle
-                            ? timerTextColor.opacity(0.85)
+                            ? vividTextColor.opacity(0.85)
                             : statusTint
                     )
 
@@ -713,7 +724,7 @@ private struct WhoAmITimerCard: View {
                     .font(.largeTitle.weight(.semibold))
                     .foregroundStyle(
                         usesVividStyle
-                            ? timerTextColor.opacity(0.85)
+                            ? vividTextColor.opacity(0.85)
                             : statusTint
                     )
 
@@ -723,7 +734,7 @@ private struct WhoAmITimerCard: View {
                         .monospacedDigit()
                         .minimumScaleFactor(0.5)
                         .lineLimit(1)
-                        .foregroundStyle(usesVividStyle ? timerTextColor : tint)
+                        .foregroundStyle(usesVividStyle ? vividTextColor : displayTint)
                 }
             }
             .scaleEffect(isPulsing ? 1.04 : 1)
@@ -755,12 +766,12 @@ private struct WhoAmITimerCard: View {
             .labelStyle(.iconOnly)
             .buttonStyle(.glass(.clear))
             .controlSize(.small)
-            .tint(usesVividStyle ? timerTextColor : tint)
+            .tint(usesVividStyle ? vividTextColor : displayTint)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(32)
         .background(
-            usesVividStyle ? tint : Color.clear,
+            usesVividStyle ? displayTint : Color.clear,
             in: RoundedRectangle(
                 cornerRadius: AppDesignMetrics.cardCornerRadius,
                 style: .continuous
@@ -773,21 +784,24 @@ private struct WhoAmITimerCard: View {
         if !isTimed {
             return "Untimed"
         }
-        return isActive ? "Time Remaining" : "Round Complete"
+        guard !isActive, let resultIsCorrect else { return "Time Remaining" }
+        return resultIsCorrect ? "Correct" : "Incorrect"
     }
 
     private var statusSystemImage: String {
         if !isTimed {
             return "infinity"
         }
-        return isActive ? "timer" : "checkmark.circle.fill"
+        guard !isActive, let resultIsCorrect else { return "timer" }
+        return resultIsCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"
     }
 
     private var statusTint: Color {
         if !isTimed {
             return .secondary
         }
-        return isActive ? tint : .green
+        guard !isActive, let resultIsCorrect else { return tint }
+        return resultIsCorrect ? .green : .red
     }
 }
 

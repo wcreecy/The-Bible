@@ -26,6 +26,7 @@ struct BeatTheClockGameView: View {
 
     // Timer
     @State private var remainingSeconds: Int = 0
+    @State private var roundResultIsCorrect: Bool?
     @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     // Scoring
@@ -356,6 +357,7 @@ struct BeatTheClockGameView: View {
                         remainingSeconds: remainingSeconds,
                         tint: timerColor,
                         isPulsing: pulse,
+                        resultIsCorrect: roundResultIsCorrect,
                         usesMutedStyle: $usesMutedTimerStyle,
                         onSwapSides: {
                             withAnimation(.snappy) {
@@ -457,6 +459,7 @@ struct BeatTheClockGameView: View {
         remainingSeconds = roundTime
         acceptableBooks = []
         pulse = false
+        roundResultIsCorrect = nil
 
         switch category {
         case .people:
@@ -563,6 +566,7 @@ struct BeatTheClockGameView: View {
     private func endRound(correct: Bool) {
         guard !selectionLocked else { return }
         selectionLocked = true
+        roundResultIsCorrect = correct
         answered += 1
         if correct {
             score += 1
@@ -950,6 +954,7 @@ private struct BeatTheClockLargeTimerView: View {
     let remainingSeconds: Int
     let tint: Color
     let isPulsing: Bool
+    let resultIsCorrect: Bool?
     @Binding var usesMutedStyle: Bool
     let onSwapSides: () -> Void
 
@@ -957,31 +962,44 @@ private struct BeatTheClockLargeTimerView: View {
         remainingSeconds > 5 && remainingSeconds <= 10 ? .black : .white
     }
 
+    private var isActive: Bool { resultIsCorrect == nil }
+
+    private var displayTint: Color {
+        guard let resultIsCorrect else { return tint }
+        return resultIsCorrect ? .green : .red
+    }
+
+    private var vividTextColor: Color {
+        isActive ? timerTextColor : .white
+    }
+
     var body: some View {
         VStack(spacing: 16) {
             Spacer(minLength: 0)
 
             VStack(spacing: 24) {
-                Image(systemName: "timer")
+                Image(systemName: statusSystemImage)
                     .font(.system(size: 72, weight: .semibold))
-                    .foregroundStyle(usesMutedStyle ? Color.secondary : timerTextColor.opacity(0.85))
+                    .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor.opacity(0.85))
 
-                Text("Time Remaining")
+                Text(statusTitle)
                     .font(.largeTitle.weight(.semibold))
-                    .foregroundStyle(usesMutedStyle ? tint : timerTextColor.opacity(0.85))
+                    .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor.opacity(0.85))
 
-                Text("\(remainingSeconds)s")
-                    .font(.system(size: 180, weight: .bold, design: .rounded))
-                    .monospacedDigit()
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(1)
-                    .foregroundStyle(usesMutedStyle ? tint : timerTextColor)
+                if isActive {
+                    Text("\(remainingSeconds)s")
+                        .font(.system(size: 180, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
+                        .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor)
+                }
             }
             .scaleEffect(isPulsing ? 1.04 : 1.0)
             .animation(.easeOut(duration: 0.18), value: isPulsing)
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel("Time remaining")
-            .accessibilityValue("\(remainingSeconds) seconds")
+            .accessibilityLabel(statusTitle)
+            .accessibilityValue(isActive ? "\(remainingSeconds) seconds" : "")
 
             Spacer(minLength: 0)
 
@@ -1000,12 +1018,12 @@ private struct BeatTheClockLargeTimerView: View {
             .labelStyle(.iconOnly)
             .buttonStyle(.glass(.clear))
             .controlSize(.small)
-            .tint(usesMutedStyle ? tint : timerTextColor)
+            .tint(usesMutedStyle ? displayTint : vividTextColor)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(32)
         .background(
-            usesMutedStyle ? Color.clear : tint,
+            usesMutedStyle ? Color.clear : displayTint,
             in: RoundedRectangle(
                 cornerRadius: AppDesignMetrics.cardCornerRadius,
                 style: .continuous
@@ -1014,5 +1032,15 @@ private struct BeatTheClockLargeTimerView: View {
         .heroCardSurface()
         .padding(12)
         .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
+    }
+
+    private var statusTitle: LocalizedStringKey {
+        guard let resultIsCorrect else { return "Time Remaining" }
+        return resultIsCorrect ? "Correct" : "Incorrect"
+    }
+
+    private var statusSystemImage: String {
+        guard let resultIsCorrect else { return "timer" }
+        return resultIsCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"
     }
 }

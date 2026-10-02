@@ -518,6 +518,7 @@ struct QuizView: View {
                         tint: timerColor(for: remainingSeconds),
                         isPulsing: pulseOn,
                         isTimed: quizDifficulty == "normal" || quizDifficulty == "hard",
+                        resultIsCorrect: selectedOption.map { $0 == correctBookName },
                         usesMutedStyle: $usesMutedTimerStyle,
                         onSwapSides: {
                             withAnimation(.snappy) {
@@ -1340,6 +1341,7 @@ private struct QuizLargeTimerView: View {
     let tint: Color
     let isPulsing: Bool
     let isTimed: Bool
+    let resultIsCorrect: Bool?
     @Binding var usesMutedStyle: Bool
     let onSwapSides: () -> Void
 
@@ -1347,31 +1349,46 @@ private struct QuizLargeTimerView: View {
         remainingSeconds > 5 && remainingSeconds <= 10 ? .black : .white
     }
 
+    private var isActive: Bool {
+        isTimed && resultIsCorrect == nil
+    }
+
+    private var displayTint: Color {
+        guard isTimed, let resultIsCorrect else { return tint }
+        return resultIsCorrect ? .green : .red
+    }
+
+    private var vividTextColor: Color {
+        isActive ? timerTextColor : .white
+    }
+
     var body: some View {
         VStack(spacing: 16) {
             Spacer(minLength: 0)
 
             VStack(spacing: 24) {
-                Image(systemName: isTimed ? "timer" : "infinity")
+                Image(systemName: statusSystemImage)
                     .font(.system(size: 72, weight: .semibold))
-                    .foregroundStyle(usesMutedStyle ? Color.secondary : timerTextColor.opacity(0.85))
+                    .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor.opacity(0.85))
 
-                Text(isTimed ? "Time Remaining" : "Untimed Mode")
+                Text(statusTitle)
                     .font(.largeTitle.weight(.semibold))
-                    .foregroundStyle(usesMutedStyle ? tint : timerTextColor.opacity(0.85))
+                    .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor.opacity(0.85))
 
-                Text(isTimed ? "\(remainingSeconds)s" : "∞")
-                    .font(.system(size: 180, weight: .bold, design: .rounded))
-                    .monospacedDigit()
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(1)
-                    .foregroundStyle(usesMutedStyle ? tint : timerTextColor)
+                if isActive || !isTimed {
+                    Text(isTimed ? "\(remainingSeconds)s" : "∞")
+                        .font(.system(size: 180, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
+                        .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor)
+                }
             }
             .scaleEffect(isPulsing ? 1.04 : 1)
             .animation(.easeOut(duration: 0.18), value: isPulsing)
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(isTimed ? "Time remaining" : "Untimed mode")
-            .accessibilityValue(isTimed ? "\(remainingSeconds) seconds" : "No time limit")
+            .accessibilityLabel(statusTitle)
+            .accessibilityValue(isActive ? "\(remainingSeconds) seconds" : isTimed ? "" : "No time limit")
 
             Spacer(minLength: 0)
 
@@ -1390,7 +1407,7 @@ private struct QuizLargeTimerView: View {
             .labelStyle(.iconOnly)
             .buttonStyle(.glass(.clear))
             .controlSize(.small)
-            .tint(usesMutedStyle ? tint : timerTextColor)
+            .tint(usesMutedStyle ? displayTint : vividTextColor)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(32)
@@ -1400,18 +1417,30 @@ private struct QuizLargeTimerView: View {
                     .heroCardSurface()
             } else {
                 RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
-                    .fill(tint)
+                    .fill(displayTint)
             }
         }
         .overlay {
             if !usesMutedStyle {
                 RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
-                    .strokeBorder(timerTextColor.opacity(0.22), lineWidth: 1)
+                    .strokeBorder(vividTextColor.opacity(0.22), lineWidth: 1)
             }
         }
-        .shadow(color: usesMutedStyle ? .clear : tint.opacity(0.25), radius: 12, x: 0, y: 5)
+        .shadow(color: usesMutedStyle ? .clear : displayTint.opacity(0.25), radius: 12, x: 0, y: 5)
         .padding(12)
         .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
+    }
+
+    private var statusTitle: LocalizedStringKey {
+        guard isTimed else { return "Untimed Mode" }
+        guard let resultIsCorrect else { return "Time Remaining" }
+        return resultIsCorrect ? "Correct" : "Incorrect"
+    }
+
+    private var statusSystemImage: String {
+        guard isTimed else { return "infinity" }
+        guard let resultIsCorrect else { return "timer" }
+        return resultIsCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"
     }
 }
 
