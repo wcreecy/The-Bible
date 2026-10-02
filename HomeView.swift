@@ -191,6 +191,15 @@ struct HomeView: View {
         progressList.first
     }
 
+    private var progressVerseText: String? {
+        guard let progress,
+              let book = bibleStore.books.first(where: { $0.name == progress.bookName }),
+              let chapter = book.chapters.first(where: { $0.number == progress.chapterNumber }) else {
+            return nil
+        }
+        return chapter.verses.first(where: { $0.number == progress.verseNumber })?.text
+    }
+
     // Verse-of-the-Day: configurable times and scheduler (delegated to VM, keep keys observed)
     @AppStorage("votdRefreshFrequency") private var votdRefreshFrequency: String = VOTDRefreshFrequency.custom.rawValue
     @AppStorage("votdRefresh1Hour") private var votdRefresh1Hour: Int = 6
@@ -406,6 +415,8 @@ struct HomeView: View {
         case .resumeReading:
             ResumeReadingCard(
                 progress: progress,
+                verseText: progressVerseText,
+                usesCompactLayout: !isPad,
                 onOpenReference: { p in
                     NotificationCenter.default.post(
                         name: .openBibleReference,

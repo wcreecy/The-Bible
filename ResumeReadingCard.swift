@@ -2,18 +2,12 @@ import SwiftUI
 
 struct ResumeReadingCard: View {
     let progress: ReadingProgress?
+    let verseText: String?
+    let usesCompactLayout: Bool
     let onOpenReference: (ReadingProgress) -> Void
 
     var body: some View {
         if let progress {
-            let verseText: String? = {
-                if let book = BibleData.books.first(where: { $0.name == progress.bookName }),
-                   let chapter = book.chapters.first(where: { $0.number == progress.chapterNumber }) {
-                    return chapter.verses.first(where: { $0.number == progress.verseNumber })?.text
-                }
-                return nil
-            }()
-
             Button(action: { onOpenReference(progress) }) {
                 HeroCard(
                     title: "",
@@ -33,17 +27,35 @@ struct ResumeReadingCard: View {
                         Spacer()
                     }
 
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
-                            .font(.system(size: 17, weight: .semibold))
-                            .foregroundStyle(.primary)
+                    if usesCompactLayout {
+                        HStack(alignment: .firstTextBaseline, spacing: 6) {
+                            Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
+                                .font(.system(size: 17, weight: .semibold))
+                                .foregroundStyle(.primary)
+                                .lineLimit(1)
+                                .layoutPriority(1)
 
-                        if let verseText, !verseText.isEmpty {
-                            Text("“\(verseText)”")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(2)
-                                .truncationMode(.tail)
+                            if let verseText, !verseText.isEmpty {
+                                Text("“\(verseText)”")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                            }
+                        }
+                    } else {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
+                                .font(.system(size: 17, weight: .semibold))
+                                .foregroundStyle(.primary)
+
+                            if let verseText, !verseText.isEmpty {
+                                Text("“\(verseText)”")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(2)
+                                    .truncationMode(.tail)
+                            }
                         }
                     }
                 }
