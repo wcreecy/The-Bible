@@ -17,6 +17,7 @@ enum NoteCategory: String, CaseIterable, Identifiable {
 
 @Model
 final class VerseNote {
+    var title: String = ""
     var bookName: String = ""
     var chapterNumber: Int = 0
     var verseNumber: Int = 0

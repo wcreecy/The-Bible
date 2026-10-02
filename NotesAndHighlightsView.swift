@@ -41,6 +41,7 @@ struct VerseNoteEditorView: View {
     let verse: VerseActionReference
     let existingNote: VerseNote?
 
+    @State private var title: String
     @State private var noteText: AttributedString
     @State private var noteSelection = AttributedTextSelection()
     @State private var selectedColor: VerseHighlightColor?
@@ -51,7 +52,8 @@ struct VerseNoteEditorView: View {
     init(verse: VerseActionReference, existingNote: VerseNote?) {
         self.verse = verse
         self.existingNote = existingNote
-        _noteText = State(initialValue: Self.loadFormattedContent(from: existingNote))
+        _title = State(initialValue: existingNote?.title ?? "")
+        _noteText = State(initialValue: Self.loadFormattedContent(from: existingNote, verse: verse))
         _selectedColor = State(
             initialValue: existingNote.flatMap { VerseHighlightColor(rawValue: $0.highlightColor) }
         )
@@ -62,7 +64,10 @@ struct VerseNoteEditorView: View {
 
     var body: some View {
         Form {
-            VerseNotePassageSection(reference: verse)
+            Section("Title") {
+                TextField("Title", text: $title)
+                    .accessibilityLabel("Note title")
+            }
 
             Section("Highlight") {
                 HighlightColorPicker(selection: $selectedColor)
@@ -132,8 +137,14 @@ struct VerseNoteEditorView: View {
         String(noteText.characters).trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    private static func loadFormattedContent(from note: VerseNote?) -> AttributedString {
-        guard let note else { return AttributedString() }
+    private static func loadFormattedContent(
+        from note: VerseNote?,
+        verse: VerseActionReference
+    ) -> AttributedString {
+        guard let note else {
+            let reference = "\(verse.bookName) \(verse.chapterNumber):\(verse.verseNumber)"
+            return BibleReferenceLinker.linkify(AttributedString(reference))
+        }
         if let data = note.formattedContent,
            let formatted = try? JSONDecoder().decode(AttributedString.self, from: data) {
             return formatted
@@ -219,6 +230,7 @@ struct VerseNoteEditorView: View {
                     verseNumber: verse.verseNumber,
                     verseText: verse.verseText
                 )
+                note.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
                 note.content = trimmedNote
                 note.formattedContent = try JSONEncoder().encode(noteText)
                 note.highlightColor = selectedColor?.rawValue ?? ""
@@ -385,19 +397,6 @@ private struct NoteFormattingBar: View {
         }
         .buttonStyle(.borderless)
         .accessibilityLabel(accessibilityLabel)
-    }
-}
-
-private struct VerseNotePassageSection: View {
-    let reference: VerseActionReference
-
-    var body: some View {
-        Section {
-            Text(reference.verseText)
-            Text("\(reference.bookName) \(reference.chapterNumber):\(reference.verseNumber)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
     }
 }
 
@@ -637,6 +636,7 @@ struct NotesAndHighlightsView: View {
         let filtered = scriptureNotes.filter { note in
             matchesSelectedCategory(note.categoryRawValue) &&
             (searchText.isEmpty ||
+             note.title.localizedCaseInsensitiveContains(searchText) ||
              note.bookName.localizedCaseInsensitiveContains(searchText) ||
              note.verseText.localizedCaseInsensitiveContains(searchText) ||
              note.content.localizedCaseInsensitiveContains(searchText) ||
@@ -758,6 +758,7 @@ private struct NotesCollectionCard: View {
                                 selectedScriptureNote = note
                             } label: {
                                 NoteHighlightRow(
+                                    title: note.title,
                                     reference: "\(note.bookName) \(note.chapterNumber):\(note.verseNumber)",
                                     verseText: note.verseText,
                                     noteText: formattedContent(for: note),
@@ -885,6 +886,7 @@ private struct ScriptureNotesView: View {
                         selectedNote = note
                     } label: {
                         NoteHighlightRow(
+                            title: note.title,
                             reference: "\(note.bookName) \(note.chapterNumber):\(note.verseNumber)",
                             verseText: note.verseText,
                             noteText: formattedContent(for: note),
@@ -1034,6 +1036,7 @@ private struct ScriptureNotesView: View {
 }
 
 private struct NoteHighlightRow: View {
+    let title: String
     let reference: String
     let verseText: String
     let noteText: AttributedString
@@ -1054,9 +1057,14 @@ private struct NoteHighlightRow: View {
                 }
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(reference)
+                Text(title.isEmpty ? reference : title)
                     .font(.headline)
                     .foregroundStyle(.primary)
+                if !title.isEmpty {
+                    Text(reference)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
                 Text(verseText)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
