@@ -488,6 +488,8 @@ private enum NotesTabSort: String, CaseIterable, Identifiable {
     case createdNewest
     case createdOldest
     case highlightColor
+    case titleAscending
+    case titleDescending
 
     var id: String { rawValue }
 
@@ -498,11 +500,14 @@ private enum NotesTabSort: String, CaseIterable, Identifiable {
         case .createdNewest: "Created: Newest First"
         case .createdOldest: "Created: Oldest First"
         case .highlightColor: "Highlight Color"
+        case .titleAscending: "Title: A–Z"
+        case .titleDescending: "Title: Z–A"
         }
     }
 }
 
 private enum NotesFilter: String, CaseIterable, Identifiable {
+    case all
     case sermon
     case personal
     case scripture
@@ -511,9 +516,79 @@ private enum NotesFilter: String, CaseIterable, Identifiable {
 
     var title: LocalizedStringResource {
         switch self {
-        case .sermon: "Sermon Notes"
-        case .personal: "Personal Notes"
-        case .scripture: "Scripture Notes"
+        case .all: "All Tags"
+        case .sermon: "Sermon"
+        case .personal: "Personal"
+        case .scripture: "Scripture"
+        }
+    }
+}
+
+private enum NotesListItem: Identifiable {
+    enum ID: Hashable {
+        case scripture(PersistentIdentifier)
+        case user(PersistentIdentifier)
+    }
+
+    case scripture(VerseNote)
+    case user(UserNote)
+
+    var id: ID {
+        switch self {
+        case .scripture(let note): .scripture(note.persistentModelID)
+        case .user(let note): .user(note.persistentModelID)
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .scripture(let note):
+            note.title.isEmpty ? "\(note.bookName) \(note.chapterNumber):\(note.verseNumber)" : note.title
+        case .user(let note):
+            note.title.isEmpty ? "Untitled Note" : note.title
+        }
+    }
+
+    var categoryRawValue: String {
+        switch self {
+        case .scripture(let note): note.categoryRawValue
+        case .user(let note): note.categoryRawValue
+        }
+    }
+
+    var highlightColor: String {
+        switch self {
+        case .scripture(let note): note.highlightColor
+        case .user: ""
+        }
+    }
+
+    var createdAt: Date? {
+        switch self {
+        case .scripture(let note): note.createdAt
+        case .user(let note): note.createdAt
+        }
+    }
+
+    var updatedAt: Date? {
+        switch self {
+        case .scripture(let note): note.updatedAt
+        case .user(let note): note.updatedAt
+        }
+    }
+
+    func matchesSearch(_ searchText: String) -> Bool {
+        guard !searchText.isEmpty else { return true }
+        switch self {
+        case .scripture(let note):
+            return title.localizedCaseInsensitiveContains(searchText) ||
+                note.bookName.localizedCaseInsensitiveContains(searchText) ||
+                note.verseText.localizedCaseInsensitiveContains(searchText) ||
+                note.content.localizedCaseInsensitiveContains(searchText) ||
+                "\(note.chapterNumber):\(note.verseNumber)".localizedCaseInsensitiveContains(searchText)
+        case .user(let note):
+            return title.localizedCaseInsensitiveContains(searchText) ||
+                note.content.localizedCaseInsensitiveContains(searchText)
         }
     }
 }
@@ -548,7 +623,7 @@ struct NotesAndHighlightsView: View {
     @Query(sort: \UserNote.updatedAt, order: .reverse) private var userNotes: [UserNote]
 
     @AppStorage("notesTabSort") private var sortRawValue = NotesTabSort.modifiedNewest.rawValue
-    @State private var selectedFilter = NotesFilter.scripture
+    @State private var selectedFilter = NotesFilter.all
     @State private var highlightFilter = NotesHighlightFilter.all
     @State private var searchText = ""
     @State private var selectedScriptureNote: VerseNote?
@@ -558,13 +633,10 @@ struct NotesAndHighlightsView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            NotesFilterPicker(selection: $selectedFilter)
-
             GeometryReader { proxy in
                 HStack(spacing: 16) {
                     NotesListCard(
-                        scriptureNotes: visibleScriptureNotes,
-                        userNotes: visibleUserNotes,
+                        notes: visibleNotes,
                         selectedScriptureNote: $selectedScriptureNote,
                         selectedUserNote: $selectedUserNote
                     )
@@ -591,6 +663,14 @@ struct NotesAndHighlightsView: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Menu {
+                    Picker("Tag", selection: $selectedFilter) {
+                        ForEach(NotesFilter.allCases) { option in
+                            Text(option.title).tag(option)
+                        }
+                    }
+
+                    Divider()
+
                     Picker("Highlight Color", selection: $highlightFilter) {
                         ForEach(NotesHighlightFilter.allCases) { option in
                             Text(option.title).tag(option)
@@ -605,7 +685,7 @@ struct NotesAndHighlightsView: View {
                         }
                     }
                 } label: {
-                    Label("Sort", systemImage: "arrow.up.arrow.down")
+                    Label("Filter and Sort", systemImage: "line.3.horizontal.decrease.circle")
                 }
                 .accessibilityLabel("Filter and sort notes")
 
@@ -621,7 +701,7 @@ struct NotesAndHighlightsView: View {
             NavigationStack {
                 UserNoteEditorView(
                     existingNote: nil,
-                    defaultCategory: noteCategory
+                    defaultCategory: selectedFilter.noteCategory ?? .personal
                 )
             }
         }
@@ -643,47 +723,23 @@ struct NotesAndHighlightsView: View {
             }
         }
         .onAppear(perform: selectFirstVisibleNoteIfNeeded)
-        .onChange(of: selectedFilter) { _, _ in selectFirstVisibleNote() }
+        .onChange(of: selectedFilter) { _, _ in selectFirstVisibleNoteIfNeeded() }
         .onChange(of: highlightFilter) { _, _ in selectFirstVisibleNote() }
         .onChange(of: sortRawValue) { _, _ in selectFirstVisibleNoteIfNeeded() }
         .onChange(of: searchText) { _, _ in selectFirstVisibleNoteIfNeeded() }
     }
 
-    private var visibleScriptureNotes: [VerseNote] {
-        let filtered = scriptureNotes.filter { note in
+    private var visibleNotes: [NotesListItem] {
+        let allNotes = scriptureNotes.map(NotesListItem.scripture) + userNotes.map(NotesListItem.user)
+        return sort(allNotes.filter { note in
             matchesSelectedCategory(note.categoryRawValue) &&
-            matchesHighlight(note.highlightColor) &&
-            (searchText.isEmpty ||
-             note.title.localizedCaseInsensitiveContains(searchText) ||
-             note.bookName.localizedCaseInsensitiveContains(searchText) ||
-             note.verseText.localizedCaseInsensitiveContains(searchText) ||
-             note.content.localizedCaseInsensitiveContains(searchText) ||
-             "\(note.chapterNumber):\(note.verseNumber)".localizedCaseInsensitiveContains(searchText))
-        }
-        return sort(filtered)
-    }
-
-    private var visibleUserNotes: [UserNote] {
-        let filtered = userNotes.filter { note in
-            matchesSelectedCategory(note.categoryRawValue) &&
-            (highlightFilter == .all || highlightFilter == .none) &&
-            (searchText.isEmpty ||
-             note.title.localizedCaseInsensitiveContains(searchText) ||
-             note.content.localizedCaseInsensitiveContains(searchText))
-        }
-        return sort(filtered)
+                matchesHighlight(note.highlightColor) &&
+                note.matchesSearch(searchText)
+        })
     }
 
     private func matchesSelectedCategory(_ rawValue: String) -> Bool {
-        rawValue == noteCategory.rawValue
-    }
-
-    private var noteCategory: NoteCategory {
-        switch selectedFilter {
-        case .sermon: .sermon
-        case .personal: .personal
-        case .scripture: .scripture
-        }
+        selectedFilter == .all || rawValue == selectedFilter.rawValue
     }
 
     private func matchesHighlight(_ rawValue: String) -> Bool {
@@ -694,7 +750,7 @@ struct NotesAndHighlightsView: View {
         }
     }
 
-    private func sort(_ notes: [VerseNote]) -> [VerseNote] {
+    private func sort(_ notes: [NotesListItem]) -> [NotesListItem] {
         let selectedSort = NotesTabSort(rawValue: sortRawValue) ?? .modifiedNewest
         switch selectedSort {
         case .modifiedNewest:
@@ -707,22 +763,10 @@ struct NotesAndHighlightsView: View {
             return notes.sorted { ($0.createdAt ?? .distantPast) < ($1.createdAt ?? .distantPast) }
         case .highlightColor:
             return notes.sorted { $0.highlightColor < $1.highlightColor }
-        }
-    }
-
-    private func sort(_ notes: [UserNote]) -> [UserNote] {
-        let selectedSort = NotesTabSort(rawValue: sortRawValue) ?? .modifiedNewest
-        switch selectedSort {
-        case .modifiedNewest:
-            return notes.sorted { ($0.updatedAt ?? .distantPast) > ($1.updatedAt ?? .distantPast) }
-        case .modifiedOldest:
-            return notes.sorted { ($0.updatedAt ?? .distantPast) < ($1.updatedAt ?? .distantPast) }
-        case .createdNewest:
-            return notes.sorted { ($0.createdAt ?? .distantPast) > ($1.createdAt ?? .distantPast) }
-        case .createdOldest:
-            return notes.sorted { ($0.createdAt ?? .distantPast) < ($1.createdAt ?? .distantPast) }
-        case .highlightColor:
-            return notes.sorted { ($0.updatedAt ?? .distantPast) > ($1.updatedAt ?? .distantPast) }
+        case .titleAscending:
+            return notes.sorted { $0.title.localizedStandardCompare($1.title) == .orderedAscending }
+        case .titleDescending:
+            return notes.sorted { $0.title.localizedStandardCompare($1.title) == .orderedDescending }
         }
     }
 
@@ -740,10 +784,16 @@ struct NotesAndHighlightsView: View {
 
     private func selectFirstVisibleNoteIfNeeded() {
         let scriptureSelectionIsVisible = selectedScriptureNote.map { selected in
-            visibleScriptureNotes.contains { $0 === selected }
+            visibleNotes.contains {
+                if case .scripture(let note) = $0 { return note === selected }
+                return false
+            }
         } ?? false
         let userSelectionIsVisible = selectedUserNote.map { selected in
-            visibleUserNotes.contains { $0 === selected }
+            visibleNotes.contains {
+                if case .user(let note) = $0 { return note === selected }
+                return false
+            }
         } ?? false
 
         if !scriptureSelectionIsVisible && !userSelectionIsVisible {
@@ -752,30 +802,35 @@ struct NotesAndHighlightsView: View {
     }
 
     private func selectFirstVisibleNote() {
-        selectedScriptureNote = visibleScriptureNotes.first
-        selectedUserNote = selectedScriptureNote == nil ? visibleUserNotes.first : nil
+        switch visibleNotes.first {
+        case .scripture(let note):
+            selectedScriptureNote = note
+            selectedUserNote = nil
+        case .user(let note):
+            selectedScriptureNote = nil
+            selectedUserNote = note
+        case nil:
+            selectedScriptureNote = nil
+            selectedUserNote = nil
+        }
     }
 }
 
-private struct NotesFilterPicker: View {
-    @Binding var selection: NotesFilter
-
-    var body: some View {
-        Picker("Note Type", selection: $selection) {
-            ForEach(NotesFilter.allCases) { filter in
-                Text(filter.title).tag(filter)
-            }
+private extension NotesFilter {
+    var noteCategory: NoteCategory? {
+        switch self {
+        case .all: nil
+        case .sermon: .sermon
+        case .personal: .personal
+        case .scripture: .scripture
         }
-        .pickerStyle(.segmented)
-        .accessibilityLabel("Filter notes")
     }
 }
 
 private struct NotesListCard: View {
     @Environment(\.modelContext) private var modelContext
 
-    let scriptureNotes: [VerseNote]
-    let userNotes: [UserNote]
+    let notes: [NotesListItem]
     @Binding var selectedScriptureNote: VerseNote?
     @Binding var selectedUserNote: UserNote?
 
@@ -789,41 +844,42 @@ private struct NotesListCard: View {
 
             ScrollView {
                 LazyVStack(spacing: 4) {
-                if scriptureNotes.isEmpty && userNotes.isEmpty {
+                if notes.isEmpty {
                     ContentUnavailableView(
                         "No Notes",
                         systemImage: "note.text",
-                        description: Text("Try another category, color, date order, or search.")
+                        description: Text("Try another tag, color, sort order, or search.")
                     )
                     .padding(.top, 40)
                 } else {
-                    ForEach(scriptureNotes) { note in
-                        NotesTitleButton(
-                            title: note.title.isEmpty
-                                ? "\(note.bookName) \(note.chapterNumber):\(note.verseNumber)"
-                                : note.title,
-                            highlight: VerseHighlightColor(rawValue: note.highlightColor),
-                            isSelected: selectedScriptureNote === note
-                        ) {
-                            selectedScriptureNote = note
-                            selectedUserNote = nil
-                        }
-                        .contextMenu {
-                            Button("Delete", systemImage: "trash", role: .destructive) { delete(note) }
-                        }
-                    }
-
-                    ForEach(userNotes) { note in
-                        NotesTitleButton(
-                            title: note.title.isEmpty ? "Untitled Note" : note.title,
-                            highlight: nil,
-                            isSelected: selectedUserNote === note
-                        ) {
-                            selectedUserNote = note
-                            selectedScriptureNote = nil
-                        }
-                        .contextMenu {
-                            Button("Delete", systemImage: "trash", role: .destructive) { delete(note) }
+                    ForEach(notes) { item in
+                        switch item {
+                        case .scripture(let note):
+                            NotesTitleButton(
+                                title: item.title,
+                                tag: NoteCategory(rawValue: note.categoryRawValue)?.title,
+                                highlight: VerseHighlightColor(rawValue: note.highlightColor),
+                                isSelected: selectedScriptureNote === note
+                            ) {
+                                selectedScriptureNote = note
+                                selectedUserNote = nil
+                            }
+                            .contextMenu {
+                                Button("Delete", systemImage: "trash", role: .destructive) { delete(note) }
+                            }
+                        case .user(let note):
+                            NotesTitleButton(
+                                title: item.title,
+                                tag: NoteCategory(rawValue: note.categoryRawValue)?.title,
+                                highlight: nil,
+                                isSelected: selectedUserNote === note
+                            ) {
+                                selectedUserNote = note
+                                selectedScriptureNote = nil
+                            }
+                            .contextMenu {
+                                Button("Delete", systemImage: "trash", role: .destructive) { delete(note) }
+                            }
                         }
                     }
                 }
@@ -855,6 +911,7 @@ private struct NotesListCard: View {
 
 private struct NotesTitleButton: View {
     let title: String
+    let tag: LocalizedStringResource?
     let highlight: VerseHighlightColor?
     let isSelected: Bool
     let action: () -> Void
@@ -866,10 +923,17 @@ private struct NotesTitleButton: View {
                     .fill(highlight?.color ?? .secondary.opacity(0.25))
                     .frame(width: 8, height: 8)
 
-                Text(title)
-                    .font(.subheadline.weight(isSelected ? .semibold : .regular))
-                    .foregroundStyle(.primary)
-                    .lineLimit(2)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.subheadline.weight(isSelected ? .semibold : .regular))
+                        .foregroundStyle(.primary)
+                        .lineLimit(2)
+                    if let tag {
+                        Text(tag)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
 
                 Spacer(minLength: 0)
             }
