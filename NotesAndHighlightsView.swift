@@ -37,6 +37,7 @@ struct VerseNoteEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.fontResolutionContext) private var fontResolutionContext
     @Environment(\.modelContext) private var modelContext
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     let verse: VerseActionReference
     let existingNote: VerseNote?
@@ -65,6 +66,10 @@ struct VerseNoteEditorView: View {
     var body: some View {
         VStack(spacing: 14) {
             NoteEditorTitleField(title: $title, placeholder: "Scripture note title")
+
+            if contextualTipsEnabled {
+                ScriptureReferenceLinkTip()
+            }
 
             ScriptureEditorReferenceCard(
                 reference: "\(verse.bookName) \(verse.chapterNumber):\(verse.verseNumber)",
@@ -393,6 +398,16 @@ private struct NoteEditorTitleField: View {
             .textFieldStyle(.plain)
             .padding(.horizontal, 2)
             .accessibilityLabel("Note title")
+    }
+}
+
+private struct ScriptureReferenceLinkTip: View {
+    var body: some View {
+        ContextualTipView(
+            title: "Link Scripture references",
+            message: "Type a reference such as John 3:16 in your note. It automatically becomes a tappable link with a Scripture preview.",
+            systemImage: "link.badge.plus"
+        )
     }
 }
 
@@ -1494,7 +1509,10 @@ private struct NoteDetailHeader: View {
                 }
                 .accessibilityLabel("Share note")
 
-                Button("Edit", systemImage: "pencil", action: editAction)
+                Button(action: editAction) {
+                    Image(systemName: "pencil")
+                }
+                .accessibilityLabel("Edit note")
             }
             .buttonStyle(.bordered)
         }
@@ -1879,6 +1897,7 @@ private struct UserNoteEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.fontResolutionContext) private var fontResolutionContext
     @Environment(\.modelContext) private var modelContext
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     let existingNote: UserNote?
 
@@ -1901,6 +1920,10 @@ private struct UserNoteEditorView: View {
     var body: some View {
         VStack(spacing: 14) {
             NoteEditorTitleField(title: $title, placeholder: "Note title")
+
+            if contextualTipsEnabled {
+                ScriptureReferenceLinkTip()
+            }
 
             HStack {
                 NoteCategoryMenu(category: $selectedCategory)
