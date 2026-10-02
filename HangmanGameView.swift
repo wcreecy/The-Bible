@@ -353,8 +353,7 @@ struct HangmanGameView: View {
             }
         } drawing: {
             HangmanDrawing(
-                revealedCount: piecesRevealed(),
-                totalPieces: 10
+                progress: Double(wrongGuesses) / Double(max(1, maxWrong))
             )
             .frame(height: usesWideLayout ? 280 : drawingHeight)
             .padding(.horizontal, 12)
@@ -494,14 +493,6 @@ struct HangmanGameView: View {
         if wrongGuesses >= maxWrong && started && !roundOver {
             endRound(win: false)
         }
-    }
-
-    private func piecesRevealed() -> Int {
-        let clampedMax = max(1, maxWrong)
-        let fraction = Double(min(wrongGuesses, clampedMax)) / Double(clampedMax)
-        let totalPieces = 10
-        let count = Int(round(fraction * Double(totalPieces)))
-        return max(0, min(totalPieces, count))
     }
 
     private func iconName(for theme: Theme) -> String {
@@ -1057,137 +1048,45 @@ private struct HangmanResponsiveLayout<
 // MARK: - Hangman Drawing
 
 private struct HangmanDrawing: View {
-    let revealedCount: Int
-    let totalPieces: Int
+    let progress: Double
 
-    @Environment(\.colorScheme) private var scheme
+    private var clampedProgress: Double {
+        min(max(progress, 0), 1)
+    }
 
-    private var stroke: Color {
-        scheme == .dark ? Color.white.opacity(0.9) : Color.black.opacity(0.85)
+    private var fillColor: Color {
+        if clampedProgress >= 0.75 { return .red }
+        if clampedProgress >= 0.4 { return .orange }
+        return .teal
     }
 
     var body: some View {
         GeometryReader { geo in
-            let w = geo.size.width
-            let h = geo.size.height
-
-            // Tight virtual width (64); height 140
-            let scaleX = w / 64.0
-            let scaleY = h / 140.0
+            let characterHeight = min(geo.size.height, 310)
+            let characterWidth = min(geo.size.width * 0.72, characterHeight * 0.62)
 
             ZStack {
-                Group {
-                    if revealedCount >= 1 { base(scaleX: scaleX, scaleY: scaleY) }
-                    if revealedCount >= 2 { pole(scaleX: scaleX, scaleY: scaleY) }
-                    if revealedCount >= 3 { beam(scaleX: scaleX, scaleY: scaleY) }
-                    if revealedCount >= 4 { rope(scaleX: scaleX, scaleY: scaleY) }
-                    if revealedCount >= 5 { head(scaleX: scaleX, scaleY: scaleY) }
-                    if revealedCount >= 6 { torso(scaleX: scaleX, scaleY: scaleY) }
-                    if revealedCount >= 7 { leftArm(scaleX: scaleX, scaleY: scaleY) }
-                    if revealedCount >= 8 { rightArm(scaleX: scaleX, scaleY: scaleY) }
-                    if revealedCount >= 9 { leftLeg(scaleX: scaleX, scaleY: scaleY) }
-                    if revealedCount >= 10 { rightLeg(scaleX: scaleX, scaleY: scaleY) }
-                }
-                .animation(.easeInOut(duration: 0.25), value: revealedCount)
+                Image(systemName: "figure.stand")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(Color.secondary.opacity(0.16))
+
+                Image(systemName: "figure.stand")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(fillColor.gradient)
+                    .mask(alignment: .bottom) {
+                        Rectangle()
+                            .frame(height: characterHeight * clampedProgress)
+                    }
             }
-            .frame(width: w, height: h)
+            .frame(width: characterWidth, height: characterHeight)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .animation(.easeInOut(duration: 0.35), value: clampedProgress)
         }
-    }
-
-    // Base: shorter but still connected to the pole at x=16 (end from 38 -> 34).
-    private func base(scaleX: CGFloat, scaleY: CGFloat) -> some View {
-        Path { p in
-            p.move(to: CGPoint(x: 16 * scaleX, y: 130 * scaleY))
-            p.addLine(to: CGPoint(x: 34 * scaleX, y: 130 * scaleY))
-        }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 3.0, lineCap: .round))
-        .transition(.opacity)
-    }
-
-    // Pole at x=16
-    private func pole(scaleX: CGFloat, scaleY: CGFloat) -> some View {
-        Path { p in
-            p.move(to: CGPoint(x: 16 * scaleX, y: 130 * scaleY))
-            p.addLine(to: CGPoint(x: 16 * scaleX, y: 24 * scaleY))
-        }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 3.0, lineCap: .round))
-        .transition(.opacity)
-    }
-
-    // Beam cut in half: 16 → 32
-    private func beam(scaleX: CGFloat, scaleY: CGFloat) -> some View {
-        Path { p in
-            p.move(to: CGPoint(x: 16 * scaleX, y: 24 * scaleY))
-            p.addLine(to: CGPoint(x: 32 * scaleX, y: 24 * scaleY))
-        }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 3.0, lineCap: .round))
-        .transition(.opacity)
-    }
-
-    // Rope at x=32
-    private func rope(scaleX: CGFloat, scaleY: CGFloat) -> some View {
-        Path { p in
-            p.move(to: CGPoint(x: 32 * scaleX, y: 24 * scaleY))
-            p.addLine(to: CGPoint(x: 32 * scaleX, y: 38 * scaleY))
-        }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 2.6, lineCap: .round))
-        .transition(.opacity)
-    }
-
-    // Head centered at x=32 — make a little bigger (diameter 16 instead of 14)
-    private func head(scaleX: CGFloat, scaleY: CGFloat) -> some View {
-        Circle()
-            .stroke(stroke, lineWidth: 2.6)
-            .frame(width: 16 * scaleX, height: 16 * scaleY)
-            .position(x: 32 * scaleX, y: 46 * scaleY)
-            .transition(.opacity)
-    }
-
-    private func torso(scaleX: CGFloat, scaleY: CGFloat) -> some View {
-        Path { p in
-            p.move(to: CGPoint(x: 32 * scaleX, y: 54 * scaleY))
-            p.addLine(to: CGPoint(x: 32 * scaleX, y: 88 * scaleY))
-        }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 2.6, lineCap: .round))
-        .transition(.opacity)
-    }
-
-    // Arms shorter (endpoints moved slightly inward/up)
-    private func leftArm(scaleX: CGFloat, scaleY: CGFloat) -> some View {
-        Path { p in
-            p.move(to: CGPoint(x: 32 * scaleX, y: 62 * scaleY))
-            p.addLine(to: CGPoint(x: 28.5 * scaleX, y: 68 * scaleY))
-        }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 2.6, lineCap: .round))
-        .transition(.opacity)
-    }
-
-    private func rightArm(scaleX: CGFloat, scaleY: CGFloat) -> some View {
-        Path { p in
-            p.move(to: CGPoint(x: 32 * scaleX, y: 62 * scaleY))
-            p.addLine(to: CGPoint(x: 35.5 * scaleX, y: 68 * scaleY))
-        }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 2.6, lineCap: .round))
-        .transition(.opacity)
-    }
-
-    // Legs shorter (endpoints moved slightly inward/up)
-    private func leftLeg(scaleX: CGFloat, scaleY: CGFloat) -> some View {
-        Path { p in
-            p.move(to: CGPoint(x: 32 * scaleX, y: 88 * scaleY))
-            p.addLine(to: CGPoint(x: 29 * scaleX, y: 98 * scaleY))
-        }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 2.6, lineCap: .round))
-        .transition(.opacity)
-    }
-
-    private func rightLeg(scaleX: CGFloat, scaleY: CGFloat) -> some View {
-        Path { p in
-            p.move(to: CGPoint(x: 32 * scaleX, y: 88 * scaleY))
-            p.addLine(to: CGPoint(x: 35 * scaleX, y: 98 * scaleY))
-        }
-        .stroke(stroke, style: StrokeStyle(lineWidth: 2.6, lineCap: .round))
-        .transition(.opacity)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Mistake meter")
+        .accessibilityValue("\(Int((clampedProgress * 100).rounded())) percent filled")
     }
 }
 
