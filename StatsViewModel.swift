@@ -33,7 +33,7 @@ final class StatsViewModel {
 
     // Charts datasets and consistency
     var last7Daily: [(date: Date, seconds: Int)] = []
-    var sessionsLast7: [(index: Int, seconds: Int)] = []
+    var dailyAverageSessionsLast7: [(date: Date, seconds: Int)] = []
     private(set) var refreshRevision: Int = 0
     var avgSessionSecondsLast7: Int = 0
     var last30Daily: [(date: Date, seconds: Int)] = []
@@ -181,9 +181,12 @@ final class StatsViewModel {
         let sessionsIn7Days = sessions.filter { $0.end >= cutoff }
             .sorted { $0.end < $1.end }
         avgSessionSecondsLast7 = StatsSeriesBuilder.averageSessionLength(sessions: sessionsIn7Days)
-        sessionsLast7 = StatsSeriesBuilder.sessionDurations(sessions: sessionsIn7Days).enumerated().map { (idx, durSec) in
-            return (index: idx + 1, seconds: durSec)
-        }
+        dailyAverageSessionsLast7 = StatsSeriesBuilder.dailyAverageSessionLengths(
+            sessions: sessionsIn7Days,
+            days: 7,
+            now: now,
+            calendar: calendar
+        )
 
         lastSessionSeconds = sessions.max(by: { $0.end < $1.end })
             .map(ReadingSessionsStore.duration(of:)) ?? 0

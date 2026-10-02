@@ -228,8 +228,10 @@ private struct SettingsDeveloperSection: View {
                 titleVisibility: .visible
             ) {
                 Button("Generate Data") {
-                    DeveloperSampleData.generate()
-                    showingCompletion = true
+                    Task {
+                        await DeveloperSampleData.generate()
+                        showingCompletion = true
+                    }
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {

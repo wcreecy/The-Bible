@@ -3,8 +3,9 @@ import Foundation
 
 @MainActor
 enum DeveloperSampleData {
-    static func generate() {
-        generateReadingStats()
+    static func generate() async {
+        let books = await BibleRepository.shared.loadAllBooks()
+        generateReadingStats(books: books)
         generateGameStats()
         generateAppUsageSplit()
 
@@ -12,16 +13,17 @@ enum DeveloperSampleData {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    private static func generateReadingStats() {
+    private static func generateReadingStats(books: [Book]) {
         let store = BibleStatsStore.shared
         let calendar = Calendar.autoupdatingCurrent
-        let books = BibleData.books
         guard !books.isEmpty else { return }
 
+        let now = Date()
         var contributions = store.loadReadingContributions()
+        var sessions: [ReadingSessionsStore.Session] = []
 
         for dayOffset in 0..<90 {
-            guard let date = calendar.date(byAdding: .day, value: -dayOffset, to: Date()) else {
+            guard let date = calendar.date(byAdding: .day, value: -dayOffset, to: now) else {
                 continue
             }
 
@@ -32,19 +34,44 @@ enum DeveloperSampleData {
 
             let dayKey = BibleStatsStore.isoDateString(date, calendar: calendar)
             let sessionCount = Int.random(in: 1...3)
+            let startOfDay = calendar.startOfDay(for: date)
+            let latestEnd = dayOffset == 0
+                ? now
+                : calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? date
 
             for _ in 0..<sessionCount {
                 guard let book = books.randomElement() else { continue }
                 let seconds = Int.random(in: 4...32) * 60
+                let availableStartSeconds = max(
+                    0,
+                    Int(latestEnd.timeIntervalSince(startOfDay)) - seconds
+                )
+                let startOffset = availableStartSeconds > 0
+                    ? Int.random(in: 0...availableStartSeconds)
+                    : 0
+                let sessionStart = startOfDay.addingTimeInterval(TimeInterval(startOffset))
+                let sessionEnd = min(
+                    sessionStart.addingTimeInterval(TimeInterval(seconds)),
+                    latestEnd
+                )
+
                 contributions[dayKey, default: [:]][book.name, default: [:]][
                     "developer-sample",
                     default: 0
                 ] += seconds
+                sessions.append(.init(
+                    readingSessionID: UUID(),
+                    start: sessionStart,
+                    end: sessionEnd,
+                    book: book.name,
+                    chapter: book.chapters.randomElement()?.number
+                ))
             }
         }
 
         store.cacheReadingContributions = contributions
         store.saveJSON(contributions, key: BibleStatsStore.Defaults.keyReadingContributions)
+        ReadingSessionsStore.shared.appendSessions(sessions)
 
         if let book = books.randomElement(), let chapter = book.chapters.randomElement() {
             store.saveLastRead(

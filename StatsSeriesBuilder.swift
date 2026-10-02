@@ -21,6 +21,34 @@ struct StatsSeriesBuilder {
         }.sorted()
     }
 
+    static func dailyAverageSessionLengths(
+        sessions: [ReadingSessionsStore.Session],
+        days: Int,
+        now: Date = Date(),
+        calendar: Calendar = .autoupdatingCurrent
+    ) -> [(date: Date, seconds: Int)] {
+        guard days > 0 else { return [] }
+
+        let startDate = ReadingSessionsStore.startDate(
+            forLastDays: days,
+            now: now,
+            calendar: calendar
+        )
+        let recentSessions = sessions.filter {
+            ReadingSessionsStore.isValid($0) && $0.start >= startDate && $0.start <= now
+        }
+        let sessionsByDay = Dictionary(grouping: recentSessions) {
+            calendar.startOfDay(for: $0.start)
+        }
+
+        return sessionsByDay.compactMap { date, sessionsForDay in
+            let durations = sessionDurations(sessions: sessionsForDay)
+            guard !durations.isEmpty else { return nil }
+            return (date: date, seconds: durations.reduce(0, +) / durations.count)
+        }
+        .sorted { $0.date < $1.date }
+    }
+
     enum Genre: String, CaseIterable, Identifiable {
         case Law = "Law"
         case History = "History"

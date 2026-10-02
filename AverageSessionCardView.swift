@@ -3,18 +3,18 @@ import Charts
 
 struct AverageSessionCardView: View {
     let title: String
-    let sessionsSeries: [(index: Int, seconds: Int)]
+    let dailyAverages: [(date: Date, seconds: Int)]
     let avgSessionSeconds: Int
     let formatSeconds: (Int) -> String
 
     init(
         title: String = "Average Session Length",
-        sessionsSeries: [(index: Int, seconds: Int)],
+        dailyAverages: [(date: Date, seconds: Int)],
         avgSessionSeconds: Int,
         formatSeconds: @escaping (Int) -> String
     ) {
         self.title = title
-        self.sessionsSeries = sessionsSeries
+        self.dailyAverages = dailyAverages
         self.avgSessionSeconds = avgSessionSeconds
         self.formatSeconds = formatSeconds
     }
@@ -22,35 +22,62 @@ struct AverageSessionCardView: View {
     var body: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text(title)
-                        .font(.headline)
+                HStack(alignment: .firstTextBaseline) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(title)
+                            .font(.headline)
+                        Text("Daily averages for active days · Sessions ≥ 1 min")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
                     Spacer()
-                    Text("Avg (last 7 days): \(formatSeconds(avgSessionSeconds))")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
+
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text("7-day average")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text(formatSeconds(avgSessionSeconds))
+                            .font(.subheadline)
+                            .monospacedDigit()
+                    }
                 }
 
-                if !sessionsSeries.isEmpty {
+                if !dailyAverages.isEmpty {
                     Chart {
-                        ForEach(sessionsSeries, id: \.index) { point in
+                        ForEach(dailyAverages, id: \.date) { point in
                             LineMark(
-                                x: .value("Session", point.index),
-                                y: .value("Minutes", Double(point.seconds) / 60.0)
+                                x: .value("Date", point.date),
+                                y: .value("Average minutes", Double(point.seconds) / 60.0)
                             )
                             .foregroundStyle(.teal)
+                            .interpolationMethod(.catmullRom)
+
                             PointMark(
-                                x: .value("Session", point.index),
-                                y: .value("Minutes", Double(point.seconds) / 60.0)
+                                x: .value("Date", point.date),
+                                y: .value("Average minutes", Double(point.seconds) / 60.0)
                             )
                             .foregroundStyle(.teal)
+                            .symbolSize(45)
                         }
                     }
-                    // Ensure a non-zero y-domain even when all points are zero
-                    .chartYScale(domain: 0...max(1, maxMinutes))
+                    .chartYScale(domain: 0...max(1, maxMinutes * 1.1))
+                    .chartXAxis {
+                        AxisMarks(values: .stride(by: .day)) {
+                            AxisGridLine()
+                            AxisTick()
+                            AxisValueLabel(format: .dateTime.weekday(.abbreviated))
+                        }
+                    }
+                    .chartYAxis {
+                        AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) {
+                            AxisGridLine()
+                            AxisTick()
+                            AxisValueLabel()
+                        }
+                    }
                     .chartYAxisLabel("Minutes")
-                    .chartXAxisLabel("Sessions")
+                    .chartXAxisLabel("Date")
                     .frame(height: 180)
                 } else {
                     ContentUnavailableView("No recent sessions", systemImage: "chart.line.uptrend.xyaxis")
@@ -60,7 +87,7 @@ struct AverageSessionCardView: View {
     }
 
     private var maxMinutes: Double {
-        guard !sessionsSeries.isEmpty else { return 0 }
-        return sessionsSeries.map { Double(max(0, $0.seconds)) / 60.0 }.max() ?? 0
+        guard !dailyAverages.isEmpty else { return 0 }
+        return dailyAverages.map { Double(max(0, $0.seconds)) / 60.0 }.max() ?? 0
     }
 }

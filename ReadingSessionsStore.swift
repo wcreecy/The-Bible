@@ -5,7 +5,7 @@ import Foundation
 @MainActor
 final class ReadingSessionsStore {
     static let shared = ReadingSessionsStore()
-    static let minimumValidSessionSeconds = 10
+    static let minimumValidSessionSeconds = 60
     private init() {
         // Invalidate cache when external merges happen (iCloud KVS or other writers)
         NotificationCenter.default.addObserver(
@@ -49,9 +49,15 @@ final class ReadingSessionsStore {
     // MARK: - Public API
 
     func appendSession(_ session: Session) {
-        guard Self.isValid(session) else { return }
+        appendSessions([session])
+    }
+
+    func appendSessions(_ sessions: [Session]) {
+        let validSessions = sessions.filter(Self.isValid)
+        guard !validSessions.isEmpty else { return }
+
         var all = loadAll()
-        all.append(session)
+        all.append(contentsOf: validSessions)
         saveAll(all)
     }
 

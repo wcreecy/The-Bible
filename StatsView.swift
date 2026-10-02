@@ -462,7 +462,7 @@ struct StatsView: View {
 
     private var avgSessionCard: some View {
         AverageSessionCardView(
-            sessionsSeries: model.sessionsLast7,
+            dailyAverages: model.dailyAverageSessionsLast7,
             avgSessionSeconds: model.avgSessionSecondsLast7,
             formatSeconds: { BibleStatsStore.shared.format($0) }
         )

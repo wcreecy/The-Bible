@@ -131,24 +131,24 @@ struct The_Bible__iOS_Tests {
     }
 
     @Test
-    func sessionAnalyticsUseOneMinimumDuration() {
+    func sessionAnalyticsRequireAtLeastOneMinute() {
         let start = Date(timeIntervalSince1970: 1_000)
-        let noise = ReadingSessionsStore.Session(
+        let tooShort = ReadingSessionsStore.Session(
             start: start,
-            end: start.addingTimeInterval(9),
+            end: start.addingTimeInterval(59),
             book: "John",
             chapter: 1
         )
         let valid = ReadingSessionsStore.Session(
             start: start,
-            end: start.addingTimeInterval(70),
+            end: start.addingTimeInterval(60),
             book: "John",
             chapter: 1
         )
 
-        #expect(!ReadingSessionsStore.isValid(noise))
+        #expect(!ReadingSessionsStore.isValid(tooShort))
         #expect(ReadingSessionsStore.isValid(valid))
-        #expect(StatsSeriesBuilder.averageSessionLength(sessions: [noise, valid]) == 70)
+        #expect(StatsSeriesBuilder.averageSessionLength(sessions: [tooShort, valid]) == 60)
     }
 
     @Test
@@ -174,6 +174,52 @@ struct The_Bible__iOS_Tests {
 
         #expect(durations == [300])
         #expect(StatsSeriesBuilder.averageSessionLength(sessions: [firstChapter, secondChapter]) == 300)
+    }
+
+    @Test
+    func dailySessionAveragesAreGroupedByCalendarDay() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try #require(TimeZone(secondsFromGMT: 0))
+        let firstDay = try #require(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 28, hour: 10))
+        )
+        let secondDay = try #require(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 29, hour: 10))
+        )
+        let sessions = [
+            ReadingSessionsStore.Session(
+                start: firstDay,
+                end: firstDay.addingTimeInterval(600),
+                book: "John",
+                chapter: 1
+            ),
+            ReadingSessionsStore.Session(
+                start: firstDay.addingTimeInterval(3_600),
+                end: firstDay.addingTimeInterval(4_800),
+                book: "John",
+                chapter: 2
+            ),
+            ReadingSessionsStore.Session(
+                start: secondDay,
+                end: secondDay.addingTimeInterval(1_800),
+                book: "Acts",
+                chapter: 1
+            )
+        ]
+
+        let averages = StatsSeriesBuilder.dailyAverageSessionLengths(
+            sessions: sessions,
+            days: 7,
+            now: secondDay.addingTimeInterval(3_600),
+            calendar: calendar
+        )
+
+        #expect(averages.count == 2)
+        #expect(averages.map(\.seconds) == [900, 1_800])
+        #expect(averages.map(\.date) == [
+            calendar.startOfDay(for: firstDay),
+            calendar.startOfDay(for: secondDay)
+        ])
     }
 
     @Test
