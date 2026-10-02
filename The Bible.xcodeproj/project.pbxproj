@@ -61,6 +61,7 @@
 		2C2A45042EEE34B100FE8C2F /* SettingsHomeLayoutSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A45032EEE34B100FE8C2F /* SettingsHomeLayoutSection.swift */; };
 		2C2A45062EEE34F200FE8C2F /* SettingsiCloudSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A45052EEE34F200FE8C2F /* SettingsiCloudSection.swift */; };
 		2C2A45082EEE351E00FE8C2F /* SettingsResetDataSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A45072EEE351E00FE8C2F /* SettingsResetDataSection.swift */; };
+		2C2BBFAA30702B6900BD4A07 /* VerseToRememberCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2BBFA930702B6900BD4A07 /* VerseToRememberCard.swift */; };
 		2C33952B2EED9D8B00E8CA41 /* Color+GamerScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33952A2EED9D8B00E8CA41 /* Color+GamerScore.swift */; };
 		2C33952D2EEDCB3D00E8CA41 /* ProgressRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33952C2EEDCB3D00E8CA41 /* ProgressRing.swift */; };
 		2C3395312EEDCB4300E8CA41 /* BookChaptersDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3395302EEDCB4300E8CA41 /* BookChaptersDetailView.swift */; };
@@ -272,6 +273,7 @@
 		2C2A45032EEE34B100FE8C2F /* SettingsHomeLayoutSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHomeLayoutSection.swift; sourceTree = "<group>"; };
 		2C2A45052EEE34F200FE8C2F /* SettingsiCloudSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsiCloudSection.swift; sourceTree = "<group>"; };
 		2C2A45072EEE351E00FE8C2F /* SettingsResetDataSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsResetDataSection.swift; sourceTree = "<group>"; };
+		2C2BBFA930702B6900BD4A07 /* VerseToRememberCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerseToRememberCard.swift; sourceTree = "<group>"; };
 		2C33952A2EED9D8B00E8CA41 /* Color+GamerScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+GamerScore.swift"; sourceTree = "<group>"; };
 		2C33952C2EEDCB3D00E8CA41 /* ProgressRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRing.swift; sourceTree = "<group>"; };
 		2C3395302EEDCB4300E8CA41 /* BookChaptersDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookChaptersDetailView.swift; sourceTree = "<group>"; };
@@ -678,6 +680,7 @@
 				2CB92B7C306D3D8600B03AB0 /* HomeBibleReaderCard.swift */,
 				2C0DFA20306E9C5A00E114A5 /* NotesAndHighlightsView.swift */,
 				2C8F6557307008BE0052754F /* DeveloperSampleData.swift */,
+				2C2BBFA930702B6900BD4A07 /* VerseToRememberCard.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1098,6 +1101,7 @@
 				2C4BE63E2EEDE2360090F5A2 /* ProgressCardView.swift in Sources */,
 				2C49CF512EBE10310006FF79 /* BookSelectionLink.swift in Sources */,
 				2C6BB64D2EF1FF300010D769 /* BibleStatsStore+DailyTotals.swift in Sources */,
+				2C2BBFAA30702B6900BD4A07 /* VerseToRememberCard.swift in Sources */,
 				2C4A26AF2EDB3BA30055FD1B /* ReadingSessionsStore.swift in Sources */,
 				2CD9C6C1306AEA860077D777 /* BackgroundCustomization.swift in Sources */,
 				2C2A44EA2EEE260300FE8C2F /* iCloudSyncCoordinator+Games.swift in Sources */,

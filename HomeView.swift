@@ -307,6 +307,27 @@ struct HomeView: View {
     @State private var mainCards: Set<HomeCardID> = HomeLayoutStore.baselineMain
     @State private var showMoreCards: Bool = false
     @State private var hasFavoriteLayout: Bool = false
+    @State private var verseToRememberOffset = 0
+
+    private var verseToRemember: HomeVerseRef? {
+        let sortedFavorites = favorites.sorted {
+            if $0.createdAt != $1.createdAt {
+                return $0.createdAt > $1.createdAt
+            }
+            return "\($0.bookName)-\($0.chapterNumber)-\($0.verseNumber)"
+                < "\($1.bookName)-\($1.chapterNumber)-\($1.verseNumber)"
+        }
+        guard !sortedFavorites.isEmpty else { return nil }
+
+        let day = Calendar.current.ordinality(of: .day, in: .era, for: Date()) ?? 0
+        let favorite = sortedFavorites[(day + verseToRememberOffset) % sortedFavorites.count]
+        return HomeVerseRef(
+            bookName: favorite.bookName,
+            chapterNumber: favorite.chapterNumber,
+            verseNumber: favorite.verseNumber,
+            verseText: favorite.verseText
+        )
+    }
 
     private var moreCards: [HomeCardID] {
         layoutOrder.filter {
@@ -473,6 +494,24 @@ struct HomeView: View {
                 onOpenGameStats: {
                     UserDefaults.standard.set("Game Stats", forKey: "statsSelectedMode")
                     NotificationCenter.default.post(name: .openStats, object: nil)
+                }
+            )
+        case .verseToRemember:
+            VerseToRememberCard(
+                verse: verseToRemember,
+                canChooseAnother: favorites.count > 1,
+                onChooseAnother: {
+                    verseToRememberOffset += 1
+                },
+                onOpenVerse: { verse in
+                    openInBibleTab(verse)
+                },
+                onOpenFavorites: {
+                    NotificationCenter.default.post(
+                        name: .switchToTab,
+                        object: nil,
+                        userInfo: ["tabName": "favorites"]
+                    )
                 }
             )
         }
