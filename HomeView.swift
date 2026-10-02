@@ -305,6 +305,7 @@ struct HomeView: View {
     @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
     @State private var hiddenCards: Set<HomeCardID> = HomeLayoutStore.baselineHidden
     @State private var mainCards: Set<HomeCardID> = HomeLayoutStore.baselineMain
+    @State private var showMoreVisible = true
     @State private var showMoreCards: Bool = false
     @State private var hasFavoriteLayout: Bool = false
     @State private var verseToRememberOffset = 0
@@ -341,15 +342,26 @@ struct HomeView: View {
         layoutOrder = loaded.order
         hiddenCards = loaded.hidden
         mainCards = loaded.main
+        showMoreVisible = loaded.showMoreVisible
         hasFavoriteLayout = store.hasFavorite
     }
 
     private func saveHomeLayout() {
-        HomeLayoutStore().save(order: layoutOrder, hidden: hiddenCards, main: mainCards)
+        HomeLayoutStore().save(
+            order: layoutOrder,
+            hidden: hiddenCards,
+            main: mainCards,
+            showMoreVisible: showMoreVisible
+        )
     }
 
     private func saveFavoriteLayout() {
-        HomeLayoutStore().saveFavorite(order: layoutOrder, hidden: hiddenCards, main: mainCards)
+        HomeLayoutStore().saveFavorite(
+            order: layoutOrder,
+            hidden: hiddenCards,
+            main: mainCards,
+            showMoreVisible: showMoreVisible
+        )
         hasFavoriteLayout = true
     }
 
@@ -575,7 +587,7 @@ struct HomeView: View {
             card(for: cardID)
         }
 
-        if !moreCards.isEmpty {
+        if showMoreVisible && !moreCards.isEmpty {
             Button {
                 withAnimation(.snappy) {
                     showMoreCards.toggle()
@@ -649,6 +661,7 @@ struct HomeView: View {
                 order: $layoutOrder,
                 hiddenSet: $hiddenCards,
                 mainSet: $mainCards,
+                showMoreVisible: $showMoreVisible,
                 allowsShowMore: !isPad,
                 onDone: saveHomeLayout,
                 onSaveFavorite: saveFavoriteLayout,
@@ -692,6 +705,7 @@ struct HomeView: View {
                             order: $layoutOrder,
                             hiddenSet: $hiddenCards,
                             mainSet: $mainCards,
+                            showMoreVisible: $showMoreVisible,
                             allowsShowMore: false,
                             onDone: saveHomeLayout,
                             onSaveFavorite: saveFavoriteLayout,

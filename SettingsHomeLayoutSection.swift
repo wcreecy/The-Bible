@@ -6,6 +6,7 @@ struct SettingsHomeLayoutSection: View {
     @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
     @State private var hiddenSet: Set<HomeCardID> = []
     @State private var mainSet: Set<HomeCardID> = HomeLayoutStore.baselineMain
+    @State private var showMoreVisible = true
 
     private let layoutStore = HomeLayoutStore()
 
@@ -16,14 +17,25 @@ struct SettingsHomeLayoutSection: View {
         layoutOrder = loaded.order
         hiddenSet = loaded.hidden
         mainSet = loaded.main
+        showMoreVisible = loaded.showMoreVisible
     }
 
     private func saveHomeLayout() {
-        layoutStore.save(order: layoutOrder, hidden: hiddenSet, main: mainSet)
+        layoutStore.save(
+            order: layoutOrder,
+            hidden: hiddenSet,
+            main: mainSet,
+            showMoreVisible: showMoreVisible
+        )
     }
 
     private func saveFavoriteLayout() {
-        layoutStore.saveFavorite(order: layoutOrder, hidden: hiddenSet, main: mainSet)
+        layoutStore.saveFavorite(
+            order: layoutOrder,
+            hidden: hiddenSet,
+            main: mainSet,
+            showMoreVisible: showMoreVisible
+        )
     }
 
     private func applyFavoriteLayout() {
@@ -32,6 +44,7 @@ struct SettingsHomeLayoutSection: View {
         layoutOrder = loaded.order
         hiddenSet = loaded.hidden
         mainSet = loaded.main
+        showMoreVisible = loaded.showMoreVisible
     }
 
     var body: some View {
@@ -39,6 +52,7 @@ struct SettingsHomeLayoutSection: View {
             order: $layoutOrder,
             hiddenSet: $hiddenSet,
             mainSet: $mainSet,
+            showMoreVisible: $showMoreVisible,
             allowsShowMore: UIDevice.current.userInterfaceIdiom != .pad,
             onDone: saveHomeLayout,
             onSaveFavorite: saveFavoriteLayout,

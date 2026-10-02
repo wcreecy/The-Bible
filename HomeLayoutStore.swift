@@ -9,17 +9,21 @@ struct HomeLayoutStore {
     private static let keyOrder = "homeCardOrder"
     private static let keyHidden = "homeCardHidden"
     private static let keyMain = "homeCardMain"
+    private static let keyShowMoreVisible = "homeShowMoreVisible"
     private static let keyFavOrder = "homeCardFavoriteOrder"
     private static let keyFavHidden = "homeCardFavoriteHidden"
     private static let keyFavMain = "homeCardFavoriteMain"
+    private static let keyFavShowMoreVisible = "homeCardFavoriteShowMoreVisible"
 
     // Underlying storage
     @AppStorage(Self.keyOrder) private var orderRaw: String = ""
     @AppStorage(Self.keyHidden) private var hiddenRaw: String = ""
     @AppStorage(Self.keyMain) private var mainRaw: String = ""
+    @AppStorage(Self.keyShowMoreVisible) private var showMoreVisible: Bool = true
     @AppStorage(Self.keyFavOrder) private var favOrderRaw: String = ""
     @AppStorage(Self.keyFavHidden) private var favHiddenRaw: String = ""
     @AppStorage(Self.keyFavMain) private var favMainRaw: String = ""
+    @AppStorage(Self.keyFavShowMoreVisible) private var favShowMoreVisible: Bool = true
 
     // Baseline hidden set used when no hidden config exists
     static let baselineHidden: Set<HomeCardID> = []
@@ -29,7 +33,7 @@ struct HomeLayoutStore {
 
     // MARK: - Core load/save
 
-    func load() -> (order: [HomeCardID], hidden: Set<HomeCardID>, main: Set<HomeCardID>) {
+    func load() -> (order: [HomeCardID], hidden: Set<HomeCardID>, main: Set<HomeCardID>, showMoreVisible: Bool) {
         // Decode order
         let order: [HomeCardID] = {
             if let data = orderRaw.data(using: .utf8),
@@ -54,10 +58,15 @@ struct HomeLayoutStore {
         }()
 
         let main = decodeSet(from: mainRaw) ?? Self.baselineMain
-        return (order, hidden, main)
+        return (order, hidden, main, showMoreVisible)
     }
 
-    func save(order: [HomeCardID], hidden: Set<HomeCardID>, main: Set<HomeCardID>) {
+    func save(
+        order: [HomeCardID],
+        hidden: Set<HomeCardID>,
+        main: Set<HomeCardID>,
+        showMoreVisible: Bool
+    ) {
         // Encode order
         do {
             let rawIDs = order.map { $0.rawValue }
@@ -77,6 +86,7 @@ struct HomeLayoutStore {
         }
 
         mainRaw = encode(main)
+        self.showMoreVisible = showMoreVisible
 
         notifyChanged()
     }
@@ -87,7 +97,12 @@ struct HomeLayoutStore {
         !favOrderRaw.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    func saveFavorite(order: [HomeCardID], hidden: Set<HomeCardID>, main: Set<HomeCardID>) {
+    func saveFavorite(
+        order: [HomeCardID],
+        hidden: Set<HomeCardID>,
+        main: Set<HomeCardID>,
+        showMoreVisible: Bool
+    ) {
         // Encode order
         do {
             let rawIDs = order.map { $0.rawValue }
@@ -107,9 +122,10 @@ struct HomeLayoutStore {
         }
 
         favMainRaw = encode(main)
+        favShowMoreVisible = showMoreVisible
     }
 
-    func loadFavorite() -> (order: [HomeCardID], hidden: Set<HomeCardID>, main: Set<HomeCardID>)? {
+    func loadFavorite() -> (order: [HomeCardID], hidden: Set<HomeCardID>, main: Set<HomeCardID>, showMoreVisible: Bool)? {
         guard let orderData = favOrderRaw.data(using: .utf8),
               let orderIDs = try? JSONDecoder().decode([String].self, from: orderData) else {
             return nil
@@ -125,13 +141,18 @@ struct HomeLayoutStore {
             hidden = Set(hiddenIDs.compactMap { HomeCardID(rawValue: $0) })
         }
         let main = decodeSet(from: favMainRaw) ?? Self.baselineMain
-        return (order, hidden, main)
+        return (order, hidden, main, favShowMoreVisible)
     }
 
     // Applies favorite to current layout and notifies listeners
     func applyFavoriteIfAvailable() {
         guard let fav = loadFavorite() else { return }
-        save(order: fav.order, hidden: fav.hidden, main: fav.main)
+        save(
+            order: fav.order,
+            hidden: fav.hidden,
+            main: fav.main,
+            showMoreVisible: fav.showMoreVisible
+        )
     }
 
     private func encode(_ ids: Set<HomeCardID>) -> String {

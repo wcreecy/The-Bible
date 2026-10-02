@@ -4,6 +4,7 @@ struct HomeLayoutEditorView: View {
     @Binding var order: [HomeCardID]
     @Binding var hiddenSet: Set<HomeCardID>
     @Binding var mainSet: Set<HomeCardID>
+    @Binding var showMoreVisible: Bool
     let allowsShowMore: Bool
     var onDone: () -> Void
 
@@ -38,6 +39,7 @@ struct HomeLayoutEditorView: View {
         order = HomeCardID.allCases
         hiddenSet = HomeLayoutStore.baselineHidden
         mainSet = HomeLayoutStore.baselineMain
+        showMoreVisible = true
         onDone()
     }
 
@@ -196,13 +198,22 @@ struct HomeLayoutEditorView: View {
 
             if allowsShowMore {
                 Section {
+                    Toggle(isOn: $showMoreVisible) {
+                        Label("Show ‘Show More’ on Home", systemImage: showMoreVisible ? "eye" : "eye.slash")
+                    }
+                    .onChange(of: showMoreVisible) { _, _ in
+                        onDone()
+                    }
+
                     ForEach(showMoreCards) { id in
                         layoutRow(for: id)
                     }
                 } header: {
                     Label("Inside Show More", systemImage: "square.grid.2x2")
                 } footer: {
-                    Text("Shown cards become visible only after Show More is expanded. Use the arrows to arrange them.")
+                    Text(showMoreVisible
+                        ? "Shown cards become visible only after Show More is expanded. Use the arrows to arrange them."
+                        : "Show More is hidden from Home. You can still arrange its cards here for later.")
                 }
             }
 
