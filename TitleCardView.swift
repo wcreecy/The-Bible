@@ -5,6 +5,7 @@ struct TitleCardView: View {
     let goalMinutes: Int
     let todayReadingSeconds: Int
     let streak: Int
+    let dailyScripture: String
     let onSearch: () -> Void
     let onRead: () -> Void
     let onFavorites: () -> Void
@@ -31,9 +32,15 @@ struct TitleCardView: View {
                 Text(text)
                     .font(font)
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .allowsTightening(true)
+                    .minimumScaleFactor(0.75)
                 Text(text)
                     .font(font)
                     .foregroundStyle(gradient)
+                    .lineLimit(1)
+                    .allowsTightening(true)
+                    .minimumScaleFactor(0.75)
                     .mask(
                         GeometryReader { geo in
                             let width = max(0, min(1, progress)) * geo.size.width
@@ -64,10 +71,14 @@ struct TitleCardView: View {
         return "\(minutesRead) of \(goalMinutes) minutes"
     }
 
+    private var progressPercent: Int {
+        Int((progress * 100).rounded())
+    }
+
     var body: some View {
         HeroCard(
             title: isPad ? greeting : "Word of God",
-            subtitle: isPad ? "Your daily rhythm in Scripture" : nil,
+            subtitle: nil,
             icon: "book.fill",
             tint: .blue,
             titleFont: titleFont,
@@ -75,38 +86,44 @@ struct TitleCardView: View {
             centerHeader: !isPad
         ) {
             if isPad {
-                HStack(alignment: .center, spacing: 28) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        ProgressFillText(
-                            text: "What does God have for YOU today?",
-                            font: .title3.weight(.semibold),
-                            progress: progress
-                        )
-
-                        HStack(spacing: 14) {
-                            Label(progressDescription, systemImage: "book.pages")
-                            Label("\(streak) day streak", systemImage: "flame.fill")
-                        }
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.secondary)
-                        .labelStyle(.titleAndIcon)
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text("Today’s Reading Goal")
+                            .font(.title3.weight(.semibold))
+                        Spacer()
+                        Text("\(progressPercent)%")
+                            .font(.headline.monospacedDigit())
+                            .foregroundStyle(.blue)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
 
+                    ProgressView(value: progress)
+                        .tint(.blue)
+                        .scaleEffect(x: 1, y: 1.5, anchor: .center)
+
+                    HStack(spacing: 18) {
+                        Label(progressDescription, systemImage: "book.pages")
+                        Label("\(streak) day streak", systemImage: "flame.fill")
+                    }
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.secondary)
+                    .labelStyle(.titleAndIcon)
+
+                    Divider()
                     actionButtons
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .accessibilityElement(children: .contain)
-                .accessibilityLabel("Daily goal progress \(Int(round(progress * 100))) percent. Current streak \(streak) days.")
+                .accessibilityLabel("Daily goal progress \(progressPercent) percent. Current streak \(streak) days.")
             } else {
                 VStack(spacing: 8) {
                     ProgressFillText(
-                        text: "What does God have for YOU today?",
+                        text: dailyScripture,
                         font: .subheadline.weight(.semibold),
                         progress: progress
                     )
                     .frame(maxWidth: .infinity, alignment: .center)
                     .multilineTextAlignment(.center)
-                    .accessibilityLabel("What does God have for you today? Daily goal progress \(Int(round(progress * 100))) percent. Current streak \(streak) days.")
+                    .accessibilityLabel("\(dailyScripture) Daily goal progress \(progressPercent) percent. Current streak \(streak) days.")
 
                     actionButtons
                         .frame(maxWidth: .infinity, alignment: .center)
