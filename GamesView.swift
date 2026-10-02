@@ -150,7 +150,7 @@ struct GamesView: View {
             if contextualTipsEnabled {
                 ContextualTipView(
                     title: "Favorite your games",
-                    message: "Swipe a game left or right to add it to Favorites. Swipe a favorite to remove it, or drag its handle to reorder.",
+                    message: "Swipe a game left or right to add it to Favorites. Swipe a favorite to remove it, or drag favorites to reorder them.",
                     systemImage: "hand.draw"
                 )
                 .listRowSeparator(.hidden)
@@ -362,7 +362,6 @@ private struct ReorderableFavoriteRow: View {
     @State private var dragOriginIndex: Int?
     @State private var lastDestinationIndex: Int?
     @State private var rowHeight: CGFloat = 64
-    @State private var isDragging = false
 
     let route: GameRoute
     let routes: [GameRoute]
@@ -372,31 +371,21 @@ private struct ReorderableFavoriteRow: View {
     let onMove: (GameRoute, Int) -> Void
 
     var body: some View {
-        HStack(spacing: 4) {
-            GameNavigationRow(
-                route: route,
-                progress: progress,
-                onSelect: onSelect
+        GameNavigationRow(
+            route: route,
+            progress: progress,
+            onSelect: onSelect
+        )
+        .modifier(
+            GameFavoriteSwipeModifier(
+                isEnabled: true,
+                actionLabel: "Remove from Favorites",
+                systemImage: "star.slash.fill",
+                tint: .red,
+                action: onRemove
             )
-            .modifier(
-                GameFavoriteSwipeModifier(
-                    isEnabled: true,
-                    actionLabel: "Remove from Favorites",
-                    systemImage: "star.slash.fill",
-                    tint: .red,
-                    action: onRemove
-                )
-            )
-
-            Image(systemName: "line.3.horizontal")
-                .font(.body.weight(.semibold))
-                .foregroundStyle(isDragging ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
-                .frame(width: 44, height: 44)
-                .contentShape(Rectangle())
-                .scaleEffect(isDragging ? 1.15 : 1)
-                .highPriorityGesture(reorderGesture)
-                .accessibilityHidden(true)
-        }
+        )
+        .simultaneousGesture(reorderGesture)
         .onGeometryChange(for: CGFloat.self) { proxy in
             proxy.size.height
         } action: { newHeight in
@@ -414,12 +403,13 @@ private struct ReorderableFavoriteRow: View {
     }
 
     private var reorderGesture: some Gesture {
-        DragGesture(minimumDistance: 1)
+        DragGesture(minimumDistance: 10)
             .onChanged { value in
+                guard abs(value.translation.height) > abs(value.translation.width) else { return }
+
                 if dragOriginIndex == nil {
                     dragOriginIndex = routes.firstIndex(of: route)
                     lastDestinationIndex = dragOriginIndex
-                    isDragging = true
                 }
 
                 guard let dragOriginIndex else { return }
@@ -436,7 +426,6 @@ private struct ReorderableFavoriteRow: View {
             .onEnded { _ in
                 dragOriginIndex = nil
                 lastDestinationIndex = nil
-                isDragging = false
             }
     }
 }
