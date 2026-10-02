@@ -11,6 +11,7 @@ struct QuizView: View {
     @Query private var favorites: [Favorite]
     
     @AppStorage("quizScope") private var quizScopeRaw: String = "whole"
+    @AppStorage("quizSections") private var quizSectionsRaw: String = ""
     @AppStorage("quizDifficulty") private var quizDifficulty: String = "normal"
     
     // COMBINED all-time stats (shared across difficulties)
@@ -88,6 +89,80 @@ struct QuizView: View {
         let verse: Int
         let options: [String]
         var selected: String?
+    }
+
+    private enum VerseSection: String, CaseIterable, Identifiable {
+        case law
+        case history
+        case poetry
+        case majorProphets
+        case minorProphets
+        case gospels
+        case acts
+        case epistles
+        case apocalypse
+
+        var id: String { rawValue }
+
+        var title: String {
+            switch self {
+            case .law: "Law"
+            case .history: "History"
+            case .poetry: "Poetry"
+            case .majorProphets: "Major Prophets"
+            case .minorProphets: "Minor Prophets"
+            case .gospels: "Gospels"
+            case .acts: "Acts"
+            case .epistles: "Epistles"
+            case .apocalypse: "Apocalypse"
+            }
+        }
+    }
+
+    private var availableSections: [VerseSection] {
+        switch quizScopeRaw {
+        case "old": [.law, .history, .poetry, .majorProphets, .minorProphets]
+        case "new": [.gospels, .acts, .epistles, .apocalypse]
+        default: VerseSection.allCases
+        }
+    }
+
+    private var selectedSections: Set<VerseSection> {
+        Set(quizSectionsRaw.split(separator: ",").compactMap { VerseSection(rawValue: String($0)) })
+    }
+
+    private var displayedSelectedSections: Set<VerseSection> {
+        selectedSections.isEmpty ? Set(availableSections) : selectedSections.intersection(availableSections)
+    }
+
+    private var selectedSectionsTitle: String {
+        let selected = availableSections.filter { selectedSections.contains($0) }
+        return selected.isEmpty ? "All sections" : selected.map(\.title).joined(separator: ", ")
+    }
+
+    private func storeSelectedSections(_ sections: Set<VerseSection>) {
+        let singleBookSections: Set<VerseSection> = [.acts, .apocalypse]
+        let isInvalidSelection = !sections.isEmpty && sections.isSubset(of: singleBookSections)
+
+        if isInvalidSelection {
+            let currentSelection = selectedSections.intersection(availableSections)
+            guard !currentSelection.isSubset(of: singleBookSections) || currentSelection.isEmpty else {
+                quizSectionsRaw = ""
+                rebuildPools()
+                return
+            }
+            return
+        }
+
+        if sections == Set(availableSections) {
+            quizSectionsRaw = ""
+        } else {
+            quizSectionsRaw = VerseSection.allCases
+                .filter { sections.contains($0) }
+                .map(\.rawValue)
+                .joined(separator: ",")
+        }
+        rebuildPools()
     }
 
     // MARK: - Canon sets for OT/NT
@@ -209,9 +284,15 @@ struct QuizView: View {
                         GroupBox {
                             DisclosureGroup(isExpanded: $difficultyExpanded) {
                                 VStack(alignment: .leading, spacing: 12) {
-                                    Text("• Easy: No timer; two options from each testament.")
-                                    Text("• Medium: 15 seconds; options are completely random.")
-                                    Text("• Hard: 8 seconds; all options are from the same testament.")
+                                    if selectedSections.isEmpty {
+                                        Text("• Easy: No timer; two answers from each testament.")
+                                        Text("• Medium: 15 seconds; answers from anywhere in the Bible.")
+                                        Text("• Hard: 8 seconds; all answers from the verse's section. Acts and Apocalypse are excluded.")
+                                    } else {
+                                        Text("• Easy: No timer; two answers from your sections and two from elsewhere.")
+                                        Text("• Medium: 15 seconds; three answers from your sections and one elsewhere in the same testament.")
+                                        Text("• Hard: 8 seconds; all answers from the verse's section. Acts and Apocalypse are excluded.")
+                                    }
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             } label: {
@@ -221,8 +302,12 @@ struct QuizView: View {
 
                         GameStartCurrentGameCard {
                             GameStartCurrentGameRow(
-                                label: "Source",
+                                label: "Testament",
                                 value: quizScopeRaw == "whole" ? "Old & New Testaments" : quizScopeRaw == "old" ? "Old Testament" : "New Testament"
+                            )
+                            GameStartCurrentGameRow(
+                                label: "Sections",
+                                value: selectedSectionsTitle
                             )
                             GameStartCurrentGameRow(
                                 label: "Difficulty",
@@ -246,11 +331,22 @@ struct QuizView: View {
                             title: "Verse Source",
                             selection: Binding<String>(get: { quizScopeRaw }, set: { new in
                                 quizScopeRaw = new
-                                rebuildPools()
+                                storeSelectedSections(selectedSections.intersection(availableSections))
                             }),
                             options: ["whole", "old", "new"]
                         ) { source in
                             Text(source == "whole" ? "OT & NT" : source == "old" ? "OT" : "NT")
+                        }
+
+                        GameStartMultiPickerCard(
+                            title: "Sections",
+                            selection: Binding<Set<VerseSection>>(
+                                get: { displayedSelectedSections },
+                                set: storeSelectedSections
+                            ),
+                            options: availableSections
+                        ) { section in
+                            Text(section.title)
                         }
 
                         GameStartPickerCard(
@@ -483,7 +579,7 @@ struct QuizView: View {
             }
         }
         .onAppear {
-            rebuildPools()
+            storeSelectedSections(displayedSelectedSections)
             // Seed streaks from persisted values so they survive navigation/relaunch
             seedStreakFromPersistence()
         }
@@ -506,17 +602,67 @@ struct QuizView: View {
         default:
             books = BibleData.books
         }
+        let scopedBooks: [Book]
+        if selectedSections.isEmpty {
+            scopedBooks = books
+        } else {
+            let selectedBookNames = Set(selectedSections.flatMap { bookNames(in: $0) })
+            scopedBooks = books.filter { selectedBookNames.contains($0.name) }
+        }
+
         // The selected scope controls which verses can be asked, while difficulty
         // independently controls the composition of the four answer choices.
         let names = BibleData.books.map { $0.name }
         let old = names.filter { Self.oldTestamentSet.contains($0) }
         let new = names.filter { Self.newTestamentSet.contains($0) }
-        pools = Pools(books: books, allNames: names, oldNames: old, newNames: new)
+        pools = Pools(books: scopedBooks, allNames: names, oldNames: old, newNames: new)
         rebuildQuestionBag()
     }
 
+    private func bookNames(in section: VerseSection) -> Set<String> {
+        let names: [String]
+        switch section {
+        case .law:
+            names = ["Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy"]
+        case .history:
+            names = bookNames(from: "Joshua", through: "Esther")
+        case .poetry:
+            names = bookNames(from: "Job", through: "Song of Solomon")
+        case .majorProphets:
+            names = bookNames(from: "Isaiah", through: "Daniel")
+        case .minorProphets:
+            names = bookNames(from: "Hosea", through: "Malachi")
+        case .gospels:
+            names = bookNames(from: "Matthew", through: "John")
+        case .acts:
+            names = ["Acts"]
+        case .epistles:
+            names = bookNames(from: "Romans", through: "Jude")
+        case .apocalypse:
+            names = ["Revelation"]
+        }
+        return Set(names)
+    }
+
+    private func bookNames(from firstBookName: String, through lastBookName: String) -> [String] {
+        let names = BibleData.books.map(\.name)
+        guard let firstIndex = names.firstIndex(of: firstBookName),
+              let lastIndex = names.firstIndex(of: lastBookName),
+              firstIndex <= lastIndex else { return [] }
+        return Array(names[firstIndex...lastIndex])
+    }
+
+    private func bookNamesInSection(containing bookName: String) -> Set<String>? {
+        VerseSection.allCases
+            .map { bookNames(in: $0) }
+            .first { $0.contains(bookName) }
+    }
+
     private func rebuildQuestionBag() {
-        questionBag = pools.books.flatMap { book in
+        let questionBooks = quizDifficulty == "hard"
+            ? pools.books.filter { $0.name != "Acts" && $0.name != "Revelation" }
+            : pools.books
+        questionBag = questionBooks.flatMap { book in
             book.chapters.flatMap { chapter in
                 chapter.verses.map { verse in
                     VerseCandidate(
@@ -591,25 +737,63 @@ struct QuizView: View {
         let correctName = bookName
         let isOld = Self.oldTestamentSet.contains(correctName)
 
-        var wrongBooks: [String]
-        switch quizDifficulty {
-        case "easy":
-            var sameTestamentNames = isOld ? pools.oldNames : pools.newNames
-            sameTestamentNames.removeAll { $0 == correctName }
-            let otherTestamentNames = isOld ? pools.newNames : pools.oldNames
+        let wrongBooks: [String]
+        if selectedSections.isEmpty {
+            switch quizDifficulty {
+            case "easy":
+                var sameTestamentNames = isOld ? pools.oldNames : pools.newNames
+                sameTestamentNames.removeAll { $0 == correctName }
+                let otherTestamentNames = isOld ? pools.newNames : pools.oldNames
 
-            guard let sameTestamentWrong = sameTestamentNames.randomElement() else {
+                guard let sameTestamentWrong = sameTestamentNames.randomElement() else {
+                    return nil
+                }
+                wrongBooks = [sameTestamentWrong] + Array(otherTestamentNames.shuffled().prefix(2))
+            case "hard":
+                guard let sectionNames = bookNamesInSection(containing: correctName) else {
+                    return nil
+                }
+                wrongBooks = Array(sectionNames
+                    .filter { $0 != correctName }
+                    .shuffled()
+                    .prefix(3))
+            default:
+                var allNames = pools.allNames
+                allNames.removeAll { $0 == correctName }
+                wrongBooks = Array(allNames.shuffled().prefix(3))
+            }
+        } else {
+            let selectedNames: [String]
+            if quizDifficulty == "hard",
+               let sectionNames = bookNamesInSection(containing: correctName) {
+                selectedNames = pools.books.map(\.name).filter { sectionNames.contains($0) }
+            } else {
+                selectedNames = pools.books.map(\.name)
+            }
+            let selectedNameSet = Set(selectedNames)
+            let selectedWrongNames = selectedNames
+                .filter { $0 != correctName }
+                .shuffled()
+            let selectedWrongCount = switch quizDifficulty {
+            case "easy": 1
+            case "hard": 3
+            default: 2
+            }
+            let randomWrongCount = 3 - selectedWrongCount
+            let randomCandidateNames = quizDifficulty == "normal"
+                ? (isOld ? pools.oldNames : pools.newNames)
+                : pools.allNames
+            let randomWrongNames = randomCandidateNames
+                .filter { !selectedNameSet.contains($0) }
+                .shuffled()
+
+            guard selectedWrongNames.count >= selectedWrongCount,
+                  randomWrongNames.count >= randomWrongCount else {
                 return nil
             }
-            wrongBooks = [sameTestamentWrong] + Array(otherTestamentNames.shuffled().prefix(2))
-        case "hard":
-            var sameTestamentNames = isOld ? pools.oldNames : pools.newNames
-            sameTestamentNames.removeAll { $0 == correctName }
-            wrongBooks = Array(sameTestamentNames.shuffled().prefix(3))
-        default:
-            var allNames = pools.allNames
-            allNames.removeAll { $0 == correctName }
-            wrongBooks = Array(allNames.shuffled().prefix(3))
+
+            wrongBooks = Array(selectedWrongNames.prefix(selectedWrongCount))
+                + Array(randomWrongNames.prefix(randomWrongCount))
         }
         let opts = (wrongBooks + [correctName]).shuffled()
 
