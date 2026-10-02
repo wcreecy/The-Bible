@@ -34,17 +34,29 @@ struct VerseToRememberCard: View {
         revealedWordCount >= hiddenWordIndices.count
     }
 
-    private var practiceText: String {
-        words.enumerated().map { index, word in
-            guard let hiddenPosition = hiddenWordIndices.firstIndex(of: index),
-                  hiddenPosition >= revealedWordCount else {
-                return String(word)
+    private var practiceText: AttributedString {
+        var result = AttributedString()
+
+        for (index, word) in words.enumerated() {
+            if index > words.startIndex {
+                result.append(AttributedString(" "))
             }
 
-            let hiddenLength = max(3, word.filter(\.isLetter).count)
-            return String(repeating: "＿", count: hiddenLength)
+            if let hiddenPosition = hiddenWordIndices.firstIndex(of: index) {
+                if hiddenPosition < revealedWordCount {
+                    var revealedWord = AttributedString(String(word))
+                    revealedWord.foregroundColor = .red
+                    result.append(revealedWord)
+                } else {
+                    let hiddenLength = max(3, word.filter(\.isLetter).count)
+                    result.append(AttributedString(String(repeating: "＿", count: hiddenLength)))
+                }
+            } else {
+                result.append(AttributedString(String(word)))
+            }
         }
-        .joined(separator: " ")
+
+        return result
     }
 
     var body: some View {
@@ -60,7 +72,7 @@ struct VerseToRememberCard: View {
                         .font(.headline)
                         .italic()
                         .lineLimit(8)
-                        .contentTransition(.opacity)
+                        .id(revealedWordCount)
                         .accessibilityLabel(
                             allWordsRevealed
                                 ? verse.verseText
@@ -76,12 +88,10 @@ struct VerseToRememberCard: View {
                             title: allWordsRevealed ? "Reset" : "Reveal",
                             systemImage: allWordsRevealed ? "arrow.counterclockwise" : "eye"
                         ) {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                if allWordsRevealed {
-                                    revealedWordCount = 0
-                                } else {
-                                    revealedWordCount += 1
-                                }
+                            if allWordsRevealed {
+                                revealedWordCount = 0
+                            } else {
+                                revealedWordCount += 1
                             }
                         }
 
