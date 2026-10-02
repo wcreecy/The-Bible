@@ -300,26 +300,6 @@ struct GameStartMultiPickerCard<Value: Hashable, OptionLabel: View>: View {
     }
 }
 
-struct ExpandGameStartCardsOnIPad: ViewModifier {
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @Binding var howToExpanded: Bool
-    @Binding var difficultyExpanded: Bool
-
-    func body(content: Content) -> some View {
-        content
-            .onAppear(perform: expandCardsIfNeeded)
-            .onChange(of: horizontalSizeClass) { _, _ in
-                expandCardsIfNeeded()
-            }
-    }
-
-    private func expandCardsIfNeeded() {
-        guard horizontalSizeClass == .regular else { return }
-        howToExpanded = true
-        difficultyExpanded = true
-    }
-}
-
 extension View {
     func gameStartScreenStyle() -> some View {
         modifier(GameStartScreenStyle())
@@ -335,17 +315,5 @@ extension View {
 
     func gameStartSettingsStyle() -> some View {
         modifier(GameStartSettingsStyle())
-    }
-
-    func expandGameStartCardsOnIPad(
-        howTo howToExpanded: Binding<Bool>,
-        difficulty difficultyExpanded: Binding<Bool>
-    ) -> some View {
-        modifier(
-            ExpandGameStartCardsOnIPad(
-                howToExpanded: howToExpanded,
-                difficultyExpanded: difficultyExpanded
-            )
-        )
     }
 }

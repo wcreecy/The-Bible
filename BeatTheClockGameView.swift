@@ -159,10 +159,6 @@ struct BeatTheClockGameView: View {
                         }
                     }
                     .gameStartOptionsStyle()
-                    .expandGameStartCardsOnIPad(
-                        howTo: $howToExpanded,
-                        difficulty: $difficultyExpanded
-                    )
                     .padding(.horizontal)
 
                     GameStartSettingsLayout {

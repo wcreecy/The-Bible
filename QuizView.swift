@@ -320,10 +320,6 @@ struct QuizView: View {
                         }
                     }
                     .gameStartOptionsStyle()
-                    .expandGameStartCardsOnIPad(
-                        howTo: $howToExpanded,
-                        difficulty: $difficultyExpanded
-                    )
                     .padding(.horizontal, usesSplitLayout ? 0 : 16)
                     
                     GameStartSettingsLayout {

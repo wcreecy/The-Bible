@@ -79,10 +79,6 @@ struct WhoAmIGameView: View {
                         }
                     }
                     .gameStartOptionsStyle()
-                    .expandGameStartCardsOnIPad(
-                        howTo: $vm.howToExpanded,
-                        difficulty: $vm.difficultyExpanded
-                    )
                     .padding(.horizontal)
 
                     GameStartSettingsLayout {

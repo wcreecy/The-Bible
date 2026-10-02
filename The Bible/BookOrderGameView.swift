@@ -62,10 +62,6 @@ struct BookOrderGameView: View {
                         }
                     }
                     .gameStartOptionsStyle()
-                    .expandGameStartCardsOnIPad(
-                        howTo: $howToExpanded,
-                        difficulty: $difficultyExpanded
-                    )
                     .padding(.horizontal)
 
                     GameStartSettingsLayout {

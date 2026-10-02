@@ -501,10 +501,6 @@ struct WordleView: View {
                 }
             }
             .gameStartOptionsStyle()
-            .expandGameStartCardsOnIPad(
-                howTo: $howToExpanded,
-                difficulty: $gameOptionsExpanded
-            )
             .padding(.horizontal)
 
             GameStartSettingsLayout {
