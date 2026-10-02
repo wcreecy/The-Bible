@@ -51,100 +51,98 @@ struct StreaksCard: View {
         HeroCard(
             title: "Daily Bible Streak",
             subtitle: nil,
-            tint: current > 0 ? .orange : .secondary,
-            iconContent: {
-                // Progress flame uses the same fraction as TitleCard (totals-based)
-                FillingFlame(progress: progress)
-            }
+            icon: "flame.fill",
+            tint: .orange
         ) {
-            VStack(alignment: .leading, spacing: 10) {
-                // Header row: current streak and best
-                HStack(alignment: .firstTextBaseline, spacing: 12) {
-                    Text("\(current)")
-                        .font(.system(size: UIDevice.current.userInterfaceIdiom == .pad ? 48 : 40, weight: .black, design: .rounded))
-                        .foregroundStyle(current > 0 ? .orange : .secondary)
-                        .accessibilityLabel("Current streak \(current) days")
-                    Text(current == 1 ? "day" : "days")
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                    if best > 0 {
-                        HStack(spacing: 6) {
-                            Image(systemName: "trophy.fill")
-                                .foregroundStyle(.yellow)
-                            Text("Best \(best)")
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(spacing: 10) {
+                    streakMetric(
+                        title: "Current",
+                        value: current,
+                        systemImage: "flame.fill",
+                        tint: current > 0 ? .orange : .secondary
+                    )
+                    streakMetric(
+                        title: "Best",
+                        value: best,
+                        systemImage: "trophy.fill",
+                        tint: .yellow
+                    )
+                }
+
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Today's Goal")
                                 .font(.subheadline.weight(.semibold))
+                            Text(goalMinutesString(goalSeconds / 60))
+                                .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
-                        .accessibilityElement(children: .combine)
-                        .accessibilityLabel("Best streak \(best) days")
-                    }
-                }
 
-                // Last read / encouragement
-                if let last {
-                    Text("Last completed: \(friendlyDate(last))")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                } else {
-                    Text("Start your first day today.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-
-                // Today's progress toward goal (matching TitleCard formula and synced totals)
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack {
-                        Text("Today")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.secondary)
                         Spacer()
+
                         Button {
                             isDailyGoalEditorPresented = true
                         } label: {
-                            Label("Edit Goal: \(goalMinutesString(goalSeconds / 60))", systemImage: "pencil")
+                            Label("Edit Goal", systemImage: "pencil")
                                 .font(.footnote.weight(.semibold))
                         }
                         .buttonStyle(.borderless)
                         .accessibilityIdentifier("homeDailyGoalEditButton")
                     }
+
                     ProgressView(value: progress)
-                        .tint(goalMet ? .green : .accentColor)
-                    HStack {
-                        if goalMet {
-                            Label("Great job! You reached your goal today.", systemImage: "checkmark.seal.fill")
-                                .foregroundStyle(.green)
-                                .font(.footnote.weight(.semibold))
-                        } else {
-                            let remaining = max(0, goalSeconds - todayTotal)
-                            let m = remaining / 60
-                            let s = remaining % 60
-                            Label("\(m)m \(s)s left", systemImage: "clock")
-                                .foregroundStyle(.secondary)
-                                .font(.footnote)
-                        }
-                        Spacer()
+                        .tint(goalMet ? .green : .orange)
+
+                    if goalMet {
+                        Label("Goal complete for today", systemImage: "checkmark.circle.fill")
+                            .foregroundStyle(.green)
+                            .font(.footnote.weight(.semibold))
+                    } else {
+                        let remaining = max(0, goalSeconds - todayTotal)
+                        let m = remaining / 60
+                        let s = remaining % 60
+
+                        Label("\(m)m \(s)s remaining", systemImage: "clock")
+                            .foregroundStyle(.secondary)
+                            .font(.footnote)
                     }
                 }
-                .padding(.top, 4)
+                .padding(12)
+                .background {
+                    RoundedRectangle(cornerRadius: AppDesignMetrics.compactControlCornerRadius, style: .continuous)
+                        .fill(Color.orange.opacity(0.08))
+                }
 
-                // Expandable calendar
-                DisclosureGroup(isExpanded: $vm.isExpanded) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        calendarMonthView(anchor: vm.monthAnchor)
+                HStack(spacing: 6) {
+                    Image(systemName: last == nil ? "sparkles" : "calendar.badge.checkmark")
+                    if let last {
+                        Text("Last completed \(friendlyDate(last))")
+                    } else {
+                        Text("Start your first day today")
                     }
-                    .padding(.top, 4)
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .accessibilityElement(children: .combine)
+
+                Divider()
+
+                DisclosureGroup(isExpanded: $vm.isExpanded) {
+                    calendarMonthView(anchor: vm.monthAnchor)
+                        .padding(.top, 8)
                 } label: {
                     HStack {
-                        Text("Calendar")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
+                        Label("History", systemImage: "calendar")
+                            .font(.subheadline.weight(.semibold))
                         Spacer()
                         Text(vm.friendlyMonthYear)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
                 }
+                .tint(.orange)
                 .animation(.spring(response: 0.25, dampingFraction: 0.9), value: vm.isExpanded)
             }
         }
@@ -254,35 +252,37 @@ struct StreaksCard: View {
         }
     }
 
-    // MARK: - Filling flame icon
+    private func streakMetric(
+        title: LocalizedStringResource,
+        value: Int,
+        systemImage: String,
+        tint: Color
+    ) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: systemImage)
+                .font(.title3)
+                .foregroundStyle(tint)
+                .frame(width: 28, height: 28)
+                .background(tint.opacity(0.12), in: Circle())
 
-    private struct FillingFlame: View {
-        var progress: Double // 0...1
-
-        var clamped: CGFloat {
-            CGFloat(min(1.0, max(0.0, progress)))
-        }
-
-        var body: some View {
-            ZStack {
-                Image(systemName: "flame.fill")
-                    .foregroundStyle(.secondary.opacity(0.25))
-                Image(systemName: "flame.fill")
-                    .foregroundStyle(.orange)
-                    .mask(
-                        GeometryReader { geo in
-                            VStack(spacing: 0) {
-                                Spacer(minLength: 0)
-                                Rectangle()
-                                    .frame(height: geo.size.height * clamped)
-                            }
-                            .frame(width: geo.size.width, height: geo.size.height, alignment: .bottom)
-                        }
-                    )
-                    .animation(.easeInOut(duration: 0.35), value: clamped)
+            VStack(alignment: .leading, spacing: 1) {
+                Text("\(value) days")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(.primary)
+                Text(title)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(Text("Today's progress \(Int(clamped * 100)) percent"))
+
+            Spacer(minLength: 0)
         }
+        .padding(12)
+        .frame(maxWidth: .infinity)
+        .background {
+            RoundedRectangle(cornerRadius: AppDesignMetrics.compactControlCornerRadius, style: .continuous)
+                .fill(Color(.secondarySystemBackground))
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text("\(title), \(value) days"))
     }
 }
