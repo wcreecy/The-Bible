@@ -133,7 +133,7 @@ struct TitleCardView: View {
                     .allowsTightening(true)
                     .minimumScaleFactor(0.85)
             }
-            .buttonStyle(SubtlePillButtonStyle(emphasized: true, sizeScale: buttonScale))
+            .buttonStyle(SubtlePillButtonStyle(emphasized: false, sizeScale: buttonScale))
 
             Button(action: onFavorites) {
                 Label("Favorites", systemImage: "heart")

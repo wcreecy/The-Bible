@@ -164,15 +164,13 @@ struct BibleSplitView: View {
                             searchText = ""
                             detailPath = NavigationPath()
                         } label: {
-                            HStack {
-                                Text(book.name)
-                                if selectedBook?.name == book.name {
-                                    Spacer()
-                                    Image(systemName: "checkmark").foregroundStyle(Color.accentColor)
-                                }
-                            }
+                            Text(book.name)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         .buttonStyle(.plain)
+                        .listRowBackground(
+                            Color.accentColor.opacity(selectedBook?.name == book.name ? 0.18 : 0)
+                        )
                     }
                 } header: {
                     Text("All Books (\(filteredAllBooksAZ.count))").font(.footnote).foregroundStyle(.secondary)
@@ -189,15 +187,13 @@ struct BibleSplitView: View {
                                 searchText = ""
                                 detailPath = NavigationPath()
                             } label: {
-                                HStack {
-                                    Text(book.name)
-                                    if selectedBook?.name == book.name {
-                                        Spacer()
-                                        Image(systemName: "checkmark").foregroundStyle(Color.accentColor)
-                                    }
-                                }
+                                Text(book.name)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             .buttonStyle(.plain)
+                            .listRowBackground(
+                                Color.accentColor.opacity(selectedBook?.name == book.name ? 0.18 : 0)
+                            )
                         }
                     } header: {
                         Text("Old Testament (\(filteredOTBooks.count))").font(.footnote).foregroundStyle(.secondary)
@@ -213,15 +209,13 @@ struct BibleSplitView: View {
                                 searchText = ""
                                 detailPath = NavigationPath()
                             } label: {
-                                HStack {
-                                    Text(book.name)
-                                    if selectedBook?.name == book.name {
-                                        Spacer()
-                                        Image(systemName: "checkmark").foregroundStyle(Color.accentColor)
-                                    }
-                                }
+                                Text(book.name)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             .buttonStyle(.plain)
+                            .listRowBackground(
+                                Color.accentColor.opacity(selectedBook?.name == book.name ? 0.18 : 0)
+                            )
                         }
                     } header: {
                         Text("New Testament (\(filteredNTBooks.count))").font(.footnote).foregroundStyle(.secondary)
