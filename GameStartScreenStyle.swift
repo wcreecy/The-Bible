@@ -80,6 +80,7 @@ struct GameStartInfoLayout<Content: View>: View {
                     VStack(alignment: .leading, spacing: spacing) {
                         content
                     }
+                    .disclosureGroupStyle(ExpandedGameHelpDisclosureStyle())
                     .padding()
                     .frame(maxWidth: 620)
                     .frame(maxWidth: .infinity)
@@ -95,6 +96,18 @@ struct GameStartInfoLayout<Content: View>: View {
             .presentationDetents(horizontalSizeClass == .regular ? [.large] : [.medium, .large])
         }
         .accessibilityHint("Opens game instructions and difficulty details")
+    }
+}
+
+private struct ExpandedGameHelpDisclosureStyle: DisclosureGroupStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            configuration.label
+                .font(.headline)
+
+            configuration.content
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -172,12 +185,40 @@ struct GameStartSettingsStyle: ViewModifier {
 }
 
 struct GameStartSettingsLayout<Content: View>: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @State private var showsSettings = false
+
     @ViewBuilder let content: Content
 
     var body: some View {
-        GameStartInfoLayout(spacing: 16) {
-            content
+        Button {
+            showsSettings = true
+        } label: {
+            Label("Game Settings", systemImage: "slider.horizontal.3")
+                .font(.subheadline.weight(.semibold))
         }
+        .buttonStyle(.bordered)
+        .sheet(isPresented: $showsSettings) {
+            NavigationStack {
+                ScrollView {
+                    VStack(spacing: 16) {
+                        content
+                    }
+                    .padding()
+                    .frame(maxWidth: 720)
+                    .frame(maxWidth: .infinity)
+                }
+                .navigationTitle("Game Settings")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") { showsSettings = false }
+                    }
+                }
+            }
+            .presentationDetents(horizontalSizeClass == .regular ? [.large] : [.medium, .large])
+        }
+        .accessibilityHint("Opens settings for this game")
     }
 }
 
