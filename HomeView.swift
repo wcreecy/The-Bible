@@ -18,7 +18,6 @@ import WidgetKit
 //     case timer
 //     case resumeReading
 //     case streaks // Daily Bible Streak (now includes Daily Goal progress)
-//     case games   // Games
 //     case bibleStats // NEW: Bible Stats (Top 5 by reading time)
 //     var id: String { rawValue }
 // }
@@ -461,38 +460,6 @@ struct HomeView: View {
                     )
                 }
             )
-        case .games:
-            GamesCard(
-                onOpenGames: {
-                    switchTo(.games)
-                },
-                onOpenStats: {
-                    // Force StatsView to open on the Game Stats tab
-                    UserDefaults.standard.set("Game Stats", forKey: "statsSelectedMode")
-                    NotificationCenter.default.post(name: .openStats, object: nil)
-                },
-                onShufflePlay: {
-                    // Choose one of the seven games at random (includes Who am I? and Wordle)
-                    enum Game: CaseIterable { case quiz, beat, match, order, hangman, whoami, wordle }
-                    let pick = Game.allCases.randomElement() ?? .quiz
-                    switch pick {
-                    case .quiz:
-                        coordinator.push(.gameQuiz)
-                    case .beat:
-                        coordinator.push(.gameBeatTheClock)
-                    case .match:
-                        coordinator.push(.gameVerseMatch)
-                    case .order:
-                        coordinator.push(.gameBookOrder)
-                    case .hangman:
-                        coordinator.push(.gameHangman)
-                    case .whoami:
-                        coordinator.push(.gameWhoAmI)
-                    case .wordle:
-                        coordinator.push(.gameWordle)
-                    }
-                }
-            )
         case .streaks:
             streaksCard
         case .bibleStats:
@@ -733,8 +700,6 @@ struct HomeView: View {
             // appearance so construction and appearance do not refresh twice.
             bibleVM.refresh()
 
-            // Initialize GameStats and bind to its version for immediate refresh
-            gameStatsVersion = GameStats.shared.snapshot().totalAnswered
         }
         .onReceive(NotificationCenter.default.publisher(for: .homeLayoutChanged)) { _ in
             loadHomeLayout()
@@ -863,9 +828,6 @@ struct HomeView: View {
         }
         try? modelContext.save()
     }
-
-    // MARK: - NEW: Games Card (Home) using centralized GameStats
-    @State private var gameStatsVersion: Int = 0
 
 }
 
