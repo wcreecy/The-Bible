@@ -548,6 +548,19 @@ private enum NotesListItem: Identifiable {
         }
     }
 
+    var preview: String {
+        let content: String
+        switch self {
+        case .scripture(let note): content = note.content
+        case .user(let note): content = note.content
+        }
+        return content
+            .components(separatedBy: .newlines)
+            .lazy
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .first(where: { !$0.isEmpty }) ?? ""
+    }
+
     var highlightColor: String {
         switch self {
         case .scripture(let note): note.highlightColor
@@ -874,6 +887,7 @@ private struct NotesListCard: View {
                         case .scripture(let note):
                             NotesTitleButton(
                                 title: item.title,
+                                preview: item.preview,
                                 tag: NoteCategory(rawValue: note.categoryRawValue)?.title,
                                 highlight: VerseHighlightColor(rawValue: note.highlightColor),
                                 isSelected: selectedScriptureNote === note
@@ -888,6 +902,7 @@ private struct NotesListCard: View {
                         case .user(let note):
                             NotesTitleButton(
                                 title: item.title,
+                                preview: item.preview,
                                 tag: NoteCategory(rawValue: note.categoryRawValue)?.title,
                                 highlight: nil,
                                 isSelected: selectedUserNote === note
@@ -958,7 +973,10 @@ private struct NotesFilterMenu: View {
 }
 
 private struct NotesTitleButton: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
     let title: String
+    let preview: String
     let tag: LocalizedStringResource?
     let highlight: VerseHighlightColor?
     let isSelected: Bool
@@ -976,7 +994,12 @@ private struct NotesTitleButton: View {
                         .font(.subheadline.weight(isSelected ? .semibold : .regular))
                         .foregroundStyle(.primary)
                         .lineLimit(2)
-                    if let tag {
+                    if horizontalSizeClass == .compact, !preview.isEmpty {
+                        Text(preview)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    } else if horizontalSizeClass != .compact, let tag {
                         Text(tag)
                             .font(.caption2)
                             .foregroundStyle(.secondary)
