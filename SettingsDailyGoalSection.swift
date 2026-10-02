@@ -4,7 +4,6 @@ struct SettingsDailyGoalSection: View {
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
 
     @State private var isDailyGoalSheetPresented: Bool = false
-    @State private var localDailyGoalMinutes: Int = 30
 
     var body: some View {
         Section(
@@ -17,7 +16,6 @@ struct SettingsDailyGoalSection: View {
             VStack(spacing: 0) {
                 Button {
                     guard !isDailyGoalSheetPresented else { return }
-                    localDailyGoalMinutes = dailyGoalMinutes
                     isDailyGoalSheetPresented = true
                 } label: {
                     HStack {
@@ -34,37 +32,7 @@ struct SettingsDailyGoalSection: View {
                 .accessibilityIdentifier("dailyGoalMinutesPickerLink")
             }
             .sheet(isPresented: $isDailyGoalSheetPresented) {
-                NavigationStack {
-                    VStack {
-                        Picker("", selection: $localDailyGoalMinutes) {
-                            ForEach(1...240, id: \.self) { m in
-                                Text("\(m) minute\(m == 1 ? "" : "s")").tag(m)
-                            }
-                        }
-                        .pickerStyle(.wheel)
-                        .accessibilityIdentifier("dailyGoalMinutesWheel")
-                    }
-                    .navigationTitle("Daily Goal")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel") {
-                                isDailyGoalSheetPresented = false
-                            }
-                        }
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("Done") {
-                                dailyGoalMinutes = localDailyGoalMinutes
-                                // Record a change effective today so past days keep their prior goal
-                                DailyGoalHistoryStore.shared.recordChange(minutes: localDailyGoalMinutes, at: Date())
-                                // Also push the simple key for legacy consumers and other devices
-                                iCloudSyncCoordinator.shared.pushKey("dailyGoalMinutes")
-                                isDailyGoalSheetPresented = false
-                            }
-                        }
-                    }
-                    .presentationDetents([.medium, .large])
-                }
+                DailyGoalEditorView()
             }
         }
         .headerProminence(.increased)
@@ -72,5 +40,45 @@ struct SettingsDailyGoalSection: View {
             // Ensure there is a baseline history so older days evaluate consistently
             DailyGoalHistoryStore.shared.ensureSeededIfNeeded()
         }
+    }
+}
+
+struct DailyGoalEditorView: View {
+    @Environment(\.dismiss) private var dismiss
+    @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
+
+    @State private var selectedMinutes: Int = 30
+
+    var body: some View {
+        NavigationStack {
+            Picker("Daily Goal", selection: $selectedMinutes) {
+                ForEach(1...240, id: \.self) { minutes in
+                    Text("\(minutes) minute\(minutes == 1 ? "" : "s")").tag(minutes)
+                }
+            }
+            .pickerStyle(.wheel)
+            .accessibilityIdentifier("dailyGoalMinutesWheel")
+            .navigationTitle("Daily Goal")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dailyGoalMinutes = selectedMinutes
+                        DailyGoalHistoryStore.shared.recordChange(minutes: selectedMinutes, at: Date())
+                        iCloudSyncCoordinator.shared.pushKey("dailyGoalMinutes")
+                        dismiss()
+                    }
+                }
+            }
+            .onAppear {
+                selectedMinutes = dailyGoalMinutes
+            }
+        }
+        .presentationDetents([.medium, .large])
     }
 }

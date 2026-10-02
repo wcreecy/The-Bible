@@ -5,6 +5,7 @@ struct StreaksCard: View {
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
 
     @StateObject private var vm = StreaksViewModel()
+    @State private var isDailyGoalEditorPresented = false
 
     private var goalSeconds: Int {
         max(1, dailyGoalMinutes) * 60
@@ -98,9 +99,14 @@ struct StreaksCard: View {
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.secondary)
                         Spacer()
-                        Text("Goal: \(goalMinutesString(goalSeconds / 60))")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.secondary)
+                        Button {
+                            isDailyGoalEditorPresented = true
+                        } label: {
+                            Label("Edit Goal: \(goalMinutesString(goalSeconds / 60))", systemImage: "pencil")
+                                .font(.footnote.weight(.semibold))
+                        }
+                        .buttonStyle(.borderless)
+                        .accessibilityIdentifier("homeDailyGoalEditButton")
                     }
                     ProgressView(value: progress)
                         .tint(goalMet ? .green : .accentColor)
@@ -143,6 +149,9 @@ struct StreaksCard: View {
             }
         }
         .accessibilityElement(children: .contain)
+        .sheet(isPresented: $isDailyGoalEditorPresented) {
+            DailyGoalEditorView()
+        }
         .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
             // No explicit state change needed; StreaksViewModel nudges objectWillChange on updates.
         }
