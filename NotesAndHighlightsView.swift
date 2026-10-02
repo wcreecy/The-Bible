@@ -582,6 +582,13 @@ private enum NotesListItem: Identifiable {
         }
     }
 
+    var isFavorite: Bool {
+        switch self {
+        case .scripture(let note): note.isFavorite
+        case .user(let note): note.isFavorite
+        }
+    }
+
     func matchesSearch(_ searchText: String) -> Bool {
         guard !searchText.isEmpty else { return true }
         switch self {
@@ -629,6 +636,7 @@ struct NotesAndHighlightsView: View {
     @Query(sort: \UserNote.updatedAt, order: .reverse) private var userNotes: [UserNote]
 
     @AppStorage("notesTabSort") private var sortRawValue = NotesTabSort.modifiedNewest.rawValue
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @State private var selectedFilter = NotesFilter.all
     @State private var highlightFilter = NotesHighlightFilter.all
     @State private var searchText = ""
@@ -640,6 +648,14 @@ struct NotesAndHighlightsView: View {
 
     var body: some View {
         VStack(spacing: 12) {
+            if contextualTipsEnabled {
+                ContextualTipView(
+                    title: "Quick note actions",
+                    message: "Swipe a note for quick actions, or press and hold it to delete.",
+                    systemImage: "hand.point.up.left"
+                )
+            }
+
             GeometryReader { proxy in
                 if horizontalSizeClass == .compact {
                     NotesListCard(
@@ -749,11 +765,14 @@ struct NotesAndHighlightsView: View {
 
     private var visibleNotes: [NotesListItem] {
         let allNotes = scriptureNotes.map(NotesListItem.scripture) + userNotes.map(NotesListItem.user)
-        return sort(allNotes.filter { note in
+        let favorites = sort(allNotes.filter(\.isFavorite))
+        let filteredNotes = sort(allNotes.filter { note in
+            !note.isFavorite &&
             matchesSelectedCategory(note.categoryRawValue) &&
                 matchesHighlight(note.highlightColor) &&
                 note.matchesSearch(searchText)
         })
+        return favorites + filteredNotes
     }
 
     private func matchesSelectedCategory(_ rawValue: String) -> Bool {
@@ -872,8 +891,7 @@ private struct NotesListCard: View {
             .padding(.top, 12)
             .padding(.bottom, 8)
 
-            ScrollView {
-                LazyVStack(spacing: 4) {
+            List {
                 if notes.isEmpty {
                     ContentUnavailableView(
                         "No Notes",
@@ -881,6 +899,8 @@ private struct NotesListCard: View {
                         description: Text("Try another tag, color, sort order, or search.")
                     )
                     .padding(.top, 40)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                 } else {
                     ForEach(notes) { item in
                         switch item {
@@ -890,6 +910,7 @@ private struct NotesListCard: View {
                                 preview: item.preview,
                                 tag: NoteCategory(rawValue: note.categoryRawValue)?.title,
                                 highlight: VerseHighlightColor(rawValue: note.highlightColor),
+                                isFavorite: note.isFavorite,
                                 isSelected: selectedScriptureNote === note
                             ) {
                                 selectedScriptureNote = note
@@ -897,14 +918,33 @@ private struct NotesListCard: View {
                                 selectionAction()
                             }
                             .contextMenu {
+                                Button(note.isFavorite ? "Remove Favorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star") {
+                                    toggleFavorite(note)
+                                }
                                 Button("Delete", systemImage: "trash", role: .destructive) { delete(note) }
                             }
+                            .swipeActions(edge: .leading) {
+                                Button {
+                                    toggleFavorite(note)
+                                } label: {
+                                    Label(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star")
+                                }
+                                .tint(.yellow)
+                            }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) { delete(note) } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
                         case .user(let note):
                             NotesTitleButton(
                                 title: item.title,
                                 preview: item.preview,
                                 tag: NoteCategory(rawValue: note.categoryRawValue)?.title,
                                 highlight: nil,
+                                isFavorite: note.isFavorite,
                                 isSelected: selectedUserNote === note
                             ) {
                                 selectedUserNote = note
@@ -912,15 +952,34 @@ private struct NotesListCard: View {
                                 selectionAction()
                             }
                             .contextMenu {
+                                Button(note.isFavorite ? "Remove Favorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star") {
+                                    toggleFavorite(note)
+                                }
                                 Button("Delete", systemImage: "trash", role: .destructive) { delete(note) }
                             }
+                            .swipeActions(edge: .leading) {
+                                Button {
+                                    toggleFavorite(note)
+                                } label: {
+                                    Label(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star")
+                                }
+                                .tint(.yellow)
+                            }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) { delete(note) } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
                         }
                     }
                 }
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
             .padding(.horizontal, 8)
             .padding(.bottom, 8)
-            }
         }
         .heroCardSurface()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -939,6 +998,16 @@ private struct NotesListCard: View {
             selectedUserNote = nil
         }
         modelContext.delete(note)
+        try? modelContext.save()
+    }
+
+    private func toggleFavorite(_ note: VerseNote) {
+        note.isFavorite.toggle()
+        try? modelContext.save()
+    }
+
+    private func toggleFavorite(_ note: UserNote) {
+        note.isFavorite.toggle()
         try? modelContext.save()
     }
 }
@@ -979,6 +1048,7 @@ private struct NotesTitleButton: View {
     let preview: String
     let tag: LocalizedStringResource?
     let highlight: VerseHighlightColor?
+    let isFavorite: Bool
     let isSelected: Bool
     let action: () -> Void
 
@@ -1007,6 +1077,12 @@ private struct NotesTitleButton: View {
                 }
 
                 Spacer(minLength: 0)
+
+                if isFavorite {
+                    Image(systemName: "star.fill")
+                        .foregroundStyle(.yellow)
+                        .accessibilityLabel("Favorite")
+                }
             }
             .padding(.horizontal, 10)
             .frame(minHeight: 44)

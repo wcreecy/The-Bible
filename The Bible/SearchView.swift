@@ -7,6 +7,7 @@ struct SearchView: View {
     @State private var searchTask: Task<Void, Never>? = nil
     @State private var isSearching: Bool = false
     @AppStorage("bibleRecentSearches") private var recentSearchesStorage: String = ""
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     private let suggestedSearches = ["love", "faith", "peace", "John 3:16", "Psalm 23"]
 
@@ -62,6 +63,16 @@ struct SearchView: View {
     // MARK: - Body
     var body: some View {
         VStack(spacing: 0) {
+            if contextualTipsEnabled {
+                ContextualTipView(
+                    title: "Search words or references",
+                    message: "Search for words such as love or faith, or enter a reference such as John 3:16. Use the scope controls to narrow the results.",
+                    systemImage: "magnifyingglass"
+                )
+                .padding(.horizontal)
+                .padding(.vertical, 12)
+            }
+
             // Scope controls at the top
             scopeControls
 

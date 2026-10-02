@@ -5,6 +5,7 @@ struct HomeBibleReaderCard: View {
     @AppStorage("homeBibleReaderChapter") private var selectedChapterNumber: Int = 1
     @AppStorage("homeBibleReaderVerse") private var selectedVerseNumber: Int = 1
     @AppStorage("homeBibleReaderContentHeight") private var preferredContentHeight: Double = 0
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     @State private var book: Book?
     @State private var isLoading = true
@@ -68,6 +69,16 @@ struct HomeBibleReaderCard: View {
             }
             .buttonStyle(.plain)
             .padding(AppDesignMetrics.cardPadding)
+
+            if contextualTipsEnabled {
+                ContextualTipView(
+                    title: "Bible reader shortcuts",
+                    message: "Swipe left or right to change chapters, drag the handle to resize, or press and hold a verse to open it in the Bible tab.",
+                    systemImage: "hand.draw"
+                )
+                .padding(.horizontal, AppDesignMetrics.cardPadding)
+                .padding(.bottom, AppDesignMetrics.cardPadding)
+            }
 
             Divider()
 

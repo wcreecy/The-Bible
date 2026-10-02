@@ -68,6 +68,7 @@ struct WordleView: View {
 
     // NEW: Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     // All-time (per mode) — now split by difficulty for the in-game scoreboard
     private var allTimeModeSuffix: String { hardModeEnabled ? "hard" : "normal" }
@@ -269,6 +270,15 @@ struct WordleView: View {
 
       ScrollView(.vertical) {
         VStack(spacing: 12) {
+          if contextualTipsEnabled {
+            ContextualTipView(
+              title: "Reuse a correct letter",
+              message: "Tap a correctly placed letter from an earlier guess to reuse it in your current guess.",
+              systemImage: "hand.tap"
+            )
+            .padding(.horizontal)
+          }
+
           if !started {
             startScreen()
           } else {

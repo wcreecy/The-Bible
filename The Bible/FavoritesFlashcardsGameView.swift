@@ -19,6 +19,7 @@ struct FavoritesFlashcardsGameView: View {
     @State private var flipped = false
     @State private var shuffledFavorites: [Favorite] = []
     @AppStorage("favoritesFlashcardsPlayCount") private var playCount = 0
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @Namespace private var flipNamespace
     
     var body: some View {
@@ -26,6 +27,14 @@ struct FavoritesFlashcardsGameView: View {
             let usesSplitLayout = started && geometry.size.width >= 700
 
             VStack {
+                if contextualTipsEnabled {
+                    ContextualTipView(
+                        title: "Reveal the answer",
+                        message: "Tap the flashcard to flip it and reveal the answer.",
+                        systemImage: "rectangle.on.rectangle.angled"
+                    )
+                }
+
                 if favorites.isEmpty {
                     Spacer()
                     Text("You have no favorites yet.\nAdd favorites to start the flashcards game!")

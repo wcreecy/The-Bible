@@ -30,6 +30,7 @@ final class VerseNote {
     /// Raw value of `VerseHighlightColor`. An empty value means no highlight.
     var highlightColor: String = ""
     var categoryRawValue: String = NoteCategory.scripture.rawValue
+    var isFavorite: Bool = false
     // Optionals for CloudKit schema
     var createdAt: Date?
     var updatedAt: Date?
@@ -64,6 +65,7 @@ final class UserNote {
     /// Encoded `AttributedString` data. `content` remains the searchable plain-text copy.
     var formattedContent: Data?
     var categoryRawValue: String = NoteCategory.personal.rawValue
+    var isFavorite: Bool = false
     // Optionals keep the model compatible with the app's CloudKit-backed store.
     var createdAt: Date?
     var updatedAt: Date?
