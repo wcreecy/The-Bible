@@ -278,7 +278,7 @@ struct GamesView: View {
         let safeDestinationIndex = min(max(destinationIndex, routes.startIndex), routes.endIndex)
         routes.insert(movedRoute, at: safeDestinationIndex)
 
-        withAnimation {
+        withAnimation(.easeInOut(duration: 0.2)) {
             favoriteRoutesRaw = routes.map(\.rawValue).joined(separator: ",")
         }
     }
@@ -359,8 +359,7 @@ private struct GameCollectionSection: View {
 }
 
 private struct ReorderableFavoriteRow: View {
-    @State private var dragOriginIndex: Int?
-    @State private var lastDestinationIndex: Int?
+    @GestureState private var dragOffset: CGFloat = 0
     @State private var rowHeight: CGFloat = 64
 
     let route: GameRoute
@@ -385,6 +384,8 @@ private struct ReorderableFavoriteRow: View {
                 action: onRemove
             )
         )
+        .offset(y: dragOffset)
+        .zIndex(dragOffset == 0 ? 0 : 1)
         .simultaneousGesture(reorderGesture)
         .onGeometryChange(for: CGFloat.self) { proxy in
             proxy.size.height
@@ -404,28 +405,22 @@ private struct ReorderableFavoriteRow: View {
 
     private var reorderGesture: some Gesture {
         DragGesture(minimumDistance: 10)
-            .onChanged { value in
+            .updating($dragOffset) { value, offset, _ in
                 guard abs(value.translation.height) > abs(value.translation.width) else { return }
+                offset = value.translation.height
+            }
+            .onEnded { value in
+                guard abs(value.translation.height) > abs(value.translation.width),
+                      let sourceIndex = routes.firstIndex(of: route) else { return }
 
-                if dragOriginIndex == nil {
-                    dragOriginIndex = routes.firstIndex(of: route)
-                    lastDestinationIndex = dragOriginIndex
-                }
-
-                guard let dragOriginIndex else { return }
                 let indexOffset = Int((value.translation.height / rowHeight).rounded())
                 let destinationIndex = min(
-                    max(dragOriginIndex + indexOffset, routes.startIndex),
+                    max(sourceIndex + indexOffset, routes.startIndex),
                     routes.index(before: routes.endIndex)
                 )
 
-                guard destinationIndex != lastDestinationIndex else { return }
-                lastDestinationIndex = destinationIndex
+                guard destinationIndex != sourceIndex else { return }
                 onMove(route, destinationIndex)
-            }
-            .onEnded { _ in
-                dragOriginIndex = nil
-                lastDestinationIndex = nil
             }
     }
 }
@@ -450,7 +445,13 @@ private struct GameFavoritesEmptyView: View {
 }
 
 private struct GameFavoriteSwipeModifier: ViewModifier {
+    private enum DragAxis {
+        case horizontal
+        case vertical
+    }
+
     @GestureState private var horizontalTranslation: CGFloat = 0
+    @State private var dragAxis: DragAxis?
     @State private var isSuppressingTap = false
 
     let isEnabled: Bool
@@ -460,7 +461,7 @@ private struct GameFavoriteSwipeModifier: ViewModifier {
     let action: () -> Void
 
     private var displayedTranslation: CGFloat {
-        guard isEnabled else { return 0 }
+        guard isEnabled, dragAxis == .horizontal else { return 0 }
         return min(max(horizontalTranslation, -96), 96)
     }
 
@@ -491,23 +492,29 @@ private struct GameFavoriteSwipeModifier: ViewModifier {
         .simultaneousGesture(
             DragGesture(minimumDistance: 20)
                 .updating($horizontalTranslation) { value, state, _ in
-                    guard isEnabled,
-                          abs(value.translation.width) > abs(value.translation.height) else { return }
+                    guard isEnabled, dragAxis == .horizontal else { return }
                     state = value.translation.width
                 }
                 .onChanged { value in
-                    guard isEnabled,
-                          abs(value.translation.width) > 8,
-                          abs(value.translation.width) > abs(value.translation.height) else { return }
+                    guard isEnabled else { return }
+
+                    if dragAxis == nil {
+                        dragAxis = abs(value.translation.width) > abs(value.translation.height)
+                            ? .horizontal
+                            : .vertical
+                    }
+
+                    guard dragAxis == .horizontal else { return }
                     isSuppressingTap = true
                 }
                 .onEnded { value in
                     if isEnabled,
-                       abs(value.translation.width) > 72,
-                       abs(value.translation.width) > abs(value.translation.height) {
+                       dragAxis == .horizontal,
+                       abs(value.translation.width) > 72 {
                         action()
                     }
 
+                    dragAxis = nil
                     Task {
                         try? await Task.sleep(for: .milliseconds(150))
                         isSuppressingTap = false
