@@ -16,6 +16,57 @@ struct VerseMatchGameView: View {
     @Query private var favorites: [Favorite]
 
     enum Difficulty: String, CaseIterable, Identifiable { case easy, normal, hard; var id: String { rawValue } }
+    enum TestamentScope: String, CaseIterable, Identifiable {
+        case whole
+        case old
+        case new
+
+        var id: String { rawValue }
+
+        var title: String {
+            switch self {
+            case .whole: "Old & New Testaments"
+            case .old: "Old Testament"
+            case .new: "New Testament"
+            }
+        }
+
+        var pickerTitle: String {
+            switch self {
+            case .whole: "OT & NT"
+            case .old: "OT"
+            case .new: "NT"
+            }
+        }
+    }
+
+    enum VerseSection: String, CaseIterable, Identifiable {
+        case law
+        case history
+        case poetry
+        case majorProphets
+        case minorProphets
+        case gospels
+        case acts
+        case epistles
+        case apocalypse
+
+        var id: String { rawValue }
+
+        var title: String {
+            switch self {
+            case .law: "Law"
+            case .history: "History"
+            case .poetry: "Poetry"
+            case .majorProphets: "Major Prophets"
+            case .minorProphets: "Minor Prophets"
+            case .gospels: "Gospels"
+            case .acts: "Acts"
+            case .epistles: "Epistles"
+            case .apocalypse: "Apocalypse"
+            }
+        }
+    }
     @State private var difficulty: Difficulty = .normal
 
     @State private var howToExpanded: Bool = false
@@ -23,6 +74,57 @@ struct VerseMatchGameView: View {
 
     @State private var started = false
     @AppStorage("versematchScope") private var verseScopeRaw: String = "whole"
+    @AppStorage("versematchSections") private var verseSectionsRaw: String = ""
+
+    private var testamentScope: TestamentScope {
+        TestamentScope(rawValue: verseScopeRaw) ?? .whole
+    }
+
+    private var selectedSections: Set<VerseSection> {
+        Set(verseSectionsRaw.split(separator: ",").compactMap { VerseSection(rawValue: String($0)) })
+    }
+
+    private var availableSections: [VerseSection] {
+        sections(for: testamentScope)
+    }
+
+    private var displayedSelectedSections: Set<VerseSection> {
+        selectedSections.isEmpty ? Set(availableSections) : selectedSections.intersection(availableSections)
+    }
+
+    private var selectedSectionsTitle: String {
+        let selected = availableSections.filter { selectedSections.contains($0) }
+        return selected.isEmpty ? "All sections" : selected.map(\.title).joined(separator: ", ")
+    }
+
+    private func sections(for scope: TestamentScope) -> [VerseSection] {
+        switch scope {
+        case .whole:
+            VerseSection.allCases
+        case .old:
+            [.law, .history, .poetry, .majorProphets, .minorProphets]
+        case .new:
+            [.gospels, .acts, .epistles, .apocalypse]
+        }
+    }
+
+    private func storeSelectedSections(_ sections: Set<VerseSection>) {
+        if sections == Set(availableSections) {
+            verseSectionsRaw = ""
+        } else {
+            verseSectionsRaw = VerseSection.allCases
+                .filter { sections.contains($0) }
+                .map(\.rawValue)
+                .joined(separator: ",")
+        }
+    }
+
+    private var answerPoolTitle: String {
+        if !selectedSections.isEmpty, difficulty != .hard {
+            return difficulty == .easy ? "Selected sections" : "Selected sections, same testament"
+        }
+        return difficulty == .easy ? "Whole Bible" : difficulty == .normal ? "Same testament" : "Same book"
+    }
     // Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
@@ -112,8 +214,8 @@ struct VerseMatchGameView: View {
                         GroupBox {
                             DisclosureGroup(isExpanded: $difficultyExpanded) {
                                 VStack(alignment: .leading, spacing: 12) {
-                                    Text("• Easy: Possible answers can come from any book of the Bible.")
-                                    Text("• Normal: Possible answers are limited to the same testament (Old or New) as the reference.")
+                                    Text("• Easy: Answers can come from any book, or only from selected sections when you choose them.")
+                                    Text("• Normal: Answers come from the reference's testament and are limited to selected sections when chosen.")
                                     Text("• Hard: Possible answers all come from the same book as the reference.")
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -124,8 +226,12 @@ struct VerseMatchGameView: View {
 
                         GameStartCurrentGameCard {
                             GameStartCurrentGameRow(
-                                label: "Source",
-                                value: verseScopeRaw == "whole" ? "Old & New Testaments" : verseScopeRaw == "old" ? "Old Testament" : "New Testament"
+                                label: "Testament",
+                                value: testamentScope.title
+                            )
+                            GameStartCurrentGameRow(
+                                label: "Sections",
+                                value: selectedSectionsTitle
                             )
                             GameStartCurrentGameRow(
                                 label: "Difficulty",
@@ -133,7 +239,7 @@ struct VerseMatchGameView: View {
                             )
                             GameStartCurrentGameRow(
                                 label: "Answer Pool",
-                                value: difficulty == .easy ? "Whole Bible" : difficulty == .normal ? "Same testament" : "Same book"
+                                value: answerPoolTitle
                             )
                         }
                     }
@@ -146,14 +252,28 @@ struct VerseMatchGameView: View {
 
                     GameStartSettingsLayout {
                         GameStartPickerCard(
-                            title: "Verse Source",
-                            selection: Binding<String>(
-                            get: { verseScopeRaw },
-                            set: { verseScopeRaw = $0 }
+                            title: "Testament",
+                            selection: Binding<TestamentScope>(
+                                get: { testamentScope },
+                                set: { scope in
+                                    verseScopeRaw = scope.rawValue
+                                    storeSelectedSections(selectedSections.intersection(sections(for: scope)))
+                                }
                             ),
-                            options: ["whole", "old", "new"]
-                        ) { source in
-                            Text(source == "whole" ? "OT & NT" : source == "old" ? "OT" : "NT")
+                            options: TestamentScope.allCases
+                        ) { scope in
+                            Text(scope.pickerTitle)
+                        }
+
+                        GameStartMultiPickerCard(
+                            title: "Sections",
+                            selection: Binding<Set<VerseSection>>(
+                                get: { displayedSelectedSections },
+                                set: storeSelectedSections
+                            ),
+                            options: availableSections
+                        ) { section in
+                            Text(section.title)
                         }
 
                         GameStartPickerCard(
@@ -349,28 +469,48 @@ struct VerseMatchGameView: View {
 
             switch difficulty {
             case .easy:
-                // Easy: distinct books across OT and NT, ignoring scope for distractors
-                if let built = makeDistinctBookDistractorsAcrossAll(
-                    excluding: (book: book.name, chapter: chapter.number, verse: verse.number),
-                    count: neededDistractors
-                ) {
+                if selectedSections.isEmpty {
+                    // Preserve the original Easy rule when no sections are selected.
+                    guard let built = makeDistinctBookDistractorsAcrossAll(
+                        excluding: (book: book.name, chapter: chapter.number, verse: verse.number),
+                        count: neededDistractors
+                    ) else { continue }
                     distractors = built
                 } else {
-                    continue // re-roll
+                    guard let built = makeSectionScopedDistractors(
+                        from: books,
+                        excluding: (book: book.name, chapter: chapter.number, verse: verse.number),
+                        count: neededDistractors
+                    ) else { continue }
+                    distractors = built
                 }
 
             case .normal:
-                // Normal: distinct books within the same testament as the correct answer
                 let sameTestamentBooks = booksInSameTestament(as: book)
-                if let built = makeDistinctBookDistractors(
-                    from: sameTestamentBooks,
-                    excludingBookName: book.name,
-                    excludingReference: (book: book.name, chapter: chapter.number, verse: verse.number),
-                    count: neededDistractors
-                ) {
+                let candidateBooks: [Book]
+                if selectedSections.isEmpty {
+                    // Preserve the original Normal rule when no sections are selected.
+                    candidateBooks = sameTestamentBooks
+                } else {
+                    let scopedBookNames = Set(books.map(\.name))
+                    candidateBooks = sameTestamentBooks.filter { scopedBookNames.contains($0.name) }
+                }
+
+                if selectedSections.isEmpty {
+                    guard let built = makeDistinctBookDistractors(
+                        from: candidateBooks,
+                        excludingBookName: book.name,
+                        excludingReference: (book: book.name, chapter: chapter.number, verse: verse.number),
+                        count: neededDistractors
+                    ) else { continue }
                     distractors = built
                 } else {
-                    continue // re-roll
+                    guard let built = makeSectionScopedDistractors(
+                        from: candidateBooks,
+                        excluding: (book: book.name, chapter: chapter.number, verse: verse.number),
+                        count: neededDistractors
+                    ) else { continue }
+                    distractors = built
                 }
 
             case .hard:
@@ -383,6 +523,13 @@ struct VerseMatchGameView: View {
                     distractors = built
                 } else {
                     continue // re-roll
+                }
+            }
+
+            if !selectedSections.isEmpty {
+                let allowedBookNames = Set(books.map(\.name))
+                guard distractors.allSatisfy({ allowedBookNames.contains($0.bookName) }) else {
+                    continue
                 }
             }
 
@@ -481,16 +628,57 @@ struct VerseMatchGameView: View {
     // MARK: - Generation utilities
 
     private func scopedBooks() -> [Book] {
-        let all = BibleData.books
-        guard !all.isEmpty else { return [] }
-        switch verseScopeRaw {
-        case "old":
-            return booksInOT()
-        case "new":
-            return booksInNT()
-        default:
-            return all
+        let testamentBooks: [Book]
+        switch testamentScope {
+        case .whole:
+            testamentBooks = BibleData.books
+        case .old:
+            testamentBooks = booksInOT()
+        case .new:
+            testamentBooks = booksInNT()
         }
+
+        guard !selectedSections.isEmpty else { return testamentBooks }
+
+        let sectionBookNames = Set(selectedSections.flatMap { books(in: $0).map(\.name) })
+        return testamentBooks.filter { sectionBookNames.contains($0.name) }
+    }
+
+    private func books(in section: VerseSection) -> [Book] {
+        switch section {
+        case .law:
+            books(named: ["Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy"])
+        case .history:
+            books(from: "Joshua", through: "Esther")
+        case .poetry:
+            books(from: "Job", through: "Song of Solomon")
+        case .majorProphets:
+            books(from: "Isaiah", through: "Daniel")
+        case .minorProphets:
+            books(from: "Hosea", through: "Malachi")
+        case .gospels:
+            books(from: "Matthew", through: "John")
+        case .acts:
+            books(named: ["Acts"])
+        case .epistles:
+            books(from: "Romans", through: "Jude")
+        case .apocalypse:
+            books(named: ["Revelation"])
+        }
+    }
+
+    private func books(named names: Set<String>) -> [Book] {
+        BibleData.books.filter { names.contains($0.name) }
+    }
+
+    private func books(from firstBookName: String, through lastBookName: String) -> [Book] {
+        let all = BibleData.books
+        guard let firstIndex = all.firstIndex(where: { $0.name == firstBookName }),
+              let lastIndex = all.firstIndex(where: { $0.name == lastBookName }),
+              firstIndex <= lastIndex else {
+            return []
+        }
+        return Array(all[firstIndex...lastIndex])
     }
 
     private func booksInOT() -> [Book] {
@@ -577,6 +765,42 @@ struct VerseMatchGameView: View {
 
         // Not enough distinct books found
         return nil
+    }
+
+    private func makeSectionScopedDistractors(
+        from books: [Book],
+        excluding target: (book: String, chapter: Int, verse: Int),
+        count: Int
+    ) -> [MatchChoice]? {
+        if let distinctBooks = makeDistinctBookDistractors(
+            from: books,
+            excludingBookName: target.book,
+            excludingReference: target,
+            count: count
+        ) {
+            return distinctBooks
+        }
+
+        var candidates: [MatchChoice] = []
+        for book in books {
+            for chapter in book.chapters {
+                for verse in chapter.verses {
+                    guard book.name != target.book
+                            || chapter.number != target.chapter
+                            || verse.number != target.verse else { continue }
+                    candidates.append(MatchChoice(
+                        snippet: snippet(for: verse.text),
+                        bookName: book.name,
+                        chapterNumber: chapter.number,
+                        verseNumber: verse.number,
+                        verseText: verse.text
+                    ))
+                }
+            }
+        }
+
+        guard candidates.count >= count else { return nil }
+        return Array(candidates.shuffled().prefix(count))
     }
 
     // Strict same-book distractors; returns nil if not enough to meet count

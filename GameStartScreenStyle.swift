@@ -243,6 +243,63 @@ struct GameStartPickerCard<Value: Hashable, Label: View>: View {
     }
 }
 
+struct GameStartMultiPickerCard<Value: Hashable, OptionLabel: View>: View {
+    let title: LocalizedStringKey
+    @Binding var selection: Set<Value>
+    let options: [Value]
+    @ViewBuilder let label: (Value) -> OptionLabel
+
+    @State private var isExpanded = false
+
+    var body: some View {
+        GroupBox(title) {
+            DisclosureGroup(isExpanded: $isExpanded) {
+                VStack(spacing: 8) {
+                    ForEach(options, id: \.self) { option in
+                        let isSelected = selection.contains(option)
+                        Button {
+                            if isSelected {
+                                guard selection.count > 1 else { return }
+                                selection.remove(option)
+                            } else {
+                                selection.insert(option)
+                            }
+                        } label: {
+                            HStack(spacing: 12) {
+                                label(option)
+                                    .font(.body.weight(isSelected ? .semibold : .regular))
+                                    .foregroundStyle(.primary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                                Image(systemName: isSelected ? "checkmark.square.fill" : "square")
+                                    .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
+                            }
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 11)
+                            .background(
+                                isSelected ? Color.accentColor.opacity(0.12) : Color.secondary.opacity(0.06),
+                                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityAddTraits(isSelected ? .isSelected : [])
+                    }
+                }
+                .padding(.top, 8)
+                .frame(maxWidth: .infinity, alignment: .top)
+            } label: {
+                Label {
+                    Text(selection.count == options.count ? "All" : "\(selection.count) selected")
+                } icon: {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(.tint)
+                }
+                .font(.body.weight(.semibold))
+            }
+        }
+    }
+}
+
 struct ExpandGameStartCardsOnIPad: ViewModifier {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Binding var howToExpanded: Bool
