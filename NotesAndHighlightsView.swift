@@ -125,8 +125,7 @@ struct VerseNoteEditorView: View {
         .sheet(item: $selectedScriptureReference) { reference in
             ScriptureReferencePreview(
                 reference: reference,
-                copyAction: { copyScripture(reference) },
-                openAction: { openScripture(reference) }
+                copyAction: { copyScripture(reference) }
             )
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
@@ -164,22 +163,6 @@ struct VerseNoteEditorView: View {
         let text = passage.verses.map(\.text).joined(separator: " ")
         UIPasteboard.general.string = "\(text)\n\(passage.title)"
         Haptics.success()
-    }
-
-    private func openScripture(_ reference: ScriptureRef) {
-        selectedScriptureReference = nil
-        dismiss()
-        DispatchQueue.main.async {
-            NotificationCenter.default.post(
-                name: .openBibleReference,
-                object: nil,
-                userInfo: [
-                    "book": reference.bookName,
-                    "chapter": reference.chapter,
-                    "verse": reference.startVerse
-                ]
-            )
-        }
     }
 
     private func toggleFontTrait(_ trait: KeyPath<Font.Resolved, Bool>) {
@@ -273,7 +256,6 @@ private struct ScriptureReferencePreview: View {
 
     let reference: ScriptureRef
     let copyAction: () -> Void
-    let openAction: () -> Void
 
     var body: some View {
         NavigationStack {
@@ -333,14 +315,22 @@ private struct ScriptureReferencePreview: View {
                     .accessibilityLabel("Copy scripture")
                     .disabled(passage?.verses.isEmpty != false)
 
-                    Button(action: openAction) {
-                        Image(systemName: "arrow.right.circle")
+                    ShareLink(item: shareText) {
+                        Image(systemName: "square.and.arrow.up")
                     }
-                    .accessibilityLabel("Go to scripture")
+                    .accessibilityLabel("Share scripture")
                     .disabled(passage?.verses.isEmpty != false)
                 }
             }
         }
+    }
+
+    private var shareText: String {
+        guard let passage else { return "" }
+        let verses = passage.verses
+            .map { "\($0.number) \($0.text)" }
+            .joined(separator: "\n")
+        return "\(passage.title)\n\n\(verses)"
     }
 }
 
@@ -1031,8 +1021,7 @@ private struct NoteDetailCard: View {
         .sheet(item: $selectedScriptureReference) { reference in
             ScriptureReferencePreview(
                 reference: reference,
-                copyAction: { copyScripture(reference) },
-                openAction: { openScripture(reference) }
+                copyAction: { copyScripture(reference) }
             )
         }
     }
@@ -1052,20 +1041,6 @@ private struct NoteDetailCard: View {
         Haptics.success()
     }
 
-    private func openScripture(_ reference: ScriptureRef) {
-        selectedScriptureReference = nil
-        DispatchQueue.main.async {
-            NotificationCenter.default.post(
-                name: .openBibleReference,
-                object: nil,
-                userInfo: [
-                    "book": reference.bookName,
-                    "chapter": reference.chapter,
-                    "verse": reference.startVerse
-                ]
-            )
-        }
-    }
 }
 
 private struct NoteDetailHeader: View {
@@ -1548,8 +1523,7 @@ private struct UserNoteEditorView: View {
         .sheet(item: $selectedScriptureReference) { reference in
             ScriptureReferencePreview(
                 reference: reference,
-                copyAction: { copyScripture(reference) },
-                openAction: { openScripture(reference) }
+                copyAction: { copyScripture(reference) }
             )
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
@@ -1585,22 +1559,6 @@ private struct UserNoteEditorView: View {
         let text = passage.verses.map(\.text).joined(separator: " ")
         UIPasteboard.general.string = "\(text)\n\(passage.title)"
         Haptics.success()
-    }
-
-    private func openScripture(_ reference: ScriptureRef) {
-        selectedScriptureReference = nil
-        dismiss()
-        DispatchQueue.main.async {
-            NotificationCenter.default.post(
-                name: .openBibleReference,
-                object: nil,
-                userInfo: [
-                    "book": reference.bookName,
-                    "chapter": reference.chapter,
-                    "verse": reference.startVerse
-                ]
-            )
-        }
     }
 
     private func toggleFontTrait(_ trait: KeyPath<Font.Resolved, Bool>) {
