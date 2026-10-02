@@ -98,6 +98,8 @@ struct FavoritesFlashcardsGameView: View {
                             }
                             .padding(.horizontal)
 
+                            GameLobbyPreview(kind: .flashcards)
+
                             GameStartActionBar(action: startGame)
                         }
                         .gameStartScreenStyle()

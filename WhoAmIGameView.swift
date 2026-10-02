@@ -104,6 +104,8 @@ struct WhoAmIGameView: View {
                     }
                     .padding(.horizontal)
 
+                    GameLobbyPreview(kind: .whoAmI)
+
                     GameStartActionBar(action: vm.startGame)
                     Spacer(minLength: 24)
                 } else if horizontalSizeClass == .regular {

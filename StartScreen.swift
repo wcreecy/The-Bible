@@ -106,6 +106,8 @@ struct WordSearchStartScreen: View {
                     .padding(.horizontal)
             }
 
+            GameLobbyPreview(kind: .wordSearch)
+
             GameStartActionBar(action: onStart)
 
             Spacer(minLength: 24)

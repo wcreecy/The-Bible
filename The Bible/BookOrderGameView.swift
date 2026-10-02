@@ -92,6 +92,8 @@ struct BookOrderGameView: View {
                     }
                     .padding(.horizontal)
 
+                    GameLobbyPreview(kind: .bookOrder)
+
                     GameStartActionBar(action: startGame)
                 }
                 .padding()

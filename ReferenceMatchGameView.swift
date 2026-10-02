@@ -308,6 +308,8 @@ struct VerseMatchGameView: View {
                     }
                     .padding(.horizontal)
 
+                    GameLobbyPreview(kind: .verseMatch)
+
                     GameStartActionBar(action: startGame)
                     Spacer(minLength: 32)
                 } else {

@@ -316,6 +316,8 @@ struct HangmanGameView: View {
         }
         .padding(.horizontal)
 
+        GameLobbyPreview(kind: .hangman)
+
         GameStartActionBar(action: startGame)
         Spacer(minLength: 24)
     }

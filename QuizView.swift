@@ -357,7 +357,9 @@ struct QuizView: View {
                         }
                     }
                     .padding(.horizontal)
-                    
+
+                    GameLobbyPreview(kind: .quiz)
+
                     GameStartActionBar(action: startQuiz)
                     Spacer(minLength: 48)
                 } else if usesSplitLayout {

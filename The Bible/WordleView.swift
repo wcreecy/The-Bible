@@ -557,6 +557,8 @@ struct WordleView: View {
                 .accessibilityLabel("Daily completed. You’ve completed today’s daily. Come back tomorrow.")
             }
 
+            GameLobbyPreview(kind: .wordle)
+
             GameStartActionBar(
                 isEnabled: mode != .daily || !dailyCompletedToday || wordleAllowDailyReplay,
                 action: { startNewRound(practice: mode == .practice) }

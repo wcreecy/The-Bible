@@ -180,6 +180,8 @@ struct BeatTheClockGameView: View {
                     }
                     .padding(.horizontal)
 
+                    GameLobbyPreview(kind: .beatTheClock)
+
                     GameStartActionBar(action: startGame)
                     Spacer(minLength: 32)
                 } else {

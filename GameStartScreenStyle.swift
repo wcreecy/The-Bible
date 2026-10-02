@@ -151,6 +151,184 @@ struct GameStartActionBar: View {
     }
 }
 
+enum GameLobbyPreviewKind {
+    case quiz
+    case hangman
+    case beatTheClock
+    case verseMatch
+    case flashcards
+    case bookOrder
+    case wordSearch
+    case whoAmI
+    case wordle
+}
+
+struct GameLobbyPreview: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    let kind: GameLobbyPreviewKind
+
+    var body: some View {
+        if horizontalSizeClass == .regular {
+            GroupBox("Game Preview") {
+                preview
+                    .padding(12)
+                    .frame(maxWidth: .infinity, minHeight: 150, maxHeight: 180)
+            }
+            .padding(.horizontal)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+        }
+    }
+
+    @ViewBuilder
+    private var preview: some View {
+        switch kind {
+        case .quiz:
+            HStack(spacing: 24) {
+                previewPrompt(icon: "text.quote", title: "For God so loved the world…", subtitle: "Which book is this from?")
+                VStack(spacing: 8) {
+                    previewChoice("Matthew")
+                    previewChoice("John", selected: true)
+                    previewChoice("Romans")
+                }
+            }
+        case .hangman:
+            HStack(spacing: 36) {
+                Image(systemName: "figure.stand")
+                    .font(.system(size: 62, weight: .light))
+                    .foregroundStyle(.teal)
+                VStack(spacing: 18) {
+                    Text("_  _  _  _  _")
+                        .font(.title.weight(.bold).monospaced())
+                    Text("A   E   I   O   U")
+                        .font(.headline.monospaced())
+                        .foregroundStyle(.secondary)
+                }
+            }
+        case .beatTheClock:
+            HStack(spacing: 30) {
+                ZStack {
+                    Circle().stroke(Color.indigo.opacity(0.18), lineWidth: 12)
+                    Circle().trim(from: 0, to: 0.68).stroke(Color.indigo, style: StrokeStyle(lineWidth: 12, lineCap: .round)).rotationEffect(.degrees(-90))
+                    Text("15").font(.title.bold().monospacedDigit())
+                }
+                .frame(width: 96, height: 96)
+                previewPrompt(icon: "person.fill", title: "Moses", subtitle: "Name a book that mentions this person")
+            }
+        case .verseMatch:
+            HStack(spacing: 24) {
+                previewPrompt(icon: "bookmark.fill", title: "Psalm 23:1", subtitle: "Choose the matching verse")
+                VStack(spacing: 8) {
+                    previewChoice("The Lord is my shepherd…", selected: true)
+                    previewChoice("In the beginning…")
+                    previewChoice("Rejoice evermore.")
+                }
+            }
+        case .flashcards:
+            ZStack {
+                previewCard(rotation: -6, offset: -28, color: .pink.opacity(0.12))
+                previewCard(rotation: 5, offset: 28, color: .purple.opacity(0.12))
+                VStack(spacing: 8) {
+                    Image(systemName: "text.quote").foregroundStyle(.pink)
+                    Text("John 3:16").font(.title3.bold())
+                    Text("Tap to reveal the verse").font(.subheadline).foregroundStyle(.secondary)
+                }
+                .frame(width: 280, height: 118)
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            }
+        case .bookOrder:
+            VStack(spacing: 7) {
+                previewOrderRow("1", "Genesis")
+                previewOrderRow("2", "Exodus")
+                previewOrderRow("3", "Leviticus")
+            }
+            .frame(maxWidth: 400)
+        case .wordSearch:
+            VStack(spacing: 4) {
+                ForEach(["F A I T H", "G R A C E", "P E A C E", "L O V E S", "H O P E R"], id: \.self) { row in
+                    Text(row)
+                        .font(.headline.monospaced().weight(.semibold))
+                        .foregroundStyle(row == "G R A C E" ? .green : .primary)
+                        .padding(.horizontal, 10)
+                        .background(row == "G R A C E" ? Color.green.opacity(0.14) : .clear, in: Capsule())
+                }
+            }
+        case .whoAmI:
+            HStack(spacing: 24) {
+                previewPrompt(icon: "person.crop.circle.fill", title: "Who am I?", subtitle: "I built an ark before the flood.")
+                VStack(spacing: 8) {
+                    previewChoice("Abraham")
+                    previewChoice("Noah", selected: true)
+                    previewChoice("Moses")
+                }
+            }
+        case .wordle:
+            VStack(spacing: 6) {
+                wordleRow(["G", "R", "A", "C", "E"], colors: [.green, .secondary, .yellow, .secondary, .green])
+                wordleRow(["F", "A", "I", "T", "H"], colors: Array(repeating: .secondary, count: 5))
+                wordleRow(["", "", "", "", ""], colors: Array(repeating: .secondary, count: 5))
+            }
+        }
+    }
+
+    private func previewPrompt(icon: String, title: String, subtitle: String) -> some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon).font(.title2).foregroundStyle(.tint)
+            Text(title).font(.headline).multilineTextAlignment(.center)
+            Text(subtitle).font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: 310)
+    }
+
+    private func previewChoice(_ title: String, selected: Bool = false) -> some View {
+        HStack {
+            Text(title).lineLimit(1)
+            Spacer()
+            Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+        }
+        .font(.subheadline.weight(selected ? .semibold : .regular))
+        .foregroundStyle(selected ? Color.accentColor : Color.primary)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(selected ? Color.accentColor.opacity(0.12) : Color.secondary.opacity(0.07), in: RoundedRectangle(cornerRadius: 10))
+        .frame(maxWidth: 330)
+    }
+
+    private func previewCard(rotation: Double, offset: CGFloat, color: Color) -> some View {
+        RoundedRectangle(cornerRadius: 18, style: .continuous)
+            .fill(color)
+            .frame(width: 280, height: 118)
+            .rotationEffect(.degrees(rotation))
+            .offset(x: offset)
+    }
+
+    private func previewOrderRow(_ number: String, _ title: String) -> some View {
+        HStack {
+            Text(number).font(.caption.bold()).foregroundStyle(.secondary).frame(width: 24)
+            Text(title).font(.headline)
+            Spacer()
+            Image(systemName: "line.3.horizontal").foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .background(Color.secondary.opacity(0.07), in: RoundedRectangle(cornerRadius: 10))
+    }
+
+    private func wordleRow(_ letters: [String], colors: [Color]) -> some View {
+        HStack(spacing: 6) {
+            ForEach(Array(letters.enumerated()), id: \.offset) { index, letter in
+                Text(letter)
+                    .font(.headline.bold())
+                    .foregroundStyle(letter.isEmpty ? Color.primary : .white)
+                    .frame(width: 38, height: 38)
+                    .background(letter.isEmpty ? Color.clear : colors[index], in: RoundedRectangle(cornerRadius: 6))
+                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.secondary.opacity(0.35)))
+            }
+        }
+    }
+}
+
 struct GameStartCurrentGameRow: View {
     let label: LocalizedStringKey
     let value: String
