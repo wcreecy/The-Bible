@@ -17,9 +17,6 @@ struct VersesView: View {
 
     @State private var previewVerse: Verse? = nil
 
-    @State private var navToReader: Bool = false
-    @State private var navStartVerse: Int = 1
-
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
@@ -53,7 +50,7 @@ struct VersesView: View {
                         .contentShape(Rectangle())
                     }
                     .foregroundStyle(.primary)
-                    .simultaneousGesture(
+                    .highPriorityGesture(
                         LongPressGesture(minimumDuration: 0.5)
                             .onEnded { _ in
                                 let generator = UIImpactFeedbackGenerator(style: .heavy)
@@ -93,7 +90,6 @@ struct VersesView: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Open") {
-                            navStartVerse = verse.number
                             previewVerse = nil
                             if let book = BibleData.books.first(where: { $0.name == self.book.name }), let chapter = book.chapters.first(where: { $0.number == self.chapter.number }) {
                                 coordinator.push(.reader(book: book, chapter: chapter, startVerse: verse.number))
