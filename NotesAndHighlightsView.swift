@@ -63,43 +63,45 @@ struct VerseNoteEditorView: View {
     }
 
     var body: some View {
-        Form {
-            Section("Title") {
-                TextField("Title", text: $title)
-                    .accessibilityLabel("Note title")
-            }
+        VStack(spacing: 14) {
+            NoteEditorTitleField(title: $title, placeholder: "Scripture note title")
 
-            Section("Highlight") {
-                HighlightColorPicker(selection: $selectedColor)
-            }
+            ScriptureEditorReferenceCard(
+                reference: "\(verse.bookName) \(verse.chapterNumber):\(verse.verseNumber)",
+                verseText: verse.verseText
+            )
 
-            Section("Note") {
-                NoteFormattingBar(
-                    category: $selectedCategory,
-                    toggleBold: { toggleFontTrait(\.isBold) },
-                    toggleUnderline: toggleUnderline,
-                    toggleItalic: { toggleFontTrait(\.isItalic) },
-                    toggleStrikethrough: toggleStrikethrough,
-                    insertBullet: insertBullet
-                )
+            VerseNoteOptionsBar(category: $selectedCategory, highlight: $selectedColor)
 
-                TextEditor(text: $noteText, selection: $noteSelection)
-                    .frame(minHeight: 140)
-                    .accessibilityLabel("Note")
-                    .environment(\.openURL, OpenURLAction { url in
-                        guard let reference = BibleReferenceLinker.parse(url: url) else {
-                            return .systemAction(url)
-                        }
-                        selectedScriptureReference = reference
-                        return .handled
-                    })
-            }
-
-            if existingNote != nil {
-                Section {
-                    Button("Remove Note & Highlight", role: .destructive, action: deleteEntry)
+            TextEditor(text: $noteText, selection: $noteSelection)
+                .font(.body)
+                .scrollContentBackground(.hidden)
+                .padding(10)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(Color.primary.opacity(0.1))
                 }
-            }
+                .accessibilityLabel("Note")
+                .environment(\.openURL, OpenURLAction { url in
+                    guard let reference = BibleReferenceLinker.parse(url: url) else {
+                        return .systemAction(url)
+                    }
+                    selectedScriptureReference = reference
+                    return .handled
+                })
+        }
+        .padding()
+        .background(AppBackgroundView(tab: .notes))
+        .safeAreaInset(edge: .bottom) {
+            NoteFormattingBar(
+                toggleBold: { toggleFontTrait(\.isBold) },
+                toggleUnderline: toggleUnderline,
+                toggleItalic: { toggleFontTrait(\.isItalic) },
+                toggleStrikethrough: toggleStrikethrough,
+                insertBullet: insertBullet
+            )
         }
         .navigationTitle(existingNote == nil ? "Add Note & Highlight" : "Edit Note & Highlight")
         .navigationBarTitleDisplayMode(.inline)
@@ -110,6 +112,11 @@ struct VerseNoteEditorView: View {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save", action: save)
                     .disabled(existingNote == nil && trimmedNote.isEmpty && selectedColor == nil)
+            }
+            if existingNote != nil {
+                ToolbarItem(placement: .secondaryAction) {
+                    Button("Remove Note & Highlight", systemImage: "trash", role: .destructive, action: deleteEntry)
+                }
             }
         }
         .persistenceFailureAlert(failure: $persistenceFailure)
@@ -335,8 +342,6 @@ private struct ScriptureReferencePreview: View {
 }
 
 private struct NoteFormattingBar: View {
-    @Binding var category: NoteCategory
-
     let toggleBold: () -> Void
     let toggleUnderline: () -> Void
     let toggleItalic: () -> Void
@@ -352,27 +357,15 @@ private struct NoteFormattingBar: View {
             formattingButton("Bulleted list", systemImage: "list.bullet", action: insertBullet)
             Spacer(minLength: 0)
 
-            Menu {
-                Picker("Category", selection: $category) {
-                    ForEach(NoteCategory.allCases) { option in
-                        Text(option.title).tag(option)
-                    }
-                }
-            } label: {
-                ViewThatFits(in: .horizontal) {
-                    Label(category.title, systemImage: "tag")
-                    Image(systemName: "tag")
-                }
+            Text("Formatting")
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(.tint)
-                .padding(.horizontal, 8)
-                .frame(minHeight: 30)
-                .background(.tint.opacity(0.12), in: Capsule())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Note category")
-            .accessibilityValue(Text(category.title))
+                .foregroundStyle(.secondary)
         }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .glassEffect(.regular, in: .rect(cornerRadius: 16))
+        .padding(.horizontal)
+        .padding(.bottom, 4)
     }
 
     private func formattingButton(
@@ -387,6 +380,75 @@ private struct NoteFormattingBar: View {
         }
         .buttonStyle(.borderless)
         .accessibilityLabel(accessibilityLabel)
+    }
+}
+
+private struct NoteEditorTitleField: View {
+    @Binding var title: String
+    let placeholder: LocalizedStringKey
+
+    var body: some View {
+        TextField(placeholder, text: $title, axis: .vertical)
+            .font(.title2.bold())
+            .textFieldStyle(.plain)
+            .padding(.horizontal, 2)
+            .accessibilityLabel("Note title")
+    }
+}
+
+private struct ScriptureEditorReferenceCard: View {
+    let reference: String
+    let verseText: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label(reference, systemImage: "book.closed.fill")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.tint)
+            Text(verseText)
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .lineLimit(4)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(.tint.opacity(0.08), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+}
+
+private struct VerseNoteOptionsBar: View {
+    @Binding var category: NoteCategory
+    @Binding var highlight: VerseHighlightColor?
+
+    var body: some View {
+        HStack(spacing: 12) {
+            NoteCategoryMenu(category: $category)
+            Divider().frame(height: 28)
+            HighlightColorPicker(selection: $highlight)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+}
+
+private struct NoteCategoryMenu: View {
+    @Binding var category: NoteCategory
+
+    var body: some View {
+        Menu {
+            Picker("Category", selection: $category) {
+                ForEach(NoteCategory.allCases) { option in
+                    Text(option.title).tag(option)
+                }
+            }
+        } label: {
+            Label(category.title, systemImage: "tag.fill")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.tint)
+        }
+        .accessibilityLabel("Note category")
+        .accessibilityValue(Text(category.title))
     }
 }
 
@@ -568,6 +630,15 @@ private enum NotesListItem: Identifiable {
         }
     }
 
+    var reference: String? {
+        switch self {
+        case .scripture(let note):
+            "\(note.bookName) \(note.chapterNumber):\(note.verseNumber)"
+        case .user:
+            nil
+        }
+    }
+
     var createdAt: Date? {
         switch self {
         case .scripture(let note): note.createdAt
@@ -648,6 +719,14 @@ struct NotesAndHighlightsView: View {
 
     var body: some View {
         VStack(spacing: 12) {
+            NotesOverviewHeader(
+                noteCount: visibleNotes.count,
+                totalCount: scriptureNotes.count + userNotes.count,
+                createAction: { isCreatingNote = true }
+            )
+
+            NotesCategoryStrip(selection: $selectedFilter)
+
             if contextualTipsEnabled {
                 ContextualTipView(
                     title: "Quick note actions",
@@ -677,7 +756,7 @@ struct NotesAndHighlightsView: View {
                             highlightFilter: $highlightFilter,
                             selectionAction: {}
                         )
-                        .frame(width: max(240, (proxy.size.width - 16) / 3))
+                        .frame(width: max(300, (proxy.size.width - 16) * 0.4))
 
                         NoteDetailCard(
                             scriptureNote: selectedScriptureNote,
@@ -853,6 +932,85 @@ struct NotesAndHighlightsView: View {
     }
 }
 
+private struct NotesOverviewHeader: View {
+    let noteCount: Int
+    let totalCount: Int
+    let createAction: () -> Void
+
+    var body: some View {
+        HStack(spacing: 14) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Study Notebook")
+                    .font(.title2.bold())
+                Text(summaryText)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 12)
+
+            Button(action: createAction) {
+                Image(systemName: "square.and.pencil")
+            }
+            .buttonStyle(ModernCircleButtonStyle(tint: .accentColor, isProminent: true))
+            .accessibilityLabel("Create note")
+        }
+        .padding(AppDesignMetrics.cardPadding)
+        .heroCardSurface()
+    }
+
+    private var summaryText: LocalizedStringKey {
+        if noteCount == totalCount {
+            "\(totalCount) notes and highlights"
+        } else {
+            "Showing \(noteCount) of \(totalCount) notes"
+        }
+    }
+}
+
+private struct NotesCategoryStrip: View {
+    @Binding var selection: NotesFilter
+
+    var body: some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: 8) {
+                ForEach(NotesFilter.allCases) { filter in
+                    Button {
+                        withAnimation(.snappy) {
+                            selection = filter
+                        }
+                    } label: {
+                        Label(filter.title, systemImage: filter.systemImage)
+                            .font(.subheadline.weight(.semibold))
+                            .padding(.horizontal, 14)
+                            .frame(minHeight: 40)
+                            .foregroundStyle(selection == filter ? Color.white : Color.primary)
+                            .background(
+                                selection == filter ? Color.accentColor : Color.primary.opacity(0.07),
+                                in: Capsule()
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(selection == filter ? .isSelected : [])
+                }
+            }
+            .padding(.horizontal, 2)
+        }
+        .scrollIndicators(.hidden)
+    }
+}
+
+private extension NotesFilter {
+    var systemImage: String {
+        switch self {
+        case .all: "square.grid.2x2"
+        case .sermon: "person.wave.2"
+        case .personal: "person.crop.circle"
+        case .scripture: "book.closed"
+        }
+    }
+}
+
 private extension NotesFilter {
     var noteCategory: NoteCategory? {
         switch self {
@@ -877,8 +1035,15 @@ private struct NotesListCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("Notes")
+                Text("Library")
                     .font(.headline)
+
+                Text(notes.count, format: .number)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(.secondary.opacity(0.12), in: Capsule())
 
                 Spacer()
 
@@ -908,9 +1073,11 @@ private struct NotesListCard: View {
                             NotesTitleButton(
                                 title: item.title,
                                 preview: item.preview,
+                                reference: item.reference,
                                 tag: NoteCategory(rawValue: note.categoryRawValue)?.title,
                                 highlight: VerseHighlightColor(rawValue: note.highlightColor),
                                 isFavorite: note.isFavorite,
+                                updatedAt: note.updatedAt ?? note.createdAt,
                                 isSelected: selectedScriptureNote === note
                             ) {
                                 selectedScriptureNote = note
@@ -943,9 +1110,11 @@ private struct NotesListCard: View {
                             NotesTitleButton(
                                 title: item.title,
                                 preview: item.preview,
+                                reference: nil,
                                 tag: NoteCategory(rawValue: note.categoryRawValue)?.title,
                                 highlight: nil,
                                 isFavorite: note.isFavorite,
+                                updatedAt: note.updatedAt ?? note.createdAt,
                                 isSelected: selectedUserNote === note
                             ) {
                                 selectedUserNote = note
@@ -1049,48 +1218,77 @@ private struct NotesTitleButton: View {
 
     let title: String
     let preview: String
+    let reference: String?
     let tag: LocalizedStringResource?
     let highlight: VerseHighlightColor?
     let isFavorite: Bool
+    let updatedAt: Date?
     let isSelected: Bool
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 10) {
-                Circle()
-                    .fill(highlight?.color ?? .secondary.opacity(0.25))
-                    .frame(width: 8, height: 8)
+            HStack(spacing: 0) {
+                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                    .fill(highlight?.color ?? .accentColor.opacity(0.35))
+                    .frame(width: 4)
+                    .padding(.vertical, 7)
 
-                VStack(alignment: .leading, spacing: 1) {
+                VStack(alignment: .leading, spacing: 7) {
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(title)
                         .font(.subheadline.weight(isSelected ? .semibold : .regular))
                         .foregroundStyle(.primary)
                         .lineLimit(2)
-                    if horizontalSizeClass == .compact, !preview.isEmpty {
+
+                        Spacer(minLength: 4)
+
+                        if isFavorite {
+                            Image(systemName: "star.fill")
+                                .font(.caption)
+                                .foregroundStyle(.yellow)
+                                .accessibilityLabel("Favorite")
+                        }
+                    }
+
+                    if !preview.isEmpty {
                         Text(preview)
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                    } else if horizontalSizeClass != .compact, let tag {
-                        Text(tag)
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
+                            .lineLimit(horizontalSizeClass == .compact ? 2 : 1)
                     }
-                }
 
-                Spacer(minLength: 0)
-
-                if isFavorite {
-                    Image(systemName: "star.fill")
-                        .foregroundStyle(.yellow)
-                        .accessibilityLabel("Favorite")
+                    HStack(spacing: 6) {
+                        if let tag {
+                            Text(tag)
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(.tint)
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 3)
+                                .background(.tint.opacity(0.11), in: Capsule())
+                        }
+                        if let reference {
+                            Label(reference, systemImage: "book.closed")
+                                .lineLimit(1)
+                        }
+                        Spacer(minLength: 0)
+                        if let updatedAt {
+                            Text(updatedAt, format: .dateTime.month(.abbreviated).day())
+                        }
+                    }
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
                 }
+                .padding(.horizontal, 11)
+                .padding(.vertical, 10)
             }
-            .padding(.horizontal, 10)
-            .frame(minHeight: 44)
-            .background(isSelected ? Color.accentColor.opacity(0.16) : .clear)
-            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .frame(minHeight: 76)
+            .background(isSelected ? Color.accentColor.opacity(0.15) : Color.primary.opacity(0.045))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .strokeBorder(isSelected ? Color.accentColor.opacity(0.38) : Color.primary.opacity(0.07))
+            }
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
@@ -1098,6 +1296,7 @@ private struct NotesTitleButton: View {
 }
 
 private struct NoteDetailCard: View {
+    @Environment(\.modelContext) private var modelContext
     @State private var selectedScriptureReference: ScriptureRef?
 
     let scriptureNote: VerseNote?
@@ -1110,30 +1309,48 @@ private struct NoteDetailCard: View {
                 NoteDetailHeader(
                     title: scriptureNote.title.isEmpty ? "Scripture Note" : scriptureNote.title,
                     subtitle: "\(scriptureNote.bookName) \(scriptureNote.chapterNumber):\(scriptureNote.verseNumber)",
+                    isFavorite: scriptureNote.isFavorite,
+                    shareText: scriptureShareText(scriptureNote),
+                    favoriteAction: { toggleFavorite(scriptureNote) },
+                    openBibleAction: { openInBible(scriptureNote) },
                     editAction: editAction
                 )
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        Text(scriptureNote.verseText)
-                            .font(.title3)
-                            .foregroundStyle(.secondary)
+                    VStack(alignment: .leading, spacing: 22) {
+                        ScriptureNoteQuotation(
+                            reference: "\(scriptureNote.bookName) \(scriptureNote.chapterNumber):\(scriptureNote.verseNumber)",
+                            verseText: scriptureNote.verseText,
+                            highlight: VerseHighlightColor(rawValue: scriptureNote.highlightColor)
+                        )
                         Text(formattedContent(data: scriptureNote.formattedContent, fallback: scriptureNote.content))
+                            .font(.body)
+                            .lineSpacing(5)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         NoteTimestampView(createdAt: scriptureNote.createdAt, updatedAt: scriptureNote.updatedAt)
                     }
+                    .frame(maxWidth: 760, alignment: .leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             } else if let userNote {
                 NoteDetailHeader(
                     title: userNote.title.isEmpty ? "Untitled Note" : userNote.title,
                     subtitle: nil,
+                    isFavorite: userNote.isFavorite,
+                    shareText: userShareText(userNote),
+                    favoriteAction: { toggleFavorite(userNote) },
+                    openBibleAction: nil,
                     editAction: editAction
                 )
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
                         Text(formattedContent(data: userNote.formattedContent, fallback: userNote.content))
+                            .font(.body)
+                            .lineSpacing(5)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         NoteTimestampView(createdAt: userNote.createdAt, updatedAt: userNote.updatedAt)
                     }
+                    .frame(maxWidth: 760, alignment: .leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             } else {
                 ContentUnavailableView(
@@ -1177,11 +1394,73 @@ private struct NoteDetailCard: View {
         Haptics.success()
     }
 
+    private func toggleFavorite(_ note: VerseNote) {
+        note.isFavorite.toggle()
+        try? modelContext.save()
+        Haptics.selection()
+    }
+
+    private func toggleFavorite(_ note: UserNote) {
+        note.isFavorite.toggle()
+        try? modelContext.save()
+        Haptics.selection()
+    }
+
+    private func openInBible(_ note: VerseNote) {
+        NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
+            "book": note.bookName,
+            "chapter": note.chapterNumber,
+            "verse": note.verseNumber
+        ])
+    }
+
+    private func scriptureShareText(_ note: VerseNote) -> String {
+        let title = note.title.isEmpty ? "Scripture Note" : note.title
+        return "\(title)\n\(note.bookName) \(note.chapterNumber):\(note.verseNumber)\n\n\(note.verseText)\n\n\(note.content)"
+    }
+
+    private func userShareText(_ note: UserNote) -> String {
+        let title = note.title.isEmpty ? "Untitled Note" : note.title
+        return "\(title)\n\n\(note.content)"
+    }
+
+}
+
+private struct ScriptureNoteQuotation: View {
+    let reference: String
+    let verseText: String
+    let highlight: VerseHighlightColor?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(reference, systemImage: "quote.opening")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.tint)
+            Text(verseText)
+                .font(.title3)
+                .italic()
+                .lineSpacing(4)
+                .foregroundStyle(.primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(18)
+        .background((highlight?.color ?? .accentColor).opacity(0.11), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                .fill(highlight?.color ?? .accentColor)
+                .frame(width: 5)
+                .padding(.vertical, 12)
+        }
+    }
 }
 
 private struct NoteDetailHeader: View {
     let title: String
     let subtitle: String?
+    let isFavorite: Bool
+    let shareText: String
+    let favoriteAction: () -> Void
+    let openBibleAction: (() -> Void)?
     let editAction: () -> Void
 
     var body: some View {
@@ -1196,8 +1475,28 @@ private struct NoteDetailHeader: View {
                 }
             }
             Spacer()
-            Button("Edit", systemImage: "pencil", action: editAction)
-                .buttonStyle(.bordered)
+            HStack(spacing: 8) {
+                if let openBibleAction {
+                    Button(action: openBibleAction) {
+                        Image(systemName: "book.closed")
+                    }
+                    .accessibilityLabel("Open in Bible")
+                }
+
+                Button(action: favoriteAction) {
+                    Image(systemName: isFavorite ? "star.fill" : "star")
+                }
+                .foregroundStyle(isFavorite ? .yellow : .primary)
+                .accessibilityLabel(isFavorite ? "Remove favorite" : "Favorite")
+
+                ShareLink(item: shareText) {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .accessibilityLabel("Share note")
+
+                Button("Edit", systemImage: "pencil", action: editAction)
+            }
+            .buttonStyle(.bordered)
         }
     }
 }
@@ -1600,40 +1899,49 @@ private struct UserNoteEditorView: View {
     }
 
     var body: some View {
-        Form {
-            Section("Title") {
-                TextField("Note title", text: $title)
-                    .font(.title3.weight(.semibold))
-                    .accessibilityLabel("Note title")
+        VStack(spacing: 14) {
+            NoteEditorTitleField(title: $title, placeholder: "Note title")
+
+            HStack {
+                NoteCategoryMenu(category: $selectedCategory)
+                Spacer()
+                Text(existingNote == nil ? "New note" : "Editing")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
+            .padding(.horizontal, 12)
+            .frame(minHeight: 44)
+            .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
 
-            Section("Note") {
-                NoteFormattingBar(
-                    category: $selectedCategory,
-                    toggleBold: { toggleFontTrait(\.isBold) },
-                    toggleUnderline: toggleUnderline,
-                    toggleItalic: { toggleFontTrait(\.isItalic) },
-                    toggleStrikethrough: toggleStrikethrough,
-                    insertBullet: insertBullet
-                )
-
-                TextEditor(text: $noteText, selection: $noteSelection)
-                    .frame(minHeight: 380)
-                    .accessibilityLabel("Note")
-                    .environment(\.openURL, OpenURLAction { url in
-                        guard let reference = BibleReferenceLinker.parse(url: url) else {
-                            return .systemAction(url)
-                        }
-                        selectedScriptureReference = reference
-                        return .handled
-                    })
-            }
-
-            if existingNote != nil {
-                Section {
-                    Button("Delete Note", role: .destructive, action: deleteNote)
+            TextEditor(text: $noteText, selection: $noteSelection)
+                .font(.body)
+                .scrollContentBackground(.hidden)
+                .padding(10)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(Color.primary.opacity(0.1))
                 }
-            }
+                .accessibilityLabel("Note")
+                .environment(\.openURL, OpenURLAction { url in
+                    guard let reference = BibleReferenceLinker.parse(url: url) else {
+                        return .systemAction(url)
+                    }
+                    selectedScriptureReference = reference
+                    return .handled
+                })
+        }
+        .padding()
+        .background(AppBackgroundView(tab: .notes))
+        .safeAreaInset(edge: .bottom) {
+            NoteFormattingBar(
+                toggleBold: { toggleFontTrait(\.isBold) },
+                toggleUnderline: toggleUnderline,
+                toggleItalic: { toggleFontTrait(\.isItalic) },
+                toggleStrikethrough: toggleStrikethrough,
+                insertBullet: insertBullet
+            )
         }
         .navigationTitle(existingNote == nil ? "New Note" : "Edit Note")
         .navigationBarTitleDisplayMode(.inline)
@@ -1644,6 +1952,11 @@ private struct UserNoteEditorView: View {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save", action: save)
                     .disabled(trimmedTitle.isEmpty && trimmedNote.isEmpty)
+            }
+            if existingNote != nil {
+                ToolbarItem(placement: .secondaryAction) {
+                    Button("Delete Note", systemImage: "trash", role: .destructive, action: deleteNote)
+                }
             }
         }
         .persistenceFailureAlert(failure: $persistenceFailure)
