@@ -201,6 +201,7 @@ struct HomeLayoutEditorView: View {
                     Toggle(isOn: $showMoreVisible) {
                         Label("Show ‘Show More’ on Home", systemImage: showMoreVisible ? "eye" : "eye.slash")
                     }
+                    .toggleStyle(StatusColorToggleStyle())
                     .onChange(of: showMoreVisible) { _, _ in
                         onDone()
                     }
@@ -243,6 +244,34 @@ struct HomeLayoutEditorView: View {
                 }
             }
         }
+    }
+}
+
+private struct StatusColorToggleStyle: ToggleStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                configuration.isOn.toggle()
+            }
+        } label: {
+            HStack {
+                configuration.label
+
+                Spacer()
+
+                Capsule()
+                    .fill(configuration.isOn ? Color.green : Color.red)
+                    .frame(width: 51, height: 31)
+                    .overlay(alignment: configuration.isOn ? .trailing : .leading) {
+                        Circle()
+                            .fill(.white)
+                            .padding(2)
+                            .shadow(color: .black.opacity(0.18), radius: 1, y: 1)
+                    }
+            }
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
     }
 }
 
