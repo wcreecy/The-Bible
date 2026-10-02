@@ -22,6 +22,8 @@ struct GenreDistributionCardView: View {
     let formatSeconds: (Int) -> String
 
     @Environment(\.colorScheme) private var colorScheme
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+
     private var segmentedTint: Color {
         colorScheme == .light ? Color.black.opacity(0.85) : Color.accentColor
     }
@@ -81,12 +83,14 @@ struct GenreDistributionCardView: View {
                     }
                 }
 
-                // Small tip to indicate interactivity
-                Text("Tip: Tap a genre to see the books in it.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                if contextualTipsEnabled {
+                    ContextualTipView(
+                        title: "Explore a genre",
+                        message: "Tap a genre to see its books and reading time.",
+                        systemImage: "chart.bar.xaxis"
+                    )
                     .padding(.top, 6)
-                    .accessibilityHint("Opens a list of books for the selected genre.")
+                }
             }
         }
     }

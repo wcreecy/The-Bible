@@ -4,6 +4,7 @@ import SwiftData
 struct FavoritesView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: [SortDescriptor(\Favorite.createdAt, order: .reverse)]) private var favorites: [Favorite]
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     @State private var searchText: String = ""
     @State private var removedFavorites: [RemovedFavorite] = []
@@ -52,6 +53,16 @@ struct FavoritesView: View {
                 )
             } else {
                 List {
+                    if contextualTipsEnabled {
+                        ContextualTipView(
+                            title: "Open and manage favorites",
+                            message: "Tap a favorite to open its verse. Swipe it, or use Edit, to remove it with an option to undo.",
+                            systemImage: "heart.text.clipboard"
+                        )
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                    }
+
                     ForEach(filteredFavorites) { fav in
                         // Tap to open this favorite in the Bible tab via the central router
                         Button {
