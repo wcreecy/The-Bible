@@ -16,6 +16,8 @@ struct SettingsView: View {
                 .listRowBackground(HeroCardListRowBackground())
             SettingsTipsSection()
                 .listRowBackground(HeroCardListRowBackground())
+            SettingsFeedbackSection()
+                .listRowBackground(HeroCardListRowBackground())
             SettingsDataManagementLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
 
@@ -179,6 +181,23 @@ private struct SettingsTipsSection: View {
             Text("Help")
         } footer: {
             Text("Tips appear near features such as favorites, reader gestures, verse actions, stats, widgets, timers, Health, and Home customization.")
+        }
+    }
+}
+
+private struct SettingsFeedbackSection: View {
+    var body: some View {
+        Section("Feedback") {
+            NavigationLink {
+                FeedbackView()
+            } label: {
+                SettingsNavigationRow(
+                    title: "Share Feedback",
+                    subtitle: "Send comments, suggestions, or report a problem",
+                    systemImage: "envelope"
+                )
+            }
+            .accessibilityIdentifier("shareFeedbackLink")
         }
     }
 }

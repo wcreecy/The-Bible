@@ -121,6 +121,7 @@
 		2C6BB65D2EF20A460010D769 /* FontFamilyEnvironmentModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6BB65C2EF20A460010D769 /* FontFamilyEnvironmentModifier.swift */; };
 		2C7EA8BB2EDE7AEA0073F01C /* iCloudSyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EA8BA2EDE7AEA0073F01C /* iCloudSyncCoordinator.swift */; };
 		2C8F6558307008BE0052754F /* DeveloperSampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8F6557307008BE0052754F /* DeveloperSampleData.swift */; };
+		2C98EBE03071360B00FBAED3 /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C98EBDF3071360B00FBAED3 /* FeedbackView.swift */; };
 		2C9CD7852EE2FFB90073622F /* GameStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9CD7842EE2FFB90073622F /* GameStats.swift */; };
 		2CB309D32EC2CE2D0032CB7D /* BibleReferenceLinker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB309D22EC2CE2D0032CB7D /* BibleReferenceLinker.swift */; };
 		2CB929A9306BD98000B03AB0 /* ContextualTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB929A8306BD98000B03AB0 /* ContextualTipView.swift */; };
@@ -324,6 +325,7 @@
 		2C82F4DC2EBB944B00DB40FC /* ShareText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareText.swift; sourceTree = "<group>"; };
 		2C82F4DE2EBBB31000DB40FC /* BeatTheClockGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTheClockGameView.swift; sourceTree = "<group>"; };
 		2C8F6557307008BE0052754F /* DeveloperSampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperSampleData.swift; sourceTree = "<group>"; };
+		2C98EBDF3071360B00FBAED3 /* FeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
 		2C9CD7842EE2FFB90073622F /* GameStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStats.swift; sourceTree = "<group>"; };
 		2CB309D22EC2CE2D0032CB7D /* BibleReferenceLinker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleReferenceLinker.swift; sourceTree = "<group>"; };
 		2CB56D972EB3895400A657FA /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -681,6 +683,7 @@
 				2C0DFA20306E9C5A00E114A5 /* NotesAndHighlightsView.swift */,
 				2C8F6557307008BE0052754F /* DeveloperSampleData.swift */,
 				2C2BBFA930702B6900BD4A07 /* VerseToRememberCard.swift */,
+				2C98EBDF3071360B00FBAED3 /* FeedbackView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1158,6 +1161,7 @@
 				2C2A44DC2EEE152900FE8C2F /* SideBySideGameArea.swift in Sources */,
 				2C3A48EB2EFC12EB0040AC67 /* AllGamesComparisonCardView.swift in Sources */,
 				2CF043692EE9F3D600DB1283 /* Canon.swift in Sources */,
+				2C98EBE03071360B00FBAED3 /* FeedbackView.swift in Sources */,
 				2C2A44D62EEE151700FE8C2F /* WordSearchEngine.swift in Sources */,
 				2C2A44D82EEE151E00FE8C2F /* WordSearchViewModel.swift in Sources */,
 				2C2A45082EEE351E00FE8C2F /* SettingsResetDataSection.swift in Sources */,
