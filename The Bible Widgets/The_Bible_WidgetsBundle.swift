@@ -12,7 +12,11 @@ struct VerseWidget: Widget {
     let kind: String = "VerseWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: VerseProvider()) { (entry: VerseWidgetEntry) in
+        AppIntentConfiguration(
+            kind: kind,
+            intent: VerseWidgetAppearanceIntent.self,
+            provider: VerseProvider()
+        ) { (entry: VerseWidgetEntry) in
             VerseWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Verse of the Day")
@@ -25,7 +29,11 @@ struct LastReadWidget: Widget {
     let kind: String = "LastReadWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: LastReadProvider()) { (entry: LastReadEntry) in
+        AppIntentConfiguration(
+            kind: kind,
+            intent: LastReadWidgetAppearanceIntent.self,
+            provider: LastReadProvider()
+        ) { (entry: LastReadEntry) in
             LastReadWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Last Read")

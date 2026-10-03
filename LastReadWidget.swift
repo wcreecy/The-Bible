@@ -11,9 +11,7 @@ struct LastReadWidgetEntryView: View {
     private var isLarge: Bool { widgetFamily == .systemLarge }
     private var isMedium: Bool { widgetFamily == .systemMedium }
     private var backgroundStyle: LastReadWidgetBackgroundStyle {
-        let rawValue = UserDefaults(suiteName: "group.bible.app")?
-            .string(forKey: "lastReadWidgetBackground")
-        return LastReadWidgetBackgroundStyle(rawValue: rawValue ?? "") ?? .black
+        LastReadWidgetBackgroundStyle(rawValue: entry.backgroundStyleRaw) ?? .black
     }
 
     var body: some View {

@@ -395,18 +395,48 @@ private struct SettingsWidgetAppearanceSection: View {
         selection: Binding<String>,
         accessibilityIdentifier: String
     ) -> some View {
-        Picker(selection: selection) {
-            ForEach(WidgetBackgroundStyle.allCases) { style in
-                Label {
-                    Text(style.title)
-                } icon: {
-                    Circle()
-                        .fill(style.previewColor)
-                }
-                .tag(style.rawValue)
-            }
-        } label: {
+        let selectedStyle = WidgetBackgroundStyle(rawValue: selection.wrappedValue) ?? .black
+
+        return HStack {
             Label(title, systemImage: systemImage)
+
+            Spacer()
+
+            Menu {
+                ForEach(WidgetBackgroundStyle.allCases) { style in
+                    Button {
+                        selection.wrappedValue = style.rawValue
+                    } label: {
+                        Label {
+                            Text(style.title)
+                        } icon: {
+                            Image(systemName: selection.wrappedValue == style.rawValue
+                                  ? "checkmark.circle.fill"
+                                  : "circle.fill")
+                                .foregroundStyle(style.previewColor)
+                        }
+                    }
+                }
+            } label: {
+                HStack(spacing: 7) {
+                    Circle()
+                        .fill(selectedStyle.previewColor)
+                        .frame(width: 14, height: 14)
+                        .overlay {
+                            Circle()
+                                .strokeBorder(.secondary.opacity(0.35), lineWidth: 1)
+                        }
+
+                    Text(selectedStyle.title)
+                        .foregroundStyle(.primary)
+
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .accessibilityLabel(title)
+            .accessibilityValue(Text(selectedStyle.title))
         }
         .accessibilityIdentifier(accessibilityIdentifier)
     }

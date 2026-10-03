@@ -10,9 +10,7 @@ struct PinnedVerseWidgetEntryView: View {
     private var isLarge: Bool { widgetFamily == .systemLarge }
     private var isMedium: Bool { widgetFamily == .systemMedium }
     private var backgroundStyle: PinnedVerseWidgetBackgroundStyle {
-        let rawValue = UserDefaults(suiteName: "group.bible.app")?
-            .string(forKey: "pinnedVerseWidgetBackground")
-        return PinnedVerseWidgetBackgroundStyle(rawValue: rawValue ?? "") ?? .black
+        PinnedVerseWidgetBackgroundStyle(rawValue: entry.backgroundStyleRaw) ?? .black
     }
 
     var body: some View {
@@ -123,7 +121,11 @@ struct PinnedVerseWidget: Widget {
     let kind: String = "PinnedVerseWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: PinnedVerseProvider()) { (entry: PinnedVerseEntry) in
+        AppIntentConfiguration(
+            kind: kind,
+            intent: PinnedVerseWidgetAppearanceIntent.self,
+            provider: PinnedVerseProvider()
+        ) { (entry: PinnedVerseEntry) in
             PinnedVerseWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Pinned Verse")

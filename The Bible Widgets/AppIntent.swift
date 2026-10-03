@@ -1,71 +1,46 @@
-//
-//  AppIntent.swift
-//  The Bible Widgets
-//
-//  Created by William Creecy on 11/7/25.
-//
-
-import WidgetKit
 import AppIntents
+import Foundation
 
-enum WidgetColorOption: String, AppEnum, CaseIterable, Identifiable, Codable {
-    case white
+enum WidgetBackgroundOption: String, AppEnum {
+    case useSettings
     case black
-    case blue
-    case green
-    case red
-    case orange
-    case yellow
-    case gray
-    
-    var id: String { rawValue }
-    
-    var displayName: LocalizedStringResource {
-        switch self {
-        case .white: return "White"
-        case .black: return "Black"
-        case .blue: return "Blue"
-        case .green: return "Green"
-        case .red: return "Red"
-        case .orange: return "Orange"
-        case .yellow: return "Yellow"
-        case .gray: return "Gray"
-        }
-    }
-}
+    case midnight
+    case forest
+    case burgundy
+    case indigo
+    case sunset
 
-extension WidgetColorOption: TypeDisplayRepresentable, CaseDisplayRepresentable {
     static var typeDisplayRepresentation: TypeDisplayRepresentation {
-        .init(name: "Color Option")
+        "Widget Background"
     }
-    static var caseDisplayRepresentations: [WidgetColorOption : DisplayRepresentation] {
-        return [
-            .white: DisplayRepresentation(title: "White"),
-            .black: DisplayRepresentation(title: "Black"),
-            .blue: DisplayRepresentation(title: "Blue"),
-            .green: DisplayRepresentation(title: "Green"),
-            .red: DisplayRepresentation(title: "Red"),
-            .orange: DisplayRepresentation(title: "Orange"),
-            .yellow: DisplayRepresentation(title: "Yellow"),
-            .gray: DisplayRepresentation(title: "Gray")
+
+    static var caseDisplayRepresentations: [WidgetBackgroundOption: DisplayRepresentation] {
+        [
+            .useSettings: "Match App Setting",
+            .black: "Black",
+            .midnight: "Midnight",
+            .forest: "Forest",
+            .burgundy: "Burgundy",
+            .indigo: "Indigo",
+            .sunset: "Sunset"
         ]
     }
-    // var caseDisplayRepresentation: DisplayRepresentation? {
-    //     .init(title: self.displayName)
-    // }
+
+    func resolvedRawValue(settingsKey: String) -> String {
+        guard self == .useSettings else { return rawValue }
+
+        let savedValue = UserDefaults(suiteName: "group.bible.app")?
+            .string(forKey: settingsKey)
+        return savedValue ?? WidgetBackgroundOption.black.rawValue
+    }
 }
 
-struct ConfigurationAppIntent: WidgetConfigurationIntent {
-    static var title: LocalizedStringResource { "Configuration" }
-    static var description: IntentDescription { "This is an example widget." }
+struct WidgetAppearanceConfigurationIntent: WidgetConfigurationIntent {
+    static var title: LocalizedStringResource = "Widget Appearance"
+    static var description = IntentDescription(
+        "Choose a background for this widget, or use the choice from the app’s Settings."
+    )
 
-    // An example configurable parameter.
-    @Parameter(title: "Favorite Emoji", default: "😃")
-    var favoriteEmoji: String
-
-    @Parameter(title: "Background Color", default: .white)
-    var backgroundColor: WidgetColorOption
-
-    @Parameter(title: "Font Color", default: .black)
-    var fontColor: WidgetColorOption
+    @Parameter(title: "Background", default: .useSettings)
+    var background: WidgetBackgroundOption
 }

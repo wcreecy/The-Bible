@@ -18,9 +18,7 @@ struct VerseWidgetEntryView: View {
     private var headerTitle: String { isEvening ? "Word of the Night" : "Verse of the Day" }
     private var headerIcon: String { isEvening ? "moon.stars" : "sun.max.fill" }
     private var backgroundStyle: VerseWidgetBackgroundStyle {
-        let rawValue = UserDefaults(suiteName: "group.bible.app")?
-            .string(forKey: "verseWidgetBackground")
-        return VerseWidgetBackgroundStyle(rawValue: rawValue ?? "") ?? .black
+        VerseWidgetBackgroundStyle(rawValue: entry.backgroundStyleRaw) ?? .black
     }
 
     var body: some View {
