@@ -357,11 +357,24 @@ struct HangmanGameView: View {
                 }
             }
         } drawing: {
-            HangmanDrawing(
-                progress: Double(wrongGuesses) / Double(max(1, maxWrong))
-            )
-            .frame(height: usesWideLayout ? 280 : drawingHeight)
-            .padding(.horizontal, 12)
+            VStack(spacing: 18) {
+                HangmanDrawing(
+                    progress: Double(wrongGuesses) / Double(max(1, maxWrong)),
+                    maximumCharacterHeight: usesWideLayout && !showsOnScreenKeyboard ? 520 : 310
+                )
+                .frame(
+                    height: usesWideLayout
+                        ? (showsOnScreenKeyboard
+                            ? 280
+                            : min(440, max(340, availableHeight * 0.48)))
+                        : drawingHeight
+                )
+                .padding(.horizontal, 12)
+
+                if usesWideLayout && !showsOnScreenKeyboard {
+                    playedLettersTray
+                }
+            }
         } scoreboard: {
             GameScoreboardCard(
                 currentCorrect: score,
@@ -375,6 +388,45 @@ struct HangmanGameView: View {
                 .padding(.horizontal, 6)
                 .padding(.top, 8)
         }
+    }
+
+    private var playedLettersTray: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Played Letters")
+                .font(.headline)
+
+            if guessedLetters.isEmpty {
+                Text("No letters played yet")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                LazyVGrid(
+                    columns: [GridItem(.adaptive(minimum: 36), spacing: 8)],
+                    spacing: 8
+                ) {
+                    ForEach(guessedLetters.sorted(), id: \.self) { letter in
+                        Text(String(letter))
+                            .font(.headline.monospaced())
+                            .foregroundStyle(.white)
+                            .frame(width: 36, height: 36)
+                            .background(
+                                correctLetters.contains(letter) ? Color.green : Color.red,
+                                in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            )
+                            .accessibilityLabel(
+                                correctLetters.contains(letter)
+                                    ? "\(String(letter)), correct"
+                                    : "\(String(letter)), incorrect"
+                            )
+                    }
+                }
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.quaternary, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .accessibilityElement(children: .contain)
     }
 
     @ViewBuilder
@@ -1054,6 +1106,7 @@ private struct HangmanResponsiveLayout<
 
 private struct HangmanDrawing: View {
     let progress: Double
+    let maximumCharacterHeight: CGFloat
 
     private var clampedProgress: Double {
         min(max(progress, 0), 1)
@@ -1067,7 +1120,7 @@ private struct HangmanDrawing: View {
 
     var body: some View {
         GeometryReader { geo in
-            let characterHeight = min(geo.size.height, 310)
+            let characterHeight = min(geo.size.height, maximumCharacterHeight)
             let characterWidth = min(geo.size.width * 0.72, characterHeight * 0.62)
 
             ZStack {
