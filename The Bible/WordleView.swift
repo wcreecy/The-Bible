@@ -366,11 +366,13 @@ struct WordleView: View {
         .padding(.bottom, usesCompactPhoneLayout ? 0 : 16)
       }
     }
-    .navigationTitle("WORD")
+    .navigationTitle("")
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .principal) {
-        GameNavigationTitle(title: "WORD", systemImage: "square.grid.3x3.fill")
+        if started {
+          GameNavigationTitle(title: "WORD", systemImage: "square.grid.3x3.fill", tint: .mint)
+        }
       }
     }
     .task {
@@ -459,7 +461,7 @@ struct WordleView: View {
         VStack(spacing: 16) {
             Spacer(minLength: 24)
             Text("Guess the 5‑letter word in 6 tries.\nUse the on‑screen keyboard or a connected keyboard.")
-                .gameStartDescriptionStyle(systemImage: "square.grid.3x3.fill", tint: .mint)
+                .gameStartDescriptionStyle(title: "WORD", systemImage: "square.grid.3x3.fill", tint: .mint)
 
             GameStartInfoLayout {
                 GroupBox {

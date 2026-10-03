@@ -215,7 +215,7 @@ struct VerseMatchGameView: View {
                 if !started {
                     Spacer(minLength: 32)
                     Text("Choose the verse text that matches the reference.")
-                        .gameStartDescriptionStyle(systemImage: "text.quote", tint: .orange)
+                        .gameStartDescriptionStyle(title: "Verse Match", systemImage: "text.quote", tint: .orange)
 
                     GameStartInfoLayout {
                         GroupBox {
@@ -350,11 +350,13 @@ struct VerseMatchGameView: View {
             }
             .padding()
         }
-        .navigationTitle("Verse Match")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                GameNavigationTitle(title: "Verse Match", systemImage: "text.quote")
+                if started {
+                    GameNavigationTitle(title: "Verse Match", systemImage: "text.quote", tint: .orange)
+                }
             }
 
             ToolbarItem(placement: .topBarLeading) {

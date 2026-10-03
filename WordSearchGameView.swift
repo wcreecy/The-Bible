@@ -101,11 +101,13 @@ struct WordSearchGameView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Word Search")
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    GameNavigationTitle(title: "Word Search", systemImage: "square.grid.3x3.topleft.filled")
+                    if vm.started {
+                        GameNavigationTitle(title: "Word Search", systemImage: "square.grid.3x3.topleft.filled", tint: .green)
+                    }
                 }
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {

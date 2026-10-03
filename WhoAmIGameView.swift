@@ -36,7 +36,7 @@ struct WhoAmIGameView: View {
                 if !vm.started {
                     Spacer(minLength: 24)
                     Text("Match Bible names and descriptions.")
-                        .gameStartDescriptionStyle(systemImage: "person.text.rectangle", tint: .brown)
+                        .gameStartDescriptionStyle(title: "Who am I?", systemImage: "person.text.rectangle", tint: .brown)
 
                     GameStartInfoLayout {
                         GroupBox {
@@ -261,11 +261,13 @@ struct WhoAmIGameView: View {
             }
             .padding()
         }
-        .navigationTitle("Who am I?")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                GameNavigationTitle(title: "Who am I?", systemImage: "person.text.rectangle")
+                if vm.started {
+                    GameNavigationTitle(title: "Who am I?", systemImage: "person.text.rectangle", tint: .brown)
+                }
             }
         }
         .onAppear { vm.onAppear() }

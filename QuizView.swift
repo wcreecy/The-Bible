@@ -265,7 +265,7 @@ struct QuizView: View {
                     VStack(spacing: 16) {
                 if !started {
                     Text("Test your knowledge by guessing the book of the Bible from a given verse.")
-                        .gameStartDescriptionStyle(systemImage: "questionmark.circle.fill", tint: .blue)
+                        .gameStartDescriptionStyle(title: "Bible Quiz", systemImage: "questionmark.circle.fill", tint: .blue)
                     
                     GameStartInfoLayout {
                         GroupBox {
@@ -553,11 +553,13 @@ struct QuizView: View {
             }
             wasInRedZone = inRed
         }
-        .navigationTitle("Bible Quiz")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                QuizNavigationTitle()
+                if started {
+                    GameNavigationTitle(title: "Bible Quiz", systemImage: "questionmark.circle.fill", tint: .blue)
+                }
             }
 
             // Only show navigation buttons once the round has started
@@ -1444,24 +1446,6 @@ private struct QuizLargeTimerView: View {
         guard isTimed else { return "infinity" }
         guard let resultIsCorrect else { return "timer" }
         return resultIsCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"
-    }
-}
-
-private struct QuizNavigationTitle: View {
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "questionmark.bubble.fill")
-                .font(.subheadline.weight(.bold))
-                .foregroundStyle(.white)
-                .frame(width: 28, height: 28)
-                .background(.tint, in: Circle())
-
-            Text("Bible Quiz")
-                .font(.headline.weight(.bold))
-                .fontDesign(.rounded)
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Bible Quiz")
     }
 }
 

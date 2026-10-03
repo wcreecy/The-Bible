@@ -13,17 +13,26 @@ struct GameStartScreenStyle: ViewModifier {
 }
 
 struct GameStartDescriptionStyle: ViewModifier {
+    let title: LocalizedStringKey
     let systemImage: String
     let tint: Color
 
     func body(content: Content) -> some View {
-        VStack(spacing: 14) {
-            Image(systemName: systemImage)
-                .font(.system(size: 34, weight: .semibold))
-                .foregroundStyle(.white)
-                .frame(width: 72, height: 72)
-                .background(tint.gradient, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-                .shadow(color: tint.opacity(0.24), radius: 12, y: 7)
+        VStack(spacing: 18) {
+            HStack(spacing: 16) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 34, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 72, height: 72)
+                    .background(tint.gradient, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                    .shadow(color: tint.opacity(0.24), radius: 12, y: 7)
+
+                Text(title)
+                    .font(.largeTitle.weight(.bold))
+                    .fontDesign(.rounded)
+                    .multilineTextAlignment(.leading)
+            }
+            .accessibilityElement(children: .combine)
 
             content
                 .font(.title3.weight(.semibold))
@@ -569,10 +578,11 @@ extension View {
     }
 
     func gameStartDescriptionStyle(
+        title: LocalizedStringKey,
         systemImage: String = "gamecontroller.fill",
         tint: Color = .accentColor
     ) -> some View {
-        modifier(GameStartDescriptionStyle(systemImage: systemImage, tint: tint))
+        modifier(GameStartDescriptionStyle(title: title, systemImage: systemImage, tint: tint))
     }
 
     func gameStartOptionsStyle() -> some View {

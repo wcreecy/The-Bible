@@ -183,11 +183,13 @@ struct HangmanGameView: View {
             }
         }
         .fontDesign(appFontDesign)
-        .navigationTitle("Hangman")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                GameNavigationTitle(title: "Hangman", systemImage: "text.word.spacing")
+                if started {
+                    GameNavigationTitle(title: "Hangman", systemImage: "text.word.spacing", tint: .teal)
+                }
             }
         }
         .onAppear {
@@ -256,7 +258,7 @@ struct HangmanGameView: View {
     private var startSection: some View {
         Spacer(minLength: 24)
         Text("Guess the person, place or book from the Bible")
-            .gameStartDescriptionStyle(systemImage: "text.word.spacing", tint: .teal)
+            .gameStartDescriptionStyle(title: "Hangman", systemImage: "text.word.spacing", tint: .teal)
 
         GameStartInfoLayout {
             GroupBox {

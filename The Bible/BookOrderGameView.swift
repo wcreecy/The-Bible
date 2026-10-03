@@ -16,7 +16,7 @@ struct BookOrderGameView: View {
             if !vm.started {
                 VStack(spacing: 16) {
                     Text("Rearrange the books in the correct order.")
-                    .gameStartDescriptionStyle(systemImage: "list.number", tint: .purple)
+                    .gameStartDescriptionStyle(title: "Book Order", systemImage: "list.number", tint: .purple)
 
                     GameStartInfoLayout {
                         GroupBox {
@@ -211,11 +211,13 @@ struct BookOrderGameView: View {
             }
         }
         }
-        .navigationTitle("Book Order")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                GameNavigationTitle(title: "Book Order", systemImage: "list.number")
+                if vm.started {
+                    GameNavigationTitle(title: "Book Order", systemImage: "list.number", tint: .purple)
+                }
             }
 
             if vm.started {

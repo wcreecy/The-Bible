@@ -118,7 +118,7 @@ struct BeatTheClockGameView: View {
                 if !started {
                     Spacer(minLength: 32)
                     Text("Type a Bible book that mentions the shown person or place before the timer runs out.")
-                        .gameStartDescriptionStyle(systemImage: "hourglass", tint: .indigo)
+                        .gameStartDescriptionStyle(title: "Beat the Clock", systemImage: "hourglass", tint: .indigo)
 
                     GameStartInfoLayout {
                         GroupBox {
@@ -374,11 +374,13 @@ struct BeatTheClockGameView: View {
             }
         }
         .background(AppBackgroundView(tab: .games))
-        .navigationTitle("Beat the Clock")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                BeatTheClockNavigationTitle()
+                if started {
+                    GameNavigationTitle(title: "Beat the Clock", systemImage: "hourglass", tint: .indigo)
+                }
             }
         }
         .task {
@@ -932,24 +934,6 @@ private struct BeatTheClockDashboardActions: View {
                     .buttonStyle(.glass(.regular.tint(.red)))
             }
         }
-    }
-}
-
-private struct BeatTheClockNavigationTitle: View {
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "timer")
-                .font(.subheadline.weight(.bold))
-                .foregroundStyle(.white)
-                .frame(width: 28, height: 28)
-                .background(.tint, in: Circle())
-
-            Text("Beat the Clock")
-                .font(.headline.weight(.bold))
-                .fontDesign(.rounded)
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Beat the Clock")
     }
 }
 

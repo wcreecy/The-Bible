@@ -3,14 +3,16 @@ import SwiftUI
 struct GameNavigationTitle: View {
     let title: LocalizedStringKey
     let systemImage: String
+    let tint: Color
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 10) {
             Image(systemName: systemImage)
-                .font(.subheadline.weight(.bold))
+                .font(.body.weight(.semibold))
                 .foregroundStyle(.white)
-                .frame(width: 28, height: 28)
-                .background(.tint, in: Circle())
+                .frame(width: 36, height: 36)
+                .background(tint.gradient, in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+                .shadow(color: tint.opacity(0.22), radius: 5, y: 3)
 
             Text(title)
                 .font(.headline.weight(.bold))
