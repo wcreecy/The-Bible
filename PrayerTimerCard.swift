@@ -144,9 +144,6 @@ struct PrayerTimerCard<ModePickerContent: View>: View {
                                     .buttonStyle(ModernCircleButtonStyle(tint: .blue))
                                     .accessibilityLabel("Start 20 minutes")
 
-                                Button { onStartPreset(30) } label: { presetCircle("30") }
-                                    .buttonStyle(ModernCircleButtonStyle(tint: .blue))
-                                    .accessibilityLabel("Start 30 minutes")
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.top, 4)
