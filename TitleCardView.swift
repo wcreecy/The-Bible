@@ -5,7 +5,7 @@ struct TitleCardView: View {
     let goalMinutes: Int
     let todayReadingSeconds: Int
     let streak: Int
-    let dailyScripture: String
+    let goalMessage: String
     let onSearch: () -> Void
     let onRead: () -> Void
     let onFavorites: () -> Void
@@ -117,13 +117,13 @@ struct TitleCardView: View {
             } else {
                 VStack(spacing: 8) {
                     ProgressFillText(
-                        text: dailyScripture,
+                        text: goalMessage,
                         font: .subheadline.weight(.semibold),
                         progress: progress
                     )
                     .frame(maxWidth: .infinity, alignment: .center)
                     .multilineTextAlignment(.center)
-                    .accessibilityLabel("\(dailyScripture) Daily goal progress \(progressPercent) percent. Current streak \(streak) days.")
+                    .accessibilityLabel("\(goalMessage) Daily goal progress \(progressPercent) percent. Current streak \(streak) days.")
 
                     actionButtons
                         .frame(maxWidth: .infinity, alignment: .center)

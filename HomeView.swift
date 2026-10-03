@@ -199,38 +199,6 @@ struct HomeView: View {
         return chapter.verses.first(where: { $0.number == progress.verseNumber })?.text
     }
 
-    private func dailyShortScripture(on date: Date) -> String {
-        let fallback = "Rejoice evermore."
-        let books = bibleStore.books
-        guard !books.isEmpty else { return fallback }
-
-        let components = Calendar.current.dateComponents([.year, .month, .day], from: date)
-        var seed = UInt64(
-            (components.year ?? 0) * 10_000
-                + (components.month ?? 0) * 100
-                + (components.day ?? 0)
-        )
-
-        for _ in 0..<512 {
-            seed = seed &* 6_364_136_223_846_793_005 &+ 1
-            let book = books[Int(seed % UInt64(books.count))]
-            guard !book.chapters.isEmpty else { continue }
-
-            seed = seed &* 6_364_136_223_846_793_005 &+ 1
-            let chapter = book.chapters[Int(seed % UInt64(book.chapters.count))]
-            guard !chapter.verses.isEmpty else { continue }
-
-            seed = seed &* 6_364_136_223_846_793_005 &+ 1
-            let verse = chapter.verses[Int(seed % UInt64(chapter.verses.count))]
-            let text = verse.text.split(whereSeparator: \.isWhitespace).joined(separator: " ")
-            if !text.isEmpty, text.count <= 42 {
-                return text
-            }
-        }
-
-        return fallback
-    }
-
     // Verse-of-the-Day: configurable times and scheduler (delegated to VM, keep keys observed)
     @AppStorage("votdRefreshFrequency") private var votdRefreshFrequency: String = VOTDRefreshFrequency.custom.rawValue
     @AppStorage("votdRefresh1Hour") private var votdRefresh1Hour: Int = 6
@@ -538,32 +506,30 @@ struct HomeView: View {
 
     @ViewBuilder
     private var homeHeader: some View {
-        TimelineView(.periodic(from: .now, by: 60)) { context in
-            TitleCardView(
-                isPad: isPad,
-                goalMinutes: dailyGoalMinutes,
-                todayReadingSeconds: bibleVM.todaySeconds,
-                streak: StreakTracker.currentStreak,
-                dailyScripture: dailyShortScripture(on: context.date),
-                onSearch: {
-                    DispatchQueue.main.async {
-                        NotificationCenter.default.post(name: .openBibleSearch, object: nil)
-                    }
-                },
-                onRead: {
-                    DispatchQueue.main.async { switchTo(.bible) }
-                },
-                onFavorites: {
-                    DispatchQueue.main.async {
-                        NotificationCenter.default.post(
-                            name: .switchToTab,
-                            object: nil,
-                            userInfo: ["tabName": "favorites"]
-                        )
-                    }
+        TitleCardView(
+            isPad: isPad,
+            goalMinutes: dailyGoalMinutes,
+            todayReadingSeconds: bibleVM.todaySeconds,
+            streak: StreakTracker.currentStreak,
+            goalMessage: "Study to shew thyself approved unto God",
+            onSearch: {
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .openBibleSearch, object: nil)
                 }
-            )
-        }
+            },
+            onRead: {
+                DispatchQueue.main.async { switchTo(.bible) }
+            },
+            onFavorites: {
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(
+                        name: .switchToTab,
+                        object: nil,
+                        userInfo: ["tabName": "favorites"]
+                    )
+                }
+            }
+        )
     }
 
     @ViewBuilder
