@@ -10,6 +10,11 @@ struct LastReadWidgetEntryView: View {
     private var isExtraLarge: Bool { widgetFamily == .systemExtraLarge }
     private var isLarge: Bool { widgetFamily == .systemLarge }
     private var isMedium: Bool { widgetFamily == .systemMedium }
+    private var backgroundStyle: LastReadWidgetBackgroundStyle {
+        let rawValue = UserDefaults(suiteName: "group.bible.app")?
+            .string(forKey: "lastReadWidgetBackground")
+        return LastReadWidgetBackgroundStyle(rawValue: rawValue ?? "") ?? .black
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: isExtraLarge ? 18 : (isLarge ? 12 : 6)) {
@@ -46,7 +51,7 @@ struct LastReadWidgetEntryView: View {
         .padding(isExtraLarge ? 28 : (isLarge ? 22 : 16))
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .widgetURL(deepLinkURL(book: entry.book, chapter: entry.chapter, verse: entry.verse))
-        .applyWidgetBackground()
+        .applyWidgetBackground(style: backgroundStyle)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Last Read widget")
     }
@@ -67,17 +72,65 @@ struct LastReadWidgetEntryView: View {
 
 private extension View {
     // Use the widget-aware background on iOS 17+, and a fallback on iOS 16.
-    func applyWidgetBackground() -> some View {
+    @ViewBuilder
+    func applyWidgetBackground(style: LastReadWidgetBackgroundStyle) -> some View {
         if #available(iOS 17.0, *) {
-            return AnyView(
-                self
-                    .containerBackground(Color.black, for: .widget)
-                    .contentMargins(.all, 0)
-            )
+            self
+                .containerBackground(for: .widget) {
+                    LastReadWidgetBackground(style: style)
+                }
+                .contentMargins(.all, 0)
         } else {
-            return AnyView(
-                self
-                    .background(Color.black)
+            self.background(LastReadWidgetBackground(style: style))
+        }
+    }
+}
+
+private enum LastReadWidgetBackgroundStyle: String {
+    case black
+    case midnight
+    case forest
+    case burgundy
+    case indigo
+    case sunset
+}
+
+private struct LastReadWidgetBackground: View {
+    let style: LastReadWidgetBackgroundStyle
+
+    var body: some View {
+        switch style {
+        case .black:
+            Color.black
+        case .midnight:
+            LinearGradient(
+                colors: [Color(red: 0.03, green: 0.08, blue: 0.18), Color(red: 0.08, green: 0.22, blue: 0.38)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case .forest:
+            LinearGradient(
+                colors: [Color(red: 0.03, green: 0.16, blue: 0.12), Color(red: 0.10, green: 0.34, blue: 0.23)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case .burgundy:
+            LinearGradient(
+                colors: [Color(red: 0.22, green: 0.03, blue: 0.08), Color(red: 0.48, green: 0.08, blue: 0.16)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case .indigo:
+            LinearGradient(
+                colors: [Color(red: 0.10, green: 0.07, blue: 0.28), Color(red: 0.28, green: 0.20, blue: 0.58)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case .sunset:
+            LinearGradient(
+                colors: [Color(red: 0.33, green: 0.07, blue: 0.18), Color(red: 0.72, green: 0.28, blue: 0.16)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
             )
         }
     }

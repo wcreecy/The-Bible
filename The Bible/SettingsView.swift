@@ -1,4 +1,5 @@
 import SwiftUI
+import WidgetKit
 
 struct SettingsView: View {
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
@@ -51,6 +52,16 @@ private struct SettingsPersonalizationLinksSection: View {
                     title: "Home Layout",
                     subtitle: "Choose what appears on Home",
                     systemImage: "rectangle.grid.1x2"
+                )
+            }
+
+            NavigationLink {
+                SettingsWidgetAppearanceDetailView()
+            } label: {
+                SettingsNavigationRow(
+                    title: "Widget Appearance",
+                    subtitle: "Choose backgrounds for your widgets",
+                    systemImage: "rectangle.3.group"
                 )
             }
         }
@@ -316,6 +327,120 @@ private struct SettingsAppearanceDetailView: View {
         SettingsDetailForm(title: "Appearance") {
             SettingsAppearanceSection()
             SettingsBackgroundSection()
+        }
+    }
+}
+
+private struct SettingsWidgetAppearanceDetailView: View {
+    var body: some View {
+        SettingsDetailForm(title: "Widget Appearance") {
+            SettingsWidgetAppearanceSection()
+        }
+    }
+}
+
+private struct SettingsWidgetAppearanceSection: View {
+    private static let sharedDefaults = UserDefaults(suiteName: "group.bible.app") ?? .standard
+
+    @AppStorage("verseWidgetBackground", store: sharedDefaults)
+    private var verseBackgroundRaw = WidgetBackgroundStyle.black.rawValue
+
+    @AppStorage("lastReadWidgetBackground", store: sharedDefaults)
+    private var lastReadBackgroundRaw = WidgetBackgroundStyle.black.rawValue
+
+    @AppStorage("pinnedVerseWidgetBackground", store: sharedDefaults)
+    private var pinnedVerseBackgroundRaw = WidgetBackgroundStyle.black.rawValue
+
+    var body: some View {
+        Section {
+            backgroundPicker(
+                title: "Verse of the Day",
+                systemImage: "sun.max.fill",
+                selection: $verseBackgroundRaw,
+                accessibilityIdentifier: "verseWidgetBackgroundPicker"
+            )
+
+            backgroundPicker(
+                title: "Last Read",
+                systemImage: "bookmark.fill",
+                selection: $lastReadBackgroundRaw,
+                accessibilityIdentifier: "lastReadWidgetBackgroundPicker"
+            )
+
+            backgroundPicker(
+                title: "Pinned Verse",
+                systemImage: "pin.fill",
+                selection: $pinnedVerseBackgroundRaw,
+                accessibilityIdentifier: "pinnedVerseWidgetBackgroundPicker"
+            )
+        } header: {
+            Text("Widget Backgrounds")
+        } footer: {
+            Text("Your choices apply to every Verse of the Day, Last Read, and Pinned Verse widget. The system may adapt colors when widgets are tinted.")
+        }
+        .onChange(of: verseBackgroundRaw) { _, _ in
+            WidgetCenter.shared.reloadTimelines(ofKind: "VerseWidget")
+        }
+        .onChange(of: lastReadBackgroundRaw) { _, _ in
+            WidgetCenter.shared.reloadTimelines(ofKind: "LastReadWidget")
+        }
+        .onChange(of: pinnedVerseBackgroundRaw) { _, _ in
+            WidgetCenter.shared.reloadTimelines(ofKind: "PinnedVerseWidget")
+        }
+    }
+
+    private func backgroundPicker(
+        title: LocalizedStringResource,
+        systemImage: String,
+        selection: Binding<String>,
+        accessibilityIdentifier: String
+    ) -> some View {
+        Picker(selection: selection) {
+            ForEach(WidgetBackgroundStyle.allCases) { style in
+                Label {
+                    Text(style.title)
+                } icon: {
+                    Circle()
+                        .fill(style.previewColor)
+                }
+                .tag(style.rawValue)
+            }
+        } label: {
+            Label(title, systemImage: systemImage)
+        }
+        .accessibilityIdentifier(accessibilityIdentifier)
+    }
+}
+
+private enum WidgetBackgroundStyle: String, CaseIterable, Identifiable {
+    case black
+    case midnight
+    case forest
+    case burgundy
+    case indigo
+    case sunset
+
+    var id: String { rawValue }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .black: "Black"
+        case .midnight: "Midnight"
+        case .forest: "Forest"
+        case .burgundy: "Burgundy"
+        case .indigo: "Indigo"
+        case .sunset: "Sunset"
+        }
+    }
+
+    var previewColor: Color {
+        switch self {
+        case .black: .black
+        case .midnight: Color(red: 0.04, green: 0.11, blue: 0.23)
+        case .forest: Color(red: 0.05, green: 0.25, blue: 0.18)
+        case .burgundy: Color(red: 0.35, green: 0.06, blue: 0.12)
+        case .indigo: Color(red: 0.16, green: 0.12, blue: 0.40)
+        case .sunset: Color(red: 0.48, green: 0.16, blue: 0.18)
         }
     }
 }
