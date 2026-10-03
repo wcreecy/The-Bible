@@ -689,19 +689,19 @@ struct HomeView: View {
         GeometryReader { proxy in
             let availableWidth = proxy.size.width
             let usesDashboard = availableWidth >= 700
-            let dashboardWidth = availableWidth - 48
+            let horizontalPadding: CGFloat = usesDashboard ? 24 : 16
+            let contentWidth = max(0, availableWidth - (horizontalPadding * 2))
 
             ScrollView {
                 VStack(spacing: 16) {
                     if usesDashboard {
-                        dashboardContent(width: dashboardWidth)
+                        dashboardContent(width: contentWidth)
                     } else {
                         compactHomeContent
                     }
                 }
-                .frame(width: usesDashboard ? dashboardWidth : nil, alignment: .leading)
-                .padding(.horizontal, usesDashboard ? 24 : 16)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(width: contentWidth, alignment: .leading)
+                .padding(.horizontal, horizontalPadding)
             }
         }
         .background(AppBackgroundView(tab: .home))
