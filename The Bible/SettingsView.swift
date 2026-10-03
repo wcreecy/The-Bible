@@ -8,29 +8,17 @@ struct SettingsView: View {
         Form {
             SettingsPersonalizationLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
-            SettingsDailyExperienceLinksSection()
-                .listRowBackground(HeroCardListRowBackground())
-            SettingsReadingProgressSection()
+            SettingsReadingAndDailyLifeLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
             SettingsAppAndDataLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
-            SettingsTipsSection()
-                .listRowBackground(HeroCardListRowBackground())
-            SettingsFeedbackSection()
-                .listRowBackground(HeroCardListRowBackground())
-            SettingsDataManagementLinksSection()
+            SettingsHelpSection()
                 .listRowBackground(HeroCardListRowBackground())
 
             #if DEBUG
             SettingsDeveloperSection()
                 .listRowBackground(HeroCardListRowBackground())
             #endif
-
-            Section {
-                SettingsCloudSyncFooter()
-                    .listRowBackground(HeroCardListRowBackground())
-                    .listRowSeparator(.hidden)
-            }
         }
         .scrollContentBackground(.hidden)
         .background(AppBackgroundView(tab: .more))
@@ -69,9 +57,19 @@ private struct SettingsPersonalizationLinksSection: View {
     }
 }
 
-private struct SettingsDailyExperienceLinksSection: View {
+private struct SettingsReadingAndDailyLifeLinksSection: View {
     var body: some View {
-        Section("Daily Experience") {
+        Section("Reading & Daily Life") {
+            NavigationLink {
+                SettingsBibleReaderDetailView()
+            } label: {
+                SettingsNavigationRow(
+                    title: "Bible Reader",
+                    subtitle: "Reading progress and verse indicators",
+                    systemImage: "book"
+                )
+            }
+
             NavigationLink {
                 SettingsVerseOfTheDayDetailView()
             } label: {
@@ -133,6 +131,9 @@ private struct SettingsReadingProgressSection: View {
 }
 
 private struct SettingsAppAndDataLinksSection: View {
+    @EnvironmentObject private var cloudKitManager: CloudKitManager
+    @State private var lastSyncActivity: Date?
+
     var body: some View {
         Section("App & Data") {
             NavigationLink {
@@ -150,15 +151,57 @@ private struct SettingsAppAndDataLinksSection: View {
             } label: {
                 SettingsNavigationRow(
                     title: "iCloud Sync",
-                    subtitle: "Account status and sync details",
+                    subtitle: iCloudSubtitle,
                     systemImage: "icloud"
                 )
             }
+
+            NavigationLink {
+                SettingsResetDataDetailView()
+            } label: {
+                SettingsNavigationRow(
+                    title: "Reset Data",
+                    subtitle: "Reset game or reading statistics",
+                    systemImage: "trash"
+                )
+            }
         }
+        .task {
+            updateLastSyncActivity()
+            for await _ in NotificationCenter.default.notifications(
+                named: UserDefaults.didChangeNotification
+            ) {
+                updateLastSyncActivity()
+            }
+        }
+    }
+
+    private var iCloudSubtitle: LocalizedStringResource {
+        switch cloudKitManager.accountState {
+        case .available where lastSyncActivity != nil:
+            "Available · Synced recently"
+        case .available:
+            "Available · No sync activity yet"
+        case .noAccount:
+            "No iCloud account"
+        case .restricted:
+            "iCloud restricted"
+        case .couldNotDetermine:
+            "iCloud unavailable"
+        case .unknown:
+            "Checking iCloud status"
+        }
+    }
+
+    private func updateLastSyncActivity() {
+        let coordinator = iCloudSyncCoordinator.shared
+        lastSyncActivity = [coordinator.lastPushDate, coordinator.lastMergeDate]
+            .compactMap { $0 }
+            .max()
     }
 }
 
-private struct SettingsTipsSection: View {
+private struct SettingsHelpSection: View {
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     var body: some View {
@@ -177,17 +220,7 @@ private struct SettingsTipsSection: View {
                 }
             }
             .accessibilityIdentifier("contextualTipsToggle")
-        } header: {
-            Text("Help")
-        } footer: {
-            Text("Tips appear near features such as favorites, reader gestures, verse actions, stats, widgets, timers, Health, and Home customization.")
-        }
-    }
-}
 
-private struct SettingsFeedbackSection: View {
-    var body: some View {
-        Section("Feedback") {
             NavigationLink {
                 FeedbackView()
             } label: {
@@ -198,22 +231,10 @@ private struct SettingsFeedbackSection: View {
                 )
             }
             .accessibilityIdentifier("shareFeedbackLink")
-        }
-    }
-}
-
-private struct SettingsDataManagementLinksSection: View {
-    var body: some View {
-        Section("Data Management") {
-            NavigationLink {
-                SettingsResetDataDetailView()
-            } label: {
-                SettingsNavigationRow(
-                    title: "Reset Data",
-                    subtitle: "Reset game or reading statistics",
-                    systemImage: "trash"
-                )
-            }
+        } header: {
+            Text("Help")
+        } footer: {
+            Text("Tips appear near features such as favorites, reader gestures, verse actions, stats, widgets, timers, Health, and Home customization.")
         }
     }
 }
@@ -290,58 +311,19 @@ private struct SettingsNavigationRow: View {
     }
 }
 
-private struct SettingsCloudSyncFooter: View {
-    @EnvironmentObject private var cloudKitManager: CloudKitManager
-    @State private var lastSyncActivity: Date?
-
-    var body: some View {
-        VStack(spacing: 4) {
-            Label(iCloudStatusText, systemImage: "icloud")
-            if let lastSyncActivity {
-                Text("Last sync activity: \(lastSyncActivity, format: .dateTime.month(.abbreviated).day().year().hour().minute())")
-                    .accessibilityIdentifier("settingsLastSyncActivity")
-            } else {
-                Text("No sync activity yet")
-                    .accessibilityIdentifier("settingsLastSyncActivity")
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .font(.footnote)
-        .foregroundStyle(.secondary)
-        .multilineTextAlignment(.center)
-        .task {
-            updateLastSyncActivity()
-            for await _ in NotificationCenter.default.notifications(
-                named: UserDefaults.didChangeNotification
-            ) {
-                updateLastSyncActivity()
-            }
-        }
-    }
-
-    private var iCloudStatusText: LocalizedStringResource {
-        switch cloudKitManager.accountState {
-        case .available: "iCloud available"
-        case .noAccount: "No iCloud account"
-        case .restricted: "iCloud restricted"
-        case .couldNotDetermine: "iCloud unavailable"
-        case .unknown: "iCloud status unknown"
-        }
-    }
-
-    private func updateLastSyncActivity() {
-        let coordinator = iCloudSyncCoordinator.shared
-        lastSyncActivity = [coordinator.lastPushDate, coordinator.lastMergeDate]
-            .compactMap { $0 }
-            .max()
-    }
-}
-
 private struct SettingsAppearanceDetailView: View {
     var body: some View {
         SettingsDetailForm(title: "Appearance") {
             SettingsAppearanceSection()
             SettingsBackgroundSection()
+        }
+    }
+}
+
+private struct SettingsBibleReaderDetailView: View {
+    var body: some View {
+        SettingsDetailForm(title: "Bible Reader") {
+            SettingsReadingProgressSection()
         }
     }
 }
