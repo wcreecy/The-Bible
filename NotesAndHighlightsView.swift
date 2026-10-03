@@ -36,6 +36,7 @@ enum VerseHighlightColor: String, CaseIterable, Identifiable {
 struct VerseNoteEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.fontResolutionContext) private var fontResolutionContext
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.modelContext) private var modelContext
     @Environment(\.undoManager) private var undoManager
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
@@ -66,41 +67,48 @@ struct VerseNoteEditorView: View {
     }
 
     var body: some View {
-        VStack(spacing: 14) {
-            NoteEditorTitleField(title: $title, placeholder: "Scripture note title")
+        GeometryReader { proxy in
+            VStack(spacing: 14) {
+                NoteEditorTitleField(title: $title, placeholder: "Scripture note title")
 
-            if contextualTipsEnabled {
-                ScriptureReferenceLinkTip()
-            }
-
-            ScriptureEditorReferenceCard(
-                reference: "\(verse.bookName) \(verse.chapterNumber):\(verse.verseNumber)",
-                verseText: verse.verseText
-            )
-
-            VerseNoteOptionsBar(category: $selectedCategory, highlight: $selectedColor)
-
-            TextEditor(text: $noteText, selection: $noteSelection)
-                .font(.body)
-                .dynamicTypeSize(NoteEditorTextSize.dynamicTypeSize(for: noteEditorTextSizeStep))
-                .scrollContentBackground(.hidden)
-                .padding(10)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .strokeBorder(Color.primary.opacity(0.1))
+                if contextualTipsEnabled {
+                    ScriptureReferenceLinkTip()
                 }
-                .accessibilityLabel("Note")
-                .environment(\.openURL, OpenURLAction { url in
-                    guard let reference = BibleReferenceLinker.parse(url: url) else {
-                        return .systemAction(url)
+
+                ScriptureEditorReferenceCard(
+                    reference: "\(verse.bookName) \(verse.chapterNumber):\(verse.verseNumber)",
+                    verseText: verse.verseText
+                )
+
+                VerseNoteOptionsBar(category: $selectedCategory, highlight: $selectedColor)
+
+                TextEditor(text: $noteText, selection: $noteSelection)
+                    .font(.body)
+                    .dynamicTypeSize(NoteEditorTextSize.dynamicTypeSize(for: noteEditorTextSizeStep))
+                    .scrollContentBackground(.hidden)
+                    .padding(10)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .strokeBorder(Color.primary.opacity(0.1))
                     }
-                    selectedScriptureReference = reference
-                    return .handled
-                })
+                    .accessibilityLabel("Note")
+                    .environment(\.openURL, OpenURLAction { url in
+                        guard let reference = BibleReferenceLinker.parse(url: url) else {
+                            return .systemAction(url)
+                        }
+                        selectedScriptureReference = reference
+                        return .handled
+                    })
+            }
+            .frame(
+                width: max(0, proxy.size.width - (editorHorizontalPadding * 2)),
+                height: proxy.size.height
+            )
+            .frame(maxWidth: .infinity)
         }
-        .padding()
+        .padding(.vertical)
         .background(AppBackgroundView(tab: .notes))
         .safeAreaInset(edge: .bottom) {
             NoteFormattingBar(
@@ -119,7 +127,8 @@ struct VerseNoteEditorView: View {
                 undo: { undoManager?.undo() },
                 redo: { undoManager?.redo() },
                 canUndo: undoManager?.canUndo == true,
-                canRedo: undoManager?.canRedo == true
+                canRedo: undoManager?.canRedo == true,
+                horizontalPadding: editorHorizontalPadding
             )
         }
         .navigationTitle(existingNote == nil ? "Add Note & Highlight" : "Edit Note & Highlight")
@@ -160,6 +169,10 @@ struct VerseNoteEditorView: View {
 
     private var trimmedNote: String {
         String(noteText.characters).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var editorHorizontalPadding: CGFloat {
+        horizontalSizeClass == .compact ? 24 : 16
     }
 
     private static func loadFormattedContent(
@@ -415,6 +428,7 @@ private struct NoteFormattingBar: View {
     let redo: () -> Void
     let canUndo: Bool
     let canRedo: Bool
+    var horizontalPadding: CGFloat = 16
 
     var body: some View {
         ScrollView(.horizontal) {
@@ -457,7 +471,7 @@ private struct NoteFormattingBar: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .glassEffect(.regular, in: .rect(cornerRadius: 16))
-        .padding(.horizontal)
+        .padding(.horizontal, horizontalPadding)
         .padding(.bottom, 4)
     }
 
@@ -538,14 +552,26 @@ private struct ScriptureEditorReferenceCard: View {
 }
 
 private struct VerseNoteOptionsBar: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
     @Binding var category: NoteCategory
     @Binding var highlight: VerseHighlightColor?
 
     var body: some View {
-        HStack(spacing: 12) {
-            NoteCategoryMenu(category: $category)
-            Divider().frame(height: 28)
-            HighlightColorPicker(selection: $highlight)
+        Group {
+            if horizontalSizeClass == .compact {
+                VStack(alignment: .leading, spacing: 8) {
+                    NoteCategoryMenu(category: $category)
+                    Divider()
+                    HighlightColorPicker(selection: $highlight)
+                }
+            } else {
+                HStack(spacing: 12) {
+                    NoteCategoryMenu(category: $category)
+                    Divider().frame(height: 28)
+                    HighlightColorPicker(selection: $highlight)
+                }
+            }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
