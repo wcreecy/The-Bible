@@ -563,6 +563,9 @@ struct WordleView: View {
                 isEnabled: mode != .daily || !dailyCompletedToday || wordleAllowDailyReplay,
                 action: { startNewRound(practice: mode == .practice) }
             )
+            GameSetupSummary(
+                summary: "You’ll play \(mode == .daily ? "today’s daily word" : "an unlimited practice word") with six guesses. \(hardModeEnabled ? "Hard Mode requires revealed letters to be reused." : "Hard Mode is off.")"
+            )
             .disabled(mode == .daily && dailyCompletedToday && !wordleAllowDailyReplay)
 
             Spacer(minLength: 24)

@@ -101,6 +101,9 @@ struct FavoritesFlashcardsGameView: View {
                             GameLobbyPreview(kind: .flashcards)
 
                             GameStartActionBar(action: startGame)
+                            GameSetupSummary(
+                                summary: "All of your favorited scriptures are included. Each card will show the \(mode == .referenceToVerse ? "reference first so you can recall the verse" : "verse first so you can recall its reference")."
+                            )
                         }
                         .gameStartScreenStyle()
                     }

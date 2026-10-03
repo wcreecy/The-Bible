@@ -137,7 +137,7 @@ struct QuizView: View {
 
     private var selectedSectionsTitle: String {
         let selected = availableSections.filter { selectedSections.contains($0) }
-        return selected.isEmpty ? "All sections" : selected.map(\.title).joined(separator: ", ")
+        return selected.isEmpty ? "All Biblical Categories" : selected.map(\.title).joined(separator: ", ")
     }
 
     private func storeSelectedSections(_ sections: Set<VerseSection>) {
@@ -271,7 +271,7 @@ struct QuizView: View {
                         GroupBox {
                             DisclosureGroup(isExpanded: $howToExpanded) {
                                 VStack(alignment: .leading, spacing: 12) {
-                                    Text("• Pick a verse source and difficulty, then tap Start.")
+                                    Text("• Pick a verse source, one or more Biblical Categories, and a difficulty, then tap Start.")
                                     Text("• Read the verse, then choose the correct book from the options.")
                                     Text("• In timed modes, answer before the clock runs out.")
                                 }
@@ -287,11 +287,11 @@ struct QuizView: View {
                                     if selectedSections.isEmpty {
                                         Text("• Easy: No timer; two answers from each testament.")
                                         Text("• Medium: 15 seconds; answers from anywhere in the Bible.")
-                                        Text("• Hard: 8 seconds; all answers from the verse's section. Acts and Apocalypse are excluded.")
+                                        Text("• Hard: 8 seconds; all answers come from the verse’s Biblical Category. Acts and Apocalypse are excluded.")
                                     } else {
-                                        Text("• Easy: No timer; two answers from your sections and two from elsewhere.")
-                                        Text("• Medium: 15 seconds; three answers from your sections and one elsewhere in the same testament.")
-                                        Text("• Hard: 8 seconds; all answers from the verse's section. Acts and Apocalypse are excluded.")
+                                        Text("• Easy: No timer; two answers come from your selected Biblical Categories and two from elsewhere.")
+                                        Text("• Medium: 15 seconds; three answers come from your selected Biblical Categories and one from elsewhere in the same testament.")
+                                        Text("• Hard: 8 seconds; all answers come from the verse’s Biblical Category. Acts and Apocalypse are excluded.")
                                     }
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -306,7 +306,7 @@ struct QuizView: View {
                                 value: quizScopeRaw == "whole" ? "Old & New Testaments" : quizScopeRaw == "old" ? "Old Testament" : "New Testament"
                             )
                             GameStartCurrentGameRow(
-                                label: "Sections",
+                                label: "Biblical Categories",
                                 value: selectedSectionsTitle
                             )
                             GameStartCurrentGameRow(
@@ -335,7 +335,7 @@ struct QuizView: View {
                         }
 
                         GameStartMultiPickerCard(
-                            title: "Sections",
+                            title: "Biblical Categories",
                             selection: Binding<Set<VerseSection>>(
                                 get: { displayedSelectedSections },
                                 set: storeSelectedSections
@@ -361,6 +361,9 @@ struct QuizView: View {
                     GameLobbyPreview(kind: .quiz)
 
                     GameStartActionBar(action: startQuiz)
+                    GameSetupSummary(
+                            summary: "Questions will come from \(quizScopeRaw == "whole" ? "the Old and New Testaments" : quizScopeRaw == "old" ? "the Old Testament" : "the New Testament").\n\nBiblical Categories: \(selectedSectionsTitle).\n\nDifficulty: \(quizDifficulty == "easy" ? "Easy. You can answer without a timer." : quizDifficulty == "normal" ? "Medium. You have 15 seconds to answer each question." : "Hard. You have 8 seconds to answer each question.")"
+                    )
                     Spacer(minLength: 48)
                 } else if usesSplitLayout {
                     QuizGameDashboard(

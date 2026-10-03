@@ -107,6 +107,9 @@ struct WhoAmIGameView: View {
                     GameLobbyPreview(kind: .whoAmI)
 
                     GameStartActionBar(action: vm.startGame)
+                    GameSetupSummary(
+                        summary: "You’ll \(vm.mode == .names ? "match Bible names to their descriptions" : "match descriptions to Bible names"). \(vm.difficulty == .easy ? "You can answer without a timer." : "You have \(vm.difficulty.timeLimit) seconds to answer each question.")"
+                    )
                     Spacer(minLength: 24)
                 } else if horizontalSizeClass == .regular {
                     WhoAmIIPadGameBoard(

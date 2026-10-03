@@ -184,6 +184,9 @@ struct BeatTheClockGameView: View {
                     GameLobbyPreview(kind: .beatTheClock)
 
                     GameStartActionBar(action: startGame)
+                    GameSetupSummary(
+                        summary: "You’ll be shown \(category == .both ? "people and places" : category.rawValue.lowercased()) from the Bible and have \(roundTime) seconds to name a book that mentions each one."
+                    )
                     Spacer(minLength: 32)
                 } else {
                     if usesSplitLayout {

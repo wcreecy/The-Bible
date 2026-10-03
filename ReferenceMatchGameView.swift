@@ -94,7 +94,7 @@ struct VerseMatchGameView: View {
 
     private var selectedSectionsTitle: String {
         let selected = availableSections.filter { selectedSections.contains($0) }
-        return selected.isEmpty ? "All sections" : selected.map(\.title).joined(separator: ", ")
+        return selected.isEmpty ? "All Biblical Categories" : selected.map(\.title).joined(separator: ", ")
     }
 
     private func sections(for scope: TestamentScope) -> [VerseSection] {
@@ -221,7 +221,7 @@ struct VerseMatchGameView: View {
                         GroupBox {
                             DisclosureGroup(isExpanded: $howToExpanded) {
                                 VStack(alignment: .leading, spacing: 12) {
-                                    Text("• Choose a verse source and difficulty, then tap Start.")
+                                    Text("• Choose a verse source, one or more Biblical Categories, and a difficulty, then tap Start.")
                                     Text("• You'll see a reference; pick the verse text that matches it.")
                                     Text("• Review your answer, then tap Next for a new question.")
                                 }
@@ -239,8 +239,8 @@ struct VerseMatchGameView: View {
                                         Text("• Normal: Answers come from the same testament as the reference.")
                                         Text("• Hard: Answers come from the same book as the reference.")
                                     } else {
-                                        Text("• Easy: Three answers come from your selected sections and one from elsewhere.")
-                                        Text("• Normal: Two answers come from the reference book, one from your selected sections, and one elsewhere in the same testament.")
+                                        Text("• Easy: Three answers come from your selected Biblical Categories and one from elsewhere.")
+                                        Text("• Normal: Two answers come from the reference book, one from your selected Biblical Categories, and one from elsewhere in the same testament.")
                                         Text("• Hard: All answers come from the same book as the reference.")
                                     }
                                 }
@@ -256,7 +256,7 @@ struct VerseMatchGameView: View {
                                 value: testamentScope.title
                             )
                             GameStartCurrentGameRow(
-                                label: "Sections",
+                                label: "Biblical Categories",
                                 value: selectedSectionsTitle
                             )
                             GameStartCurrentGameRow(
@@ -288,7 +288,7 @@ struct VerseMatchGameView: View {
                         }
 
                         GameStartMultiPickerCard(
-                            title: "Sections",
+                            title: "Biblical Categories",
                             selection: Binding<Set<VerseSection>>(
                                 get: { displayedSelectedSections },
                                 set: storeSelectedSections
@@ -311,6 +311,9 @@ struct VerseMatchGameView: View {
                     GameLobbyPreview(kind: .verseMatch)
 
                     GameStartActionBar(action: startGame)
+                    GameSetupSummary(
+                            summary: "References will come from \(testamentScope.title.lowercased()).\n\nBiblical Categories: \(selectedSectionsTitle).\n\nDifficulty: \(difficulty.rawValue.capitalized). \(difficulty == .easy ? "Answer choices can come from anywhere in the Bible." : difficulty == .normal ? "Answer choices stay mostly within the same testament." : "Every answer choice comes from the same book.")"
+                    )
                     Spacer(minLength: 32)
                 } else {
                     GameScoreboardCard(

@@ -151,6 +151,55 @@ struct GameStartActionBar: View {
     }
 }
 
+struct GameSetupSummary: View {
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+
+    let summary: String
+
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "checklist")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(.tint)
+                    .frame(width: 32, height: 32)
+                    .background(.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 9))
+                    .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Your Game")
+                        .font(.subheadline.weight(.bold))
+
+                    Text(summary)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: 0)
+            }
+            .padding(14)
+            .frame(maxWidth: 620, alignment: .leading)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
+            }
+            .accessibilityElement(children: .combine)
+
+            if contextualTipsEnabled {
+                ContextualTipView(
+                    title: "Customize your game",
+                    message: "Choose Game Settings above to change how this game will play before you start.",
+                    systemImage: "slider.horizontal.3"
+                )
+                .frame(maxWidth: 620)
+            }
+        }
+        .padding(.horizontal)
+    }
+}
+
 enum GameLobbyPreviewKind {
     case quiz
     case hangman

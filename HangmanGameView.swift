@@ -319,6 +319,9 @@ struct HangmanGameView: View {
         GameLobbyPreview(kind: .hangman)
 
         GameStartActionBar(action: startGame)
+        GameSetupSummary(
+            summary: "You’ll guess \(theme.rawValue.lowercased()) from the Bible. You can miss up to \(maxWrong) letters, and \(difficulty == .easy ? "the scripture reference is shown immediately" : difficulty == .normal ? "the reference appears after three misses" : "the reference appears after the round")."
+        )
         Spacer(minLength: 24)
     }
 

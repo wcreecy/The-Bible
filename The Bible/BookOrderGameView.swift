@@ -95,6 +95,9 @@ struct BookOrderGameView: View {
                     GameLobbyPreview(kind: .bookOrder)
 
                     GameStartActionBar(action: startGame)
+                    GameSetupSummary(
+                        summary: "You’ll arrange \(vm.difficulty == .easy ? "5" : vm.difficulty == .normal ? "10" : vm.difficulty == .hard ? "15" : "all selected") books from \(vm.source == .both ? "the Old and New Testaments" : vm.source == .ot ? "the Old Testament" : "the New Testament") in canonical order."
+                    )
                 }
                 .padding()
                 Spacer()

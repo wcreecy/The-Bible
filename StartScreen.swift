@@ -110,6 +110,10 @@ struct WordSearchStartScreen: View {
 
             GameStartActionBar(action: onStart)
 
+            GameSetupSummary(
+                summary: "You’ll search a \(displayName(for: difficulty).lowercased()) puzzle in \(gameMode.displayName.lowercased()) mode. \(isTimedMode ? "You have \(timeLimitString) to finish." : "There is no time limit.")"
+            )
+
             Spacer(minLength: 24)
         }
         .gameStartScreenStyle()
