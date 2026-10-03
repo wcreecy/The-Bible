@@ -126,21 +126,14 @@ private struct HomeDashboardColumns<Header: View, Tip: View, Main: View, Sidebar
 }
 
 struct HomeView: View {
-    // Visibility widened so split cards can reference it
-    enum PrayerMode: String { case timer, stopwatch, focus }
-
     // Always keep newest progress first so `progressList.first` is canonical
     @Query(sort: \ReadingProgress.updatedAt, order: .reverse) private var progressList: [ReadingProgress]
     @State private var showPrayerStudySheet: Bool = false
 
-    // Timer is now owned by controller
     @StateObject private var timerController = PrayerTimerController()
-    // New: Stopwatch controller
-    @StateObject private var stopwatchController = StopwatchController()
 
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
-    @AppStorage("prayerMode") private var prayerMode: PrayerMode = .timer
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     private var sharedDefaults: UserDefaults? { UserDefaults(suiteName: "group.bible.app") }
@@ -405,46 +398,25 @@ struct HomeView: View {
                 }
             )
         case .timer:
-            if prayerMode == .timer {
-                PrayerTimerCard(
-                    prayerMode: $prayerMode,
-                    isTimerRunning: timerController.isRunning,
-                    isPaused: timerController.isPaused,
-                    remainingSeconds: timerController.remainingSeconds,
-                    timerTintColor: timerTintColor,
-                    formattedTime: { TimeFormatters.compactClock($0) },
-                    onOpenSetup: {
-                        Haptics.selection()
-                        showPrayerStudySheet = true
-                    },
-                    onStartPreset: { minutes in
-                        timerController.start(minutes: minutes)
-                    },
-                    onTogglePause: { timerController.togglePause() },
-                    onAddOne: { timerController.addOne() },
-                    onAddFive: { timerController.addFive() },
-                    onAddTen: { timerController.addTen() },
-                    onStop: { timerController.stop() },
-                    stopwatchRunning: stopwatchController.isRunning,
-                    modePicker: { disabled in
-                        ModePicker(prayerMode: $prayerMode, disabled: disabled)
-                    }
-                )
-            } else {
-                StopwatchCard(
-                    prayerMode: $prayerMode,
-                    stopwatchRunning: stopwatchController.isRunning,
-                    stopwatchElapsed: stopwatchController.elapsed,
-                    formattedStopwatch: { TimeFormatters.compactStopwatch($0) },
-                    onStart: { stopwatchController.start() },
-                    onPause: { stopwatchController.pause() },
-                    onStop: { stopwatchController.stop() },
-                    isTimerRunning: timerController.isRunning,
-                    modePicker: { disabled in
-                        ModePicker(prayerMode: $prayerMode, disabled: disabled)
-                    }
-                )
-            }
+            PrayerTimerCard(
+                isTimerRunning: timerController.isRunning,
+                isPaused: timerController.isPaused,
+                remainingSeconds: timerController.remainingSeconds,
+                timerTintColor: timerTintColor,
+                formattedTime: { TimeFormatters.compactClock($0) },
+                onOpenSetup: {
+                    Haptics.selection()
+                    showPrayerStudySheet = true
+                },
+                onStartPreset: { minutes in
+                    timerController.start(minutes: minutes)
+                },
+                onTogglePause: { timerController.togglePause() },
+                onAddOne: { timerController.addOne() },
+                onAddFive: { timerController.addFive() },
+                onAddTen: { timerController.addTen() },
+                onStop: { timerController.stop() }
+            )
         case .resumeReading:
             ResumeReadingCard(
                 progress: progress,
@@ -704,8 +676,6 @@ struct HomeView: View {
             loadHomeLayout()
             bibleStore.ensureLoaded()
 
-            if prayerMode == .focus { prayerMode = .timer }
-
             // Verse-of-the-Day initial handling moved to VM
             votdVM.handleAppear()
 
@@ -720,9 +690,6 @@ struct HomeView: View {
             // Controllers
             timerController.onAppear()
             _ = timerController.handlePendingActionIfAny()
-
-            stopwatchController.onAppear()
-            _ = stopwatchController.handlePendingActionIfAny()
 
             // Initial load of Bible Stats. The view model intentionally waits for
             // appearance so construction and appearance do not refresh twice.
@@ -739,15 +706,12 @@ struct HomeView: View {
             switch newPhase {
             case .active:
                 _ = timerController.handlePendingActionIfAny()
-                _ = stopwatchController.handlePendingActionIfAny()
                 handleOpenPendingVerse()
                 bibleVM.refresh()
                 votdVM.handleScenePhaseChange(newPhase)
                 timerController.onSceneBecameActive()
-                stopwatchController.onSceneBecameActive()
             case .inactive, .background:
                 timerController.onSceneBecameInactiveOrBackground()
-                stopwatchController.onSceneBecameInactiveOrBackground()
             @unknown default:
                 break
             }

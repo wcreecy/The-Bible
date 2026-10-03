@@ -131,8 +131,6 @@ final class PrayerTimerController: ObservableObject {
         startMindfulLoggingIfNeeded()
         scheduleNotification(at: end)
 
-        // Ensure Stopwatch Live Activity is not active
-        StopwatchActivityController.shared.cancel()
         PrayerTimerActivityController.shared.start(
             sessionName: "Prayer/Study",
             totalSeconds: storedTotalSeconds,
@@ -412,4 +410,3 @@ final class PrayerTimerController: ObservableObject {
         liveEndDate = 0
     }
 }
-

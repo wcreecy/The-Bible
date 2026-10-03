@@ -10,7 +10,7 @@ enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
         switch self {
         case .verseOfDay: return "Verse of the Day"
         case .dailyFocus: return "Daily Focus"
-        case .timer: return "Prayer Timer / Stopwatch"
+        case .timer: return "Prayer Timer"
         case .resumeReading: return "Continue Reading"
         case .streaks: return "Daily Bible Streak"
         case .bibleStats: return "App Activity"

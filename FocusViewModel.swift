@@ -40,8 +40,7 @@ final class FocusViewModel {
         savedAt = now
         hasSaved = hasNonWhitespaceLetters(in: title) || hasNonWhitespaceLetters(in: body)
 
-        // Live Activities behavior: stop Stopwatch, ensure Focus activity
-        StopwatchActivityController.shared.cancel()
+        // Keep the saved focus visible in the prayer Live Activity.
         let cleanTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let cleanBody = body.trimmingCharacters(in: .whitespacesAndNewlines)
         PrayerTimerActivityController.shared.ensureActivityForFocus(

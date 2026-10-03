@@ -1,9 +1,6 @@
 import SwiftUI
 
-struct PrayerTimerCard<ModePickerContent: View>: View {
-    enum Mode { case timer, stopwatch }
-
-    @Binding var prayerMode: HomeView.PrayerMode
+struct PrayerTimerCard: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     // Timer state
@@ -22,30 +19,19 @@ struct PrayerTimerCard<ModePickerContent: View>: View {
     let onAddTen: () -> Void
     let onStop: () -> Void
 
-    // Stopwatch state to disable mode changes while active
-    let stopwatchRunning: Bool
-
-    // ModePicker provider (so HomeView can host the Picker bound to its own storage)
-    @ViewBuilder let modePicker: (_ disabled: Bool) -> ModePickerContent
-
     private func presetCircle(_ label: String) -> some View {
         Text(label)
     }
 
     var body: some View {
-        Group {
-            if prayerMode == .timer {
-                if isTimerRunning {
+        if isTimerRunning {
                     HeroCard(
                         title: "Prayer Timer",
                         subtitle: nil,
                         icon: "timer",
                         tint: timerTintColor,
                         backgroundColor: timerTintColor.opacity(0.20),
-                        strokeColor: timerTintColor.opacity(0.35),
-                        trailingAccessory: {
-                            modePicker(isTimerRunning || stopwatchRunning)
-                        }
+                        strokeColor: timerTintColor.opacity(0.35)
                     ) {
                         HStack(alignment: .center, spacing: 16) {
                             HStack(spacing: 16) {
@@ -110,15 +96,12 @@ struct PrayerTimerCard<ModePickerContent: View>: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .center)
                     }
-                } else {
+        } else {
                     HeroCard(
                         title: "Prayer Timer",
                         subtitle: nil,
                         icon: "timer",
-                        tint: .blue,
-                        trailingAccessory: {
-                            modePicker(isTimerRunning || stopwatchRunning)
-                        }
+                        tint: .blue
                     ) {
                         VStack(spacing: 12) {
                             HStack(spacing: 12) {
@@ -155,10 +138,6 @@ struct PrayerTimerCard<ModePickerContent: View>: View {
                                 .padding(.top, 2)
                         }
                     }
-                }
-            } else {
-                EmptyView() // Stopwatch is handled in StopwatchCard
-            }
         }
     }
 }

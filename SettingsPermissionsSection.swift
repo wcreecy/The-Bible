@@ -52,7 +52,6 @@ struct SettingsPermissionsSection: View {
             .onChange(of: liveActivitiesEnabled) { _, enabled in
                 if !enabled {
                     PrayerTimerActivityController.shared.cancel()
-                    StopwatchActivityController.shared.cancel()
                 }
             }
 

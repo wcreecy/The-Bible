@@ -47,11 +47,10 @@ struct ContentView: View {
     @State private var usageTimer: Timer? = nil
     @State private var nextMidnightTimer: Timer? = nil
 
-    // Timer/Stopwatch state (to account for background time)
+    // Prayer timer state (to account for background time)
     @AppStorage("prayerTimerRunning") private var prayerTimerRunning: Bool = false
     @AppStorage("prayerTimerPaused") private var prayerTimerPaused: Bool = false
     @AppStorage("prayerTimerEndDate") private var prayerTimerEndDate: Double = 0
-    @AppStorage("stopwatchRunning") private var stopwatchRunning: Bool = false
 
     // Track when we went inactive/background to compute elapsed when returning
     @AppStorage("lastBackgroundedAt") private var lastBackgroundedAt: Double = 0
@@ -297,7 +296,7 @@ struct ContentView: View {
                 // Re-run start (idempotent) to ensure any missed merges are reconciled on resume.
                 iCloudSyncCoordinator.shared.start()
 
-                // Account for any background elapsed time while timer/stopwatch was running
+                // Account for any background elapsed time while the prayer timer was running
                 applyBackgroundElapsedIfAny()
                 // Start foreground usage timer
                 startUsageTimerIfNeeded()
@@ -494,11 +493,6 @@ struct ContentView: View {
             let cappedEnd = max(0, prayerTimerEndDate - lastBackgroundedAt)
             let timerDelta = Int(min(backgroundDelta, cappedEnd))
             addSeconds += max(0, timerDelta)
-        }
-
-        // If Stopwatch was running, count full delta
-        if stopwatchRunning {
-            addSeconds += Int(backgroundDelta)
         }
 
         if addSeconds > 0 {

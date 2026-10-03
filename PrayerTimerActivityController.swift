@@ -13,8 +13,6 @@ final class PrayerTimerActivityController {
     func start(sessionName: String, totalSeconds: Int, remainingSeconds: Int, isPaused: Bool) {
         guard #available(iOS 16.1, *), ActivityAuthorizationInfo().areActivitiesEnabled else { return }
 
-        // Enforce single-activity policy: end all Stopwatch and PrayerTimer activities first
-        Self.endAllStopwatchActivities()
         Self.endAllPrayerActivities()
 
         let attributes = PrayerTimerAttributes(sessionName: sessionName)
@@ -54,8 +52,6 @@ final class PrayerTimerActivityController {
     
     func ensureActivityForFocus(title: String?, body: String?) {
         guard #available(iOS 16.1, *) else { return }
-        // Enforce single-active: end all Stopwatch and PrayerTimer activities first
-        Self.endAllStopwatchActivities()
         Self.endAllPrayerActivities()
 
         let attributes = PrayerTimerAttributes(sessionName: "Prayer/Study")
@@ -88,9 +84,8 @@ final class PrayerTimerActivityController {
     
     func ensureFocusIfNone(title: String?, body: String?) {
         guard #available(iOS 16.1, *) else { return }
-        // If any activity exists (either type), do nothing
+        // If a prayer activity exists, do nothing.
         if !Activity<PrayerTimerAttributes>.activities.isEmpty { return }
-        if !Activity<StopwatchAttributes>.activities.isEmpty { return }
         // Otherwise, start a Focus activity with provided title/body
         let attributes = PrayerTimerAttributes(sessionName: "Prayer/Study")
         let state = PrayerTimerAttributes.ContentState(status: "Focus", remaining: 0, total: 0, focusTitle: title, focusBody: body)
@@ -137,23 +132,6 @@ final class PrayerTimerActivityController {
                         focusBody: finalStatus == nil ? state.focusBody : nil
                     )
                     await act.end(using: finalState)
-                }
-            }
-        }
-    }
-
-    static func endAllStopwatchActivities() {
-        guard #available(iOS 16.1, *) else { return }
-        let activities = Activity<StopwatchAttributes>.activities
-        guard !activities.isEmpty else { return }
-
-        Task {
-            for act in activities {
-                if #available(iOS 17.0, *) {
-                    await act.end(act.content, dismissalPolicy: .immediate)
-                } else {
-                    // iOS 16.x
-                    await act.end()
                 }
             }
         }
