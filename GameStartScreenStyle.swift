@@ -205,7 +205,6 @@ enum GameLobbyPreviewKind {
     case hangman
     case beatTheClock
     case verseMatch
-    case flashcards
     case bookOrder
     case wordSearch
     case whoAmI
@@ -273,18 +272,6 @@ struct GameLobbyPreview: View {
                     previewChoice("In the beginning…")
                     previewChoice("Rejoice evermore.")
                 }
-            }
-        case .flashcards:
-            ZStack {
-                previewCard(rotation: -6, offset: -28, color: .pink.opacity(0.12))
-                previewCard(rotation: 5, offset: 28, color: .purple.opacity(0.12))
-                VStack(spacing: 8) {
-                    Image(systemName: "text.quote").foregroundStyle(.pink)
-                    Text("John 3:16").font(.title3.bold())
-                    Text("Tap to reveal the verse").font(.subheadline).foregroundStyle(.secondary)
-                }
-                .frame(width: 280, height: 118)
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             }
         case .bookOrder:
             VStack(spacing: 7) {

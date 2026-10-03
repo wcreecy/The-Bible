@@ -30,7 +30,6 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
     case hangman
     case beatTheClock
     case verseMatch
-    case favoritesFlashcards
     case bookOrder
     case wordSearch
     case whoAmI
@@ -44,7 +43,6 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .hangman: "Hangman"
         case .beatTheClock: "Beat the Clock"
         case .verseMatch: "Verse Match"
-        case .favoritesFlashcards: "Favorites Flashcards"
         case .bookOrder: "Book Order"
         case .wordSearch: "Word Search"
         case .whoAmI: "Who am I?"
@@ -58,7 +56,6 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .hangman: "Hangman"
         case .beatTheClock: "Beat the Clock"
         case .verseMatch: "Verse Match"
-        case .favoritesFlashcards: "Favorites Flashcards"
         case .bookOrder: "Book Order"
         case .wordSearch: "Word Search"
         case .whoAmI: "Who am I?"
@@ -72,7 +69,6 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .hangman: "Guess a person, place, or book"
         case .beatTheClock: "Name a book before time runs out"
         case .verseMatch: "Match each verse to its reference"
-        case .favoritesFlashcards: "Practice your saved verses"
         case .bookOrder: "Put Bible books in order"
         case .wordSearch: "Find hidden words from a verse"
         case .whoAmI: "Match names and descriptions"
@@ -86,7 +82,6 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .hangman: "text.word.spacing"
         case .beatTheClock: "hourglass"
         case .verseMatch: "text.quote"
-        case .favoritesFlashcards: "rectangle.portrait.on.rectangle.portrait"
         case .bookOrder: "list.number"
         case .wordSearch: "square.grid.3x3.topleft.filled"
         case .whoAmI: "person.text.rectangle"
@@ -100,7 +95,6 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .hangman: .teal
         case .beatTheClock: .indigo
         case .verseMatch: .orange
-        case .favoritesFlashcards: .pink
         case .bookOrder: .purple
         case .wordSearch: .green
         case .whoAmI: .brown
@@ -124,7 +118,6 @@ struct GamesView: View {
     @State private var isFavoriteLimitAlertPresented = false
 
     @AppStorage("favoriteGameRoutes") private var favoriteRoutesRaw = ""
-    @AppStorage("favoritesFlashcardsPlayCount") private var favoritesFlashcardsPlayCount = 0
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
     private var allRoutes: [GameRoute] {
@@ -217,7 +210,6 @@ struct GamesView: View {
             case .hangman: HangmanGameView()
             case .beatTheClock: BeatTheClockGameView()
             case .verseMatch: VerseMatchGameView()
-            case .favoritesFlashcards: FavoritesFlashcardsGameView()
             case .bookOrder: BookOrderGameView()
             case .wordSearch: WordSearchGameView()
             case .whoAmI: WhoAmIGameView()
@@ -231,11 +223,6 @@ struct GamesView: View {
 
         if route == .wordle, let result = todayWordResult {
             return result.won ? "Solved in \(result.guesses)/6" : "Try again tomorrow"
-        }
-
-        if route == .favoritesFlashcards, favoritesFlashcardsPlayCount > 0 {
-            let unit = favoritesFlashcardsPlayCount == 1 ? "session" : "sessions"
-            return "\(favoritesFlashcardsPlayCount) \(unit)"
         }
 
         guard let entry = statsByName[route.displayName], entry.answered > 0 else {
