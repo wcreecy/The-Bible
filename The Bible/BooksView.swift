@@ -36,6 +36,16 @@ struct BooksView: View {
         displayedBooks.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 
+    private var scriptureReference: (reference: ScriptureRef, book: Book, chapter: Chapter)? {
+        guard let reference = BibleReferenceLinker.parse(searchText),
+              let book = books.first(where: { $0.name == reference.bookName }),
+              let chapter = book.chapters.first(where: { $0.number == reference.chapter }),
+              chapter.verses.contains(where: { $0.number == reference.startVerse }) else {
+            return nil
+        }
+        return (reference, book, chapter)
+    }
+
     private func updateDisplayedBooks(for searchText: String) {
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else {
@@ -89,6 +99,25 @@ struct BooksView: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 16) {
+                if let match = scriptureReference {
+                    Button(action: openScriptureReference) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "arrow.right.circle.fill")
+                                .font(.title2)
+                                .foregroundStyle(.tint)
+
+                            Text("Go to \(match.reference.bookName) \(match.reference.chapter):\(match.reference.startVerse)")
+                                .font(.headline)
+
+                            Spacer()
+                        }
+                        .frame(minHeight: AppDesignMetrics.selectionRowMinHeight)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(AppDesignMetrics.cardPadding)
+                    .heroCardSurface()
+                }
+
                 if sortAlphabetically {
                     LazyVStack(alignment: .leading, spacing: 0) {
                         bookRows(title: "All Books (\(azBooks.count))", books: azBooks)
@@ -124,7 +153,12 @@ struct BooksView: View {
         }
         .background(AppBackgroundView(tab: .bible))
         .navigationTitle("Books")
-        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search books")
+        .searchable(
+            text: $searchText,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: "Books or a reference"
+        )
+        .onSubmit(of: .search, openScriptureReference)
         .onChange(of: searchText) { _, newValue in
             updateDisplayedBooks(for: newValue)
         }
@@ -160,6 +194,16 @@ struct BooksView: View {
                 .accessibilityHint("Choose canonical or alphabetical order")
             }
         }
+    }
+
+    private func openScriptureReference() {
+        guard let match = scriptureReference else { return }
+        searchText = ""
+        coordinator.push(.reader(
+            book: match.book,
+            chapter: match.chapter,
+            startVerse: match.reference.startVerse
+        ))
     }
 }
 

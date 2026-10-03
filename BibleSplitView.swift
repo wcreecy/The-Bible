@@ -74,6 +74,15 @@ struct BibleSplitView: View {
     private var filteredSidebarQuery: String {
         sidebarSearch.trimmingCharacters(in: .whitespacesAndNewlines)
     }
+    private var sidebarReference: ScriptureRef? {
+        guard let reference = BibleReferenceLinker.parse(sidebarSearch),
+              let book = canon.first(where: { $0.name == reference.bookName }),
+              let chapter = book.chapters.first(where: { $0.number == reference.chapter }),
+              chapter.verses.contains(where: { $0.number == reference.startVerse }) else {
+            return nil
+        }
+        return reference
+    }
     private var filteredOTBooks: [Book] {
         let base = otBooks
         let q = filteredSidebarQuery
@@ -137,21 +146,48 @@ struct BibleSplitView: View {
         // Sidebar: Books only
         List {
             Section {
-                TextField("Search books", text: $sidebarSearch)
-                    .textFieldStyle(.roundedBorder)
-                    .overlay(alignment: .trailing) {
-                        if !sidebarSearch.isEmpty {
-                            Button {
-                                sidebarSearch = ""
-                            } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundStyle(.secondary)
-                            }
-                            .buttonStyle(.plain)
-                            .padding(.trailing, 8)
-                            .accessibilityLabel("Clear search")
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(.secondary)
+
+                    TextField("Books or a reference", text: $sidebarSearch)
+                        .textFieldStyle(.plain)
+                        .autocorrectionDisabled(true)
+                        .textInputAutocapitalization(.words)
+                        .submitLabel(.go)
+                        .onSubmit(openSidebarReference)
+
+                    if !sidebarSearch.isEmpty {
+                        Button {
+                            sidebarSearch = ""
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.secondary)
                         }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Clear search")
                     }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .background(.regularMaterial, in: Capsule())
+                .overlay {
+                    Capsule()
+                        .strokeBorder(.secondary.opacity(0.2), lineWidth: 1)
+                }
+            }
+            .listRowBackground(Color.clear)
+
+            if let reference = sidebarReference {
+                Section {
+                    Button(action: openSidebarReference) {
+                        Label(
+                            "Go to \(reference.bookName) \(reference.chapter):\(reference.startVerse)",
+                            systemImage: "arrow.right.circle.fill"
+                        )
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
             }
             if sortAlphabetically {
                 // Single A–Z section
@@ -248,6 +284,26 @@ struct BibleSplitView: View {
                 .accessibilityHint("Choose canonical or alphabetical order")
             }
         }
+    }
+
+    private func openSidebarReference() {
+        guard let reference = sidebarReference,
+              let book = canon.first(where: { $0.name == reference.bookName }),
+              let chapter = book.chapters.first(where: { $0.number == reference.chapter }) else {
+            return
+        }
+
+        selectedBook = book
+        selectedChapter = chapter
+        navStartVerse = reference.startVerse
+        searchText = ""
+        sidebarSearch = ""
+        detailPath = NavigationPath()
+        detailPath.append(ReadingRoute(
+            bookName: book.name,
+            chapterNumber: chapter.number,
+            verseNumber: reference.startVerse
+        ))
     }
     
     private struct ChaptersListView: View {

@@ -275,6 +275,32 @@ enum BibleReferenceLinker {
         return nil
     }
 
+    static func parse(_ text: String) -> ScriptureRef? {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let parts = trimmed.split(whereSeparator: \Character.isWhitespace).map(String.init)
+        guard parts.count >= 2, let location = parts.last else { return nil }
+
+        let locationParts = location.split(separator: ":", omittingEmptySubsequences: false)
+        guard locationParts.count == 2,
+              let chapter = Int(locationParts[0]), chapter > 0 else { return nil }
+
+        let verseParts = locationParts[1].split(whereSeparator: { $0 == "-" || $0 == "–" || $0 == "—" })
+        guard (1...2).contains(verseParts.count),
+              let startVerse = Int(verseParts[0]), startVerse > 0 else { return nil }
+
+        let endVerse = verseParts.count == 2 ? Int(verseParts[1]) : nil
+        guard verseParts.count == 1 || (endVerse ?? 0) >= startVerse else { return nil }
+
+        let rawBook = parts.dropLast().joined(separator: " ")
+        guard let bookName = resolveBook(named: rawBook) else { return nil }
+        return ScriptureRef(
+            bookName: bookName,
+            chapter: chapter,
+            startVerse: startVerse,
+            endVerse: endVerse
+        )
+    }
+
     static func linkify(_ text: String) -> AttributedString {
         linkify(AttributedString(text))
     }

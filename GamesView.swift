@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct GameNavigationTitle: View {
     let title: LocalizedStringKey
@@ -115,8 +116,13 @@ private struct DailyWordResult: Codable {
 struct GamesView: View {
     @Binding var path: NavigationPath
 
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Query(sort: \Favorite.createdAt, order: .reverse) private var favorites: [Favorite]
+
     @State private var todayWordResult: DailyWordResult?
     @State private var refreshToken = 0
+    @State private var verseToRememberOffset = 0
 
     private var allRoutes: [GameRoute] {
         GameRoute.allCases.sorted {
@@ -128,14 +134,36 @@ struct GamesView: View {
         Dictionary(uniqueKeysWithValues: GameStats.shared.breakdownSnapshot().entries.map { ($0.name, $0) })
     }
 
+    private var verseToRemember: HomeVerseRef? {
+        guard !favorites.isEmpty else { return nil }
+        let day = Calendar.current.ordinality(of: .day, in: .era, for: Date()) ?? 0
+        let favorite = favorites[(day + verseToRememberOffset) % favorites.count]
+        return HomeVerseRef(
+            bookName: favorite.bookName,
+            chapterNumber: favorite.chapterNumber,
+            verseNumber: favorite.verseNumber,
+            verseText: favorite.verseText
+        )
+    }
+
     var body: some View {
         List {
-            GameCollectionSection(
-                title: "All Games",
-                routes: allRoutes,
-                progress: progressText,
-                onSelect: present
-            )
+            Section {
+                if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
+                    HStack(alignment: .top, spacing: 16) {
+                        gameCollectionCard
+                        verseToRememberCard
+                    }
+                } else {
+                    VStack(spacing: 16) {
+                        gameCollectionCard
+                        verseToRememberCard
+                    }
+                }
+            }
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
         }
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
@@ -161,6 +189,37 @@ struct GamesView: View {
             refreshToken &+= 1
             loadTodayWordResult()
         }
+    }
+
+    private var gameCollectionCard: some View {
+        GameCollectionCard(
+            title: "All Games",
+            routes: allRoutes,
+            usesExpandedLayout: horizontalSizeClass == .regular,
+            progress: progressText,
+            onSelect: present
+        )
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+    }
+
+    private var verseToRememberCard: some View {
+        VerseToRememberCard(
+            verse: verseToRemember,
+            usesExpandedLayout: horizontalSizeClass == .regular,
+            canChooseAnother: favorites.count > 1,
+            onChooseAnother: {
+                verseToRememberOffset += 1
+            },
+            onOpenVerse: openVerse,
+            onOpenFavorites: {
+                NotificationCenter.default.post(
+                    name: .switchToTab,
+                    object: nil,
+                    userInfo: ["tabName": "favorites"]
+                )
+            }
+        )
+        .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 
     @ViewBuilder
@@ -203,6 +262,18 @@ struct GamesView: View {
         path.append(route)
     }
 
+    private func openVerse(_ verse: HomeVerseRef) {
+        NotificationCenter.default.post(
+            name: .openBibleReference,
+            object: nil,
+            userInfo: [
+                "book": verse.bookName,
+                "chapter": verse.chapterNumber,
+                "verse": verse.verseNumber
+            ]
+        )
+    }
+
     private func loadTodayWordResult() {
         let today = GameStats.localDayKey(for: Date())
         guard let data = UserDefaults.standard.data(forKey: "wordleDailyResultMap"),
@@ -214,39 +285,41 @@ struct GamesView: View {
     }
 }
 
-private struct GameCollectionSection: View {
+private struct GameCollectionCard: View {
     let title: LocalizedStringResource
     let routes: [GameRoute]
+    let usesExpandedLayout: Bool
     let progress: (GameRoute) -> String
     let onSelect: (GameRoute) -> Void
 
     var body: some View {
-        Section {
-            VStack(alignment: .leading, spacing: 0) {
-                Text(title)
-                    .font(.headline)
-                    .padding(.bottom, 8)
+        VStack(alignment: .leading, spacing: 0) {
+            Text(title)
+                .font(usesExpandedLayout ? .title3.weight(.bold) : .headline)
+                .padding(.bottom, usesExpandedLayout ? 12 : 8)
 
-                ForEach(routes) { route in
-                    VStack(spacing: 0) {
-                        GameNavigationRow(
-                            route: route,
-                            progress: progress(route),
-                            onSelect: { onSelect(route) }
-                        )
+            ForEach(routes) { route in
+                VStack(spacing: 0) {
+                    GameNavigationRow(
+                        route: route,
+                        progress: progress(route),
+                        usesExpandedLayout: usesExpandedLayout,
+                        onSelect: { onSelect(route) }
+                    )
 
-                        if route.id != routes.last?.id {
-                            Divider()
-                        }
+                    if route.id != routes.last?.id {
+                        Divider()
                     }
                 }
             }
-            .padding(AppDesignMetrics.cardPadding)
-            .heroCardSurface()
-            .listRowInsets(EdgeInsets())
-            .listRowBackground(Color.clear)
-            .listRowSeparator(.hidden)
         }
+        .frame(
+            maxWidth: .infinity,
+            minHeight: usesExpandedLayout ? 560 : nil,
+            alignment: .topLeading
+        )
+        .padding(AppDesignMetrics.cardPadding)
+        .heroCardSurface()
     }
 }
 
@@ -255,6 +328,7 @@ private struct GameNavigationRow: View {
 
     let route: GameRoute
     let progress: String
+    let usesExpandedLayout: Bool
     let onSelect: () -> Void
 
     var body: some View {
@@ -262,11 +336,15 @@ private struct GameNavigationRow: View {
             if dynamicTypeSize.isAccessibilitySize {
                 GameAccessibilityRow(route: route, progress: progress)
             } else {
-                GameStandardRow(route: route, progress: progress)
+                GameStandardRow(
+                    route: route,
+                    progress: progress,
+                    usesExpandedLayout: usesExpandedLayout
+                )
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 8 : 4)
+        .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 8 : (usesExpandedLayout ? 9 : 4))
         .contentShape(Rectangle())
         .foregroundStyle(.primary)
         .onTapGesture {
@@ -283,16 +361,17 @@ private struct GameNavigationRow: View {
 private struct GameStandardRow: View {
     let route: GameRoute
     let progress: String
+    let usesExpandedLayout: Bool
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            GameRowIcon(route: route)
+            GameRowIcon(route: route, usesExpandedLayout: usesExpandedLayout)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(route.title)
-                    .font(.headline)
+                    .font(usesExpandedLayout ? .title3.weight(.semibold) : .headline)
                 Text(route.subtitle)
-                    .font(.caption)
+                    .font(usesExpandedLayout ? .subheadline : .caption)
                     .foregroundStyle(.secondary)
             }
             .fixedSize(horizontal: false, vertical: true)
@@ -301,7 +380,7 @@ private struct GameStandardRow: View {
             Spacer(minLength: 8)
 
             Text(progress)
-                .font(.caption.weight(.medium))
+                .font((usesExpandedLayout ? Font.footnote : Font.caption).weight(.medium))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.trailing)
                 .fixedSize(horizontal: true, vertical: false)
@@ -344,12 +423,13 @@ private struct GameAccessibilityRow: View {
 
 private struct GameRowIcon: View {
     let route: GameRoute
+    var usesExpandedLayout = false
 
     var body: some View {
         Image(systemName: route.systemImage)
-            .font(.title3)
+            .font(usesExpandedLayout ? .title2 : .title3)
             .foregroundStyle(route.tint)
-            .frame(minWidth: 28)
+            .frame(minWidth: usesExpandedLayout ? 36 : 28)
             .accessibilityHidden(true)
     }
 }

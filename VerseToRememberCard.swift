@@ -2,6 +2,7 @@ import SwiftUI
 
 struct VerseToRememberCard: View {
     let verse: HomeVerseRef?
+    var usesExpandedLayout = false
     let canChooseAnother: Bool
     let onChooseAnother: () -> Void
     let onOpenVerse: (HomeVerseRef) -> Void
@@ -53,14 +54,15 @@ struct VerseToRememberCard: View {
             title: "Verse to Remember",
             subtitle: "Practice a verse from your Favorites",
             icon: "brain.head.profile",
-            tint: .purple
+            tint: .purple,
+            titleFont: usesExpandedLayout ? .title3 : .headline
         ) {
             if let verse {
                 VStack(alignment: .leading, spacing: 12) {
                     Text(practiceText)
-                        .font(.headline)
+                        .font(usesExpandedLayout ? .title2 : .headline)
                         .italic()
-                        .lineLimit(8)
+                        .lineLimit(usesExpandedLayout ? 10 : 8)
                         .id(revealedWordCount)
                         .accessibilityLabel(
                             allWordsRevealed
@@ -69,8 +71,12 @@ struct VerseToRememberCard: View {
                         )
 
                     Text("\(verse.bookName) \(verse.chapterNumber):\(verse.verseNumber)")
-                        .font(.subheadline.weight(.semibold))
+                        .font((usesExpandedLayout ? Font.headline : Font.subheadline).weight(.semibold))
                         .foregroundStyle(.secondary)
+
+                    if usesExpandedLayout {
+                        Spacer(minLength: 16)
+                    }
 
                     HStack(spacing: 8) {
                         actionButton(
@@ -101,6 +107,11 @@ struct VerseToRememberCard: View {
                         }
                     }
                 }
+                .frame(
+                    maxWidth: .infinity,
+                    minHeight: usesExpandedLayout ? 500 : nil,
+                    alignment: .topLeading
+                )
             } else {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Favorite a verse to turn it into a quick memory exercise here.")
@@ -111,6 +122,11 @@ struct VerseToRememberCard: View {
                         onOpenFavorites()
                     }
                 }
+                .frame(
+                    maxWidth: .infinity,
+                    minHeight: usesExpandedLayout ? 500 : nil,
+                    alignment: .topLeading
+                )
             }
         }
         .onAppear {
@@ -142,12 +158,12 @@ struct VerseToRememberCard: View {
                 Image(systemName: systemImage)
                     .font(.body.weight(.semibold))
                 Text(title)
-                    .font(.caption.weight(.semibold))
+                    .font((usesExpandedLayout ? Font.footnote : Font.caption).weight(.semibold))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
             }
             .foregroundStyle(disabled ? Color.secondary : Color.accentColor)
-            .frame(maxWidth: .infinity, minHeight: 52)
+            .frame(maxWidth: .infinity, minHeight: usesExpandedLayout ? 64 : 52)
             .padding(.horizontal, 4)
             .heroCardSurface(cornerRadius: AppDesignMetrics.compactControlCornerRadius)
         }
