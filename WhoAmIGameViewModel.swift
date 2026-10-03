@@ -8,7 +8,10 @@ import Observation
 final class WhoAmIGameViewModel {
     enum Mode: String, CaseIterable, Identifiable {
         case names = "Names"     // prompt: name -> choices: descriptions
-        case reverse = "Reverse" // prompt: description -> choices: names
+        case reverse = "Clues"   // prompt: clue -> choices: names
+
+        static let releasedModes: [Mode] = [.reverse]
+
         var id: String { rawValue }
     }
 
@@ -43,7 +46,7 @@ final class WhoAmIGameViewModel {
 
     // Start screen state
     var started: Bool = false
-    var mode: Mode = .names
+    var mode: Mode = .reverse
     var difficulty: Difficulty = .normal {
         didSet { seedStreakFromPersistence() }
     }

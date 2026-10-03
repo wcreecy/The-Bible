@@ -42,9 +42,8 @@ struct WhoAmIGameView: View {
                         GroupBox {
                             DisclosureGroup(isExpanded: $vm.howToExpanded) {
                                 VStack(alignment: .leading, spacing: 12) {
-                                    Text("• Choose a mode and difficulty, then tap Start.")
-                                    Text("• Names: You’ll see a name; pick the correct description.")
-                                    Text("• Reverse: You’ll see a description; pick the correct name.")
+                                    Text("• Choose a difficulty, then tap Start.")
+                                    Text("• You’ll see a clue; pick the correct person from four names.")
                                     Text("• In timed modes, answer before the clock runs out.")
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -85,7 +84,7 @@ struct WhoAmIGameView: View {
                         GameStartPickerCard(
                             title: "Question Type",
                             selection: $vm.mode,
-                            options: WhoAmIGameViewModel.Mode.allCases
+                            options: WhoAmIGameViewModel.Mode.releasedModes
                         ) { mode in
                             Text(mode.rawValue)
                         }
@@ -191,18 +190,19 @@ struct WhoAmIGameView: View {
                                     }
                                 } label: {
                                     Text(choice)
-                                        .font(.footnote)
-                                        .multilineTextAlignment(.leading)
-                                        .lineLimit(6)
+                                        .font(vm.mode == .reverse ? .body.weight(.semibold) : .footnote)
+                                        .multilineTextAlignment(vm.mode == .reverse ? .center : .leading)
+                                        .lineLimit(vm.mode == .reverse ? 2 : 6)
                                         .fixedSize(horizontal: false, vertical: true)
                                         .frame(
                                             maxWidth: .infinity,
-                                            minHeight: max(maxChoiceHeight, 96),
-                                            maxHeight: max(maxChoiceHeight, 96),
-                                            alignment: .leading
+                                            minHeight: vm.mode == .reverse ? 40 : max(maxChoiceHeight, 96),
+                                            maxHeight: vm.mode == .reverse ? 40 : max(maxChoiceHeight, 96),
+                                            alignment: vm.mode == .reverse ? .center : .leading
                                         )
-                                        .padding()
+                                        .padding(vm.mode == .reverse ? 10 : 16)
                                         .foregroundStyle(.primary)
+                                        .contentShape(Rectangle())
                                         .background(
                                             GeometryReader { geo in
                                                 Color.clear
@@ -602,12 +602,18 @@ private struct WhoAmIPlayCard: View {
                         onChoose(choice)
                     } label: {
                         Text(choice)
-                            .font(.subheadline)
-                            .multilineTextAlignment(.leading)
+                            .font(promptIsName ? .subheadline : .body.weight(.semibold))
+                            .multilineTextAlignment(promptIsName ? .leading : .center)
+                            .lineLimit(promptIsName ? 6 : 2)
                             .fixedSize(horizontal: false, vertical: true)
-                            .frame(maxWidth: .infinity, minHeight: 88, alignment: .leading)
-                            .padding()
+                            .frame(
+                                maxWidth: .infinity,
+                                minHeight: promptIsName ? 88 : 40,
+                                alignment: promptIsName ? .leading : .center
+                            )
+                            .padding(promptIsName ? 16 : 10)
                             .foregroundStyle(.primary)
+                            .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     .background(
