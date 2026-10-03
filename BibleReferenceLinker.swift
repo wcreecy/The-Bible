@@ -27,6 +27,10 @@ enum BibleReferenceLinker {
         return try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
     }()
 
+    private static let linkDetector = try? NSDataDetector(
+        types: NSTextCheckingResult.CheckingType.link.rawValue
+    )
+
     // NOTE: Keys must be lowercase. For numbered books, only map the word part (e.g., "cor" -> "Corinthians").
     private static let abbreviations: [String: String] = [
         // Genesis
@@ -281,6 +285,7 @@ enum BibleReferenceLinker {
         debugLog("Input: “\(text)”")
         var attributed = source
         attributed[attributed.startIndex..<attributed.endIndex].link = nil
+        linkWebURLs(in: text, attributed: &attributed)
         guard let regex = cachedRegex else {
             debugLog("No regex compiled.")
             return attributed
@@ -363,6 +368,22 @@ enum BibleReferenceLinker {
             }
         }
         return attributed
+    }
+
+    private static func linkWebURLs(in text: String, attributed: inout AttributedString) {
+        guard let linkDetector else { return }
+        let fullRange = NSRange(text.startIndex..<text.endIndex, in: text)
+
+        for match in linkDetector.matches(in: text, options: [], range: fullRange) {
+            guard let url = match.url,
+                  let stringRange = Range(match.range, in: text),
+                  let lowerBound = AttributedString.Index(stringRange.lowerBound, within: attributed),
+                  let upperBound = AttributedString.Index(stringRange.upperBound, within: attributed) else {
+                continue
+            }
+
+            attributed[lowerBound..<upperBound].link = url
+        }
     }
 
     static func parse(url: URL) -> ScriptureRef? {

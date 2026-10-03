@@ -8,7 +8,7 @@ import Observation
 final class WhoAmIGameViewModel {
     enum Mode: String, CaseIterable, Identifiable {
         case names = "Names"     // prompt: name -> choices: descriptions
-        case reverse = "Clues"   // prompt: clue -> choices: names
+        case reverse = "Bible Names"   // prompt: clue -> choices: names
 
         static let releasedModes: [Mode] = [.reverse]
 
