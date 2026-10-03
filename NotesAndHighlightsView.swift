@@ -37,7 +37,9 @@ struct VerseNoteEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.fontResolutionContext) private var fontResolutionContext
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.undoManager) private var undoManager
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    @AppStorage("noteEditorTextSizeStep") private var noteEditorTextSizeStep = NoteEditorTextSize.defaultStep
 
     let verse: VerseActionReference
     let existingNote: VerseNote?
@@ -80,6 +82,7 @@ struct VerseNoteEditorView: View {
 
             TextEditor(text: $noteText, selection: $noteSelection)
                 .font(.body)
+                .dynamicTypeSize(NoteEditorTextSize.dynamicTypeSize(for: noteEditorTextSizeStep))
                 .scrollContentBackground(.hidden)
                 .padding(10)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -105,7 +108,18 @@ struct VerseNoteEditorView: View {
                 toggleUnderline: toggleUnderline,
                 toggleItalic: { toggleFontTrait(\.isItalic) },
                 toggleStrikethrough: toggleStrikethrough,
-                insertBullet: insertBullet
+                insertBullet: insertBullet,
+                insertNumberedItem: insertNumberedItem,
+                increaseIndent: increaseIndent,
+                decreaseIndent: decreaseIndent,
+                decreaseTextSize: decreaseTextSize,
+                increaseTextSize: increaseTextSize,
+                canDecreaseTextSize: noteEditorTextSizeStep > NoteEditorTextSize.minimumStep,
+                canIncreaseTextSize: noteEditorTextSizeStep < NoteEditorTextSize.maximumStep,
+                undo: { undoManager?.undo() },
+                redo: { undoManager?.redo() },
+                canUndo: undoManager?.canUndo == true,
+                canRedo: undoManager?.canRedo == true
             )
         }
         .navigationTitle(existingNote == nil ? "Add Note & Highlight" : "Edit Note & Highlight")
@@ -207,6 +221,44 @@ struct VerseNoteEditorView: View {
 
     private func insertBullet() {
         noteText.replaceSelection(&noteSelection, withCharacters: "• ")
+    }
+
+    private func insertNumberedItem() {
+        noteText.replaceSelection(&noteSelection, withCharacters: "1. ")
+    }
+
+    private func increaseIndent() {
+        guard case .insertionPoint = noteSelection.indices(in: noteText) else { return }
+        noteText.replaceSelection(&noteSelection, withCharacters: "    ")
+    }
+
+    private func decreaseIndent() {
+        guard case let .insertionPoint(caret) = noteSelection.indices(in: noteText),
+              caret > noteText.startIndex else { return }
+
+        let characters = noteText.characters
+        var lineStart = caret
+        while lineStart > noteText.startIndex {
+            let previous = characters.index(before: lineStart)
+            if characters[previous] == "\n" { break }
+            lineStart = previous
+        }
+
+        var indentEnd = lineStart
+        for _ in 0..<4 where indentEnd < noteText.endIndex && characters[indentEnd] == " " {
+            indentEnd = characters.index(after: indentEnd)
+        }
+        guard indentEnd > lineStart else { return }
+        noteText.replaceSubrange(lineStart..<indentEnd, with: AttributedString())
+        noteSelection = AttributedTextSelection(insertionPoint: lineStart)
+    }
+
+    private func decreaseTextSize() {
+        noteEditorTextSizeStep = max(NoteEditorTextSize.minimumStep, noteEditorTextSizeStep - 1)
+    }
+
+    private func increaseTextSize() {
+        noteEditorTextSizeStep = min(NoteEditorTextSize.maximumStep, noteEditorTextSizeStep + 1)
     }
 
     private func save() {
@@ -352,20 +404,56 @@ private struct NoteFormattingBar: View {
     let toggleItalic: () -> Void
     let toggleStrikethrough: () -> Void
     let insertBullet: () -> Void
+    let insertNumberedItem: () -> Void
+    let increaseIndent: () -> Void
+    let decreaseIndent: () -> Void
+    let decreaseTextSize: () -> Void
+    let increaseTextSize: () -> Void
+    let canDecreaseTextSize: Bool
+    let canIncreaseTextSize: Bool
+    let undo: () -> Void
+    let redo: () -> Void
+    let canUndo: Bool
+    let canRedo: Bool
 
     var body: some View {
-        HStack(spacing: 6) {
-            formattingButton("Bold", systemImage: "bold", action: toggleBold)
-            formattingButton("Underline", systemImage: "underline", action: toggleUnderline)
-            formattingButton("Italic", systemImage: "italic", action: toggleItalic)
-            formattingButton("Strikethrough", systemImage: "strikethrough", action: toggleStrikethrough)
-            formattingButton("Bulleted list", systemImage: "list.bullet", action: insertBullet)
-            Spacer(minLength: 0)
+        ScrollView(.horizontal) {
+            HStack(spacing: 6) {
+                formattingButton("Undo", systemImage: "arrow.uturn.backward", action: undo)
+                    .disabled(!canUndo)
+                formattingButton("Redo", systemImage: "arrow.uturn.forward", action: redo)
+                    .disabled(!canRedo)
 
-            Text("Formatting")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+                Divider().frame(height: 24)
+
+                formattingButton("Bold", systemImage: "bold", action: toggleBold)
+                formattingButton("Underline", systemImage: "underline", action: toggleUnderline)
+                formattingButton("Italic", systemImage: "italic", action: toggleItalic)
+                formattingButton("Strikethrough", systemImage: "strikethrough", action: toggleStrikethrough)
+
+                Menu {
+                    Button("Bulleted List", systemImage: "list.bullet", action: insertBullet)
+                    Button("Numbered List", systemImage: "list.number", action: insertNumberedItem)
+                    Divider()
+                    Button("Decrease Indent", systemImage: "decrease.indent", action: decreaseIndent)
+                    Button("Increase Indent", systemImage: "increase.indent", action: increaseIndent)
+                } label: {
+                    Image(systemName: "list.bullet.indent")
+                        .frame(width: 30, height: 30)
+                        .contentShape(.rect)
+                }
+                .buttonStyle(.borderless)
+                .accessibilityLabel("Lists and indentation")
+
+                Divider().frame(height: 24)
+
+                formattingButton("Decrease text size", systemImage: "textformat.size.smaller", action: decreaseTextSize)
+                    .disabled(!canDecreaseTextSize)
+                formattingButton("Increase text size", systemImage: "textformat.size.larger", action: increaseTextSize)
+                    .disabled(!canIncreaseTextSize)
+            }
         }
+        .scrollIndicators(.hidden)
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .glassEffect(.regular, in: .rect(cornerRadius: 16))
@@ -385,6 +473,24 @@ private struct NoteFormattingBar: View {
         }
         .buttonStyle(.borderless)
         .accessibilityLabel(accessibilityLabel)
+    }
+}
+
+private enum NoteEditorTextSize {
+    static let minimumStep = 0
+    static let maximumStep = 6
+    static let defaultStep = 3
+
+    static func dynamicTypeSize(for step: Int) -> DynamicTypeSize {
+        switch min(maximumStep, max(minimumStep, step)) {
+        case 0: .xSmall
+        case 1: .small
+        case 2: .medium
+        case 3: .large
+        case 4: .xLarge
+        case 5: .xxLarge
+        default: .xxxLarge
+        }
     }
 }
 
@@ -1897,7 +2003,9 @@ private struct UserNoteEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.fontResolutionContext) private var fontResolutionContext
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.undoManager) private var undoManager
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    @AppStorage("noteEditorTextSizeStep") private var noteEditorTextSizeStep = NoteEditorTextSize.defaultStep
 
     let existingNote: UserNote?
 
@@ -1938,6 +2046,7 @@ private struct UserNoteEditorView: View {
 
             TextEditor(text: $noteText, selection: $noteSelection)
                 .font(.body)
+                .dynamicTypeSize(NoteEditorTextSize.dynamicTypeSize(for: noteEditorTextSizeStep))
                 .scrollContentBackground(.hidden)
                 .padding(10)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -1963,7 +2072,18 @@ private struct UserNoteEditorView: View {
                 toggleUnderline: toggleUnderline,
                 toggleItalic: { toggleFontTrait(\.isItalic) },
                 toggleStrikethrough: toggleStrikethrough,
-                insertBullet: insertBullet
+                insertBullet: insertBullet,
+                insertNumberedItem: insertNumberedItem,
+                increaseIndent: increaseIndent,
+                decreaseIndent: decreaseIndent,
+                decreaseTextSize: decreaseTextSize,
+                increaseTextSize: increaseTextSize,
+                canDecreaseTextSize: noteEditorTextSizeStep > NoteEditorTextSize.minimumStep,
+                canIncreaseTextSize: noteEditorTextSizeStep < NoteEditorTextSize.maximumStep,
+                undo: { undoManager?.undo() },
+                redo: { undoManager?.redo() },
+                canUndo: undoManager?.canUndo == true,
+                canRedo: undoManager?.canRedo == true
             )
         }
         .navigationTitle(existingNote == nil ? "New Note" : "Edit Note")
@@ -2063,6 +2183,44 @@ private struct UserNoteEditorView: View {
 
     private func insertBullet() {
         noteText.replaceSelection(&noteSelection, withCharacters: "• ")
+    }
+
+    private func insertNumberedItem() {
+        noteText.replaceSelection(&noteSelection, withCharacters: "1. ")
+    }
+
+    private func increaseIndent() {
+        guard case .insertionPoint = noteSelection.indices(in: noteText) else { return }
+        noteText.replaceSelection(&noteSelection, withCharacters: "    ")
+    }
+
+    private func decreaseIndent() {
+        guard case let .insertionPoint(caret) = noteSelection.indices(in: noteText),
+              caret > noteText.startIndex else { return }
+
+        let characters = noteText.characters
+        var lineStart = caret
+        while lineStart > noteText.startIndex {
+            let previous = characters.index(before: lineStart)
+            if characters[previous] == "\n" { break }
+            lineStart = previous
+        }
+
+        var indentEnd = lineStart
+        for _ in 0..<4 where indentEnd < noteText.endIndex && characters[indentEnd] == " " {
+            indentEnd = characters.index(after: indentEnd)
+        }
+        guard indentEnd > lineStart else { return }
+        noteText.replaceSubrange(lineStart..<indentEnd, with: AttributedString())
+        noteSelection = AttributedTextSelection(insertionPoint: lineStart)
+    }
+
+    private func decreaseTextSize() {
+        noteEditorTextSizeStep = max(NoteEditorTextSize.minimumStep, noteEditorTextSizeStep - 1)
+    }
+
+    private func increaseTextSize() {
+        noteEditorTextSizeStep = min(NoteEditorTextSize.maximumStep, noteEditorTextSizeStep + 1)
     }
 
     private func save() {
