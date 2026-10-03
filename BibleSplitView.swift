@@ -352,7 +352,14 @@ struct BibleSplitView: View {
                 .navigationDestination(for: ReadingRoute.self) { route in
                     if let book = BibleData.books.first(where: { $0.name == route.bookName }),
                        let chapter = book.chapters.first(where: { $0.number == route.chapterNumber }) {
-                        ReadingView(book: book, chapter: chapter, startVerse: route.verseNumber)
+                        ReadingView(
+                            book: book,
+                            chapter: chapter,
+                            startVerse: route.verseNumber,
+                            onSearch: {
+                                detailPath.append(SearchRoute())
+                            }
+                        )
                             .id("\(route.bookName)-\(route.chapterNumber)-\(route.verseNumber)")
                             // Safety net: ensure tracker is active for split-view navigation as well.
                             .onAppear {

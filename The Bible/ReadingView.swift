@@ -13,6 +13,7 @@ struct ReadingView: View {
     let book: Book
     let chapter: Chapter
     let startVerse: Int
+    let onSearch: (() -> Void)?
 
     // View model and stores
     @StateObject private var pinnedStore: PinnedVerseStore
@@ -38,10 +39,16 @@ struct ReadingView: View {
     @State private var removedFavorite: RemovedReadingFavorite?
     @State private var persistenceFailure: PersistenceFailure?
 
-    init(book: Book, chapter: Chapter, startVerse: Int) {
+    init(
+        book: Book,
+        chapter: Chapter,
+        startVerse: Int,
+        onSearch: (() -> Void)? = nil
+    ) {
         self.book = book
         self.chapter = chapter
         self.startVerse = startVerse
+        self.onSearch = onSearch
 
         // Create a single pinned store instance and share it with the view model
         let pinned = PinnedVerseStore()
@@ -65,7 +72,11 @@ struct ReadingView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        NotificationCenter.default.post(name: .openBibleSearch, object: nil)
+                        if let onSearch {
+                            onSearch()
+                        } else {
+                            NotificationCenter.default.post(name: .openBibleSearch, object: nil)
+                        }
                     } label: {
                         Image(systemName: "magnifyingglass")
                     }
