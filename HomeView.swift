@@ -309,6 +309,7 @@ struct HomeView: View {
     @State private var showMoreCards: Bool = false
     @State private var hasFavoriteLayout: Bool = false
     @State private var verseToRememberOffset = 0
+    @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
 
     private var verseToRemember: HomeVerseRef? {
         let sortedFavorites = favorites.sorted {
@@ -587,37 +588,45 @@ struct HomeView: View {
             card(for: cardID)
         }
 
-        if showMoreVisible && !moreCards.isEmpty {
-            Button {
-                withAnimation(.snappy) {
-                    showMoreCards.toggle()
+        if !moreCards.isEmpty {
+            if showMoreVisible {
+                Button {
+                    withAnimation(.snappy) {
+                        showMoreCards.toggle()
+                    }
+                } label: {
+                    HStack {
+                        Label(
+                            showMoreCards ? "Show Less" : "Show More",
+                            systemImage: "square.grid.2x2"
+                        )
+                        Spacer()
+                        Image(systemName: "chevron.down")
+                            .rotationEffect(.degrees(showMoreCards ? 180 : 0))
+                    }
+                    .font(.headline)
+                    .padding(AppDesignMetrics.cardPadding)
+                    .imageOverlaySurface()
                 }
-            } label: {
-                HStack {
-                    Label(
-                        showMoreCards ? "Show Less" : "Show More",
-                        systemImage: "square.grid.2x2"
-                    )
-                    Spacer()
-                    Image(systemName: "chevron.down")
-                        .rotationEffect(.degrees(showMoreCards ? 180 : 0))
-                }
-                .font(.headline)
-                .padding(AppDesignMetrics.cardPadding)
-                .imageOverlaySurface()
-            }
-            .buttonStyle(.plain)
-            .accessibilityHint(showMoreCards ? "Hides additional Home cards" : "Shows additional Home cards")
+                .buttonStyle(.plain)
+                .accessibilityHint(showMoreCards ? "Hides additional Home cards" : "Shows additional Home cards")
 
-            if showMoreCards {
+                if showMoreCards {
+                    ForEach(moreCards) { cardID in
+                        card(for: cardID)
+                    }
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                }
+            } else {
                 ForEach(moreCards) { cardID in
                     card(for: cardID)
                 }
-                .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
 
-        customizeHomeLink
+        if customizeButtonVisible {
+            customizeHomeLink
+        }
     }
 
     @ViewBuilder

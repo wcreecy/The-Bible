@@ -13,6 +13,7 @@ struct HomeLayoutEditorView: View {
     var hasFavorite: Bool
 
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
 
     private var mainCards: [HomeCardID] {
         order.filter { mainSet.contains($0) }
@@ -198,6 +199,11 @@ struct HomeLayoutEditorView: View {
 
             if allowsShowMore {
                 Section {
+                    Toggle(isOn: $customizeButtonVisible) {
+                        Label("Show ‘Customize Home’ on Home", systemImage: customizeButtonVisible ? "eye" : "eye.slash")
+                    }
+                    .toggleStyle(StatusColorToggleStyle())
+
                     Toggle(isOn: $showMoreVisible) {
                         Label("Show ‘Show More’ on Home", systemImage: showMoreVisible ? "eye" : "eye.slash")
                     }
@@ -214,7 +220,7 @@ struct HomeLayoutEditorView: View {
                 } footer: {
                     Text(showMoreVisible
                         ? "Shown cards become visible only after Show More is expanded. Use the arrows to arrange them."
-                        : "Show More is hidden from Home. You can still arrange its cards here for later.")
+                        : "Show More is hidden from Home. Shown cards appear directly on Home instead.")
                 }
             }
 
