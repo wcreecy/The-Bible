@@ -197,6 +197,14 @@ struct ReadingView: View {
                         )
                         .padding(.bottom, 12)
 
+                        ContextualTipView(
+                            id: "reader.statusIcons",
+                            title: "Understand verse icons",
+                            message: "Heart: favorite • Note: has a note • Bookmark: continue reading • Checkmark: read. Show or hide them in Settings › Bible Reader.",
+                            systemImage: "info.circle"
+                        )
+                        .padding(.bottom, 12)
+
                         Divider()
                     }
 

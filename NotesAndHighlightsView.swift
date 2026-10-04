@@ -907,8 +907,8 @@ struct NotesAndHighlightsView: View {
             if contextualTipsEnabled {
                 ContextualTipView(
                     id: "notes.quickActions",
-                    title: "Quick note actions",
-                    message: "Swipe a note for quick actions, or press and hold it to delete.",
+                    title: "Browse and manage notes",
+                    message: "Filter by tag or highlight color. Select a note to follow links without editing, or swipe it for quick actions.",
                     systemImage: "hand.point.up.left"
                 )
             }
