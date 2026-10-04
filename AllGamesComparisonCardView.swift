@@ -22,6 +22,7 @@ struct AllGamesComparisonCardView: View {
     }
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     private var segmentedTint: Color {
         colorScheme == .light ? Color.black.opacity(0.85) : Color.accentColor
     }
@@ -35,15 +36,25 @@ struct AllGamesComparisonCardView: View {
             let isEmpty: Bool = (totalAnswered == 0)
 
             VStack(alignment: .leading, spacing: 8) {
-                Picker("Sort", selection: $sort) {
-                    ForEach(Sort.allCases) { s in
-                        Text(s.rawValue).tag(s)
+                if dynamicTypeSize.isAccessibilitySize {
+                    Picker("Sort", selection: $sort) {
+                        ForEach(Sort.allCases) { s in
+                            Text(s.rawValue).tag(s)
+                        }
                     }
+                    .pickerStyle(.menu)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                } else {
+                    Picker("Sort", selection: $sort) {
+                        ForEach(Sort.allCases) { s in
+                            Text(s.rawValue).tag(s)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .tint(segmentedTint)
+                    .frame(maxWidth: 280, alignment: .trailing)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
-                .pickerStyle(.segmented)
-                .tint(segmentedTint)
-                .frame(maxWidth: 280, alignment: .trailing)
-                .frame(maxWidth: .infinity, alignment: .trailing)
 
                 if isEmpty {
                     Text("Play any game to build your Gamer Score.")
@@ -57,23 +68,27 @@ struct AllGamesComparisonCardView: View {
                         return Row(name: e.name, played: played, accuracy: acc)
                     }
 
-                    // Add breathing room between header line and chart
-                    ChartView(rows: rows, sort: sort, version: stats.version)
-                        .padding(.top, 20)
+                    if dynamicTypeSize.isAccessibilitySize {
+                        AccessibleComparisonView(rows: rows, sort: sort)
+                    } else {
+                        // Add breathing room between header line and chart
+                        ChartView(rows: rows, sort: sort, version: stats.version)
+                            .padding(.top, 20)
 
-                    // Legend-like caption
-                    HStack(spacing: 12) {
-                        HStack(spacing: 6) {
-                            RoundedRectangle(cornerRadius: 3).fill(Color.accentColor.opacity(0.85)).frame(width: 12, height: 12)
-                            Text("Attempts")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        HStack(spacing: 6) {
-                            Circle().fill(Color.green.opacity(0.9)).frame(width: 8, height: 8)
-                            Text("Accuracy (%)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                        // Legend-like caption
+                        HStack(spacing: 12) {
+                            HStack(spacing: 6) {
+                                RoundedRectangle(cornerRadius: 3).fill(Color.accentColor.opacity(0.85)).frame(width: 12, height: 12)
+                                Text("Attempts")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            HStack(spacing: 6) {
+                                Circle().fill(Color.green.opacity(0.9)).frame(width: 8, height: 8)
+                                Text("Accuracy (%)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                     }
                 }
@@ -84,6 +99,45 @@ struct AllGamesComparisonCardView: View {
 }
 
 fileprivate extension AllGamesComparisonCardView {
+    struct AccessibleComparisonView: View {
+        let rows: [Row]
+        let sort: Sort
+
+        private var sortedRows: [Row] {
+            switch sort {
+            case .name:
+                return rows.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            case .played:
+                return rows.sorted {
+                    $0.played == $1.played ? $0.name < $1.name : $0.played > $1.played
+                }
+            case .accuracy:
+                return rows.sorted {
+                    $0.accuracy == $1.accuracy ? $0.name < $1.name : ($0.accuracy ?? -1) > ($1.accuracy ?? -1)
+                }
+            }
+        }
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 12) {
+                ForEach(sortedRows) { row in
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(row.name)
+                            .font(.headline)
+
+                        LabeledContent("Attempts", value: "\(row.played)")
+                        LabeledContent(
+                            "Accuracy",
+                            value: row.accuracy.map { "\(Int(round($0)))%" } ?? "—"
+                        )
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 6)
+                }
+            }
+        }
+    }
+
     struct ChartView: View {
         let rows: [Row]
         let sort: Sort

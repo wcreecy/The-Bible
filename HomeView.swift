@@ -482,10 +482,13 @@ struct HomeView: View {
     @ViewBuilder
     private var compactHomeContent: some View {
         homeHeader
+            .frame(maxWidth: .infinity)
         contextualHomeTip
+            .frame(maxWidth: .infinity)
 
         ForEach(layoutOrder.filter { mainCards.contains($0) && !hiddenCards.contains($0) }) { cardID in
             card(for: cardID)
+                .frame(maxWidth: .infinity)
         }
 
         if !moreCards.isEmpty {
@@ -514,12 +517,14 @@ struct HomeView: View {
                 if showMoreCards {
                     ForEach(moreCards) { cardID in
                         card(for: cardID)
+                            .frame(maxWidth: .infinity)
                     }
                     .transition(.opacity.combined(with: .move(edge: .top)))
                 }
             } else {
                 ForEach(moreCards) { cardID in
                     card(for: cardID)
+                        .frame(maxWidth: .infinity)
                 }
             }
         }

@@ -158,6 +158,7 @@ struct StatsView: View {
     // Size-class aware layout
     @Environment(\.horizontalSizeClass) private var hSizeClass
     @Environment(\.verticalSizeClass) private var vSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.colorScheme) private var colorScheme
 
     // OT/NT totals for the OTNT card — UI-only
@@ -321,7 +322,7 @@ struct StatsView: View {
     // MARK: - Mode-specific content
 
     private var usesWideStatsLayout: Bool {
-        hSizeClass == .regular || vSizeClass == .compact
+        !dynamicTypeSize.isAccessibilitySize && (hSizeClass == .regular || vSizeClass == .compact)
     }
 
     private var bibleContent: some View {

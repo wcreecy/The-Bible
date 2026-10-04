@@ -14,6 +14,7 @@ struct PlayerStatSheetCardView: View {
     @State private var sort: Sort = .avg
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     private var segmentedTint: Color {
         colorScheme == .light ? Color.black.opacity(0.85) : Color.accentColor
     }
@@ -56,45 +57,31 @@ struct PlayerStatSheetCardView: View {
             let worstStreakIndex = uniqueMinIndex(streaks.map { $0 == 0 ? Int.max : $0 })
 
             VStack(alignment: .leading, spacing: 8) {
-                Picker("Sort", selection: $sort) {
-                    ForEach(Sort.allCases) { s in
-                        Text(s.rawValue).tag(s)
+                if dynamicTypeSize.isAccessibilitySize {
+                    Picker("Sort", selection: $sort) {
+                        ForEach(Sort.allCases) { s in
+                            Text(s.rawValue).tag(s)
+                        }
                     }
+                    .pickerStyle(.menu)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                } else {
+                    Picker("Sort", selection: $sort) {
+                        ForEach(Sort.allCases) { s in
+                            Text(s.rawValue).tag(s)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .tint(segmentedTint)
+                    .frame(maxWidth: 280, alignment: .trailing)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
-                .pickerStyle(.segmented)
-                .tint(segmentedTint)
-                .frame(maxWidth: 280, alignment: .trailing)
-                .frame(maxWidth: .infinity, alignment: .trailing)
 
                 if isEmpty {
                     Text("Play any game to build your Gamer Score.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 } else {
-                    let nameWidth: CGFloat = 88
-                    let percentageWidth: CGFloat = 60
-                    let streakWidth: CGFloat = 46
-
-                    HStack(spacing: 8) {
-                        Text("Game")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                            .frame(width: nameWidth, alignment: .leading)
-                        Spacer(minLength: 0)
-                        Text("Attempts")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                            .frame(width: percentageWidth, alignment: .center)
-                        Text("Avg")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                            .frame(width: percentageWidth, alignment: .center)
-                        Text("Streak")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                            .frame(width: streakWidth, alignment: .center)
-                    }
-
                     let sortedIndices: [Int] = {
                         let indices = Array(entries.indices)
                         switch sort {
@@ -118,7 +105,55 @@ struct PlayerStatSheetCardView: View {
                         }
                     }()
 
-                    ForEach(sortedIndices, id: \.self) { idx in
+                    if dynamicTypeSize.isAccessibilitySize {
+                        ForEach(sortedIndices, id: \.self) { idx in
+                            let s = entries[idx]
+                            let attemptCount = attempts[idx]
+                            let avg = avgs[idx]
+                            let best = streaks[idx]
+
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(s.name)
+                                    .font(.headline)
+                                LabeledContent("Attempts", value: "\(attemptCount)")
+                                LabeledContent("Average", value: avg.map { "\(Int(round($0)))%" } ?? "—")
+                                LabeledContent("Best Streak", value: best > 0 ? "\(best)" : "—")
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .foregroundStyle(s.answered == 0 ? .secondary : .primary)
+                            .padding()
+                            .background(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .fill(Color(.secondarySystemBackground))
+                            )
+                            .accessibilityElement(children: .combine)
+                        }
+                    } else {
+                        let nameWidth: CGFloat = 88
+                        let percentageWidth: CGFloat = 60
+                        let streakWidth: CGFloat = 46
+
+                        HStack(spacing: 8) {
+                            Text("Game")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .frame(width: nameWidth, alignment: .leading)
+                            Spacer(minLength: 0)
+                            Text("Attempts")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .frame(width: percentageWidth, alignment: .center)
+                            Text("Avg")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .frame(width: percentageWidth, alignment: .center)
+                            Text("Streak")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .frame(width: streakWidth, alignment: .center)
+                        }
+
+                        ForEach(sortedIndices, id: \.self) { idx in
                         let s = entries[idx]
                         let attemptCount = attempts[idx]
                         let avg = avgs[idx]
@@ -169,8 +204,9 @@ struct PlayerStatSheetCardView: View {
                             RoundedRectangle(cornerRadius: 10, style: .continuous)
                                 .stroke(Color.black.opacity(0.06), lineWidth: 1)
                         )
+                        }
+                        .animation(.easeInOut(duration: 0.2), value: sort)
                     }
-                    .animation(.easeInOut(duration: 0.2), value: sort)
                 }
             }
             .padding(.top, 2)
