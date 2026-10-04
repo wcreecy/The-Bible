@@ -89,7 +89,7 @@ struct FavoritesView: View {
             }
         }
         .background(AppBackgroundView(tab: .more))
-        .navigationTitle("Favorites")
+        .navigationTitle("Favorites (\(favorites.count))")
         .navigationBarTitleDisplayMode(.large)
         .toolbar { EditButton() }
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search favorites")
