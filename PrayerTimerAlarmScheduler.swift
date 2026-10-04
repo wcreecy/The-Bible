@@ -1,10 +1,11 @@
 import Foundation
 import SwiftUI
+import ActivityKit
 
 #if canImport(AlarmKit)
 import AlarmKit
 
-@available(iOS 26.0, *)
+@available(iOS 26.1, *)
 private struct PrayerTimerAlarmMetadata: AlarmMetadata {}
 #endif
 
@@ -12,7 +13,7 @@ enum PrayerTimerAlarmScheduler {
     private static let alarmID = UUID(uuidString: "7E9B4495-35BE-4CB1-9EF4-AFC5A8A79F0F")!
 
     static func schedule(at date: Date) async -> Bool {
-        guard #available(iOS 26.0, *) else { return false }
+        guard #available(iOS 26.1, *) else { return false }
 
         #if canImport(AlarmKit)
         let manager = AlarmManager.shared
@@ -47,7 +48,7 @@ enum PrayerTimerAlarmScheduler {
     }
 
     static func cancel() {
-        guard #available(iOS 26.0, *) else { return }
+        guard #available(iOS 26.1, *) else { return }
 
         #if canImport(AlarmKit)
         try? AlarmManager.shared.cancel(id: alarmID)

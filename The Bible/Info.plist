@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSAlarmKitUsageDescription</key>
+	<string>The Bible uses alarms to clearly alert you when your prayer or study timer finishes.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

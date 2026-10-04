@@ -51,6 +51,9 @@ final class PrayerTimerController: ObservableObject {
     // Finish sound/haptic loop
     private var finishHapticTimer: Timer?
 
+    // Invalidates older asynchronous AlarmKit scheduling attempts after timer changes.
+    private var completionSchedulingToken = UUID()
+
     // MARK: - Derived
 
     private var selectedFinishSoundID: SystemSoundID {
@@ -130,7 +133,7 @@ final class PrayerTimerController: ObservableObject {
         suppressTimerRecomputeUntil = Date().addingTimeInterval(1.75)
 
         startMindfulLoggingIfNeeded()
-        scheduleNotification(at: end)
+        scheduleCompletionAlert(at: end)
 
         PrayerTimerActivityController.shared.start(
             sessionName: "Prayer/Study",
@@ -153,6 +156,7 @@ final class PrayerTimerController: ObservableObject {
             remainingSeconds = newRemain
             storedRemainingWhenPaused = newRemain
             cancelNotification()
+            cancelAlarm()
         } else {
             let newEnd = Date().addingTimeInterval(TimeInterval(remainingSeconds))
             storedEndDate = newEnd.timeIntervalSince1970
@@ -160,7 +164,7 @@ final class PrayerTimerController: ObservableObject {
             suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(1.0)
             suppressTimerRecomputeUntil = Date().addingTimeInterval(1.75)
             storedRemainingWhenPaused = 0
-            scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
+            scheduleCompletionAlert(at: Date(timeIntervalSince1970: storedEndDate))
         }
         PrayerTimerActivityController.shared.update(
             remainingSeconds: remainingSeconds,
@@ -198,7 +202,7 @@ final class PrayerTimerController: ObservableObject {
             suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(1.0)
             suppressTimerRecomputeUntil = Date().addingTimeInterval(1.75)
 
-            scheduleNotification(at: Date(timeIntervalSince1970: storedEndDate))
+            scheduleCompletionAlert(at: Date(timeIntervalSince1970: storedEndDate))
             PrayerTimerActivityController.shared.update(
                 remainingSeconds: remainingSeconds,
                 totalSeconds: storedTotalSeconds,
@@ -213,6 +217,7 @@ final class PrayerTimerController: ObservableObject {
         }
         resetTimerState()
         cancelNotification()
+        cancelAlarm()
         stopFinishAlerts()
         PrayerTimerActivityController.shared.cancel()
         showFinishedAlert = false
@@ -388,9 +393,31 @@ final class PrayerTimerController: ObservableObject {
         center.add(request, withCompletionHandler: nil)
     }
 
+    private func scheduleCompletionAlert(at date: Date) {
+        let token = UUID()
+        completionSchedulingToken = token
+
+        // Keep the notification in place until AlarmKit scheduling succeeds so
+        // denied authorization and older OS versions still get an alert.
+        scheduleNotification(at: date)
+
+        Task {
+            let scheduledWithAlarmKit = await PrayerTimerAlarmScheduler.schedule(at: date)
+            guard completionSchedulingToken == token else { return }
+            if scheduledWithAlarmKit {
+                cancelNotification()
+            }
+        }
+    }
+
     private func cancelNotification() {
         let center = UNUserNotificationCenter.current()
         center.removePendingNotificationRequests(withIdentifiers: [Self.notificationID])
+    }
+
+    private func cancelAlarm() {
+        completionSchedulingToken = UUID()
+        PrayerTimerAlarmScheduler.cancel()
     }
 
     private func requestNotificationsIfNeeded() async {
