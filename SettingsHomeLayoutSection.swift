@@ -6,7 +6,7 @@ struct SettingsHomeLayoutSection: View {
     @State private var layoutOrder: [HomeCardID] = HomeLayoutStore.baselineOrder
     @State private var hiddenSet: Set<HomeCardID> = HomeLayoutStore.baselineHidden
     @State private var mainSet: Set<HomeCardID> = HomeLayoutStore.baselineMain
-    @State private var showMoreVisible = true
+    @State private var showMoreVisible = HomeLayoutStore.defaultShowMoreVisible
 
     private let layoutStore = HomeLayoutStore()
 

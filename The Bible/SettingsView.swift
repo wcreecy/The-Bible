@@ -567,14 +567,14 @@ private struct SettingsWidgetAppearanceSection: View {
                             Image(systemName: selection.wrappedValue == style.rawValue
                                   ? "checkmark.circle.fill"
                                   : "circle.fill")
-                                .foregroundStyle(style.previewColor)
+                                .foregroundStyle(style.previewStyle)
                         }
                     }
                 }
             } label: {
                 HStack(spacing: 7) {
                     Circle()
-                        .fill(selectedStyle.previewColor)
+                        .fill(selectedStyle.previewStyle)
                         .frame(width: 14, height: 14)
                         .overlay {
                             Circle()
@@ -603,6 +603,8 @@ private enum WidgetBackgroundStyle: String, CaseIterable, Identifiable {
     case burgundy
     case indigo
     case sunset
+    case blackToGray
+    case blueToPurple
 
     var id: String { rawValue }
 
@@ -614,17 +616,41 @@ private enum WidgetBackgroundStyle: String, CaseIterable, Identifiable {
         case .burgundy: "Burgundy"
         case .indigo: "Indigo"
         case .sunset: "Sunset"
+        case .blackToGray: "Graphite"
+        case .blueToPurple: "Aurora"
         }
     }
 
-    var previewColor: Color {
+    var previewStyle: AnyShapeStyle {
         switch self {
-        case .black: .black
-        case .midnight: Color(red: 0.04, green: 0.11, blue: 0.23)
-        case .forest: Color(red: 0.05, green: 0.25, blue: 0.18)
-        case .burgundy: Color(red: 0.35, green: 0.06, blue: 0.12)
-        case .indigo: Color(red: 0.16, green: 0.12, blue: 0.40)
-        case .sunset: Color(red: 0.48, green: 0.16, blue: 0.18)
+        case .black:
+            AnyShapeStyle(Color.black)
+        case .midnight:
+            AnyShapeStyle(Color(red: 0.04, green: 0.11, blue: 0.23))
+        case .forest:
+            AnyShapeStyle(Color(red: 0.05, green: 0.25, blue: 0.18))
+        case .burgundy:
+            AnyShapeStyle(Color(red: 0.35, green: 0.06, blue: 0.12))
+        case .indigo:
+            AnyShapeStyle(Color(red: 0.16, green: 0.12, blue: 0.40))
+        case .sunset:
+            AnyShapeStyle(Color(red: 0.48, green: 0.16, blue: 0.18))
+        case .blackToGray:
+            AnyShapeStyle(
+                LinearGradient(
+                    colors: [.black, .gray],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+        case .blueToPurple:
+            AnyShapeStyle(
+                LinearGradient(
+                    colors: [.blue, .purple],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
         }
     }
 }

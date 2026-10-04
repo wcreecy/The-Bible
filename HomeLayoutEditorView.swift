@@ -41,7 +41,7 @@ struct HomeLayoutEditorView: View {
         order = HomeLayoutStore.baselineOrder
         hiddenSet = HomeLayoutStore.baselineHidden
         mainSet = HomeLayoutStore.baselineMain
-        showMoreVisible = true
+        showMoreVisible = HomeLayoutStore.defaultShowMoreVisible
         customizeButtonVisible = true
         bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
         onDone()

@@ -77,6 +77,8 @@ private enum VerseWidgetBackgroundStyle: String {
     case burgundy
     case indigo
     case sunset
+    case blackToGray
+    case blueToPurple
 }
 
 private struct VerseWidgetBackground: View {
@@ -113,6 +115,18 @@ private struct VerseWidgetBackground: View {
         case .sunset:
             LinearGradient(
                 colors: [Color(red: 0.33, green: 0.07, blue: 0.18), Color(red: 0.72, green: 0.28, blue: 0.16)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case .blackToGray:
+            LinearGradient(
+                colors: [.black, .gray],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case .blueToPurple:
+            LinearGradient(
+                colors: [.blue, .purple],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )

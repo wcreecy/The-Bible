@@ -20,7 +20,7 @@ struct HomeLayoutStore {
     @AppStorage(Self.keyOrder) private var orderRaw: String = ""
     @AppStorage(Self.keyHidden) private var hiddenRaw: String = ""
     @AppStorage(Self.keyMain) private var mainRaw: String = ""
-    @AppStorage(Self.keyShowMoreVisible) private var showMoreVisible: Bool = true
+    @AppStorage(Self.keyShowMoreVisible) private var showMoreVisible: Bool = Self.defaultShowMoreVisible
     @AppStorage(Self.keyFavOrder) private var favOrderRaw: String = ""
     @AppStorage(Self.keyFavHidden) private var favHiddenRaw: String = ""
     @AppStorage(Self.keyFavMain) private var favMainRaw: String = ""
@@ -39,9 +39,12 @@ struct HomeLayoutStore {
         if UIDevice.current.userInterfaceIdiom == .pad {
             return [.bibleStats, .dailyFocus, .streaks]
         }
-        return [.streaks]
+        return [.timer, .bibleStats, .dailyFocus, .streaks]
     }
     static let baselineMain: Set<HomeCardID> = [.verseOfDay, .resumeReading]
+    static var defaultShowMoreVisible: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
     static var defaultBibleReaderVisible: Bool {
         UIDevice.current.userInterfaceIdiom != .pad
     }

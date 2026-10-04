@@ -266,7 +266,7 @@ struct HomeView: View {
     @State private var layoutOrder: [HomeCardID] = HomeLayoutStore.baselineOrder
     @State private var hiddenCards: Set<HomeCardID> = HomeLayoutStore.baselineHidden
     @State private var mainCards: Set<HomeCardID> = HomeLayoutStore.baselineMain
-    @State private var showMoreVisible = true
+    @State private var showMoreVisible = HomeLayoutStore.defaultShowMoreVisible
     @State private var showMoreCards: Bool = false
     @State private var hasFavoriteLayout: Bool = false
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true

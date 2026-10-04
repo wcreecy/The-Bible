@@ -11,6 +11,8 @@ enum PinnedVerseWidgetBackgroundOption: String, AppEnum {
     case burgundy
     case indigo
     case sunset
+    case blackToGray
+    case blueToPurple
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation {
         "Widget Background"
@@ -24,7 +26,9 @@ enum PinnedVerseWidgetBackgroundOption: String, AppEnum {
             .forest: "Forest",
             .burgundy: "Burgundy",
             .indigo: "Indigo",
-            .sunset: "Sunset"
+            .sunset: "Sunset",
+            .blackToGray: "Graphite",
+            .blueToPurple: "Aurora"
         ]
     }
 
