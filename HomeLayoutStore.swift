@@ -45,9 +45,7 @@ struct HomeLayoutStore {
     static var defaultShowMoreVisible: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
     }
-    static var defaultBibleReaderVisible: Bool {
-        UIDevice.current.userInterfaceIdiom != .pad
-    }
+    static let defaultBibleReaderVisible = false
 
     init() {}
 

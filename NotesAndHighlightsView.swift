@@ -57,7 +57,7 @@ struct VerseNoteEditorView: View {
         self.verse = verse
         self.existingNote = existingNote
         _title = State(initialValue: existingNote?.title ?? "")
-        _noteText = State(initialValue: Self.loadFormattedContent(from: existingNote, verse: verse))
+        _noteText = State(initialValue: Self.loadFormattedContent(from: existingNote))
         _selectedColor = State(
             initialValue: existingNote.flatMap { VerseHighlightColor(rawValue: $0.highlightColor) }
         )
@@ -175,13 +175,9 @@ struct VerseNoteEditorView: View {
         horizontalSizeClass == .compact ? 24 : 16
     }
 
-    private static func loadFormattedContent(
-        from note: VerseNote?,
-        verse: VerseActionReference
-    ) -> AttributedString {
+    private static func loadFormattedContent(from note: VerseNote?) -> AttributedString {
         guard let note else {
-            let reference = "\(verse.bookName) \(verse.chapterNumber):\(verse.verseNumber)"
-            return BibleReferenceLinker.linkify(AttributedString(reference))
+            return AttributedString()
         }
         if let data = note.formattedContent,
            let formatted = try? JSONDecoder().decode(AttributedString.self, from: data) {

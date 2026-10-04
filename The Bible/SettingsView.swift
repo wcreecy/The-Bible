@@ -127,28 +127,31 @@ private struct SettingsReadingAndDailyLifeLinksSection: View {
 }
 
 private struct SettingsReadingProgressSection: View {
-    @AppStorage("showReadVerseCheckmarks") private var showReadVerseCheckmarks = false
+    @AppStorage("showReadVerseCheckmarks") private var showVerseStatusIcons = false
 
     var body: some View {
         Section {
-            Toggle(isOn: $showReadVerseCheckmarks) {
+            Toggle(isOn: $showVerseStatusIcons) {
                 Label {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Read Verse Checkmarks")
-                        Text("Show a green checkmark on verses you have read")
+                        Text("Verse Status Icons")
+                        Text("Show icons for saved and read verses")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 } icon: {
-                    Image(systemName: "checkmark.circle")
-                        .foregroundStyle(.green)
+                    Image(systemName: "eye")
+                        .foregroundStyle(.tint)
                 }
             }
             .accessibilityIdentifier("readVerseCheckmarksToggle")
         } header: {
             Text("Bible Reader")
         } footer: {
-            Text("Checkmarks reflect your reading progress and disappear when reading statistics are reset.")
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Heart: favorite • Note: has a note • Bookmark: continue reading • Checkmark: read")
+                Text("Read indicators reflect your reading progress and disappear when reading statistics are reset.")
+            }
         }
     }
 }

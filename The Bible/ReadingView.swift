@@ -23,7 +23,7 @@ struct ReadingView: View {
 
     // Reader-specific font size (independent from global app UI font)
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
-    @AppStorage("showReadVerseCheckmarks") private var showReadVerseCheckmarks: Bool = false
+    @AppStorage("showReadVerseCheckmarks") private var showVerseStatusIcons: Bool = false
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @State private var seenVerseNumbers: Set<Int> = []
     @State private var seenVerseLocation: String = ""
@@ -145,7 +145,7 @@ struct ReadingView: View {
                 saveVisibleReaderPosition()
                 viewModel.onDisappear()
             }
-            .onChange(of: showReadVerseCheckmarks) { _, isEnabled in
+            .onChange(of: showVerseStatusIcons) { _, isEnabled in
                 if isEnabled {
                     refreshSeenVerses()
                 }
@@ -216,11 +216,13 @@ struct ReadingView: View {
                             chapterNumber: chapterNumber,
                             isHighlighted: viewModel.highlightedVerse == verse.number,
                             isSelected: viewModel.selectedVerse == verse.number,
-                            // Do not show any icon next to the verse when pinned
-                            isPinned: false,
-                            isRead: showReadVerseCheckmarks &&
+                            isFavorite: isFavorited(verse),
+                            hasNote: hasNote(for: verse.number),
+                            isPinned: isBookmarked(verse),
+                            isRead: showVerseStatusIcons &&
                                 seenVerseLocation == verseLocationKey &&
                                 seenVerseNumbers.contains(verse.number),
+                            showsStatusIcons: showVerseStatusIcons,
                             savedHighlightColor: highlightColor(for: verse.number),
                             readerFontSize: readerFontSize,
                             onVisibilityChange: { isVisible in
@@ -333,7 +335,7 @@ struct ReadingView: View {
     }
 
     private func refreshSeenVerses() {
-        guard showReadVerseCheckmarks else { return }
+        guard showVerseStatusIcons else { return }
         let bookName = viewModel.currentBook.name
         let chapterNumber = viewModel.currentChapter.number
         seenVerseNumbers = BibleStatsStore.shared.loadSeenVerses(
@@ -350,6 +352,25 @@ struct ReadingView: View {
             $0.verseNumber == verseNumber
         }
         .flatMap { VerseHighlightColor(rawValue: $0.highlightColor)?.color }
+    }
+
+    private func hasNote(for verseNumber: Int) -> Bool {
+        verseNotes.contains {
+            guard $0.bookName == viewModel.currentBook.name,
+                  $0.chapterNumber == viewModel.currentChapter.number,
+                  $0.verseNumber == verseNumber else { return false }
+
+            let title = $0.title.trimmingCharacters(in: .whitespacesAndNewlines)
+            let content = $0.content.trimmingCharacters(in: .whitespacesAndNewlines)
+            let seededReference = "\($0.bookName) \($0.chapterNumber):\($0.verseNumber)"
+            return !title.isEmpty || (!content.isEmpty && content != seededReference)
+        }
+    }
+
+    private func isBookmarked(_ verse: Verse) -> Bool {
+        lastReadBook == viewModel.currentBook.name &&
+        lastReadChapter == viewModel.currentChapter.number &&
+        lastReadVerse == verse.number
     }
 
     // MARK: - Overlay Arrows
