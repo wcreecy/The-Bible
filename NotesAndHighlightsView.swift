@@ -1217,15 +1217,14 @@ private struct NotesListCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("Library")
-                    .font(.headline)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Library")
+                        .font(.headline)
 
-                Text(notes.count, format: .number)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(.secondary.opacity(0.12), in: Capsule())
+                    Text("\(notes.count) notes")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
 
                 Spacer()
 
@@ -1235,8 +1234,9 @@ private struct NotesListCard: View {
                 )
             }
             .padding(.horizontal, 16)
-            .padding(.top, 12)
-            .padding(.bottom, 8)
+            .padding(.vertical, 11)
+
+            Divider()
 
             List {
                 if notes.isEmpty {
@@ -1285,9 +1285,14 @@ private struct NotesListCard: View {
                                     Label("Delete", systemImage: "trash")
                                 }
                             }
-                            .listRowBackground(Color.clear)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(top: 1, leading: 0, bottom: 1, trailing: 0))
+                            .listRowBackground(
+                                selectedScriptureNote === note
+                                    ? Color.accentColor.opacity(0.13)
+                                    : Color.clear
+                            )
+                            .listRowSeparator(.visible)
+                            .listRowSeparatorTint(Color.primary.opacity(0.09))
+                            .listRowInsets(EdgeInsets())
                         case .user(let note):
                             NotesTitleButton(
                                 title: item.title,
@@ -1322,9 +1327,14 @@ private struct NotesListCard: View {
                                     Label("Delete", systemImage: "trash")
                                 }
                             }
-                            .listRowBackground(Color.clear)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(top: 1, leading: 0, bottom: 1, trailing: 0))
+                            .listRowBackground(
+                                selectedUserNote === note
+                                    ? Color.accentColor.opacity(0.13)
+                                    : Color.clear
+                            )
+                            .listRowSeparator(.visible)
+                            .listRowSeparatorTint(Color.primary.opacity(0.09))
+                            .listRowInsets(EdgeInsets())
                         }
                     }
                 }
@@ -1332,10 +1342,11 @@ private struct NotesListCard: View {
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .contentMargins(.vertical, 0, for: .scrollContent)
-            .padding(.horizontal, 8)
-            .padding(.bottom, 8)
         }
-        .heroCardSurface()
+        .background(Color(uiColor: .secondarySystemBackground).opacity(0.72))
+        .overlay(alignment: .trailing) {
+            Divider()
+        }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
@@ -1411,17 +1422,17 @@ private struct NotesTitleButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 0) {
-                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                Capsule()
                     .fill(highlight?.color ?? .accentColor.opacity(0.35))
-                    .frame(width: 4)
-                    .padding(.vertical, 7)
+                    .frame(width: 3)
+                    .padding(.vertical, 5)
 
                 VStack(alignment: .leading, spacing: 7) {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text(title)
-                        .font(.subheadline.weight(isSelected ? .semibold : .regular))
-                        .foregroundStyle(.primary)
-                        .lineLimit(2)
+                        Text(title)
+                            .font(.subheadline.weight(isSelected ? .semibold : .regular))
+                            .foregroundStyle(.primary)
+                            .lineLimit(2)
 
                         Spacer(minLength: 4)
 
@@ -1443,11 +1454,8 @@ private struct NotesTitleButton: View {
                     HStack(spacing: 6) {
                         if let tag {
                             Text(tag)
-                                .font(.caption2.weight(.semibold))
+                                .font(.caption2.weight(.medium))
                                 .foregroundStyle(.tint)
-                                .padding(.horizontal, 7)
-                                .padding(.vertical, 3)
-                                .background(.tint.opacity(0.11), in: Capsule())
                         }
                         if let reference {
                             Label(reference, systemImage: "book.closed")
@@ -1461,16 +1469,11 @@ private struct NotesTitleButton: View {
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
                 }
-                .padding(.horizontal, 11)
-                .padding(.vertical, 10)
+                .padding(.leading, 12)
             }
-            .frame(minHeight: 76)
-            .background(isSelected ? Color.accentColor.opacity(0.15) : Color.primary.opacity(0.045))
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .strokeBorder(isSelected ? Color.accentColor.opacity(0.38) : Color.primary.opacity(0.07))
-            }
+            .frame(minHeight: 76, alignment: .leading)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 7)
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
