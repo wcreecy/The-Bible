@@ -10,6 +10,13 @@ private struct PrayerTimerAlarmMetadata: AlarmMetadata {}
 #endif
 
 enum PrayerTimerAlarmScheduler {
+    enum AuthorizationStatus {
+        case unavailable
+        case notDetermined
+        case denied
+        case authorized
+    }
+
     private static let alarmID = UUID(uuidString: "7E9B4495-35BE-4CB1-9EF4-AFC5A8A79F0F")!
 
     static func schedule(at date: Date) async -> Bool {
@@ -47,6 +54,31 @@ enum PrayerTimerAlarmScheduler {
         #endif
     }
 
+    static func authorizationStatus() -> AuthorizationStatus {
+        guard #available(iOS 26.1, *) else { return .unavailable }
+
+        #if canImport(AlarmKit)
+        return mapAuthorizationState(AlarmManager.shared.authorizationState)
+        #else
+        return .unavailable
+        #endif
+    }
+
+    static func requestAuthorization() async -> AuthorizationStatus {
+        guard #available(iOS 26.1, *) else { return .unavailable }
+
+        #if canImport(AlarmKit)
+        do {
+            let state = try await AlarmManager.shared.requestAuthorization()
+            return mapAuthorizationState(state)
+        } catch {
+            return authorizationStatus()
+        }
+        #else
+        return .unavailable
+        #endif
+    }
+
     static func cancel() {
         guard #available(iOS 26.1, *) else { return }
 
@@ -54,4 +86,18 @@ enum PrayerTimerAlarmScheduler {
         try? AlarmManager.shared.cancel(id: alarmID)
         #endif
     }
+
+    #if canImport(AlarmKit)
+    @available(iOS 26.1, *)
+    private static func mapAuthorizationState(
+        _ state: AlarmManager.AuthorizationState
+    ) -> AuthorizationStatus {
+        switch state {
+        case .notDetermined: .notDetermined
+        case .denied: .denied
+        case .authorized: .authorized
+        @unknown default: .unavailable
+        }
+    }
+    #endif
 }

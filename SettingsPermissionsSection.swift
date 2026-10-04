@@ -11,6 +11,7 @@ struct SettingsPermissionsSection: View {
     @AppStorage("healthKitMindfulMinutesEnabled") private var mindfulMinutesEnabled: Bool = false
 
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
+    @State private var alarmStatus: PrayerTimerAlarmScheduler.AuthorizationStatus = .unavailable
     @State private var mindfulMinutesStatus: HKAuthorizationStatus?
     @State private var areSystemLiveActivitiesEnabled = true
 
@@ -25,6 +26,18 @@ struct SettingsPermissionsSection: View {
                 handleNotificationsAction()
             }
             .accessibilityIdentifier("notificationsPermissionRow")
+
+            if #available(iOS 26.1, *) {
+                permissionRow(
+                    title: "Prayer Timer Alarms",
+                    systemImage: "alarm",
+                    status: alarmStatusText,
+                    statusColor: alarmStatusColor
+                ) {
+                    handleAlarmAction()
+                }
+                .accessibilityIdentifier("alarmKitPermissionRow")
+            }
 
             Toggle(isOn: $mindfulMinutesEnabled) {
                 Label {
@@ -134,6 +147,23 @@ struct SettingsPermissionsSection: View {
         }
     }
 
+    private var alarmStatusText: LocalizedStringKey {
+        switch alarmStatus {
+        case .authorized: "Allowed"
+        case .denied: "Denied"
+        case .notDetermined: "Not Requested"
+        case .unavailable: "Unavailable"
+        }
+    }
+
+    private var alarmStatusColor: Color {
+        switch alarmStatus {
+        case .authorized: .green
+        case .denied: .orange
+        case .notDetermined, .unavailable: .secondary
+        }
+    }
+
     private var mindfulMinutesStatusText: LocalizedStringKey {
         guard let mindfulMinutesStatus else { return "Unavailable" }
         guard mindfulMinutesEnabled else {
@@ -171,6 +201,16 @@ struct SettingsPermissionsSection: View {
         }
     }
 
+    private func handleAlarmAction() {
+        if alarmStatus == .notDetermined {
+            Task {
+                alarmStatus = await PrayerTimerAlarmScheduler.requestAuthorization()
+            }
+        } else {
+            openSystemSettings()
+        }
+    }
+
     private func handleMindfulMinutesToggle(_ enabled: Bool) {
         guard enabled else { return }
         guard mindfulMinutesStatus != nil else {
@@ -197,6 +237,7 @@ struct SettingsPermissionsSection: View {
         notificationStatus = await UNUserNotificationCenter.current()
             .notificationSettings()
             .authorizationStatus
+        alarmStatus = PrayerTimerAlarmScheduler.authorizationStatus()
         mindfulMinutesStatus = HealthKitManager.shared.mindfulMinutesAuthorizationStatus()
         if mindfulMinutesStatus == nil || mindfulMinutesStatus == .sharingDenied {
             mindfulMinutesEnabled = false
