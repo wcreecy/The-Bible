@@ -301,6 +301,7 @@ struct BeatTheClockGameView: View {
                                         }
                                         .padding(.vertical, 8)
                                         .padding(.horizontal, 12)
+                                        .contentShape(Rectangle())
                                         .background(
                                             RoundedRectangle(cornerRadius: 10, style: .continuous)
                                                 .fill(Color(.secondarySystemBackground))
@@ -876,14 +877,20 @@ private struct BeatTheClockDashboardAnswer: View {
             if !filteredBooks.isEmpty {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
                     ForEach(filteredBooks, id: \.self) { name in
-                        Button(name) {
+                        Button {
                             onSelectBook(name)
+                        } label: {
+                            Text(name)
+                                .font(.subheadline.weight(.semibold))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 14)
+                                .frame(minHeight: 42)
+                                .contentShape(Rectangle())
+                                .background(
+                                    .primary.opacity(0.06),
+                                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                )
                         }
-                        .font(.subheadline.weight(.semibold))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 14)
-                        .frame(minHeight: 42)
-                        .background(.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                         .buttonStyle(.plain)
                         .disabled(isLocked)
                     }
