@@ -8,6 +8,7 @@ struct GamesOverviewCardView: View {
     @State private var version: Int = 0
 
     @Environment(\.horizontalSizeClass) private var hSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @AppStorage("statsSelectedGame") private var selectedGame: String = "All Games"
 
     private func gameIcon(for name: String) -> String {
@@ -131,7 +132,11 @@ struct GamesOverviewCardView: View {
             let displayTint: Color = Color.gamerScoreColor(for: displayPct)
 
             VStack(alignment: .leading, spacing: 10) {
-                HStack(spacing: hSizeClass == .compact ? 10 : 12) {
+                let filterLayout = dynamicTypeSize.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+                    : AnyLayout(HStackLayout(spacing: hSizeClass == .compact ? 10 : 12))
+
+                filterLayout {
                     if isEmpty {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .fill(Color.accentColor.opacity(0.08))
@@ -164,38 +169,43 @@ struct GamesOverviewCardView: View {
                         .font(.headline)
                         .lineLimit(1)
 
-                    Spacer(minLength: 8)
+                    if !dynamicTypeSize.isAccessibilitySize {
+                        Spacer(minLength: 8)
+                    }
 
-                    Picker(selection: $selectedGame) {
+                    Menu {
                         ForEach(pickerOptions, id: \.self) { name in
-                            Label(name, systemImage: gameIcon(for: name))
-                                .font(.caption2)
-                                .tag(name)
+                            Button {
+                                selectedGame = name
+                            } label: {
+                                Label(name, systemImage: gameIcon(for: name))
+                            }
                         }
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: gameIcon(for: selectedGame))
-                            Text(selectedGame)
+                            Text(
+                                dynamicTypeSize.isAccessibilitySize && selectedGame == "All Games"
+                                    ? "All"
+                                    : selectedGame
+                            )
                                 .lineLimit(1)
-                                .minimumScaleFactor(hSizeClass == .compact ? 0.6 : 0.7)
-                                .allowsTightening(true)
                             Image(systemName: "chevron.down")
                                 .foregroundStyle(.secondary)
                         }
                         .font(.caption2.weight(.semibold))
-                        .padding(.vertical, hSizeClass == .compact ? 1 : 2)
-                        .padding(.horizontal, 6)
+                        .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 10 : (hSizeClass == .compact ? 1 : 2))
+                        .padding(.horizontal, dynamicTypeSize.isAccessibilitySize ? 12 : 6)
                         .glassEffect(.regular.tint(Color.accentColor.opacity(0.14)), in: .capsule)
                         .contentShape(Capsule())
                         .accessibilityElement(children: .combine)
                         .accessibilityLabel("Select Game")
                         .accessibilityValue(selectedGame)
                     }
-                    .pickerStyle(.menu)
-                    .controlSize(.mini)
+                    .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil, alignment: .leading)
                     .animation(.easeInOut(duration: 0.2), value: selectedGame)
                 }
-                .padding(.bottom, hSizeClass == .compact ? 8 : 0)
+                .padding(.bottom, dynamicTypeSize.isAccessibilitySize ? 16 : (hSizeClass == .compact ? 8 : 0))
 
                 Divider()
 
