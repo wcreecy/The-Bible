@@ -270,6 +270,7 @@ struct HomeView: View {
     @State private var showMoreCards: Bool = false
     @State private var hasFavoriteLayout: Bool = false
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
+    @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = true
 
     private var moreCards: [HomeCardID] {
         layoutOrder.filter {
@@ -530,14 +531,16 @@ struct HomeView: View {
 
     @ViewBuilder
     private func dashboardContent(width: CGFloat) -> some View {
-        let columnSpacing: CGFloat = 16
-        let columnWidth = (width - (columnSpacing * 2)) / 3
-        let mainCardsWidth = (columnWidth * 2) + columnSpacing
+        let standardColumnSpacing: CGFloat = 16
+        let columnWidth = (width - (standardColumnSpacing * 2)) / 3
+        let mainCardsWidth = bibleReaderVisible ? (columnWidth * 2) + standardColumnSpacing : width
+        let sidebarWidth = bibleReaderVisible ? columnWidth : 0
+        let columnSpacing = bibleReaderVisible ? standardColumnSpacing : 0
 
         HomeDashboardColumns(
             columnSpacing: columnSpacing,
             mainWidth: mainCardsWidth,
-            sidebarWidth: columnWidth
+            sidebarWidth: sidebarWidth
         ) {
             homeHeader
         } tip: {
@@ -559,7 +562,9 @@ struct HomeView: View {
                 }
             }
         } sidebar: {
-            HomeBibleReaderCard()
+            if bibleReaderVisible {
+                HomeBibleReaderCard()
+            }
         }
     }
 

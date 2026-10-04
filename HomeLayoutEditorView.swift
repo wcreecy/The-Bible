@@ -14,6 +14,7 @@ struct HomeLayoutEditorView: View {
 
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
+    @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = true
 
     private var mainCards: [HomeCardID] {
         order.filter { mainSet.contains($0) }
@@ -41,11 +42,13 @@ struct HomeLayoutEditorView: View {
         hiddenSet = HomeLayoutStore.baselineHidden
         mainSet = HomeLayoutStore.baselineMain
         showMoreVisible = true
+        bibleReaderVisible = true
         onDone()
     }
 
     private func showAll() {
         hiddenSet.removeAll()
+        bibleReaderVisible = true
         onDone()
     }
 
@@ -185,8 +188,31 @@ struct HomeLayoutEditorView: View {
                 .listRowSeparator(.hidden)
             }
 
+            if !allowsShowMore {
+                Section {
+                    Toggle(
+                        "Verse of the Day",
+                        systemImage: "sun.max",
+                        isOn: Binding(
+                            get: { isVisible(.verseOfDay) },
+                            set: { _ in toggleVisibility(.verseOfDay) }
+                        )
+                    )
+
+                    Toggle(
+                        "Mini Bible Reader",
+                        systemImage: "book.pages",
+                        isOn: $bibleReaderVisible
+                    )
+                } header: {
+                    Label("iPad Card Visibility", systemImage: "eye")
+                } footer: {
+                    Text("Choose whether Verse of the Day and the mini Bible reader appear on the iPad Home dashboard.")
+                }
+            }
+
             Section {
-                ForEach(allowsShowMore ? mainCards : [.verseOfDay] + order.filter { $0 != .verseOfDay }) { id in
+                ForEach(allowsShowMore ? mainCards : order.filter { $0 != .verseOfDay }) { id in
                     layoutRow(for: id)
                 }
             } header: {
