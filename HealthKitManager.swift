@@ -5,7 +5,13 @@ final class HealthKitManager {
     static let shared = HealthKitManager()
     private let healthStore: HKHealthStore? = HKHealthStore.isHealthDataAvailable() ? HKHealthStore() : nil
 
+    private static let mindfulMinutesEnabledKey = "healthKitMindfulMinutesEnabled"
+
     private init() {}
+
+    var isMindfulMinutesEnabled: Bool {
+        UserDefaults.standard.bool(forKey: Self.mindfulMinutesEnabledKey)
+    }
 
     private var mindfulType: HKCategoryType? {
         HKObjectType.categoryType(forIdentifier: .mindfulSession)
@@ -22,7 +28,7 @@ final class HealthKitManager {
 
     // Request authorization if not already determined. Calls completion with success flag.
     func requestAuthorizationIfNeeded(completion: ((Bool) -> Void)? = nil) {
-        guard let healthStore, let mindfulType else {
+        guard isMindfulMinutesEnabled, let healthStore, let mindfulType else {
             completion?(false)
             return
         }
@@ -43,7 +49,10 @@ final class HealthKitManager {
 
     // Save a mindful session from start to end. If authorization isn't granted, this is a no-op.
     func saveMindfulSession(start: Date, end: Date, completion: ((Bool) -> Void)? = nil) {
-        guard let healthStore, let mindfulType else {
+        guard isMindfulMinutesEnabled,
+              let healthStore,
+              let mindfulType,
+              healthStore.authorizationStatus(for: mindfulType) == .sharingAuthorized else {
             completion?(false)
             return
         }

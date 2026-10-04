@@ -4,6 +4,7 @@ import UserNotifications
 import ActivityKit
 import AudioToolbox
 import SwiftUI
+import HealthKit
 
 @MainActor
 final class PrayerTimerController: ObservableObject {
@@ -341,14 +342,22 @@ final class PrayerTimerController: ObservableObject {
     // MARK: - HealthKit mindful logging
 
     private func startMindfulLoggingIfNeeded() {
-        guard HealthKitManager.shared.isAvailable() else { return }
+        guard HealthKitManager.shared.isMindfulMinutesEnabled,
+              HealthKitManager.shared.mindfulMinutesAuthorizationStatus() == .sharingAuthorized else {
+            mindfulStartDate = 0
+            return
+        }
         if mindfulStartDate == 0 {
             mindfulStartDate = Date().timeIntervalSince1970
         }
     }
 
     private func stopMindfulLogging() {
-        guard HealthKitManager.shared.isAvailable() else { return }
+        guard HealthKitManager.shared.isMindfulMinutesEnabled,
+              HealthKitManager.shared.mindfulMinutesAuthorizationStatus() == .sharingAuthorized else {
+            mindfulStartDate = 0
+            return
+        }
         if mindfulStartDate > 0 {
             let startDate = Date(timeIntervalSince1970: mindfulStartDate)
             let endDate = Date()

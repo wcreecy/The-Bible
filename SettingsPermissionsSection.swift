@@ -8,6 +8,7 @@ struct SettingsPermissionsSection: View {
     @Environment(\.scenePhase) private var scenePhase
 
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
+    @AppStorage("healthKitMindfulMinutesEnabled") private var mindfulMinutesEnabled: Bool = false
 
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
     @State private var mindfulMinutesStatus: HKAuthorizationStatus?
@@ -25,16 +26,23 @@ struct SettingsPermissionsSection: View {
             }
             .accessibilityIdentifier("notificationsPermissionRow")
 
-            permissionRow(
-                title: "Mindful Minutes",
-                systemImage: "heart.text.square",
-                status: mindfulMinutesStatusText,
-                statusColor: mindfulMinutesStatusColor
-            ) {
-                handleMindfulMinutesAction()
+            Toggle(isOn: $mindfulMinutesEnabled) {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Mindful Minutes")
+                        Text(mindfulMinutesStatusText)
+                            .font(.caption)
+                            .foregroundStyle(mindfulMinutesStatusColor)
+                    }
+                } icon: {
+                    Image(systemName: "heart.text.square")
+                }
             }
             .disabled(mindfulMinutesStatus == nil)
-            .accessibilityIdentifier("mindfulMinutesPermissionRow")
+            .accessibilityIdentifier("mindfulMinutesToggle")
+            .onChange(of: mindfulMinutesEnabled) { _, enabled in
+                handleMindfulMinutesToggle(enabled)
+            }
 
             Toggle(isOn: $liveActivitiesEnabled) {
                 Label {
@@ -72,7 +80,7 @@ struct SettingsPermissionsSection: View {
             Text("Permissions & Access")
                 .foregroundStyle(.primary)
         } footer: {
-            Text("Access is requested when you use a feature that needs it. Photo backgrounds use the system picker, so the app only receives photos you select.")
+            Text("Health access is requested only when you turn on Mindful Minutes here. Photo backgrounds use the system picker, so the app only receives photos you select.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -128,16 +136,22 @@ struct SettingsPermissionsSection: View {
 
     private var mindfulMinutesStatusText: LocalizedStringKey {
         guard let mindfulMinutesStatus else { return "Unavailable" }
+        guard mindfulMinutesEnabled else {
+            return mindfulMinutesStatus == .sharingDenied ? "Denied" : "Off"
+        }
         return switch mindfulMinutesStatus {
         case .sharingAuthorized: "Allowed"
         case .sharingDenied: "Denied"
-        case .notDetermined: "Not Requested"
+        case .notDetermined: "Requesting Access"
         @unknown default: "Unknown"
         }
     }
 
     private var mindfulMinutesStatusColor: Color {
-        switch mindfulMinutesStatus {
+        guard mindfulMinutesEnabled else {
+            return mindfulMinutesStatus == .sharingDenied ? .orange : .secondary
+        }
+        return switch mindfulMinutesStatus {
         case .sharingAuthorized: .green
         case .sharingDenied: .orange
         case .notDetermined, nil: .secondary
@@ -157,15 +171,24 @@ struct SettingsPermissionsSection: View {
         }
     }
 
-    private func handleMindfulMinutesAction() {
-        guard mindfulMinutesStatus != nil else { return }
+    private func handleMindfulMinutesToggle(_ enabled: Bool) {
+        guard enabled else { return }
+        guard mindfulMinutesStatus != nil else {
+            mindfulMinutesEnabled = false
+            return
+        }
 
-        if mindfulMinutesStatus == .notDetermined {
-            HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
-                mindfulMinutesStatus = HealthKitManager.shared.mindfulMinutesAuthorizationStatus()
-            }
-        } else {
+        if mindfulMinutesStatus == .sharingDenied {
+            mindfulMinutesEnabled = false
             openSystemSettings()
+            return
+        }
+
+        HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
+            mindfulMinutesStatus = HealthKitManager.shared.mindfulMinutesAuthorizationStatus()
+            if mindfulMinutesStatus != .sharingAuthorized {
+                mindfulMinutesEnabled = false
+            }
         }
     }
 
@@ -175,6 +198,9 @@ struct SettingsPermissionsSection: View {
             .notificationSettings()
             .authorizationStatus
         mindfulMinutesStatus = HealthKitManager.shared.mindfulMinutesAuthorizationStatus()
+        if mindfulMinutesStatus == nil || mindfulMinutesStatus == .sharingDenied {
+            mindfulMinutesEnabled = false
+        }
         areSystemLiveActivitiesEnabled = ActivityAuthorizationInfo().areActivitiesEnabled
     }
 

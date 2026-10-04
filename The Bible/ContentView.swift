@@ -6,7 +6,6 @@
 //
 
 import Combine
-import HealthKit
 import SwiftUI
 import UIKit
 import ObjectiveC
@@ -26,7 +25,6 @@ struct ContentView: View {
     @State private var bibleSearchRequestID: Int = 0
     @State private var bibleBookSelectionRequestID: Int = 0
     @State private var launchBibleLocation: BibleReaderLocation?
-    @AppStorage("healthKitPrompted") private var healthKitPrompted: Bool = false
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
     
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
@@ -204,7 +202,6 @@ struct ContentView: View {
                 bibleCoordinator.reset()
                 launchBibleLocation = nil
                 bibleBookSelectionRequestID &+= 1
-                requestMindfulMinutesAuthorizationIfNeeded()
             }
 
             if newValue == .home {
@@ -424,16 +421,6 @@ struct ContentView: View {
                 bibleCoordinator.reset()
                 bibleCoordinator.push(.search)
             }
-        }
-    }
-
-    private func requestMindfulMinutesAuthorizationIfNeeded() {
-        guard HealthKitManager.shared.isAvailable(),
-              HealthKitManager.shared.mindfulMinutesAuthorizationStatus() == .notDetermined,
-              !healthKitPrompted else { return }
-
-        HealthKitManager.shared.requestAuthorizationIfNeeded { _ in
-            healthKitPrompted = true
         }
     }
 
