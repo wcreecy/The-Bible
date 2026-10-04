@@ -56,6 +56,16 @@ private struct SettingsPersonalizationLinksSection: View {
             }
 
             NavigationLink {
+                SettingsLaunchTabSection()
+            } label: {
+                SettingsNavigationRow(
+                    title: "Launch Page",
+                    subtitle: "Choose where the app opens on this device",
+                    systemImage: "rectangle.on.rectangle"
+                )
+            }
+
+            NavigationLink {
                 SettingsWidgetAppearanceDetailView()
             } label: {
                 SettingsNavigationRow(

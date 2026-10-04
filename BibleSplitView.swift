@@ -2,8 +2,11 @@ import SwiftUI
 
 struct BibleSplitView: View {
     let searchRequestID: Int
+    let bookSelectionRequestID: Int
+    let initialReaderLocation: BibleReaderLocation?
 
     @State private var handledSearchRequestID: Int = 0
+    @State private var handledInitialReaderLocation: BibleReaderLocation?
     @State private var selectedBook: Book? = nil
     @State private var selectedChapter: Chapter? = nil
     @State private var navStartVerse: Int = 1
@@ -468,6 +471,37 @@ struct BibleSplitView: View {
             handledSearchRequestID = searchRequestID
             detailPath.append(SearchRoute())
         }
+        .task(id: bookSelectionRequestID) {
+            guard bookSelectionRequestID != 0 else { return }
+            selectedBook = nil
+            selectedChapter = nil
+            searchText = ""
+            sidebarSearch = ""
+            detailPath = NavigationPath()
+        }
+        .task(id: initialReaderLocation) {
+            guard let location = initialReaderLocation,
+                  location != handledInitialReaderLocation,
+                  let book = BibleData.books.first(where: { $0.name == location.bookName }) else {
+                return
+            }
+
+            handledInitialReaderLocation = location
+            selectedBook = book
+            selectedChapter = nil
+            navStartVerse = location.verseNumber
+            searchText = ""
+
+            // Changing the selected book replaces the detail stack's identity.
+            // Yield before installing the reader route into the new stack.
+            await Task.yield()
+            detailPath = NavigationPath()
+            detailPath.append(ReadingRoute(
+                bookName: book.name,
+                chapterNumber: location.chapterNumber,
+                verseNumber: location.verseNumber
+            ))
+        }
         // Listen for deep links from ContentView (iPad path)
         .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { note in
             guard
@@ -498,5 +532,9 @@ struct BibleSplitView: View {
 }
 
 #Preview {
-    BibleSplitView(searchRequestID: 0)
+    BibleSplitView(
+        searchRequestID: 0,
+        bookSelectionRequestID: 0,
+        initialReaderLocation: nil
+    )
 }

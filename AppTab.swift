@@ -1,5 +1,6 @@
 // AppTab.swift
 import Foundation
+import SwiftUI
 
 enum AppTab: Int, CaseIterable {
     case home = 0
@@ -28,5 +29,39 @@ enum AppTab: Int, CaseIterable {
         case "more", "stats", "settings": return .more
         default: return nil
         }
+    }
+}
+
+enum LaunchTabPreference: String, CaseIterable, Identifiable {
+    case home
+    case bible
+    case notes
+    case games
+
+    var id: String { rawValue }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .home: "Home"
+        case .bible: "Bible"
+        case .notes: "Notes"
+        case .games: "Games"
+        }
+    }
+
+    var appTab: AppTab {
+        switch self {
+        case .home: .home
+        case .bible: .bible
+        case .notes: .notes
+        case .games: .games
+        }
+    }
+
+    static let defaultsKey = "launchTabPreference"
+
+    static func currentDeviceSelection(defaults: UserDefaults = .standard) -> AppTab {
+        let rawValue = defaults.string(forKey: defaultsKey) ?? home.rawValue
+        return LaunchTabPreference(rawValue: rawValue)?.appTab ?? .home
     }
 }

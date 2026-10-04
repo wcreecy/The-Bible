@@ -101,11 +101,13 @@ struct ReadingView: View {
             }
             .onAppear {
                 viewModel.onAppear()
+                saveReaderPosition(verseNumber: viewModel.currentVerse)
                 refreshSeenVerses()
                 // Ensure newest-only ReadingProgress row
                 ReadingProgressStore.dedupe(in: modelContext)
             }
             .onDisappear {
+                saveVisibleReaderPosition()
                 viewModel.onDisappear()
             }
             .onChange(of: showReadVerseCheckmarks) { _, isEnabled in
@@ -118,6 +120,10 @@ struct ReadingView: View {
             }
             .onChange(of: scenePhase) { _, newPhase in
                 viewModel.onScenePhaseChanged(newPhase)
+
+                if newPhase == .inactive || newPhase == .background {
+                    saveVisibleReaderPosition()
+                }
 
                 // Fallback nudge on app activation (device B):
                 // Ensure latest KVS values are pulled locally, then reload the Last Read widget timeline.
@@ -236,6 +242,9 @@ struct ReadingView: View {
                 }
             }
             .scrollPosition(id: $viewModel.topVisibleVerseID, anchor: .top)
+            .onChange(of: viewModel.topVisibleVerseID) { _, _ in
+                saveVisibleReaderPosition()
+            }
 
             // Bottom corner navigation arrows overlay
             overlayArrows
@@ -265,6 +274,26 @@ struct ReadingView: View {
 
     private var verseLocationKey: String {
         "\(viewModel.currentBook.name):\(viewModel.currentChapter.number)"
+    }
+
+    private func saveVisibleReaderPosition() {
+        guard let visibleID = viewModel.topVisibleVerseID,
+              let verse = currentChapter.verses.first(where: {
+                  viewModel.rowID(for: $0.number) == visibleID
+              }) else {
+            saveReaderPosition(verseNumber: viewModel.currentVerse)
+            return
+        }
+
+        saveReaderPosition(verseNumber: verse.number)
+    }
+
+    private func saveReaderPosition(verseNumber: Int) {
+        DeviceReaderPositionStore.save(BibleReaderLocation(
+            bookName: viewModel.currentBook.name,
+            chapterNumber: viewModel.currentChapter.number,
+            verseNumber: verseNumber
+        ))
     }
 
     private func refreshSeenVerses() {

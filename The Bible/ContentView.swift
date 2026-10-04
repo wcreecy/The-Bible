@@ -24,6 +24,8 @@ struct ContentView: View {
 
     @State private var selectedTab: AppTab = .home
     @State private var bibleSearchRequestID: Int = 0
+    @State private var bibleBookSelectionRequestID: Int = 0
+    @State private var launchBibleLocation: BibleReaderLocation?
     @AppStorage("healthKitPrompted") private var healthKitPrompted: Bool = false
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
     
@@ -68,6 +70,13 @@ struct ContentView: View {
 
     // Track previous tab to detect leaving Games
     @State private var previousTab: AppTab = .home
+    @State private var didOpenLaunchBible = false
+
+    init() {
+        let launchTab = LaunchTabPreference.currentDeviceSelection()
+        _selectedTab = State(initialValue: launchTab)
+        _previousTab = State(initialValue: launchTab)
+    }
     
     private var tabs: some View {
         TabView(selection: $selectedTab) {
@@ -80,7 +89,11 @@ struct ContentView: View {
             .tag(AppTab.home)
 
             if usesWideLayout {
-                BibleSplitView(searchRequestID: bibleSearchRequestID)
+                BibleSplitView(
+                    searchRequestID: bibleSearchRequestID,
+                    bookSelectionRequestID: bibleBookSelectionRequestID,
+                    initialReaderLocation: launchBibleLocation
+                )
                     .tabItem { Label("Bible", systemImage: "book") }
                     .tag(AppTab.bible)
             } else {
@@ -143,6 +156,7 @@ struct ContentView: View {
             }
 
             bibleStore.ensureLoaded()
+            openBibleReaderAtLaunchIfNeeded()
 
             Task.detached {
                 _ = await BibleReferenceLinker.linkify("")
@@ -181,6 +195,9 @@ struct ContentView: View {
             }
 
             if newValue == .bible {
+                bibleCoordinator.reset()
+                launchBibleLocation = nil
+                bibleBookSelectionRequestID &+= 1
                 requestMindfulMinutesAuthorizationIfNeeded()
             }
 
@@ -331,6 +348,59 @@ struct ContentView: View {
         if name.lowercased() == "favorites" {
             DispatchQueue.main.async {
                 morePath = [.favorites]
+            }
+        }
+    }
+
+    private func openBibleReaderAtLaunchIfNeeded() {
+        guard selectedTab == .bible, !didOpenLaunchBible else { return }
+        didOpenLaunchBible = true
+
+        Task {
+            let books = await BibleRepository.shared.loadAllBooks()
+            guard selectedTab == .bible,
+                  let genesis = books.first(where: { $0.name == "Genesis" }) ?? books.first,
+                  let genesisOne = genesis.chapters.first(where: { $0.number == 1 }) ?? genesis.chapters.first
+            else { return }
+
+            let savedLocation = DeviceReaderPositionStore.load()
+            let savedBook = savedLocation.flatMap { location in
+                books.first(where: { $0.name == location.bookName })
+            }
+            let savedChapter = savedLocation.flatMap { location in
+                savedBook?.chapters.first(where: { $0.number == location.chapterNumber })
+            }
+            let savedVerse = savedLocation.flatMap { location in
+                savedChapter?.verses.first(where: { $0.number == location.verseNumber })?.number
+            }
+
+            let book: Book
+            let chapter: Chapter
+            let verse: Int
+            if let savedBook, let savedChapter, let savedVerse {
+                book = savedBook
+                chapter = savedChapter
+                verse = savedVerse
+            } else {
+                book = genesis
+                chapter = genesisOne
+                verse = 1
+            }
+
+            let location = BibleReaderLocation(
+                bookName: book.name,
+                chapterNumber: chapter.number,
+                verseNumber: verse
+            )
+
+            if usesWideLayout {
+                launchBibleLocation = location
+            } else {
+                bibleCoordinator.reset()
+                bibleCoordinator.push(.reader(book: book, chapter: chapter, startVerse: verse))
+                ReadingTimeTracker.shared.start(bookName: book.name, chapter: chapter.number)
+                ReadingTimeTracker.shared.setCurrentLocation(bookName: book.name, chapter: chapter.number)
+                ReadingTimeTracker.shared.resume()
             }
         }
     }
