@@ -447,9 +447,7 @@ struct HomeView: View {
             streak: StreakTracker.currentStreak,
             goalMessage: "Study to shew thyself approved unto God",
             onSearch: {
-                DispatchQueue.main.async {
-                    NotificationCenter.default.post(name: .openBibleSearch, object: nil)
-                }
+                coordinator.push(.search)
             },
             onRead: {
                 DispatchQueue.main.async { switchTo(.bible) }
