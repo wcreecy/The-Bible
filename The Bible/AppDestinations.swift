@@ -5,7 +5,11 @@ extension View {
     /// - Parameters:
     ///   - readerFontSize: Binding to the reader font size used by ReadingView.
     ///   - isPad: Whether the current device is an iPad (available if you want to customize behavior).
-    func appDestinations(readerFontSize: Binding<Double>, isPad: Bool) -> some View {
+    func appDestinations(
+        readerFontSize: Binding<Double>,
+        isPad: Bool,
+        coordinator: NavigationCoordinator
+    ) -> some View {
         self
             .navigationDestination(for: Route.self) { route in
                 switch route {
@@ -17,7 +21,17 @@ extension View {
                     VersesView(book: book, chapter: chapter)
 
                 case .reader(let book, let chapter, let startVerse):
-                    ReadingView(book: book, chapter: chapter, startVerse: startVerse)
+                    ReadingView(
+                        book: book,
+                        chapter: chapter,
+                        startVerse: startVerse,
+                        onNavigateBack: {
+                            coordinator.navigateBackFromReader(book: book, chapter: chapter)
+                        },
+                        onBookSelected: { selectedBook in
+                            coordinator.showChapters(for: selectedBook)
+                        }
+                    )
                         .id("\(book.name)-\(chapter.number)-\(startVerse)")
                         .font(.system(size: readerFontSize.wrappedValue))
                         .toolbar {

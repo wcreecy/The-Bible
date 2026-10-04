@@ -81,7 +81,11 @@ struct ContentView: View {
         TabView(selection: $selectedTab) {
             NavigationStack(path: $homeCoordinator.path) {
                 HomeView()
-                    .appDestinations(readerFontSize: $readerFontSize, isPad: usesWideLayout)
+                    .appDestinations(
+                        readerFontSize: $readerFontSize,
+                        isPad: usesWideLayout,
+                        coordinator: homeCoordinator
+                    )
             }
             .environmentObject(homeCoordinator)
             .tabItem { Label("Home", systemImage: "house") }
@@ -98,7 +102,11 @@ struct ContentView: View {
             } else {
                 NavigationStack(path: $bibleCoordinator.path) {
                     BooksView(books: bibleStore.books)
-                        .appDestinations(readerFontSize: $readerFontSize, isPad: usesWideLayout)
+                        .appDestinations(
+                            readerFontSize: $readerFontSize,
+                            isPad: usesWideLayout,
+                            coordinator: bibleCoordinator
+                        )
                 }
                 .environmentObject(bibleCoordinator)
                 .tabItem { Label("Bible", systemImage: "book") }

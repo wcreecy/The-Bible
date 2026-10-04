@@ -14,6 +14,8 @@ struct ReadingView: View {
     let chapter: Chapter
     let startVerse: Int
     let onSearch: (() -> Void)?
+    let onNavigateBack: (() -> Void)?
+    let onBookSelected: ((Book) -> Void)?
 
     // View model and stores
     @StateObject private var pinnedStore: PinnedVerseStore
@@ -38,17 +40,22 @@ struct ReadingView: View {
     @State private var favoriteToastTint: Color = .pink
     @State private var removedFavorite: RemovedReadingFavorite?
     @State private var persistenceFailure: PersistenceFailure?
+    @State private var isBookPickerPresented = false
 
     init(
         book: Book,
         chapter: Chapter,
         startVerse: Int,
-        onSearch: (() -> Void)? = nil
+        onSearch: (() -> Void)? = nil,
+        onNavigateBack: (() -> Void)? = nil,
+        onBookSelected: ((Book) -> Void)? = nil
     ) {
         self.book = book
         self.chapter = chapter
         self.startVerse = startVerse
         self.onSearch = onSearch
+        self.onNavigateBack = onNavigateBack
+        self.onBookSelected = onBookSelected
 
         // Create a single pinned store instance and share it with the view model
         let pinned = PinnedVerseStore()
@@ -69,8 +76,16 @@ struct ReadingView: View {
             .environment(\.font, nil)
             .navigationTitle("\(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(onNavigateBack != nil)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItemGroup(placement: .topBarLeading) {
+                    if let onNavigateBack {
+                        Button(action: onNavigateBack) {
+                            Image(systemName: "chevron.backward")
+                        }
+                        .accessibilityLabel("Back to verse selection")
+                    }
+
                     Button {
                         if let onSearch {
                             onSearch()
@@ -86,7 +101,7 @@ struct ReadingView: View {
                     Button {
                         let h = UIImpactFeedbackGenerator(style: .light)
                         h.impactOccurred()
-                        NotificationCenter.default.post(name: .resetBibleNavigation, object: nil)
+                        isBookPickerPresented = true
                     } label: {
                         Text("\(viewModel.currentBook.name) \(viewModel.currentChapter.number)")
                             .font(.headline)
@@ -95,8 +110,28 @@ struct ReadingView: View {
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel("Back to Books")
-                    .accessibilityHint("Go to the list of books")
+                    .accessibilityLabel("Choose a book")
+                    .accessibilityHint("Shows the list of Bible books")
+                }
+            }
+            .sheet(isPresented: $isBookPickerPresented) {
+                NavigationStack {
+                    List(BibleData.books) { book in
+                        Button(book.name) {
+                            isBookPickerPresented = false
+                            onBookSelected?(book)
+                        }
+                        .foregroundStyle(.primary)
+                    }
+                    .navigationTitle("Choose a Book")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") {
+                                isBookPickerPresented = false
+                            }
+                        }
+                    }
                 }
             }
             .onAppear {

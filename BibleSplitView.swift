@@ -417,6 +417,18 @@ struct BibleSplitView: View {
                             startVerse: route.verseNumber,
                             onSearch: {
                                 detailPath.append(SearchRoute())
+                            },
+                            onNavigateBack: {
+                                selectedBook = book
+                                detailPath = NavigationPath()
+                                detailPath.append(ChapterRoute(
+                                    bookName: book.name,
+                                    chapterNumber: chapter.number
+                                ))
+                            },
+                            onBookSelected: { selectedBook in
+                                self.selectedBook = selectedBook
+                                detailPath = NavigationPath()
                             }
                         )
                             .id("\(route.bookName)-\(route.chapterNumber)-\(route.verseNumber)")
