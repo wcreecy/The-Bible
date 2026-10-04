@@ -670,6 +670,9 @@ struct HomeView: View {
         .onReceive(NotificationCenter.default.publisher(for: .homeLayoutChanged)) { _ in
             loadHomeLayout()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .resetPrayerTimer)) { _ in
+            timerController.stop()
+        }
         .onChange(of: progressList) { _, _ in
             mirrorLastReadToAppGroup()
         }

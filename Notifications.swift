@@ -43,4 +43,7 @@ extension Notification.Name {
 
     // Posted when the Home layout order/visibility changes.
     static let homeLayoutChanged = Notification.Name("homeLayoutChanged")
+
+    // Posted by the debug settings reset to stop an active prayer timer.
+    static let resetPrayerTimer = Notification.Name("resetPrayerTimer")
 }

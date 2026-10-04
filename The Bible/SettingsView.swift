@@ -1,4 +1,6 @@
 import SwiftUI
+import UIKit
+import UserNotifications
 import WidgetKit
 
 struct SettingsView: View {
@@ -264,6 +266,8 @@ private struct SettingsHelpSection: View {
 private struct SettingsDeveloperSection: View {
     @State private var showingConfirmation = false
     @State private var showingCompletion = false
+    @State private var showingResetConfirmation = false
+    @State private var showingResetCompletion = false
 
     var body: some View {
         Section {
@@ -303,11 +307,151 @@ private struct SettingsDeveloperSection: View {
             } message: {
                 Text("The Home and Stats views now have randomized reading and game activity to display.")
             }
+
+            Button(role: .destructive) {
+                showingResetConfirmation = true
+            } label: {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Reset Permissions & Settings")
+                        Text("Restore app defaults and cancel permission-based features")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "arrow.counterclockwise.circle")
+                }
+            }
+            .accessibilityIdentifier("resetDeveloperPermissionsAndSettingsButton")
+            .confirmationDialog(
+                "Reset Permissions and Settings?",
+                isPresented: $showingResetConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Reset", role: .destructive) {
+                    DeveloperSettingsReset.perform()
+                    showingResetCompletion = true
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This restores every app preference to its default, cancels pending notifications and prayer alarms, and ends Live Activities. iOS authorization decisions must still be changed in System Settings.")
+            }
+            .alert("App Settings Reset", isPresented: $showingResetCompletion) {
+                Button("Open System Settings") {
+                    DeveloperSettingsReset.openSystemSettings()
+                }
+                Button("Done", role: .cancel) {}
+            } message: {
+                Text("App settings are back to their defaults. To make Notifications, Prayer Timer Alarms, Mindful Minutes, or Live Activities appear not requested again, reset them in iOS Settings or reset privacy on the simulator. Photo Selection uses the system picker and has no persistent library permission.")
+            }
         } header: {
             Label("Developer", systemImage: "hammer")
         } footer: {
             Text("Debug builds only. This section is not included in App Store builds.")
         }
+    }
+}
+
+@MainActor
+private enum DeveloperSettingsReset {
+    static func perform() {
+        let defaults = UserDefaults.standard
+        let defaultValues: [String: Any] = [
+            "colorSchemePreference": "system",
+            "fontSizePreference": FontSizePreference.system.rawValue,
+            "fontFamilyPreference": FontFamilyPreference.system.rawValue,
+            "dailyGoalMinutes": 30,
+            "timerSoundSelection": TimerSound.default.rawValue,
+            "verseOfDayScope": "whole",
+            "verseOfDaySpecificBook": "",
+            "votdRefreshFrequency": VOTDRefreshFrequency.custom.rawValue,
+            "votdRefresh1Hour": 6,
+            "votdRefresh1Minute": 0,
+            "votdRefresh2Hour": 18,
+            "votdRefresh2Minute": 0,
+            "votdRefreshNotificationsEnabled": false,
+            "verseOfDayPaused": false,
+            "liveActivitiesEnabled": true,
+            "healthKitMindfulMinutesEnabled": false,
+            "didRequestNotifications": false,
+            "contextualTipsEnabled": false,
+            "readerFontSize": 17.0,
+            "showReadVerseCheckmarks": false,
+            "homeCustomizeButtonVisible": true,
+            "homeBibleReaderVisible": HomeLayoutStore.defaultBibleReaderVisible,
+            "noteEditorTextSizeStep": 0,
+            "notesHighlightsSort": "Newest",
+            "notesTabSort": "Newest",
+            "bibleBooksSortAlphabetical": false,
+            "bibleRecentSearches": "",
+            "lastReadWidgetBackground": "system",
+            "pinnedVerseWidgetBackground": "system",
+            "verseWidgetBackground": "system",
+            "statsSelectedMode": "Reading Stats",
+            "statsSelectedGame": "All Games",
+            "debugAutoWinEnabled": false,
+            "beatTheClockCategory": "people",
+            "beatTheClockDifficulty": "medium",
+            "hangmanDifficulty": "medium",
+            "hangmanTheme": "people",
+            "quizDifficulty": "normal",
+            "quizScope": "whole",
+            "quizSections": "",
+            "verseMatchDifficulty": "medium",
+            "versematchScope": "whole",
+            "versematchSections": "",
+            "wordleAllowDailyReplay": false,
+            "wordleHardModeEnabled": false,
+            "prayerTimerRunning": false,
+            "prayerTimerPaused": false,
+            "prayerTimerTotalSeconds": 0,
+            "prayerTimerRemainingWhenPaused": 0,
+            "prayerTimerEndDate": 0.0,
+            "prayerTimerStartDate": 0.0,
+            "prayerTimerLastActionToken": "",
+            "mindfulSessionStartDate": 0.0
+        ]
+
+        for (key, value) in defaultValues {
+            defaults.set(value, forKey: key)
+        }
+
+        let homeLayoutKeys = [
+            "homeCardOrder",
+            "homeCardHidden",
+            "homeCardMain",
+            "homeShowMoreVisible",
+            "homeCardFavoriteOrder",
+            "homeCardFavoriteHidden",
+            "homeCardFavoriteMain",
+            "homeCardFavoriteShowMoreVisible"
+        ]
+        homeLayoutKeys.forEach(defaults.removeObject(forKey:))
+
+        for tab in AppTab.allCases {
+            defaults.set(
+                AppBackgroundMode.defaultStyle.rawValue,
+                forKey: AppBackgroundStorage.modeKey(for: tab)
+            )
+            defaults.set("#F2F2F7", forKey: AppBackgroundStorage.colorKey(for: tab))
+            defaults.set("", forKey: AppBackgroundStorage.photoKey(for: tab))
+        }
+
+        NotificationCenter.default.post(name: .resetPrayerTimer, object: nil)
+        NotificationCenter.default.post(name: .homeLayoutChanged, object: nil)
+        VOTDNotificationScheduler.cancel()
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+        PrayerTimerAlarmScheduler.cancel()
+        PrayerTimerActivityController.shared.cancel()
+        iCloudSyncCoordinator.shared.pushKey("dailyGoalMinutes")
+        WidgetCenter.shared.reloadAllTimelines()
+        Haptics.success()
+    }
+
+    static func openSystemSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
     }
 }
 #endif
