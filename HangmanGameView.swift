@@ -384,9 +384,20 @@ struct HangmanGameView: View {
                 style: usesWideLayout ? .dashboard : .compact
             )
         } keyboard: {
-            keyboardView(keyHeight: usesWideLayout ? 60 : 42)
+            if roundOver {
+                GameRoundNavigationButtons(
+                    canGoPrevious: history.count > 1,
+                    canGoNext: true,
+                    onPrevious: { showPreviousSheet = true },
+                    onNext: { nextRound() }
+                )
                 .padding(.horizontal, 6)
                 .padding(.top, 8)
+            } else {
+                keyboardView(keyHeight: usesWideLayout ? 60 : 42)
+                    .padding(.horizontal, 6)
+                    .padding(.top, 8)
+            }
         }
     }
 
@@ -463,23 +474,12 @@ struct HangmanGameView: View {
                 .controlSize(.small)
             }
 
-            Button("Previous") { showPreviousSheet = true }
-                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                .controlSize(.small)
-                .disabled(history.isEmpty)
-                .opacity(history.isEmpty ? 0.5 : 1.0)
-
-            if roundOver {
-                Button("Next") { nextRound() }
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                    .controlSize(.small)
-            }
         }
     }
 
     @ViewBuilder
     private func previousRoundSheet() -> some View {
-        if let last = history.last {
+        if let last = history.dropLast().last {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Previous Round")
                     .font(.title3)
@@ -656,6 +656,7 @@ struct HangmanGameView: View {
     private func endRound(win: Bool) {
         roundOver = true
         didWin = win
+        showsOnScreenKeyboard = true
 
         let snapshot = HangmanSnapshot(
             category: currentRoundCategory,

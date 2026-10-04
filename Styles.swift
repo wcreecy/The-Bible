@@ -156,6 +156,25 @@ public struct ModernCircleButtonStyle: ButtonStyle {
     }
 }
 
+struct GameRoundNavigationButtons: View {
+    let canGoPrevious: Bool
+    let canGoNext: Bool
+    let onPrevious: () -> Void
+    let onNext: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Button("Previous", systemImage: "arrow.left", action: onPrevious)
+                .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                .disabled(!canGoPrevious)
+
+            Button("Next", systemImage: "arrow.right", action: onNext)
+                .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                .disabled(!canGoNext)
+        }
+    }
+}
+
 /// A prominent filled button style used in games and primary calls to action.
 /// Prominent tinted Liquid Glass with a strong affordance.
 public struct GameProminentButtonStyle: ButtonStyle {

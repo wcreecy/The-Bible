@@ -336,6 +336,23 @@ struct VerseMatchGameView: View {
                         onSelect: select
                     )
 
+                    GameRoundNavigationButtons(
+                        canGoPrevious: currentIndex > 0 && selectedIndex != nil,
+                        canGoNext: selectedIndex != nil,
+                        onPrevious: {
+                            currentIndex -= 1
+                            loadFromHistory()
+                        },
+                        onNext: {
+                            if currentIndex < history.count - 1 {
+                                currentIndex += 1
+                                loadFromHistory()
+                            } else {
+                                nextQuestion()
+                            }
+                        }
+                    )
+
                     // DEBUG: WIN button
                     if debugAutoWinEnabled, started, selectedIndex == nil, correctIndex >= 0 {
                         Button("WIN") {
@@ -359,23 +376,6 @@ struct VerseMatchGameView: View {
                 }
             }
 
-            ToolbarItem(placement: .topBarLeading) {
-                if started && currentIndex > 0 {
-                    Button("Previous") { currentIndex -= 1; loadFromHistory() }
-                        .disabled(selectedIndex == nil)
-                }
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                if started {
-                    Button("Next") {
-                        if currentIndex < history.count - 1 { currentIndex += 1; loadFromHistory() }
-                        else { nextQuestion() }
-                    }
-                    .disabled(selectedIndex == nil)
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                    .controlSize(.regular)
-                }
-            }
         }
         .onAppear {
             storeSelectedSections(displayedSelectedSections)

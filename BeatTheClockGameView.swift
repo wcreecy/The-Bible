@@ -218,7 +218,6 @@ struct BeatTheClockGameView: View {
                                 searchFieldFocused = false
                             },
                             onSubmit: submitCurrentEntry,
-                            onSkip: { endRound(correct: false) },
                             onNext: nextRound,
                             onShowAnswers: { showAnswers = true },
                             onDebugWin: { endRound(correct: true) }
@@ -315,20 +314,19 @@ struct BeatTheClockGameView: View {
                     }
 
                     HStack(spacing: 12) {
-                        Button("Skip") { endRound(correct: false) }
-                            .buttonStyle(ModernPillButtonStyle(tint: .orange))
-                            .disabled(selectionLocked)
-                        Button("Next") { nextRound() }
-                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                            .disabled(!selectionLocked)
-                        Button(action: { submitCurrentEntry() }) {
-                            Image(systemName: "paperplane.circle.fill")
-                                .font(.system(size: 34, weight: .bold))
+                        Button("Previous", systemImage: "arrow.left") { }
+                            .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                            .disabled(true)
+
+                        Button("Submit", systemImage: "paperplane.fill") {
+                            submitCurrentEntry()
                         }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(canSubmit ? Color.green : Color.secondary)
+                        .buttonStyle(GameProminentButtonStyle(tint: .green))
                         .disabled(!canSubmit)
-                        .accessibilityLabel("Submit answer")
+
+                        Button("Next", systemImage: "arrow.right") { nextRound() }
+                            .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                            .disabled(!selectionLocked)
                     }
                     if selectionLocked {
                         Button("Show answers (\(acceptableBooks.count))") { showAnswers = true }
@@ -684,7 +682,6 @@ private struct BeatTheClockGameDashboard: View {
     let onClear: () -> Void
     let onSelectBook: (String) -> Void
     let onSubmit: () -> Void
-    let onSkip: () -> Void
     let onNext: () -> Void
     let onShowAnswers: () -> Void
     let onDebugWin: () -> Void
@@ -724,7 +721,6 @@ private struct BeatTheClockGameDashboard: View {
                 acceptableBookCount: acceptableBookCount,
                 showsDebugWin: showsDebugWin,
                 onSubmit: onSubmit,
-                onSkip: onSkip,
                 onNext: onNext,
                 onShowAnswers: onShowAnswers,
                 onDebugWin: onDebugWin
@@ -903,7 +899,6 @@ private struct BeatTheClockDashboardActions: View {
     let acceptableBookCount: Int
     let showsDebugWin: Bool
     let onSubmit: () -> Void
-    let onSkip: () -> Void
     let onNext: () -> Void
     let onShowAnswers: () -> Void
     let onDebugWin: () -> Void
@@ -911,9 +906,9 @@ private struct BeatTheClockDashboardActions: View {
     var body: some View {
         VStack(spacing: 10) {
             HStack(spacing: 12) {
-                Button("Skip", systemImage: "forward.fill", action: onSkip)
-                    .buttonStyle(GameProminentButtonStyle(tint: .orange))
-                    .disabled(isLocked)
+                Button("Previous", systemImage: "arrow.left") { }
+                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                    .disabled(true)
 
                 Button("Submit", systemImage: "paperplane.fill", action: onSubmit)
                     .buttonStyle(GameProminentButtonStyle(tint: .green))

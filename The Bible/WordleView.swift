@@ -1366,77 +1366,84 @@ struct WordleView: View {
     // MARK: - End-of-round action area (replaces keyboard)
     @ViewBuilder
     private func endOfRoundActionArea() -> some View {
-        HStack(spacing: 10) {
-            if let ref = roundRef {
-                Button {
-                    presentReferencePreview(ref)
-                } label: {
-                    Text(ref.display)
-                        .font(.headline)
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                .controlSize(.large)
-            } else {
-                Button { } label: {
-                    Text("Reference")
-                        .font(.headline)
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                .controlSize(.large)
-                .disabled(true)
-                .opacity(0.6)
-                .accessibilityHidden(true)
-            }
-
-            if let secs = lastRoundElapsedSeconds {
-                Button(action: { }) {
-                    Text(formatElapsed(secs))
-                        .font(.headline)
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(ModernPillButtonStyle(tint: .purple))
-                .controlSize(.large)
-                .disabled(true)
-                .accessibilityElement(children: .combine)
-                .accessibilityLabel("Time \(formatElapsed(secs))")
-            } else {
-                Button(action: { }) {
-                    Text("--:--")
-                        .font(.headline)
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(ModernPillButtonStyle(tint: .purple))
-                .controlSize(.large)
-                .disabled(true)
-                .opacity(0.6)
-                .accessibilityHidden(true)
-            }
-
-            if mode == .practice {
-                Button("Next") { startNewRound(practice: true) }
+        VStack(spacing: 10) {
+            HStack(spacing: 10) {
+                if let ref = roundRef {
+                    Button {
+                        presentReferencePreview(ref)
+                    } label: {
+                        Text(ref.display)
+                            .font(.headline)
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity)
+                    }
                     .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
                     .controlSize(.large)
-            } else {
-                if dailyCompletedToday && !wordleAllowDailyReplay {
-                    Button("Daily") { }
-                        .buttonStyle(ModernPillButtonStyle(tint: .gray))
-                        .controlSize(.large)
+                } else {
+                    Button { } label: {
+                        Text("Reference")
+                            .font(.headline)
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                    .controlSize(.large)
+                    .disabled(true)
+                    .opacity(0.6)
+                    .accessibilityHidden(true)
+                }
+
+                if let secs = lastRoundElapsedSeconds {
+                    Button(action: { }) {
+                        Text(formatElapsed(secs))
+                            .font(.headline)
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(ModernPillButtonStyle(tint: .purple))
+                    .controlSize(.large)
+                    .disabled(true)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Time \(formatElapsed(secs))")
+                } else {
+                    Button(action: { }) {
+                        Text("--:--")
+                            .font(.headline)
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(ModernPillButtonStyle(tint: .purple))
+                    .controlSize(.large)
+                    .disabled(true)
+                    .opacity(0.6)
+                    .accessibilityHidden(true)
+                }
+            }
+
+            HStack(spacing: 12) {
+                Button("Previous", systemImage: "arrow.left") { }
+                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                    .disabled(true)
+
+                if mode == .practice {
+                    Button("Next", systemImage: "arrow.right") {
+                        startNewRound(practice: true)
+                    }
+                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                } else if dailyCompletedToday && !wordleAllowDailyReplay {
+                    Button("Next", systemImage: "arrow.right") { }
+                        .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
                         .disabled(true)
                         .accessibilityLabel("Daily completed. Come back tomorrow.")
                 } else {
-          Button("Play Daily") { startNewRound(practice: false) }
-            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-            .controlSize(.large)
+                    Button("Next", systemImage: "arrow.right") {
+                        startNewRound(practice: false)
+                    }
+                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                }
+            }
         }
-      }
     }
-  }
 
   private func formatElapsed(_ s: Int) -> String {
     let seconds = max(0, s)

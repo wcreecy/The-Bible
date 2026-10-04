@@ -110,11 +110,12 @@ struct SideBySideGameArea: View {
     private var controls: some View {
         HStack(spacing: 12) {
             if roundOver {
-                Button("New Puzzle", systemImage: "arrow.clockwise", action: onNewPuzzle)
-                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-
-                Button("Settings", systemImage: "slider.horizontal.3", action: onChangeDifficultyOrMode)
-                    .buttonStyle(GameProminentButtonStyle(tint: .orange))
+                GameRoundNavigationButtons(
+                    canGoPrevious: false,
+                    canGoNext: true,
+                    onPrevious: {},
+                    onNext: onNewPuzzle
+                )
             } else {
                 Button("Reveal", systemImage: "eye.fill", action: onReveal)
                     .buttonStyle(GameProminentButtonStyle(tint: .accentColor))

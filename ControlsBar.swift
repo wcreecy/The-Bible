@@ -21,10 +21,12 @@ struct WordSearchControlsBar: View {
                         .buttonStyle(ModernPillButtonStyle(tint: healedOn ? .green : .red))
                 }
             } else {
-                Button("New Puzzle") { onNewPuzzle() }
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                Button("Change Settings") { onChangeDifficultyOrMode() }
-                    .buttonStyle(ModernPillButtonStyle(tint: .orange))
+                GameRoundNavigationButtons(
+                    canGoPrevious: false,
+                    canGoNext: true,
+                    onPrevious: {},
+                    onNext: onNewPuzzle
+                )
             }
         }
     }
