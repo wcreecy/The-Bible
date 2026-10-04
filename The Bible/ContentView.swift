@@ -206,12 +206,6 @@ struct ContentView: View {
                 UserDefaults.standard.set(baselinePct, forKey: "gamesSessionBaselinePct")
             }
 
-            if newValue == .bible {
-                bibleCoordinator.reset()
-                launchBibleLocation = nil
-                bibleBookSelectionRequestID &+= 1
-            }
-
             if newValue == .home {
                 Task { @MainActor in
                     await Task.yield()

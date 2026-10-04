@@ -490,6 +490,39 @@ private struct NoteFormattingBar: View {
     }
 }
 
+private enum NoteTextColor: String, CaseIterable, Identifiable {
+    case red
+    case orange
+    case yellow
+    case green
+    case blue
+    case purple
+
+    var id: String { rawValue }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .red: "Red"
+        case .orange: "Orange"
+        case .yellow: "Yellow"
+        case .green: "Green"
+        case .blue: "Blue"
+        case .purple: "Purple"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .red: .red
+        case .orange: .orange
+        case .yellow: Color(red: 0.72, green: 0.52, blue: 0.02)
+        case .green: .green
+        case .blue: .blue
+        case .purple: .purple
+        }
+    }
+}
+
 private enum NoteEditorTextSize {
     static let minimumStep = 0
     static let maximumStep = 6
