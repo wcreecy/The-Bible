@@ -35,7 +35,12 @@ struct HomeLayoutStore {
         .dailyFocus,
         .streaks
     ]
-    static let baselineHidden: Set<HomeCardID> = [.streaks]
+    static var baselineHidden: Set<HomeCardID> {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return [.bibleStats, .dailyFocus, .streaks]
+        }
+        return [.streaks]
+    }
     static let baselineMain: Set<HomeCardID> = [.verseOfDay, .resumeReading]
     static var defaultBibleReaderVisible: Bool {
         UIDevice.current.userInterfaceIdiom != .pad
