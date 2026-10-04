@@ -7,9 +7,10 @@ struct SettingsTimerSection: View {
     var body: some View {
         Section(
             header: Text("Timer").foregroundStyle(.primary),
-            footer: Text("Choose the sound that plays when the prayer/study timer finishes.")
+            footer: Text("Sound played when the timer ends.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
         ) {
             LabeledContent {
                 HStack(spacing: 10) {
@@ -38,6 +39,8 @@ struct SettingsTimerSection: View {
                 }
             } label: {
                 Label("Timer Sound", systemImage: "speaker.wave.2")
+                    .lineLimit(1)
+                    .layoutPriority(1)
             }
         }
         .headerProminence(.increased)
