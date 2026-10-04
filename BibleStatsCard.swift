@@ -37,15 +37,22 @@ struct BibleStatsCard: View {
                 HStack(spacing: 10) {
                     Button(action: onOpenReadingStats) {
                         Label("Reading Stats", systemImage: "book.pages")
+                            .font(.subheadline.weight(.semibold))
                             .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .heroCardSurface()
                     }
+                    .buttonStyle(.plain)
 
                     Button(action: onOpenGameStats) {
                         Label("Game Stats", systemImage: "gamecontroller")
+                            .font(.subheadline.weight(.semibold))
                             .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .heroCardSurface()
                     }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(ClearGlassPillButtonStyle())
             }
             .onAppear {
                 bibleVM.refresh()
