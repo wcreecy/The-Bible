@@ -110,6 +110,7 @@
 		2C6BB6592EF1FF880010D769 /* BibleStatsStore+LastRead.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6BB6582EF1FF880010D769 /* BibleStatsStore+LastRead.swift */; };
 		2C6BB65B2EF20A400010D769 /* HomeCardID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6BB65A2EF20A400010D769 /* HomeCardID.swift */; };
 		2C6BB65D2EF20A460010D769 /* FontFamilyEnvironmentModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6BB65C2EF20A460010D769 /* FontFamilyEnvironmentModifier.swift */; };
+		2C7E791230727A8600179A65 /* PrayerTimerAlarmScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7E791130727A8600179A65 /* PrayerTimerAlarmScheduler.swift */; };
 		2C7EA8BB2EDE7AEA0073F01C /* iCloudSyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EA8BA2EDE7AEA0073F01C /* iCloudSyncCoordinator.swift */; };
 		2C8E13F830725E0600A43970 /* SettingsLaunchTabSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8E13F730725E0600A43970 /* SettingsLaunchTabSection.swift */; };
 		2C8F6558307008BE0052754F /* DeveloperSampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8F6557307008BE0052754F /* DeveloperSampleData.swift */; };
@@ -305,6 +306,7 @@
 		2C6BB65C2EF20A460010D769 /* FontFamilyEnvironmentModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontFamilyEnvironmentModifier.swift; sourceTree = "<group>"; };
 		2C736D082EB9899600CD2E6F /* BibleSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleSplitView.swift; sourceTree = "<group>"; };
 		2C7841382EB407C0008DDBBF /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
+		2C7E791130727A8600179A65 /* PrayerTimerAlarmScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimerAlarmScheduler.swift; sourceTree = "<group>"; };
 		2C7EA8BA2EDE7AEA0073F01C /* iCloudSyncCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iCloudSyncCoordinator.swift; sourceTree = "<group>"; };
 		2C82F4852EBACCE600DB40FC /* BookSelectionLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookSelectionLink.swift; sourceTree = "<group>"; };
 		2C82F4DC2EBB944B00DB40FC /* ShareText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareText.swift; sourceTree = "<group>"; };
@@ -664,6 +666,7 @@
 				2C2BBFA930702B6900BD4A07 /* VerseToRememberCard.swift */,
 				2C98EBDF3071360B00FBAED3 /* FeedbackView.swift */,
 				2C8E13F730725E0600A43970 /* SettingsLaunchTabSection.swift */,
+				2C7E791130727A8600179A65 /* PrayerTimerAlarmScheduler.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1076,6 +1079,7 @@
 				2C6BB65D2EF20A460010D769 /* FontFamilyEnvironmentModifier.swift in Sources */,
 				2C4BE63C2EEDE22F0090F5A2 /* GenreDistributionCardView.swift in Sources */,
 				2C4BE6322EEDE21E0090F5A2 /* TotalsCardView.swift in Sources */,
+				2C7E791230727A8600179A65 /* PrayerTimerAlarmScheduler.swift in Sources */,
 				2C4BE63E2EEDE2360090F5A2 /* ProgressCardView.swift in Sources */,
 				2C49CF512EBE10310006FF79 /* BookSelectionLink.swift in Sources */,
 				2C6BB64D2EF1FF300010D769 /* BibleStatsStore+DailyTotals.swift in Sources */,

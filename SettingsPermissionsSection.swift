@@ -12,6 +12,8 @@ struct SettingsPermissionsSection: View {
 
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
     @State private var alarmStatus: PrayerTimerAlarmScheduler.AuthorizationStatus = .unavailable
+    @State private var isRequestingAlarmAuthorization = false
+    @State private var showAlarmSettingsAlert = false
     @State private var mindfulMinutesStatus: HKAuthorizationStatus?
     @State private var areSystemLiveActivitiesEnabled = true
 
@@ -28,13 +30,17 @@ struct SettingsPermissionsSection: View {
             .accessibilityIdentifier("notificationsPermissionRow")
 
             if #available(iOS 26.1, *) {
-                permissionRow(
-                    title: "Prayer Timer Alarms",
-                    systemImage: "alarm",
-                    status: alarmStatusText,
-                    statusColor: alarmStatusColor
-                ) {
-                    handleAlarmAction()
+                Toggle(isOn: alarmAuthorizationBinding) {
+                    Label {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Prayer Timer Alarms")
+                            Text(alarmStatusText)
+                                .font(.caption)
+                                .foregroundStyle(alarmStatusColor)
+                        }
+                    } icon: {
+                        Image(systemName: "alarm")
+                    }
                 }
                 .accessibilityIdentifier("alarmKitPermissionRow")
             }
@@ -98,6 +104,12 @@ struct SettingsPermissionsSection: View {
                 .foregroundStyle(.secondary)
         }
         .headerProminence(.increased)
+        .alert("Alarm Access Is Managed by iOS", isPresented: $showAlarmSettingsAlert) {
+            Button("Open Settings", action: openSystemSettings)
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("The Bible can only show the AlarmKit permission prompt once. To change a previous decision, allow Prayer Timer Alarms in iOS Settings.")
+        }
         .task {
             await updateStatuses()
         }
@@ -148,7 +160,10 @@ struct SettingsPermissionsSection: View {
     }
 
     private var alarmStatusText: LocalizedStringKey {
-        switch alarmStatus {
+        if isRequestingAlarmAuthorization {
+            return "Requesting Access"
+        }
+        return switch alarmStatus {
         case .authorized: "Allowed"
         case .denied: "Denied"
         case .notDetermined: "Not Requested"
@@ -201,13 +216,34 @@ struct SettingsPermissionsSection: View {
         }
     }
 
-    private func handleAlarmAction() {
-        if alarmStatus == .notDetermined {
+    private var alarmAuthorizationBinding: Binding<Bool> {
+        Binding(
+            get: { alarmStatus == .authorized || isRequestingAlarmAuthorization },
+            set: { enabled in handleAlarmToggle(enabled) }
+        )
+    }
+
+    private func handleAlarmToggle(_ enabled: Bool) {
+        guard !isRequestingAlarmAuthorization else { return }
+
+        guard enabled else {
+            if alarmStatus == .authorized {
+                showAlarmSettingsAlert = true
+            }
+            return
+        }
+
+        switch alarmStatus {
+        case .notDetermined:
+            isRequestingAlarmAuthorization = true
             Task {
                 alarmStatus = await PrayerTimerAlarmScheduler.requestAuthorization()
+                isRequestingAlarmAuthorization = false
             }
-        } else {
-            openSystemSettings()
+        case .denied:
+            showAlarmSettingsAlert = true
+        case .authorized, .unavailable:
+            break
         }
     }
 
