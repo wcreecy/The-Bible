@@ -473,6 +473,12 @@ struct HangmanGameView: View {
                         .padding(.vertical, 6)
                 }
                 .buttonStyle(.plain)
+                .disabled(!roundOver)
+                .accessibilityHint(
+                    roundOver
+                        ? "Shows the scripture passage"
+                        : "Available after the round ends"
+                )
                 .foregroundStyle(Color.accentColor)
                 .background(
                     Color.accentColor.opacity(0.14),
