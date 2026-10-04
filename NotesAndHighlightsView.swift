@@ -557,6 +557,7 @@ private struct NoteEditorTitleField: View {
 private struct ScriptureReferenceLinkTip: View {
     var body: some View {
         ContextualTipView(
+            id: "notes.scriptureLinks",
             title: "Link Scripture references",
             message: "Type a reference such as John 3:16 in your note. It automatically becomes a tappable link with a Scripture preview.",
             systemImage: "link.badge.plus"
@@ -909,6 +910,7 @@ struct NotesAndHighlightsView: View {
 
             if contextualTipsEnabled {
                 ContextualTipView(
+                    id: "notes.quickActions",
                     title: "Quick note actions",
                     message: "Swipe a note for quick actions, or press and hold it to delete.",
                     systemImage: "hand.point.up.left"

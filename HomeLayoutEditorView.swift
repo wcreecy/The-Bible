@@ -180,6 +180,7 @@ struct HomeLayoutEditorView: View {
         List {
             if contextualTipsEnabled {
                 ContextualTipView(
+                    id: "home.layoutEditor",
                     title: "Make Home yours",
                     message: allowsShowMore
                         ? "Use the arrow buttons to reorder cards or move them between Main Home and Show More."

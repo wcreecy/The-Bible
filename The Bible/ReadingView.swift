@@ -190,6 +190,7 @@ struct ReadingView: View {
                 LazyVStack(alignment: .leading, spacing: 0) {
                     if contextualTipsEnabled {
                         ContextualTipView(
+                            id: "reader.shortcuts",
                             title: "Reader shortcuts",
                             message: "Swipe left or right to change chapters. Press and hold a verse for notes, highlights, favorites, and more.",
                             systemImage: "hand.draw"

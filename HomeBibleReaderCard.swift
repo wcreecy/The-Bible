@@ -72,6 +72,7 @@ struct HomeBibleReaderCard: View {
 
             if contextualTipsEnabled {
                 ContextualTipView(
+                    id: "home.readerShortcuts",
                     title: "Bible reader shortcuts",
                     message: "Swipe left or right to change chapters, drag the handle to resize, or press and hold a verse to open it in the Bible tab.",
                     systemImage: "hand.draw"

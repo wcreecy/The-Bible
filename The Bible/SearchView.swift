@@ -65,6 +65,7 @@ struct SearchView: View {
         VStack(spacing: 0) {
             if contextualTipsEnabled {
                 ContextualTipView(
+                    id: "search.references",
                     title: "Search words or references",
                     message: "Search for words such as love or faith, or enter a reference such as John 3:16. Use the scope controls to narrow the results.",
                     systemImage: "magnifyingglass"

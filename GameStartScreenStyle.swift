@@ -198,6 +198,7 @@ struct GameSetupSummary: View {
 
             if contextualTipsEnabled {
                 ContextualTipView(
+                    id: "games.customization",
                     title: "Customize your game",
                     message: "Choose Game Settings above to change how this game will play before you start.",
                     systemImage: "slider.horizontal.3"

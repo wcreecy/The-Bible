@@ -22,6 +22,7 @@ struct VersesView: View {
             LazyVStack(alignment: .leading, spacing: 0) {
                 if contextualTipsEnabled {
                     ContextualTipView(
+                        id: "verses.actions",
                         title: "More verse actions",
                         message: "Press and hold a verse to preview it, then favorite, bookmark, copy, or pin it to the Home Screen widget.",
                         systemImage: "hand.tap"

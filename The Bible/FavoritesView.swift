@@ -55,6 +55,7 @@ struct FavoritesView: View {
                 List {
                     if contextualTipsEnabled {
                         ContextualTipView(
+                            id: "favorites.management",
                             title: "Open and manage favorites",
                             message: "Tap a favorite to open its verse. Swipe it, or use Edit, to remove it with an option to undo.",
                             systemImage: "heart.text.clipboard"

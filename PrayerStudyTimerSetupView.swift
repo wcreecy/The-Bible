@@ -15,6 +15,7 @@ struct PrayerStudyTimerSetupView: View {
 
             if contextualTipsEnabled {
                 ContextualTipView(
+                    id: "timer.mindfulMinutes",
                     title: "Track mindful minutes",
                     message: "Completed prayer and study timers can contribute Mindful Minutes to Apple Health when access is allowed in Settings.",
                     systemImage: "heart.text.square"

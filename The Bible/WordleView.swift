@@ -272,6 +272,7 @@ struct WordleView: View {
         VStack(spacing: 12) {
           if contextualTipsEnabled {
             ContextualTipView(
+              id: "wordle.reuseLetter",
               title: "Reuse a correct letter",
               message: "Tap a correctly placed letter from an earlier guess to reuse it in your current guess.",
               systemImage: "hand.tap"

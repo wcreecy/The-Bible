@@ -85,6 +85,7 @@ struct GenreDistributionCardView: View {
 
                 if contextualTipsEnabled {
                     ContextualTipView(
+                        id: "stats.genre",
                         title: "Explore a genre",
                         message: "Tap a genre to see its books and reading time.",
                         systemImage: "chart.bar.xaxis"

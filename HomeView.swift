@@ -468,6 +468,7 @@ struct HomeView: View {
     private var contextualHomeTip: some View {
         if contextualTipsEnabled {
             ContextualTipView(
+                id: "home.customization",
                 title: "Make Home your own",
                 message: isPad
                     ? "Your visible cards fill this dashboard automatically. Choose and reorder them from Customize Home."

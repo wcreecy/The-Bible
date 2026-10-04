@@ -226,6 +226,7 @@ private struct SettingsAppAndDataLinksSection: View {
 
 private struct SettingsHelpSection: View {
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    @AppStorage("contextualTipsResetGeneration") private var contextualTipsResetGeneration = 0
 
     var body: some View {
         Section {
@@ -243,6 +244,11 @@ private struct SettingsHelpSection: View {
                 }
             }
             .accessibilityIdentifier("contextualTipsToggle")
+            .onChange(of: contextualTipsEnabled) { wasEnabled, isEnabled in
+                if !wasEnabled && isEnabled {
+                    contextualTipsResetGeneration &+= 1
+                }
+            }
 
             NavigationLink {
                 FeedbackView()
