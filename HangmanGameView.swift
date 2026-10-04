@@ -469,8 +469,19 @@ struct HangmanGameView: View {
                 } label: {
                     Text(ref)
                         .lineLimit(1)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
                 }
-                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                .buttonStyle(.plain)
+                .foregroundStyle(Color.accentColor)
+                .background(
+                    Color.accentColor.opacity(0.14),
+                    in: RoundedRectangle(
+                        cornerRadius: AppDesignMetrics.compactControlCornerRadius,
+                        style: .continuous
+                    )
+                )
+                .heroCardSurface(cornerRadius: AppDesignMetrics.compactControlCornerRadius)
                 .controlSize(.small)
             }
 
