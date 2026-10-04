@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import UIKit
 
 // Centralized persistence for Home card order/visibility and a single "favorite" layout snapshot.
 // This store owns the @AppStorage keys and JSON (de)serialization so Views don’t duplicate logic.
@@ -36,6 +37,9 @@ struct HomeLayoutStore {
     ]
     static let baselineHidden: Set<HomeCardID> = [.streaks]
     static let baselineMain: Set<HomeCardID> = [.verseOfDay, .resumeReading]
+    static var defaultBibleReaderVisible: Bool {
+        UIDevice.current.userInterfaceIdiom != .pad
+    }
 
     init() {}
 

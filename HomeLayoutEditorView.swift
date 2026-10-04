@@ -14,7 +14,7 @@ struct HomeLayoutEditorView: View {
 
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
-    @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = true
+    @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
 
     private var mainCards: [HomeCardID] {
         order.filter { mainSet.contains($0) }
@@ -43,7 +43,7 @@ struct HomeLayoutEditorView: View {
         mainSet = HomeLayoutStore.baselineMain
         showMoreVisible = true
         customizeButtonVisible = true
-        bibleReaderVisible = true
+        bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
         onDone()
     }
 

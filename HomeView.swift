@@ -270,7 +270,7 @@ struct HomeView: View {
     @State private var showMoreCards: Bool = false
     @State private var hasFavoriteLayout: Bool = false
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
-    @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = true
+    @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
 
     private var moreCards: [HomeCardID] {
         layoutOrder.filter {
