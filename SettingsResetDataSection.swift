@@ -84,16 +84,21 @@ struct SettingsResetDataSection: View {
     }
 
     private func resetAppActivity(category: AppActivityCategory) {
-        let defaults = UserDefaults.standard
-
+        let keys: [String]
         switch category {
         case .reading:
-            defaults.set(0, forKey: "dailyUsageReadingSeconds")
-            defaults.set(0, forKey: "allTimeUsageReadingSeconds")
+            keys = [
+                "dailyUsageReadingSeconds",
+                "allTimeUsageReadingSeconds"
+            ]
         case .games:
-            defaults.set(0, forKey: "dailyUsageGameSeconds")
-            defaults.set(0, forKey: "allTimeUsageGameSeconds")
+            keys = [
+                "dailyUsageGameSeconds",
+                "allTimeUsageGameSeconds"
+            ]
         }
+
+        iCloudSyncCoordinator.shared.resetAppActivity(keys: keys)
     }
 }
 

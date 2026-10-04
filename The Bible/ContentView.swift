@@ -47,6 +47,7 @@ struct ContentView: View {
     @AppStorage("allTimeUsageGameSeconds") private var allTimeUsageGameSeconds: Int = 0
     @AppStorage("dailyUsageTodayKey") private var dailyUsageTodayKey: String = ""
     @State private var usageTimer: Timer? = nil
+    @State private var lastUsageUpdate: Date?
     @State private var nextMidnightTimer: Timer? = nil
 
     // Prayer timer state (to account for background time)
@@ -172,6 +173,9 @@ struct ContentView: View {
             // Initialize daily usage tracking day key and rollover timer
             initializeUsageDayIfNeeded()
             scheduleMidnightRollover()
+            if scenePhase == .active {
+                startUsageTimerIfNeeded()
+            }
 
             // Initialize previousTab at launch
             previousTab = selectedTab
@@ -179,6 +183,8 @@ struct ContentView: View {
 
         }
         .onChange(of: selectedTab) { oldValue, newValue in
+            recordUsageElapsed(for: oldValue)
+
             // When leaving Games tab, persist latest session accuracy baseline for the Home games card caret
             if previousTab == .games && newValue != .games {
                 let today = GameStats.shared.todayStats()
@@ -471,15 +477,25 @@ struct ContentView: View {
     private func initializeUsageDayIfNeeded() {
         let key = todayKey()
         if dailyUsageTodayKey != key {
-            dailyUsageTodayKey = key
-            dailyUsageTodaySeconds = 0
-            dailyUsageReadingSeconds = 0
-            dailyUsageGameSeconds = 0
+            resetDailyUsage(for: key)
         }
 
         // Existing installs may already have today's usage but no cumulative counters.
         allTimeUsageReadingSeconds = max(allTimeUsageReadingSeconds, dailyUsageReadingSeconds)
         allTimeUsageGameSeconds = max(allTimeUsageGameSeconds, dailyUsageGameSeconds)
+    }
+
+    private func resetDailyUsage(for dayKey: String) {
+        dailyUsageTodayKey = dayKey
+        dailyUsageTodaySeconds = 0
+        dailyUsageReadingSeconds = 0
+        dailyUsageGameSeconds = 0
+        pushUsageKeys([
+            "dailyUsageTodayKey",
+            "dailyUsageTodaySeconds",
+            "dailyUsageReadingSeconds",
+            "dailyUsageGameSeconds"
+        ])
     }
 
     private func scheduleMidnightRollover() {
@@ -490,10 +506,7 @@ struct ContentView: View {
         let interval = startOfTomorrow.timeIntervalSince(now)
         nextMidnightTimer = Timer.scheduledTimer(withTimeInterval: max(1, interval), repeats: false) { _ in
             // Rollover day
-            dailyUsageTodayKey = todayKey()
-            dailyUsageTodaySeconds = 0
-            dailyUsageReadingSeconds = 0
-            dailyUsageGameSeconds = 0
+            resetDailyUsage(for: todayKey())
             // Reschedule for next midnight
             scheduleMidnightRollover()
         }
@@ -505,50 +518,78 @@ struct ContentView: View {
     private func startUsageTimerIfNeeded() {
         initializeUsageDayIfNeeded()
         guard usageTimer == nil else { return }
+
+        lastUsageUpdate = Date()
         usageTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            let key = todayKey()
-            if key != dailyUsageTodayKey {
-                dailyUsageTodayKey = key
-                dailyUsageTodaySeconds = 0
-                dailyUsageReadingSeconds = 0
-                dailyUsageGameSeconds = 0
-            }
-
-            dailyUsageTodaySeconds += 1
-
-            switch selectedTab {
-            case .games:
-                dailyUsageGameSeconds += 1
-                allTimeUsageGameSeconds = max(
-                    allTimeUsageGameSeconds + 1,
-                    dailyUsageGameSeconds
-                )
-            case .bible, .notes:
-                dailyUsageReadingSeconds += 1
-                allTimeUsageReadingSeconds = max(
-                    allTimeUsageReadingSeconds + 1,
-                    dailyUsageReadingSeconds
-                )
-            case .more:
-                if case .favorites? = morePath.last {
-                    dailyUsageReadingSeconds += 1
-                    allTimeUsageReadingSeconds = max(
-                        allTimeUsageReadingSeconds + 1,
-                        dailyUsageReadingSeconds
-                    )
-                }
-            case .home:
-                break
-            }
+            recordUsageElapsed(for: selectedTab)
         }
-        if let t = usageTimer {
-            RunLoop.main.add(t, forMode: .common)
+        if let timer = usageTimer {
+            RunLoop.main.add(timer, forMode: .common)
         }
     }
 
     private func stopUsageTimer() {
+        recordUsageElapsed(for: selectedTab)
         usageTimer?.invalidate()
         usageTimer = nil
+        lastUsageUpdate = nil
+    }
+
+    private func recordUsageElapsed(for tab: AppTab) {
+        guard let previousUpdate = lastUsageUpdate else { return }
+
+        let now = Date()
+        let elapsedSeconds = Int(now.timeIntervalSince(previousUpdate))
+        guard elapsedSeconds > 0 else { return }
+
+        lastUsageUpdate = previousUpdate.addingTimeInterval(TimeInterval(elapsedSeconds))
+        initializeUsageDayIfNeeded()
+        dailyUsageTodaySeconds += elapsedSeconds
+
+        switch tab {
+        case .games:
+            dailyUsageGameSeconds += elapsedSeconds
+            allTimeUsageGameSeconds = max(
+                allTimeUsageGameSeconds + elapsedSeconds,
+                dailyUsageGameSeconds
+            )
+            pushUsageKeys([
+                "dailyUsageGameSeconds",
+                "allTimeUsageGameSeconds"
+            ])
+        case .bible, .notes:
+            dailyUsageReadingSeconds += elapsedSeconds
+            allTimeUsageReadingSeconds = max(
+                allTimeUsageReadingSeconds + elapsedSeconds,
+                dailyUsageReadingSeconds
+            )
+            pushUsageKeys([
+                "dailyUsageReadingSeconds",
+                "allTimeUsageReadingSeconds"
+            ])
+        case .more:
+            if case .favorites? = morePath.last {
+                dailyUsageReadingSeconds += elapsedSeconds
+                allTimeUsageReadingSeconds = max(
+                    allTimeUsageReadingSeconds + elapsedSeconds,
+                    dailyUsageReadingSeconds
+                )
+                pushUsageKeys([
+                    "dailyUsageReadingSeconds",
+                    "allTimeUsageReadingSeconds"
+                ])
+            }
+        case .home:
+            break
+        }
+
+        iCloudSyncCoordinator.shared.pushKey("dailyUsageTodaySeconds")
+    }
+
+    private func pushUsageKeys(_ keys: [String]) {
+        for key in keys {
+            iCloudSyncCoordinator.shared.pushKey(key)
+        }
     }
 
     private func applyBackgroundElapsedIfAny() {

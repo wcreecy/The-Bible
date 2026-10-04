@@ -250,6 +250,7 @@ final class iCloudSyncCoordinator {
             Self.bibleStatsKeys
             + Self.sessionKeys
             + Self.settingsKeys
+            + Self.appActivityKeys
             + Self.hangmanKeys
             + Self.beatClockKeys
             + Self.refMatchKeys
@@ -475,6 +476,10 @@ final class iCloudSyncCoordinator {
             mirrorSettingsKeyToKVS(key)
             return
         }
+        if Self.appActivityKeys.contains(key) {
+            mirrorAppActivityKeyToKVS(key)
+            return
+        }
         if Self.gameDailyAndLastPlayedKeys.contains(key)
             || isGameCounterKey(key)
             || Self.quizPerBookMapKeys.contains(key)
@@ -550,6 +555,10 @@ final class iCloudSyncCoordinator {
     func mergeIncomingKVSValue(forKey key: String) {
         if Self.settingsKeys.contains(key) {
             mergeSettingsIncoming(forKey: key)
+            return
+        }
+        if Self.appActivityKeys.contains(key) {
+            mergeAppActivityIncoming(forKey: key)
             return
         }
         if Self.gameDailyAndLastPlayedKeys.contains(key)
@@ -733,6 +742,83 @@ final class iCloudSyncCoordinator {
             ).count) ?? 0)
         }
     }
+}
+
+@MainActor
+extension iCloudSyncCoordinator {
+    static let appActivityKeys: [String] = [
+        "dailyUsageTodayKey",
+        "dailyUsageTodaySeconds",
+        "dailyUsageReadingSeconds",
+        "dailyUsageGameSeconds",
+        "allTimeUsageReadingSeconds",
+        "allTimeUsageGameSeconds"
+    ]
+
+    func mirrorAppActivityKeyToKVS(_ key: String) {
+        guard Self.appActivityKeys.contains(key) else { return }
+        reconcileAppActivityValues()
+    }
+
+    func mergeAppActivityIncoming(forKey key: String) {
+        guard Self.appActivityKeys.contains(key) else { return }
+        reconcileAppActivityValues()
+    }
+
+    func resetAppActivity(keys: [String]) {
+        let allowedKeys = Set(Self.dailyAppActivityCounterKeys + Self.allTimeAppActivityCounterKeys)
+        for key in keys where allowedKeys.contains(key) {
+            defaults.set(0, forKey: key)
+            kvs.set(Int64(0), forKey: key)
+        }
+        recordSynchronizeResult(kvs.synchronize(), isPush: true)
+    }
+
+    private func reconcileAppActivityValues() {
+        let localDay = defaults.string(forKey: "dailyUsageTodayKey") ?? ""
+        let remoteDay = kvs.string(forKey: "dailyUsageTodayKey") ?? ""
+
+        if remoteDay > localDay {
+            defaults.set(remoteDay, forKey: "dailyUsageTodayKey")
+            for key in Self.dailyAppActivityCounterKeys {
+                defaults.set(max(0, Int(kvs.longLong(forKey: key))), forKey: key)
+            }
+        } else if localDay > remoteDay {
+            kvs.set(localDay, forKey: "dailyUsageTodayKey")
+            for key in Self.dailyAppActivityCounterKeys {
+                kvs.set(max(0, defaults.integer(forKey: key)), forKey: key)
+            }
+        } else {
+            for key in Self.dailyAppActivityCounterKeys {
+                let merged = max(
+                    max(0, defaults.integer(forKey: key)),
+                    max(0, Int(kvs.longLong(forKey: key)))
+                )
+                defaults.set(merged, forKey: key)
+                kvs.set(merged, forKey: key)
+            }
+        }
+
+        for key in Self.allTimeAppActivityCounterKeys {
+            let merged = max(
+                max(0, defaults.integer(forKey: key)),
+                max(0, Int(kvs.longLong(forKey: key)))
+            )
+            defaults.set(merged, forKey: key)
+            kvs.set(merged, forKey: key)
+        }
+    }
+
+    private static let dailyAppActivityCounterKeys = [
+        "dailyUsageTodaySeconds",
+        "dailyUsageReadingSeconds",
+        "dailyUsageGameSeconds"
+    ]
+
+    private static let allTimeAppActivityCounterKeys = [
+        "allTimeUsageReadingSeconds",
+        "allTimeUsageGameSeconds"
+    ]
 }
 
 extension Notification.Name {
