@@ -3,8 +3,8 @@ import UIKit
 
 struct SettingsHomeLayoutSection: View {
     // Local UI state
-    @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
-    @State private var hiddenSet: Set<HomeCardID> = []
+    @State private var layoutOrder: [HomeCardID] = HomeLayoutStore.baselineOrder
+    @State private var hiddenSet: Set<HomeCardID> = HomeLayoutStore.baselineHidden
     @State private var mainSet: Set<HomeCardID> = HomeLayoutStore.baselineMain
     @State private var showMoreVisible = true
 

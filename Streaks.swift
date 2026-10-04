@@ -49,7 +49,7 @@ struct StreaksCard: View {
         let last = StreakTracker.lastVisitDate
 
         HeroCard(
-            title: "Daily Bible Streak",
+            title: "Reading Streak & History",
             subtitle: nil,
             icon: "flame.fill",
             tint: .orange

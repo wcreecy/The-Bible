@@ -263,7 +263,7 @@ struct HomeView: View {
     // NEW: Bind Live Activities setting directly so Home tracks Settings in real time.
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
 
-    @State private var layoutOrder: [HomeCardID] = HomeCardID.allCases
+    @State private var layoutOrder: [HomeCardID] = HomeLayoutStore.baselineOrder
     @State private var hiddenCards: Set<HomeCardID> = HomeLayoutStore.baselineHidden
     @State private var mainCards: Set<HomeCardID> = HomeLayoutStore.baselineMain
     @State private var showMoreVisible = true

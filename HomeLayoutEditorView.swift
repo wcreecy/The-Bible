@@ -38,10 +38,11 @@ struct HomeLayoutEditorView: View {
     }
 
     private func resetToDefault() {
-        order = HomeCardID.allCases
+        order = HomeLayoutStore.baselineOrder
         hiddenSet = HomeLayoutStore.baselineHidden
         mainSet = HomeLayoutStore.baselineMain
         showMoreVisible = true
+        customizeButtonVisible = true
         bibleReaderVisible = true
         onDone()
     }

@@ -12,7 +12,7 @@ enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
         case .dailyFocus: return "Daily Focus"
         case .timer: return "Prayer Timer"
         case .resumeReading: return "Continue Reading"
-        case .streaks: return "Daily Bible Streak"
+        case .streaks: return "Reading Streak & History"
         case .bibleStats: return "App Activity"
         }
     }

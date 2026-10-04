@@ -26,7 +26,15 @@ struct HomeLayoutStore {
     @AppStorage(Self.keyFavShowMoreVisible) private var favShowMoreVisible: Bool = true
 
     // Baseline hidden set used when no hidden config exists
-    static let baselineHidden: Set<HomeCardID> = []
+    static let baselineOrder: [HomeCardID] = [
+        .verseOfDay,
+        .resumeReading,
+        .timer,
+        .bibleStats,
+        .dailyFocus,
+        .streaks
+    ]
+    static let baselineHidden: Set<HomeCardID> = [.streaks]
     static let baselineMain: Set<HomeCardID> = [.verseOfDay, .resumeReading]
 
     init() {}
@@ -43,7 +51,7 @@ struct HomeLayoutStore {
                 let missing = HomeCardID.allCases.filter { !mapped.contains($0) }
                 return mapped + missing
             } else {
-                return HomeCardID.allCases
+                return Self.baselineOrder
             }
         }()
 
