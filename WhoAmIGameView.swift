@@ -229,13 +229,16 @@ struct WhoAmIGameView: View {
                         }
                     }
 
-                    HStack(spacing: 12) {
+                    if vm.roundOver {
+                        GameRoundNavigationButtons(
+                            canGoPrevious: false,
+                            canGoNext: true,
+                            onPrevious: {},
+                            onNext: { vm.nextRound() }
+                        )
+                    } else {
                         Button("Skip") { vm.skipOrTimeout() }
                             .buttonStyle(ModernPillButtonStyle(tint: .orange))
-                            .disabled(vm.roundOver)
-                        Button("Next") { vm.nextRound() }
-                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                            .disabled(!vm.roundOver)
                     }
 
                     if vm.roundOver {
@@ -634,14 +637,16 @@ private struct WhoAmIPlayCard: View {
 
             Spacer(minLength: 0)
 
-            HStack(spacing: 12) {
+            if roundOver {
+                GameRoundNavigationButtons(
+                    canGoPrevious: false,
+                    canGoNext: true,
+                    onPrevious: {},
+                    onNext: onNext
+                )
+            } else {
                 Button("Skip", action: onSkip)
                     .buttonStyle(ModernPillButtonStyle(tint: .orange))
-                    .disabled(roundOver)
-
-                Button("Next", action: onNext)
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                    .disabled(!roundOver)
             }
 
             if roundOver {

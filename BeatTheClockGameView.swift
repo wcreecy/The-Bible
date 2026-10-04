@@ -314,20 +314,19 @@ struct BeatTheClockGameView: View {
                         }
                     }
 
-                    HStack(spacing: 12) {
-                        Button("Previous", systemImage: "arrow.left") { }
-                            .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-                            .disabled(true)
-
+                    if selectionLocked {
+                        GameRoundNavigationButtons(
+                            canGoPrevious: false,
+                            canGoNext: true,
+                            onPrevious: {},
+                            onNext: nextRound
+                        )
+                    } else {
                         Button("Submit", systemImage: "paperplane.fill") {
                             submitCurrentEntry()
                         }
                         .buttonStyle(GameProminentButtonStyle(tint: .green))
                         .disabled(!canSubmit)
-
-                        Button("Next", systemImage: "arrow.right") { nextRound() }
-                            .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-                            .disabled(!selectionLocked)
                     }
                     if selectionLocked {
                         Button("Show answers (\(acceptableBooks.count))") { showAnswers = true }
@@ -912,18 +911,17 @@ private struct BeatTheClockDashboardActions: View {
 
     var body: some View {
         VStack(spacing: 10) {
-            HStack(spacing: 12) {
-                Button("Previous", systemImage: "arrow.left") { }
-                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-                    .disabled(true)
-
+            if isLocked {
+                GameRoundNavigationButtons(
+                    canGoPrevious: false,
+                    canGoNext: true,
+                    onPrevious: {},
+                    onNext: onNext
+                )
+            } else {
                 Button("Submit", systemImage: "paperplane.fill", action: onSubmit)
                     .buttonStyle(GameProminentButtonStyle(tint: .green))
                     .disabled(!canSubmit)
-
-                Button("Next", systemImage: "arrow.right", action: onNext)
-                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-                    .disabled(!isLocked)
             }
 
             if isLocked {

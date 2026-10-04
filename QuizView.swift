@@ -483,6 +483,13 @@ struct QuizView: View {
                                 )
                             }
                             .padding(.top, 4)
+
+                            GameRoundNavigationButtons(
+                                canGoPrevious: isPreviousEnabled,
+                                canGoNext: isNextEnabled,
+                                onPrevious: showPrevious,
+                                onNext: showNext
+                            )
                         }
 
                         // DEBUG: WIN button
@@ -562,20 +569,6 @@ struct QuizView: View {
                 }
             }
 
-            // Only show navigation buttons once the round has started
-            if started {
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    Button("Previous") { showPrevious() }
-                        .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
-                        .controlSize(.regular)
-                        .disabled(!isPreviousEnabled)
-
-                    Button("Next") { showNext() }
-                        .buttonStyle(ToolbarPillButtonStyle(tint: .accentColor))
-                        .controlSize(.regular)
-                        .disabled(!isNextEnabled)
-                }
-            }
         }
         .onAppear {
             storeSelectedSections(displayedSelectedSections)
@@ -1324,19 +1317,20 @@ private struct QuizDashboardActions: View {
     let onDebugWin: () -> Void
 
     var body: some View {
-        HStack(spacing: 12) {
-            Button("Previous", systemImage: "arrow.left", action: onPrevious)
-                .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-                .disabled(!canGoPrevious)
-
+        VStack(spacing: 12) {
             if showsDebugWin {
                 Button("Win", systemImage: "checkmark.seal.fill", action: onDebugWin)
                     .buttonStyle(GameProminentButtonStyle(tint: .red))
             }
 
-            Button("Next", systemImage: "arrow.right", action: onNext)
-                .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-                .disabled(!canGoNext)
+            if !showsDebugWin {
+                GameRoundNavigationButtons(
+                    canGoPrevious: canGoPrevious,
+                    canGoNext: canGoNext,
+                    onPrevious: onPrevious,
+                    onNext: onNext
+                )
+            }
         }
     }
 }
