@@ -3,12 +3,39 @@ import UIKit
 import Combine
 
 struct BeatTheClockGameView: View {
-    enum Difficulty: String, CaseIterable, Identifiable { case easy, normal, hard; var id: String { rawValue } }
-    enum Category: String, CaseIterable, Identifiable { case people = "People", places = "Places", both = "Both"; var id: String { rawValue } }
+    enum Difficulty: String, CaseIterable, Identifiable {
+        case easy
+        case normal
+        case hard
+
+        var id: String { rawValue }
+
+        var title: LocalizedStringResource {
+            switch self {
+            case .easy: "Easy"
+            case .normal: "Normal"
+            case .hard: "Hard"
+            }
+        }
+    }
+
+    enum Category: String, CaseIterable, Identifiable {
+        case people = "People"
+        case places = "Places"
+        case both = "Both"
+
+        var id: String { rawValue }
+
+        var title: LocalizedStringResource {
+            switch self {
+            case .people: "People"
+            case .places: "Places"
+            case .both: "Both"
+            }
+        }
+    }
 
     @State private var started: Bool = false
-    @State private var howToExpanded: Bool = false
-    @State private var difficultyExpanded: Bool = false
     @AppStorage("beatTheClockDifficulty") private var difficulty: Difficulty = .normal
     @AppStorage("beatTheClockCategory") private var category: Category = .people
 
@@ -120,73 +147,20 @@ struct BeatTheClockGameView: View {
                     Text("Type a Bible book that mentions the shown person or place before the timer runs out.")
                         .gameStartDescriptionStyle(title: "Beat the Clock", systemImage: "hourglass", tint: .indigo)
 
-                    GameStartInfoLayout {
-                        GroupBox {
-                            DisclosureGroup(isExpanded: $howToExpanded) {
-                                VStack(alignment: .leading, spacing: 12) {
-                                    Text("• Choose a category and difficulty, then tap Start.")
-                                    Text("• You'll see a person or place; type a Bible book that mentions it.")
-                                    Text("• Submit before the timer hits zero. Suggestions appear as you type.")
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            } label: {
-                                Text("How to Play").font(.headline)
-                            }
-                        }
+                    BeatTheClockSetupCard(
+                        category: category,
+                        difficulty: difficulty,
+                        roundTime: roundTime
+                    )
 
-                        GroupBox {
-                            DisclosureGroup(isExpanded: $difficultyExpanded) {
-                                VStack(alignment: .leading, spacing: 12) {
-                                    Text("• Easy: 25 seconds per round.")
-                                    Text("• Normal: 15 seconds per round.")
-                                    Text("• Hard: 8 seconds per round.")
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            } label: {
-                                Text("Difficulty Settings").font(.headline)
-                            }
-                        }
-
-                        GameStartCurrentGameCard {
-                            GameStartCurrentGameRow(label: "Category", value: category.rawValue)
-                            GameStartCurrentGameRow(
-                                label: "Difficulty",
-                                value: difficulty.rawValue.capitalized
-                            )
-                            GameStartCurrentGameRow(
-                                label: "Time Limit",
-                                value: "\(roundTime) seconds per round"
-                            )
-                        }
-                    }
-                    .gameStartOptionsStyle()
-                    .padding(.horizontal)
-
-                    GameStartSettingsLayout {
-                        GameStartPickerCard(
-                            title: "Category",
-                            selection: $category,
-                            options: Category.allCases
-                        ) { category in
-                            Text(category.rawValue)
-                        }
-
-                        GameStartPickerCard(
-                            title: "Difficulty",
-                            selection: $difficulty,
-                            options: Difficulty.allCases
-                        ) { difficulty in
-                            Text(difficulty.rawValue.capitalized)
-                        }
-                    }
-                    .padding(.horizontal)
+                    BeatTheClockSetupControls(
+                        difficulty: $difficulty,
+                        category: $category
+                    )
 
                     GameLobbyPreview(kind: .beatTheClock)
 
                     GameStartActionBar(action: startGame)
-                    GameSetupSummary(
-                        summary: "You’ll be shown \(category == .both ? "people and places" : category.rawValue.lowercased()) from the Bible and have \(roundTime) seconds to name a book that mentions each one."
-                    )
                     Spacer(minLength: 32)
                 } else {
                     if usesSplitLayout {
@@ -658,6 +632,92 @@ struct BeatTheClockGameView: View {
         case .normal: return .normal
         case .hard: return .hard
         }
+    }
+}
+
+private struct BeatTheClockSetupCard: View {
+    let category: BeatTheClockGameView.Category
+    let difficulty: BeatTheClockGameView.Difficulty
+    let roundTime: Int
+
+    private var summary: LocalizedStringResource {
+        switch category {
+        case .people:
+            "You’ll be shown people from the Bible and have \(roundTime) seconds to name a book that mentions each one."
+        case .places:
+            "You’ll be shown places from the Bible and have \(roundTime) seconds to name a book that mentions each one."
+        case .both:
+            "You’ll be shown people and places from the Bible and have \(roundTime) seconds to name a book that mentions each one."
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Your Game", systemImage: "checklist")
+                .font(.headline)
+                .foregroundStyle(.tint)
+
+            Text(summary)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Divider()
+
+            LabeledContent("Difficulty") {
+                Text(difficulty.title)
+                    .fontWeight(.semibold)
+            }
+
+            LabeledContent("Question Subject") {
+                Text(category.title)
+                    .fontWeight(.semibold)
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: 620, alignment: .leading)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
+        }
+        .padding(.horizontal)
+        .accessibilityElement(children: .contain)
+    }
+}
+
+private struct BeatTheClockSetupControls: View {
+    @Binding var difficulty: BeatTheClockGameView.Difficulty
+    @Binding var category: BeatTheClockGameView.Category
+
+    var body: some View {
+        VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Difficulty")
+                    .font(.headline)
+
+                Picker("Difficulty", selection: $difficulty) {
+                    ForEach(BeatTheClockGameView.Difficulty.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Question Subject")
+                    .font(.headline)
+
+                Picker("Question Subject", selection: $category) {
+                    ForEach(BeatTheClockGameView.Category.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+        }
+        .frame(maxWidth: 620)
+        .padding(.horizontal)
     }
 }
 
