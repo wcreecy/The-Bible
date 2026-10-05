@@ -234,10 +234,6 @@ struct QuizView: View {
     @State private var history: [QuizQuestion] = []
     @State private var currentIndex: Int = -1
     
-    // Start screen disclosures
-    @State private var howToExpanded: Bool = false
-    @State private var difficultyExpanded: Bool = false
-
     // MARK: - Question buffer (prefetch)
     @State private var questionBuffer: [QuizQuestion] = []
     private let bufferSize: Int = 5
@@ -267,103 +263,45 @@ struct QuizView: View {
                     Text("Test your knowledge by guessing the book of the Bible from a given verse.")
                         .gameStartDescriptionStyle(title: "Bible Quiz", systemImage: "questionmark.circle.fill", tint: .blue)
                     
-                    GameStartInfoLayout {
-                        GroupBox {
-                            DisclosureGroup(isExpanded: $howToExpanded) {
-                                VStack(alignment: .leading, spacing: 12) {
-                                    Text("• Pick a verse source, one or more Biblical Categories, and a difficulty, then tap Start.")
-                                    Text("• Read the verse, then choose the correct book from the options.")
-                                    Text("• In timed modes, answer before the clock runs out.")
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            } label: {
-                                Text("How to Play").font(.headline)
-                            }
-                        }
+                    QuizSetupCard(
+                        scope: quizScopeRaw,
+                        difficulty: quizDifficulty,
+                        categories: selectedSectionsTitle
+                    )
 
-                        GroupBox {
-                            DisclosureGroup(isExpanded: $difficultyExpanded) {
-                                VStack(alignment: .leading, spacing: 12) {
-                                    if selectedSections.isEmpty {
-                                        Text("• Easy: No timer; two answers from each testament.")
-                                        Text("• Medium: 15 seconds; answers from anywhere in the Bible.")
-                                        Text("• Hard: 8 seconds; all answers come from the verse’s Biblical Category. Acts and Apocalypse are excluded.")
-                                    } else {
-                                        Text("• Easy: No timer; two answers come from your selected Biblical Categories and two from elsewhere.")
-                                        Text("• Medium: 15 seconds; three answers come from your selected Biblical Categories and one from elsewhere in the same testament.")
-                                        Text("• Hard: 8 seconds; all answers come from the verse’s Biblical Category. Acts and Apocalypse are excluded.")
-                                    }
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            } label: {
-                                Text("Difficulty Settings").font(.headline)
-                            }
-                        }
-
-                        GameStartCurrentGameCard {
-                            GameStartCurrentGameRow(
-                                label: "Testament",
-                                value: quizScopeRaw == "whole" ? "Old & New Testaments" : quizScopeRaw == "old" ? "Old Testament" : "New Testament"
-                            )
-                            GameStartCurrentGameRow(
-                                label: "Biblical Categories",
-                                value: selectedSectionsTitle
-                            )
-                            GameStartCurrentGameRow(
-                                label: "Difficulty",
-                                value: quizDifficulty == "normal" ? "Medium" : quizDifficulty.capitalized
-                            )
-                            GameStartCurrentGameRow(
-                                label: "Time Limit",
-                                value: quizDifficulty == "easy" ? "No timer" : quizDifficulty == "normal" ? "15 seconds per question" : "8 seconds per question"
-                            )
-                        }
-                    }
-                    .gameStartOptionsStyle()
-                    .padding(.horizontal, usesSplitLayout ? 0 : 16)
-                    
-                    GameStartSettingsLayout {
-                        GameStartPickerCard(
-                            title: "Verse Source",
-                            selection: Binding<String>(get: { quizScopeRaw }, set: { new in
-                                quizScopeRaw = new
+                    QuizSetupControls(
+                        scope: Binding(
+                            get: { quizScopeRaw },
+                            set: { newValue in
+                                quizScopeRaw = newValue
                                 storeSelectedSections(selectedSections.intersection(availableSections))
-                            }),
-                            options: ["whole", "old", "new"]
-                        ) { source in
-                            Text(source == "whole" ? "OT & NT" : source == "old" ? "OT" : "NT")
-                        }
-
-                        GameStartMultiPickerCard(
-                            title: "Biblical Categories",
-                            selection: Binding<Set<VerseSection>>(
-                                get: { displayedSelectedSections },
-                                set: storeSelectedSections
-                            ),
-                            options: availableSections
-                        ) { section in
-                            Text(section.title)
-                        }
-
-                        GameStartPickerCard(
-                            title: "Difficulty",
-                            selection: Binding<String>(get: { quizDifficulty }, set: { new in
-                                quizDifficulty = new
+                            }
+                        ),
+                        difficulty: Binding(
+                            get: { quizDifficulty },
+                            set: { newValue in
+                                quizDifficulty = newValue
                                 rebuildPools()
-                            }),
-                            options: ["easy", "normal", "hard"]
-                        ) { difficulty in
-                            Text(difficulty == "normal" ? "Medium" : difficulty.capitalized)
-                        }
+                            }
+                        )
+                    )
+
+                    GameStartMultiPickerCard(
+                        title: "Biblical Categories",
+                        selection: Binding<Set<VerseSection>>(
+                            get: { displayedSelectedSections },
+                            set: storeSelectedSections
+                        ),
+                        options: availableSections
+                    ) { section in
+                        Text(section.title)
                     }
+                    .frame(maxWidth: 620)
                     .padding(.horizontal)
 
                     GameLobbyPreview(kind: .quiz)
 
                     GameStartActionBar(action: startQuiz)
-                    GameSetupSummary(
-                            summary: "Questions will come from \(quizScopeRaw == "whole" ? "the Old and New Testaments" : quizScopeRaw == "old" ? "the Old Testament" : "the New Testament").\n\nBiblical Categories: \(selectedSectionsTitle).\n\nDifficulty: \(quizDifficulty == "easy" ? "Easy. You can answer without a timer." : quizDifficulty == "normal" ? "Medium. You have 15 seconds to answer each question." : "Hard. You have 8 seconds to answer each question.")"
-                    )
                     Spacer(minLength: 48)
                 } else if usesSplitLayout {
                     QuizGameDashboard(
@@ -1068,6 +1006,114 @@ struct QuizView: View {
             modelContext.insert(fav)
             try? modelContext.save()
         }
+    }
+}
+
+private struct QuizSetupCard: View {
+    let scope: String
+    let difficulty: String
+    let categories: String
+
+    private var testamentTitle: LocalizedStringResource {
+        switch scope {
+        case "old": "Old Testament"
+        case "new": "New Testament"
+        default: "New & Old Testaments"
+        }
+    }
+
+    private var difficultyTitle: LocalizedStringResource {
+        switch difficulty {
+        case "easy": "Easy"
+        case "hard": "Hard"
+        default: "Normal"
+        }
+    }
+
+    private var summary: LocalizedStringResource {
+        switch difficulty {
+        case "easy":
+            "Choose the Bible book that contains each verse. There is no time limit."
+        case "hard":
+            "Choose the Bible book that contains each verse within 8 seconds."
+        default:
+            "Choose the Bible book that contains each verse within 15 seconds."
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Your Game", systemImage: "checklist")
+                .font(.headline)
+                .foregroundStyle(.tint)
+
+            Text(summary)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Divider()
+
+            LabeledContent("Difficulty") {
+                Text(difficultyTitle)
+                    .fontWeight(.semibold)
+            }
+
+            LabeledContent("Testament") {
+                Text(testamentTitle)
+                    .fontWeight(.semibold)
+            }
+
+            LabeledContent("Biblical Categories") {
+                Text(categories)
+                    .fontWeight(.semibold)
+                    .multilineTextAlignment(.trailing)
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: 620, alignment: .leading)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
+        }
+        .padding(.horizontal)
+        .accessibilityElement(children: .contain)
+    }
+}
+
+private struct QuizSetupControls: View {
+    @Binding var scope: String
+    @Binding var difficulty: String
+
+    var body: some View {
+        VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Difficulty")
+                    .font(.headline)
+
+                Picker("Difficulty", selection: $difficulty) {
+                    Text("Easy").tag("easy")
+                    Text("Normal").tag("normal")
+                    Text("Hard").tag("hard")
+                }
+                .pickerStyle(.segmented)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Testament")
+                    .font(.headline)
+
+                Picker("Testament", selection: $scope) {
+                    Text("NT/OT").tag("whole")
+                    Text("OT").tag("old")
+                    Text("NT").tag("new")
+                }
+                .pickerStyle(.segmented)
+            }
+        }
+        .frame(maxWidth: 620)
+        .padding(.horizontal)
     }
 }
 
