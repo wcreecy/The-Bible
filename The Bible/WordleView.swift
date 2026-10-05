@@ -37,8 +37,6 @@ struct WordleView: View {
     // MARK: - State
     @State private var started: Bool = false
     @State private var mode: Mode = .practice
-    @State private var howToExpanded: Bool = false
-    @State private var gameOptionsExpanded: Bool = false
 
     @State private var target: String = ""
     @State private var guesses: [String] = Array(repeating: "", count: 6)
@@ -464,73 +462,15 @@ struct WordleView: View {
             Text("Guess the 5‑letter word in 6 tries.\nUse the on‑screen keyboard or a connected keyboard.")
                 .gameStartDescriptionStyle(title: "WORD", systemImage: "square.grid.3x3.fill", tint: .mint)
 
-            GameStartInfoLayout {
-                GroupBox {
-                    DisclosureGroup(isExpanded: $howToExpanded) {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("• Enter a five-letter word, then submit your guess.")
-                            Text("• Green letters are correct and in the right position.")
-                            Text("• Yellow letters are in the word but in a different position.")
-                            Text("• Gray letters are not in the word.")
-                            Text("• The softly highlighted tile shows where the next letter will go.")
-                            Text("• Tap a green letter from an earlier guess to place and lock it in the same spot of your current guess.")
-                            Text("• Solve the word in six guesses or fewer.")
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    } label: {
-                        Text("How to Play").font(.headline)
-                    }
-                }
+            WordSetupCard(
+                mode: mode,
+                hardModeEnabled: hardModeEnabled
+            )
 
-                GroupBox {
-                    DisclosureGroup(isExpanded: $gameOptionsExpanded) {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("• Daily: Daily results count toward your stats and streaks, and it can normally be played once per day.")
-                            Text("• Practice: Play unlimited rounds with a new word each time. Practice results do not affect your stats or streaks.")
-                            Text("• Hard Mode: Green letters must stay fixed, and yellow letters must be used in later guesses.")
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    } label: {
-                        Text("Difficulty Settings").font(.headline)
-                    }
-                }
-
-                GameStartCurrentGameCard {
-                    GameStartCurrentGameRow(label: "Game Mode", value: mode.rawValue)
-                    GameStartCurrentGameRow(
-                        label: "Hard Mode",
-                        value: hardModeEnabled ? "On" : "Off"
-                    )
-                }
-            }
-            .gameStartOptionsStyle()
-            .padding(.horizontal)
-
-            GameStartSettingsLayout {
-                GameStartPickerCard(
-                    title: "Game Mode",
-                    selection: $mode,
-                    options: Mode.allCases
-                ) { mode in
-                    Text(mode.rawValue)
-                }
-
-                GameStartSettingCard(title: "Challenge") {
-                    Toggle(isOn: $hardModeEnabled) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Hard Mode")
-                                .font(.headline)
-                            Text("Keep green letters fixed and use yellow letters in later guesses.")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                    }
-                    .tint(.orange)
-                    .padding(.horizontal)
-                }
-            }
-            .padding(.horizontal)
+            WordSetupControls(
+                mode: $mode,
+                hardModeEnabled: $hardModeEnabled
+            )
 
             if mode == .daily && dailyCompletedToday && !wordleAllowDailyReplay {
                 HStack(alignment: .top, spacing: 8) {
@@ -566,11 +506,6 @@ struct WordleView: View {
                 isEnabled: mode != .daily || !dailyCompletedToday || wordleAllowDailyReplay,
                 action: { startNewRound(practice: mode == .practice) }
             )
-            GameSetupSummary(
-                summary: "You’ll play \(mode == .daily ? "today’s daily word" : "an unlimited practice word") with six guesses. \(hardModeEnabled ? "Hard Mode requires revealed letters to be reused." : "Hard Mode is off.")"
-            )
-            .disabled(mode == .daily && dailyCompletedToday && !wordleAllowDailyReplay)
-
             Spacer(minLength: 24)
         }
         .gameStartScreenStyle()
@@ -1457,6 +1392,102 @@ struct WordleView: View {
       return String(format: "%d:%02d", m, sec)
     }
   }
+}
+
+private struct WordSetupCard: View {
+    let mode: WordleView.Mode
+    let hardModeEnabled: Bool
+
+    private var difficultyTitle: LocalizedStringResource {
+        hardModeEnabled ? "Hard" : "Normal"
+    }
+
+    private var gameTypeTitle: LocalizedStringResource {
+        switch mode {
+        case .daily: "Daily"
+        case .practice: "Practice"
+        }
+    }
+
+    private var summary: LocalizedStringResource {
+        switch (mode, hardModeEnabled) {
+        case (.daily, false):
+            "Solve today’s five-letter word in six guesses. Normal difficulty has no required-letter restrictions. Daily can be played once per day, and your score is recorded."
+        case (.daily, true):
+            "Solve today’s five-letter word in six guesses. Hard difficulty requires green letters to stay fixed and yellow letters to be reused. Daily can be played once per day, and your score is recorded."
+        case (.practice, false):
+            "Solve a five-letter word in six guesses. Normal difficulty has no required-letter restrictions. Practice offers unlimited games, but scores are not recorded."
+        case (.practice, true):
+            "Solve a five-letter word in six guesses. Hard difficulty requires green letters to stay fixed and yellow letters to be reused. Practice offers unlimited games, but scores are not recorded."
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Your Game", systemImage: "checklist")
+                .font(.headline)
+                .foregroundStyle(.tint)
+
+            Text(summary)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Divider()
+
+            LabeledContent("Difficulty") {
+                Text(difficultyTitle)
+                    .fontWeight(.semibold)
+            }
+
+            LabeledContent("Game Type") {
+                Text(gameTypeTitle)
+                    .fontWeight(.semibold)
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: 620, alignment: .leading)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
+        }
+        .padding(.horizontal)
+        .accessibilityElement(children: .contain)
+    }
+}
+
+private struct WordSetupControls: View {
+    @Binding var mode: WordleView.Mode
+    @Binding var hardModeEnabled: Bool
+
+    var body: some View {
+        VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Difficulty")
+                    .font(.headline)
+
+                Picker("Difficulty", selection: $hardModeEnabled) {
+                    Text("Normal").tag(false)
+                    Text("Hard").tag(true)
+                }
+                .pickerStyle(.segmented)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Game Type")
+                    .font(.headline)
+
+                Picker("Game Type", selection: $mode) {
+                    Text("Daily").tag(WordleView.Mode.daily)
+                    Text("Practice").tag(WordleView.Mode.practice)
+                }
+                .pickerStyle(.segmented)
+            }
+        }
+        .frame(maxWidth: 620)
+        .padding(.horizontal)
+    }
 }
 
 private struct WordGameResponsiveLayout<
