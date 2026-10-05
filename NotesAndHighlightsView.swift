@@ -933,12 +933,10 @@ struct NotesAndHighlightsView: View {
         .searchable(text: $searchText, prompt: "Search all notes")
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
-                if horizontalSizeClass == .compact {
-                    NotesFilterMenu(
-                        highlightFilter: $highlightFilter,
-                        presentation: .toolbar
-                    )
-                }
+                NotesFilterMenu(
+                    highlightFilter: $highlightFilter,
+                    presentation: .toolbar
+                )
 
                 Menu {
                     Picker("Sort By", selection: $sortRawValue) {
@@ -1002,7 +1000,6 @@ struct NotesAndHighlightsView: View {
                     selectedScriptureNote: $selectedScriptureNote,
                     selectedUserNote: $selectedUserNote,
                     selectedFilter: $selectedFilter,
-                    highlightFilter: $highlightFilter,
                     selectionAction: { isShowingCompactDetail = true }
                 )
                 .frame(maxWidth: .infinity)
@@ -1026,16 +1023,17 @@ struct NotesAndHighlightsView: View {
             contextualTip
 
             GeometryReader { proxy in
-                HStack(spacing: 16) {
+                HStack(alignment: .top, spacing: 16) {
                     NotesListCard(
                         notes: visibleNotes,
                         selectedScriptureNote: $selectedScriptureNote,
                         selectedUserNote: $selectedUserNote,
                         selectedFilter: $selectedFilter,
-                        highlightFilter: $highlightFilter,
                         selectionAction: {}
                     )
                     .frame(width: max(300, (proxy.size.width - 16) * 0.4))
+                    .frame(height: min(compactNotesCardHeight, proxy.size.height))
+                    .heroCardSurface()
 
                     NoteDetailCard(
                         scriptureNote: selectedScriptureNote,
@@ -1257,53 +1255,25 @@ private struct NotesListCard: View {
     @Binding var selectedScriptureNote: VerseNote?
     @Binding var selectedUserNote: UserNote?
     @Binding var selectedFilter: NotesFilter
-    @Binding var highlightFilter: NotesHighlightFilter
     let selectionAction: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if horizontalSizeClass != .compact {
-                HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Library")
-                            .font(.headline)
-
-                        Text("\(notes.count) notes")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
-
-                    NotesFilterMenu(
-                        highlightFilter: $highlightFilter
-                    )
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 11)
-            }
-
-            if horizontalSizeClass != .compact {
-                Divider()
-            }
-
             List {
-                if horizontalSizeClass == .compact {
-                    Text(selectedFilter.libraryTitle(noteCount: notes.count))
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(
-                            EdgeInsets(
-                                top: AppDesignMetrics.cardPadding,
-                                leading: AppDesignMetrics.cardPadding,
-                                bottom: 4,
-                                trailing: AppDesignMetrics.cardPadding
-                            )
+                Text(selectedFilter.libraryTitle(noteCount: notes.count))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(
+                        EdgeInsets(
+                            top: AppDesignMetrics.cardPadding,
+                            leading: AppDesignMetrics.cardPadding,
+                            bottom: 4,
+                            trailing: AppDesignMetrics.cardPadding
                         )
-                }
+                    )
 
                 if notes.isEmpty {
                     ContentUnavailableView(
@@ -1357,9 +1327,7 @@ private struct NotesListCard: View {
                                     : Color.clear
                             )
                             .listRowSeparator(
-                                horizontalSizeClass == .compact && item.id == notes.last?.id
-                                    ? .hidden
-                                    : .visible
+                                item.id == notes.last?.id ? .hidden : .visible
                             )
                             .listRowSeparatorTint(Color.primary.opacity(0.09))
                             .listRowInsets(EdgeInsets())
@@ -1403,9 +1371,7 @@ private struct NotesListCard: View {
                                     : Color.clear
                             )
                             .listRowSeparator(
-                                horizontalSizeClass == .compact && item.id == notes.last?.id
-                                    ? .hidden
-                                    : .visible
+                                item.id == notes.last?.id ? .hidden : .visible
                             )
                             .listRowSeparatorTint(Color.primary.opacity(0.09))
                             .listRowInsets(EdgeInsets())
@@ -1418,16 +1384,7 @@ private struct NotesListCard: View {
             .scrollContentBackground(.hidden)
             .contentMargins(.vertical, 0, for: .scrollContent)
         }
-        .background(
-            horizontalSizeClass == .compact
-                ? Color.clear
-                : Color(uiColor: .secondarySystemBackground).opacity(0.72)
-        )
-        .overlay(alignment: .trailing) {
-            if horizontalSizeClass != .compact {
-                Divider()
-            }
-        }
+        .background(Color.clear)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
