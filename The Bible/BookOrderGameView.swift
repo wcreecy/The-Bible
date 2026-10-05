@@ -2,8 +2,6 @@ import SwiftUI
 
 struct BookOrderGameView: View {
     @State private var vm = BookOrderGameViewModel()
-    @State private var howToExpanded: Bool = false
-    @State private var difficultyExpanded: Bool = false
     @State private var elapsedSeconds: Int = 0
     @State private var isTimerHidden: Bool = false
 
@@ -18,86 +16,19 @@ struct BookOrderGameView: View {
                     Text("Rearrange the books in the correct order.")
                     .gameStartDescriptionStyle(title: "Book Order", systemImage: "list.number", tint: .purple)
 
-                    GameStartInfoLayout {
-                        GroupBox {
-                            DisclosureGroup(isExpanded: $howToExpanded) {
-                                VStack(alignment: .leading, spacing: 12) {
-                                    Text("• Choose a source (OT/NT) and difficulty, then tap Start.")
-                                    Text("• Drag the rows to arrange the books in canonical order.")
-                                    Text("• Tap Check to see results; then tap Next for a new round.")
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            } label: {
-                                Text("How to Play").font(.headline)
-                            }
-                        }
+                    BookOrderSetupCard(
+                        source: vm.source,
+                        difficulty: vm.difficulty
+                    )
 
-                        GroupBox {
-                            DisclosureGroup(isExpanded: $difficultyExpanded) {
-                                VStack(alignment: .leading, spacing: 12) {
-                                    Text("• Easy: Arrange 5 books.")
-                                    Text("• Normal: Arrange 10 books.")
-                                    Text("• Hard: Arrange 15 books.")
-                                    Text("• All Books: Arrange the entire selected canon.")
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            } label: {
-                                Text("Difficulty Settings").font(.headline)
-                            }
-                        }
-
-                        GameStartCurrentGameCard {
-                            GameStartCurrentGameRow(
-                                label: "Source",
-                                value: vm.source == .both ? "Old & New Testaments" : vm.source == .ot ? "Old Testament" : "New Testament"
-                            )
-                            GameStartCurrentGameRow(
-                                label: "Difficulty",
-                                value: vm.difficulty == .easy ? "Easy" : vm.difficulty == .normal ? "Normal" : vm.difficulty == .hard ? "Hard" : "All Books"
-                            )
-                            GameStartCurrentGameRow(
-                                label: "Books per Round",
-                                value: vm.difficulty == .easy ? "5" : vm.difficulty == .normal ? "10" : vm.difficulty == .hard ? "15" : "Entire selected canon"
-                            )
-                        }
-                    }
-                    .gameStartOptionsStyle()
-                    .padding(.horizontal)
-
-                    GameStartSettingsLayout {
-                        GameStartPickerCard(
-                            title: "Book Source",
-                            selection: $vm.source,
-                            options: [.both, .ot, .nt]
-                        ) { source in
-                            switch source {
-                            case .both: Text("OT & NT")
-                            case .ot: Text("OT")
-                            case .nt: Text("NT")
-                            }
-                        }
-
-                        GameStartPickerCard(
-                            title: "Difficulty",
-                            selection: $vm.difficulty,
-                            options: BookOrderDifficulty.allCases
-                        ) { difficulty in
-                            switch difficulty {
-                            case .easy: Text("Easy")
-                            case .normal: Text("Normal")
-                            case .hard: Text("Hard")
-                            case .all: Text("All Books")
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
+                    BookOrderSetupControls(
+                        source: $vm.source,
+                        difficulty: $vm.difficulty
+                    )
 
                     GameLobbyPreview(kind: .bookOrder)
 
                     GameStartActionBar(action: startGame)
-                    GameSetupSummary(
-                        summary: "You’ll arrange \(vm.difficulty == .easy ? "5" : vm.difficulty == .normal ? "10" : vm.difficulty == .hard ? "15" : "all selected") books from \(vm.source == .both ? "the Old and New Testaments" : vm.source == .ot ? "the Old Testament" : "the New Testament") in canonical order."
-                    )
                 }
                 .padding()
                 Spacer()
@@ -460,6 +391,112 @@ struct BookOrderGameView: View {
         vm.showResult = false
         vm.showingCorrectOrder = false
         vm.nextRound()
+    }
+}
+
+private struct BookOrderSetupCard: View {
+    let source: BookSourceScope
+    let difficulty: BookOrderDifficulty
+
+    private var sourceTitle: LocalizedStringResource {
+        switch source {
+        case .both: "New & Old Testaments"
+        case .ot: "Old Testament"
+        case .nt: "New Testament"
+        }
+    }
+
+    private var difficultyTitle: LocalizedStringResource {
+        switch difficulty {
+        case .easy: "Easy"
+        case .normal: "Normal"
+        case .hard: "Hard"
+        case .all: "Expert"
+        }
+    }
+
+    private var summary: LocalizedStringResource {
+        switch difficulty {
+        case .easy:
+            "Arrange 5 books from the selected testament in canonical order."
+        case .normal:
+            "Arrange 10 books from the selected testament in canonical order."
+        case .hard:
+            "Arrange 15 books from the selected testament in canonical order."
+        case .all:
+            "Arrange all 66 books of the Bible in canonical order."
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Your Game", systemImage: "checklist")
+                .font(.headline)
+                .foregroundStyle(.tint)
+
+            Text(summary)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Divider()
+
+            LabeledContent("Difficulty") {
+                Text(difficultyTitle)
+                    .fontWeight(.semibold)
+            }
+
+            LabeledContent("Testament") {
+                Text(difficulty == .all ? "New & Old Testaments" : sourceTitle)
+                    .fontWeight(.semibold)
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: 620, alignment: .leading)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
+        }
+        .padding(.horizontal)
+        .accessibilityElement(children: .contain)
+    }
+}
+
+private struct BookOrderSetupControls: View {
+    @Binding var source: BookSourceScope
+    @Binding var difficulty: BookOrderDifficulty
+
+    var body: some View {
+        VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Difficulty")
+                    .font(.headline)
+
+                Picker("Difficulty", selection: $difficulty) {
+                    Text("Easy").tag(BookOrderDifficulty.easy)
+                    Text("Normal").tag(BookOrderDifficulty.normal)
+                    Text("Hard").tag(BookOrderDifficulty.hard)
+                    Text("Expert").tag(BookOrderDifficulty.all)
+                }
+                .pickerStyle(.segmented)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Testament")
+                    .font(.headline)
+
+                Picker("Testament", selection: $source) {
+                    Text("NT/OT").tag(BookSourceScope.both)
+                    Text("OT").tag(BookSourceScope.ot)
+                    Text("NT").tag(BookSourceScope.nt)
+                }
+                .pickerStyle(.segmented)
+                .disabled(difficulty == .all)
+            }
+        }
+        .frame(maxWidth: 620)
+        .padding(.horizontal)
     }
 }
 

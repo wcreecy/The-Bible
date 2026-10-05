@@ -165,7 +165,7 @@ final class BookOrderGameViewModel {
     }
     
     func nextRound() {
-        let canon = workingCanon()
+        let canon = difficulty == .all ? BibleCanon.canonicalOrder() : workingCanon()
         guard !canon.isEmpty else {
             currentItems = []
             correctOrder = []
@@ -289,10 +289,14 @@ final class BookOrderGameViewModel {
     var prompt: String {
         let base = "Arrange these books in canonical order"
         let scope: String
-        switch source {
-        case .both: scope = "(Whole Bible)"
-        case .ot:   scope = "(Old Testament)"
-        case .nt:   scope = "(New Testament)"
+        if difficulty == .all {
+            scope = "(Whole Bible)"
+        } else {
+            switch source {
+            case .both: scope = "(Whole Bible)"
+            case .ot:   scope = "(Old Testament)"
+            case .nt:   scope = "(New Testament)"
+            }
         }
         if let a = sliceFirst, let b = sliceLast, difficulty != .all {
             return "\(base) \(scope) — \(a) to \(b)"
