@@ -24,6 +24,7 @@ struct ScripturePickerView: View {
     @State private var selectedChapter: Int = 1
     @State private var selectedVerse: Int = 1
     @State private var previewText: String = ""
+    @State private var bookSearchText: String = ""
 
     // Async book load cancellation
     @State private var loadTask: Task<Void, Never>? = nil
@@ -83,7 +84,7 @@ struct ScripturePickerView: View {
             } header: {
                 Text("Scripture")
             } footer: {
-                Text("Tap Book, Chapter, or Verse to choose. The wheel now snaps precisely to the nearest option.")
+                Text("Tap Book, Chapter, or Verse to choose, then scroll or tap an option.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -146,51 +147,54 @@ struct ScripturePickerView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     switch which {
                     case .book:
-                        ModernWheelCard {
-                            ModernWheelPicker(
-                                items: allBookNames,
-                                id: \.self,
-                                label: { Text($0).font(.headline) },
-                                selection: $bookSelection
-                            )
+                        List(filteredBookNames, id: \.self) { bookName in
+                            Button {
+                                bookSelection = bookName
+                                UISelectionFeedbackGenerator().selectionChanged()
+                                loadTask?.cancel()
+                                loadTask = Task {
+                                    await loadBook(named: bookName, seedChapter: nil, seedVerse: nil)
+                                    guard !Task.isCancelled, loadedBook?.name == bookName else { return }
+                                    activePicker = nil
+                                }
+                            } label: {
+                                HStack {
+                                    Text(bookName)
+                                        .foregroundStyle(.primary)
+                                    Spacer()
+                                    if bookName == bookSelection {
+                                        Image(systemName: "checkmark")
+                                            .fontWeight(.semibold)
+                                            .foregroundStyle(Color.accentColor)
+                                    }
+                                }
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .onChangeCompat(of: bookSelection) { _, newValue in
-                            let h = UISelectionFeedbackGenerator(); h.selectionChanged()
-                            loadTask?.cancel()
-                            loadTask = Task { await loadBook(named: newValue, seedChapter: nil, seedVerse: nil) }
-                        } legacy: { newValue in
-                            let h = UISelectionFeedbackGenerator(); h.selectionChanged()
-                            loadTask?.cancel()
-                            loadTask = Task { await loadBook(named: newValue, seedChapter: nil, seedVerse: nil) }
-                        }
+                        .listStyle(.plain)
+                        .searchable(text: $bookSearchText, prompt: "Search books")
 
                     case .chapter:
                         if let book = loadedBook {
-                            ModernWheelCard {
-                                ModernWheelPicker(
-                                    items: book.chapters.map { $0.number },
-                                    id: \.self,
-                                    label: { Text("\($0)").font(.headline) },
-                                    selection: $selectedChapter
-                                )
+                            List(book.chapters, id: \.number) { chapter in
+                                Button {
+                                    selectedChapter = chapter.number
+                                    let first = chapter.verses.first?.number ?? 1
+                                    let last = chapter.verses.last?.number ?? first
+                                    selectedVerse = min(max(selectedVerse, first), last)
+                                    updatePreviewText()
+                                    UISelectionFeedbackGenerator().selectionChanged()
+                                    activePicker = nil
+                                } label: {
+                                    selectionOptionRow(
+                                        title: "Chapter \(chapter.number)",
+                                        isSelected: chapter.number == selectedChapter
+                                    )
+                                }
+                                .buttonStyle(.plain)
                             }
-                            .onChangeCompat(of: selectedChapter) { _, newValue in
-                                let h = UISelectionFeedbackGenerator(); h.selectionChanged()
-                                // Clamp verse for new chapter
-                                guard let ch = book.chapters.first(where: { $0.number == newValue }) else { return }
-                                let first = ch.verses.first?.number ?? 1
-                                let last = ch.verses.last?.number ?? first
-                                selectedVerse = min(max(selectedVerse, first), last)
-                                updatePreviewText()
-                            } legacy: { newValue in
-                                let h = UISelectionFeedbackGenerator(); h.selectionChanged()
-                                // Clamp verse for new chapter
-                                guard let ch = book.chapters.first(where: { $0.number == newValue }) else { return }
-                                let first = ch.verses.first?.number ?? 1
-                                let last = ch.verses.last?.number ?? first
-                                selectedVerse = min(max(selectedVerse, first), last)
-                                updatePreviewText()
-                            }
+                            .listStyle(.plain)
                         } else {
                             ContentUnavailableView("Choose a book first", systemImage: "book")
                                 .padding()
@@ -198,21 +202,21 @@ struct ScripturePickerView: View {
 
                     case .verse:
                         if let ch = currentChapter() {
-                            ModernWheelCard {
-                                ModernWheelPicker(
-                                    items: ch.verses.map { $0.number },
-                                    id: \.self,
-                                    label: { Text("\($0)").font(.headline) },
-                                    selection: $selectedVerse
-                                )
+                            List(ch.verses) { verse in
+                                Button {
+                                    selectedVerse = verse.number
+                                    updatePreviewText()
+                                    UISelectionFeedbackGenerator().selectionChanged()
+                                    activePicker = nil
+                                } label: {
+                                    selectionOptionRow(
+                                        title: "Verse \(verse.number)",
+                                        isSelected: verse.number == selectedVerse
+                                    )
+                                }
+                                .buttonStyle(.plain)
                             }
-                            .onChangeCompat(of: selectedVerse) { _, _ in
-                                let h = UISelectionFeedbackGenerator(); h.selectionChanged()
-                                updatePreviewText()
-                            } legacy: { _ in
-                                let h = UISelectionFeedbackGenerator(); h.selectionChanged()
-                                updatePreviewText()
-                            }
+                            .listStyle(.plain)
                         } else {
                             ContentUnavailableView("Choose a chapter first", systemImage: "text.book.closed")
                                 .padding()
@@ -282,6 +286,26 @@ struct ScripturePickerView: View {
         }
     }
 
+    private var filteredBookNames: [String] {
+        let query = bookSearchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return allBookNames }
+        return allBookNames.filter { $0.localizedCaseInsensitiveContains(query) }
+    }
+
+    private func selectionOptionRow(title: String, isSelected: Bool) -> some View {
+        HStack {
+            Text(title)
+                .foregroundStyle(.primary)
+            Spacer()
+            if isSelected {
+                Image(systemName: "checkmark")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color.accentColor)
+            }
+        }
+        .contentShape(Rectangle())
+    }
+
     private func currentChapter() -> Chapter? {
         guard let b = loadedBook else { return nil }
         return b.chapters.first(where: { $0.number == selectedChapter })
@@ -307,6 +331,7 @@ struct ScripturePickerView: View {
         let prevVerse = selectedVerse
 
         if let b = await BibleRepository.shared.loadBook(named: name) {
+                guard !Task.isCancelled, bookSelection == name else { return }
                 loadedBook = b
 
                 // Decide chapter:
@@ -348,11 +373,13 @@ struct ScripturePickerView: View {
                     selectedVerse = 1
                     previewText = ""
                 }
-        } else {
+        } else if !Task.isCancelled, bookSelection == name {
             loadedBook = nil
             loadError = true
         }
-        isLoadingBook = false
+        if bookSelection == name {
+            isLoadingBook = false
+        }
     }
 
     private func updatePreviewText() {
@@ -363,255 +390,5 @@ struct ScripturePickerView: View {
             return
         }
         previewText = verse.text
-    }
-}
-
-// MARK: - Modern wheel shell with glassy card styling
-private struct ModernWheelCard<Content: View>: View {
-    @ViewBuilder var content: Content
-
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color(.secondarySystemBackground),
-                            Color(.systemBackground)
-                        ],
-                        startPoint: .topLeading, endPoint: .bottomTrailing
-                    )
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(Color.black.opacity(0.06), lineWidth: 1)
-                )
-                .shadow(color: .black.opacity(0.06), radius: 12, x: 0, y: 6)
-
-            content
-                .padding(8)
-        }
-    }
-}
-
-// MARK: - PreferenceKeys to track scroll offset and row centers
-private struct ScrollOffsetPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
-    }
-}
-
-private struct RowCentersPreferenceKey<ID: Hashable>: PreferenceKey {
-    static var defaultValue: [ID: CGFloat] { [:] }
-    static func reduce(value: inout [ID: CGFloat], nextValue: () -> [ID: CGFloat]) {
-        value.merge(nextValue(), uniquingKeysWith: { $1 })
-    }
-}
-
-// MARK: - Modern, snapping, scalable wheel picker (iOS 16+, uses native snapping on iOS 17)
-private struct ModernWheelPicker<Item: Hashable, ID: Hashable, Label: View>: View {
-    let items: [Item]
-    let id: KeyPath<Item, ID>
-    let label: (Item) -> Label
-    @Binding var selection: Item
-
-    // Tunables
-    private let rowHeight: CGFloat = 40
-    private let visiblePadRows: Int = 3 // padding rows above/below to center the selection
-    private let scaleRange: ClosedRange<CGFloat> = 0.85...1.12
-    private let opacityRange: ClosedRange<Double> = 0.45...1.0
-    private let selectionBandHeight: CGFloat = 34
-
-    @State private var scrollOffset: CGFloat = 0
-    @State private var rowCenters: [ID: CGFloat] = [:]
-    @State private var isDragging: Bool = false
-    @State private var snapWorkItem: DispatchWorkItem?
-
-    var body: some View {
-        ZStack {
-            // Selection band
-            GeometryReader { geo in
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(.ultraThinMaterial.opacity(0.6))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .stroke(Color.accentColor.opacity(0.35), lineWidth: 1)
-                    )
-                    .frame(height: selectionBandHeight)
-                    .shadow(color: .black.opacity(0.07), radius: 2, x: 0, y: 1)
-                    .position(x: geo.size.width / 2, y: geo.size.height / 2)
-            }
-            .allowsHitTesting(false)
-
-            // Scrolling content
-            GeometryReader { geo in
-                let centerY = geo.size.height / 2
-
-                ScrollViewReader { proxy in
-                    ScrollView(.vertical, showsIndicators: false) {
-                        VStack(spacing: 0) {
-                            // Top padding to allow centering
-                            Color.clear.frame(height: rowHeight * CGFloat(visiblePadRows))
-
-                            ForEach(items, id: id) { item in
-                                rowView(for: item, centerY: centerY)
-                                    .frame(height: rowHeight)
-                                    .id(item[keyPath: id])
-                                    .background(
-                                        GeometryReader { rowGeo in
-                                            let mid = rowGeo.frame(in: .named("scroll")).midY
-                                            Color.clear
-                                                .preference(
-                                                    key: RowCentersPreferenceKey<ID>.self,
-                                                    value: [item[keyPath: id]: mid]
-                                                )
-                                        }
-                                    )
-                            }
-
-                            // Bottom padding
-                            Color.clear.frame(height: rowHeight * CGFloat(visiblePadRows))
-                        }
-                        .background(
-                            GeometryReader { innerGeo in
-                                Color.clear
-                                    .preference(key: ScrollOffsetPreferenceKey.self,
-                                                value: innerGeo.frame(in: .named("scroll")).minY)
-                            }
-                        )
-                    }
-                    .coordinateSpace(name: "scroll")
-                    .onPreferenceChange(ScrollOffsetPreferenceKey.self) { _ in
-                        // Debounce snapping to allow deceleration to finish
-                        scheduleSnap(proxy: proxy, containerCenterY: centerY)
-                    }
-                    .onPreferenceChange(RowCentersPreferenceKey<ID>.self) { centers in
-                        rowCenters = centers
-                    }
-                    .onAppear {
-                        // Scroll initial selection into center
-                        DispatchQueue.main.async {
-                            proxy.scrollTo(selection[keyPath: id], anchor: .center)
-                        }
-                    }
-                    .gesture(
-                        DragGesture()
-                            .onChanged { _ in isDragging = true }
-                            .onEnded { _ in
-                                isDragging = false
-                                // Snap immediately when drag ends
-                                snapNow(proxy: proxy, containerCenterY: centerY)
-                            }
-                    )
-                    .onChangeCompat(of: selection) { _, newValue in
-                        // Programmatically scroll if selection changed externally
-                        withAnimation(.spring(response: 0.28, dampingFraction: 0.88)) {
-                            proxy.scrollTo(newValue[keyPath: id], anchor: .center)
-                        }
-                    } legacy: { newValue in
-                        // Programmatically scroll if selection changed externally
-                        withAnimation(.spring(response: 0.28, dampingFraction: 0.88)) {
-                            proxy.scrollTo(newValue[keyPath: id], anchor: .center)
-                        }
-                    }
-                }
-            }
-
-            // Edge fades
-            VStack {
-                LinearGradient(
-                    colors: [Color(.systemBackground), Color(.systemBackground).opacity(0)],
-                    startPoint: .top, endPoint: .bottom
-                )
-                .frame(height: 18)
-                Spacer()
-                LinearGradient(
-                    colors: [Color(.systemBackground).opacity(0), Color(.systemBackground)],
-                    startPoint: .top, endPoint: .bottom
-                )
-                .frame(height: 18)
-            }
-            .allowsHitTesting(false)
-        }
-        .frame(minHeight: rowHeight * CGFloat(visiblePadRows * 2 + 3)) // ensure room for a few rows
-        .accessibilityElement(children: .contain)
-    }
-
-    private func rowView(for item: Item, centerY: CGFloat) -> some View {
-        GeometryReader { rowGeo in
-            let rowCenter = rowGeo.frame(in: .named("scroll")).midY
-            let distance = abs(rowCenter - centerY)
-            let maxDistance = rowHeight * CGFloat(visiblePadRows + 1)
-            let t = max(0, min(1, 1 - (distance / maxDistance))) // 1 at center, 0 far
-
-            let scale = scaleRange.lowerBound + (scaleRange.upperBound - scaleRange.lowerBound) * t
-            let opacity = opacityRange.lowerBound + (opacityRange.upperBound - opacityRange.lowerBound) * Double(t)
-            let weight: Font.Weight = t > 0.85 ? .semibold : .regular
-            let color: Color = t > 0.85 ? .primary : .secondary
-
-            Button {
-                // Tap to select and snap
-                selection = item
-                let gen = UISelectionFeedbackGenerator(); gen.selectionChanged()
-            } label: {
-                label(item)
-                    .fontWeight(weight)
-                    .foregroundStyle(color)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .scaleEffect(scale)
-                    .opacity(opacity)
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-        }
-    }
-
-    // Debounced snapping while scrolling (helps after deceleration)
-    private func scheduleSnap(proxy: ScrollViewProxy, containerCenterY: CGFloat) {
-        snapWorkItem?.cancel()
-        let item = DispatchWorkItem { [isDragging] in
-            if !isDragging {
-                snapNow(proxy: proxy, containerCenterY: containerCenterY)
-            }
-        }
-        snapWorkItem = item
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12, execute: item)
-    }
-
-    private func snapNow(proxy: ScrollViewProxy, containerCenterY: CGFloat) {
-        guard let nearest = nearestItem(to: containerCenterY) else { return }
-        if nearest != selection {
-            selection = nearest
-        }
-        withAnimation(.spring(response: 0.28, dampingFraction: 0.88)) {
-            proxy.scrollTo(nearest[keyPath: id], anchor: .center)
-        }
-    }
-
-    private func nearestItem(to centerY: CGFloat) -> Item? {
-        // Find the ID whose midY is closest to centerY
-        guard !rowCenters.isEmpty else { return nil }
-        let closest = rowCenters.min(by: { abs($0.value - centerY) < abs($1.value - centerY) })
-        guard let closestID = closest?.key else { return nil }
-        return items.first(where: { $0[keyPath: id] == closestID })
-    }
-}
-
-// MARK: - Backward-compatible onChange helper
-private extension View {
-    @ViewBuilder
-    func onChangeCompat<V: Equatable>(
-        of value: V,
-        perform: @escaping (_ oldValue: V, _ newValue: V) -> Void,
-        legacy: @escaping (_ newValue: V) -> Void
-    ) -> some View {
-        if #available(iOS 17.0, *) {
-            self.onChange(of: value) { oldValue, newValue in
-                perform(oldValue, newValue)
-            }
-        } else {
-            self.onChange(of: value, perform: legacy)
-        }
     }
 }
