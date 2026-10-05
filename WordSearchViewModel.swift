@@ -9,10 +9,22 @@ import SwiftData
 final class WordSearchViewModel {
     // Public UI state
     var started: Bool = false
-    var howToExpanded: Bool = false
-    var difficultyExpanded: Bool = false
     var difficulty: WordSearchEngine.Difficulty = .medium
-    enum GameMode: String, CaseIterable, Identifiable { case normal, blind, favorites; var id: String { rawValue }; var displayName: String { switch self { case .normal: return "Normal"; case .blind: return "Blind"; case .favorites: return "Favorites" } } }
+    enum GameMode: String, CaseIterable, Identifiable {
+        case normal
+        case blind
+        case favorites
+
+        var id: String { rawValue }
+
+        var displayName: String {
+            switch self {
+            case .normal: return "Standard"
+            case .blind: return "Blind"
+            case .favorites: return "Favorites"
+            }
+        }
+    }
     var gameMode: GameMode = .normal
 
     // Timer

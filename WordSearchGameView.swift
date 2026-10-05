@@ -36,8 +36,6 @@ struct WordSearchGameView: View {
                 VStack(spacing: 16) {
                     if !vm.started {
                         WordSearchStartScreen(
-                            howToExpanded: $vm.howToExpanded,
-                            difficultyExpanded: $vm.difficultyExpanded,
                             difficulty: $vm.difficulty,
                             gameMode: $vm.gameMode,
                             isTimedMode: $vm.isTimedMode,

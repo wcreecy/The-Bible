@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct WordSearchStartScreen: View {
-    @Binding var howToExpanded: Bool
-    @Binding var difficultyExpanded: Bool
     @Binding var difficulty: WordSearchEngine.Difficulty
     @Binding var gameMode: WordSearchViewModel.GameMode
     @Binding var isTimedMode: Bool
@@ -15,71 +13,17 @@ struct WordSearchStartScreen: View {
             Text("Find hidden words from a random Bible verse.")
                 .gameStartDescriptionStyle(title: "Word Search", systemImage: "square.grid.3x3.topleft.filled", tint: .green)
 
-            GameStartInfoLayout {
-                GroupBox {
-                    DisclosureGroup(isExpanded: $howToExpanded) {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("• Tap Start to generate a new puzzle.")
-                            Text("• Drag across letters to select a word.")
-                            Text("• Easy/Normal: words can be horizontal, vertical, or diagonal (forward only).")
-                            Text("• Hard: words can be in any direction, forward or backwards.")
-                            Text("• Expert: all words are reversed and can go in any direction.")
-                            Text("• Blind Mode: the word list is hidden. Tap Healed to reveal the list, then find them.")
-                            Text("• Tip: You can also tap a start letter, then tap an end letter to select the line between them.")
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    } label: {
-                        Text("How to Play").font(.headline)
-                    }
-                }
+            WordSearchSetupCard(
+                difficulty: difficulty,
+                gameMode: gameMode,
+                isTimedMode: isTimedMode,
+                timeLimitString: timeLimitString
+            )
 
-                GroupBox {
-                    DisclosureGroup(isExpanded: $difficultyExpanded) {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("• Easy: 10×10 grid; words go horizontal, vertical, or diagonal (forward only).")
-                            Text("• Normal: 12×12 grid; words go horizontal, vertical, or diagonal (forward only).")
-                            Text("• Hard: 14×14 grid; words can be in any direction, including backwards.")
-                            Text("• Expert: 14×14 grid; all words are reversed and can go in any direction.")
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    } label: {
-                        Text("Difficulty Settings").font(.headline)
-                    }
-                }
-
-                GameStartCurrentGameCard {
-                    GameStartCurrentGameRow(
-                        label: "Difficulty",
-                        value: displayName(for: difficulty)
-                    )
-                    GameStartCurrentGameRow(label: "Game Mode", value: gameMode.displayName)
-                    GameStartCurrentGameRow(
-                        label: "Timer",
-                        value: isTimedMode ? timeLimitString : "Off"
-                    )
-                }
-            }
-            .gameStartOptionsStyle()
-            .padding(.horizontal)
-
-            GameStartSettingsLayout {
-                GameStartPickerCard(
-                    title: "Difficulty",
-                    selection: $difficulty,
-                    options: WordSearchEngine.Difficulty.allCases
-                ) { difficulty in
-                    Text(displayName(for: difficulty))
-                }
-
-                GameStartPickerCard(
-                    title: "Game Mode",
-                    selection: $gameMode,
-                    options: WordSearchViewModel.GameMode.allCases
-                ) { mode in
-                    Text(mode.displayName)
-                }
-            }
-            .padding(.horizontal)
+            WordSearchSetupControls(
+                difficulty: $difficulty,
+                gameMode: $gameMode
+            )
 
             HStack(spacing: 10) {
                 Label {
@@ -110,21 +54,146 @@ struct WordSearchStartScreen: View {
 
             GameStartActionBar(action: onStart)
 
-            GameSetupSummary(
-                summary: "You’ll search a \(displayName(for: difficulty).lowercased()) puzzle in \(gameMode.displayName.lowercased()) mode. \(isTimedMode ? "You have \(timeLimitString) to finish." : "There is no time limit.")"
-            )
-
             Spacer(minLength: 24)
         }
         .gameStartScreenStyle()
     }
+}
 
-    private func displayName(for d: WordSearchEngine.Difficulty) -> String {
-        switch d {
-        case .easy: return "Easy"
-        case .medium: return "Normal"
-        case .hard: return "Hard"
-        case .expert: return "Expert"
+private struct WordSearchSetupCard: View {
+    let difficulty: WordSearchEngine.Difficulty
+    let gameMode: WordSearchViewModel.GameMode
+    let isTimedMode: Bool
+    let timeLimitString: String
+
+    private var difficultyTitle: LocalizedStringResource {
+        switch difficulty {
+        case .easy: "Easy"
+        case .medium: "Normal"
+        case .hard: "Hard"
+        case .expert: "Expert"
         }
+    }
+
+    private var gameTypeTitle: LocalizedStringResource {
+        switch gameMode {
+        case .normal: "Standard"
+        case .favorites: "Favorites"
+        case .blind: "Blind"
+        }
+    }
+
+    private var difficultySummary: LocalizedStringResource {
+        switch difficulty {
+        case .easy:
+            "Easy uses a 10×10 grid with words placed forward horizontally, vertically, or diagonally."
+        case .medium:
+            "Normal uses a 12×12 grid with words placed forward horizontally, vertically, or diagonally."
+        case .hard:
+            "Hard uses a 14×14 grid with words placed in any direction, including backwards."
+        case .expert:
+            "Expert uses a 14×14 grid with every word reversed and placed in any direction."
+        }
+    }
+
+    private var gameTypeSummary: LocalizedStringResource {
+        switch gameMode {
+        case .normal:
+            "Standard creates the puzzle from a random Bible verse."
+        case .favorites:
+            "Favorites uses one of your saved verses when available."
+        case .blind:
+            "Blind hides the word list until you reveal it."
+        }
+    }
+
+    private var timerSummary: LocalizedStringResource {
+        isTimedMode
+            ? "You have \(timeLimitString) to finish the puzzle."
+            : "There is no time limit."
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Your Game", systemImage: "checklist")
+                .font(.headline)
+                .foregroundStyle(.tint)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(difficultySummary)
+                Text(gameTypeSummary)
+                Text(timerSummary)
+            }
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
+
+            Divider()
+
+            LabeledContent("Difficulty") {
+                Text(difficultyTitle)
+                    .fontWeight(.semibold)
+            }
+
+            LabeledContent("Game Type") {
+                Text(gameTypeTitle)
+                    .fontWeight(.semibold)
+            }
+
+            LabeledContent("Timer") {
+                if isTimedMode {
+                    Text(timeLimitString)
+                        .fontWeight(.semibold)
+                } else {
+                    Text("Off")
+                        .fontWeight(.semibold)
+                }
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: 620, alignment: .leading)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
+        }
+        .padding(.horizontal)
+        .accessibilityElement(children: .contain)
+    }
+}
+
+private struct WordSearchSetupControls: View {
+    @Binding var difficulty: WordSearchEngine.Difficulty
+    @Binding var gameMode: WordSearchViewModel.GameMode
+
+    var body: some View {
+        VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Difficulty")
+                    .font(.headline)
+
+                Picker("Difficulty", selection: $difficulty) {
+                    Text("Easy").tag(WordSearchEngine.Difficulty.easy)
+                    Text("Normal").tag(WordSearchEngine.Difficulty.medium)
+                    Text("Hard").tag(WordSearchEngine.Difficulty.hard)
+                    Text("Expert").tag(WordSearchEngine.Difficulty.expert)
+                }
+                .pickerStyle(.segmented)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Game Type")
+                    .font(.headline)
+
+                Picker("Game Type", selection: $gameMode) {
+                    Text("Standard").tag(WordSearchViewModel.GameMode.normal)
+                    Text("Favorites").tag(WordSearchViewModel.GameMode.favorites)
+                    Text("Blind").tag(WordSearchViewModel.GameMode.blind)
+                }
+                .pickerStyle(.segmented)
+            }
+        }
+        .frame(maxWidth: 620)
+        .padding(.horizontal)
     }
 }
