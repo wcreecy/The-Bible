@@ -483,43 +483,106 @@ private struct BookOrderSetupCard: View {
     }
 }
 
+private enum BookOrderScopeChoice: Hashable {
+    case wholeBible
+    case oldTestament
+    case newTestament
+    case category
+}
+
 private struct BookOrderSetupControls: View {
     @Binding var source: BookSourceScope
     @Binding var difficulty: BookOrderDifficulty
 
+    private static let categoryOptions = BookSourceScope.allCases.filter(\.isCategory)
+
+    private var scopeChoice: Binding<BookOrderScopeChoice> {
+        Binding(
+            get: {
+                switch source {
+                case .both: .wholeBible
+                case .ot: .oldTestament
+                case .nt: .newTestament
+                default: .category
+                }
+            },
+            set: { choice in
+                switch choice {
+                case .wholeBible: source = .both
+                case .oldTestament: source = .ot
+                case .newTestament: source = .nt
+                case .category:
+                    if !source.isCategory {
+                        source = .law
+                    }
+                }
+            }
+        )
+    }
+
     var body: some View {
         VStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Difficulty")
-                    .font(.headline)
-
-                Picker("Difficulty", selection: $difficulty) {
-                    Text("Easy").tag(BookOrderDifficulty.easy)
-                    Text("Normal").tag(BookOrderDifficulty.normal)
-                    Text("Hard").tag(BookOrderDifficulty.hard)
-                    Text("Expert").tag(BookOrderDifficulty.all)
-                }
-                .pickerStyle(.segmented)
-                .disabled(source.isCategory)
-            }
-
             VStack(alignment: .leading, spacing: 8) {
                 Text("Part of the Bible")
                     .font(.headline)
 
-                Picker("Part of the Bible", selection: $source) {
-                    Section("Testaments") {
-                        Text("New & Old Testaments").tag(BookSourceScope.both)
-                        Text("Old Testament").tag(BookSourceScope.ot)
-                        Text("New Testament").tag(BookSourceScope.nt)
-                    }
-                    Section("Categories") {
-                        ForEach(BookSourceScope.allCases.filter(\.isCategory)) { option in
-                            Text(option.title).tag(option)
+                Picker("Part of the Bible", selection: scopeChoice) {
+                    Text("Whole").tag(BookOrderScopeChoice.wholeBible)
+                    Text("Old").tag(BookOrderScopeChoice.oldTestament)
+                    Text("New").tag(BookOrderScopeChoice.newTestament)
+                    Text("Category").tag(BookOrderScopeChoice.category)
+                }
+                .pickerStyle(.segmented)
+            }
+
+            if source.isCategory {
+                LazyVGrid(
+                    columns: [GridItem(.adaptive(minimum: 130), spacing: 10)],
+                    spacing: 10
+                ) {
+                    ForEach(Self.categoryOptions) { option in
+                        Button {
+                            source = option
+                        } label: {
+                            Text(option.title)
+                                .font(.subheadline.weight(.semibold))
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: .infinity, minHeight: 44)
+                                .padding(.horizontal, 8)
+                                .foregroundStyle(source == option ? Color.accentColor : Color.primary)
+                                .background(
+                                    source == option
+                                        ? Color.accentColor.opacity(0.16)
+                                        : Color.primary.opacity(0.055),
+                                    in: RoundedRectangle(cornerRadius: 11, style: .continuous)
+                                )
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 11, style: .continuous)
+                                        .strokeBorder(
+                                            source == option
+                                                ? Color.accentColor.opacity(0.65)
+                                                : Color.secondary.opacity(0.18),
+                                            lineWidth: 1
+                                        )
+                                }
                         }
+                        .buttonStyle(.plain)
+                        .accessibilityAddTraits(source == option ? .isSelected : [])
                     }
                 }
-                .pickerStyle(.menu)
+            } else {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Difficulty")
+                        .font(.headline)
+
+                    Picker("Difficulty", selection: $difficulty) {
+                        Text("Easy").tag(BookOrderDifficulty.easy)
+                        Text("Normal").tag(BookOrderDifficulty.normal)
+                        Text("Hard").tag(BookOrderDifficulty.hard)
+                        Text("Expert").tag(BookOrderDifficulty.all)
+                    }
+                    .pickerStyle(.segmented)
+                }
             }
         }
         .frame(maxWidth: 620)
