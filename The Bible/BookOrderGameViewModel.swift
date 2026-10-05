@@ -9,8 +9,72 @@ enum BookOrderDifficulty: String, CaseIterable, Identifiable {
 }
 
 enum BookSourceScope: String, CaseIterable, Identifiable {
-    case ot = "OT", nt = "NT", both = "Both"
+    case both, ot, nt
+    case law, history, poetry, majorProphets, minorProphets
+    case gospels, epistles
+
     var id: String { rawValue }
+
+    var title: LocalizedStringResource {
+        return switch self {
+        case .both: "New & Old Testaments"
+        case .ot: "Old Testament"
+        case .nt: "New Testament"
+        case .law: "Law"
+        case .history: "History"
+        case .poetry: "Poetry"
+        case .majorProphets: "Major Prophets"
+        case .minorProphets: "Minor Prophets"
+        case .gospels: "Gospels"
+        case .epistles: "Epistles"
+        }
+    }
+
+    var isCategory: Bool {
+        switch self {
+        case .both, .ot, .nt: false
+        default: true
+        }
+    }
+
+    var categoryBookNames: [String]? {
+        let canon = BibleCanon.canonicalOrder()
+
+        func books(from first: String, through last: String) -> [String] {
+            guard let firstIndex = canon.firstIndex(of: first),
+                  let lastIndex = canon.firstIndex(of: last),
+                  firstIndex <= lastIndex else { return [] }
+            return Array(canon[firstIndex...lastIndex])
+        }
+
+        return switch self {
+        case .both, .ot, .nt: nil
+        case .law: books(from: "Genesis", through: "Deuteronomy")
+        case .history: books(from: "Joshua", through: "Esther")
+        case .poetry: books(from: "Job", through: "Song of Solomon")
+        case .majorProphets: books(from: "Isaiah", through: "Daniel")
+        case .minorProphets: books(from: "Hosea", through: "Malachi")
+        case .gospels: books(from: "Matthew", through: "John")
+        case .epistles: books(from: "Romans", through: "Jude")
+        }
+    }
+
+    var previewBookNames: [String] {
+        if let categoryBookNames {
+            return Array(categoryBookNames.prefix(3))
+        }
+
+        let canon = BibleCanon.canonicalOrder()
+        switch self {
+        case .nt:
+            guard let matthewIndex = canon.firstIndex(of: "Matthew") else { return [] }
+            return Array(canon[matthewIndex...].prefix(3))
+        case .both, .ot:
+            return Array(canon.prefix(3))
+        default:
+            return []
+        }
+    }
 }
 
 struct BibleCanon {
@@ -50,6 +114,9 @@ final class BookOrderGameViewModel {
     var currentStreak: Int = 0
 
     private var keySuffix: String {
+        if source.isCategory {
+            return "category_\(source.rawValue)"
+        }
         switch difficulty {
         case .easy: return "easy"
         case .normal: return "normal"
@@ -161,11 +228,16 @@ final class BookOrderGameViewModel {
             let fallback = BibleCanon.fallbackCanon
             let ntSet = Set(fallback.suffix(27))
             return canon.filter { ntSet.contains($0) }
+        default:
+            let categoryNames = Set(source.categoryBookNames ?? [])
+            return canon.filter { categoryNames.contains($0) }
         }
     }
     
     func nextRound() {
-        let canon = difficulty == .all ? BibleCanon.canonicalOrder() : workingCanon()
+        let canon = source.isCategory
+            ? workingCanon()
+            : difficulty == .all ? BibleCanon.canonicalOrder() : workingCanon()
         guard !canon.isEmpty else {
             currentItems = []
             correctOrder = []
@@ -176,11 +248,15 @@ final class BookOrderGameViewModel {
         }
         
         let length: Int
-        switch difficulty {
-        case .easy:   length = 5
-        case .normal: length = 10
-        case .hard:   length = 15
-        case .all:    length = canon.count
+        if source.isCategory {
+            length = canon.count
+        } else {
+            switch difficulty {
+            case .easy:   length = 5
+            case .normal: length = 10
+            case .hard:   length = 15
+            case .all:    length = canon.count
+            }
         }
         
         // Helper: OT/NT split based on full canonical list (uses "Matthew" boundary)
@@ -296,6 +372,7 @@ final class BookOrderGameViewModel {
             case .both: scope = "(Whole Bible)"
             case .ot:   scope = "(Old Testament)"
             case .nt:   scope = "(New Testament)"
+            default:    scope = "(\(String(localized: source.title)))"
             }
         }
         if let a = sliceFirst, let b = sliceLast, difficulty != .all {

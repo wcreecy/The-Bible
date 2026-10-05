@@ -26,7 +26,12 @@ struct BookOrderGameView: View {
                         difficulty: $vm.difficulty
                     )
 
-                    GameLobbyPreview(kind: .bookOrder)
+                    GameLobbyPreview(
+                        kind: .bookOrder,
+                        bookOrderBooks: vm.difficulty == .all && !vm.source.isCategory
+                            ? Array(BibleCanon.canonicalOrder().prefix(3))
+                            : vm.source.previewBookNames
+                    )
 
                     GameStartActionBar(action: startGame)
                 }
@@ -399,15 +404,11 @@ private struct BookOrderSetupCard: View {
     let difficulty: BookOrderDifficulty
 
     private var sourceTitle: LocalizedStringResource {
-        switch source {
-        case .both: "New & Old Testaments"
-        case .ot: "Old Testament"
-        case .nt: "New Testament"
-        }
+        source.title
     }
 
     private var difficultyTitle: LocalizedStringResource {
-        switch difficulty {
+        return switch difficulty {
         case .easy: "Easy"
         case .normal: "Normal"
         case .hard: "Hard"
@@ -416,24 +417,31 @@ private struct BookOrderSetupCard: View {
     }
 
     private var summary: LocalizedStringResource {
-        switch difficulty {
+        if let categoryBooks = source.categoryBookNames {
+            return "Arrange all \(categoryBooks.count) books in the \(source.title) category in canonical order."
+        }
+
+        return switch difficulty {
         case .easy:
             switch source {
             case .both: "Arrange 5 books from the New and Old Testaments in canonical order."
             case .ot: "Arrange 5 books from the Old Testament in canonical order."
             case .nt: "Arrange 5 books from the New Testament in canonical order."
+            default: "Arrange the selected Bible category in canonical order."
             }
         case .normal:
             switch source {
             case .both: "Arrange 10 books from the New and Old Testaments in canonical order."
             case .ot: "Arrange 10 books from the Old Testament in canonical order."
             case .nt: "Arrange 10 books from the New Testament in canonical order."
+            default: "Arrange the selected Bible category in canonical order."
             }
         case .hard:
             switch source {
             case .both: "Arrange 15 books from the New and Old Testaments in canonical order."
             case .ot: "Arrange 15 books from the Old Testament in canonical order."
             case .nt: "Arrange 15 books from the New Testament in canonical order."
+            default: "Arrange the selected Bible category in canonical order."
             }
         case .all:
             "Arrange all 66 books of the Bible in canonical order."
@@ -454,12 +462,12 @@ private struct BookOrderSetupCard: View {
             Divider()
 
             LabeledContent("Difficulty") {
-                Text(difficultyTitle)
+                Text(source.isCategory ? "Not applicable" : difficultyTitle)
                     .fontWeight(.semibold)
             }
 
-            LabeledContent("Testament") {
-                Text(difficulty == .all ? "New & Old Testaments" : sourceTitle)
+            LabeledContent("Part of the Bible") {
+                Text(difficulty == .all && !source.isCategory ? "New & Old Testaments" : sourceTitle)
                     .fontWeight(.semibold)
             }
         }
@@ -492,19 +500,26 @@ private struct BookOrderSetupControls: View {
                     Text("Expert").tag(BookOrderDifficulty.all)
                 }
                 .pickerStyle(.segmented)
+                .disabled(source.isCategory)
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("Testament")
+                Text("Part of the Bible")
                     .font(.headline)
 
-                Picker("Testament", selection: $source) {
-                    Text("NT/OT").tag(BookSourceScope.both)
-                    Text("OT").tag(BookSourceScope.ot)
-                    Text("NT").tag(BookSourceScope.nt)
+                Picker("Part of the Bible", selection: $source) {
+                    Section("Testaments") {
+                        Text("New & Old Testaments").tag(BookSourceScope.both)
+                        Text("Old Testament").tag(BookSourceScope.ot)
+                        Text("New Testament").tag(BookSourceScope.nt)
+                    }
+                    Section("Categories") {
+                        ForEach(BookSourceScope.allCases.filter(\.isCategory)) { option in
+                            Text(option.title).tag(option)
+                        }
+                    }
                 }
-                .pickerStyle(.segmented)
-                .disabled(difficulty == .all)
+                .pickerStyle(.menu)
             }
         }
         .frame(maxWidth: 620)

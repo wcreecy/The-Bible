@@ -225,6 +225,7 @@ struct GameLobbyPreview: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     let kind: GameLobbyPreviewKind
+    var bookOrderBooks: [String] = ["Genesis", "Exodus", "Leviticus"]
 
     var body: some View {
         if horizontalSizeClass == .regular {
@@ -285,9 +286,9 @@ struct GameLobbyPreview: View {
             }
         case .bookOrder:
             VStack(spacing: 7) {
-                previewOrderRow("1", "Genesis")
-                previewOrderRow("2", "Exodus")
-                previewOrderRow("3", "Leviticus")
+                ForEach(Array(bookOrderBooks.prefix(3).enumerated()), id: \.offset) { index, bookName in
+                    previewOrderRow("\(index + 1)", bookName)
+                }
             }
             .frame(maxWidth: 400)
         case .wordSearch:
