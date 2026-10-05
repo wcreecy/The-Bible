@@ -418,11 +418,23 @@ private struct BookOrderSetupCard: View {
     private var summary: LocalizedStringResource {
         switch difficulty {
         case .easy:
-            "Arrange 5 books from the selected testament in canonical order."
+            switch source {
+            case .both: "Arrange 5 books from the New and Old Testaments in canonical order."
+            case .ot: "Arrange 5 books from the Old Testament in canonical order."
+            case .nt: "Arrange 5 books from the New Testament in canonical order."
+            }
         case .normal:
-            "Arrange 10 books from the selected testament in canonical order."
+            switch source {
+            case .both: "Arrange 10 books from the New and Old Testaments in canonical order."
+            case .ot: "Arrange 10 books from the Old Testament in canonical order."
+            case .nt: "Arrange 10 books from the New Testament in canonical order."
+            }
         case .hard:
-            "Arrange 15 books from the selected testament in canonical order."
+            switch source {
+            case .both: "Arrange 15 books from the New and Old Testaments in canonical order."
+            case .ot: "Arrange 15 books from the Old Testament in canonical order."
+            case .nt: "Arrange 15 books from the New Testament in canonical order."
+            }
         case .all:
             "Arrange all 66 books of the Bible in canonical order."
         }
