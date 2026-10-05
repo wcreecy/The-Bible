@@ -38,77 +38,13 @@ struct WhoAmIGameView: View {
                     Text("Match Bible names and descriptions.")
                         .gameStartDescriptionStyle(title: "Who am I?", systemImage: "person.text.rectangle", tint: .brown)
 
-                    GameStartInfoLayout {
-                        GroupBox {
-                            DisclosureGroup(isExpanded: $vm.howToExpanded) {
-                                VStack(alignment: .leading, spacing: 12) {
-                                    Text("• Choose a difficulty, then tap Start.")
-                                    Text("• You’ll see a clue; pick the correct person from four names.")
-                                    Text("• In timed modes, answer before the clock runs out.")
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            } label: {
-                                Text("How to Play").font(.headline)
-                            }
-                        }
+                    WhoAmISetupCard(difficulty: vm.difficulty)
 
-                        GroupBox {
-                            DisclosureGroup(isExpanded: $vm.difficultyExpanded) {
-                                VStack(alignment: .leading, spacing: 12) {
-                                    Text("• Easy: No timer.")
-                                    Text("• Normal: 30 seconds per question.")
-                                    Text("• Hard: 15 seconds per question.")
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            } label: {
-                                Text("Difficulty Settings").font(.headline)
-                            }
-                        }
-
-                        GameStartCurrentGameCard {
-                            GameStartCurrentGameRow(label: "Question Type", value: vm.mode.rawValue)
-                            GameStartCurrentGameRow(
-                                label: "Difficulty",
-                                value: vm.difficulty.rawValue.capitalized
-                            )
-                            GameStartCurrentGameRow(
-                                label: "Time Limit",
-                                value: vm.difficulty == .easy ? "No timer" : vm.difficulty == .normal ? "30 seconds per question" : "15 seconds per question"
-                            )
-                        }
-                    }
-                    .gameStartOptionsStyle()
-                    .padding(.horizontal)
-
-                    GameStartSettingsLayout {
-                        GameStartPickerCard(
-                            title: "Question Type",
-                            selection: $vm.mode,
-                            options: WhoAmIGameViewModel.Mode.releasedModes
-                        ) { mode in
-                            Text(mode.rawValue)
-                        }
-
-                        GameStartPickerCard(
-                            title: "Difficulty",
-                            selection: $vm.difficulty,
-                            options: WhoAmIGameViewModel.Difficulty.allCases
-                        ) { difficulty in
-                            switch difficulty {
-                            case .easy: Text("Easy")
-                            case .normal: Text("Normal")
-                            case .hard: Text("Hard")
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
+                    WhoAmISetupControls(difficulty: $vm.difficulty)
 
                     GameLobbyPreview(kind: .whoAmI)
 
                     GameStartActionBar(action: vm.startGame)
-                    GameSetupSummary(
-                        summary: "You’ll \(vm.mode == .names ? "match Bible names to their descriptions" : "match descriptions to Bible names"). \(vm.difficulty == .easy ? "You can answer without a timer." : "You have \(vm.difficulty.timeLimit) seconds to answer each question.")"
-                    )
                     Spacer(minLength: 24)
                 } else if horizontalSizeClass == .regular {
                     WhoAmIIPadGameBoard(
@@ -486,6 +422,91 @@ struct WhoAmIGameView: View {
         let n = refChoices.count
         let newIndex = (currentRefIndex + delta % n + n) % n
         setCurrentRefIndex(newIndex)
+    }
+}
+
+private struct WhoAmISetupCard: View {
+    let difficulty: WhoAmIGameViewModel.Difficulty
+
+    private var difficultyTitle: LocalizedStringResource {
+        switch difficulty {
+        case .easy: "Easy"
+        case .normal: "Normal"
+        case .hard: "Hard"
+        }
+    }
+
+    private var timeLimitTitle: LocalizedStringResource {
+        switch difficulty {
+        case .easy: "No timer"
+        case .normal: "30 seconds per question"
+        case .hard: "15 seconds per question"
+        }
+    }
+
+    private var summary: LocalizedStringResource {
+        switch difficulty {
+        case .easy:
+            "You’ll see one clue and choose the correct Bible name from four options. Easy has no time limit."
+        case .normal:
+            "You’ll see one clue and choose the correct Bible name from four options within 30 seconds."
+        case .hard:
+            "You’ll see one clue and choose the correct Bible name from four options within 15 seconds."
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Your Game", systemImage: "checklist")
+                .font(.headline)
+                .foregroundStyle(.tint)
+
+            Text(summary)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Divider()
+
+            LabeledContent("Difficulty") {
+                Text(difficultyTitle)
+                    .fontWeight(.semibold)
+            }
+
+            LabeledContent("Time Limit") {
+                Text(timeLimitTitle)
+                    .fontWeight(.semibold)
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: 620, alignment: .leading)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
+        }
+        .padding(.horizontal)
+        .accessibilityElement(children: .contain)
+    }
+}
+
+private struct WhoAmISetupControls: View {
+    @Binding var difficulty: WhoAmIGameViewModel.Difficulty
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Difficulty")
+                .font(.headline)
+
+            Picker("Difficulty", selection: $difficulty) {
+                Text("Easy").tag(WhoAmIGameViewModel.Difficulty.easy)
+                Text("Normal").tag(WhoAmIGameViewModel.Difficulty.normal)
+                Text("Hard").tag(WhoAmIGameViewModel.Difficulty.hard)
+            }
+            .pickerStyle(.segmented)
+        }
+        .frame(maxWidth: 620)
+        .padding(.horizontal)
     }
 }
 

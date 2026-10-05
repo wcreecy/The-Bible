@@ -10,8 +10,6 @@ final class WhoAmIGameViewModel {
         case names = "Names"     // prompt: name -> choices: descriptions
         case reverse = "Bible Names"   // prompt: clue -> choices: names
 
-        static let releasedModes: [Mode] = [.reverse]
-
         var id: String { rawValue }
     }
 
@@ -50,8 +48,6 @@ final class WhoAmIGameViewModel {
     var difficulty: Difficulty = .normal {
         didSet { seedStreakFromPersistence() }
     }
-    var howToExpanded: Bool = false
-    var difficultyExpanded: Bool = false
 
     // Data
     private(set) var entries: [Entry] = []
