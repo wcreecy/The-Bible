@@ -7,6 +7,7 @@ struct SettingsHomeLayoutSection: View {
     @State private var hiddenSet: Set<HomeCardID> = HomeLayoutStore.baselineHidden
     @State private var mainSet: Set<HomeCardID> = HomeLayoutStore.baselineMain
     @State private var showMoreVisible = HomeLayoutStore.defaultShowMoreVisible
+    @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
 
     private let layoutStore = HomeLayoutStore()
 
@@ -34,7 +35,8 @@ struct SettingsHomeLayoutSection: View {
             order: layoutOrder,
             hidden: hiddenSet,
             main: mainSet,
-            showMoreVisible: showMoreVisible
+            showMoreVisible: showMoreVisible,
+            bibleReaderVisible: bibleReaderVisible
         )
     }
 

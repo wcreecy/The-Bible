@@ -302,7 +302,8 @@ struct HomeView: View {
             order: layoutOrder,
             hidden: hiddenCards,
             main: mainCards,
-            showMoreVisible: showMoreVisible
+            showMoreVisible: showMoreVisible,
+            bibleReaderVisible: bibleReaderVisible
         )
         hasFavoriteLayout = true
     }

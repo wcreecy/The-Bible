@@ -38,7 +38,6 @@ struct VerseNoteEditorView: View {
     @Environment(\.fontResolutionContext) private var fontResolutionContext
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.undoManager) private var undoManager
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage("noteEditorTextSizeStep") private var noteEditorTextSizeStep = NoteEditorTextSize.defaultStep
 
@@ -133,10 +132,6 @@ struct VerseNoteEditorView: View {
                 increaseTextSize: increaseTextSize,
                 canDecreaseTextSize: noteEditorTextSizeStep > NoteEditorTextSize.minimumStep,
                 canIncreaseTextSize: noteEditorTextSizeStep < NoteEditorTextSize.maximumStep,
-                undo: { undoManager?.undo() },
-                redo: { undoManager?.redo() },
-                canUndo: undoManager?.canUndo == true,
-                canRedo: undoManager?.canRedo == true,
                 horizontalPadding: editorHorizontalPadding
             )
         }
@@ -449,22 +444,11 @@ private struct NoteFormattingBar: View {
     let increaseTextSize: () -> Void
     let canDecreaseTextSize: Bool
     let canIncreaseTextSize: Bool
-    let undo: () -> Void
-    let redo: () -> Void
-    let canUndo: Bool
-    let canRedo: Bool
     var horizontalPadding: CGFloat = 16
 
     var body: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 6) {
-                formattingButton("Undo", systemImage: "arrow.uturn.backward", action: undo)
-                    .disabled(!canUndo)
-                formattingButton("Redo", systemImage: "arrow.uturn.forward", action: redo)
-                    .disabled(!canRedo)
-
-                Divider().frame(height: 24)
-
                 formattingButton("Bold", systemImage: "bold", action: toggleBold)
                 formattingButton("Underline", systemImage: "underline", action: toggleUnderline)
                 formattingButton("Italic", systemImage: "italic", action: toggleItalic)
@@ -2109,7 +2093,6 @@ private struct UserNoteEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.fontResolutionContext) private var fontResolutionContext
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.undoManager) private var undoManager
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage("noteEditorTextSizeStep") private var noteEditorTextSizeStep = NoteEditorTextSize.defaultStep
 
@@ -2185,11 +2168,7 @@ private struct UserNoteEditorView: View {
                 decreaseTextSize: decreaseTextSize,
                 increaseTextSize: increaseTextSize,
                 canDecreaseTextSize: noteEditorTextSizeStep > NoteEditorTextSize.minimumStep,
-                canIncreaseTextSize: noteEditorTextSizeStep < NoteEditorTextSize.maximumStep,
-                undo: { undoManager?.undo() },
-                redo: { undoManager?.redo() },
-                canUndo: undoManager?.canUndo == true,
-                canRedo: undoManager?.canRedo == true
+                canIncreaseTextSize: noteEditorTextSizeStep < NoteEditorTextSize.maximumStep
             )
         }
         .navigationTitle(existingNote == nil ? "New Note" : "Edit Note")

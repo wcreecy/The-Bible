@@ -11,20 +11,24 @@ struct HomeLayoutStore {
     private static let keyHidden = "homeCardHidden"
     private static let keyMain = "homeCardMain"
     private static let keyShowMoreVisible = "homeShowMoreVisible"
+    private static let keyBibleReaderVisible = "homeBibleReaderVisible"
     private static let keyFavOrder = "homeCardFavoriteOrder"
     private static let keyFavHidden = "homeCardFavoriteHidden"
     private static let keyFavMain = "homeCardFavoriteMain"
     private static let keyFavShowMoreVisible = "homeCardFavoriteShowMoreVisible"
+    private static let keyFavBibleReaderVisible = "homeCardFavoriteBibleReaderVisible"
 
     // Underlying storage
     @AppStorage(Self.keyOrder) private var orderRaw: String = ""
     @AppStorage(Self.keyHidden) private var hiddenRaw: String = ""
     @AppStorage(Self.keyMain) private var mainRaw: String = ""
     @AppStorage(Self.keyShowMoreVisible) private var showMoreVisible: Bool = Self.defaultShowMoreVisible
+    @AppStorage(Self.keyBibleReaderVisible) private var bibleReaderVisible: Bool = Self.defaultBibleReaderVisible
     @AppStorage(Self.keyFavOrder) private var favOrderRaw: String = ""
     @AppStorage(Self.keyFavHidden) private var favHiddenRaw: String = ""
     @AppStorage(Self.keyFavMain) private var favMainRaw: String = ""
     @AppStorage(Self.keyFavShowMoreVisible) private var favShowMoreVisible: Bool = true
+    @AppStorage(Self.keyFavBibleReaderVisible) private var favBibleReaderVisible: Bool = Self.defaultBibleReaderVisible
 
     // Baseline hidden set used when no hidden config exists
     static let baselineOrder: [HomeCardID] = [
@@ -119,7 +123,8 @@ struct HomeLayoutStore {
         order: [HomeCardID],
         hidden: Set<HomeCardID>,
         main: Set<HomeCardID>,
-        showMoreVisible: Bool
+        showMoreVisible: Bool,
+        bibleReaderVisible: Bool
     ) {
         // Encode order
         do {
@@ -141,9 +146,16 @@ struct HomeLayoutStore {
 
         favMainRaw = encode(main)
         favShowMoreVisible = showMoreVisible
+        favBibleReaderVisible = bibleReaderVisible
     }
 
-    func loadFavorite() -> (order: [HomeCardID], hidden: Set<HomeCardID>, main: Set<HomeCardID>, showMoreVisible: Bool)? {
+    func loadFavorite() -> (
+        order: [HomeCardID],
+        hidden: Set<HomeCardID>,
+        main: Set<HomeCardID>,
+        showMoreVisible: Bool,
+        bibleReaderVisible: Bool
+    )? {
         guard let orderData = favOrderRaw.data(using: .utf8),
               let orderIDs = try? JSONDecoder().decode([String].self, from: orderData) else {
             return nil
@@ -159,12 +171,13 @@ struct HomeLayoutStore {
             hidden = Set(hiddenIDs.compactMap { HomeCardID(rawValue: $0) })
         }
         let main = decodeSet(from: favMainRaw) ?? Self.baselineMain
-        return (order, hidden, main, favShowMoreVisible)
+        return (order, hidden, main, favShowMoreVisible, favBibleReaderVisible)
     }
 
     // Applies favorite to current layout and notifies listeners
     func applyFavoriteIfAvailable() {
         guard let fav = loadFavorite() else { return }
+        bibleReaderVisible = fav.bibleReaderVisible
         save(
             order: fav.order,
             hidden: fav.hidden,
