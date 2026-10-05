@@ -69,9 +69,6 @@ struct VerseMatchGameView: View {
     }
     @AppStorage("verseMatchDifficulty") private var difficulty: Difficulty = .normal
 
-    @State private var howToExpanded: Bool = false
-    @State private var difficultyExpanded: Bool = false
-
     @State private var started = false
     @AppStorage("versematchScope") private var verseScopeRaw: String = "whole"
     @AppStorage("versematchSections") private var verseSectionsRaw: String = ""
@@ -131,20 +128,6 @@ struct VerseMatchGameView: View {
         }
     }
 
-    private var answerPoolTitle: String {
-        guard !selectedSections.isEmpty else {
-            return difficulty == .easy ? "Whole Bible" : difficulty == .normal ? "Same testament" : "Same book"
-        }
-
-        switch difficulty {
-        case .easy:
-            return "3 selected, 1 random"
-        case .normal:
-            return "2 same book, 1 selected, 1 same-testament"
-        case .hard:
-            return "Same book"
-        }
-    }
     // Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
@@ -217,103 +200,40 @@ struct VerseMatchGameView: View {
                     Text("Choose the verse text that matches the reference.")
                         .gameStartDescriptionStyle(title: "Verse Match", systemImage: "text.quote", tint: .orange)
 
-                    GameStartInfoLayout {
-                        GroupBox {
-                            DisclosureGroup(isExpanded: $howToExpanded) {
-                                VStack(alignment: .leading, spacing: 12) {
-                                    Text("• Choose a verse source, one or more Biblical Categories, and a difficulty, then tap Start.")
-                                    Text("• You'll see a reference; pick the verse text that matches it.")
-                                    Text("• Review your answer, then tap Next for a new question.")
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            } label: {
-                                Text("How to Play").font(.headline)
+                    VerseMatchSetupCard(
+                        testament: testamentScope,
+                        difficulty: difficulty,
+                        categories: selectedSectionsTitle,
+                        usesCustomCategories: !selectedSections.isEmpty
+                    )
+
+                    VerseMatchSetupControls(
+                        testament: Binding(
+                            get: { testamentScope },
+                            set: { scope in
+                                verseScopeRaw = scope.rawValue
+                                storeSelectedSections(selectedSections.intersection(sections(for: scope)))
                             }
-                        }
+                        ),
+                        difficulty: $difficulty
+                    )
 
-                        GroupBox {
-                            DisclosureGroup(isExpanded: $difficultyExpanded) {
-                                VStack(alignment: .leading, spacing: 12) {
-                                    if selectedSections.isEmpty {
-                                        Text("• Easy: Answers can come from any book in the Bible.")
-                                        Text("• Normal: Answers come from the same testament as the reference.")
-                                        Text("• Hard: Answers come from the same book as the reference.")
-                                    } else {
-                                        Text("• Easy: Three answers come from your selected Biblical Categories and one from elsewhere.")
-                                        Text("• Normal: Two answers come from the reference book, one from your selected Biblical Categories, and one from elsewhere in the same testament.")
-                                        Text("• Hard: All answers come from the same book as the reference.")
-                                    }
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            } label: {
-                                Text("Difficulty Settings").font(.headline)
-                            }
-                        }
-
-                        GameStartCurrentGameCard {
-                            GameStartCurrentGameRow(
-                                label: "Testament",
-                                value: testamentScope.title
-                            )
-                            GameStartCurrentGameRow(
-                                label: "Biblical Categories",
-                                value: selectedSectionsTitle
-                            )
-                            GameStartCurrentGameRow(
-                                label: "Difficulty",
-                                value: difficulty.rawValue.capitalized
-                            )
-                            GameStartCurrentGameRow(
-                                label: "Answer Pool",
-                                value: answerPoolTitle
-                            )
-                        }
+                    GameStartMultiPickerCard(
+                        title: "Biblical Categories",
+                        selection: Binding<Set<VerseSection>>(
+                            get: { displayedSelectedSections },
+                            set: storeSelectedSections
+                        ),
+                        options: availableSections
+                    ) { section in
+                        Text(section.title)
                     }
-                    .gameStartOptionsStyle()
-                    .padding(.horizontal)
-
-                    GameStartSettingsLayout {
-                        GameStartPickerCard(
-                            title: "Testament",
-                            selection: Binding<TestamentScope>(
-                                get: { testamentScope },
-                                set: { scope in
-                                    verseScopeRaw = scope.rawValue
-                                    storeSelectedSections(selectedSections.intersection(sections(for: scope)))
-                                }
-                            ),
-                            options: TestamentScope.allCases
-                        ) { scope in
-                            Text(scope.pickerTitle)
-                        }
-
-                        GameStartMultiPickerCard(
-                            title: "Biblical Categories",
-                            selection: Binding<Set<VerseSection>>(
-                                get: { displayedSelectedSections },
-                                set: storeSelectedSections
-                            ),
-                            options: availableSections
-                        ) { section in
-                            Text(section.title)
-                        }
-
-                        GameStartPickerCard(
-                            title: "Difficulty",
-                            selection: $difficulty,
-                            options: Difficulty.allCases
-                        ) { difficulty in
-                            Text(difficulty.rawValue.capitalized)
-                        }
-                    }
+                    .frame(maxWidth: 620)
                     .padding(.horizontal)
 
                     GameLobbyPreview(kind: .verseMatch)
 
                     GameStartActionBar(action: startGame)
-                    GameSetupSummary(
-                            summary: "References will come from \(testamentScope.title.lowercased()).\n\nBiblical Categories: \(selectedSectionsTitle).\n\nDifficulty: \(difficulty.rawValue.capitalized). \(difficulty == .easy ? "Answer choices can come from anywhere in the Bible." : difficulty == .normal ? "Answer choices stay mostly within the same testament." : "Every answer choice comes from the same book.")"
-                    )
                     Spacer(minLength: 32)
                 } else {
                     GameScoreboardCard(
@@ -884,6 +804,130 @@ struct VerseMatchGameView: View {
         case .normal: return .normal
         case .hard: return .hard
         }
+    }
+}
+
+private struct VerseMatchSetupCard: View {
+    let testament: VerseMatchGameView.TestamentScope
+    let difficulty: VerseMatchGameView.Difficulty
+    let categories: String
+    let usesCustomCategories: Bool
+
+    private var testamentTitle: LocalizedStringResource {
+        switch testament {
+        case .whole: "Old & New Testaments"
+        case .old: "Old Testament"
+        case .new: "New Testament"
+        }
+    }
+
+    private var difficultyTitle: LocalizedStringResource {
+        switch difficulty {
+        case .easy: "Easy"
+        case .normal: "Normal"
+        case .hard: "Hard"
+        }
+    }
+
+    private var testamentSummary: LocalizedStringResource {
+        switch testament {
+        case .whole: "References will come from the Old and New Testaments."
+        case .old: "References will come from the Old Testament."
+        case .new: "References will come from the New Testament."
+        }
+    }
+
+    private var difficultySummary: LocalizedStringResource {
+        switch difficulty {
+        case .easy where usesCustomCategories:
+            "Three answer choices will come from your selected Biblical Categories and one from elsewhere."
+        case .easy:
+            "Answer choices can come from any book in the Bible."
+        case .normal where usesCustomCategories:
+            "Two answer choices will come from the reference book, one from your selected Biblical Categories, and one from elsewhere in the same testament."
+        case .normal:
+            "Answer choices will come from the same testament as the reference."
+        case .hard:
+            "Every answer choice will come from the same book as the reference."
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Your Game", systemImage: "checklist")
+                .font(.headline)
+                .foregroundStyle(.tint)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(testamentSummary)
+                Text(difficultySummary)
+            }
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
+
+            Divider()
+
+            LabeledContent("Difficulty") {
+                Text(difficultyTitle)
+                    .fontWeight(.semibold)
+            }
+
+            LabeledContent("Testament") {
+                Text(testamentTitle)
+                    .fontWeight(.semibold)
+            }
+
+            LabeledContent("Biblical Categories") {
+                Text(categories)
+                    .fontWeight(.semibold)
+                    .multilineTextAlignment(.trailing)
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: 620, alignment: .leading)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
+        }
+        .padding(.horizontal)
+        .accessibilityElement(children: .contain)
+    }
+}
+
+private struct VerseMatchSetupControls: View {
+    @Binding var testament: VerseMatchGameView.TestamentScope
+    @Binding var difficulty: VerseMatchGameView.Difficulty
+
+    var body: some View {
+        VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Difficulty")
+                    .font(.headline)
+
+                Picker("Difficulty", selection: $difficulty) {
+                    Text("Easy").tag(VerseMatchGameView.Difficulty.easy)
+                    Text("Normal").tag(VerseMatchGameView.Difficulty.normal)
+                    Text("Hard").tag(VerseMatchGameView.Difficulty.hard)
+                }
+                .pickerStyle(.segmented)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Testament")
+                    .font(.headline)
+
+                Picker("Testament", selection: $testament) {
+                    Text("OT/NT").tag(VerseMatchGameView.TestamentScope.whole)
+                    Text("OT").tag(VerseMatchGameView.TestamentScope.old)
+                    Text("NT").tag(VerseMatchGameView.TestamentScope.new)
+                }
+                .pickerStyle(.segmented)
+            }
+        }
+        .frame(maxWidth: 620)
+        .padding(.horizontal)
     }
 }
 
