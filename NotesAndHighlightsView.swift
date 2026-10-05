@@ -517,6 +517,7 @@ private enum NoteTextColor: String, CaseIterable, Identifiable {
         case .purple: .purple
         }
     }
+
 }
 
 private enum NoteEditorTextSize {
@@ -753,6 +754,15 @@ private enum NotesFilter: String, CaseIterable, Identifiable {
         case .scripture: "Scripture"
         }
     }
+
+    func libraryTitle(noteCount: Int) -> LocalizedStringKey {
+        switch self {
+        case .all: "All Notes (\(noteCount))"
+        case .sermon: "Sermon Notes (\(noteCount))"
+        case .personal: "Personal Notes (\(noteCount))"
+        case .scripture: "Scripture Notes (\(noteCount))"
+        }
+    }
 }
 
 private enum NotesListItem: Identifiable {
@@ -895,59 +905,13 @@ struct NotesAndHighlightsView: View {
     @State private var isShowingCompactDetail = false
 
     var body: some View {
-        VStack(spacing: 12) {
-            NotesOverviewHeader(
-                noteCount: visibleNotes.count,
-                totalCount: scriptureNotes.count + userNotes.count,
-                createAction: { isCreatingNote = true }
-            )
-
-            NotesCategoryStrip(selection: $selectedFilter)
-
-            if contextualTipsEnabled {
-                ContextualTipView(
-                    id: "notes.quickActions",
-                    title: "Browse and manage notes",
-                    message: "Filter by tag or highlight color. Select a note to follow links without editing, or swipe it for quick actions.",
-                    systemImage: "hand.point.up.left"
-                )
-            }
-
-            GeometryReader { proxy in
-                if horizontalSizeClass == .compact {
-                    NotesListCard(
-                        notes: visibleNotes,
-                        selectedScriptureNote: $selectedScriptureNote,
-                        selectedUserNote: $selectedUserNote,
-                        selectedFilter: $selectedFilter,
-                        highlightFilter: $highlightFilter,
-                        selectionAction: { isShowingCompactDetail = true }
-                    )
-                    .frame(maxWidth: .infinity)
-                } else {
-                    HStack(spacing: 16) {
-                        NotesListCard(
-                            notes: visibleNotes,
-                            selectedScriptureNote: $selectedScriptureNote,
-                            selectedUserNote: $selectedUserNote,
-                            selectedFilter: $selectedFilter,
-                            highlightFilter: $highlightFilter,
-                            selectionAction: {}
-                        )
-                        .frame(width: max(300, (proxy.size.width - 16) * 0.4))
-
-                        NoteDetailCard(
-                            scriptureNote: selectedScriptureNote,
-                            userNote: selectedUserNote,
-                            editAction: { isEditingSelection = true }
-                        )
-                        .frame(maxWidth: .infinity)
-                    }
-                }
+        Group {
+            if horizontalSizeClass == .compact {
+                compactContent
+            } else {
+                regularContent
             }
         }
-        .padding(.horizontal)
-        .padding(.bottom)
         .background(AppBackgroundView(tab: .notes))
         .navigationTitle("Notes")
         .navigationDestination(isPresented: $isShowingCompactDetail) {
@@ -969,6 +933,13 @@ struct NotesAndHighlightsView: View {
         .searchable(text: $searchText, prompt: "Search all notes")
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
+                if horizontalSizeClass == .compact {
+                    NotesFilterMenu(
+                        highlightFilter: $highlightFilter,
+                        presentation: .toolbar
+                    )
+                }
+
                 Menu {
                     Picker("Sort By", selection: $sortRawValue) {
                         ForEach(NotesTabSort.allCases) { option in
@@ -1020,6 +991,77 @@ struct NotesAndHighlightsView: View {
         .onChange(of: searchText) { _, _ in selectFirstVisibleNoteIfNeeded() }
     }
 
+    private var compactContent: some View {
+        ScrollView {
+            VStack(spacing: 12) {
+                NotesCategoryStrip(selection: $selectedFilter)
+                contextualTip
+
+                NotesListCard(
+                    notes: visibleNotes,
+                    selectedScriptureNote: $selectedScriptureNote,
+                    selectedUserNote: $selectedUserNote,
+                    selectedFilter: $selectedFilter,
+                    highlightFilter: $highlightFilter,
+                    selectionAction: { isShowingCompactDetail = true }
+                )
+                .frame(maxWidth: .infinity)
+                .frame(height: compactNotesCardHeight)
+                .heroCardSurface()
+            }
+            .padding(.horizontal)
+            .padding(.bottom)
+        }
+    }
+
+    private var regularContent: some View {
+        VStack(spacing: 12) {
+            NotesOverviewHeader(
+                noteCount: visibleNotes.count,
+                totalCount: scriptureNotes.count + userNotes.count,
+                createAction: { isCreatingNote = true }
+            )
+
+            NotesCategoryStrip(selection: $selectedFilter)
+            contextualTip
+
+            GeometryReader { proxy in
+                HStack(spacing: 16) {
+                    NotesListCard(
+                        notes: visibleNotes,
+                        selectedScriptureNote: $selectedScriptureNote,
+                        selectedUserNote: $selectedUserNote,
+                        selectedFilter: $selectedFilter,
+                        highlightFilter: $highlightFilter,
+                        selectionAction: {}
+                    )
+                    .frame(width: max(300, (proxy.size.width - 16) * 0.4))
+
+                    NoteDetailCard(
+                        scriptureNote: selectedScriptureNote,
+                        userNote: selectedUserNote,
+                        editAction: { isEditingSelection = true }
+                    )
+                    .frame(maxWidth: .infinity)
+                }
+            }
+        }
+        .padding(.horizontal)
+        .padding(.bottom)
+    }
+
+    @ViewBuilder
+    private var contextualTip: some View {
+        if contextualTipsEnabled {
+            ContextualTipView(
+                id: "notes.quickActions",
+                title: "Browse and manage notes",
+                message: "Filter by tag or highlight color. Select a note to follow links without editing, or swipe it for quick actions.",
+                systemImage: "hand.point.up.left"
+            )
+        }
+    }
+
     private var visibleNotes: [NotesListItem] {
         let allNotes = scriptureNotes.map(NotesListItem.scripture) + userNotes.map(NotesListItem.user)
         let favorites = sort(allNotes.filter(\.isFavorite))
@@ -1030,6 +1072,13 @@ struct NotesAndHighlightsView: View {
                 note.matchesSearch(searchText)
         })
         return favorites + filteredNotes
+    }
+
+    private var compactNotesCardHeight: CGFloat {
+        let headerHeight: CGFloat = 44
+        let estimatedRowHeight: CGFloat = 90
+        let visibleRowCount = max(visibleNotes.count, 1)
+        return headerHeight + (CGFloat(visibleRowCount) * estimatedRowHeight)
     }
 
     private func matchesSelectedCategory(_ rawValue: String) -> Bool {
@@ -1202,6 +1251,7 @@ private extension NotesFilter {
 
 private struct NotesListCard: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     let notes: [NotesListItem]
     @Binding var selectedScriptureNote: VerseNote?
@@ -1212,29 +1262,49 @@ private struct NotesListCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Library")
-                        .font(.headline)
+            if horizontalSizeClass != .compact {
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Library")
+                            .font(.headline)
 
-                    Text("\(notes.count) notes")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        Text("\(notes.count) notes")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+
+                    NotesFilterMenu(
+                        highlightFilter: $highlightFilter
+                    )
                 }
-
-                Spacer()
-
-                NotesFilterMenu(
-                    selectedFilter: $selectedFilter,
-                    highlightFilter: $highlightFilter
-                )
+                .padding(.horizontal, 16)
+                .padding(.vertical, 11)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 11)
 
-            Divider()
+            if horizontalSizeClass != .compact {
+                Divider()
+            }
 
             List {
+                if horizontalSizeClass == .compact {
+                    Text(selectedFilter.libraryTitle(noteCount: notes.count))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(
+                            EdgeInsets(
+                                top: AppDesignMetrics.cardPadding,
+                                leading: AppDesignMetrics.cardPadding,
+                                bottom: 4,
+                                trailing: AppDesignMetrics.cardPadding
+                            )
+                        )
+                }
+
                 if notes.isEmpty {
                     ContentUnavailableView(
                         "No Notes",
@@ -1286,7 +1356,11 @@ private struct NotesListCard: View {
                                     ? Color.accentColor.opacity(0.13)
                                     : Color.clear
                             )
-                            .listRowSeparator(.visible)
+                            .listRowSeparator(
+                                horizontalSizeClass == .compact && item.id == notes.last?.id
+                                    ? .hidden
+                                    : .visible
+                            )
                             .listRowSeparatorTint(Color.primary.opacity(0.09))
                             .listRowInsets(EdgeInsets())
                         case .user(let note):
@@ -1328,7 +1402,11 @@ private struct NotesListCard: View {
                                     ? Color.accentColor.opacity(0.13)
                                     : Color.clear
                             )
-                            .listRowSeparator(.visible)
+                            .listRowSeparator(
+                                horizontalSizeClass == .compact && item.id == notes.last?.id
+                                    ? .hidden
+                                    : .visible
+                            )
                             .listRowSeparatorTint(Color.primary.opacity(0.09))
                             .listRowInsets(EdgeInsets())
                         }
@@ -1336,12 +1414,19 @@ private struct NotesListCard: View {
                 }
             }
             .listStyle(.plain)
+            .scrollDisabled(horizontalSizeClass == .compact)
             .scrollContentBackground(.hidden)
             .contentMargins(.vertical, 0, for: .scrollContent)
         }
-        .background(Color(uiColor: .secondarySystemBackground).opacity(0.72))
+        .background(
+            horizontalSizeClass == .compact
+                ? Color.clear
+                : Color(uiColor: .secondarySystemBackground).opacity(0.72)
+        )
         .overlay(alignment: .trailing) {
-            Divider()
+            if horizontalSizeClass != .compact {
+                Divider()
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -1374,31 +1459,41 @@ private struct NotesListCard: View {
 }
 
 private struct NotesFilterMenu: View {
-    @Binding var selectedFilter: NotesFilter
+    enum Presentation {
+        case pill
+        case toolbar
+    }
+
     @Binding var highlightFilter: NotesHighlightFilter
+    var presentation: Presentation = .pill
 
+    @ViewBuilder
     var body: some View {
-        Menu {
-            Picker("Tag", selection: $selectedFilter) {
-                ForEach(NotesFilter.allCases) { option in
-                    Text(option.title).tag(option)
-                }
+        switch presentation {
+        case .pill:
+            filterMenu {
+                Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
             }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+        case .toolbar:
+            filterMenu {
+                Image(systemName: "line.3.horizontal.decrease")
+            }
+        }
+    }
 
-            Divider()
-
+    private func filterMenu<Label: View>(@ViewBuilder label: () -> Label) -> some View {
+        Menu {
             Picker("Highlight Color", selection: $highlightFilter) {
                 ForEach(NotesHighlightFilter.allCases) { option in
                     Text(option.title).tag(option)
                 }
             }
-
         } label: {
-            Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
+            label()
         }
-        .buttonStyle(.bordered)
-        .controlSize(.small)
-        .accessibilityLabel("Filter and sort notes")
+        .accessibilityLabel("Filter notes")
     }
 }
 
@@ -1418,10 +1513,12 @@ private struct NotesTitleButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 0) {
-                Capsule()
-                    .fill(highlight?.color ?? .accentColor.opacity(0.35))
-                    .frame(width: 3)
-                    .padding(.vertical, 5)
+                if let highlight {
+                    Capsule()
+                        .fill(highlight.color)
+                        .frame(width: 3)
+                        .padding(.vertical, 5)
+                }
 
                 VStack(alignment: .leading, spacing: 7) {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
