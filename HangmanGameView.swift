@@ -31,8 +31,6 @@ struct HangmanGameView: View {
         }
 
     @State private var started = false
-    @State private var howToExpanded: Bool = false
-    @State private var difficultyExpanded: Bool = false
 
     @AppStorage("hangmanTheme") private var theme: Theme = .all
     @AppStorage("hangmanDifficulty") private var difficulty: Difficulty = .normal
@@ -260,70 +258,19 @@ struct HangmanGameView: View {
         Text("Guess the person, place or book from the Bible")
             .gameStartDescriptionStyle(title: "Hangman", systemImage: "text.word.spacing", tint: .teal)
 
-        GameStartInfoLayout {
-            GroupBox {
-                DisclosureGroup(isExpanded: $howToExpanded) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("• Pick a theme and difficulty, then tap Start.")
-                        Text("• Tap letters on the on‑screen keyboard to guess.")
-                        Text("• You have a limited number of mistakes. Reveal the word before you run out!")
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                } label: {
-                    Text("How to Play").font(.headline)
-                }
-            }
+        HangmanSetupCard(
+            theme: theme,
+            difficulty: difficulty
+        )
 
-            GroupBox {
-                DisclosureGroup(isExpanded: $difficultyExpanded) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("• Easy: Up to 10 mistakes. A scripture reference is shown right away to help.")
-                        Text("• Normal: Up to 7 mistakes. The reference appears after 3 wrong guesses.")
-                        Text("• Hard: Up to 6 mistakes. The reference is shown only after the round ends.")
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                } label: {
-                    Text("Difficulty Settings").font(.headline)
-                }
-            }
-
-            GameStartCurrentGameCard {
-                GameStartCurrentGameRow(label: "Theme", value: theme.rawValue)
-                GameStartCurrentGameRow(label: "Difficulty", value: difficulty.rawValue)
-                GameStartCurrentGameRow(
-                    label: "Round",
-                    value: difficulty == .easy ? "10 mistakes · Reference shown" : difficulty == .normal ? "7 mistakes · Reference after 3 misses" : "6 mistakes · Reference after round"
-                )
-            }
-        }
-        .gameStartOptionsStyle()
-        .padding(.horizontal)
-
-        GameStartSettingsLayout {
-            GameStartPickerCard(
-                title: "Theme",
-                selection: $theme,
-                options: Theme.allCases
-            ) { theme in
-                Text(theme.rawValue)
-            }
-
-            GameStartPickerCard(
-                title: "Difficulty",
-                selection: $difficulty,
-                options: Difficulty.allCases
-            ) { difficulty in
-                Text(difficulty.rawValue)
-            }
-        }
-        .padding(.horizontal)
+        HangmanSetupControls(
+            theme: $theme,
+            difficulty: $difficulty
+        )
 
         GameLobbyPreview(kind: .hangman)
 
         GameStartActionBar(action: startGame)
-        GameSetupSummary(
-            summary: "You’ll guess \(theme.rawValue.lowercased()) from the Bible. You can miss up to \(maxWrong) letters, and \(difficulty == .easy ? "the scripture reference is shown immediately" : difficulty == .normal ? "the reference appears after three misses" : "the reference appears after the round")."
-        )
         Spacer(minLength: 24)
     }
 
@@ -903,6 +850,124 @@ struct HangmanGameView: View {
         .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
         .disabled(roundOver)
         .opacity(roundOver ? 0.6 : 1.0)
+    }
+}
+
+private struct HangmanSetupCard: View {
+    let theme: HangmanGameView.Theme
+    let difficulty: HangmanGameView.Difficulty
+
+    private var subjectTitle: LocalizedStringResource {
+        switch theme {
+        case .all: "All"
+        case .books: "Books"
+        case .people: "People"
+        case .places: "Places"
+        }
+    }
+
+    private var difficultyTitle: LocalizedStringResource {
+        switch difficulty {
+        case .easy: "Easy"
+        case .normal: "Normal"
+        case .hard: "Hard"
+        }
+    }
+
+    private var summary: LocalizedStringResource {
+        switch difficulty {
+        case .easy:
+            switch theme {
+            case .all: "Guess Bible books, people, or places. You can make up to 10 mistakes, and a scripture reference is shown immediately."
+            case .books: "Guess books of the Bible. You can make up to 10 mistakes, and a scripture reference is shown immediately."
+            case .people: "Guess people from the Bible. You can make up to 10 mistakes, and a scripture reference is shown immediately."
+            case .places: "Guess places from the Bible. You can make up to 10 mistakes, and a scripture reference is shown immediately."
+            }
+        case .normal:
+            switch theme {
+            case .all: "Guess Bible books, people, or places. You can make up to 7 mistakes, and the scripture reference appears after 3 wrong guesses."
+            case .books: "Guess books of the Bible. You can make up to 7 mistakes, and the scripture reference appears after 3 wrong guesses."
+            case .people: "Guess people from the Bible. You can make up to 7 mistakes, and the scripture reference appears after 3 wrong guesses."
+            case .places: "Guess places from the Bible. You can make up to 7 mistakes, and the scripture reference appears after 3 wrong guesses."
+            }
+        case .hard:
+            switch theme {
+            case .all: "Guess Bible books, people, or places. You can make up to 6 mistakes, and the scripture reference appears only after the round ends."
+            case .books: "Guess books of the Bible. You can make up to 6 mistakes, and the scripture reference appears only after the round ends."
+            case .people: "Guess people from the Bible. You can make up to 6 mistakes, and the scripture reference appears only after the round ends."
+            case .places: "Guess places from the Bible. You can make up to 6 mistakes, and the scripture reference appears only after the round ends."
+            }
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Your Game", systemImage: "checklist")
+                .font(.headline)
+                .foregroundStyle(.tint)
+
+            Text(summary)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Divider()
+
+            LabeledContent("Difficulty") {
+                Text(difficultyTitle)
+                    .fontWeight(.semibold)
+            }
+
+            LabeledContent("Question Subject") {
+                Text(subjectTitle)
+                    .fontWeight(.semibold)
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: 620, alignment: .leading)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
+        }
+        .padding(.horizontal)
+        .accessibilityElement(children: .contain)
+    }
+}
+
+private struct HangmanSetupControls: View {
+    @Binding var theme: HangmanGameView.Theme
+    @Binding var difficulty: HangmanGameView.Difficulty
+
+    var body: some View {
+        VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Difficulty")
+                    .font(.headline)
+
+                Picker("Difficulty", selection: $difficulty) {
+                    Text("Easy").tag(HangmanGameView.Difficulty.easy)
+                    Text("Normal").tag(HangmanGameView.Difficulty.normal)
+                    Text("Hard").tag(HangmanGameView.Difficulty.hard)
+                }
+                .pickerStyle(.segmented)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Question Subject")
+                    .font(.headline)
+
+                Picker("Question Subject", selection: $theme) {
+                    Text("All").tag(HangmanGameView.Theme.all)
+                    Text("Books").tag(HangmanGameView.Theme.books)
+                    Text("People").tag(HangmanGameView.Theme.people)
+                    Text("Places").tag(HangmanGameView.Theme.places)
+                }
+                .pickerStyle(.segmented)
+            }
+        }
+        .frame(maxWidth: 620)
+        .padding(.horizontal)
     }
 }
 
