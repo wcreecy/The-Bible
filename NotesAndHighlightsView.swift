@@ -44,6 +44,7 @@ struct VerseNoteEditorView: View {
 
     let verse: VerseActionReference
     let existingNote: VerseNote?
+    let preservesHighlightWhenRemovingNote: Bool
 
     @State private var title: String
     @State private var noteText: AttributedString
@@ -53,9 +54,14 @@ struct VerseNoteEditorView: View {
     @State private var persistenceFailure: PersistenceFailure?
     @State private var selectedScriptureReference: ScriptureRef?
 
-    init(verse: VerseActionReference, existingNote: VerseNote?) {
+    init(
+        verse: VerseActionReference,
+        existingNote: VerseNote?,
+        preservesHighlightWhenRemovingNote: Bool = false
+    ) {
         self.verse = verse
         self.existingNote = existingNote
+        self.preservesHighlightWhenRemovingNote = preservesHighlightWhenRemovingNote
         _title = State(initialValue: existingNote?.title ?? "")
         _noteText = State(initialValue: Self.loadFormattedContent(from: existingNote))
         _selectedColor = State(
@@ -80,7 +86,10 @@ struct VerseNoteEditorView: View {
                     verseText: verse.verseText
                 )
 
-                VerseNoteOptionsBar(category: $selectedCategory, highlight: $selectedColor)
+                VerseNoteOptionsBar(
+                    category: $selectedCategory,
+                    highlight: $selectedColor
+                )
 
                 TextEditor(text: $noteText, selection: $noteSelection)
                     .font(.body)
@@ -131,7 +140,7 @@ struct VerseNoteEditorView: View {
                 horizontalPadding: editorHorizontalPadding
             )
         }
-        .navigationTitle(existingNote == nil ? "Add Note & Highlight" : "Edit Note & Highlight")
+        .navigationTitle(editorTitle)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
@@ -143,7 +152,12 @@ struct VerseNoteEditorView: View {
             }
             if existingNote != nil {
                 ToolbarItem(placement: .secondaryAction) {
-                    Button("Remove Note & Highlight", systemImage: "trash", role: .destructive, action: deleteEntry)
+                    Button(
+                        preservesHighlightWhenRemovingNote ? "Remove Note" : "Remove Note & Highlight",
+                        systemImage: "trash",
+                        role: .destructive,
+                        action: deleteEntry
+                    )
                 }
             }
         }
@@ -169,6 +183,14 @@ struct VerseNoteEditorView: View {
 
     private var trimmedNote: String {
         String(noteText.characters).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var editorTitle: LocalizedStringResource {
+        if preservesHighlightWhenRemovingNote {
+            "Edit Scripture Note"
+        } else {
+            existingNote == nil ? "Add Note & Highlight" : "Edit Note & Highlight"
+        }
     }
 
     private var editorHorizontalPadding: CGFloat {
@@ -310,7 +332,14 @@ struct VerseNoteEditorView: View {
         ModelContextPersistence.perform(
             in: modelContext,
             operation: {
-                modelContext.delete(existingNote)
+                if preservesHighlightWhenRemovingNote, !existingNote.highlightColor.isEmpty {
+                    existingNote.title = ""
+                    existingNote.content = ""
+                    existingNote.formattedContent = nil
+                    existingNote.updatedAt = Date()
+                } else {
+                    modelContext.delete(existingNote)
+                }
                 try modelContext.save()
             },
             onSuccess: {
@@ -594,19 +623,34 @@ private struct VerseNoteOptionsBar: View {
                 VStack(alignment: .leading, spacing: 8) {
                     NoteCategoryMenu(category: $category)
                     Divider()
-                    HighlightColorPicker(selection: $highlight)
+                    ScriptureHighlightPicker(selection: $highlight)
                 }
             } else {
                 HStack(spacing: 12) {
                     NoteCategoryMenu(category: $category)
                     Divider().frame(height: 28)
-                    HighlightColorPicker(selection: $highlight)
+                    ScriptureHighlightPicker(selection: $highlight)
                 }
             }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+}
+
+private struct ScriptureHighlightPicker: View {
+    @Binding var selection: VerseHighlightColor?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label("Scripture Highlight", systemImage: "highlighter")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            HighlightColorPicker(selection: $selection)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -975,7 +1019,8 @@ struct NotesAndHighlightsView: View {
                             verseNumber: selectedScriptureNote.verseNumber,
                             verseText: selectedScriptureNote.verseText
                         ),
-                        existingNote: selectedScriptureNote
+                        existingNote: selectedScriptureNote,
+                        preservesHighlightWhenRemovingNote: true
                     )
                 } else if let selectedUserNote {
                     UserNoteEditorView(existingNote: selectedUserNote)
@@ -1013,12 +1058,6 @@ struct NotesAndHighlightsView: View {
 
     private var regularContent: some View {
         VStack(spacing: 12) {
-            NotesOverviewHeader(
-                noteCount: visibleNotes.count,
-                totalCount: scriptureNotes.count + userNotes.count,
-                createAction: { isCreatingNote = true }
-            )
-
             NotesCategoryStrip(selection: $selectedFilter)
             contextualTip
 
@@ -1157,42 +1196,6 @@ struct NotesAndHighlightsView: View {
     }
 }
 
-private struct NotesOverviewHeader: View {
-    let noteCount: Int
-    let totalCount: Int
-    let createAction: () -> Void
-
-    var body: some View {
-        HStack(spacing: 14) {
-            VStack(alignment: .leading, spacing: 3) {
-                Text("Study Notebook")
-                    .font(.title2.bold())
-                Text(summaryText)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer(minLength: 12)
-
-            Button(action: createAction) {
-                Image(systemName: "square.and.pencil")
-            }
-            .buttonStyle(ModernCircleButtonStyle(tint: .accentColor, isProminent: true))
-            .accessibilityLabel("Create note")
-        }
-        .padding(AppDesignMetrics.cardPadding)
-        .heroCardSurface()
-    }
-
-    private var summaryText: LocalizedStringKey {
-        if noteCount == totalCount {
-            "\(totalCount) notes and highlights"
-        } else {
-            "Showing \(noteCount) of \(totalCount) notes"
-        }
-    }
-}
-
 private struct NotesCategoryStrip: View {
     @Binding var selection: NotesFilter
 
@@ -1302,12 +1305,6 @@ private struct NotesListCard: View {
                                 selectedUserNote = nil
                                 selectionAction()
                             }
-                            .contextMenu {
-                                Button(note.isFavorite ? "Remove Favorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star") {
-                                    toggleFavorite(note)
-                                }
-                                Button("Delete", systemImage: "trash", role: .destructive) { delete(note) }
-                            }
                             .swipeActions(edge: .leading) {
                                 Button {
                                     toggleFavorite(note)
@@ -1345,12 +1342,6 @@ private struct NotesListCard: View {
                                 selectedUserNote = note
                                 selectedScriptureNote = nil
                                 selectionAction()
-                            }
-                            .contextMenu {
-                                Button(note.isFavorite ? "Remove Favorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star") {
-                                    toggleFavorite(note)
-                                }
-                                Button("Delete", systemImage: "trash", role: .destructive) { delete(note) }
                             }
                             .swipeActions(edge: .leading) {
                                 Button {
@@ -1812,7 +1803,8 @@ private struct ScriptureNotesView: View {
                         verseNumber: note.verseNumber,
                         verseText: note.verseText
                     ),
-                    existingNote: note
+                    existingNote: note,
+                    preservesHighlightWhenRemovingNote: true
                 )
                 .toolbar {
                     ToolbarItem(placement: .bottomBar) {
