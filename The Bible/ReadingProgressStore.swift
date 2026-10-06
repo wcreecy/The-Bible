@@ -26,6 +26,14 @@ enum ReadingProgressStore {
         try context.save()
     }
 
+    static func clear(in context: ModelContext) throws {
+        let progressRecords = try context.fetch(FetchDescriptor<ReadingProgress>())
+        for progress in progressRecords {
+            context.delete(progress)
+        }
+        try context.save()
+    }
+
     static func dedupe(in context: ModelContext) {
         // Keep newest by updatedAt, delete the rest
         let sort = [SortDescriptor(\ReadingProgress.updatedAt, order: .reverse)]

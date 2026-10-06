@@ -458,6 +458,10 @@ struct ReadingView: View {
             favoriteToastSymbol = "bookmark.fill"
             favoriteToastTint = .accentColor
             favoriteToastText = "Set as Continue Reading"
+        case .removedBookmark:
+            favoriteToastSymbol = "bookmark"
+            favoriteToastTint = .secondary
+            favoriteToastText = "Removed Continue Reading"
         case .pinned:
             favoriteToastSymbol = "pin.fill"
             favoriteToastTint = .red

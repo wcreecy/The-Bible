@@ -730,6 +730,10 @@ struct HomeView: View {
             verseActionToastSymbol = "bookmark.fill"
             verseActionToastText = "Set as Continue Reading"
             verseActionToastTint = .accentColor
+        case .removedBookmark:
+            verseActionToastSymbol = "bookmark"
+            verseActionToastText = "Removed Continue Reading"
+            verseActionToastTint = .secondary
         case .pinned:
             verseActionToastSymbol = "pin.fill"
             verseActionToastText = "Pinned to Widget"

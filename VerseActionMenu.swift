@@ -22,6 +22,7 @@ enum VerseActionFeedback {
     case addedFavorite
     case removedFavorite
     case bookmarked
+    case removedBookmark
     case pinned
     case unpinned
     case copied
@@ -103,7 +104,7 @@ struct VerseActionMenu: View {
                     Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                         .foregroundStyle(isBookmarked ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.primary))
                 }
-                .accessibilityLabel(isBookmarked ? "Continue Reading is set here" : "Set as Continue Reading")
+                .accessibilityLabel(isBookmarked ? "Remove Continue Reading bookmark" : "Set as Continue Reading")
 
                 Button(action: togglePin) {
                     Image(systemName: isPinned ? "pin.fill" : "pin")
@@ -144,7 +145,7 @@ struct VerseActionMenu: View {
 
                 Button(action: bookmark) {
                     Label(
-                        isBookmarked ? "Continue Reading Set Here" : "Set as Continue Reading",
+                        isBookmarked ? "Remove Continue Reading Bookmark" : "Set as Continue Reading",
                         systemImage: isBookmarked ? "bookmark.fill" : "bookmark"
                     )
                 }
@@ -213,21 +214,34 @@ struct VerseActionMenu: View {
     }
 
     private func bookmark() {
+        let removesBookmark = isBookmarked
+
         ModelContextPersistence.perform(
             in: modelContext,
             operation: {
-                try ReadingProgressStore.save(
-                    in: modelContext,
-                    bookName: verse.bookName,
-                    chapter: verse.chapterNumber,
-                    verse: verse.verseNumber
-                )
+                if removesBookmark {
+                    try ReadingProgressStore.clear(in: modelContext)
+                } else {
+                    try ReadingProgressStore.save(
+                        in: modelContext,
+                        bookName: verse.bookName,
+                        chapter: verse.chapterNumber,
+                        verse: verse.verseNumber
+                    )
+                }
             },
             onSuccess: {
-                VerseActionPersistence.mirrorBookmark(verse)
-                isBookmarked = true
-                Haptics.success()
-                onFeedback(.bookmarked)
+                if removesBookmark {
+                    VerseActionPersistence.clearBookmark()
+                    isBookmarked = false
+                    Haptics.selection()
+                    onFeedback(.removedBookmark)
+                } else {
+                    VerseActionPersistence.mirrorBookmark(verse)
+                    isBookmarked = true
+                    Haptics.success()
+                    onFeedback(.bookmarked)
+                }
             },
             onFailure: { persistenceFailure = $0 }
         )
@@ -284,6 +298,24 @@ private enum VerseActionPersistence {
             bookName: verse.bookName,
             chapter: verse.chapterNumber
         )
+        DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
+    }
+
+    static func clearBookmark() {
+        let keys = ["lastReadBook", "lastReadChapter", "lastReadVerse", "lastReadText"]
+
+        if let shared = UserDefaults(suiteName: "group.bible.app") {
+            for key in keys {
+                shared.removeObject(forKey: key)
+            }
+        }
+
+        let ubiquitousStore = NSUbiquitousKeyValueStore.default
+        for key in keys {
+            ubiquitousStore.removeObject(forKey: key)
+        }
+        ubiquitousStore.synchronize()
+
         DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
     }
 }
