@@ -305,6 +305,9 @@ struct WordleView: View {
               },
               swapCards: {
                 showsBoardCardSecond.toggle()
+              },
+              revealWord: {
+                confirmReveal = true
               }
             ) {
               GameScoreboardCard(
@@ -316,11 +319,26 @@ struct WordleView: View {
                 style: usesWideLayout ? .dashboard : .compact
               )
             } board: {
-              boardView(
-                tileSize: usesWideLayout && !(roundOver || showsOnScreenKeyboard)
-                  ? 68
-                  : (usesCompactPhoneLayout ? 42 : 48)
-              )
+              VStack(alignment: .trailing, spacing: 4) {
+                if usesCompactPhoneLayout, !roundOver {
+                  Button {
+                    confirmReveal = true
+                  } label: {
+                    Label("Reveal Word", systemImage: "eye")
+                  }
+                  .labelStyle(.iconOnly)
+                  .buttonStyle(.bordered)
+                  .controlSize(.small)
+                  .tint(.red)
+                  .accessibilityHint("Reveals the answer and counts the round as a loss")
+                }
+
+                boardView(
+                  tileSize: usesWideLayout && !(roundOver || showsOnScreenKeyboard)
+                    ? 68
+                    : (usesCompactPhoneLayout ? 42 : 48)
+                )
+              }
             } feedback: {
               VStack(spacing: 10) {
                 if !roundOver, let msg = message {
@@ -707,8 +725,7 @@ struct WordleView: View {
             keyHeight: keyHeight,
             onLetter: tapLetter,
             onDelete: deleteLetter,
-            onEnter: submitGuess,
-            onReveal: { confirmReveal = true }
+            onEnter: submitGuess
         )
     }
 
@@ -722,7 +739,6 @@ struct WordleView: View {
         let onLetter: (Character) -> Void
         let onDelete: () -> Void
         let onEnter: () -> Void
-        let onReveal: () -> Void
 
         private var rows: [[Character]] {
             if usesABCLayout {
@@ -770,34 +786,17 @@ struct WordleView: View {
                     .accessibilityLabel("Backspace")
                 }
 
-                GeometryReader { geometry in
-                    let keyWidth = (geometry.size.width - (8 * keySpacing)) / 9
-
-                    HStack(spacing: keySpacing) {
-                        Button(action: onReveal) {
-                            Image(systemName: "eye")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity, minHeight: keyHeight)
-                        }
-                        .buttonStyle(GameKeyButtonStyle(tint: .red))
-                        .frame(width: keyWidth)
-                        .disabled(isRoundOver)
-                        .accessibilityLabel("Reveal Word. Counts as a loss.")
-
-                        Button(action: onEnter) {
-                            Label("Enter", systemImage: "return")
-                                .labelStyle(.titleAndIcon)
-                                .font(.headline)
-                                .frame(maxWidth: .infinity, minHeight: keyHeight)
-                        }
-                        .buttonStyle(
-                            GameKeyButtonStyle(tint: isCurrentRowFull ? .green : .gray)
-                        )
-                        .disabled(isRoundOver || !isCurrentRowFull)
-                        .accessibilityLabel("Enter")
-                    }
+                Button(action: onEnter) {
+                    Label("Enter", systemImage: "return")
+                        .labelStyle(.titleAndIcon)
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, minHeight: keyHeight)
                 }
-                .frame(height: keyHeight + 16)
+                .buttonStyle(
+                    GameKeyButtonStyle(tint: isCurrentRowFull ? .green : .gray)
+                )
+                .disabled(isRoundOver || !isCurrentRowFull)
+                .accessibilityLabel("Enter")
             }
             .accessibilityElement(children: .contain)
             .padding(.top, 6)
@@ -1499,6 +1498,7 @@ private struct WordGameResponsiveLayout<
   let showsBoardCardSecond: Bool
   let toggleKeyboardCard: () -> Void
   let swapCards: () -> Void
+  let revealWord: () -> Void
   let scoreboard: Scoreboard
   let board: Board
   let feedback: Feedback
@@ -1512,6 +1512,7 @@ private struct WordGameResponsiveLayout<
     showsBoardCardSecond: Bool,
     toggleKeyboardCard: @escaping () -> Void,
     swapCards: @escaping () -> Void,
+    revealWord: @escaping () -> Void,
     @ViewBuilder scoreboard: () -> Scoreboard,
     @ViewBuilder board: () -> Board,
     @ViewBuilder feedback: () -> Feedback,
@@ -1524,6 +1525,7 @@ private struct WordGameResponsiveLayout<
     self.showsBoardCardSecond = showsBoardCardSecond
     self.toggleKeyboardCard = toggleKeyboardCard
     self.swapCards = swapCards
+    self.revealWord = revealWord
     self.scoreboard = scoreboard()
     self.board = board()
     self.feedback = feedback()
@@ -1577,6 +1579,14 @@ private struct WordGameResponsiveLayout<
     VStack(spacing: 16) {
       HStack {
         Spacer()
+
+        Button(action: revealWord) {
+          Label("Reveal Word", systemImage: "eye")
+        }
+        .labelStyle(.iconOnly)
+        .buttonStyle(.bordered)
+        .controlSize(.small)
+        .accessibilityHint("Reveals the answer and counts the round as a loss")
 
         Button(action: swapCards) {
           Label("Swap Cards", systemImage: "arrow.left.arrow.right")
