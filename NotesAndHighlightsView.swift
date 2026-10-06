@@ -1093,53 +1093,50 @@ struct NotesAndHighlightsView: View {
             NotesCategoryStrip(selection: $selectedFilter)
             contextualTip
 
-            GeometryReader { proxy in
-                HStack(alignment: .top, spacing: 16) {
-                    ScrollView {
-                        ExpandingNotesListCard(
-                            notes: visibleNotes,
-                            selectedScriptureNote: $selectedScriptureNote,
-                            selectedUserNote: $selectedUserNote,
-                            selectedFilter: $selectedFilter,
-                            showsClearFiltersAction: hasActiveFilters,
-                            clearFiltersAction: clearFilters,
-                            newNoteAction: { isCreatingNote = true },
-                            deleteAction: delete,
-                            selectionAction: {}
+            ResizableNotesColumns {
+                ScrollView {
+                    ExpandingNotesListCard(
+                        notes: visibleNotes,
+                        selectedScriptureNote: $selectedScriptureNote,
+                        selectedUserNote: $selectedUserNote,
+                        selectedFilter: $selectedFilter,
+                        showsClearFiltersAction: hasActiveFilters,
+                        clearFiltersAction: clearFilters,
+                        newNoteAction: { isCreatingNote = true },
+                        deleteAction: delete,
+                        selectionAction: {}
+                    )
+                    .frame(maxWidth: .infinity)
+                    .heroCardSurface()
+                    .padding(.horizontal, 2)
+                    .padding(.vertical, 12)
+                }
+                .scrollIndicators(.hidden)
+            } detail: {
+                VStack(spacing: 12) {
+                    if selectedNoteIsExcludedFromVisibleNotes {
+                        Label(
+                            "This note isn’t included in the active filter or search.",
+                            systemImage: "line.3.horizontal.decrease.circle"
                         )
-                        .frame(maxWidth: .infinity)
-                        .heroCardSurface()
-                        .padding(.horizontal, 2)
-                        .padding(.vertical, 12)
-                    }
-                    .scrollIndicators(.hidden)
-                    .frame(width: max(300, (proxy.size.width - 16) * 0.4))
-
-                    VStack(spacing: 12) {
-                        if selectedNoteIsExcludedFromVisibleNotes {
-                            Label(
-                                "This note isn’t included in the active filter or search.",
-                                systemImage: "line.3.horizontal.decrease.circle"
-                            )
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 10)
-                            .background(
-                                Color.orange.opacity(0.12),
-                                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            )
-                            .accessibilityLabel("The open note is not included in the active filter or search.")
-                        }
-
-                        NoteDetailCard(
-                            scriptureNote: selectedScriptureNote,
-                            userNote: selectedUserNote,
-                            editAction: { isEditingSelection = true }
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(
+                            Color.orange.opacity(0.12),
+                            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
                         )
-                        .frame(maxWidth: .infinity)
+                        .accessibilityLabel("The open note is not included in the active filter or search.")
                     }
+
+                    NoteDetailCard(
+                        scriptureNote: selectedScriptureNote,
+                        userNote: selectedUserNote,
+                        editAction: { isEditingSelection = true }
+                    )
+                    .frame(maxWidth: .infinity)
                 }
             }
         }
@@ -1374,6 +1371,89 @@ struct NotesAndHighlightsView: View {
         case nil:
             selectedScriptureNote = nil
             selectedUserNote = nil
+        }
+    }
+}
+
+private struct ResizableNotesColumns<ListContent: View, DetailContent: View>: View {
+    @State private var listColumnFraction: CGFloat = 0.4
+    @GestureState private var dragTranslation: CGFloat = 0
+
+    let listContent: ListContent
+    let detailContent: DetailContent
+
+    init(
+        @ViewBuilder listContent: () -> ListContent,
+        @ViewBuilder detail: () -> DetailContent
+    ) {
+        self.listContent = listContent()
+        self.detailContent = detail()
+    }
+
+    var body: some View {
+        GeometryReader { proxy in
+            let dividerWidth: CGFloat = 20
+            let availableWidth = max(proxy.size.width - dividerWidth, 1)
+            let minimumListWidth = min(300, availableWidth * 0.45)
+            let minimumDetailWidth = min(360, availableWidth - minimumListWidth)
+            let minimumFraction = minimumListWidth / availableWidth
+            let maximumFraction = (availableWidth - minimumDetailWidth) / availableWidth
+            let committedFraction = min(max(listColumnFraction, minimumFraction), maximumFraction)
+            let previewFraction = min(
+                max(
+                    committedFraction + (dragTranslation / availableWidth),
+                    minimumFraction
+                ),
+                maximumFraction
+            )
+            let listWidth = availableWidth * committedFraction
+            let previewListWidth = availableWidth * previewFraction
+
+            ZStack(alignment: .leading) {
+                HStack(alignment: .top, spacing: 0) {
+                    listContent
+                        .frame(width: listWidth)
+
+                    Color.clear
+                        .frame(width: dividerWidth)
+
+                    detailContent
+                        .frame(width: availableWidth - listWidth)
+                }
+
+                Capsule()
+                    .fill(Color.secondary.opacity(0.45))
+                    .frame(width: 4, height: 48)
+                    .frame(width: dividerWidth)
+                    .frame(maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .offset(x: previewListWidth)
+                    .gesture(
+                        DragGesture(minimumDistance: 1)
+                            .updating($dragTranslation) { value, translation, _ in
+                                translation = value.translation.width
+                            }
+                            .onEnded { value in
+                                listColumnFraction = min(
+                                    max(
+                                        committedFraction + (value.translation.width / availableWidth),
+                                        minimumFraction
+                                    ),
+                                    maximumFraction
+                                )
+                            }
+                    )
+                    .accessibilityElement()
+                    .accessibilityLabel("Resize notes list")
+                    .accessibilityValue("\(Int(previewFraction * 100)) percent")
+                    .accessibilityAdjustableAction { direction in
+                        let adjustment: CGFloat = direction == .increment ? 0.05 : -0.05
+                        listColumnFraction = min(
+                            max(committedFraction + adjustment, minimumFraction),
+                            maximumFraction
+                        )
+                    }
+            }
         }
     }
 }
