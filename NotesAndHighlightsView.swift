@@ -1029,6 +1029,8 @@ struct NotesAndHighlightsView: View {
                     selectedScriptureNote: $selectedScriptureNote,
                     selectedUserNote: $selectedUserNote,
                     selectedFilter: $selectedFilter,
+                    showsClearFiltersAction: hasActiveFilters,
+                    clearFiltersAction: clearFilters,
                     selectionAction: { isShowingCompactDetail = true }
                 )
                 .frame(maxWidth: .infinity)
@@ -1053,6 +1055,8 @@ struct NotesAndHighlightsView: View {
                             selectedScriptureNote: $selectedScriptureNote,
                             selectedUserNote: $selectedUserNote,
                             selectedFilter: $selectedFilter,
+                            showsClearFiltersAction: hasActiveFilters,
+                            clearFiltersAction: clearFilters,
                             selectionAction: {}
                         )
                         .frame(maxWidth: .infinity)
@@ -1105,6 +1109,18 @@ struct NotesAndHighlightsView: View {
         let estimatedRowHeight: CGFloat = 90
         let visibleRowCount = max(visibleNotes.count, 1)
         return headerHeight + (CGFloat(visibleRowCount) * estimatedRowHeight)
+    }
+
+    private var hasActiveFilters: Bool {
+        selectedFilter != .all || highlightFilter != .all || !searchText.isEmpty
+    }
+
+    private func clearFilters() {
+        withAnimation(.snappy) {
+            selectedFilter = .all
+            highlightFilter = .all
+            searchText = ""
+        }
     }
 
     private func matchesSelectedCategory(_ rawValue: String) -> Bool {
@@ -1247,6 +1263,8 @@ private struct NotesListCard: View {
     @Binding var selectedScriptureNote: VerseNote?
     @Binding var selectedUserNote: UserNote?
     @Binding var selectedFilter: NotesFilter
+    let showsClearFiltersAction: Bool
+    let clearFiltersAction: () -> Void
     let selectionAction: () -> Void
 
     var body: some View {
@@ -1268,11 +1286,18 @@ private struct NotesListCard: View {
                     )
 
                 if notes.isEmpty {
-                    ContentUnavailableView(
-                        "No Notes",
-                        systemImage: "note.text",
-                        description: Text("Try another tag, color, sort order, or search.")
-                    )
+                    ContentUnavailableView {
+                        Label("No Notes", systemImage: "note.text")
+                    } description: {
+                        Text("Try another tag, color, sort order, or search.")
+                    } actions: {
+                        if showsClearFiltersAction {
+                            Button("Clear Filters", systemImage: "line.3.horizontal.decrease.circle") {
+                                clearFiltersAction()
+                            }
+                            .buttonStyle(.borderedProminent)
+                        }
+                    }
                     .padding(.top, 40)
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
@@ -1402,6 +1427,8 @@ private struct ExpandingNotesListCard: View {
     @Binding var selectedScriptureNote: VerseNote?
     @Binding var selectedUserNote: UserNote?
     @Binding var selectedFilter: NotesFilter
+    let showsClearFiltersAction: Bool
+    let clearFiltersAction: () -> Void
     let selectionAction: () -> Void
 
     var body: some View {
@@ -1420,11 +1447,18 @@ private struct ExpandingNotesListCard: View {
                 )
 
             if notes.isEmpty {
-                ContentUnavailableView(
-                    "No Notes",
-                    systemImage: "note.text",
-                    description: Text("Try another tag, color, sort order, or search.")
-                )
+                ContentUnavailableView {
+                    Label("No Notes", systemImage: "note.text")
+                } description: {
+                    Text("Try another tag, color, sort order, or search.")
+                } actions: {
+                    if showsClearFiltersAction {
+                        Button("Clear Filters", systemImage: "line.3.horizontal.decrease.circle") {
+                            clearFiltersAction()
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                }
                 .padding(.vertical, 40)
                 .frame(maxWidth: .infinity)
             } else {
@@ -1562,7 +1596,16 @@ private struct NotesFilterMenu: View {
             .controlSize(.small)
         case .toolbar:
             filterMenu {
-                Image(systemName: "line.3.horizontal.decrease")
+                Image(
+                    systemName: highlightFilter == .all
+                        ? "line.3.horizontal.decrease"
+                        : "line.3.horizontal.decrease.circle.fill"
+                )
+                .foregroundStyle(
+                    highlightFilter == .all
+                        ? AnyShapeStyle(.primary)
+                        : AnyShapeStyle(.tint)
+                )
             }
         }
     }
@@ -1578,6 +1621,7 @@ private struct NotesFilterMenu: View {
             label()
         }
         .accessibilityLabel("Filter notes")
+        .accessibilityValue(Text(highlightFilter.title))
     }
 }
 
