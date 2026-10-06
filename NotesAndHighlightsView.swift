@@ -933,7 +933,8 @@ struct NotesAndHighlightsView: View {
     @State private var isCreatingNote = false
     @State private var isEditingSelection = false
     @State private var isShowingCompactDetail = false
-    @State private var isConfirmingDeletion = false
+    @State private var deletedNoteSnapshot: DeletedNoteSnapshot?
+    @State private var isShowingDeleteUndo = false
 
     var body: some View {
         Group {
@@ -1029,12 +1030,14 @@ struct NotesAndHighlightsView: View {
                 )
             }
         }
-        .alert("Delete Note?", isPresented: $isConfirmingDeletion) {
-            Button("Cancel", role: .cancel) {}
-            Button("Delete", role: .destructive, action: deleteSelectedNote)
-        } message: {
-            Text("This action cannot be undone.")
-        }
+        .appToast(
+            isPresented: $isShowingDeleteUndo,
+            symbol: "trash",
+            text: "Note deleted",
+            tint: .red,
+            actionTitle: "Undo",
+            action: undoLastDeletion
+        )
         .onAppear(perform: selectFirstVisibleNoteIfNeeded)
         .onChange(of: selectedFilter) { _, _ in selectFirstVisibleNoteIfNeeded() }
         .onChange(of: highlightFilter) { _, _ in selectFirstVisibleNoteIfNeeded() }
@@ -1073,6 +1076,7 @@ struct NotesAndHighlightsView: View {
                     selectedFilter: $selectedFilter,
                     showsClearFiltersAction: hasActiveFilters,
                     clearFiltersAction: clearFilters,
+                    deleteAction: delete,
                     selectionAction: { isShowingCompactDetail = true }
                 )
                 .frame(maxWidth: .infinity)
@@ -1099,6 +1103,7 @@ struct NotesAndHighlightsView: View {
                             selectedFilter: $selectedFilter,
                             showsClearFiltersAction: hasActiveFilters,
                             clearFiltersAction: clearFilters,
+                            deleteAction: delete,
                             selectionAction: {}
                         )
                         .frame(maxWidth: .infinity)
@@ -1275,35 +1280,75 @@ struct NotesAndHighlightsView: View {
     }
 
     private func requestSelectedNoteDeletion() {
-        guard selectedScriptureNote != nil || selectedUserNote != nil else { return }
-        isConfirmingDeletion = true
+        guard let selectedItem else { return }
+        delete(selectedItem)
     }
 
-    private func deleteSelectedNote() {
-        let notesBeforeDeletion = visibleNotes
-        let selectedID = notesBeforeDeletion.first { item in
-            switch item {
-            case .scripture(let note): note === selectedScriptureNote
-            case .user(let note): note === selectedUserNote
-            }
-        }?.id
-        let selectedIndex = selectedID.flatMap { id in
-            notesBeforeDeletion.firstIndex { $0.id == id }
-        }
-
+    private var selectedItem: NotesListItem? {
         if let selectedScriptureNote {
-            modelContext.delete(selectedScriptureNote)
-        } else if let selectedUserNote {
-            modelContext.delete(selectedUserNote)
+            return .scripture(selectedScriptureNote)
+        }
+        if let selectedUserNote {
+            return .user(selectedUserNote)
+        }
+        return nil
+    }
+
+    private func delete(_ item: NotesListItem) {
+        let notesBeforeDeletion = visibleNotes
+        let deletedIndex = notesBeforeDeletion.firstIndex { $0.id == item.id }
+        let wasSelected: Bool
+
+        switch item {
+        case .scripture(let note):
+            wasSelected = selectedScriptureNote === note
+            deletedNoteSnapshot = .scripture(VerseNoteSnapshot(note: note), wasSelected: wasSelected)
+            modelContext.delete(note)
+        case .user(let note):
+            wasSelected = selectedUserNote === note
+            deletedNoteSnapshot = .user(UserNoteSnapshot(note: note), wasSelected: wasSelected)
+            modelContext.delete(note)
         }
         try? modelContext.save()
 
-        self.selectedScriptureNote = nil
-        self.selectedUserNote = nil
-        let remainingNotes = notesBeforeDeletion.filter { $0.id != selectedID }
-        if !remainingNotes.isEmpty {
-            select(remainingNotes[min(selectedIndex ?? 0, remainingNotes.count - 1)])
+        if wasSelected {
+            selectedScriptureNote = nil
+            selectedUserNote = nil
+            let remainingNotes = notesBeforeDeletion.filter { $0.id != item.id }
+            if !remainingNotes.isEmpty {
+                select(remainingNotes[min(deletedIndex ?? 0, remainingNotes.count - 1)])
+            }
         }
+
+        isShowingDeleteUndo = false
+        Task { @MainActor in
+            await Task.yield()
+            withAnimation(.snappy) {
+                isShowingDeleteUndo = true
+            }
+        }
+    }
+
+    private func undoLastDeletion() {
+        guard let deletedNoteSnapshot else { return }
+
+        switch deletedNoteSnapshot {
+        case .scripture(let snapshot, let wasSelected):
+            let note = snapshot.makeNote()
+            modelContext.insert(note)
+            if wasSelected {
+                select(.scripture(note))
+            }
+        case .user(let snapshot, let wasSelected):
+            let note = snapshot.makeNote()
+            modelContext.insert(note)
+            if wasSelected {
+                select(.user(note))
+            }
+        }
+
+        try? modelContext.save()
+        self.deletedNoteSnapshot = nil
     }
 
     private func select(_ item: NotesListItem) {
@@ -1329,6 +1374,90 @@ struct NotesAndHighlightsView: View {
             selectedScriptureNote = nil
             selectedUserNote = nil
         }
+    }
+}
+
+private enum DeletedNoteSnapshot {
+    case scripture(VerseNoteSnapshot, wasSelected: Bool)
+    case user(UserNoteSnapshot, wasSelected: Bool)
+}
+
+private struct VerseNoteSnapshot {
+    let title: String
+    let bookName: String
+    let chapterNumber: Int
+    let verseNumber: Int
+    let verseText: String
+    let content: String
+    let formattedContent: Data?
+    let highlightColor: String
+    let categoryRawValue: String
+    let isFavorite: Bool
+    let createdAt: Date?
+    let updatedAt: Date?
+
+    init(note: VerseNote) {
+        title = note.title
+        bookName = note.bookName
+        chapterNumber = note.chapterNumber
+        verseNumber = note.verseNumber
+        verseText = note.verseText
+        content = note.content
+        formattedContent = note.formattedContent
+        highlightColor = note.highlightColor
+        categoryRawValue = note.categoryRawValue
+        isFavorite = note.isFavorite
+        createdAt = note.createdAt
+        updatedAt = note.updatedAt
+    }
+
+    func makeNote() -> VerseNote {
+        let note = VerseNote()
+        note.title = title
+        note.bookName = bookName
+        note.chapterNumber = chapterNumber
+        note.verseNumber = verseNumber
+        note.verseText = verseText
+        note.content = content
+        note.formattedContent = formattedContent
+        note.highlightColor = highlightColor
+        note.categoryRawValue = categoryRawValue
+        note.isFavorite = isFavorite
+        note.createdAt = createdAt
+        note.updatedAt = updatedAt
+        return note
+    }
+}
+
+private struct UserNoteSnapshot {
+    let title: String
+    let content: String
+    let formattedContent: Data?
+    let categoryRawValue: String
+    let isFavorite: Bool
+    let createdAt: Date?
+    let updatedAt: Date?
+
+    init(note: UserNote) {
+        title = note.title
+        content = note.content
+        formattedContent = note.formattedContent
+        categoryRawValue = note.categoryRawValue
+        isFavorite = note.isFavorite
+        createdAt = note.createdAt
+        updatedAt = note.updatedAt
+    }
+
+    func makeNote() -> UserNote {
+        let note = UserNote()
+        note.title = title
+        note.content = content
+        note.formattedContent = formattedContent
+        note.categoryRawValue = categoryRawValue
+        note.isFavorite = isFavorite
+        note.createdAt = createdAt
+        note.updatedAt = updatedAt
+        return note
     }
 }
 
@@ -1481,6 +1610,7 @@ private struct NotesListCard: View {
     @Binding var selectedFilter: NotesFilter
     let showsClearFiltersAction: Bool
     let clearFiltersAction: () -> Void
+    let deleteAction: (NotesListItem) -> Void
     let selectionAction: () -> Void
 
     var body: some View {
@@ -1544,7 +1674,7 @@ private struct NotesListCard: View {
                                 .tint(.yellow)
                             }
                             .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) { delete(note) } label: {
+                                Button(role: .destructive) { deleteAction(.scripture(note)) } label: {
                                     Label("Delete", systemImage: "trash")
                                 }
                             }
@@ -1582,7 +1712,7 @@ private struct NotesListCard: View {
                                 .tint(.yellow)
                             }
                             .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) { delete(note) } label: {
+                                Button(role: .destructive) { deleteAction(.user(note)) } label: {
                                     Label("Delete", systemImage: "trash")
                                 }
                             }
@@ -1609,22 +1739,6 @@ private struct NotesListCard: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func delete(_ note: VerseNote) {
-        if selectedScriptureNote === note {
-            selectedScriptureNote = nil
-        }
-        modelContext.delete(note)
-        try? modelContext.save()
-    }
-
-    private func delete(_ note: UserNote) {
-        if selectedUserNote === note {
-            selectedUserNote = nil
-        }
-        modelContext.delete(note)
-        try? modelContext.save()
-    }
-
     private func toggleFavorite(_ note: VerseNote) {
         note.isFavorite.toggle()
         try? modelContext.save()
@@ -1645,6 +1759,7 @@ private struct ExpandingNotesListCard: View {
     @Binding var selectedFilter: NotesFilter
     let showsClearFiltersAction: Bool
     let clearFiltersAction: () -> Void
+    let deleteAction: (NotesListItem) -> Void
     let selectionAction: () -> Void
 
     var body: some View {
@@ -1724,7 +1839,7 @@ private struct ExpandingNotesListCard: View {
                 .tint(.yellow)
             }
             .swipeActions(edge: .trailing) {
-                Button(role: .destructive) { delete(note) } label: {
+                Button(role: .destructive) { deleteAction(.scripture(note)) } label: {
                     Label("Delete", systemImage: "trash")
                 }
             }
@@ -1758,27 +1873,11 @@ private struct ExpandingNotesListCard: View {
                 .tint(.yellow)
             }
             .swipeActions(edge: .trailing) {
-                Button(role: .destructive) { delete(note) } label: {
+                Button(role: .destructive) { deleteAction(.user(note)) } label: {
                     Label("Delete", systemImage: "trash")
                 }
             }
         }
-    }
-
-    private func delete(_ note: VerseNote) {
-        if selectedScriptureNote === note {
-            selectedScriptureNote = nil
-        }
-        modelContext.delete(note)
-        try? modelContext.save()
-    }
-
-    private func delete(_ note: UserNote) {
-        if selectedUserNote === note {
-            selectedUserNote = nil
-        }
-        modelContext.delete(note)
-        try? modelContext.save()
     }
 
     private func toggleFavorite(_ note: VerseNote) {
