@@ -2,6 +2,11 @@ import SwiftUI
 
 struct VerseOfDayCard: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    private var verseActionPresentation: VerseActionPresentation {
+        dynamicTypeSize.isAccessibilitySize || horizontalSizeClass == .compact ? .menu : .buttons
+    }
 
     @Binding var verseOfDay: HomeVerseRef?
     @Binding var verseOfDayPaused: Bool
@@ -75,7 +80,7 @@ struct VerseOfDayCard: View {
                                 verseNumber: v.verseNumber,
                                 verseText: v.verseText
                             ),
-                            presentation: dynamicTypeSize.isAccessibilitySize ? .menu : .buttons,
+                            presentation: verseActionPresentation,
                             onFeedback: onVerseActionFeedback
                         )
                         .help("Verse actions")
