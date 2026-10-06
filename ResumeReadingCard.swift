@@ -5,6 +5,7 @@ struct ResumeReadingCard: View {
     let verseText: String?
     let usesCompactLayout: Bool
     let onOpenReference: (ReadingProgress) -> Void
+    let onStartReading: () -> Void
 
     var body: some View {
         if let progress {
@@ -62,29 +63,34 @@ struct ResumeReadingCard: View {
             }
             .buttonStyle(.plain)
         } else {
-            HeroCard(
-                title: "",
-                subtitle: nil,
-                icon: nil,
-                tint: .blue
-            ) {
-                HStack(alignment: .center, spacing: 12) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "bookmark.fill")
+            Button(action: onStartReading) {
+                HeroCard(
+                    title: "",
+                    subtitle: nil,
+                    icon: nil,
+                    tint: .blue
+                ) {
+                    HStack(alignment: .center, spacing: 12) {
+                        Image(systemName: "book.fill")
                             .font(.title3)
                             .foregroundStyle(Color.accentColor)
-                        Text("Continue Reading")
+                        Text("Start Reading")
                             .font(.headline)
                             .bold()
+                        Spacer()
+                        Image(systemName: "arrow.right")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .accessibilityHidden(true)
                     }
-                    Spacer()
-                }
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Start reading from the Bible tab")
+
+                    Text("Begin with Genesis 1")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
             }
+            .buttonStyle(.plain)
+            .accessibilityHint("Opens Genesis chapter 1 in the Bible reader")
         }
     }
 }

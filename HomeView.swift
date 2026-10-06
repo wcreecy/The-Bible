@@ -413,6 +413,17 @@ struct HomeView: View {
                             "verse": p.verseNumber
                         ]
                     )
+                },
+                onStartReading: {
+                    NotificationCenter.default.post(
+                        name: .openBibleReference,
+                        object: nil,
+                        userInfo: [
+                            "book": "Genesis",
+                            "chapter": 1,
+                            "verse": 1
+                        ]
+                    )
                 }
             )
         case .streaks:
