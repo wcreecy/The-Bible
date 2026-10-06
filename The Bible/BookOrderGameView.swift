@@ -527,9 +527,9 @@ private struct BookOrderSetupControls: View {
                     .font(.headline)
 
                 Picker("Part of the Bible", selection: scopeChoice) {
-                    Text("Whole").tag(BookOrderScopeChoice.wholeBible)
-                    Text("Old").tag(BookOrderScopeChoice.oldTestament)
-                    Text("New").tag(BookOrderScopeChoice.newTestament)
+                    Text("OT/NT").tag(BookOrderScopeChoice.wholeBible)
+                    Text("OT").tag(BookOrderScopeChoice.oldTestament)
+                    Text("NT").tag(BookOrderScopeChoice.newTestament)
                     Text("Category").tag(BookOrderScopeChoice.category)
                 }
                 .pickerStyle(.segmented)
