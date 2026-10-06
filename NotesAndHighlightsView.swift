@@ -1047,16 +1047,21 @@ struct NotesAndHighlightsView: View {
 
             GeometryReader { proxy in
                 HStack(alignment: .top, spacing: 16) {
-                    NotesListCard(
-                        notes: visibleNotes,
-                        selectedScriptureNote: $selectedScriptureNote,
-                        selectedUserNote: $selectedUserNote,
-                        selectedFilter: $selectedFilter,
-                        selectionAction: {}
-                    )
+                    ScrollView {
+                        ExpandingNotesListCard(
+                            notes: visibleNotes,
+                            selectedScriptureNote: $selectedScriptureNote,
+                            selectedUserNote: $selectedUserNote,
+                            selectedFilter: $selectedFilter,
+                            selectionAction: {}
+                        )
+                        .frame(maxWidth: .infinity)
+                        .heroCardSurface()
+                        .padding(.horizontal, 2)
+                        .padding(.vertical, 12)
+                    }
+                    .scrollIndicators(.hidden)
                     .frame(width: max(300, (proxy.size.width - 16) * 0.4))
-                    .frame(height: min(compactNotesCardHeight, proxy.size.height))
-                    .heroCardSurface()
 
                     NoteDetailCard(
                         scriptureNote: selectedScriptureNote,
@@ -1361,6 +1366,153 @@ private struct NotesListCard: View {
         }
         .background(Color.clear)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func delete(_ note: VerseNote) {
+        if selectedScriptureNote === note {
+            selectedScriptureNote = nil
+        }
+        modelContext.delete(note)
+        try? modelContext.save()
+    }
+
+    private func delete(_ note: UserNote) {
+        if selectedUserNote === note {
+            selectedUserNote = nil
+        }
+        modelContext.delete(note)
+        try? modelContext.save()
+    }
+
+    private func toggleFavorite(_ note: VerseNote) {
+        note.isFavorite.toggle()
+        try? modelContext.save()
+    }
+
+    private func toggleFavorite(_ note: UserNote) {
+        note.isFavorite.toggle()
+        try? modelContext.save()
+    }
+}
+
+private struct ExpandingNotesListCard: View {
+    @Environment(\.modelContext) private var modelContext
+
+    let notes: [NotesListItem]
+    @Binding var selectedScriptureNote: VerseNote?
+    @Binding var selectedUserNote: UserNote?
+    @Binding var selectedFilter: NotesFilter
+    let selectionAction: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(selectedFilter.libraryTitle(noteCount: notes.count))
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(
+                    EdgeInsets(
+                        top: AppDesignMetrics.cardPadding,
+                        leading: AppDesignMetrics.cardPadding,
+                        bottom: 4,
+                        trailing: AppDesignMetrics.cardPadding
+                    )
+                )
+
+            if notes.isEmpty {
+                ContentUnavailableView(
+                    "No Notes",
+                    systemImage: "note.text",
+                    description: Text("Try another tag, color, sort order, or search.")
+                )
+                .padding(.vertical, 40)
+                .frame(maxWidth: .infinity)
+            } else {
+                ForEach(notes) { item in
+                    noteRow(item)
+
+                    if item.id != notes.last?.id {
+                        Divider()
+                            .padding(.leading, 16)
+                            .foregroundStyle(Color.primary.opacity(0.09))
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder
+    private func noteRow(_ item: NotesListItem) -> some View {
+        switch item {
+        case .scripture(let note):
+            NotesTitleButton(
+                title: item.title,
+                preview: item.preview,
+                reference: item.reference,
+                tag: NoteCategory(rawValue: note.categoryRawValue)?.title,
+                highlight: VerseHighlightColor(rawValue: note.highlightColor),
+                isFavorite: note.isFavorite,
+                updatedAt: note.updatedAt ?? note.createdAt,
+                isSelected: selectedScriptureNote === note
+            ) {
+                selectedScriptureNote = note
+                selectedUserNote = nil
+                selectionAction()
+            }
+            .background(
+                selectedScriptureNote === note
+                    ? Color.accentColor.opacity(0.13)
+                    : Color.clear
+            )
+            .swipeActions(edge: .leading) {
+                Button {
+                    toggleFavorite(note)
+                } label: {
+                    Label(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star")
+                }
+                .tint(.yellow)
+            }
+            .swipeActions(edge: .trailing) {
+                Button(role: .destructive) { delete(note) } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            }
+
+        case .user(let note):
+            NotesTitleButton(
+                title: item.title,
+                preview: item.preview,
+                reference: nil,
+                tag: NoteCategory(rawValue: note.categoryRawValue)?.title,
+                highlight: nil,
+                isFavorite: note.isFavorite,
+                updatedAt: note.updatedAt ?? note.createdAt,
+                isSelected: selectedUserNote === note
+            ) {
+                selectedUserNote = note
+                selectedScriptureNote = nil
+                selectionAction()
+            }
+            .background(
+                selectedUserNote === note
+                    ? Color.accentColor.opacity(0.13)
+                    : Color.clear
+            )
+            .swipeActions(edge: .leading) {
+                Button {
+                    toggleFavorite(note)
+                } label: {
+                    Label(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star")
+                }
+                .tint(.yellow)
+            }
+            .swipeActions(edge: .trailing) {
+                Button(role: .destructive) { delete(note) } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            }
+        }
     }
 
     private func delete(_ note: VerseNote) {
