@@ -60,6 +60,9 @@ final class WordSearchViewModel {
     private var modelContext: ModelContext
     private var favoritesFetch: () -> [Favorite]
     private var timerSubscription: AnyCancellable?
+    private var hasRecordedCurrentRound = false
+
+    private static let currentStreakKey = "wordsearchCurrentStreak"
 
     // Engine
     private var engine: WordSearchEngine {
@@ -95,11 +98,13 @@ final class WordSearchViewModel {
         didWin = false
         roundOver = false
         showBlindWordList = false
+        hasRecordedCurrentRound = false
         generatePuzzle()
         startTimerIfNeeded()
     }
 
     func newPuzzle() {
+        hasRecordedCurrentRound = false
         generatePuzzle()
         timeUp = false
         didWin = false
@@ -119,6 +124,7 @@ final class WordSearchViewModel {
         revealOverlay()
         stopTimer()
         roundOver = true
+        recordCompletedRound(won: false)
     }
 
     func handleTap(row: Int, col: Int) {
@@ -242,6 +248,7 @@ final class WordSearchViewModel {
         selectionEnd = nil
         tapStart = nil
         roundOver = true
+        recordCompletedRound(won: false)
         #if canImport(UIKit)
         let gen = UINotificationFeedbackGenerator()
         gen.notificationOccurred(.warning)
@@ -324,6 +331,37 @@ final class WordSearchViewModel {
             stopTimer()
             didWin = true
             roundOver = true
+            recordCompletedRound(won: true)
+        }
+    }
+
+    private func recordCompletedRound(won: Bool) {
+        guard !hasRecordedCurrentRound else { return }
+        hasRecordedCurrentRound = true
+
+        let defaults = UserDefaults.standard
+        let currentStreak: Int
+        if won {
+            currentStreak = defaults.integer(forKey: Self.currentStreakKey) + 1
+        } else {
+            currentStreak = 0
+        }
+        defaults.set(currentStreak, forKey: Self.currentStreakKey)
+
+        GameStats.shared.recordRound(
+            game: .wordsearch,
+            difficulty: statsDifficulty,
+            correct: won ? 1 : 0,
+            answered: 1,
+            currentBestStreak: currentStreak
+        )
+    }
+
+    private var statsDifficulty: GameStats.Difficulty {
+        switch difficulty {
+        case .easy: .easy
+        case .medium: .normal
+        case .hard, .expert: .hard
         }
     }
 

@@ -16,6 +16,7 @@ final class GameStats: ObservableObject {
         case versematch
         case bookorder
         case whoami
+        case wordsearch
         case wordle
     }
 
@@ -373,6 +374,7 @@ final class GameStats: ObservableObject {
         let b = beatclock
         let o = bookorder
         let w = whoami
+        let ws = wordsearch
 
         let wdDaily = wordle(type: .daily)
         let wdFree = wordle(type: .free)
@@ -392,6 +394,7 @@ final class GameStats: ObservableObject {
             .init(name: "Beat the Clock", correct: b.correct, answered: b.answered, bestStreak: b.bestStreak),
             .init(name: "Book Order", correct: o.correct, answered: o.answered, bestStreak: o.bestStreak),
             .init(name: "Who am I?", correct: w.correct, answered: w.answered, bestStreak: w.bestStreak),
+            .init(name: "Word Search", correct: ws.correct, answered: ws.answered, bestStreak: ws.bestStreak),
             .init(name: "WORD", correct: wdCombined.correct, answered: wdCombined.answered, bestStreak: wdCombined.bestStreak)
         ]
         return GameBreakdown(entries: entries)
@@ -413,6 +416,7 @@ final class GameStats: ObservableObject {
         case .versematch: stat = versematch
         case .bookorder: stat = bookorder
         case .whoami: stat = whoami
+        case .wordsearch: stat = wordsearch
         case .wordle:
             if let wordMode {
                 let counts = wordleCounts(mode: wordMode)
@@ -441,6 +445,7 @@ final class GameStats: ObservableObject {
         case .versematch: return "versematch"
         case .bookorder: return "bookorder"
         case .whoami: return "whoami"
+        case .wordsearch: return "wordsearch"
         case .wordle: return "word"
         }
     }
@@ -453,6 +458,7 @@ final class GameStats: ObservableObject {
         case "Beat the Clock": return "beatclock"
         case "Book Order": return "bookorder"
         case "Who am I?": return "whoami"
+        case "Word Search": return "wordsearch"
         case "WORD": return "word"
         default: return nil
         }
@@ -600,7 +606,7 @@ final class GameStats: ObservableObject {
                 case .hard: return "hard"
                 case .medium, .none: return nil
                 }
-            case .hangman, .beatclock, .versematch:
+            case .hangman, .beatclock, .versematch, .wordsearch:
                 switch difficulty {
                 case .easy: return "easy"
                 case .normal: return "normal"
@@ -700,6 +706,15 @@ final class GameStats: ObservableObject {
             incInt("whoamiAllTimeCorrect_all", by: addCorrect)
             incInt("whoamiAllTimeAnswered_all", by: addAnswered)
             maxInt("whoamiAllTimeBestStreak_all", candidate: currentBestStreak)
+
+        case .wordsearch:
+            guard let s = suf else { return }
+            incInt("wordsearchAllTimeCorrect_\(s)", by: addCorrect)
+            incInt("wordsearchAllTimeAnswered_\(s)", by: addAnswered)
+            maxInt("wordsearchAllTimeBestStreak_\(s)", candidate: currentBestStreak)
+            incInt("wordsearchAllTimeCorrect_all", by: addCorrect)
+            incInt("wordsearchAllTimeAnswered_all", by: addAnswered)
+            maxInt("wordsearchAllTimeBestStreak_all", candidate: currentBestStreak)
 
         case .wordle:
             guard let s = suf else { return }
@@ -983,6 +998,20 @@ final class GameStats: ObservableObject {
         return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
     }
 
+    private var wordsearch: GameStat {
+        let combinedC = max(0, readInt("wordsearchAllTimeCorrect_all"))
+        let combinedA = max(0, readInt("wordsearchAllTimeAnswered_all"))
+        let combinedB = max(0, readInt("wordsearchAllTimeBestStreak_all"))
+        if (combinedC + combinedA + combinedB) > 0 {
+            return GameStat(correct: combinedC, answered: combinedA, bestStreak: combinedB == 0 ? nil : combinedB)
+        }
+
+        let c = sumAcross(prefix: "wordsearchAllTimeCorrect", parts: ["_easy", "_normal", "_hard"], legacyKey: nil)
+        let a = sumAcross(prefix: "wordsearchAllTimeAnswered", parts: ["_easy", "_normal", "_hard"], legacyKey: nil)
+        let best = maxAcross(prefix: "wordsearchAllTimeBestStreak", parts: ["_easy", "_normal", "_hard"], legacyKey: nil)
+        return GameStat(correct: c, answered: a, bestStreak: best == 0 ? nil : best)
+    }
+
     private func wordle(type: WordleType) -> GameStat {
         let suf = (type == .daily) ? "_daily" : "_free"
         let c = readInt("wordleAllTimeCorrect\(suf)")
@@ -1061,7 +1090,7 @@ final class GameStats: ObservableObject {
     }
 
     private func aggregateAll() -> (correct: Int, answered: Int) {
-        let stats = [quiz, hangman, versematch, beatclock, bookorder, whoami]
+        let stats = [quiz, hangman, versematch, beatclock, bookorder, whoami, wordsearch]
         let typedCorrect = wordle(type: .daily).correct + wordle(type: .free).correct
         let typedAnswered = wordle(type: .daily).answered + wordle(type: .free).answered
         let wordleCombined = GameStat(
@@ -1131,6 +1160,7 @@ final class GameStats: ObservableObject {
         case .versematch: return "Verse Match"
         case .bookorder: return "Book Order"
         case .whoami: return "Who am I?"
+        case .wordsearch: return "Word Search"
         case .wordle: return "WORD"
         }
     }
