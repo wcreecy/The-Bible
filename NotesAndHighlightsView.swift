@@ -1037,7 +1037,7 @@ struct NotesAndHighlightsView: View {
         }
         .onAppear(perform: selectFirstVisibleNoteIfNeeded)
         .onChange(of: selectedFilter) { _, _ in selectFirstVisibleNoteIfNeeded() }
-        .onChange(of: highlightFilter) { _, _ in selectFirstVisibleNote() }
+        .onChange(of: highlightFilter) { _, _ in selectFirstVisibleNoteIfNeeded() }
         .onChange(of: sortRawValue) { _, _ in selectFirstVisibleNoteIfNeeded() }
         .onChange(of: searchText) { _, _ in selectFirstVisibleNoteIfNeeded() }
     }
@@ -1109,12 +1109,31 @@ struct NotesAndHighlightsView: View {
                     .scrollIndicators(.hidden)
                     .frame(width: max(300, (proxy.size.width - 16) * 0.4))
 
-                    NoteDetailCard(
-                        scriptureNote: selectedScriptureNote,
-                        userNote: selectedUserNote,
-                        editAction: { isEditingSelection = true }
-                    )
-                    .frame(maxWidth: .infinity)
+                    VStack(spacing: 12) {
+                        if selectedNoteIsExcludedFromVisibleNotes {
+                            Label(
+                                "This note isn’t included in the active filter or search.",
+                                systemImage: "line.3.horizontal.decrease.circle"
+                            )
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
+                            .background(
+                                Color.orange.opacity(0.12),
+                                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            )
+                            .accessibilityLabel("The open note is not included in the active filter or search.")
+                        }
+
+                        NoteDetailCard(
+                            scriptureNote: selectedScriptureNote,
+                            userNote: selectedUserNote,
+                            editAction: { isEditingSelection = true }
+                        )
+                        .frame(maxWidth: .infinity)
+                    }
                 }
             }
         }
@@ -1209,23 +1228,27 @@ struct NotesAndHighlightsView: View {
         }
     }
 
-    private func selectFirstVisibleNoteIfNeeded() {
-        let scriptureSelectionIsVisible = selectedScriptureNote.map { selected in
-            visibleNotes.contains {
-                if case .scripture(let note) = $0 { return note === selected }
+    private var selectedNoteIsExcludedFromVisibleNotes: Bool {
+        if let selectedScriptureNote {
+            return !visibleNotes.contains {
+                if case .scripture(let note) = $0 { return note === selectedScriptureNote }
                 return false
             }
-        } ?? false
-        let userSelectionIsVisible = selectedUserNote.map { selected in
-            visibleNotes.contains {
-                if case .user(let note) = $0 { return note === selected }
-                return false
-            }
-        } ?? false
-
-        if !scriptureSelectionIsVisible && !userSelectionIsVisible {
-            selectFirstVisibleNote()
         }
+
+        if let selectedUserNote {
+            return !visibleNotes.contains {
+                if case .user(let note) = $0 { return note === selectedUserNote }
+                return false
+            }
+        }
+
+        return false
+    }
+
+    private func selectFirstVisibleNoteIfNeeded() {
+        guard selectedScriptureNote == nil, selectedUserNote == nil else { return }
+        selectFirstVisibleNote()
     }
 
     private func moveSelection(by offset: Int) {
