@@ -1103,6 +1103,7 @@ struct NotesAndHighlightsView: View {
                             selectedFilter: $selectedFilter,
                             showsClearFiltersAction: hasActiveFilters,
                             clearFiltersAction: clearFilters,
+                            newNoteAction: { isCreatingNote = true },
                             deleteAction: delete,
                             selectionAction: {}
                         )
@@ -1616,9 +1617,23 @@ private struct NotesListCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             List {
-                Text(selectedFilter.libraryTitle(noteCount: notes.count))
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                HStack(spacing: 8) {
+                    Text(selectedFilter.libraryTitle(noteCount: notes.count))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+
+                    Spacer(minLength: 8)
+
+                    if showsClearFiltersAction {
+                        Button("Clear All Filters", systemImage: "line.3.horizontal.decrease.circle") {
+                            clearFiltersAction()
+                        }
+                        .font(.caption.weight(.semibold))
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        .accessibilityLabel("Clear all filters")
+                    }
+                }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
@@ -1638,7 +1653,7 @@ private struct NotesListCard: View {
                         Text("Try another tag, color, sort order, or search.")
                     } actions: {
                         if showsClearFiltersAction {
-                            Button("Clear Filters", systemImage: "line.3.horizontal.decrease.circle") {
+                            Button("Clear All Filters", systemImage: "line.3.horizontal.decrease.circle") {
                                 clearFiltersAction()
                             }
                             .buttonStyle(.borderedProminent)
@@ -1759,14 +1774,38 @@ private struct ExpandingNotesListCard: View {
     @Binding var selectedFilter: NotesFilter
     let showsClearFiltersAction: Bool
     let clearFiltersAction: () -> Void
+    let newNoteAction: () -> Void
     let deleteAction: (NotesListItem) -> Void
     let selectionAction: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(selectedFilter.libraryTitle(noteCount: notes.count))
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            HStack(spacing: 8) {
+                Text(selectedFilter.libraryTitle(noteCount: notes.count))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+
+                Spacer(minLength: 8)
+
+                if showsClearFiltersAction {
+                    Button {
+                        clearFiltersAction()
+                    } label: {
+                        Label("Clear All Filters", systemImage: "line.3.horizontal.decrease.circle")
+                    }
+                    .labelStyle(.iconOnly)
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .accessibilityLabel("Clear all filters")
+                }
+
+                Button("New Note", systemImage: "plus") {
+                    newNoteAction()
+                }
+                .font(.caption.weight(.semibold))
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+            }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(
                     EdgeInsets(
@@ -1784,7 +1823,7 @@ private struct ExpandingNotesListCard: View {
                     Text("Try another tag, color, sort order, or search.")
                 } actions: {
                     if showsClearFiltersAction {
-                        Button("Clear Filters", systemImage: "line.3.horizontal.decrease.circle") {
+                        Button("Clear All Filters", systemImage: "line.3.horizontal.decrease.circle") {
                             clearFiltersAction()
                         }
                         .buttonStyle(.borderedProminent)
