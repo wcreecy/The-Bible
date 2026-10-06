@@ -918,6 +918,7 @@ private enum NotesHighlightFilter: String, CaseIterable, Identifiable {
 @MainActor
 struct NotesAndHighlightsView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.modelContext) private var modelContext
     @Query(sort: \VerseNote.updatedAt, order: .reverse) private var scriptureNotes: [VerseNote]
     @Query(sort: \UserNote.updatedAt, order: .reverse) private var userNotes: [UserNote]
 
@@ -926,11 +927,13 @@ struct NotesAndHighlightsView: View {
     @State private var selectedFilter = NotesFilter.all
     @State private var highlightFilter = NotesHighlightFilter.all
     @State private var searchText = ""
+    @State private var isSearchPresented = false
     @State private var selectedScriptureNote: VerseNote?
     @State private var selectedUserNote: UserNote?
     @State private var isCreatingNote = false
     @State private var isEditingSelection = false
     @State private var isShowingCompactDetail = false
+    @State private var isConfirmingDeletion = false
 
     var body: some View {
         Group {
@@ -958,7 +961,11 @@ struct NotesAndHighlightsView: View {
             .navigationTitle("Note")
             .navigationBarTitleDisplayMode(.inline)
         }
-        .searchable(text: $searchText, prompt: "Search all notes")
+        .searchable(
+            text: $searchText,
+            isPresented: $isSearchPresented,
+            prompt: "Search all notes"
+        )
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 NotesFilterMenu(
@@ -983,6 +990,7 @@ struct NotesAndHighlightsView: View {
                     Image(systemName: "plus")
                 }
                 .accessibilityLabel("Create note")
+                .keyboardShortcut("n", modifiers: .command)
             }
         }
         .fullScreenCover(isPresented: $isCreatingNote) {
@@ -1011,11 +1019,45 @@ struct NotesAndHighlightsView: View {
                 }
             }
         }
+        .background {
+            ZStack {
+                keyboardShortcutControls
+                NotesKeyboardCommandResponder(
+                    isEnabled: !isSearchPresented && !isCreatingNote && !isEditingSelection,
+                    moveSelection: moveSelection,
+                    requestDeletion: requestSelectedNoteDeletion
+                )
+            }
+        }
+        .alert("Delete Note?", isPresented: $isConfirmingDeletion) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete", role: .destructive, action: deleteSelectedNote)
+        } message: {
+            Text("This action cannot be undone.")
+        }
         .onAppear(perform: selectFirstVisibleNoteIfNeeded)
         .onChange(of: selectedFilter) { _, _ in selectFirstVisibleNoteIfNeeded() }
         .onChange(of: highlightFilter) { _, _ in selectFirstVisibleNote() }
         .onChange(of: sortRawValue) { _, _ in selectFirstVisibleNoteIfNeeded() }
         .onChange(of: searchText) { _, _ in selectFirstVisibleNoteIfNeeded() }
+    }
+
+    private var keyboardShortcutControls: some View {
+        Group {
+            Button("Search Notes") {
+                isSearchPresented = true
+            }
+            .keyboardShortcut("f", modifiers: .command)
+
+            Button("Edit Selected Note") {
+                editSelectedNote()
+            }
+            .keyboardShortcut("e", modifiers: .command)
+            .disabled(selectedScriptureNote == nil && selectedUserNote == nil)
+        }
+        .frame(width: 0, height: 0)
+        .opacity(0)
+        .accessibilityHidden(true)
     }
 
     private var compactContent: some View {
@@ -1186,6 +1228,72 @@ struct NotesAndHighlightsView: View {
         }
     }
 
+    private func moveSelection(by offset: Int) {
+        guard !visibleNotes.isEmpty else { return }
+
+        let selectedID: NotesListItem.ID? = if let selectedScriptureNote {
+            .scripture(selectedScriptureNote.persistentModelID)
+        } else if let selectedUserNote {
+            .user(selectedUserNote.persistentModelID)
+        } else {
+            nil
+        }
+        let currentIndex = selectedID.flatMap { id in
+            visibleNotes.firstIndex { $0.id == id }
+        }
+        let proposedIndex = (currentIndex ?? (offset > 0 ? -1 : visibleNotes.count)) + offset
+        let destinationIndex = min(max(proposedIndex, 0), visibleNotes.count - 1)
+        select(visibleNotes[destinationIndex])
+    }
+
+    private func editSelectedNote() {
+        guard selectedScriptureNote != nil || selectedUserNote != nil else { return }
+        isEditingSelection = true
+    }
+
+    private func requestSelectedNoteDeletion() {
+        guard selectedScriptureNote != nil || selectedUserNote != nil else { return }
+        isConfirmingDeletion = true
+    }
+
+    private func deleteSelectedNote() {
+        let notesBeforeDeletion = visibleNotes
+        let selectedID = notesBeforeDeletion.first { item in
+            switch item {
+            case .scripture(let note): note === selectedScriptureNote
+            case .user(let note): note === selectedUserNote
+            }
+        }?.id
+        let selectedIndex = selectedID.flatMap { id in
+            notesBeforeDeletion.firstIndex { $0.id == id }
+        }
+
+        if let selectedScriptureNote {
+            modelContext.delete(selectedScriptureNote)
+        } else if let selectedUserNote {
+            modelContext.delete(selectedUserNote)
+        }
+        try? modelContext.save()
+
+        self.selectedScriptureNote = nil
+        self.selectedUserNote = nil
+        let remainingNotes = notesBeforeDeletion.filter { $0.id != selectedID }
+        if !remainingNotes.isEmpty {
+            select(remainingNotes[min(selectedIndex ?? 0, remainingNotes.count - 1)])
+        }
+    }
+
+    private func select(_ item: NotesListItem) {
+        switch item {
+        case .scripture(let note):
+            selectedScriptureNote = note
+            selectedUserNote = nil
+        case .user(let note):
+            selectedScriptureNote = nil
+            selectedUserNote = note
+        }
+    }
+
     private func selectFirstVisibleNote() {
         switch visibleNotes.first {
         case .scripture(let note):
@@ -1197,6 +1305,91 @@ struct NotesAndHighlightsView: View {
         case nil:
             selectedScriptureNote = nil
             selectedUserNote = nil
+        }
+    }
+}
+
+private struct NotesKeyboardCommandResponder: UIViewRepresentable {
+    let isEnabled: Bool
+    let moveSelection: (Int) -> Void
+    let requestDeletion: () -> Void
+
+    func makeUIView(context: Context) -> KeyCommandView {
+        KeyCommandView()
+    }
+
+    func updateUIView(_ view: KeyCommandView, context: Context) {
+        view.moveSelection = moveSelection
+        view.requestDeletion = requestDeletion
+        view.isCommandHandlingEnabled = isEnabled
+
+        DispatchQueue.main.async {
+            if isEnabled {
+                view.becomeFirstResponder()
+            } else if view.isFirstResponder {
+                view.resignFirstResponder()
+            }
+        }
+    }
+
+    @MainActor
+    final class KeyCommandView: UIView {
+        var moveSelection: ((Int) -> Void)?
+        var requestDeletion: (() -> Void)?
+        var isCommandHandlingEnabled = true
+
+        override var canBecomeFirstResponder: Bool {
+            isCommandHandlingEnabled
+        }
+
+        override var keyCommands: [UIKeyCommand]? {
+            guard isCommandHandlingEnabled else { return nil }
+
+            return [
+                command(
+                    input: UIKeyCommand.inputUpArrow,
+                    action: #selector(selectPreviousNote),
+                    title: "Previous Note"
+                ),
+                command(
+                    input: UIKeyCommand.inputDownArrow,
+                    action: #selector(selectNextNote),
+                    title: "Next Note"
+                ),
+                command(
+                    input: "\u{8}",
+                    action: #selector(deleteSelectedNote),
+                    title: "Delete Selected Note"
+                ),
+                command(
+                    input: UIKeyCommand.inputDelete,
+                    action: #selector(deleteSelectedNote),
+                    title: "Delete Selected Note"
+                )
+            ]
+        }
+
+        private func command(input: String, action: Selector, title: String) -> UIKeyCommand {
+            let command = UIKeyCommand(
+                title: title,
+                action: action,
+                input: input,
+                modifierFlags: []
+            )
+            command.wantsPriorityOverSystemBehavior = true
+            return command
+        }
+
+        @objc private func selectPreviousNote() {
+            moveSelection?(-1)
+        }
+
+        @objc private func selectNextNote() {
+            moveSelection?(1)
+        }
+
+        @objc private func deleteSelectedNote() {
+            requestDeletion?()
         }
     }
 }
