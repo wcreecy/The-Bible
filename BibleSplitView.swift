@@ -13,6 +13,7 @@ struct BibleSplitView: View {
     @State private var searchText: String = ""
     @State private var sidebarSearch: String = ""
     @State private var detailPath = NavigationPath()
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
     
     @State private var debouncedText: String = ""
     @State private var showInspector: Bool = false
@@ -516,6 +517,10 @@ struct BibleSplitView: View {
         }
         // Listen for deep links from ContentView (iPad path)
         .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { note in
+            // ContentView is the single router for app-wide requests. It relays the
+            // request after switching to the Bible tab, so handling the original
+            // notification here as well could reset this stack twice.
+            guard note.userInfo?["relayed"] as? Bool == true else { return }
             guard
                 let bookName = note.userInfo?["book"] as? String,
                 let chapterNum = note.userInfo?["chapter"] as? Int,
@@ -535,7 +540,7 @@ struct BibleSplitView: View {
     }
     
     var body: some View {
-        NavigationSplitView(columnVisibility: .constant(.all)) {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             sidebarView
         } detail: {
             detailView

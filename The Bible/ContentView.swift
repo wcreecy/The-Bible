@@ -128,6 +128,10 @@ struct ContentView: View {
             .tabItem { Label("More", systemImage: "ellipsis.circle") }
             .tag(AppTab.more)
         }
+        // On iPad, TabView renders the app's top-level navigation as a floating
+        // top tab bar. Keep it visible while a nested searchable view focuses
+        // its field and presents the keyboard.
+        .toolbarVisibility(.visible, for: .tabBar)
         .background {
             TabReselectionObserver { tabIndex in
                 guard let tab = AppTab(rawValue: tabIndex), tab == selectedTab else { return }
