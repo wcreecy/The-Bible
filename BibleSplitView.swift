@@ -148,7 +148,47 @@ struct BibleSplitView: View {
     @ViewBuilder
     private var sidebarView: some View {
         // Sidebar: Books only
-        List {
+        VStack(spacing: 0) {
+            HStack {
+                Menu {
+                    Button {
+                        sortAlphabetically = false
+                    } label: {
+                        Label("Canonical", systemImage: "list.number")
+                    }
+                    .disabled(!sortAlphabetically)
+
+                    Button {
+                        sortAlphabetically = true
+                    } label: {
+                        Label("A–Z", systemImage: "textformat.abc")
+                    }
+                    .disabled(sortAlphabetically)
+                } label: {
+                    Image(systemName: "arrow.up.arrow.down")
+                }
+                .accessibilityLabel("Sort")
+                .accessibilityHint("Choose canonical or alphabetical order")
+                .frame(width: 44, height: 44)
+
+                Spacer()
+
+                Text("Books")
+                    .font(.headline)
+
+                Spacer()
+
+                Button {
+                    columnVisibility = .detailOnly
+                } label: {
+                    Image(systemName: "sidebar.left")
+                }
+                .accessibilityLabel("Hide Books pane")
+                .frame(width: 44, height: 44)
+            }
+            .padding(.horizontal, 8)
+
+            List {
             Section {
                 HStack(spacing: 8) {
                     Image(systemName: "magnifyingglass")
@@ -262,32 +302,9 @@ struct BibleSplitView: View {
                     }
                 }
             }
-        }
-        .navigationTitle("Books")
-        .navigationBarTitleDisplayMode(.large)
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Menu {
-                    Button {
-                        sortAlphabetically = false
-                    } label: {
-                        Label("Canonical", systemImage: "list.number")
-                    }
-                    .disabled(!sortAlphabetically)
-
-                    Button {
-                        sortAlphabetically = true
-                    } label: {
-                        Label("A–Z", systemImage: "textformat.abc")
-                    }
-                    .disabled(sortAlphabetically)
-                } label: {
-                    Image(systemName: "arrow.up.arrow.down")
-                }
-                .accessibilityLabel("Sort")
-                .accessibilityHint("Choose canonical or alphabetical order")
             }
         }
+        .toolbar(.hidden, for: .navigationBar)
     }
 
     private func openSidebarReference() {
