@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct SearchView: View {
-    @Environment(\.dismissSearch) private var dismissSearch
-
     // MARK: - Query & Results
     @State private var query: String = ""
     @State private var results: [SearchResult] = []
@@ -77,7 +75,9 @@ struct SearchView: View {
                 .padding(.vertical, 12)
             }
 
-            // Scope controls at the top
+            prominentSearchField
+
+            // Scope controls below the search field
             scopeControls
 
             Group {
@@ -111,11 +111,6 @@ struct SearchView: View {
         .background(AppBackgroundView(tab: .bible))
         .navigationTitle("Search")
         .navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $query, placement: .toolbar, prompt: "Words or a reference")
-        .searchFocused($isSearchFieldFocused)
-        .onSubmit(of: .search) {
-            submitSearch()
-        }
         .onChange(of: query) { _, newValue in
             // Some hardware keyboard layouts send ";" for Shift-; in the search field.
             // A semicolon is not meaningful in a Bible reference, so treat it as ":".
@@ -202,6 +197,42 @@ struct SearchView: View {
             }
             .frame(minWidth: 320, minHeight: 420)
         }
+    }
+
+    private var prominentSearchField: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "magnifyingglass")
+                .foregroundStyle(.secondary)
+
+            TextField("Search words or a reference", text: $query)
+                .focused($isSearchFieldFocused)
+                .textInputAutocapitalization(.words)
+                .autocorrectionDisabled(true)
+                .submitLabel(.search)
+                .onSubmit(submitSearch)
+
+            if !query.isEmpty {
+                Button {
+                    query = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+                .accessibilityLabel("Clear search")
+            }
+        }
+        .font(.body)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(Color.accentColor.opacity(0.35), lineWidth: 1)
+        }
+        .padding(.horizontal)
+        .padding(.top, 12)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Bible search")
     }
 
     // MARK: - Scope Controls
@@ -315,8 +346,6 @@ struct SearchView: View {
     // MARK: - Open in Bible Tab
     private func openInBibleTab(_ item: SearchResult) {
         isSearchFieldFocused = false
-        dismissSearch()
-
         Task { @MainActor in
             // Release the search field before replacing Home's navigation
             // hierarchy with the Bible tab.
