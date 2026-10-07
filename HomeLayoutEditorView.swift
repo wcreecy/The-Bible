@@ -168,7 +168,6 @@ struct HomeLayoutEditorView: View {
             Label(title, systemImage: systemImage)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .lineLimit(2)
-                .minimumScaleFactor(0.85)
         }
         .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
         .controlSize(.large)

@@ -34,13 +34,11 @@ struct TitleCardView: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .allowsTightening(true)
-                    .minimumScaleFactor(0.75)
                 Text(text)
                     .font(font)
                     .foregroundStyle(gradient)
                     .lineLimit(1)
                     .allowsTightening(true)
-                    .minimumScaleFactor(0.75)
                     .mask(
                         GeometryReader { geo in
                             let width = max(0, min(1, progress)) * geo.size.width
@@ -140,7 +138,6 @@ struct TitleCardView: View {
                 Label("Search", systemImage: "magnifyingglass")
                     .lineLimit(1)
                     .allowsTightening(true)
-                    .minimumScaleFactor(0.85)
             }
             .buttonStyle(SubtlePillButtonStyle(emphasized: false, sizeScale: buttonScale))
 
@@ -148,7 +145,6 @@ struct TitleCardView: View {
                 Label("Read", systemImage: "book")
                     .lineLimit(1)
                     .allowsTightening(true)
-                    .minimumScaleFactor(0.85)
             }
             .buttonStyle(SubtlePillButtonStyle(emphasized: false, sizeScale: buttonScale))
 
@@ -156,7 +152,6 @@ struct TitleCardView: View {
                 Label("Favorites", systemImage: "heart")
                     .lineLimit(1)
                     .allowsTightening(true)
-                    .minimumScaleFactor(0.85)
             }
             .buttonStyle(SubtlePillButtonStyle(emphasized: false, sizeScale: buttonScale))
         }

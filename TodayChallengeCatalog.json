@@ -1,0 +1,128 @@
+{
+  "gameNames": [
+    "Bible Quiz",
+    "Hangman",
+    "Verse Match",
+    "Beat the Clock",
+    "Book Order",
+    "Who am I?",
+    "Word Search",
+    "WORD"
+  ],
+  "prayerMinutes": {
+    "minimum": 2,
+    "maximum": 20
+  },
+  "prayerFocuses": [
+    "growth",
+    "knowledge",
+    "wisdom",
+    "understanding",
+    "guidance",
+    "direction",
+    "peace",
+    "health"
+  ],
+  "reflectionTasks": [
+    {
+      "title": "Check on a friend",
+      "detail": "Send someone a thoughtful message."
+    },
+    {
+      "title": "Reflect on your blessings",
+      "detail": "Name three things you are grateful for."
+    },
+    {
+      "title": "Plan something meaningful",
+      "detail": "Make space for something that matters this week."
+    },
+    {
+      "title": "Encourage someone",
+      "detail": "Share a kind word with someone today."
+    },
+    {
+      "title": "Pause and reflect",
+      "detail": "Take a few quiet minutes to notice what is good."
+    },
+    {
+      "title": "Research the author of {{bookName}}",
+      "detail": "Learn a little about the person behind the book."
+    },
+    {
+      "title": "Take a prayer walk",
+      "detail": "Spend some time walking and talking with God."
+    },
+    {
+      "title": "Listen to an old gospel song",
+      "detail": "Choose one you have not heard in a while."
+    },
+    {
+      "title": "Buy someone a meal or snack",
+      "detail": "Share a small act of generosity."
+    },
+    {
+      "title": "Pray for someone new",
+      "detail": "Choose someone you do not normally pray for."
+    },
+    {
+      "title": "Start something you have been putting off",
+      "detail": "Take one small first step."
+    },
+    {
+      "title": "Text someone a scripture",
+      "detail": "Send a verse that may encourage them."
+    },
+    {
+      "title": "Ask for forgiveness",
+      "detail": "Take a sincere step toward making things right."
+    },
+    {
+      "title": "Memorize a Bible verse",
+      "detail": "Choose a short or long verse to carry with you."
+    },
+    {
+      "title": "Write down a Bible verse",
+      "detail": "Put it on paper where you can see it."
+    },
+    {
+      "title": "Spend 5 minutes in silence with God",
+      "detail": "Set aside quiet time without distractions."
+    },
+    {
+      "title": "Let someone go ahead of you",
+      "detail": "Practice patience in a line or everyday moment."
+    },
+    {
+      "title": "Thank someone",
+      "detail": "Tell someone specifically what you appreciate."
+    },
+    {
+      "title": "Tell someone you love them",
+      "detail": "Make sure they know."
+    },
+    {
+      "title": "Tell someone a joke",
+      "detail": "Share a little joy today."
+    },
+    {
+      "title": "Pray for {{prayerFocus}}",
+      "detail": "Bring this area to God in prayer."
+    },
+    {
+      "title": "Give something away",
+      "detail": "Share something useful with someone else."
+    },
+    {
+      "title": "Pray for your city",
+      "detail": "Lift up the people and needs around you."
+    },
+    {
+      "title": "Pray for students",
+      "detail": "Pray for their learning, safety, and growth."
+    },
+    {
+      "title": "Abstain from social media for 5 hours",
+      "detail": "Use that time for something life-giving."
+    }
+  ]
+}

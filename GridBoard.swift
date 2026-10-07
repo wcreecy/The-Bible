@@ -60,7 +60,6 @@ struct GridBoard: View {
             let cellSize = min(max(rawCellSize, minCell), maxCell)
 
             let totalSize = CGFloat(size) * cellSize + CGFloat(size - 1) * spacing
-            let letterFontSize: CGFloat = isPad ? min(26, cellSize * 0.72) : min(20, cellSize * 0.72)
 
             VStack(spacing: spacing) {
                 ForEach(0..<size, id: \.self) { r in
@@ -68,7 +67,7 @@ struct GridBoard: View {
                         ForEach(0..<size, id: \.self) { c in
                             let ch = grid[r][c]
                             Text(String(ch))
-                                .font(.system(size: letterFontSize, weight: .bold, design: .monospaced))
+                                .font(.headline.weight(.bold).monospaced())
                                 .frame(width: cellSize, height: cellSize)
                                 .background(
                                     RoundedRectangle(cornerRadius: 6, style: .continuous)

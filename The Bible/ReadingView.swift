@@ -394,7 +394,7 @@ struct ReadingView: View {
                         viewModel.previousChapter()
                     }) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.headline.weight(.bold))
                             .foregroundStyle(.primary)
                             .padding(10) // hit target
                             .background(.ultraThinMaterial, in: Circle())
@@ -410,7 +410,7 @@ struct ReadingView: View {
                         viewModel.nextChapter()
                     }) {
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.headline.weight(.bold))
                             .foregroundStyle(.primary)
                             .padding(10) // hit target
                             .background(.ultraThinMaterial, in: Circle())

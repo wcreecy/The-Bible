@@ -7,7 +7,7 @@ struct SubtlePillButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 13 * sizeScale, weight: .semibold))
+            .font(.caption.weight(.semibold))
             .foregroundStyle(emphasized ? Color.white : Color.accentColor)
             .padding(.horizontal, 12 * sizeScale)
             .frame(minHeight: 36 * sizeScale)

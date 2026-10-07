@@ -122,9 +122,9 @@ struct PrayerTimerLiveActivity: Widget {
                     // Big live countdown
                     Text(endDate(context.state.remaining), style: .timer)
                         .monospacedDigit()
-                        .font(.system(size: 44, weight: .bold, design: .rounded))
+                        .font(.largeTitle.weight(.bold))
+                        .fontDesign(.rounded)
                         .foregroundStyle(tint)
-                        .minimumScaleFactor(0.6)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
@@ -171,7 +171,8 @@ struct PrayerTimerLiveActivity: Widget {
 
                             Text(endDate(context.state.remaining), style: .timer)
                                 .monospacedDigit()
-                                .font(.system(size: 28, weight: .bold, design: .rounded))
+                                .font(.title.weight(.bold))
+                                .fontDesign(.rounded)
                                 .foregroundStyle(timerTintColor(context))
                                 .multilineTextAlignment(.center)
                         }

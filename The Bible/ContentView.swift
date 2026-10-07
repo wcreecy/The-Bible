@@ -11,7 +11,6 @@ import UIKit
 import ObjectiveC
 
 struct ContentView: View {
-    @Environment(\.dynamicTypeSize) private var systemDynamicTypeSize
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     // Separate coordinators per tab to avoid path leakage/corruption
     @StateObject private var homeCoordinator = NavigationCoordinator()
@@ -28,7 +27,6 @@ struct ContentView: View {
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
     
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
-    @AppStorage("fontSizePreference") private var fontSizePreferenceRaw: String = FontSizePreference.system.rawValue
     @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = FontFamilyPreference.system.rawValue
     
     // One-time cleanup flag for deprecated app time keys
@@ -57,7 +55,6 @@ struct ContentView: View {
     @AppStorage("lastBackgroundedAt") private var lastBackgroundedAt: Double = 0
 
     private var preferredScheme: ColorScheme? { (ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme }
-    private var preferredDynamicType: DynamicTypeSize? { (FontSizePreference(rawValue: fontSizePreferenceRaw) ?? .system).dynamicTypeSize }
     private var preferredFontDesign: Font.Design? { (FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).fontDesign }
     private var preferredCustomFontName: String? { (FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).customFontName }
     
@@ -144,7 +141,6 @@ struct ContentView: View {
         .background(AppBackgroundView(tab: selectedTab))
         // Apply your preferred color scheme even on the Settings tab so it updates in place.
         .preferredColorScheme(preferredScheme)
-        .dynamicTypeSize(preferredDynamicType ?? systemDynamicTypeSize)
         .font(preferredFont)
         .fontDesign(preferredFontDesign ?? .default)
         .onAppear {

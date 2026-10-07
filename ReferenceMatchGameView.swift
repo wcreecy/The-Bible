@@ -1000,7 +1000,6 @@ private struct VerseMatchReferenceCard: View {
                     Text("\(bookName) \(chapterNumber):\(verseNumber)")
                         .font(.largeTitle.weight(.semibold))
                         .multilineTextAlignment(.center)
-                        .minimumScaleFactor(0.75)
                         .frame(maxWidth: .infinity)
                 } else {
                     Text("No reference")

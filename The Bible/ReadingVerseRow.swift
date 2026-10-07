@@ -14,6 +14,9 @@ struct ReadingVerseRow: View {
     let savedHighlightColor: Color?
     let readerFontSize: Double
 
+    // Preserve the reader's size preference while scaling its 17-point baseline with Dynamic Type.
+    @ScaledMetric(relativeTo: .body) private var defaultReaderFontSize: CGFloat = 17
+
     let onVisibilityChange: (Bool) -> Void
     let onTap: (Verse) -> Void
     let onLongPress: (Int) -> Void
@@ -22,7 +25,7 @@ struct ReadingVerseRow: View {
         Group {
             VStack(alignment: .leading, spacing: 6) {
                 Text(verse.text)
-                    .font(.system(size: readerFontSize))
+                    .font(.system(size: defaultReaderFontSize + CGFloat(readerFontSize - 17)))
                     .foregroundStyle(.primary)
                     .fixedSize(horizontal: false, vertical: true)
                 Text("\(bookName) \(chapterNumber):\(verse.number)")

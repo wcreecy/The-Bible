@@ -106,12 +106,14 @@ struct GamesCard: View {
 
                         if isEmpty {
                             Text("Let’s play!")
-                                .font(.system(size: 20, weight: .semibold, design: .rounded))
+                                .font(.title3.weight(.semibold))
+                                .fontDesign(.rounded)
                                 .foregroundStyle(.secondary)
                         } else {
                             HStack(spacing: 6) {
                                 Text("\(Int(round(gamerPct)))%")
-                                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                                    .font(.title2.weight(.bold))
+                                    .fontDesign(.rounded)
                                     .foregroundStyle(gamerColor)
                                     .monospacedDigit()
                                     .accessibilityLabel("Gamer Score \(Int(round(gamerPct))) percent")

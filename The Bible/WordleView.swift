@@ -1279,10 +1279,9 @@ struct WordleView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Text(target.uppercased())
-                .font(.system(size: 28, weight: .heavy, design: .monospaced))
+                .font(.title.weight(.heavy).monospaced())
                 .foregroundStyle(.primary)
-                .minimumScaleFactor(0.6)
-                .lineLimit(1)
+                .multilineTextAlignment(.center)
                 .accessibilityLabel("Answer: \(target)")
         }
         .frame(maxWidth: .infinity)

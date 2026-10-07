@@ -24,42 +24,6 @@ enum ColorSchemePreference: String, CaseIterable, Identifiable {
     }
 }
 
-enum FontSizePreference: String, CaseIterable, Identifiable {
-    case system
-    case small
-    case medium
-    case large
-    case extraLarge
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .system: return "System"
-        case .small: return "Small"
-        case .medium: return "Medium"
-        case .large: return "Large"
-        case .extraLarge: return "Extra Large"
-        }
-    }
-
-    // Map to SwiftUI DynamicTypeSize. Returning nil means use the system setting.
-    // Bumped each preset up by two steps:
-    // • Small: xSmall → medium
-    // • Medium: medium → xLarge
-    // • Large: xLarge → xxxLarge
-    // • Extra Large: xxLarge → accessibility1 (bigger than xxxLarge on most SDKs)
-    var dynamicTypeSize: DynamicTypeSize? {
-        switch self {
-        case .system: return nil
-        case .small: return .large
-        case .medium: return .xLarge
-        case .large: return .xxLarge
-        case .extraLarge: return .xxxLarge
-        }
-    }
-}
-
 enum FontFamilyPreference: String, CaseIterable, Identifiable {
     case system
     case serif

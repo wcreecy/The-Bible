@@ -160,7 +160,6 @@ struct VerseToRememberCard: View {
                 Text(title)
                     .font((usesExpandedLayout ? Font.footnote : Font.caption).weight(.semibold))
                     .lineLimit(1)
-                    .minimumScaleFactor(0.7)
             }
             .foregroundStyle(disabled ? Color.secondary : Color.accentColor)
             .frame(maxWidth: .infinity, minHeight: usesExpandedLayout ? 64 : 52)

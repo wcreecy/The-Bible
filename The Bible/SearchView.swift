@@ -112,7 +112,15 @@ struct SearchView: View {
         .onSubmit(of: .search) {
             submitSearch()
         }
-        .onChange(of: query) { _, _ in
+        .onChange(of: query) { _, newValue in
+            // Some hardware keyboard layouts send ";" for Shift-; in the search field.
+            // A semicolon is not meaningful in a Bible reference, so treat it as ":".
+            let normalizedQuery = newValue.replacingOccurrences(of: ";", with: ":")
+            guard normalizedQuery == newValue else {
+                query = normalizedQuery
+                return
+            }
+
             debounceSearch()
         }
         .onChange(of: scope) { _, _ in

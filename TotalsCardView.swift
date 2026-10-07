@@ -100,7 +100,7 @@ struct TotalsCardView: View {
                                         // Smaller font on iPhone (compact) for legibility with many bars
                                         if hSizeClass == .compact {
                                             Text(minutes.formatted(.number.precision(.fractionLength(minutes < 1 ? 1 : 0))))
-                                                .font(.system(size: 9, weight: .semibold))
+                                                .font(.caption2.weight(.semibold))
                                                 .foregroundStyle(.secondary)
                                                 .monospacedDigit()
                                         } else {

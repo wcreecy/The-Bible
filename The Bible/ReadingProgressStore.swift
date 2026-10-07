@@ -45,4 +45,3 @@ enum ReadingProgressStore {
         try? context.save()
     }
 }
-

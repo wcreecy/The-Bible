@@ -1609,7 +1609,6 @@ private struct NotesKeyboardCommandResponder: UIViewRepresentable {
                 input: input,
                 modifierFlags: []
             )
-            command.wantsPriorityOverSystemBehavior = true
             return command
         }
 

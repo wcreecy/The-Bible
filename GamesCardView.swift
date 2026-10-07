@@ -27,7 +27,6 @@ struct MetricChip: View {
                     .font(.footnote.weight(.semibold))
                     .monospacedDigit()
                     .lineLimit(1)
-                    .minimumScaleFactor(0.65)
                     .allowsTightening(true)
             }
         }

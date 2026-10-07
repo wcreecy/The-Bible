@@ -323,7 +323,8 @@ struct BookOrderGameView: View {
                             .foregroundStyle(.tint)
 
                         Text(formattedElapsedTime)
-                            .font(.system(size: 64, weight: .bold, design: .rounded))
+                            .font(.largeTitle.weight(.bold))
+                            .fontDesign(.rounded)
                             .monospacedDigit()
 
                         Text("Time Elapsed")

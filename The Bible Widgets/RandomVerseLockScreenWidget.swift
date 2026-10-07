@@ -60,20 +60,17 @@ struct RandomVerseLockScreenView: View {
             // Single-line: Book N:M – text
             Text(inlineText)
                 .font(.caption2)
-                .minimumScaleFactor(0.7)
                 .widgetURL(deepLinkURL())
         case .accessoryCircular:
             ZStack {
                 // Keep it simple: reference in the circle
                 VStack(spacing: 0) {
                     Text(shortBookAbbrev(entry.book))
-                        .font(.system(size: 8, weight: .semibold))
+                        .font(.caption2.weight(.semibold))
                         .lineLimit(1)
-                        .minimumScaleFactor(0.6)
                     Text("\(entry.chapter):\(entry.verse)")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.caption.weight(.bold))
                         .lineLimit(1)
-                        .minimumScaleFactor(0.6)
                 }
             }
             .widgetURL(deepLinkURL())
@@ -85,12 +82,10 @@ struct RandomVerseLockScreenView: View {
                 Text("\(entry.book) \(entry.chapter):\(entry.verse)")
                     .font(.caption2.weight(.semibold))
                     .lineLimit(1)
-                    .minimumScaleFactor(0.85)
 
                 Text(entry.text)
                     .font(.footnote) // bigger than caption
                     .lineLimit(2) // lines 2 and 3
-                    .minimumScaleFactor(0.85)
                     .truncationMode(.tail)
             }
             .widgetURL(deepLinkURL())

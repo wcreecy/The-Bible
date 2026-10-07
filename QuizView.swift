@@ -1235,7 +1235,6 @@ private struct QuizScoreMetric: View {
                 .font(.title2.weight(.bold))
                 .monospacedDigit()
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
 
             Text(title)
                 .font(.caption2.weight(.semibold))
@@ -1273,7 +1272,6 @@ private struct QuizDashboardQuestion: View {
                     .font(.title3)
                     .multilineTextAlignment(.center)
                     .lineLimit(6)
-                    .minimumScaleFactor(0.8)
             }
             .frame(maxWidth: .infinity)
             .padding(20)
@@ -1288,7 +1286,6 @@ private struct QuizDashboardQuestion: View {
                             Image(systemName: optionIcon(for: option))
                             Text(optionLabel(for: option))
                                 .lineLimit(2)
-                                .minimumScaleFactor(0.8)
                         }
                         .frame(maxWidth: .infinity)
                         .frame(minHeight: 52)
@@ -1422,10 +1419,9 @@ private struct QuizLargeTimerView: View {
 
                 if isActive || !isTimed {
                     Text(isTimed ? "\(remainingSeconds)s" : "∞")
-                        .font(.system(size: 180, weight: .bold, design: .rounded))
+                        .font(.largeTitle.weight(.bold))
+                        .fontDesign(.rounded)
                         .monospacedDigit()
-                        .minimumScaleFactor(0.5)
-                        .lineLimit(1)
                         .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor)
                 }
             }

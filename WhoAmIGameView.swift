@@ -95,7 +95,6 @@ struct WhoAmIGameView: View {
                             Text(vm.promptTitle)
                                 .font(vm.mode == .names ? .title2.weight(.semibold) : .body)
                                 .lineLimit(6)
-                                .minimumScaleFactor(0.8)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -612,7 +611,6 @@ private struct WhoAmIPlayCard: View {
                 Text(promptTitle)
                     .font(promptIsName ? .title.weight(.semibold) : .title3.weight(.medium))
                     .lineLimit(7)
-                    .minimumScaleFactor(0.72)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -767,10 +765,9 @@ private struct WhoAmITimerCard: View {
 
                 if isTimed && isActive {
                     Text("\(remainingSeconds)s")
-                        .font(.system(size: 180, weight: .bold, design: .rounded))
+                        .font(.largeTitle.weight(.bold))
+                        .fontDesign(.rounded)
                         .monospacedDigit()
-                        .minimumScaleFactor(0.5)
-                        .lineLimit(1)
                         .foregroundStyle(usesVividStyle ? vividTextColor : displayTint)
                 }
             }

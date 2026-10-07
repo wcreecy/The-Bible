@@ -33,7 +33,6 @@ extension View {
                         }
                     )
                         .id("\(book.name)-\(chapter.number)-\(startVerse)")
-                        .font(.system(size: readerFontSize.wrappedValue))
                         .toolbar {
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 Button {

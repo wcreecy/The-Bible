@@ -213,7 +213,6 @@ struct BeatTheClockGameView: View {
                                 .font(.title2)
                                 .fontWeight(.semibold)
                                 .lineLimit(2)
-                                .minimumScaleFactor(0.75)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -848,7 +847,6 @@ private struct BeatTheClockScoreMetric: View {
                 .font(.title2.weight(.bold))
                 .monospacedDigit()
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
 
             Text(title)
                 .font(.caption2.weight(.semibold))
@@ -877,9 +875,9 @@ private struct BeatTheClockDashboardPrompt: View {
                 .textCase(.uppercase)
 
             Text(targetLabel)
-                .font(.system(size: 36, weight: .bold, design: .rounded))
+                .font(.largeTitle.weight(.bold))
+                .fontDesign(.rounded)
                 .lineLimit(2)
-                .minimumScaleFactor(0.65)
 
             Text("Name a Bible book that mentions this \(targetType.lowercased()).")
                 .font(.subheadline)
@@ -1035,10 +1033,9 @@ private struct BeatTheClockLargeTimerView: View {
 
                 if isActive {
                     Text("\(remainingSeconds)s")
-                        .font(.system(size: 180, weight: .bold, design: .rounded))
+                    .font(.largeTitle.weight(.bold))
+                    .fontDesign(.rounded)
                         .monospacedDigit()
-                        .minimumScaleFactor(0.5)
-                        .lineLimit(1)
                         .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor)
                 }
             }

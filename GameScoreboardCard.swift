@@ -109,7 +109,6 @@ struct GameScoreboardCard: View {
                 .font(.title2.weight(.bold))
                 .monospacedDigit()
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
 
             Text(title)
                 .font(.caption2.weight(.semibold))
@@ -169,13 +168,11 @@ struct GameScoreboardCard: View {
                 .monospacedDigit()
                 .foregroundStyle(valueColor)
                 .lineLimit(1)
-                .minimumScaleFactor(0.75)
 
             Text(title)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
-                .minimumScaleFactor(0.65)
         }
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)

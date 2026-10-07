@@ -2,7 +2,7 @@
 import Foundation
 
 enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
-    case verseOfDay, resumeReading, streaks, timer, dailyFocus, bibleStats
+    case verseOfDay, resumeReading, today, streaks, timer, dailyFocus, bibleStats
 
     var id: String { rawValue }
 
@@ -11,6 +11,7 @@ enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
         case .verseOfDay: return "Verse of the Day"
         case .dailyFocus: return "Daily Focus"
         case .timer: return "Prayer Timer"
+        case .today: return "Today"
         case .resumeReading: return "Continue Reading"
         case .streaks: return "Reading Streak & History"
         case .bibleStats: return "App Activity"
@@ -22,6 +23,7 @@ enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
         case .verseOfDay: return "sun.max"
         case .dailyFocus: return "target"
         case .timer: return "timer"
+        case .today: return "checklist"
         case .resumeReading: return "bookmark.fill"
         case .streaks: return "flame.fill"
         case .bibleStats: return "chart.bar.fill"

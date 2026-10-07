@@ -60,7 +60,6 @@ struct PrayerTimerCard: View {
                                     design: .monospaced
                                 ))
                                 .lineLimit(1)
-                                .minimumScaleFactor(0.8)
                                 .foregroundStyle(timerTintColor)
                                 .frame(maxWidth: .infinity, alignment: .center)
                                 .contentShape(Rectangle())
@@ -132,7 +131,7 @@ struct PrayerTimerCard: View {
                             .padding(.top, 4)
 
                             Text(formattedTime(remainingSeconds == 0 ? 0 : remainingSeconds))
-                                .font(.system(size: 36, weight: .semibold, design: .monospaced))
+                                .font(.largeTitle.weight(.semibold).monospaced())
                                 .foregroundStyle(.secondary)
                                 .frame(maxWidth: .infinity)
                                 .padding(.top, 2)

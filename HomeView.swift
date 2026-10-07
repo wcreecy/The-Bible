@@ -426,6 +426,8 @@ struct HomeView: View {
                     )
                 }
             )
+        case .today:
+            HomeTodayCard(readingProgress: progress)
         case .streaks:
             streaksCard
         case .bibleStats:
@@ -683,6 +685,8 @@ struct HomeView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .resetPrayerTimer)) { _ in
             timerController.stop()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
         }
         .onChange(of: progressList) { _, _ in
             mirrorLastReadToAppGroup()

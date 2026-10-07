@@ -220,7 +220,6 @@ struct PlayerStatSheetCardView: View {
             .font(.footnote)
             .monospacedDigit()
             .lineLimit(1)
-            .minimumScaleFactor(0.85)
             .foregroundStyle(isBest ? .green : (isWorst ? .red : .primary))
     }
 }

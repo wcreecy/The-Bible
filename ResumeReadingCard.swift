@@ -31,7 +31,7 @@ struct ResumeReadingCard: View {
                     if usesCompactLayout {
                         HStack(alignment: .firstTextBaseline, spacing: 6) {
                             Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
-                                .font(.system(size: 17, weight: .semibold))
+                                .font(.body.weight(.semibold))
                                 .foregroundStyle(.primary)
                                 .lineLimit(1)
                                 .layoutPriority(1)
@@ -47,7 +47,7 @@ struct ResumeReadingCard: View {
                     } else {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
-                                .font(.system(size: 17, weight: .semibold))
+                                .font(.body.weight(.semibold))
                                 .foregroundStyle(.primary)
 
                             if let verseText, !verseText.isEmpty {

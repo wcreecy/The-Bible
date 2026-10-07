@@ -367,7 +367,6 @@ private enum DeveloperSettingsReset {
         let defaults = UserDefaults.standard
         let defaultValues: [String: Any] = [
             "colorSchemePreference": "system",
-            "fontSizePreference": FontSizePreference.system.rawValue,
             "fontFamilyPreference": FontFamilyPreference.system.rawValue,
             "dailyGoalMinutes": 30,
             "timerSoundSelection": TimerSound.default.rawValue,

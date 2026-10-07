@@ -288,7 +288,7 @@ struct HangmanGameView: View {
         } word: {
             VStack(spacing: 12) {
                 Text(spacedDisplayWord())
-                    .font(.system(size: usesWideLayout ? 34 : 28, weight: .semibold, design: .monospaced))
+                    .font(.title.weight(.semibold).monospaced())
                     .fontDesign(appFontDesign)
                     .multilineTextAlignment(.center)
                     .accessibilityLabel("Word to guess")

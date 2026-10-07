@@ -17,6 +17,8 @@ struct HomeLayoutStore {
     private static let keyFavMain = "homeCardFavoriteMain"
     private static let keyFavShowMoreVisible = "homeCardFavoriteShowMoreVisible"
     private static let keyFavBibleReaderVisible = "homeCardFavoriteBibleReaderVisible"
+    private static let keyTodayVisibilityMigrated = "homeTodayVisibilityMigratedV1"
+    private static let keyFavoriteTodayVisibilityMigrated = "homeFavoriteTodayVisibilityMigratedV1"
 
     // Underlying storage
     @AppStorage(Self.keyOrder) private var orderRaw: String = ""
@@ -29,11 +31,14 @@ struct HomeLayoutStore {
     @AppStorage(Self.keyFavMain) private var favMainRaw: String = ""
     @AppStorage(Self.keyFavShowMoreVisible) private var favShowMoreVisible: Bool = true
     @AppStorage(Self.keyFavBibleReaderVisible) private var favBibleReaderVisible: Bool = Self.defaultBibleReaderVisible
+    @AppStorage(Self.keyTodayVisibilityMigrated) private var todayVisibilityMigrated = false
+    @AppStorage(Self.keyFavoriteTodayVisibilityMigrated) private var favoriteTodayVisibilityMigrated = false
 
     // Baseline hidden set used when no hidden config exists
     static let baselineOrder: [HomeCardID] = [
         .verseOfDay,
         .resumeReading,
+        .today,
         .timer,
         .bibleStats,
         .dailyFocus,
@@ -41,9 +46,9 @@ struct HomeLayoutStore {
     ]
     static var baselineHidden: Set<HomeCardID> {
         if UIDevice.current.userInterfaceIdiom == .pad {
-            return [.bibleStats, .dailyFocus, .streaks]
+            return [.today, .bibleStats, .dailyFocus, .streaks]
         }
-        return [.timer, .bibleStats, .dailyFocus, .streaks]
+        return [.today, .timer, .bibleStats, .dailyFocus, .streaks]
     }
     static let baselineMain: Set<HomeCardID> = [.verseOfDay, .resumeReading]
     static var defaultShowMoreVisible: Bool {
@@ -73,7 +78,12 @@ struct HomeLayoutStore {
         let hidden: Set<HomeCardID> = {
             if let data = hiddenRaw.data(using: .utf8),
                let ids = try? JSONDecoder().decode([String].self, from: data) {
-                return Set(ids.compactMap { HomeCardID(rawValue: $0) })
+                var hidden = Set(ids.compactMap { HomeCardID(rawValue: $0) })
+                if !todayVisibilityMigrated && !ids.contains(HomeCardID.today.rawValue) {
+                    hidden.insert(.today)
+                }
+                todayVisibilityMigrated = true
+                return hidden
             } else {
                 return Self.baselineHidden
             }
@@ -109,6 +119,7 @@ struct HomeLayoutStore {
 
         mainRaw = encode(main)
         self.showMoreVisible = showMoreVisible
+        todayVisibilityMigrated = true
 
         notifyChanged()
     }
@@ -147,6 +158,7 @@ struct HomeLayoutStore {
         favMainRaw = encode(main)
         favShowMoreVisible = showMoreVisible
         favBibleReaderVisible = bibleReaderVisible
+        favoriteTodayVisibilityMigrated = true
     }
 
     func loadFavorite() -> (
@@ -169,6 +181,13 @@ struct HomeLayoutStore {
         if let hiddenData = favHiddenRaw.data(using: .utf8),
            let hiddenIDs = try? JSONDecoder().decode([String].self, from: hiddenData) {
             hidden = Set(hiddenIDs.compactMap { HomeCardID(rawValue: $0) })
+            if !favoriteTodayVisibilityMigrated && !hiddenIDs.contains(HomeCardID.today.rawValue) {
+                hidden.insert(.today)
+            }
+            favoriteTodayVisibilityMigrated = true
+        } else if !favoriteTodayVisibilityMigrated {
+            hidden.insert(.today)
+            favoriteTodayVisibilityMigrated = true
         }
         let main = decodeSet(from: favMainRaw) ?? Self.baselineMain
         return (order, hidden, main, favShowMoreVisible, favBibleReaderVisible)
