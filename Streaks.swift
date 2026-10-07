@@ -1,13 +1,11 @@
 import SwiftUI
 
 struct StreaksCard: View {
-    @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
-
     @StateObject private var vm = StreaksViewModel()
     @State private var isDailyGoalEditorPresented = false
 
     private var goalSeconds: Int {
-        max(1, dailyGoalMinutes) * 60
+        StreakTracker.dailyGoalSeconds(on: Date())
     }
 
     private var todayTotal: Int {

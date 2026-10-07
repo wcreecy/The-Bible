@@ -16,6 +16,11 @@ final class DailyGoalHistoryStore {
 
     private var defaults: UserDefaults { .standard }
 
+    private var currentGoalMinutes: Int {
+        let storedMinutes = (defaults.object(forKey: "dailyGoalMinutes") as? NSNumber)?.intValue
+        return max(1, storedMinutes ?? 30)
+    }
+
     private func load() -> [Change] {
         if let cache { return cache }
         guard let data = defaults.data(forKey: historyKey) else {
@@ -44,7 +49,7 @@ final class DailyGoalHistoryStore {
     func ensureSeededIfNeeded() {
         var items = load()
         guard items.isEmpty else { return }
-        let minutes = max(1, UserDefaults.standard.integer(forKey: "dailyGoalMinutes"))
+        let minutes = currentGoalMinutes
         let seed = Change(isoDate: "1970-01-01", minutes: minutes)
         items.append(seed)
         save(items)
@@ -73,8 +78,6 @@ final class DailyGoalHistoryStore {
             return max(1, change.minutes) * 60
         }
         // Fallback to current setting if somehow no history
-        let mins = max(1, UserDefaults.standard.integer(forKey: "dailyGoalMinutes"))
-        return mins * 60
+        return currentGoalMinutes * 60
     }
 }
-

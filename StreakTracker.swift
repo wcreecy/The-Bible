@@ -15,7 +15,7 @@ enum StreakTracker {
     // MARK: - Settings (history-aware)
 
     /// Returns the daily goal in seconds for the given local day, using goal history.
-    private static func dailyGoalSeconds(on date: Date) -> Int {
+    static func dailyGoalSeconds(on date: Date) -> Int {
         DailyGoalHistoryStore.shared.goalSeconds(on: date)
     }
 
