@@ -426,6 +426,18 @@ struct HomeView: View {
                     )
                 }
             )
+        case .search:
+            SearchHomeCard { result in
+                NotificationCenter.default.post(
+                    name: .openBibleReference,
+                    object: nil,
+                    userInfo: [
+                        "book": result.bookName,
+                        "chapter": result.chapterNumber,
+                        "verse": result.verseNumber
+                    ]
+                )
+            }
         case .today:
             HomeTodayCard(readingProgress: progress)
         case .streaks:

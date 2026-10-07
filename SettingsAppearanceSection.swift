@@ -2,8 +2,6 @@ import SwiftUI
 
 struct SettingsAppearanceSection: View {
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
-    @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = FontFamilyPreference.system.rawValue
-
     var body: some View {
         Section(header: Text("Appearance").foregroundStyle(.primary)) {
             VStack(alignment: .leading, spacing: 8) {
@@ -28,34 +26,6 @@ struct SettingsAppearanceSection: View {
                 .accessibilityIdentifier("appearancePicker")
             }
             Text("Choose Light, Dark, or follow the System setting for the app's appearance.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-            VStack(alignment: .leading, spacing: 8) {
-                Label("Font", systemImage: "textformat")
-                HStack(spacing: 0) {
-                    fontFamilySegmentButton(.system)
-                    verticalSeparator()
-                    fontFamilySegmentButton(.serif)
-                    verticalSeparator()
-                    fontFamilySegmentButton(.rounded)
-                    verticalSeparator()
-                    fontFamilySegmentButton(.monospaced)
-                    verticalSeparator()
-                    fontFamilySegmentButton(.georgia)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(4)
-                .background(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(Color(.secondarySystemBackground))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .strokeBorder(Color.gray.opacity(0.25), lineWidth: 1)
-                )
-                .accessibilityIdentifier("fontFamilyPicker")
-            }
-            Text("Choose an easy-to-read typeface for the interface and reading.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -89,24 +59,4 @@ struct SettingsAppearanceSection: View {
         .buttonStyle(.plain)
     }
 
-    private func fontFamilySegmentButton(_ pref: FontFamilyPreference) -> some View {
-        let isSelected = (FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system) == pref
-        return Button(action: { fontFamilyPreferenceRaw = pref.rawValue }) {
-            Text(pref.title)
-                .font(.subheadline)
-                .fontWeight(isSelected ? .semibold : .regular)
-                .foregroundStyle(isSelected ? .primary : .secondary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .background(
-                    Group {
-                        if isSelected {
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(Color.accentColor.opacity(0.15))
-                        }
-                    }
-                )
-        }
-        .buttonStyle(.plain)
-    }
 }

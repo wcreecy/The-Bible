@@ -23,7 +23,7 @@ enum BibleReferenceLinker {
     private static let scheme = "thebible"
 
     private static let cachedRegex: NSRegularExpression? = {
-        let pattern = "(^|[^A-Za-z0-9])((?:[1-3]\\s*)?[A-Za-z][A-Za-z.]*?(?:\\s+[A-Za-z.]+){0,2})\\s+(\\d+)[:.](\\d+)(?:[\\-\\u2013\\u2014](\\d+))?"
+        let pattern = "(^|[^A-Za-z0-9])((?:[1-3]\\s*)?[A-Za-z][A-Za-z.]*?(?:\\s+[A-Za-z.]+){0,2})\\s+(\\d+)[:;.](\\d+)(?:[\\-\\u2013\\u2014](\\d+))?"
         return try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
     }()
 
@@ -276,7 +276,9 @@ enum BibleReferenceLinker {
     }
 
     static func parse(_ text: String) -> ScriptureRef? {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = text
+            .replacingOccurrences(of: ";", with: ":")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
         let parts = trimmed.split(whereSeparator: \Character.isWhitespace).map(String.init)
         guard parts.count >= 2, let location = parts.last else { return nil }
 

@@ -215,6 +215,17 @@ private struct DailyGoalSection: View {
     let remainingSeconds: Int
     let onEditGoal: () -> Void
 
+    private var progressTint: Color {
+        guard !goalMet else { return .green }
+
+        // Interpolate from blue at the start of the goal to red as completion nears.
+        return Color(
+            hue: 0.6 * (1 - progress),
+            saturation: 0.82,
+            brightness: 0.9
+        )
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline) {
@@ -237,7 +248,9 @@ private struct DailyGoalSection: View {
             }
 
             ProgressView(value: progress)
-                .tint(goalMet ? .green : .orange)
+                .tint(progressTint)
+                .animation(.easeInOut, value: progress)
+                .animation(.easeInOut, value: goalMet)
 
             if goalMet {
                 Label("Goal complete for today", systemImage: "checkmark.circle.fill")

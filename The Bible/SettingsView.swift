@@ -5,8 +5,6 @@ import WidgetKit
 
 struct SettingsView: View {
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
-    @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = FontFamilyPreference.system.rawValue
-
     var body: some View {
         Form {
             SettingsPersonalizationLinksSection()
@@ -30,7 +28,6 @@ struct SettingsView: View {
         .formStyle(.grouped)
         .defaultScrollAnchor(.top)
         .preferredColorScheme((ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme)
-        .modifier(FontFamilyEnvironmentModifier(prefRaw: fontFamilyPreferenceRaw))
     }
 }
 
@@ -42,7 +39,7 @@ private struct SettingsPersonalizationLinksSection: View {
             } label: {
                 SettingsNavigationRow(
                     title: "Appearance",
-                    subtitle: "Theme, text, fonts, and Home background",
+                    subtitle: "Theme and Home background",
                     systemImage: "paintbrush"
                 )
             }
@@ -367,7 +364,6 @@ private enum DeveloperSettingsReset {
         let defaults = UserDefaults.standard
         let defaultValues: [String: Any] = [
             "colorSchemePreference": "system",
-            "fontFamilyPreference": FontFamilyPreference.system.rawValue,
             "dailyGoalMinutes": 30,
             "timerSoundSelection": TimerSound.default.rawValue,
             "verseOfDayScope": "whole",

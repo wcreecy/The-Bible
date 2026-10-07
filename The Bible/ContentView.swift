@@ -28,7 +28,6 @@ struct ContentView: View {
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
     
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
-    @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = FontFamilyPreference.system.rawValue
     
     // One-time cleanup flag for deprecated app time keys
     @AppStorage("didCleanupAppTimeKeys") private var didCleanupAppTimeKeys: Bool = false
@@ -56,14 +55,7 @@ struct ContentView: View {
     @AppStorage("lastBackgroundedAt") private var lastBackgroundedAt: Double = 0
 
     private var preferredScheme: ColorScheme? { (ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme }
-    private var preferredFontDesign: Font.Design? { (FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).fontDesign }
-    private var preferredCustomFontName: String? { (FontFamilyPreference(rawValue: fontFamilyPreferenceRaw) ?? .system).customFontName }
-    
     private var usesWideLayout: Bool { horizontalSizeClass == .regular }
-    private var preferredFont: Font? {
-        guard let name = preferredCustomFontName else { return nil }
-        return .custom(name, size: 17, relativeTo: .body)
-    }
 
     // Track previous tab to detect leaving Games
     @State private var previousTab: AppTab = .home
@@ -147,13 +139,13 @@ struct ContentView: View {
         .background(AppBackgroundView(tab: selectedTab))
         // Apply your preferred color scheme even on the Settings tab so it updates in place.
         .preferredColorScheme(preferredScheme)
-        .font(preferredFont)
-        .fontDesign(preferredFontDesign ?? .default)
         .onAppear {
             // START iCloud KVS coordinator so game/bible stats pull/merge on launch.
             iCloudSyncCoordinator.shared.start()
 
             // One-time cleanup of deprecated keys
+            UserDefaults.standard.removeObject(forKey: "fontFamilyPreference")
+
             if !didCleanupAppTimeKeys {
                 UserDefaults.standard.removeObject(forKey: "appTotalActiveSeconds")
                 UserDefaults.standard.removeObject(forKey: "appActiveStart")

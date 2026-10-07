@@ -620,7 +620,7 @@ private struct SearchResultRow: View {
     }
 }
 
-private struct SearchResult: Identifiable, Hashable, Sendable {
+struct SearchResult: Identifiable, Hashable, Sendable {
     let bookIndex: Int
     let bookName: String
     let chapterNumber: Int
@@ -633,7 +633,7 @@ private struct SearchResult: Identifiable, Hashable, Sendable {
     }
 }
 
-private actor BibleSearchIndex {
+actor BibleSearchIndex {
     static let shared = BibleSearchIndex()
 
     private struct SourceEntry: Sendable {

@@ -2,17 +2,6 @@ import SwiftUI
 import UIKit
 
 struct HangmanGameView: View {
-    // MARK: - Font design mapping based on Settings
-    @AppStorage("fontFamilyPreference") private var fontFamilyPreferenceRaw: String = "system"
-    private var appFontDesign: Font.Design? {
-        switch fontFamilyPreferenceRaw.lowercased() {
-        case "serif", "georgia": return .serif
-        case "rounded": return .rounded
-        case "monospaced": return .monospaced
-        default: return nil
-        }
-    }
-
     // Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
@@ -180,7 +169,6 @@ struct HangmanGameView: View {
                 .padding(.bottom, 12)
             }
         }
-        .fontDesign(appFontDesign)
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -295,7 +283,6 @@ struct HangmanGameView: View {
             VStack(spacing: 12) {
                 Text(spacedDisplayWord())
                     .font(.title.weight(.semibold).monospaced())
-                    .fontDesign(appFontDesign)
                     .multilineTextAlignment(.center)
                     .accessibilityLabel("Word to guess")
 

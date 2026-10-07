@@ -36,8 +36,6 @@ struct MoreView: View {
                 StatsView()
             case .settings:
                 SettingsView()
-                    .environment(\.font, nil)
-                    .fontDesign(.default)
             }
         }
     }

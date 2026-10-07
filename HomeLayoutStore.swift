@@ -35,23 +35,39 @@ struct HomeLayoutStore {
     @AppStorage(Self.keyFavoriteTodayVisibilityMigrated) private var favoriteTodayVisibilityMigrated = false
 
     // Baseline hidden set used when no hidden config exists
-    static let baselineOrder: [HomeCardID] = [
-        .verseOfDay,
-        .today,
-        .resumeReading,
-        .timer,
-        .streaks,
-        .bibleStats,
-        .dailyFocus
-    ]
+    static var baselineOrder: [HomeCardID] {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return [
+                .verseOfDay,
+                .today,
+                .search,
+                .resumeReading,
+                .timer,
+                .streaks,
+                .bibleStats,
+                .dailyFocus
+            ]
+        }
+
+        return [
+            .verseOfDay,
+            .resumeReading,
+            .today,
+            .search,
+            .timer,
+            .streaks,
+            .bibleStats,
+            .dailyFocus
+        ]
+    }
     static var baselineHidden: Set<HomeCardID> {
         if UIDevice.current.userInterfaceIdiom == .pad {
             return [.today, .bibleStats, .dailyFocus, .streaks]
         }
-        return [.today, .timer, .bibleStats, .dailyFocus, .streaks]
+        return [.today, .search, .timer, .bibleStats, .dailyFocus, .streaks]
     }
     static let baselineMain: Set<HomeCardID> = [.verseOfDay, .resumeReading]
-    static let defaultShowMoreVisible = true
+    static let defaultShowMoreVisible = false
     static let defaultBibleReaderVisible = false
 
     init() {}
