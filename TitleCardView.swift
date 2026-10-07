@@ -24,9 +24,11 @@ struct TitleCardView: View {
         let text: String
         let font: Font
         let progress: Double // 0...1
+
         private var gradient: LinearGradient {
             LinearGradient(colors: [.blue, .red], startPoint: .leading, endPoint: .trailing)
         }
+
         var body: some View {
             ZStack(alignment: .leading) {
                 Text(text)
@@ -64,76 +66,59 @@ struct TitleCardView: View {
         }
     }
 
-    private var progressDescription: String {
-        let minutesRead = todayReadingSeconds / 60
-        return "\(minutesRead) of \(goalMinutes) minutes"
-    }
-
-    private var progressPercent: Int {
-        Int((progress * 100).rounded())
-    }
-
     var body: some View {
-        HeroCard(
-            title: isPad ? greeting : "Word of God",
-            subtitle: nil,
-            icon: "book.fill",
-            tint: .blue,
-            titleFont: titleFont,
-            titleFontWeight: titleWeight,
-            centerHeader: !isPad
-        ) {
+        Group {
             if isPad {
-                VStack(alignment: .leading, spacing: 14) {
-                    HStack(alignment: .firstTextBaseline) {
-                        Text("Today’s Reading Goal")
-                            .font(.title3.weight(.semibold))
-                        Spacer()
-                        Text("\(progressPercent)%")
-                            .font(.headline.monospacedDigit())
-                            .foregroundStyle(.blue)
-                    }
-
-                    ProgressView(value: progress)
-                        .tint(.blue)
-                        .scaleEffect(x: 1, y: 1.5, anchor: .center)
-
-                    HStack(spacing: 18) {
-                        Label(progressDescription, systemImage: "book.pages")
-                        Label("\(streak) day streak", systemImage: "flame.fill")
-                    }
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(.secondary)
-                    .labelStyle(.titleAndIcon)
-
-                    Divider()
-                    actionButtons
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .accessibilityElement(children: .contain)
-                .accessibilityLabel("Daily goal progress \(progressPercent) percent. Current streak \(streak) days.")
+                iPadHeader
             } else {
-                VStack(spacing: 8) {
-                    ProgressFillText(
-                        text: goalMessage,
-                        font: .subheadline.weight(.semibold),
-                        progress: progress
-                    )
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .multilineTextAlignment(.center)
-                    .accessibilityLabel("\(goalMessage) Daily goal progress \(progressPercent) percent. Current streak \(streak) days.")
-
-                    actionButtons
-                        .frame(maxWidth: .infinity, alignment: .center)
+                HeroCard(
+                    title: "Word of God",
+                    subtitle: nil,
+                    icon: "book.fill",
+                    tint: .blue,
+                    titleFont: titleFont,
+                    titleFontWeight: titleWeight,
+                    centerHeader: true
+                ) {
+                    phoneContent
                 }
             }
         }
-        .frame(maxWidth: isPad ? .infinity : 700)
         .frame(maxWidth: .infinity, alignment: .center)
     }
 
-    private var actionButtons: some View {
-        HStack(spacing: isPad ? 16 : 12) {
+    private var iPadHeader: some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(greeting)
+                .font(.largeTitle.weight(.black))
+
+            Spacer()
+
+            Text(Date(), format: .dateTime.weekday(.wide).month().day())
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.secondary)
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private var phoneContent: some View {
+        VStack(spacing: 8) {
+            ProgressFillText(
+                text: goalMessage,
+                font: .subheadline.weight(.semibold),
+                progress: progress
+            )
+            .frame(maxWidth: .infinity, alignment: .center)
+            .multilineTextAlignment(.center)
+            .accessibilityLabel("\(goalMessage) Daily goal progress \(Int((progress * 100).rounded())) percent. Current streak \(streak) days.")
+
+            phoneActionButtons
+                .frame(maxWidth: .infinity, alignment: .center)
+        }
+    }
+
+    private var phoneActionButtons: some View {
+        HStack(spacing: 12) {
             Button(action: onSearch) {
                 Label("Search", systemImage: "magnifyingglass")
                     .lineLimit(1)

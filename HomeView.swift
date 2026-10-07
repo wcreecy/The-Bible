@@ -452,6 +452,13 @@ struct HomeView: View {
         }
     }
 
+    private var showsEmptyHomeQuickActions: Bool {
+        isPad
+            && hiddenCards.contains(.verseOfDay)
+            && dashboardCards.isEmpty
+            && !bibleReaderVisible
+    }
+
     @ViewBuilder
     private var homeHeader: some View {
         TitleCardView(
@@ -548,7 +555,11 @@ struct HomeView: View {
     }
 
     @ViewBuilder
-    private func dashboardContent(width: CGFloat) -> some View {
+    private func dashboardContent(width: CGFloat, availableHeight: CGFloat) -> some View {
+        if showsEmptyHomeQuickActions {
+            emptyHomeQuickActions
+                .frame(minHeight: max(0, availableHeight - 96), alignment: .center)
+        } else {
         let standardColumnSpacing: CGFloat = 16
         let columnWidth = (width - (standardColumnSpacing * 2)) / 3
         let mainCardsWidth = bibleReaderVisible ? (columnWidth * 2) + standardColumnSpacing : width
@@ -584,6 +595,104 @@ struct HomeView: View {
                 HomeBibleReaderCard()
             }
         }
+        }
+    }
+
+    private var emptyHomeQuickActions: some View {
+        HStack(alignment: .top, spacing: 16) {
+            emptyHomeActionCard(
+                title: "Read",
+                message: "Open the Bible reader",
+                icon: "book.fill",
+                tint: .blue,
+                action: { switchTo(.bible) }
+            )
+
+            emptyHomeActionCard(
+                title: "Continue Reading",
+                message: progress.map { "\($0.bookName) \($0.chapterNumber):\($0.verseNumber)" } ?? "Start at Genesis 1",
+                verseText: progressVerseText,
+                icon: "bookmark.fill",
+                tint: .indigo,
+                action: openContinueReading
+            )
+
+            emptyHomeActionCard(
+                title: "Search",
+                message: "Find a passage, word, or topic",
+                icon: "magnifyingglass",
+                tint: .teal,
+                action: { coordinator.push(.search) }
+            )
+        }
+    }
+
+    private func emptyHomeActionCard(
+        title: String,
+        message: String,
+        verseText: String? = nil,
+        icon: String,
+        tint: Color,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HeroCard(title: title, subtitle: nil, icon: icon, tint: tint) {
+                Text(message)
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                if let verseText, !verseText.isEmpty {
+                    Text("“\(verseText)”")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(4)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                Spacer(minLength: 0)
+
+                Label("Open", systemImage: "arrow.right")
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(tint)
+            }
+            .overlay(alignment: .bottomTrailing) {
+                Image(systemName: icon)
+                    .font(.system(size: 104, weight: .bold))
+                    .foregroundStyle(tint.opacity(0.12))
+                    .padding(12)
+                    .accessibilityHidden(true)
+                    .allowsHitTesting(false)
+            }
+            .frame(maxWidth: .infinity)
+            .aspectRatio(1, contentMode: .fit)
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint(message)
+    }
+
+    private func openContinueReading() {
+        if let progress {
+            NotificationCenter.default.post(
+                name: .openBibleReference,
+                object: nil,
+                userInfo: [
+                    "book": progress.bookName,
+                    "chapter": progress.chapterNumber,
+                    "verse": progress.verseNumber
+                ]
+            )
+        } else {
+            NotificationCenter.default.post(
+                name: .openBibleReference,
+                object: nil,
+                userInfo: [
+                    "book": "Genesis",
+                    "chapter": 1,
+                    "verse": 1
+                ]
+            )
+        }
     }
 
     private var customizeHomeLink: some View {
@@ -617,7 +726,7 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     if usesDashboard {
-                        dashboardContent(width: contentWidth)
+                        dashboardContent(width: contentWidth, availableHeight: proxy.size.height)
                     } else {
                         compactHomeContent
                     }
