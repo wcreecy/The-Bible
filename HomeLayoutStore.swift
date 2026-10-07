@@ -51,9 +51,7 @@ struct HomeLayoutStore {
         return [.today, .timer, .bibleStats, .dailyFocus, .streaks]
     }
     static let baselineMain: Set<HomeCardID> = [.verseOfDay, .resumeReading]
-    static var defaultShowMoreVisible: Bool {
-        UIDevice.current.userInterfaceIdiom == .pad
-    }
+    static let defaultShowMoreVisible = true
     static let defaultBibleReaderVisible = false
 
     init() {}
