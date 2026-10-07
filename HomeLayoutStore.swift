@@ -37,12 +37,12 @@ struct HomeLayoutStore {
     // Baseline hidden set used when no hidden config exists
     static let baselineOrder: [HomeCardID] = [
         .verseOfDay,
-        .resumeReading,
         .today,
+        .resumeReading,
         .timer,
+        .streaks,
         .bibleStats,
-        .dailyFocus,
-        .streaks
+        .dailyFocus
     ]
     static var baselineHidden: Set<HomeCardID> {
         if UIDevice.current.userInterfaceIdiom == .pad {
