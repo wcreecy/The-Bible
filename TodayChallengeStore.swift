@@ -81,7 +81,6 @@ final class TodayChallengeStore: ObservableObject {
     @Published private(set) var challenges: [TodayChallenge] = []
 
     private let storageKey = "todayChallengesSnapshotV1"
-    private let lastReflectionChallengeDateKey = "todayLastReflectionChallengeDateV1"
     private let catalog = TodayChallengeCatalog.load()
 
     private init() {
@@ -126,7 +125,7 @@ final class TodayChallengeStore: ObservableObject {
 
     #if DEBUG
     func regenerateForDebug() {
-        challenges = makeChallenges(recordingReflectionAppearance: false)
+        challenges = makeChallenges()
         save()
     }
     #endif
@@ -269,8 +268,7 @@ final class TodayChallengeStore: ObservableObject {
         return challenge
     }
 
-    private func makeChallenges(recordingReflectionAppearance: Bool = true) -> [TodayChallenge] {
-        let includesReflection = shouldIncludeReflectionChallenge
+    private func makeChallenges() -> [TodayChallenge] {
         let readingCount = Int.random(in: 1...2)
         var challenges: [TodayChallenge] = []
         var readingTargets = Set<String>()
@@ -284,30 +282,13 @@ final class TodayChallengeStore: ObservableObject {
             challenges.append(readingChallenge)
         }
 
-        if includesReflection {
-            challenges.append(makeReflectionChallenge())
-            if recordingReflectionAppearance {
-                UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: lastReflectionChallengeDateKey)
-            }
-        }
+        challenges.append(makeReflectionChallenge())
 
         while challenges.count < 3 {
             challenges.append(Bool.random() ? makeGameChallenge() : makePrayerChallenge())
         }
 
         return challenges.shuffled()
-    }
-
-    private var shouldIncludeReflectionChallenge: Bool {
-        let lastShown = UserDefaults.standard.double(forKey: lastReflectionChallengeDateKey)
-        guard lastShown > 0 else { return true }
-
-        let earliestNextDate = Calendar.current.date(
-            byAdding: .day,
-            value: 7,
-            to: Date(timeIntervalSince1970: lastShown)
-        ) ?? .distantFuture
-        return Date() >= earliestNextDate
     }
 
     private func makeReadingChallenge(excluding readingTargets: Set<String>) -> TodayChallenge {
