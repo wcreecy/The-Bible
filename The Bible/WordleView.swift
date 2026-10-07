@@ -57,6 +57,8 @@ struct WordleView: View {
     @State private var answered: Int = 0
     @State private var currentStreak: Int = 0
     @State private var currentBestStreak: Int = 0
+    @State private var practiceStreak: Int = 0
+    @State private var practiceBestStreak: Int = 0
 
     // NEW: Debug flag to allow replaying Daily Wordle (matches Settings/Games)
     @AppStorage("wordleAllowDailyReplay") private var wordleAllowDailyReplay: Bool = false
@@ -68,11 +70,11 @@ struct WordleView: View {
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
-    // All-time (per mode) — now split by difficulty for the in-game scoreboard
-    private var allTimeModeSuffix: String { hardModeEnabled ? "hard" : "normal" }
-    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeCorrect_\(allTimeModeSuffix)") }
-    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeAnswered_\(allTimeModeSuffix)") }
-    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeBestStreak_\(allTimeModeSuffix)") }
+    // Daily and Practice results remain separate in both the in-game scoreboard and game statistics.
+    private var statsTypeSuffix: String { mode == .daily ? "daily" : "free" }
+    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeCorrect_\(statsTypeSuffix)") }
+    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeAnswered_\(statsTypeSuffix)") }
+    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeBestStreak_\(statsTypeSuffix)") }
 
     // Daily
     private var todayKey: String { Self.localDayKey(for: Date()) }
@@ -313,7 +315,7 @@ struct WordleView: View {
               GameScoreboardCard(
                 currentCorrect: score,
                 currentAnswered: answered,
-                currentStreak: currentStreak,
+                currentStreak: mode == .daily ? currentStreak : practiceStreak,
                 game: .wordle,
                 wordMode: hardModeEnabled ? .hard : .normal,
                 style: usesWideLayout ? .dashboard : .compact
@@ -469,6 +471,15 @@ struct WordleView: View {
             // Keep session best at least as high as persisted best
             let persistedBest = readPersistentBest()
             currentBestStreak = max(currentBestStreak, persistedBest)
+
+            if mode == .daily {
+                hardModeEnabled = true
+            }
+        }
+        .onChange(of: mode) { _, newMode in
+            if newMode == .daily {
+                hardModeEnabled = true
+            }
         }
     }
 
@@ -1092,6 +1103,10 @@ struct WordleView: View {
     }
 
     private func startNewRound(practice: Bool) {
+        if !practice {
+            hardModeEnabled = true
+        }
+
         guesses = Array(repeating: "", count: 6)
         evaluations = Array(repeating: Array(repeating: .unknown, count: 5), count: 6)
         rowIndex = 0
@@ -1158,13 +1173,37 @@ struct WordleView: View {
 
             GameStats.shared.recordWordleResult(
                 type: .daily,
-                mode: hardModeEnabled ? .hard : .normal,
+                mode: .hard,
                 won: win,
                 guesses: rowIndex,
                 currentBestStreak: currentBestStreak
             )
             GameStats.shared.recordWordleTime(
                 type: .daily,
+                mode: .hard,
+                won: win,
+                elapsedSeconds: elapsedSeconds
+            )
+        } else {
+            answered += 1
+
+            if win {
+                score += 1
+                practiceStreak += 1
+                practiceBestStreak = max(practiceBestStreak, practiceStreak)
+            } else {
+                practiceStreak = 0
+            }
+
+            GameStats.shared.recordWordleResult(
+                type: .free,
+                mode: hardModeEnabled ? .hard : .normal,
+                won: win,
+                guesses: rowIndex,
+                currentBestStreak: practiceBestStreak
+            )
+            GameStats.shared.recordWordleTime(
+                type: .free,
                 mode: hardModeEnabled ? .hard : .normal,
                 won: win,
                 elapsedSeconds: elapsedSeconds
@@ -1461,6 +1500,13 @@ private struct WordSetupControls: View {
                     Text("Hard").tag(true)
                 }
                 .pickerStyle(.segmented)
+                .disabled(mode == .daily)
+
+                if mode == .daily {
+                    Text("Daily games are always played in Hard mode.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             VStack(alignment: .leading, spacing: 8) {

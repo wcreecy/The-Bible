@@ -1068,6 +1068,13 @@ final class GameStats: ObservableObject {
         return (total, wins, losses)
     }
 
+    func wordleCounts(type: WordleType) -> (answered: Int, wins: Int) {
+        let suf = (type == .daily) ? "daily" : "free"
+        let wins = max(0, readInt("wordleAllTimeCorrect_\(suf)"))
+        let answered = max(0, readInt("wordleAllTimeAnswered_\(suf)"))
+        return (answered, wins)
+    }
+
     func wordleTimeStats(mode: WordMode) -> (total: Int, wins: Int, losses: Int) {
         let suf = (mode == .normal) ? "normal" : "hard"
         let total = max(0, readInt("wordleTimeTotal_seconds_\(suf)"))

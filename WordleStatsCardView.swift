@@ -5,51 +5,69 @@ struct WordleStatsCardView: View {
     // Re-render when GameStats publishes changes (iCloud merges, writes, etc.)
     @ObservedObject private var stats = GameStats.shared
 
-    // 0 = Normal, 1 = Hard, 2 = Combined
+    // 0 = Daily, 1 = Practice, 2 = Combined
     @State private var selection: Int = 2
 
     private var averageAndDist: (avg: Double, dist: [Int]) {
         switch selection {
         case 0:
-            let (avg, dist) = GameStats.shared.wordleWinGuessStats(mode: .normal)
+            let (avg, dist) = GameStats.shared.wordleWinGuessStats(type: .daily)
             return (avg, dist)
         case 1:
-            let (avg, dist) = GameStats.shared.wordleWinGuessStats(mode: .hard)
+            let (avg, dist) = GameStats.shared.wordleWinGuessStats(type: .free)
             return (avg, dist)
         default:
-            let (avg, dist) = GameStats.shared.wordleWinGuessStatsModesCombined()
-            return (avg, dist)
+            let daily = GameStats.shared.wordleWinGuessStats(type: .daily)
+            let practice = GameStats.shared.wordleWinGuessStats(type: .free)
+            let dailyCounts = GameStats.shared.wordleCounts(type: .daily)
+            let practiceCounts = GameStats.shared.wordleCounts(type: .free)
+            let wins = dailyCounts.wins + practiceCounts.wins
+            let weightedAverage = wins > 0
+                ? (daily.averageGuessesOnWins * Double(dailyCounts.wins) + practice.averageGuessesOnWins * Double(practiceCounts.wins)) / Double(wins)
+                : 0
+            return (weightedAverage, zip(daily.winsByGuess, practice.winsByGuess).map(+))
         }
     }
 
     private var timeStats: (total: Int, wins: Int, losses: Int) {
         switch selection {
         case 0:
-            return GameStats.shared.wordleTimeStats(mode: .normal)
+            return GameStats.shared.wordleTimeStats(type: .daily)
         case 1:
-            return GameStats.shared.wordleTimeStats(mode: .hard)
+            return GameStats.shared.wordleTimeStats(type: .free)
         default:
-            return GameStats.shared.wordleTimeStatsModesCombined()
+            let daily = GameStats.shared.wordleTimeStats(type: .daily)
+            let practice = GameStats.shared.wordleTimeStats(type: .free)
+            return (
+                daily.total + practice.total,
+                daily.wins + practice.wins,
+                daily.losses + practice.losses
+            )
         }
     }
 
-    // Counts for denominators used by averages (wins, losses, answered) — per mode
     private var counts: (answered: Int, wins: Int, losses: Int) {
+        let selectedCounts: (answered: Int, wins: Int)
+
         switch selection {
-        case 0: // Normal
-            let c = GameStats.shared.wordleCounts(mode: .normal)
-            return (c.answered, c.wins, max(0, c.answered - c.wins))
-        case 1: // Hard
-            let c = GameStats.shared.wordleCounts(mode: .hard)
-            return (c.answered, c.wins, max(0, c.answered - c.wins))
-        default: // Combined (normal + hard)
-            let n = GameStats.shared.wordleCounts(mode: .normal)
-            let h = GameStats.shared.wordleCounts(mode: .hard)
-            let answered = n.answered + h.answered
-            let wins = n.wins + h.wins
-            let losses = max(0, answered - wins)
-            return (answered, wins, losses)
+        case 0:
+            selectedCounts = GameStats.shared.wordleCounts(type: .daily)
+        case 1:
+            selectedCounts = GameStats.shared.wordleCounts(type: .free)
+        default:
+            let daily = GameStats.shared.wordleCounts(type: .daily)
+            let practice = GameStats.shared.wordleCounts(type: .free)
+            selectedCounts = (
+                daily.answered + practice.answered,
+                daily.wins + practice.wins
+            )
         }
+
+        return (
+            selectedCounts.answered,
+            selectedCounts.wins,
+            max(0, selectedCounts.answered - selectedCounts.wins)
+        )
     }
 
     private func formatSeconds(_ s: Int) -> String {
@@ -70,10 +88,9 @@ struct WordleStatsCardView: View {
             let _ = stats.version
 
             VStack(alignment: .leading, spacing: 12) {
-                // Scope picker (Normal/Hard/Combined)
                 Picker("Scope", selection: $selection) {
-                    Text("Normal").tag(0)
-                    Text("Hard").tag(1)
+                    Text("Daily").tag(0)
+                    Text("Practice").tag(1)
                     Text("Combined").tag(2)
                 }
                 .pickerStyle(.segmented)

@@ -85,6 +85,10 @@
       "detail": "Put it on paper where you can see it."
     },
     {
+      "title": "Write down a prayer",
+      "detail": "Put your thoughts and requests to God into words."
+    },
+    {
       "title": "Spend 5 minutes in silence with God",
       "detail": "Set aside quiet time without distractions."
     },
@@ -105,12 +109,48 @@
       "detail": "Share a little joy today."
     },
     {
+      "title": "Take a different route",
+      "detail": "Notice something new on your way today."
+    },
+    {
+      "title": "Sing a song out loud",
+      "detail": "Let a little joy fill the moment."
+    },
+    {
+      "title": "Remember a dream",
+      "detail": "Write down a dream or reflect on what it brought to mind."
+    },
+    {
       "title": "Pray for {{prayerFocus}}",
       "detail": "Bring this area to God in prayer."
     },
     {
       "title": "Give something away",
       "detail": "Share something useful with someone else."
+    },
+    {
+      "title": "Pray for a family member by name",
+      "detail": "Lift up a specific family member and their needs."
+    },
+    {
+      "title": "Compliment someone",
+      "detail": "Offer a sincere word of encouragement."
+    },
+    {
+      "title": "Clean up something",
+      "detail": "Care for a space that could use your attention."
+    },
+    {
+      "title": "Let it go",
+      "detail": "Release one worry, frustration, or resentment to God."
+    },
+    {
+      "title": "Start to forgive someone",
+      "detail": "Take one small step toward forgiveness."
+    },
+    {
+      "title": "Volunteer for something",
+      "detail": "Offer your time or help where it is needed."
     },
     {
       "title": "Pray for your city",
