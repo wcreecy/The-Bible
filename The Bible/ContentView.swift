@@ -21,6 +21,7 @@ struct ContentView: View {
     @State private var morePath: [MoreDestination] = []
 
     @State private var selectedTab: AppTab = .home
+    @State private var tabViewRecoveryID = 0
     @State private var bibleSearchRequestID: Int = 0
     @State private var bibleBookSelectionRequestID: Int = 0
     @State private var launchBibleLocation: BibleReaderLocation?
@@ -128,6 +129,7 @@ struct ContentView: View {
             .tabItem { Label("More", systemImage: "ellipsis.circle") }
             .tag(AppTab.more)
         }
+        .id(tabViewRecoveryID)
         // On iPad, TabView renders the app's top-level navigation as a floating
         // top tab bar. Keep it visible while a nested searchable view focuses
         // its field and presents the keyboard.
@@ -256,17 +258,26 @@ struct ContentView: View {
                 let verseNum = note.userInfo?["verse"] as? Int
             else { return }
 
-            // Switch to Bible tab first
-            selectedTab = .bible
-
             if usesWideLayout {
-                // Re-post once with a "relayed" flag so ContentView ignores it, but BibleSplitView can handle it.
+                // Store the route in ContentView so a newly created split view
+                // can consume it after the tab switch. A transient notification
+                // could arrive before that view is in the hierarchy.
+                launchBibleLocation = BibleReaderLocation(
+                    bookName: bookName,
+                    chapterNumber: chapterNum,
+                    verseNumber: verseNum
+                )
+                selectedTab = .bible
+
+                // Search focus can cause iPadOS to dismiss the floating tab
+                // bar. Recreate only the TabView container after this cross-tab
+                // handoff so the system restores its top-level controls.
                 DispatchQueue.main.async {
-                    var user = note.userInfo ?? [:]
-                    user["relayed"] = true
-                    NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: user)
+                    tabViewRecoveryID &+= 1
                 }
             } else {
+                // Switch to Bible tab first
+                selectedTab = .bible
                 // iPhone: push a Route.reader on the Bible NavigationStack
                 guard
                     let book = bibleStore.books.first(where: { $0.name == bookName }),

@@ -1,11 +1,14 @@
 import SwiftUI
 
 struct SearchView: View {
+    @Environment(\.dismissSearch) private var dismissSearch
+
     // MARK: - Query & Results
     @State private var query: String = ""
     @State private var results: [SearchResult] = []
     @State private var searchTask: Task<Void, Never>? = nil
     @State private var isSearching: Bool = false
+    @FocusState private var isSearchFieldFocused: Bool
     @AppStorage("bibleRecentSearches") private var recentSearchesStorage: String = ""
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
@@ -108,7 +111,8 @@ struct SearchView: View {
         .background(AppBackgroundView(tab: .bible))
         .navigationTitle("Search")
         .navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Words or a reference")
+        .searchable(text: $query, placement: .toolbar, prompt: "Words or a reference")
+        .searchFocused($isSearchFieldFocused)
         .onSubmit(of: .search) {
             submitSearch()
         }
@@ -310,15 +314,23 @@ struct SearchView: View {
 
     // MARK: - Open in Bible Tab
     private func openInBibleTab(_ item: SearchResult) {
-        NotificationCenter.default.post(
-            name: .openBibleReference,
-            object: nil,
-            userInfo: [
-                "book": item.bookName,
-                "chapter": item.chapterNumber,
-                "verse": item.verseNumber
-            ]
-        )
+        isSearchFieldFocused = false
+        dismissSearch()
+
+        Task { @MainActor in
+            // Release the search field before replacing Home's navigation
+            // hierarchy with the Bible tab.
+            await Task.yield()
+            NotificationCenter.default.post(
+                name: .openBibleReference,
+                object: nil,
+                userInfo: [
+                    "book": item.bookName,
+                    "chapter": item.chapterNumber,
+                    "verse": item.verseNumber
+                ]
+            )
+        }
     }
 
     private func submitSearch() {
