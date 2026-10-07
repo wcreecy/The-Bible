@@ -326,16 +326,21 @@ struct StatsView: View {
     }
 
     private var bibleContent: some View {
-        ReadingStatsSections(
-            usesWideLayout: usesWideStatsLayout,
-            progress: progressCard,
-            insights: readingInsightsCard,
-            totals: totalsCard,
-            testament: otntCard,
-            genre: genreCard,
-            averageSession: avgSessionCard,
-            topBooks: topBooksThisMonthCard
-        )
+        VStack(spacing: 16) {
+            ReadingStatsSections(
+                usesWideLayout: usesWideStatsLayout,
+                progress: progressCard,
+                insights: readingInsightsCard,
+                totals: totalsCard,
+                testament: otntCard,
+                genre: genreCard,
+                averageSession: avgSessionCard,
+                topBooks: topBooksThisMonthCard
+            )
+
+            ReadingHistoryCalendarCard()
+                .padding(.horizontal, 16)
+        }
     }
 
     private var gameContent: some View {

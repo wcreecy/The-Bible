@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct StreaksCard: View {
-    // The current setting is the source of truth for today's homepage goal.
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
 
     @StateObject private var vm = StreaksViewModel()
@@ -11,20 +10,16 @@ struct StreaksCard: View {
         max(1, dailyGoalMinutes) * 60
     }
 
-    // Today total from BibleStatsStore's synced daily totals (local-day)
     private var todayTotal: Int {
         let key = BibleStatsStore.isoDateString(Date(), calendar: .autoupdatingCurrent)
         let map = BibleStatsStore.shared.loadDailyTotals()
         return max(0, map[key, default: 0])
     }
 
-    // Progress fraction identical to TitleCard’s formula, totals-based
     private var progress: Double {
-        let g = max(1, goalSeconds)
-        return min(1.0, Double(todayTotal) / Double(g))
+        min(1.0, Double(todayTotal) / Double(max(1, goalSeconds)))
     }
 
-    // Keep today's completion state aligned with the current Settings goal.
     private var goalMet: Bool {
         todayTotal >= goalSeconds
     }
@@ -33,6 +28,7 @@ struct StreaksCard: View {
         let mins = max(0, minutes)
         let hrs = mins / 60
         let rem = mins % 60
+
         if hrs == 0 { return "\(rem) min" }
         if rem == 0 { return "\(hrs) hr" }
         return "\(hrs) hr \(rem) min"
@@ -43,13 +39,13 @@ struct StreaksCard: View {
     }
 
     var body: some View {
-        // Streak values (computed via StreakTracker from synced totals)
         let current = StreakTracker.currentStreak
         let best = StreakTracker.bestStreak
         let last = StreakTracker.lastVisitDate
+        let weekDates = vm.currentWeekDates()
 
         HeroCard(
-            title: "Reading Streak & History",
+            title: "Reading Streak",
             subtitle: nil,
             icon: "flame.fill",
             tint: .orange
@@ -70,50 +66,20 @@ struct StreaksCard: View {
                     )
                 }
 
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(alignment: .firstTextBaseline) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Today's Goal")
-                                .font(.subheadline.weight(.semibold))
-                            Text(goalMinutesString(goalSeconds / 60))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+                ReadingWeekView(
+                    dates: weekDates,
+                    statusForDate: { vm.weekStatus(for: $0) }
+                )
 
-                        Spacer()
-
-                        Button {
-                            isDailyGoalEditorPresented = true
-                        } label: {
-                            Label("Edit Goal", systemImage: "pencil")
-                                .font(.footnote.weight(.semibold))
-                        }
-                        .buttonStyle(.borderless)
-                        .accessibilityIdentifier("homeDailyGoalEditButton")
+                DailyGoalSection(
+                    goalText: goalMinutesString(goalSeconds / 60),
+                    progress: progress,
+                    goalMet: goalMet,
+                    remainingSeconds: max(0, goalSeconds - todayTotal),
+                    onEditGoal: {
+                        isDailyGoalEditorPresented = true
                     }
-
-                    ProgressView(value: progress)
-                        .tint(goalMet ? .green : .orange)
-
-                    if goalMet {
-                        Label("Goal complete for today", systemImage: "checkmark.circle.fill")
-                            .foregroundStyle(.green)
-                            .font(.footnote.weight(.semibold))
-                    } else {
-                        let remaining = max(0, goalSeconds - todayTotal)
-                        let m = remaining / 60
-                        let s = remaining % 60
-
-                        Label("\(m)m \(s)s remaining", systemImage: "clock")
-                            .foregroundStyle(.secondary)
-                            .font(.footnote)
-                    }
-                }
-                .padding(12)
-                .background {
-                    RoundedRectangle(cornerRadius: AppDesignMetrics.compactControlCornerRadius, style: .continuous)
-                        .fill(Color.orange.opacity(0.08))
-                }
+                )
 
                 HStack(spacing: 6) {
                     Image(systemName: last == nil ? "sparkles" : "calendar.badge.checkmark")
@@ -126,129 +92,11 @@ struct StreaksCard: View {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .accessibilityElement(children: .combine)
-
-                Divider()
-
-                DisclosureGroup(isExpanded: $vm.isExpanded) {
-                    calendarMonthView(anchor: vm.monthAnchor)
-                        .padding(.top, 8)
-                } label: {
-                    HStack {
-                        Label("History", systemImage: "calendar")
-                            .font(.subheadline.weight(.semibold))
-                        Spacer()
-                        Text(vm.friendlyMonthYear)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .tint(.orange)
-                .animation(.spring(response: 0.25, dampingFraction: 0.9), value: vm.isExpanded)
             }
         }
         .accessibilityElement(children: .contain)
         .sheet(isPresented: $isDailyGoalEditorPresented) {
             DailyGoalEditorView()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
-            // No explicit state change needed; StreaksViewModel nudges objectWillChange on updates.
-        }
-    }
-
-    // MARK: - Calendar pieces (delegating to VM)
-
-    private struct DayCell: View {
-        let dayNumber: Int
-        let met: Bool
-        let future: Bool
-
-        var body: some View {
-            VStack(spacing: 4) {
-                Text("\(dayNumber)")
-                    .font(.caption)
-                    .foregroundStyle(future ? .tertiary : .secondary)
-                Image(systemName: met ? "checkmark.circle.fill" : "xmark.circle.fill")
-                    .font(.caption)
-                    .foregroundStyle(future ? AnyShapeStyle(.tertiary) : AnyShapeStyle(met ? Color.green : Color.red))
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 6)
-            .background(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(Color(.secondarySystemBackground))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(Color.black.opacity(0.06), lineWidth: 1)
-            )
-        }
-    }
-
-    private struct WeekRow: View {
-        let dates: [Date?]
-        let met: (Date) -> Bool
-        let future: (Date) -> Bool
-
-        var body: some View {
-            HStack(spacing: 6) {
-                ForEach(0..<7, id: \.self) { c in
-                    if let day = dates[c] {
-                        let dayNum = Calendar.current.component(.day, from: day)
-                        DayCell(dayNumber: dayNum, met: met(day), future: future(day))
-                    } else {
-                        Color.clear
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 6)
-                    }
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func calendarMonthView(anchor: Date) -> some View {
-        let grid = vm.daysGrid(for: anchor)
-        let weekdays = vm.weekdayShortSymbols
-
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Button {
-                    vm.goToPreviousMonth()
-                } label: {
-                    Image(systemName: "chevron.left.circle.fill")
-                }
-                .buttonStyle(.plain)
-
-                Spacer()
-
-                Button {
-                    vm.goToNextMonth()
-                } label: {
-                    Image(systemName: "chevron.right.circle.fill")
-                }
-                .buttonStyle(.plain)
-            }
-            .foregroundStyle(Color.accentColor)
-
-            HStack {
-                ForEach(weekdays, id: \.self) { w in
-                    Text(w.uppercased())
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity)
-                }
-            }
-
-            VStack(spacing: 6) {
-                ForEach(0..<grid.count, id: \.self) { r in
-                    WeekRow(
-                        dates: grid[r],
-                        // Calendar check remains based on StreakTracker (totals-based for history)
-                        met: { StreakTracker.isGoalMet(on: $0) },
-                        future: { vm.isFuture($0) }
-                    )
-                }
-            }
         }
     }
 
@@ -284,5 +132,200 @@ struct StreaksCard: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text("\(title), \(value) days"))
+    }
+}
+
+private struct ReadingWeekView: View {
+    let dates: [Date]
+    let statusForDate: (Date) -> ReadingWeekStatus
+
+    private let weekdaySymbols = ["S", "M", "T", "W", "Th", "F", "Sa"]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("This Week")
+                .font(.subheadline.weight(.semibold))
+
+            HStack(spacing: 4) {
+                ForEach(Array(dates.enumerated()), id: \.element) { index, date in
+                    ReadingWeekDay(
+                        weekdaySymbol: weekdaySymbols[index],
+                        date: date,
+                        status: statusForDate(date)
+                    )
+                }
+            }
+        }
+        .padding(12)
+        .background {
+            RoundedRectangle(cornerRadius: AppDesignMetrics.compactControlCornerRadius, style: .continuous)
+                .fill(Color.orange.opacity(0.08))
+        }
+    }
+}
+
+private struct ReadingWeekDay: View {
+    let weekdaySymbol: String
+    let date: Date
+    let status: ReadingWeekStatus
+
+    var body: some View {
+        VStack(spacing: 5) {
+            ZStack {
+                Text(weekdaySymbol)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(status == .future ? .tertiary : .secondary)
+
+                if let mark = status.mark {
+                    HanddrawnStatusMark(mark: mark)
+                        .frame(width: weekdaySymbol.count == 1 ? 24 : 32, height: 22)
+                        .accessibilityHidden(true)
+                }
+            }
+            .frame(height: 22)
+
+            Text(date, format: .dateTime.day())
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(status == .future ? .tertiary : .primary)
+                .monospacedDigit()
+        }
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLabel)
+    }
+
+    private var accessibilityLabel: String {
+        let dateLabel = date.formatted(.dateTime.weekday(.wide).month(.wide).day())
+
+        switch status {
+        case .completed:
+            return "\(dateLabel), daily goal completed"
+        case .missed:
+            return "\(dateLabel), daily goal missed"
+        case .today:
+            return "\(dateLabel), today, daily goal still in progress"
+        case .future:
+            return "\(dateLabel), upcoming day"
+        }
+    }
+}
+
+private struct DailyGoalSection: View {
+    let goalText: String
+    let progress: Double
+    let goalMet: Bool
+    let remainingSeconds: Int
+    let onEditGoal: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Today's Goal")
+                        .font(.subheadline.weight(.semibold))
+                    Text(goalText)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Button(action: onEditGoal) {
+                    Label("Edit Goal", systemImage: "pencil")
+                        .font(.footnote.weight(.semibold))
+                }
+                .buttonStyle(.borderless)
+                .accessibilityIdentifier("homeDailyGoalEditButton")
+            }
+
+            ProgressView(value: progress)
+                .tint(goalMet ? .green : .orange)
+
+            if goalMet {
+                Label("Goal complete for today", systemImage: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+                    .font(.footnote.weight(.semibold))
+            } else {
+                let minutes = remainingSeconds / 60
+                let seconds = remainingSeconds % 60
+
+                Label("\(minutes)m \(seconds)s remaining", systemImage: "clock")
+                    .foregroundStyle(.secondary)
+                    .font(.footnote)
+            }
+        }
+        .padding(12)
+        .background {
+            RoundedRectangle(cornerRadius: AppDesignMetrics.compactControlCornerRadius, style: .continuous)
+                .fill(Color.orange.opacity(0.08))
+        }
+    }
+}
+
+private struct HanddrawnStatusMark: View {
+    let mark: ReadingWeekMark
+
+    var body: some View {
+        Canvas { context, size in
+            let color: Color = mark == .check ? .green : .red
+            let stroke = StrokeStyle(lineWidth: 3.2, lineCap: .round, lineJoin: .round)
+
+            func drawLine(_ points: [CGPoint], opacity: Double, offset: CGSize = .zero) {
+                var path = Path()
+                guard let first = points.first else { return }
+
+                path.move(to: CGPoint(x: first.x + offset.width, y: first.y + offset.height))
+                for point in points.dropFirst() {
+                    path.addLine(to: CGPoint(x: point.x + offset.width, y: point.y + offset.height))
+                }
+
+                context.stroke(path, with: .color(color.opacity(opacity)), style: stroke)
+            }
+
+            switch mark {
+            case .check:
+                drawLine(
+                    [
+                        CGPoint(x: size.width * 0.12, y: size.height * 0.55),
+                        CGPoint(x: size.width * 0.39, y: size.height * 0.80),
+                        CGPoint(x: size.width * 0.88, y: size.height * 0.18)
+                    ],
+                    opacity: 0.9
+                )
+                drawLine(
+                    [
+                        CGPoint(x: size.width * 0.14, y: size.height * 0.49),
+                        CGPoint(x: size.width * 0.40, y: size.height * 0.74),
+                        CGPoint(x: size.width * 0.86, y: size.height * 0.14)
+                    ],
+                    opacity: 0.42,
+                    offset: CGSize(width: 0.6, height: 0.4)
+                )
+            case .x:
+                drawLine(
+                    [
+                        CGPoint(x: size.width * 0.16, y: size.height * 0.16),
+                        CGPoint(x: size.width * 0.84, y: size.height * 0.84)
+                    ],
+                    opacity: 0.9
+                )
+                drawLine(
+                    [
+                        CGPoint(x: size.width * 0.84, y: size.height * 0.16),
+                        CGPoint(x: size.width * 0.16, y: size.height * 0.84)
+                    ],
+                    opacity: 0.9
+                )
+                drawLine(
+                    [
+                        CGPoint(x: size.width * 0.18, y: size.height * 0.12),
+                        CGPoint(x: size.width * 0.82, y: size.height * 0.80)
+                    ],
+                    opacity: 0.34,
+                    offset: CGSize(width: 0.5, height: 0.5)
+                )
+            }
+        }
+        .allowsHitTesting(false)
     }
 }
