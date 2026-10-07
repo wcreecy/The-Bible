@@ -452,7 +452,7 @@ struct HomeView: View {
         }
     }
 
-    private var showsEmptyHomeQuickActions: Bool {
+    private var showsMinimalHome: Bool {
         isPad
             && hiddenCards.contains(.verseOfDay)
             && dashboardCards.isEmpty
@@ -556,8 +556,8 @@ struct HomeView: View {
 
     @ViewBuilder
     private func dashboardContent(width: CGFloat, availableHeight: CGFloat) -> some View {
-        if showsEmptyHomeQuickActions {
-            emptyHomeQuickActions
+        if showsMinimalHome {
+            minimalHomeQuickActions
                 .frame(minHeight: max(0, availableHeight - 96), alignment: .center)
         } else {
         let standardColumnSpacing: CGFloat = 16
@@ -598,17 +598,17 @@ struct HomeView: View {
         }
     }
 
-    private var emptyHomeQuickActions: some View {
+    private var minimalHomeQuickActions: some View {
         HStack(alignment: .top, spacing: 16) {
-            emptyHomeActionCard(
+            minimalHomeActionCard(
                 title: "Read",
-                message: "Open the Bible reader",
+                message: "Open the Bible",
                 icon: "book.fill",
                 tint: .blue,
-                action: { switchTo(.bible) }
+                action: openLastReadPosition
             )
 
-            emptyHomeActionCard(
+            minimalHomeActionCard(
                 title: "Continue Reading",
                 message: progress.map { "\($0.bookName) \($0.chapterNumber):\($0.verseNumber)" } ?? "Start at Genesis 1",
                 verseText: progressVerseText,
@@ -617,7 +617,7 @@ struct HomeView: View {
                 action: openContinueReading
             )
 
-            emptyHomeActionCard(
+            minimalHomeActionCard(
                 title: "Search",
                 message: "Find a passage, word, or topic",
                 icon: "magnifyingglass",
@@ -627,7 +627,7 @@ struct HomeView: View {
         }
     }
 
-    private func emptyHomeActionCard(
+    private func minimalHomeActionCard(
         title: String,
         message: String,
         verseText: String? = nil,
@@ -693,6 +693,23 @@ struct HomeView: View {
                 ]
             )
         }
+    }
+
+    private func openLastReadPosition() {
+        guard let location = DeviceReaderPositionStore.load() else {
+            switchTo(.bible)
+            return
+        }
+
+        NotificationCenter.default.post(
+            name: .openBibleReference,
+            object: nil,
+            userInfo: [
+                "book": location.bookName,
+                "chapter": location.chapterNumber,
+                "verse": location.verseNumber
+            ]
+        )
     }
 
     private var customizeHomeLink: some View {

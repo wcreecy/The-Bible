@@ -53,6 +53,16 @@ struct HomeLayoutEditorView: View {
         onDone()
     }
 
+    private var isMinimalHome: Bool {
+        hiddenSet.isSuperset(of: Set(HomeCardID.allCases)) && !bibleReaderVisible
+    }
+
+    private func useMinimalHome() {
+        hiddenSet = Set(HomeCardID.allCases)
+        bibleReaderVisible = false
+        onDone()
+    }
+
     private func moveCard(_ id: HomeCardID, by offset: Int) {
         if !allowsShowMore {
             guard id != .verseOfDay else { return }
@@ -248,6 +258,32 @@ struct HomeLayoutEditorView: View {
                     Text(showMoreVisible
                         ? "Shown cards become visible only after Show More is expanded. Use the arrows to arrange them."
                         : "Show More is hidden from Home. Shown cards appear directly on Home instead.")
+                }
+            }
+
+            if !allowsShowMore {
+                Section {
+                    VStack(alignment: .leading, spacing: 10) {
+                        footerButton(
+                            title: "Use Minimal Home",
+                            systemImage: "rectangle.3.group",
+                            disabled: isMinimalHome
+                        ) {
+                            useMinimalHome()
+                        }
+                        footerButton(
+                            title: "Restore Default Home",
+                            systemImage: "arrow.counterclockwise",
+                            disabled: !isMinimalHome
+                        ) {
+                            resetToDefault()
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                } header: {
+                    Label("Home Style", systemImage: "rectangle.3.group")
+                } footer: {
+                    Text("Minimal Home replaces dashboard cards with Read, Continue Reading, and Search actions.")
                 }
             }
 
