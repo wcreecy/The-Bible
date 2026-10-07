@@ -210,6 +210,157 @@ struct GameSetupSummary: View {
     }
 }
 
+struct GameSplashLaunchLayout<Preview: View, Configuration: View, Facts: View>: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    let tint: Color
+    let isStartEnabled: Bool
+    let startAction: () -> Void
+    @ViewBuilder let preview: Preview
+    @ViewBuilder let configuration: Configuration
+    @ViewBuilder let facts: Facts
+
+    init(
+        tint: Color,
+        isStartEnabled: Bool = true,
+        startAction: @escaping () -> Void,
+        @ViewBuilder preview: () -> Preview,
+        @ViewBuilder configuration: () -> Configuration,
+        @ViewBuilder facts: () -> Facts
+    ) {
+        self.tint = tint
+        self.isStartEnabled = isStartEnabled
+        self.startAction = startAction
+        self.preview = preview()
+        self.configuration = configuration()
+        self.facts = facts()
+    }
+
+    var body: some View {
+        VStack(spacing: 16) {
+            preview
+
+            if horizontalSizeClass == .regular {
+                HStack(alignment: .top, spacing: 16) {
+                    GameSplashConfigurationCard(minimumHeight: 360) {
+                        configuration
+                        facts
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    GameSplashStartButton(
+                        tint: tint,
+                        isEnabled: isStartEnabled,
+                        action: startAction
+                    )
+                    .frame(maxWidth: .infinity)
+                    .frame(minHeight: 360)
+                }
+            } else {
+                GameSplashConfigurationCard {
+                    configuration
+                    facts
+                }
+
+                GameStartActionBar(isEnabled: isStartEnabled, action: startAction)
+            }
+        }
+    }
+}
+
+struct GameSplashConfigurationCard<Content: View>: View {
+    let minimumHeight: CGFloat?
+    @ViewBuilder let content: Content
+
+    init(
+        minimumHeight: CGFloat? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.minimumHeight = minimumHeight
+        self.content = content()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            content
+        }
+        .padding(16)
+        .frame(
+            maxWidth: .infinity,
+            minHeight: minimumHeight,
+            alignment: .topLeading
+        )
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
+        }
+        .accessibilityElement(children: .contain)
+    }
+}
+
+struct GameSplashStartButton: View {
+    let tint: Color
+    let isEnabled: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 12) {
+                Image(systemName: "play.fill")
+                    .font(.largeTitle)
+                Text("Start Game")
+                    .font(.title2.weight(.semibold))
+                Text("Begin your challenge.")
+                    .font(.subheadline)
+                    .foregroundStyle(.white.opacity(0.82))
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(24)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(.white)
+        .background(tint.gradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .disabled(!isEnabled)
+        .accessibilityLabel("Start Game")
+    }
+}
+
+struct GameSplashFacts: View {
+    let first: (icon: String, value: String, label: String)
+    let second: (icon: String, value: String, label: String)
+    let third: (icon: String, value: String, label: String)
+
+    var body: some View {
+        HStack(spacing: 8) {
+            fact(first)
+            fact(second)
+            fact(third)
+        }
+    }
+
+    private func fact(_ fact: (icon: String, value: String, label: String)) -> some View {
+        VStack(spacing: 5) {
+            Image(systemName: fact.icon)
+                .font(.subheadline)
+                .foregroundStyle(.tint)
+            Text(fact.value)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+            Text(fact.label)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 6)
+        .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+}
+
 enum GameLobbyPreviewKind {
     case quiz
     case hangman

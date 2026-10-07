@@ -480,50 +480,41 @@ struct WordleView: View {
             Text("Guess the 5‑letter word in 6 tries.\nUse the on‑screen keyboard or a connected keyboard.")
                 .gameStartDescriptionStyle(title: "WORD", systemImage: "square.grid.3x3.fill", tint: .mint)
 
-            WordSetupCard(
-                mode: mode,
-                hardModeEnabled: hardModeEnabled
-            )
+            GameSplashLaunchLayout(
+                tint: .mint,
+                isStartEnabled: mode != .daily || !dailyCompletedToday || wordleAllowDailyReplay,
+                startAction: { startNewRound(practice: mode == .practice) }
+            ) {
+                GameLobbyPreview(kind: .wordle)
+            } configuration: {
+                WordSetupCard(
+                    mode: mode,
+                    hardModeEnabled: hardModeEnabled
+                )
 
-            WordSetupControls(
-                mode: $mode,
-                hardModeEnabled: $hardModeEnabled
-            )
+                WordSetupControls(
+                    mode: $mode,
+                    hardModeEnabled: $hardModeEnabled
+                )
 
-            if mode == .daily && dailyCompletedToday && !wordleAllowDailyReplay {
-                HStack(alignment: .top, spacing: 8) {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundStyle(.yellow)
-                        .accessibilityHidden(true)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Daily completed")
-                            .font(.subheadline.weight(.semibold))
-                        Text("You’ve completed today’s daily. Come back tomorrow.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer(minLength: 0)
+                if mode == .daily && dailyCompletedToday && !wordleAllowDailyReplay {
+                    Label(
+                        "Daily completed. Come back tomorrow.",
+                        systemImage: "exclamationmark.triangle.fill"
+                    )
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.yellow)
+                    .padding(12)
+                    .background(Color.yellow.opacity(0.15), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .padding(.horizontal)
                 }
-                .padding(12)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color.yellow.opacity(0.15))
+            } facts: {
+                GameSplashFacts(
+                    first: ("character.cursor.ibeam", "5 letters", "Word length"),
+                    second: ("number", "6 tries", "Guesses"),
+                    third: ("calendar", mode == .daily ? "Daily" : "Practice", "Game type")
                 )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(Color.yellow.opacity(0.35), lineWidth: 1)
-                )
-                .padding(.horizontal)
-                .accessibilityElement(children: .combine)
-                .accessibilityLabel("Daily completed. You’ve completed today’s daily. Come back tomorrow.")
             }
-
-            GameLobbyPreview(kind: .wordle)
-
-            GameStartActionBar(
-                isEnabled: mode != .daily || !dailyCompletedToday || wordleAllowDailyReplay,
-                action: { startNewRound(practice: mode == .practice) }
-            )
             Spacer(minLength: 24)
         }
         .gameStartScreenStyle()

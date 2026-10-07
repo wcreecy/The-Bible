@@ -263,45 +263,51 @@ struct QuizView: View {
                     Text("Test your knowledge by guessing the book of the Bible from a given verse.")
                         .gameStartDescriptionStyle(title: "Bible Quiz", systemImage: "questionmark.circle.fill", tint: .blue)
                     
-                    QuizSetupCard(
-                        scope: quizScopeRaw,
-                        difficulty: quizDifficulty,
-                        categories: selectedSectionsTitle
-                    )
-
-                    QuizSetupControls(
-                        scope: Binding(
-                            get: { quizScopeRaw },
-                            set: { newValue in
-                                quizScopeRaw = newValue
-                                storeSelectedSections(selectedSections.intersection(availableSections))
-                            }
-                        ),
-                        difficulty: Binding(
-                            get: { quizDifficulty },
-                            set: { newValue in
-                                quizDifficulty = newValue
-                                rebuildPools()
-                            }
+                    GameSplashLaunchLayout(tint: .blue, startAction: startQuiz) {
+                        GameLobbyPreview(kind: .quiz)
+                    } configuration: {
+                        QuizSetupCard(
+                            scope: quizScopeRaw,
+                            difficulty: quizDifficulty,
+                            categories: selectedSectionsTitle
                         )
-                    )
 
-                    GameStartMultiPickerCard(
-                        title: "Biblical Categories",
-                        selection: Binding<Set<VerseSection>>(
-                            get: { displayedSelectedSections },
-                            set: storeSelectedSections
-                        ),
-                        options: availableSections
-                    ) { section in
-                        Text(section.title)
+                        QuizSetupControls(
+                            scope: Binding(
+                                get: { quizScopeRaw },
+                                set: { newValue in
+                                    quizScopeRaw = newValue
+                                    storeSelectedSections(selectedSections.intersection(availableSections))
+                                }
+                            ),
+                            difficulty: Binding(
+                                get: { quizDifficulty },
+                                set: { newValue in
+                                    quizDifficulty = newValue
+                                    rebuildPools()
+                                }
+                            )
+                        )
+
+                        GameStartMultiPickerCard(
+                            title: "Biblical Categories",
+                            selection: Binding<Set<VerseSection>>(
+                                get: { displayedSelectedSections },
+                                set: storeSelectedSections
+                            ),
+                            options: availableSections
+                        ) { section in
+                            Text(section.title)
+                        }
+                        .frame(maxWidth: 620)
+                        .padding(.horizontal)
+                    } facts: {
+                        GameSplashFacts(
+                            first: ("text.quote", "Verse", "Question"),
+                            second: ("list.bullet", "4 choices", "Answer format"),
+                            third: ("book.closed", "Bible book", "Your answer")
+                        )
                     }
-                    .frame(maxWidth: 620)
-                    .padding(.horizontal)
-
-                    GameLobbyPreview(kind: .quiz)
-
-                    GameStartActionBar(action: startQuiz)
                     Spacer(minLength: 48)
                 } else if usesSplitLayout {
                     QuizGameDashboard(

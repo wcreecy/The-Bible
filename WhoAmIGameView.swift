@@ -38,13 +38,19 @@ struct WhoAmIGameView: View {
                     Text("Match Bible names and descriptions.")
                         .gameStartDescriptionStyle(title: "Who am I?", systemImage: "person.text.rectangle", tint: .brown)
 
-                    WhoAmISetupCard(difficulty: vm.difficulty)
+                    GameSplashLaunchLayout(tint: .brown, startAction: vm.startGame) {
+                        GameLobbyPreview(kind: .whoAmI)
+                    } configuration: {
+                        WhoAmISetupCard(difficulty: vm.difficulty)
 
-                    WhoAmISetupControls(difficulty: $vm.difficulty)
-
-                    GameLobbyPreview(kind: .whoAmI)
-
-                    GameStartActionBar(action: vm.startGame)
+                        WhoAmISetupControls(difficulty: $vm.difficulty)
+                    } facts: {
+                        GameSplashFacts(
+                            first: ("person.text.rectangle", "Bible names", "Question"),
+                            second: ("list.bullet", "Match", "Your task"),
+                            third: ("checkmark.circle", "Choose", "Your answer")
+                        )
+                    }
                     Spacer(minLength: 24)
                 } else if horizontalSizeClass == .regular {
                     WhoAmIIPadGameBoard(

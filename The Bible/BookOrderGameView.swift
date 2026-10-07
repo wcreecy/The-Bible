@@ -16,24 +16,30 @@ struct BookOrderGameView: View {
                     Text("Rearrange the books in the correct order.")
                     .gameStartDescriptionStyle(title: "Book Order", systemImage: "list.number", tint: .purple)
 
-                    BookOrderSetupCard(
-                        source: vm.source,
-                        difficulty: vm.difficulty
-                    )
+                    GameSplashLaunchLayout(tint: .purple, startAction: startGame) {
+                        GameLobbyPreview(
+                            kind: .bookOrder,
+                            bookOrderBooks: vm.difficulty == .all && !vm.source.isCategory
+                                ? Array(BibleCanon.canonicalOrder().prefix(3))
+                                : vm.source.previewBookNames
+                        )
+                    } configuration: {
+                        BookOrderSetupCard(
+                            source: vm.source,
+                            difficulty: vm.difficulty
+                        )
 
-                    BookOrderSetupControls(
-                        source: $vm.source,
-                        difficulty: $vm.difficulty
-                    )
-
-                    GameLobbyPreview(
-                        kind: .bookOrder,
-                        bookOrderBooks: vm.difficulty == .all && !vm.source.isCategory
-                            ? Array(BibleCanon.canonicalOrder().prefix(3))
-                            : vm.source.previewBookNames
-                    )
-
-                    GameStartActionBar(action: startGame)
+                        BookOrderSetupControls(
+                            source: $vm.source,
+                            difficulty: $vm.difficulty
+                        )
+                    } facts: {
+                        GameSplashFacts(
+                            first: ("books.vertical", vm.source.rawValue.capitalized, "Book group"),
+                            second: ("chart.bar", vm.difficulty == .all ? "Expert" : vm.difficulty.rawValue.capitalized, "Difficulty"),
+                            third: ("arrow.left.arrow.right", "Arrange", "Your task")
+                        )
+                    }
                 }
                 .padding()
                 Spacer()

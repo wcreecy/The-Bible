@@ -13,46 +13,48 @@ struct WordSearchStartScreen: View {
             Text("Find hidden words from a random Bible verse.")
                 .gameStartDescriptionStyle(title: "Word Search", systemImage: "square.grid.3x3.topleft.filled", tint: .green)
 
-            WordSearchSetupCard(
-                difficulty: difficulty,
-                gameMode: gameMode,
-                isTimedMode: isTimedMode,
-                timeLimitString: timeLimitString
-            )
+            GameSplashLaunchLayout(tint: .green, startAction: onStart) {
+                GameLobbyPreview(kind: .wordSearch)
+            } configuration: {
+                WordSearchSetupCard(
+                    difficulty: difficulty,
+                    gameMode: gameMode,
+                    isTimedMode: isTimedMode,
+                    timeLimitString: timeLimitString
+                )
 
-            WordSearchSetupControls(
-                difficulty: $difficulty,
-                gameMode: $gameMode
-            )
+                WordSearchSetupControls(
+                    difficulty: $difficulty,
+                    gameMode: $gameMode
+                )
 
-            HStack(spacing: 10) {
-                Label {
-                    Text("Timed Mode").font(.headline).foregroundStyle(.primary)
-                } icon: {
-                    Image(systemName: "timer").foregroundStyle(.orange)
+                HStack(spacing: 10) {
+                    Label("Timed Mode", systemImage: "timer")
+                        .font(.headline)
+
+                    Spacer(minLength: 8)
+
+                    Toggle("", isOn: $isTimedMode).labelsHidden()
                 }
-                .labelStyle(.titleAndIcon)
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+                .background(Capsule(style: .continuous).fill(Color.orange.opacity(0.10)))
+                .overlay(Capsule(style: .continuous).stroke(Color.orange.opacity(0.25), lineWidth: 1))
+                .padding(.horizontal)
 
-                Spacer(minLength: 8)
-
-                Toggle("", isOn: $isTimedMode).labelsHidden()
+                if isTimedMode {
+                    Text("Time limit: \(timeLimitString)")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal)
+                }
+            } facts: {
+                GameSplashFacts(
+                    first: ("square.grid.3x3", "Find", "Hidden words"),
+                    second: ("timer", isTimedMode ? timeLimitString : "Untimed", "Time limit"),
+                    third: ("text.quote", "Bible verse", "Puzzle source")
+                )
             }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
-            .background(Capsule(style: .continuous).fill(Color.orange.opacity(0.10)))
-            .overlay(Capsule(style: .continuous).stroke(Color.orange.opacity(0.25), lineWidth: 1))
-            .padding(.horizontal)
-
-            if isTimedMode {
-                Text("Time limit: \(timeLimitString)")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal)
-            }
-
-            GameLobbyPreview(kind: .wordSearch)
-
-            GameStartActionBar(action: onStart)
 
             Spacer(minLength: 24)
         }

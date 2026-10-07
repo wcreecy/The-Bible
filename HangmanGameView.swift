@@ -258,19 +258,25 @@ struct HangmanGameView: View {
         Text("Guess the person, place or book from the Bible")
             .gameStartDescriptionStyle(title: "Hangman", systemImage: "text.word.spacing", tint: .teal)
 
-        HangmanSetupCard(
-            theme: theme,
-            difficulty: difficulty
-        )
+        GameSplashLaunchLayout(tint: .teal, startAction: startGame) {
+            GameLobbyPreview(kind: .hangman)
+        } configuration: {
+            HangmanSetupCard(
+                theme: theme,
+                difficulty: difficulty
+            )
 
-        HangmanSetupControls(
-            theme: $theme,
-            difficulty: $difficulty
-        )
-
-        GameLobbyPreview(kind: .hangman)
-
-        GameStartActionBar(action: startGame)
+            HangmanSetupControls(
+                theme: $theme,
+                difficulty: $difficulty
+            )
+        } facts: {
+            GameSplashFacts(
+                first: ("text.word.spacing", theme.rawValue, "Word theme"),
+                second: ("chart.bar", difficulty.rawValue, "Difficulty"),
+                third: ("character.cursor.ibeam", "Guess", "Your task")
+            )
+        }
         Spacer(minLength: 24)
     }
 

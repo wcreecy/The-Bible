@@ -200,40 +200,46 @@ struct VerseMatchGameView: View {
                     Text("Choose the verse text that matches the reference.")
                         .gameStartDescriptionStyle(title: "Verse Match", systemImage: "text.quote", tint: .orange)
 
-                    VerseMatchSetupCard(
-                        testament: testamentScope,
-                        difficulty: difficulty,
-                        categories: selectedSectionsTitle,
-                        usesCustomCategories: !selectedSections.isEmpty
-                    )
+                    GameSplashLaunchLayout(tint: .orange, startAction: startGame) {
+                        GameLobbyPreview(kind: .verseMatch)
+                    } configuration: {
+                        VerseMatchSetupCard(
+                            testament: testamentScope,
+                            difficulty: difficulty,
+                            categories: selectedSectionsTitle,
+                            usesCustomCategories: !selectedSections.isEmpty
+                        )
 
-                    VerseMatchSetupControls(
-                        testament: Binding(
-                            get: { testamentScope },
-                            set: { scope in
-                                verseScopeRaw = scope.rawValue
-                                storeSelectedSections(selectedSections.intersection(sections(for: scope)))
-                            }
-                        ),
-                        difficulty: $difficulty
-                    )
+                        VerseMatchSetupControls(
+                            testament: Binding(
+                                get: { testamentScope },
+                                set: { scope in
+                                    verseScopeRaw = scope.rawValue
+                                    storeSelectedSections(selectedSections.intersection(sections(for: scope)))
+                                }
+                            ),
+                            difficulty: $difficulty
+                        )
 
-                    GameStartMultiPickerCard(
-                        title: "Biblical Categories",
-                        selection: Binding<Set<VerseSection>>(
-                            get: { displayedSelectedSections },
-                            set: storeSelectedSections
-                        ),
-                        options: availableSections
-                    ) { section in
-                        Text(section.title)
+                        GameStartMultiPickerCard(
+                            title: "Biblical Categories",
+                            selection: Binding<Set<VerseSection>>(
+                                get: { displayedSelectedSections },
+                                set: storeSelectedSections
+                            ),
+                            options: availableSections
+                        ) { section in
+                            Text(section.title)
+                        }
+                        .frame(maxWidth: 620)
+                        .padding(.horizontal)
+                    } facts: {
+                        GameSplashFacts(
+                            first: ("number", "Reference", "Question"),
+                            second: ("text.quote", "Verse", "Find the match"),
+                            third: ("checkmark.circle", "Choose", "Your task")
+                        )
                     }
-                    .frame(maxWidth: 620)
-                    .padding(.horizontal)
-
-                    GameLobbyPreview(kind: .verseMatch)
-
-                    GameStartActionBar(action: startGame)
                     Spacer(minLength: 32)
                 } else {
                     GameScoreboardCard(
