@@ -11,7 +11,7 @@
     "location_name": "Ai",
     "scripture_mentioned": "Joshua 7:2",
     "short_description": "Canaanite city where Israel suffered defeat before winning after confronting hidden sin",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 3,
@@ -32,7 +32,7 @@
     "location_name": "Antioch (Syria)",
     "scripture_mentioned": "Acts 11:26",
     "short_description": "City where the disciples were first called Christians",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 6,
@@ -46,21 +46,21 @@
     "location_name": "Ararat",
     "scripture_mentioned": "Genesis 8:4",
     "short_description": "Mountains where the ark rested after the flood",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 8,
     "location_name": "Arimathaea",
     "scripture_mentioned": "Matthew 27:57",
     "short_description": "Home town of the council member who provided a tomb for Jesus",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 9,
     "location_name": "Ashdod",
     "scripture_mentioned": "1 Samuel 5:1",
     "short_description": "Philistine city where the captured ark was placed beside an idol",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 10,
@@ -74,35 +74,35 @@
     "location_name": "Assyria",
     "scripture_mentioned": "2 Kings 17:6",
     "short_description": "Empire that carried the northern kingdom into exile",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 12,
     "location_name": "Athens",
     "scripture_mentioned": "Acts 17:16",
     "short_description": "Greek city where Paul spoke about the unknown God",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 13,
     "location_name": "Babel",
     "scripture_mentioned": "Genesis 11:9",
     "short_description": "Site of the tower where human language was confused",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 14,
     "location_name": "Babylon",
     "scripture_mentioned": "Daniel 1:1",
     "short_description": "Imperial city associated with the captivity of Judah and Daniel's service",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 15,
     "location_name": "Beersheba",
     "scripture_mentioned": "Genesis 21:31",
     "short_description": "Place associated with a well and an oath between Abraham and Abimelech",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 16,
@@ -116,28 +116,28 @@
     "location_name": "Bethany (near Jerusalem)",
     "scripture_mentioned": "John 11:1",
     "short_description": "Village home to Martha, Mary and Lazarus",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 18,
     "location_name": "Bethel",
     "scripture_mentioned": "Genesis 28:19",
     "short_description": "Town where Jacob dreamed of a ladder reaching heaven",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 19,
     "location_name": "Bethesda (pool)",
     "scripture_mentioned": "John 5:2",
     "short_description": "Pool with five porches where Jesus healed a man long disabled",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 20,
     "location_name": "Bethlehem (Judah)",
     "scripture_mentioned": "Luke 2:4",
     "short_description": "Town of David where Jesus was born",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 21,
@@ -158,56 +158,56 @@
     "location_name": "Bethsaida",
     "scripture_mentioned": "John 1:44",
     "short_description": "Hometown of Andrew and Peter, also connected with a miraculous feeding",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 24,
     "location_name": "Caesarea (Maritima)",
     "scripture_mentioned": "Acts 10:1",
     "short_description": "Coastal city where a Roman centurion received Peter's message",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 25,
     "location_name": "Caesarea Philippi",
     "scripture_mentioned": "Matthew 16:13",
     "short_description": "District where Peter confessed Jesus as the Christ",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 26,
     "location_name": "Calvary",
     "scripture_mentioned": "Luke 23:33",
     "short_description": "Place called the skull where Jesus was crucified",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 27,
     "location_name": "Cana of Galilee",
     "scripture_mentioned": "John 2:1",
     "short_description": "Village where Jesus turned water into wine at a wedding",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 28,
     "location_name": "Canaan",
     "scripture_mentioned": "Genesis 12:5",
     "short_description": "Land promised to Abraham and his descendants",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 29,
     "location_name": "Capernaum",
     "scripture_mentioned": "Matthew 4:13",
     "short_description": "Galilean town that became a base for Jesus' ministry",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 30,
     "location_name": "Carmel (mountain)",
     "scripture_mentioned": "1 Kings 18:19",
     "short_description": "Mountain where Elijah challenged the prophets of Baal",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 31,
@@ -228,42 +228,42 @@
     "location_name": "Colosse",
     "scripture_mentioned": "Colossians 1:2",
     "short_description": "City addressed by a letter emphasizing the supremacy of Christ",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 34,
     "location_name": "Corinth",
     "scripture_mentioned": "Acts 18:1",
     "short_description": "Greek city where Paul worked with tentmakers and established a church",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 35,
     "location_name": "Crete",
     "scripture_mentioned": "Titus 1:5",
     "short_description": "Island where Titus was left to appoint elders",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 36,
     "location_name": "Cyprus",
     "scripture_mentioned": "Acts 13:4",
     "short_description": "Mediterranean island visited by Paul and Barnabas early in their mission",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 37,
     "location_name": "Damascus",
     "scripture_mentioned": "Acts 9:2",
     "short_description": "City approached by Saul when he encountered the risen Jesus",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 38,
     "location_name": "Decapolis",
     "scripture_mentioned": "Mark 5:20",
     "short_description": "Region of ten cities where a restored man proclaimed what Jesus had done",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 39,
@@ -277,70 +277,70 @@
     "location_name": "Dothan",
     "scripture_mentioned": "Genesis 37:17",
     "short_description": "Place where Joseph's brothers were tending flocks before selling him",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 41,
     "location_name": "Eden (garden)",
     "scripture_mentioned": "Genesis 2:8",
     "short_description": "Garden where the first human couple lived before the fall",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 42,
     "location_name": "Edom",
     "scripture_mentioned": "Genesis 36:1",
     "short_description": "Territory associated with Esau and his descendants",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 43,
     "location_name": "Egypt",
     "scripture_mentioned": "Exodus 1:8",
     "short_description": "Land of Israelite bondage from which Moses led the exodus",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 44,
     "location_name": "Elim",
     "scripture_mentioned": "Exodus 15:27",
     "short_description": "Wilderness oasis with twelve wells and seventy palm trees",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 45,
     "location_name": "Emmaus",
     "scripture_mentioned": "Luke 24:13",
     "short_description": "Village toward which two disciples walked when the risen Jesus joined them",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 46,
     "location_name": "En-gedi",
     "scripture_mentioned": "1 Samuel 24:1",
     "short_description": "Wilderness area where David spared Saul in a cave",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 47,
     "location_name": "Endor",
     "scripture_mentioned": "1 Samuel 28:7",
     "short_description": "Town where Saul consulted a woman who practiced divination",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 48,
     "location_name": "Ephesus",
     "scripture_mentioned": "Acts 19:1",
     "short_description": "City where Paul taught and a riot arose over the worship of Artemis",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 49,
     "location_name": "Euphrates (river)",
     "scripture_mentioned": "Genesis 2:14",
     "short_description": "Great river named among the waterways in the garden account",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 50,
@@ -354,35 +354,35 @@
     "location_name": "Galatia",
     "scripture_mentioned": "Galatians 1:2",
     "short_description": "Region whose churches received a letter defending salvation by faith",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 52,
     "location_name": "Galilee",
     "scripture_mentioned": "Matthew 4:12",
     "short_description": "Northern region in which Jesus spent much of his public ministry",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 53,
     "location_name": "Gath",
     "scripture_mentioned": "1 Samuel 17:4",
     "short_description": "Philistine city associated with the giant defeated by David",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 54,
     "location_name": "Gaza",
     "scripture_mentioned": "Judges 16:1",
     "short_description": "Philistine city whose gates Samson carried away",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 55,
     "location_name": "Gethsemane",
     "scripture_mentioned": "Matthew 26:36",
     "short_description": "Garden where Jesus prayed before his arrest",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 56,
@@ -396,56 +396,56 @@
     "location_name": "Gibeon",
     "scripture_mentioned": "Joshua 9:3",
     "short_description": "City whose inhabitants secured a treaty with Joshua by deception",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 58,
     "location_name": "Gilead",
     "scripture_mentioned": "Genesis 31:21",
     "short_description": "Hill country east of the Jordan associated with a balm",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 59,
     "location_name": "Gilgal",
     "scripture_mentioned": "Joshua 4:19",
     "short_description": "Israelite camp established after crossing the Jordan",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 60,
     "location_name": "Golgotha",
     "scripture_mentioned": "Mark 15:22",
     "short_description": "Aramaic name for the place of the skull where Jesus was crucified",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 61,
     "location_name": "Gomorrah",
     "scripture_mentioned": "Genesis 19:24",
     "short_description": "City destroyed by fire and brimstone along with its neighbor",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 62,
     "location_name": "Goshen",
     "scripture_mentioned": "Genesis 47:27",
     "short_description": "District where Jacob's family lived in Egypt",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 63,
     "location_name": "Haran",
     "scripture_mentioned": "Genesis 11:31",
     "short_description": "Place where Abraham's family settled before his journey to the promised land",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 64,
     "location_name": "Hebron",
     "scripture_mentioned": "Genesis 23:2",
     "short_description": "City where Abraham bought a burial cave for Sarah",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 65,
@@ -466,7 +466,7 @@
     "location_name": "Horeb (mountain)",
     "scripture_mentioned": "Exodus 3:1",
     "short_description": "Mountain of God where Moses encountered the burning bush",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 68,
@@ -480,84 +480,84 @@
     "location_name": "Jericho",
     "scripture_mentioned": "Joshua 6:1",
     "short_description": "Walled city that fell after Israel marched around it",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 70,
     "location_name": "Jerusalem",
     "scripture_mentioned": "2 Samuel 5:6",
     "short_description": "City of David, site of the temple and Jesus' crucifixion and resurrection",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 71,
     "location_name": "Jezreel (city)",
     "scripture_mentioned": "1 Kings 21:1",
     "short_description": "City beside the vineyard coveted by King Ahab",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 72,
     "location_name": "Joppa",
     "scripture_mentioned": "Jonah 1:3",
     "short_description": "Port where a prophet boarded a ship fleeing his calling",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 73,
     "location_name": "Jordan (river)",
     "scripture_mentioned": "Joshua 3:17",
     "short_description": "River crossed by Israel entering the promised land and where Jesus was baptized",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 74,
     "location_name": "Judea",
     "scripture_mentioned": "Matthew 2:1",
     "short_description": "Southern region where Jesus was born and Jerusalem is located",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 75,
     "location_name": "Kadesh-barnea",
     "scripture_mentioned": "Numbers 13:26",
     "short_description": "Wilderness camp to which the twelve spies returned",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 76,
     "location_name": "Kidron (brook)",
     "scripture_mentioned": "John 18:1",
     "short_description": "Valley stream crossed by Jesus before his arrest",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 77,
     "location_name": "Laodicea",
     "scripture_mentioned": "Revelation 3:14",
     "short_description": "City of the church warned against being lukewarm",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 78,
     "location_name": "Lebanon",
     "scripture_mentioned": "1 Kings 5:6",
     "short_description": "Mountainous land famed for cedars used in Solomon's construction",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 79,
     "location_name": "Lystra",
     "scripture_mentioned": "Acts 14:8",
     "short_description": "City where Paul healed a man lame from birth and was later stoned",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 80,
     "location_name": "Macedonia",
     "scripture_mentioned": "Acts 16:9",
     "short_description": "Region Paul was called to enter after a vision of a man asking for help",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 81,
@@ -571,14 +571,14 @@
     "location_name": "Mamre",
     "scripture_mentioned": "Genesis 18:1",
     "short_description": "Place where Abraham welcomed three visitors beside the oaks",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 83,
     "location_name": "Melita (Malta)",
     "scripture_mentioned": "Acts 28:1",
     "short_description": "Island where Paul survived a shipwreck and a viper bite",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 84,
@@ -592,42 +592,42 @@
     "location_name": "Midian (Midian)",
     "scripture_mentioned": "Exodus 2:15",
     "short_description": "Region where Moses fled Egypt and tended flocks",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 86,
     "location_name": "Mizpah (Benjamin)",
     "scripture_mentioned": "1 Samuel 7:5",
     "short_description": "Gathering place where Samuel prayed and judged Israel",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 87,
     "location_name": "Moab",
     "scripture_mentioned": "Ruth 1:1",
     "short_description": "Territory east of the Dead Sea from which Ruth came",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 88,
     "location_name": "Moriah (mount)",
     "scripture_mentioned": "Genesis 22:2",
     "short_description": "Land where Abraham was told to offer his son; later associated with the temple mount",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 89,
     "location_name": "Mount of Olives",
     "scripture_mentioned": "Matthew 21:1",
     "short_description": "Hill east of Jerusalem associated with Jesus' prayer and ascension",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 90,
     "location_name": "Mount Sinai",
     "scripture_mentioned": "Exodus 19:11",
     "short_description": "Mountain where Israel received the covenant law",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 91,
@@ -641,14 +641,14 @@
     "location_name": "Nazareth",
     "scripture_mentioned": "Matthew 2:23",
     "short_description": "Town where Jesus grew up",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 93,
     "location_name": "Nineveh",
     "scripture_mentioned": "Jonah 3:3",
     "short_description": "Great city called to repent through a reluctant prophet",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 94,
@@ -662,35 +662,35 @@
     "location_name": "Patmos",
     "scripture_mentioned": "Revelation 1:9",
     "short_description": "Island where John received apocalyptic visions",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 96,
     "location_name": "Pergamos",
     "scripture_mentioned": "Revelation 2:12",
     "short_description": "City whose church was warned about compromise amid persecution",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 97,
     "location_name": "Philadelphia (Asia Minor)",
     "scripture_mentioned": "Revelation 3:7",
     "short_description": "City of a church promised an open door that no one could shut",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 98,
     "location_name": "Philippi",
     "scripture_mentioned": "Acts 16:12",
     "short_description": "Roman colony where a seller of purple cloth believed and a jailer was baptized",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 99,
     "location_name": "Pisgah (mount)",
     "scripture_mentioned": "Deuteronomy 34:1",
     "short_description": "Mountain summit from which Moses viewed the promised land",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 100,
@@ -704,21 +704,21 @@
     "location_name": "Ramah (Benjamin)",
     "scripture_mentioned": "1 Samuel 7:17",
     "short_description": "Town where Samuel had his home and judged Israel",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 102,
     "location_name": "Red Sea",
     "scripture_mentioned": "Exodus 14:21",
     "short_description": "Body of water divided when Israelites escaped Pharaoh's army",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 103,
     "location_name": "Rephidim",
     "scripture_mentioned": "Exodus 17:1",
     "short_description": "Desert camp where water came from a rock and Israel battled Amalek",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 104,
@@ -732,7 +732,7 @@
     "location_name": "Rome",
     "scripture_mentioned": "Romans 1:7",
     "short_description": "Capital of the empire and destination of Paul's imprisonment",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 106,
@@ -746,147 +746,147 @@
     "location_name": "Salt Sea (Dead Sea)",
     "scripture_mentioned": "Joshua 3:16",
     "short_description": "Salt lake at the southern end of the Jordan Valley",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 108,
     "location_name": "Samaria (city)",
     "scripture_mentioned": "1 Kings 16:24",
     "short_description": "Capital founded by Omri in the northern kingdom",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 109,
     "location_name": "Samaria (region)",
     "scripture_mentioned": "John 4:4",
     "short_description": "Region Jesus traveled through when he spoke with a woman at a well",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 110,
     "location_name": "Sardis",
     "scripture_mentioned": "Revelation 3:1",
     "short_description": "City whose church was told it had a reputation for life but was dead",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 111,
     "location_name": "Sea of Galilee",
     "scripture_mentioned": "Matthew 4:18",
     "short_description": "Lake where Jesus called fishermen to follow him and calmed a storm",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 112,
     "location_name": "Sheba (kingdom)",
     "scripture_mentioned": "1 Kings 10:1",
     "short_description": "Land ruled by a queen who came to test Solomon with hard questions",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 113,
     "location_name": "Shechem",
     "scripture_mentioned": "Genesis 33:18",
     "short_description": "City where Jacob settled and Joshua later renewed the covenant",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 114,
     "location_name": "Shiloh",
     "scripture_mentioned": "1 Samuel 1:3",
     "short_description": "Location of the tabernacle where Hannah prayed for a son",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 115,
     "location_name": "Shinar",
     "scripture_mentioned": "Genesis 11:2",
     "short_description": "Plain where people settled and built a tower reaching skyward",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 116,
     "location_name": "Shunem",
     "scripture_mentioned": "2 Kings 4:8",
     "short_description": "Town of the hospitable woman whose son Elisha restored to life",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 117,
     "location_name": "Sidon",
     "scripture_mentioned": "Mark 7:24",
     "short_description": "Phoenician coastal city near the area Jesus visited",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 118,
     "location_name": "Siloam (pool)",
     "scripture_mentioned": "John 9:7",
     "short_description": "Pool where a man born blind washed and received sight",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 119,
     "location_name": "Smyrna",
     "scripture_mentioned": "Revelation 2:8",
     "short_description": "City whose church was urged to be faithful despite suffering",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 120,
     "location_name": "Sodom",
     "scripture_mentioned": "Genesis 19:24",
     "short_description": "City destroyed after judgment for grave wickedness",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 121,
     "location_name": "Succoth (east of Jordan)",
     "scripture_mentioned": "Genesis 33:17",
     "short_description": "Place where Jacob built shelters after meeting Esau",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 122,
     "location_name": "Sychar",
     "scripture_mentioned": "John 4:5",
     "short_description": "Samaritan town near Jacob's well where Jesus spoke to a woman",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 123,
     "location_name": "Syria",
     "scripture_mentioned": "1 Kings 20:1",
     "short_description": "Kingdom north of Israel frequently involved in conflicts with its kings",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 124,
     "location_name": "Tarsus",
     "scripture_mentioned": "Acts 9:11",
     "short_description": "Cilician city where Paul was born",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 125,
     "location_name": "Tekoa",
     "scripture_mentioned": "Amos 1:1",
     "short_description": "Town associated with a shepherd called to prophesy",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 126,
     "location_name": "Thessalonica",
     "scripture_mentioned": "Acts 17:1",
     "short_description": "City where Paul reasoned from Scripture about the Messiah",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 127,
     "location_name": "Thyatira",
     "scripture_mentioned": "Revelation 2:18",
     "short_description": "City of a church warned about a false prophetess; also home of a purple seller",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 128,
@@ -900,49 +900,49 @@
     "location_name": "Troas",
     "scripture_mentioned": "Acts 16:8",
     "short_description": "Port city where Paul saw a vision calling him to Macedonia",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 130,
     "location_name": "Tyre",
     "scripture_mentioned": "Ezekiel 26:2",
     "short_description": "Trading city by the sea whose pride was condemned by a prophet",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 131,
     "location_name": "Ur of the Chaldees",
     "scripture_mentioned": "Genesis 11:28",
     "short_description": "Ancient city from which Abraham's family departed",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 132,
     "location_name": "Uz (land)",
     "scripture_mentioned": "Job 1:1",
     "short_description": "Land where a righteous sufferer lived before severe trials",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 133,
     "location_name": "Valley of Elah",
     "scripture_mentioned": "1 Samuel 17:2",
     "short_description": "Valley where an Israelite shepherd fought a Philistine champion",
-    "difficulty": "Normal"
+    "difficulty": "Easy"
   },
   {
     "id": 134,
     "location_name": "Zarephath",
     "scripture_mentioned": "1 Kings 17:9",
     "short_description": "Phoenician town where a widow's flour and oil did not run out",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 135,
     "location_name": "Zion (hill)",
     "scripture_mentioned": "2 Samuel 5:7",
     "short_description": "Stronghold captured by David and closely associated with the holy city",
-    "difficulty": "Medium"
+    "difficulty": "Normal"
   },
   {
     "id": 136,
