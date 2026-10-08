@@ -48,10 +48,11 @@ final class WhoAmIGameViewModel {
             case .easy:
                 return difficulty.caseInsensitiveCompare("Easy") == .orderedSame
             case .normal:
-                return difficulty.caseInsensitiveCompare("Medium") == .orderedSame
+                return difficulty.caseInsensitiveCompare("Easy") == .orderedSame
+                    || difficulty.caseInsensitiveCompare("Medium") == .orderedSame
                     || difficulty.caseInsensitiveCompare("Normal") == .orderedSame
             case .hard:
-                return difficulty.caseInsensitiveCompare("Hard") == .orderedSame
+                return true
             }
         }
     }
@@ -66,6 +67,10 @@ final class WhoAmIGameViewModel {
     // Data
     private(set) var entries: [Entry] = []
     private var questionQueue: [Entry] = []
+
+    private var eligibleEntries: [Entry] {
+        entries.filter { $0.matchesDifficulty(difficulty) }
+    }
 
     // Current round
     var promptTitle: String = ""
@@ -162,7 +167,7 @@ final class WhoAmIGameViewModel {
         roundOver = false
         showReveal = false
         selectedChoice = nil
-        questionQueue = entries.shuffled()
+        questionQueue = eligibleEntries.shuffled()
         isGameComplete = false
         started = true
         nextRound()
@@ -171,7 +176,8 @@ final class WhoAmIGameViewModel {
     func nextRound() {
         stopTimer()
         guard !isGameComplete else { return }
-        guard entries.count >= 4 else {
+        let questionEntries = eligibleEntries
+        guard questionEntries.count >= 4 else {
             promptTitle = "Not enough data"
             choices = []
             correctChoice = ""
@@ -203,12 +209,12 @@ final class WhoAmIGameViewModel {
             // Prompt is the exact name; choices are descriptions (1 correct + 3 random wrong)
             promptTitle = correct.name
             correctChoice = correct.description
-            choices = fourRandomDescriptions(for: correct, from: entries)
+            choices = fourRandomDescriptions(for: correct, from: questionEntries)
         case .reverse:
             // Prompt is the exact description; choices are names (1 correct + 3 random wrong)
             promptTitle = correct.description
             correctChoice = correct.name
-            choices = fourRandomNames(for: correct, from: entries)
+            choices = fourRandomNames(for: correct, from: questionEntries)
         }
 
         // Reset timer per difficulty
@@ -288,7 +294,23 @@ final class WhoAmIGameViewModel {
     }
 
     private func finishGameIfNeeded() {
-        isGameComplete = entries.count >= 4 && questionQueue.isEmpty
+        isGameComplete = questionQueue.isEmpty
+    }
+
+    func endRoundWhenLeavingScreen() {
+        guard started, answered > 0 else { return }
+
+        stopTimer()
+        questionQueue = []
+        promptTitle = ""
+        choices = []
+        correctChoice = ""
+        selectedChoice = nil
+        remainingSeconds = 0
+        roundOver = false
+        showReveal = false
+        isGameComplete = false
+        started = false
     }
 
     // MARK: - References lookup for sheet
@@ -314,10 +336,7 @@ final class WhoAmIGameViewModel {
         var universe = Array(Set(entries.map { $0.description })).filter { $0 != correct.description }
         universe.shuffle()
         let wrong = Array(universe.prefix(3))
-        var all = wrong
-        let insertIndex = Int.random(in: 0...all.count)
-        all.insert(correct.description, at: insertIndex)
-        return all
+        return (wrong + [correct.description]).shuffled()
     }
 
     private func fourRandomNames(for correct: Entry, from entries: [Entry]) -> [String] {
@@ -325,10 +344,7 @@ final class WhoAmIGameViewModel {
         var universe = Array(Set(entries.map { $0.name })).filter { $0 != correct.name }
         universe.shuffle()
         let wrong = Array(universe.prefix(3))
-        var all = wrong
-        let insertIndex = Int.random(in: 0...all.count)
-        all.insert(correct.name, at: insertIndex)
-        return all
+        return (wrong + [correct.name]).shuffled()
     }
 
     // MARK: - Timer

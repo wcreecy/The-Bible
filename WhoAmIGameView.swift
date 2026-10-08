@@ -81,6 +81,7 @@ struct WhoAmIGameView: View {
                         },
                         onSkip: { vm.skipOrTimeout() },
                         onNext: { vm.nextRound() },
+                        onRestart: { vm.startGame() },
                         onDebugWin: { vm.select(vm.correctChoice) }
                     )
                 } else {
@@ -182,6 +183,9 @@ struct WhoAmIGameView: View {
                             Text("You answered every available question.")
                                 .font(.headline)
                                 .foregroundStyle(.green)
+
+                            Button("Start New Game", action: vm.startGame)
+                                .buttonStyle(ModernPillButtonStyle(tint: .brown))
                         }
                     } else {
                         Button("Skip") { vm.skipOrTimeout() }
@@ -211,6 +215,7 @@ struct WhoAmIGameView: View {
             }
         }
         .onAppear { vm.onAppear() }
+        .onDisappear { vm.endRoundWhenLeavingScreen() }
         .onChange(of: vm.choices) { _, _ in
             maxChoiceHeight = 0
         }
@@ -533,6 +538,7 @@ private struct WhoAmIIPadGameBoard: View {
     let onChoose: (String) -> Void
     let onSkip: () -> Void
     let onNext: () -> Void
+    let onRestart: () -> Void
     let onDebugWin: () -> Void
 
     var body: some View {
@@ -572,6 +578,7 @@ private struct WhoAmIIPadGameBoard: View {
             onChoose: onChoose,
             onSkip: onSkip,
             onNext: onNext,
+            onRestart: onRestart,
             onDebugWin: onDebugWin
         )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -604,6 +611,7 @@ private struct WhoAmIPlayCard: View {
     let onChoose: (String) -> Void
     let onSkip: () -> Void
     let onNext: () -> Void
+    let onRestart: () -> Void
     let onDebugWin: () -> Void
 
     var body: some View {
@@ -672,6 +680,9 @@ private struct WhoAmIPlayCard: View {
                     Text("You answered every available question.")
                         .font(.headline)
                         .foregroundStyle(.green)
+
+                    Button("Start New Game", action: onRestart)
+                        .buttonStyle(ModernPillButtonStyle(tint: .brown))
                 }
             } else {
                 Button("Skip", action: onSkip)
