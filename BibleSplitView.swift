@@ -46,6 +46,10 @@ struct BibleSplitView: View {
     }
 
     private struct SearchRoute: Hashable {}
+
+    private struct BookOverviewRoute: Hashable {
+        let bookName: String
+    }
     
     private struct SearchHit: Identifiable, Hashable {
         let id: String
@@ -338,6 +342,24 @@ struct BibleSplitView: View {
                         .listRowBackground(Color.clear)
                 }
 
+                NavigationLink(value: BookOverviewRoute(bookName: book.name)) {
+                    Label {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("About \(book.name)")
+                                .font(.headline)
+                            Text("Background, themes, and key passages")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    } icon: {
+                        Image(systemName: "book.closed.fill")
+                            .font(.title3)
+                            .foregroundStyle(.tint)
+                    }
+                }
+                .listRowBackground(HeroCardListRowBackground())
+                .accessibilityHint("Open an overview of \(book.name)")
+
                 ForEach(book.chapters, id: \.number) { chapter in
                     NavigationLink(value: ChapterRoute(bookName: book.name, chapterNumber: chapter.number)) {
                         Text("Chapter \(chapter.number)")
@@ -347,7 +369,8 @@ struct BibleSplitView: View {
             }
             .scrollContentBackground(.hidden)
             .background(AppBackgroundView(tab: .bible))
-            .navigationTitle(book.name)
+            // The themed header in the list supplies the book title.
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
         }
     }
@@ -564,6 +587,9 @@ struct BibleSplitView: View {
                 }
                 .navigationDestination(for: SearchRoute.self) { _ in
                     SearchView()
+                }
+                .navigationDestination(for: BookOverviewRoute.self) { route in
+                    BookOverviewView(bookName: route.bookName)
                 }
                 .navigationDestination(for: ReadingRoute.self) { route in
                     if let book = BibleData.books.first(where: { $0.name == route.bookName }),

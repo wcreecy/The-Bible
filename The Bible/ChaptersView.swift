@@ -11,6 +11,36 @@ struct ChaptersView: View {
                     GenesisChapterHeader(chapterCount: book.chapters.count)
                 }
 
+                NavigationLink {
+                    BookOverviewView(bookName: book.name)
+                } label: {
+                    HStack(spacing: 14) {
+                        Image(systemName: "book.closed.fill")
+                            .font(.title3)
+                            .foregroundStyle(.tint)
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("About \(book.name)")
+                                .font(.headline)
+                            Text("Background, themes, and key passages")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.tertiary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(AppDesignMetrics.cardPadding)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.primary)
+                .heroCardSurface()
+
                 LazyVStack(alignment: .leading, spacing: 0) {
                     ForEach(book.chapters) { chapter in
                     Button {
@@ -45,7 +75,8 @@ struct ChaptersView: View {
             .padding(.vertical)
         }
         .background(AppBackgroundView(tab: .bible))
-        .navigationTitle(book.name)
+        // Genesis already has its own styled title card in the content.
+        .navigationTitle(book.name == "Genesis" ? "" : book.name)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
