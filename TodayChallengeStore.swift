@@ -24,6 +24,7 @@ struct TodayChallenge: Identifiable, Codable, Equatable {
 private struct TodayChallengeSnapshot: Codable {
     let dayKey: String
     var challenges: [TodayChallenge]
+    var lastModified: Date
 }
 
 
@@ -81,9 +82,12 @@ final class TodayChallengeStore: ObservableObject {
     @Published private(set) var challenges: [TodayChallenge] = []
 
     private let storageKey = "todayChallengesSnapshotV1"
+    private let cloudStorageKey = "todayChallengesSnapshotV2"
     private let catalog = TodayChallengeCatalog.load()
+    private let cloudStore = NSUbiquitousKeyValueStore.default
 
     private init() {
+        cloudStore.synchronize()
         loadOrCreateForToday()
     }
 
@@ -178,13 +182,27 @@ final class TodayChallengeStore: ObservableObject {
     private func loadOrCreateForToday() {
         let today = dayKey(for: Date())
 
-        if let data = UserDefaults.standard.data(forKey: storageKey),
-           let snapshot = try? JSONDecoder().decode(TodayChallengeSnapshot.self, from: data),
-           snapshot.dayKey == today,
-           snapshot.challenges.count == 3 {
-            challenges = snapshot.challenges.map(repairedChallenge)
-            if challenges != snapshot.challenges {
+        let localSnapshot = snapshot(from: UserDefaults.standard.data(forKey: storageKey))
+        let cloudSnapshot = snapshot(from: cloudStore.data(forKey: cloudStorageKey))
+
+        if let cloudSnapshot,
+           cloudSnapshot.dayKey == today,
+           cloudSnapshot.challenges.count == 3 {
+            let cloudChallenges = cloudSnapshot.challenges.map(repairedChallenge)
+            challenges = cloudChallenges
+            persistLocally(lastModified: cloudSnapshot.lastModified)
+
+            if cloudChallenges != cloudSnapshot.challenges {
                 save()
+            }
+        } else if let localSnapshot,
+                  localSnapshot.dayKey == today,
+                  localSnapshot.challenges.count == 3 {
+            challenges = localSnapshot.challenges.map(repairedChallenge)
+            if challenges != localSnapshot.challenges {
+                save()
+            } else {
+                publishToCloud(localSnapshot)
             }
         } else {
             challenges = makeChallenges()
@@ -206,9 +224,38 @@ final class TodayChallengeStore: ObservableObject {
     }
 
     private func save() {
-        let snapshot = TodayChallengeSnapshot(dayKey: dayKey(for: Date()), challenges: challenges)
+        let snapshot = TodayChallengeSnapshot(
+            dayKey: dayKey(for: Date()),
+            challenges: challenges,
+            lastModified: Date()
+        )
         guard let data = try? JSONEncoder().encode(snapshot) else { return }
         UserDefaults.standard.set(data, forKey: storageKey)
+        publishToCloud(snapshot)
+    }
+
+    private func snapshot(from data: Data?) -> TodayChallengeSnapshot? {
+        guard let data else { return nil }
+        return try? JSONDecoder().decode(TodayChallengeSnapshot.self, from: data)
+    }
+
+    private func persistLocally(lastModified: Date) {
+        let snapshot = TodayChallengeSnapshot(
+            dayKey: dayKey(for: Date()),
+            challenges: challenges,
+            lastModified: lastModified
+        )
+        guard let data = try? JSONEncoder().encode(snapshot) else { return }
+        UserDefaults.standard.set(data, forKey: storageKey)
+    }
+
+    private func publishToCloud(_ snapshot: TodayChallengeSnapshot) {
+        guard let data = try? JSONEncoder().encode(snapshot) else { return }
+        cloudStore.set(data, forKey: cloudStorageKey)
+
+        Task.detached {
+            NSUbiquitousKeyValueStore.default.synchronize()
+        }
     }
 
     private func dayKey(for date: Date) -> String {
@@ -435,6 +482,12 @@ struct HomeTodayCard: View {
             store.refresh(readingProgress: readingProgress)
         }
         .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
+            store.refresh(readingProgress: readingProgress)
+        }
+        .onReceive(NotificationCenter.default.publisher(
+            for: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
+            object: NSUbiquitousKeyValueStore.default
+        )) { _ in
             store.refresh(readingProgress: readingProgress)
         }
     }
