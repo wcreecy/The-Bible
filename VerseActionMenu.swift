@@ -141,6 +141,26 @@ struct VerseActionMenu: View {
                         .foregroundStyle(isBookmarked ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.primary))
                 }
                 .accessibilityLabel(isBookmarked ? "Remove Continue Reading bookmark" : "Set as Continue Reading")
+
+                Menu {
+                    Button(action: copy) {
+                        Label("Copy", systemImage: "doc.on.doc")
+                    }
+
+                    ShareLink(item: verse.shareText) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+
+                    Button(action: togglePin) {
+                        Label(
+                            isPinned ? "Unpin from Widget" : "Pin to Widget",
+                            systemImage: isPinned ? "pin.fill" : "pin"
+                        )
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+                .accessibilityLabel("More verse actions")
             }
             .buttonStyle(.plain)
 
