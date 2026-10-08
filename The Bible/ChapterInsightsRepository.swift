@@ -27,6 +27,28 @@ struct ChapterKeyTheme: Identifiable, Equatable, Sendable {
 }
 
 actor ChapterInsightsRepository {
+    private struct EmbeddedFigure: Decodable {
+        let name: String
+        let roleAndSignificance: String
+
+        enum CodingKeys: String, CodingKey {
+            case name
+            case roleAndSignificance = "role_and_significance"
+        }
+    }
+
+    private struct EmbeddedTheme: Decodable {
+        let theme: String
+        let explanationAndTakeaway: String
+        let scriptureReferences: [String]
+
+        enum CodingKeys: String, CodingKey {
+            case theme
+            case explanationAndTakeaway = "explanation_and_takeaway"
+            case scriptureReferences = "scripture_references"
+        }
+    }
+
     static let shared = ChapterInsightsRepository()
 
     func insights(forBookNamed bookName: String, chapterNumber: Int) -> ChapterInsights? {
@@ -49,15 +71,89 @@ actor ChapterInsightsRepository {
         }
         defer { sqlite3_close(database) }
 
-        return loadInsights(chapterNumber: chapterNumber, database: database)
+        switch bookName {
+        case "Exodus":
+            return loadEmbeddedJSONInsights(chapterNumber: chapterNumber, database: database)
+        default:
+            return loadInsights(chapterNumber: chapterNumber, database: database)
+        }
     }
 
     private func databaseResourceName(forBookNamed bookName: String) -> String? {
         switch bookName {
         case "Genesis":
             "Genesis_Chapter_Overviews_50"
+        case "Exodus":
+            "Exodus_Chapter_Overviews_40"
         default:
             nil
+        }
+    }
+
+    private func loadEmbeddedJSONInsights(chapterNumber: Int, database: OpaquePointer) -> ChapterInsights? {
+        let query = """
+        SELECT reference, overall_summary, historical_setting, what_was_happening,
+               historical_connection, customs_and_traditions, why_it_matters,
+               key_figures_json, key_themes_json
+        FROM chapters
+        WHERE chapter = ?
+        LIMIT 1;
+        """
+
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return nil
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_int(statement, 1, Int32(chapterNumber))
+        guard sqlite3_step(statement) == SQLITE_ROW else { return nil }
+
+        let figures = decodeEmbeddedFigures(from: columnText(statement, at: 7))
+        let themes = decodeEmbeddedThemes(from: columnText(statement, at: 8))
+
+        return ChapterInsights(
+            reference: columnText(statement, at: 0),
+            overallSummary: columnText(statement, at: 1),
+            historicalSetting: columnText(statement, at: 2),
+            whatWasHappening: columnText(statement, at: 3),
+            connectionToChapter: columnText(statement, at: 4),
+            customsAndTraditions: columnText(statement, at: 5),
+            whyItMatters: columnText(statement, at: 6),
+            keyFigures: figures,
+            keyThemes: themes
+        )
+    }
+
+    private func decodeEmbeddedFigures(from json: String) -> [ChapterKeyFigure] {
+        let figures = (try? JSONDecoder().decode(
+            [EmbeddedFigure].self,
+            from: Data(json.utf8)
+        )) ?? []
+
+        return figures.enumerated().map { index, figure in
+            ChapterKeyFigure(
+                id: index,
+                name: figure.name,
+                roleAndSignificance: figure.roleAndSignificance
+            )
+        }
+    }
+
+    private func decodeEmbeddedThemes(from json: String) -> [ChapterKeyTheme] {
+        let themes = (try? JSONDecoder().decode(
+            [EmbeddedTheme].self,
+            from: Data(json.utf8)
+        )) ?? []
+
+        return themes.enumerated().map { index, theme in
+            ChapterKeyTheme(
+                id: index,
+                theme: theme.theme,
+                explanation: theme.explanationAndTakeaway,
+                scriptureReferences: theme.scriptureReferences
+            )
         }
     }
 
