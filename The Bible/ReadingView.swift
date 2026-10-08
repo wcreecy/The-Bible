@@ -87,7 +87,9 @@ struct ReadingView: View {
                         }
                         .accessibilityLabel("Back to verse selection")
                     }
+                }
 
+                ToolbarItemGroup(placement: .topBarTrailing) {
                     Button {
                         if let onSearch {
                             onSearch()
@@ -99,13 +101,37 @@ struct ReadingView: View {
                     }
                     .accessibilityLabel("Search Bible")
 
-                    Button {
-                        isFocusModePresented = true
+                    Menu {
+                        Button {
+                            readerFontSize = max(12, readerFontSize - 1)
+                        } label: {
+                            Label("Decrease Text Size", systemImage: "textformat.size.smaller")
+                        }
+
+                        Button {
+                            readerFontSize = min(30, readerFontSize + 1)
+                        } label: {
+                            Label("Increase Text Size", systemImage: "textformat.size.larger")
+                        }
+
+                        if readerFontSize != 17 {
+                            Button("Reset Text Size") {
+                                readerFontSize = 17
+                            }
+                        }
+
+                        Divider()
+
+                        Button {
+                            isFocusModePresented = true
+                        } label: {
+                            Label("Enter Focus Mode", systemImage: "arrow.up.left.and.arrow.down.right")
+                        }
                     } label: {
-                        Image(systemName: "arrow.up.left.and.arrow.down.right")
+                        Image(systemName: "ellipsis.circle")
                     }
-                    .accessibilityLabel("Enter Focus Mode")
-                    .accessibilityHint("Shows one verse at a time")
+                    .accessibilityLabel("Reader Options")
+                    .accessibilityHint("Adjust text size or enter Focus Mode")
                 }
 
                 ToolbarItem(placement: .principal) {

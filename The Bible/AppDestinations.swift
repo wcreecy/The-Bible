@@ -2,12 +2,8 @@ import SwiftUI
 
 extension View {
     /// Wires up shared navigation destinations for the app’s Route enum.
-    /// - Parameters:
-    ///   - readerFontSize: Binding to the reader font size used by ReadingView.
-    ///   - isPad: Whether the current device is an iPad (available if you want to customize behavior).
+    /// - Parameter coordinator: Coordinates navigation between destinations.
     func appDestinations(
-        readerFontSize: Binding<Double>,
-        isPad: Bool,
         coordinator: NavigationCoordinator
     ) -> some View {
         self
@@ -33,23 +29,6 @@ extension View {
                         }
                     )
                         .id("\(book.name)-\(chapter.number)-\(startVerse)")
-                        .toolbar {
-                            ToolbarItemGroup(placement: .topBarTrailing) {
-                                Button {
-                                    readerFontSize.wrappedValue = max(12, readerFontSize.wrappedValue - 1)
-                                } label: {
-                                    Image(systemName: "textformat.size.smaller")
-                                }
-                                .accessibilityLabel("Decrease font size")
-
-                                Button {
-                                    readerFontSize.wrappedValue = min(30, readerFontSize.wrappedValue + 1)
-                                } label: {
-                                    Image(systemName: "textformat.size.larger")
-                                }
-                                .accessibilityLabel("Increase font size")
-                            }
-                        }
 
                 case .search:
                     SearchView()

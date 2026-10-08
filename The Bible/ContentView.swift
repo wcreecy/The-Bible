@@ -25,7 +25,6 @@ struct ContentView: View {
     @State private var bibleSearchRequestID: Int = 0
     @State private var bibleBookSelectionRequestID: Int = 0
     @State private var launchBibleLocation: BibleReaderLocation?
-    @AppStorage("readerFontSize") private var readerFontSize: Double = 17
     
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
     
@@ -71,11 +70,7 @@ struct ContentView: View {
         TabView(selection: $selectedTab) {
             NavigationStack(path: $homeCoordinator.path) {
                 HomeView()
-                    .appDestinations(
-                        readerFontSize: $readerFontSize,
-                        isPad: usesWideLayout,
-                        coordinator: homeCoordinator
-                    )
+                    .appDestinations(coordinator: homeCoordinator)
             }
             .environmentObject(homeCoordinator)
             .tabItem { Label("Home", systemImage: "house") }
@@ -92,11 +87,7 @@ struct ContentView: View {
             } else {
                 NavigationStack(path: $bibleCoordinator.path) {
                     BooksView(books: bibleStore.books)
-                        .appDestinations(
-                            readerFontSize: $readerFontSize,
-                            isPad: usesWideLayout,
-                            coordinator: bibleCoordinator
-                        )
+                        .appDestinations(coordinator: bibleCoordinator)
                 }
                 .environmentObject(bibleCoordinator)
                 .tabItem { Label("Bible", systemImage: "book") }
