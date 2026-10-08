@@ -27,6 +27,7 @@ struct ReadingView: View {
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage("focusReadingEnabled") private var focusReadingEnabled = false
     @State private var isFocusModePresented = false
+    @State private var isChapterInsightsPresented = false
     @State private var seenVerseNumbers: Set<Int> = []
     @State private var seenVerseLocation: String = ""
 
@@ -126,6 +127,14 @@ struct ReadingView: View {
                             isFocusModePresented = true
                         } label: {
                             Label("Enter Focus Mode", systemImage: "arrow.up.left.and.arrow.down.right")
+                        }
+
+                        Divider()
+
+                        Button {
+                            isChapterInsightsPresented = true
+                        } label: {
+                            Label("Chapter Insights", systemImage: "text.book.closed")
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
@@ -235,6 +244,21 @@ struct ReadingView: View {
                         isFocusModePresented = false
                     }
                 )
+            }
+            .sheet(isPresented: $isChapterInsightsPresented) {
+                NavigationStack {
+                    ChapterInsightsView(
+                        bookName: viewModel.currentBook.name,
+                        chapterNumber: viewModel.currentChapter.number
+                    )
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Done") {
+                                isChapterInsightsPresented = false
+                            }
+                        }
+                    }
+                }
             }
     }
 
