@@ -53,12 +53,6 @@ struct SettingsiCloudSection: View {
                     .accessibilityIdentifier("statsSyncErrorText")
             }
             HStack {
-                Text("Stats Cloud Usage")
-                Spacer()
-                Text(statsCloudUsageText)
-                    .foregroundStyle(.secondary)
-            }
-            HStack {
                 Text("Last Sync Activity")
                 Spacer()
                 if let lastSyncActivity {
@@ -77,16 +71,30 @@ struct SettingsiCloudSection: View {
             }
             .foregroundStyle(.secondary)
             .accessibilityIdentifier("icloudLastSyncedAt")
-            if let id = cloudKitManager.userRecordID {
+
+            DisclosureGroup("Advanced Sync Details") {
                 HStack {
-                    Text("User Record")
+                    Text("Stats Cloud Usage")
                     Spacer()
-                    Text(id.recordName)
+                    Text(statsCloudUsageText)
                         .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
                 }
-                .accessibilityIdentifier("icloudUserRecord")
+
+                if let id = cloudKitManager.userRecordID {
+                    HStack {
+                        Text("User Record")
+                        Spacer()
+                        Text(id.recordName)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                    }
+                    .accessibilityIdentifier("icloudUserRecord")
+                }
+
+                Text("Stats Sync uses a separate iCloud key-value channel for game and reading statistics.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
             Button {
                 Haptics.selection()
@@ -120,17 +128,9 @@ struct SettingsiCloudSection: View {
         } header: {
             Text("iCloud").foregroundStyle(.primary)
         } footer: {
-            Text("""
-            iCloud keeps your data up to date across your devices using CloudKit.
-            Status meanings:
-            • Available: Signed in to iCloud and CloudKit is ready.
-            • No Account: Not signed in to iCloud on this device.
-            • Restricted: iCloud is restricted by system settings or parental controls.
-            • Unavailable: The status couldn’t be determined right now.
-            Stats Sync reports the separate iCloud key-value channel used for game and reading statistics.
-            """)
-            .font(.footnote)
-            .foregroundStyle(.secondary)
+            Text("iCloud keeps your data up to date across your devices. Open Advanced Sync Details when you need storage or account diagnostics.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
         }
         .headerProminence(.increased)
         .task {

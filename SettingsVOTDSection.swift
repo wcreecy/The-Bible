@@ -1,7 +1,10 @@
 import SwiftUI
+import UIKit
 import UserNotifications
 
 struct SettingsVOTDSection: View {
+    @Environment(\.scenePhase) private var scenePhase
+
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
 
@@ -12,6 +15,7 @@ struct SettingsVOTDSection: View {
     @AppStorage("votdRefresh2Minute") private var votdRefresh2Minute: Int = 0
     @AppStorage("votdRefreshNotificationsEnabled") private var notificationsEnabled: Bool = false
     @AppStorage("verseOfDayPaused") private var verseOfDayPaused: Bool = false
+    @State private var notificationAuthorizationStatus: UNAuthorizationStatus = .notDetermined
     @State private var showsNotificationPermissionAlert = false
 
     private var refresh1DateBinding: Binding<Date> {
@@ -133,6 +137,15 @@ struct SettingsVOTDSection: View {
 
                     Toggle("Notify When Verse Refreshes", isOn: notificationBinding)
                         .accessibilityIdentifier("votdRefreshNotifications")
+
+                    LabeledContent("Notification Access") {
+                        Text(notificationPermissionStatus)
+                            .foregroundStyle(notificationPermissionStatusColor)
+                    }
+
+                    if notificationAuthorizationStatus == .denied {
+                        Button("Open System Settings", action: openSystemSettings)
+                    }
                 }
                 .padding(.top, 8)
             }
@@ -141,10 +154,50 @@ struct SettingsVOTDSection: View {
         .onChange(of: verseOfDayPaused) { _, _ in
             updateNotificationSchedule()
         }
+        .task {
+            await updateNotificationAuthorizationStatus()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+            Task {
+                await updateNotificationAuthorizationStatus()
+            }
+        }
         .alert("Notifications Are Off", isPresented: $showsNotificationPermissionAlert) {
-            Button("OK", role: .cancel) { }
+            Button("Open System Settings", action: openSystemSettings)
+            Button("Cancel", role: .cancel) { }
         } message: {
             Text("Allow notifications for The Bible in Settings to be notified when the verse refreshes.")
+        }
+    }
+
+    private var notificationPermissionStatus: LocalizedStringResource {
+        switch notificationAuthorizationStatus {
+        case .authorized:
+            "Allowed"
+        case .denied:
+            "Off in System Settings"
+        case .notDetermined:
+            "Not Requested"
+        case .provisional:
+            "Provisional"
+        case .ephemeral:
+            "Temporary"
+        @unknown default:
+            "Unknown"
+        }
+    }
+
+    private var notificationPermissionStatusColor: Color {
+        switch notificationAuthorizationStatus {
+        case .authorized, .provisional, .ephemeral:
+            .green
+        case .denied:
+            .orange
+        case .notDetermined:
+            .secondary
+        @unknown default:
+            .secondary
         }
     }
 
@@ -165,6 +218,7 @@ struct SettingsVOTDSection: View {
     @MainActor
     private func enableNotifications() async {
         let allowed = await VOTDNotificationScheduler.requestAuthorizationIfNeeded()
+        await updateNotificationAuthorizationStatus()
         notificationsEnabled = allowed
 
         if allowed {
@@ -172,6 +226,13 @@ struct SettingsVOTDSection: View {
         } else {
             showsNotificationPermissionAlert = true
         }
+    }
+
+    @MainActor
+    private func updateNotificationAuthorizationStatus() async {
+        notificationAuthorizationStatus = await UNUserNotificationCenter.current()
+            .notificationSettings()
+            .authorizationStatus
     }
 
     private func updateNotificationSchedule() {
@@ -187,6 +248,11 @@ struct SettingsVOTDSection: View {
                 second: (votdRefresh2Hour, votdRefresh2Minute)
             )
         }
+    }
+
+    private func openSystemSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
     }
 
     private func segmentButton(title: String, tag: String) -> some View {

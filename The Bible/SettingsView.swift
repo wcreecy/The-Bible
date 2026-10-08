@@ -7,11 +7,17 @@ struct SettingsView: View {
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
     var body: some View {
         Form {
-            SettingsPersonalizationLinksSection()
+            SettingsAppearanceLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
-            SettingsReadingAndDailyLifeLinksSection()
+            SettingsAppExperienceLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
-            SettingsAppAndDataLinksSection()
+            SettingsBibleReaderLinksSection()
+                .listRowBackground(HeroCardListRowBackground())
+            SettingsDailyPracticeLinksSection()
+                .listRowBackground(HeroCardListRowBackground())
+            SettingsAccessAndSyncLinksSection()
+                .listRowBackground(HeroCardListRowBackground())
+            SettingsDataManagementLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
             SettingsHelpSection()
                 .listRowBackground(HeroCardListRowBackground())
@@ -31,9 +37,9 @@ struct SettingsView: View {
     }
 }
 
-private struct SettingsPersonalizationLinksSection: View {
+private struct SettingsAppearanceLinksSection: View {
     var body: some View {
-        Section("Personalization") {
+        Section("Appearance") {
             NavigationLink {
                 SettingsAppearanceDetailView()
             } label: {
@@ -55,16 +61,6 @@ private struct SettingsPersonalizationLinksSection: View {
             }
 
             NavigationLink {
-                SettingsLaunchTabSection()
-            } label: {
-                SettingsNavigationRow(
-                    title: "Launch Page",
-                    subtitle: "Choose where the app opens on this device",
-                    systemImage: "rectangle.on.rectangle"
-                )
-            }
-
-            NavigationLink {
                 SettingsWidgetAppearanceDetailView()
             } label: {
                 SettingsNavigationRow(
@@ -77,9 +73,25 @@ private struct SettingsPersonalizationLinksSection: View {
     }
 }
 
-private struct SettingsReadingAndDailyLifeLinksSection: View {
+private struct SettingsAppExperienceLinksSection: View {
     var body: some View {
-        Section("Reading & Daily Life") {
+        Section("App Experience") {
+            NavigationLink {
+                SettingsLaunchTabSection()
+            } label: {
+                SettingsNavigationRow(
+                    title: "Launch Page",
+                    subtitle: "Choose where the app opens on this device",
+                    systemImage: "rectangle.on.rectangle"
+                )
+            }
+        }
+    }
+}
+
+private struct SettingsBibleReaderLinksSection: View {
+    var body: some View {
+        Section("Bible Reader") {
             NavigationLink {
                 SettingsBibleReaderDetailView()
             } label: {
@@ -89,7 +101,13 @@ private struct SettingsReadingAndDailyLifeLinksSection: View {
                     systemImage: "book"
                 )
             }
+        }
+    }
+}
 
+private struct SettingsDailyPracticeLinksSection: View {
+    var body: some View {
+        Section("Daily Practice") {
             NavigationLink {
                 SettingsVerseOfTheDayDetailView()
             } label: {
@@ -114,7 +132,7 @@ private struct SettingsReadingAndDailyLifeLinksSection: View {
                 SettingsTimerDetailView()
             } label: {
                 SettingsNavigationRow(
-                    title: "Timer & Sounds",
+                    title: "Prayer Timer",
                     subtitle: "Choose the timer completion sound",
                     systemImage: "timer"
                 )
@@ -169,12 +187,12 @@ private struct SettingsReadingProgressSection: View {
     }
 }
 
-private struct SettingsAppAndDataLinksSection: View {
+private struct SettingsAccessAndSyncLinksSection: View {
     @EnvironmentObject private var cloudKitManager: CloudKitManager
     @State private var lastSyncActivity: Date?
 
     var body: some View {
-        Section("App & Data") {
+        Section("Access & Sync") {
             NavigationLink {
                 SettingsPermissionsDetailView()
             } label: {
@@ -195,15 +213,6 @@ private struct SettingsAppAndDataLinksSection: View {
                 )
             }
 
-            NavigationLink {
-                SettingsResetDataDetailView()
-            } label: {
-                SettingsNavigationRow(
-                    title: "Reset Data",
-                    subtitle: "Reset game or reading statistics",
-                    systemImage: "trash"
-                )
-            }
         }
         .task {
             updateLastSyncActivity()
@@ -237,6 +246,22 @@ private struct SettingsAppAndDataLinksSection: View {
         lastSyncActivity = [coordinator.lastPushDate, coordinator.lastMergeDate]
             .compactMap { $0 }
             .max()
+    }
+}
+
+private struct SettingsDataManagementLinksSection: View {
+    var body: some View {
+        Section("Data Management") {
+            NavigationLink {
+                SettingsResetDataDetailView()
+            } label: {
+                SettingsNavigationRow(
+                    title: "Reset Data",
+                    subtitle: "Permanently reset game or reading statistics",
+                    systemImage: "trash"
+                )
+            }
+        }
     }
 }
 
@@ -702,7 +727,7 @@ private struct SettingsDailyGoalDetailView: View {
 
 private struct SettingsTimerDetailView: View {
     var body: some View {
-        SettingsDetailForm(title: "Timer & Sounds") {
+        SettingsDetailForm(title: "Prayer Timer") {
             SettingsTimerSection()
         }
     }
