@@ -9,6 +9,8 @@ struct ChaptersView: View {
             LazyVStack(alignment: .leading, spacing: 16) {
                 if book.name == "Genesis" {
                     GenesisChapterHeader(chapterCount: book.chapters.count)
+                } else if let theme = BibleSplitView.BookChapterTheme.themes[book.name] {
+                    BibleSplitView.ThemedBookChaptersHeader(title: book.name, theme: theme)
                 }
 
                 NavigationLink {

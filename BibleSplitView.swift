@@ -375,7 +375,7 @@ struct BibleSplitView: View {
         }
     }
 
-    private struct BookChapterTheme {
+    struct BookChapterTheme {
         let primarySymbol: String
         let accentSymbol: String?
         let colors: [Color]
@@ -450,7 +450,7 @@ struct BibleSplitView: View {
         ]
     }
 
-    private struct ThemedBookChaptersHeader: View {
+    struct ThemedBookChaptersHeader: View {
         let title: String
         let theme: BookChapterTheme
 

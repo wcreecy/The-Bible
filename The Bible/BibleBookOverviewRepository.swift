@@ -69,7 +69,7 @@ actor BibleBookOverviewRepository {
         }
         defer { sqlite3_finalize(statement) }
 
-        sqlite3_bind_text(statement, 1, bookName, -1, sqliteTransientDestructor)
+        sqlite3_bind_text(statement, 1, bookName, -1, Self.sqliteTransientDestructor())
 
         guard sqlite3_step(statement) == SQLITE_ROW else { return nil }
 
@@ -131,9 +131,8 @@ actor BibleBookOverviewRepository {
         guard let text = sqlite3_column_text(statement, index) else { return "" }
         return String(cString: text)
     }
-}
 
-private let sqliteTransientDestructor = unsafeBitCast(
-    -1,
-    to: sqlite3_destructor_type.self
-)
+    private nonisolated static func sqliteTransientDestructor() -> sqlite3_destructor_type {
+        unsafeBitCast(-1, to: sqlite3_destructor_type.self)
+    }
+}
