@@ -134,7 +134,7 @@ struct ReadingView: View {
                         Button {
                             isChapterInsightsPresented = true
                         } label: {
-                            Label("Chapter Insights", systemImage: "text.book.closed")
+                            Label("Chapter Insights", systemImage: "lightbulb")
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")

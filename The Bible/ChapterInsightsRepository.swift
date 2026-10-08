@@ -49,6 +49,22 @@ actor ChapterInsightsRepository {
         }
     }
 
+    private struct HistoricalContext: Decodable {
+        let historicalSetting: String
+        let whatWasHappening: String
+        let connectionToChapter: String
+        let customsAndTraditions: String
+        let whyItMatters: String
+
+        enum CodingKeys: String, CodingKey {
+            case historicalSetting = "historical_setting"
+            case whatWasHappening = "what_was_happening"
+            case connectionToChapter = "connection_to_the_chapter"
+            case customsAndTraditions = "customs_and_traditions"
+            case whyItMatters = "why_it_matters"
+        }
+    }
+
     static let shared = ChapterInsightsRepository()
 
     func insights(forBookNamed bookName: String, chapterNumber: Int) -> ChapterInsights? {
@@ -74,6 +90,10 @@ actor ChapterInsightsRepository {
         switch bookName {
         case "Exodus":
             return loadEmbeddedJSONInsights(chapterNumber: chapterNumber, database: database)
+        case "Leviticus":
+            return loadLeviticusInsights(chapterNumber: chapterNumber, database: database)
+        case "Numbers", "Deuteronomy", "Joshua":
+            return loadSimpleOverviewInsights(chapterNumber: chapterNumber, database: database)
         default:
             return loadInsights(chapterNumber: chapterNumber, database: database)
         }
@@ -85,9 +105,94 @@ actor ChapterInsightsRepository {
             "Genesis_Chapter_Overviews_50"
         case "Exodus":
             "Exodus_Chapter_Overviews_40"
+        case "Leviticus":
+            "Leviticus_Chapter_Overviews_27"
+        case "Numbers":
+            "Numbers_Chapter_Overviews_36"
+        case "Deuteronomy":
+            "Deuteronomy_Chapter_Overviews_34"
+        case "Joshua":
+            "Joshua_Chapter_Overviews_24"
         default:
             nil
         }
+    }
+
+    private func loadSimpleOverviewInsights(chapterNumber: Int, database: OpaquePointer) -> ChapterInsights? {
+        let query = """
+        SELECT book, chapter, overall_summary, key_figures, key_themes, historical_context
+        FROM chapter_overviews
+        WHERE chapter = ?
+        LIMIT 1;
+        """
+
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return nil
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_int(statement, 1, Int32(chapterNumber))
+        guard sqlite3_step(statement) == SQLITE_ROW,
+              let context = decodeHistoricalContext(from: columnText(statement, at: 5)) else {
+            return nil
+        }
+
+        let book = columnText(statement, at: 0)
+        let chapter = sqlite3_column_int(statement, 1)
+        return ChapterInsights(
+            reference: "\(book) \(chapter)",
+            overallSummary: columnText(statement, at: 2),
+            historicalSetting: context.historicalSetting,
+            whatWasHappening: context.whatWasHappening,
+            connectionToChapter: context.connectionToChapter,
+            customsAndTraditions: context.customsAndTraditions,
+            whyItMatters: context.whyItMatters,
+            keyFigures: decodeEmbeddedFigures(from: columnText(statement, at: 3)),
+            keyThemes: decodeEmbeddedThemes(from: columnText(statement, at: 4))
+        )
+    }
+
+    private func loadLeviticusInsights(chapterNumber: Int, database: OpaquePointer) -> ChapterInsights? {
+        let query = """
+        SELECT book, chapter, overall_summary, key_figures_json, key_themes_json,
+               historical_context_json
+        FROM chapter_overviews
+        WHERE chapter = ?
+        LIMIT 1;
+        """
+
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return nil
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_int(statement, 1, Int32(chapterNumber))
+        guard sqlite3_step(statement) == SQLITE_ROW,
+              let context = decodeHistoricalContext(from: columnText(statement, at: 5)) else {
+            return nil
+        }
+
+        let book = columnText(statement, at: 0)
+        let chapter = sqlite3_column_int(statement, 1)
+        return ChapterInsights(
+            reference: "\(book) \(chapter)",
+            overallSummary: columnText(statement, at: 2),
+            historicalSetting: context.historicalSetting,
+            whatWasHappening: context.whatWasHappening,
+            connectionToChapter: context.connectionToChapter,
+            customsAndTraditions: context.customsAndTraditions,
+            whyItMatters: context.whyItMatters,
+            keyFigures: decodeEmbeddedFigures(from: columnText(statement, at: 3)),
+            keyThemes: decodeEmbeddedThemes(from: columnText(statement, at: 4))
+        )
+    }
+
+    private func decodeHistoricalContext(from json: String) -> HistoricalContext? {
+        try? JSONDecoder().decode(HistoricalContext.self, from: Data(json.utf8))
     }
 
     private func loadEmbeddedJSONInsights(chapterNumber: Int, database: OpaquePointer) -> ChapterInsights? {

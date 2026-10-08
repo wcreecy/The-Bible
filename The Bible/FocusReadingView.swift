@@ -9,6 +9,7 @@ struct FocusReadingView: View {
     @State private var visibleVerseID: String?
     @State private var showsControls = false
     @State private var isLocationPickerPresented = false
+    @State private var isChapterInsightsPresented = false
     @AppStorage("hasSeenFocusModeControlsHint") private var hasSeenControlsHint = false
 
     private let pageIndex = FocusPageIndex.shared
@@ -75,6 +76,9 @@ struct FocusReadingView: View {
                     onChooseLocation: {
                         isLocationPickerPresented = true
                     },
+                    onShowChapterInsights: {
+                        isChapterInsightsPresented = true
+                    },
                     onExit: onExit
                 )
                 .padding(.horizontal, 16)
@@ -92,6 +96,21 @@ struct FocusReadingView: View {
                 visibleVerseID = location.id
                 onLocationChange(location)
                 isLocationPickerPresented = false
+            }
+        }
+        .sheet(isPresented: $isChapterInsightsPresented) {
+            NavigationStack {
+                ChapterInsightsView(
+                    bookName: currentLocation.bookName,
+                    chapterNumber: currentLocation.chapterNumber
+                )
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Done") {
+                            isChapterInsightsPresented = false
+                        }
+                    }
+                }
             }
         }
         .task(id: showsControls) {
@@ -119,6 +138,7 @@ private struct FocusControls: View {
     let verse: FocusVerse?
     let location: FocusVerseLocation
     let onChooseLocation: () -> Void
+    let onShowChapterInsights: () -> Void
     let onExit: () -> Void
 
     var body: some View {
@@ -146,6 +166,12 @@ private struct FocusControls: View {
                     presentation: .focus
                 )
             }
+
+            Button(action: onShowChapterInsights) {
+                Image(systemName: "lightbulb")
+            }
+            .accessibilityLabel("Chapter Insights")
+            .accessibilityHint("Shows insights for \(location.bookName) \(location.chapterNumber)")
 
             Button(action: onExit) {
                 Image(systemName: "xmark")
