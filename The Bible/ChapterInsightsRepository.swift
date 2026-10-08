@@ -150,7 +150,7 @@ actor ChapterInsightsRepository {
             return loadEmbeddedJSONInsights(chapterNumber: chapterNumber, database: database)
         case "Leviticus":
             return loadLeviticusInsights(chapterNumber: chapterNumber, database: database)
-        case "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel":
+        case "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel":
             return loadSimpleOverviewInsights(chapterNumber: chapterNumber, database: database)
         default:
             return loadInsights(chapterNumber: chapterNumber, database: database)
@@ -177,6 +177,8 @@ actor ChapterInsightsRepository {
             "Ruth_Chapter_Overviews_4"
         case "1 Samuel":
             "1_Samuel_Chapter_Overviews_31"
+        case "2 Samuel":
+            "2_Samuel_Chapter_Overviews_24"
         default:
             nil
         }
