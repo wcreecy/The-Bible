@@ -34,6 +34,16 @@ actor ChapterInsightsRepository {
         enum CodingKeys: String, CodingKey {
             case name
             case roleAndSignificance = "role_and_significance"
+            case role
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            name = try container.decode(String.self, forKey: .name)
+            roleAndSignificance = try container.decodeIfPresent(
+                String.self,
+                forKey: .roleAndSignificance
+            ) ?? container.decode(String.self, forKey: .role)
         }
     }
 
@@ -46,7 +56,9 @@ actor ChapterInsightsRepository {
             case theme
             case explanationAndTakeaway = "explanation_and_takeaway"
             case explanationAndLesson = "explanation_and_lesson"
+            case explanation
             case scriptureReferences = "scripture_references"
+            case references
         }
 
         init(from decoder: Decoder) throws {
@@ -55,8 +67,14 @@ actor ChapterInsightsRepository {
             explanationAndTakeaway = try container.decodeIfPresent(
                 String.self,
                 forKey: .explanationAndTakeaway
-            ) ?? container.decode(String.self, forKey: .explanationAndLesson)
-            scriptureReferences = try container.decode([String].self, forKey: .scriptureReferences)
+            ) ?? container.decodeIfPresent(
+                String.self,
+                forKey: .explanationAndLesson
+            ) ?? container.decode(String.self, forKey: .explanation)
+            scriptureReferences = try container.decodeIfPresent(
+                [String].self,
+                forKey: .scriptureReferences
+            ) ?? container.decode([String].self, forKey: .references)
         }
     }
 
@@ -132,7 +150,7 @@ actor ChapterInsightsRepository {
             return loadEmbeddedJSONInsights(chapterNumber: chapterNumber, database: database)
         case "Leviticus":
             return loadLeviticusInsights(chapterNumber: chapterNumber, database: database)
-        case "Numbers", "Deuteronomy", "Joshua", "Judges":
+        case "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth":
             return loadSimpleOverviewInsights(chapterNumber: chapterNumber, database: database)
         default:
             return loadInsights(chapterNumber: chapterNumber, database: database)
@@ -155,6 +173,8 @@ actor ChapterInsightsRepository {
             "Joshua_Chapter_Overviews_24"
         case "Judges":
             "Judges_Chapter_Overviews_21"
+        case "Ruth":
+            "Ruth_Chapter_Overviews_4"
         default:
             nil
         }
