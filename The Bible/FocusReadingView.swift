@@ -9,16 +9,29 @@ struct FocusReadingView: View {
     @State private var visibleVerseID: String?
     @State private var showsExitControl = false
 
-    private let verses = FocusVerse.all
+    private let pages = FocusPage.all
+
+    init(
+        initialLocation: FocusVerseLocation,
+        readerFontSize: Double,
+        onLocationChange: @escaping (FocusVerseLocation) -> Void,
+        onExit: @escaping () -> Void
+    ) {
+        self.initialLocation = initialLocation
+        self.readerFontSize = readerFontSize
+        self.onLocationChange = onLocationChange
+        self.onExit = onExit
+        _visibleVerseID = State(initialValue: initialLocation.id)
+    }
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
             ScrollView {
                 LazyVStack(spacing: 0) {
-                    ForEach(verses) { verse in
-                        FocusVersePage(verse: verse, readerFontSize: readerFontSize)
+                    ForEach(pages) { page in
+                        FocusPageView(page: page, readerFontSize: readerFontSize)
                             .containerRelativeFrame(.vertical)
-                            .id(verse.id)
+                            .id(page.id)
                     }
                 }
                 .scrollTargetLayout()
@@ -26,13 +39,10 @@ struct FocusReadingView: View {
             .scrollPosition(id: $visibleVerseID)
             .scrollTargetBehavior(.paging)
             .scrollIndicators(.hidden)
-            .onAppear {
-                visibleVerseID = initialLocation.id
-            }
             .onChange(of: visibleVerseID) { _, newValue in
                 guard let newValue,
-                      let verse = verses.first(where: { $0.id == newValue }) else { return }
-                onLocationChange(verse.location)
+                      let page = pages.first(where: { $0.id == newValue }) else { return }
+                onLocationChange(page.location)
             }
             .onTapGesture {
                 showsExitControl = true
@@ -95,7 +105,49 @@ struct FocusVerseLocation: Equatable {
     let verseNumber: Int
 
     var id: String {
-        "\(bookName)-\(chapterNumber)-\(verseNumber)"
+        "verse-\(bookName)-\(chapterNumber)-\(verseNumber)"
+    }
+}
+
+private enum FocusPage: Identifiable {
+    case chapter(bookName: String, chapterNumber: Int)
+    case verse(FocusVerse)
+
+    var id: String {
+        switch self {
+        case .chapter(let bookName, let chapterNumber):
+            "chapter-\(bookName)-\(chapterNumber)"
+        case .verse(let verse):
+            verse.id
+        }
+    }
+
+    var location: FocusVerseLocation {
+        switch self {
+        case .chapter(let bookName, let chapterNumber):
+            FocusVerseLocation(
+                bookName: bookName,
+                chapterNumber: chapterNumber,
+                verseNumber: 1
+            )
+        case .verse(let verse):
+            verse.location
+        }
+    }
+
+    static let all: [FocusPage] = BibleData.books.flatMap { book in
+        book.chapters.flatMap { chapter in
+            let marker = FocusPage.chapter(bookName: book.name, chapterNumber: chapter.number)
+            let verses = chapter.verses.map { verse in
+                FocusPage.verse(FocusVerse(
+                    bookName: book.name,
+                    chapterNumber: chapter.number,
+                    verseNumber: verse.number,
+                    text: verse.text
+                ))
+            }
+            return [marker] + verses
+        }
     }
 }
 
@@ -106,7 +158,7 @@ private struct FocusVerse: Identifiable {
     let text: String
 
     var id: String {
-        location.id
+        "verse-\(bookName)-\(chapterNumber)-\(verseNumber)"
     }
 
     var location: FocusVerseLocation {
@@ -116,17 +168,33 @@ private struct FocusVerse: Identifiable {
             verseNumber: verseNumber
         )
     }
+}
 
-    static let all: [FocusVerse] = BibleData.books.flatMap { book in
-        book.chapters.flatMap { chapter in
-            chapter.verses.map { verse in
-                FocusVerse(
-                    bookName: book.name,
-                    chapterNumber: chapter.number,
-                    verseNumber: verse.number,
-                    text: verse.text
-                )
-            }
+private struct FocusPageView: View {
+    let page: FocusPage
+    let readerFontSize: Double
+
+    @ViewBuilder
+    var body: some View {
+        switch page {
+        case .chapter(let bookName, let chapterNumber):
+            FocusChapterMarkerPage(bookName: bookName, chapterNumber: chapterNumber)
+        case .verse(let verse):
+            FocusVersePage(verse: verse, readerFontSize: readerFontSize)
         }
+    }
+}
+
+private struct FocusChapterMarkerPage: View {
+    let bookName: String
+    let chapterNumber: Int
+
+    var body: some View {
+        Text("\(bookName) \(chapterNumber)")
+            .font(.title.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(32)
+            .accessibilityAddTraits(.isHeader)
     }
 }
