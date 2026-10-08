@@ -35,11 +35,25 @@ final class WhoAmIGameViewModel {
     }
 
     struct Entry: Hashable {
+        let id: Int
         let name: String
         let description: String
         let firstReference: String?
         // NEW: full comma-separated references line (preferred for Who Am I reference sheet)
         let referencesLine: String?
+        let difficulty: String
+
+        func matchesDifficulty(_ selectedDifficulty: Difficulty) -> Bool {
+            switch selectedDifficulty {
+            case .easy:
+                return difficulty.caseInsensitiveCompare("Easy") == .orderedSame
+            case .normal:
+                return difficulty.caseInsensitiveCompare("Medium") == .orderedSame
+                    || difficulty.caseInsensitiveCompare("Normal") == .orderedSame
+            case .hard:
+                return difficulty.caseInsensitiveCompare("Hard") == .orderedSame
+            }
+        }
     }
 
     // Start screen state
@@ -51,6 +65,7 @@ final class WhoAmIGameViewModel {
 
     // Data
     private(set) var entries: [Entry] = []
+    private var questionQueue: [Entry] = []
 
     // Current round
     var promptTitle: String = ""
@@ -81,6 +96,7 @@ final class WhoAmIGameViewModel {
     // UI flags
     var roundOver: Bool = false
     var showReveal: Bool = false
+    var isGameComplete: Bool = false
 
     // NEW: Jesus bonus alert flag (bound in view)
     var showJesusBonusAlert: Bool = false
@@ -119,19 +135,19 @@ final class WhoAmIGameViewModel {
 
         Task {
             if entries.isEmpty {
-                let names = await GameDataLoaders.loadNamesAsync()
-                // Filter to those with non-empty description
-                self.entries = names.compactMap { n in
-                    let d = n.description?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                    let nm = n.name.trimmingCharacters(in: .whitespacesAndNewlines)
-                    guard !nm.isEmpty, !d.isEmpty else { return nil }
-                    let firstRef = n.firstReference?.trimmingCharacters(in: .whitespacesAndNewlines)
-                    let fullRefs = n.referencesLine?.trimmingCharacters(in: .whitespacesAndNewlines)
+                let characters = await GameDataLoaders.loadCharactersAsync()
+                self.entries = characters.compactMap { character in
+                    let name = character.name.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let description = character.shortDescription.trimmingCharacters(in: .whitespacesAndNewlines)
+                    guard !name.isEmpty, !description.isEmpty else { return nil }
+
                     return Entry(
-                        name: nm,
-                        description: d,
-                        firstReference: (firstRef?.isEmpty == true ? nil : firstRef),
-                        referencesLine: (fullRefs?.isEmpty == true ? nil : fullRefs)
+                        id: character.id,
+                        name: name,
+                        description: description,
+                        firstReference: nil,
+                        referencesLine: nil,
+                        difficulty: character.difficulty
                     )
                 }
             }
@@ -146,12 +162,15 @@ final class WhoAmIGameViewModel {
         roundOver = false
         showReveal = false
         selectedChoice = nil
+        questionQueue = entries.shuffled()
+        isGameComplete = false
         started = true
         nextRound()
     }
 
     func nextRound() {
         stopTimer()
+        guard !isGameComplete else { return }
         guard entries.count >= 4 else {
             promptTitle = "Not enough data"
             choices = []
@@ -165,13 +184,18 @@ final class WhoAmIGameViewModel {
         roundOver = false
         showReveal = false
 
+        guard !questionQueue.isEmpty else {
+            isGameComplete = true
+            return
+        }
+
         // Generate a question (optionally force Jesus for testing)
         let forceJesus = UserDefaults.standard.bool(forKey: "forceJesusTestEnabled")
         let correct: Entry
-        if forceJesus, let jesus = entries.first(where: { isJesusName($0.name) }) {
-            correct = jesus
+        if forceJesus, let jesusIndex = questionQueue.firstIndex(where: { isJesusName($0.name) }) {
+            correct = questionQueue.remove(at: jesusIndex)
         } else {
-            correct = entries.randomElement()!
+            correct = questionQueue.removeFirst()
         }
 
         switch mode {
@@ -179,12 +203,12 @@ final class WhoAmIGameViewModel {
             // Prompt is the exact name; choices are descriptions (1 correct + 3 random wrong)
             promptTitle = correct.name
             correctChoice = correct.description
-            choices = fourRandomDescriptions(for: correct)
+            choices = fourRandomDescriptions(for: correct, from: entries)
         case .reverse:
             // Prompt is the exact description; choices are names (1 correct + 3 random wrong)
             promptTitle = correct.description
             correctChoice = correct.name
-            choices = fourRandomNames(for: correct)
+            choices = fourRandomNames(for: correct, from: entries)
         }
 
         // Reset timer per difficulty
@@ -242,6 +266,7 @@ final class WhoAmIGameViewModel {
         }
         roundOver = true
         showReveal = true
+        finishGameIfNeeded()
     }
 
     func skipOrTimeout() {
@@ -259,6 +284,11 @@ final class WhoAmIGameViewModel {
         )
         roundOver = true
         showReveal = true
+        finishGameIfNeeded()
+    }
+
+    private func finishGameIfNeeded() {
+        isGameComplete = entries.count >= 4 && questionQueue.isEmpty
     }
 
     // MARK: - References lookup for sheet
@@ -279,8 +309,8 @@ final class WhoAmIGameViewModel {
 
     // MARK: - Choice builders (global random wrong answers)
 
-    private func fourRandomDescriptions(for correct: Entry) -> [String] {
-        // Unique descriptions across all entries, excluding the correct one
+    private func fourRandomDescriptions(for correct: Entry, from entries: [Entry]) -> [String] {
+        // Unique descriptions from the selected difficulty, excluding the correct one
         var universe = Array(Set(entries.map { $0.description })).filter { $0 != correct.description }
         universe.shuffle()
         let wrong = Array(universe.prefix(3))
@@ -290,8 +320,8 @@ final class WhoAmIGameViewModel {
         return all
     }
 
-    private func fourRandomNames(for correct: Entry) -> [String] {
-        // Unique names across all entries, excluding the correct one
+    private func fourRandomNames(for correct: Entry, from entries: [Entry]) -> [String] {
+        // Unique names from the selected difficulty, excluding the correct one
         var universe = Array(Set(entries.map { $0.name })).filter { $0 != correct.name }
         universe.shuffle()
         let wrong = Array(universe.prefix(3))

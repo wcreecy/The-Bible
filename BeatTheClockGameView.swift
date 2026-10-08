@@ -43,8 +43,8 @@ struct BeatTheClockGameView: View {
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
     // Data
-    @State private var loadedPeople: [BibleName] = []
-    @State private var loadedPlaces: [BibleLocation] = []
+    @State private var loadedPeople: [BibleCharacter] = []
+    @State private var loadedPlaces: [BibleLocationChallenge] = []
 
     // Current round
     @State private var targetLabel: String = ""
@@ -79,6 +79,10 @@ struct BeatTheClockGameView: View {
     @State private var usesMutedTimerStyle: Bool = false
 
     private var allBookNames: [String] { BibleData.books.map { $0.name } }
+
+    private var peopleForSelectedDifficulty: [BibleCharacter] {
+        loadedPeople.filter { $0.matchesDifficulty(difficulty.rawValue) }
+    }
 
     private var filteredBooks: [String] {
         let text = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -368,11 +372,11 @@ struct BeatTheClockGameView: View {
         }
         .task {
             if loadedPeople.isEmpty {
-                let people = await GameDataLoaders.loadNamesAsync()
+                let people = await GameDataLoaders.loadCharactersAsync()
                 loadedPeople = people
             }
             if loadedPlaces.isEmpty {
-                let places = await GameDataLoaders.loadLocationsAsync()
+                let places = await GameDataLoaders.loadLocationChallengesAsync()
                 loadedPlaces = places
             }
         }
@@ -451,40 +455,45 @@ struct BeatTheClockGameView: View {
 
         switch category {
         case .people:
-            guard let entry = loadedPeople.randomElement() else { targetLabel = ""; referenceBookName = nil; return }
+            guard let entry = peopleForSelectedDifficulty.randomElement() else { targetLabel = ""; referenceBookName = nil; return }
             currentEntryIsPerson = true
             targetLabel = entry.name
-            referenceBookName = parseBookName(from: entry.firstReference)
+            referenceBookName = entry.books.first
         case .places:
             guard let entry = loadedPlaces.randomElement() else { targetLabel = ""; referenceBookName = nil; return }
             currentEntryIsPerson = false
-            targetLabel = entry.location
-            referenceBookName = parseBookName(from: entry.firstReference)
+            targetLabel = entry.locationName
+            referenceBookName = parseBookName(from: entry.scriptureMentioned)
         case .both:
             let usePerson: Bool
-            if loadedPeople.isEmpty && loadedPlaces.isEmpty {
+            if peopleForSelectedDifficulty.isEmpty && loadedPlaces.isEmpty {
                 targetLabel = ""; referenceBookName = nil; return
-            } else if loadedPeople.isEmpty {
+            } else if peopleForSelectedDifficulty.isEmpty {
                 usePerson = false
             } else if loadedPlaces.isEmpty {
                 usePerson = true
             } else {
                 usePerson = Bool.random()
             }
-            if usePerson, let entry = loadedPeople.randomElement() {
+            if usePerson, let entry = peopleForSelectedDifficulty.randomElement() {
                 currentEntryIsPerson = true
                 targetLabel = entry.name
-                referenceBookName = parseBookName(from: entry.firstReference)
+                referenceBookName = entry.books.first
             } else if let entry = loadedPlaces.randomElement() {
                 currentEntryIsPerson = false
-                targetLabel = entry.location
-                referenceBookName = parseBookName(from: entry.firstReference)
+                targetLabel = entry.locationName
+                referenceBookName = parseBookName(from: entry.scriptureMentioned)
             } else {
                 targetLabel = ""; referenceBookName = nil; return
             }
         }
-        acceptableBooks = booksMentioning(targetLabel)
-        if let ref = referenceBookName { acceptableBooks.insert(ref) }
+        acceptableBooks = currentEntryIsPerson
+            ? Set(peopleForSelectedDifficulty.first(where: { $0.name == targetLabel })?.books ?? [])
+            : []
+
+        if !currentEntryIsPerson, let ref = referenceBookName {
+            acceptableBooks.insert(ref)
+        }
         DispatchQueue.main.async {
             self.searchFieldFocused = true
         }

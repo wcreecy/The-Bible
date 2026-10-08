@@ -53,8 +53,8 @@ struct HangmanGameView: View {
         UserDefaults.standard.integer(forKey: "hangmanAllTimeBestStreak_all")
     }
 
-    @State private var loadedPeople: [BibleName] = []
-    @State private var loadedPlaces: [BibleLocation] = []
+    @State private var loadedPeople: [BibleCharacter] = []
+    @State private var loadedPlaces: [BibleLocationChallenge] = []
 
     @State private var navigateToReader: Bool = false
     @State private var navBook: Book? = nil
@@ -180,8 +180,8 @@ struct HangmanGameView: View {
         }
         .onAppear {
             Task {
-                if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadNamesAsync() }
-                if loadedPlaces.isEmpty { loadedPlaces = await GameDataLoaders.loadLocationsAsync() }
+                if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadCharactersAsync() }
+                if loadedPlaces.isEmpty { loadedPlaces = await GameDataLoaders.loadLocationChallengesAsync() }
             }
             // Seed streaks from persisted values (survive app relaunch/navigation)
             seedStreakFromPersistence()
@@ -530,8 +530,8 @@ struct HangmanGameView: View {
     private func startGame() {
         if loadedPeople.isEmpty || loadedPlaces.isEmpty {
             Task {
-                if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadNamesAsync() }
-                if loadedPlaces.isEmpty { loadedPlaces = await GameDataLoaders.loadLocationsAsync() }
+                if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadCharactersAsync() }
+                if loadedPlaces.isEmpty { loadedPlaces = await GameDataLoaders.loadLocationChallengesAsync() }
                 score = 0
                 answered = 0
                 correctLetters.removeAll()
@@ -706,8 +706,9 @@ struct HangmanGameView: View {
             }
             currentTargetReference = nil
         case .people:
-            if loadedPeople.isEmpty { loadedPeople = GameDataLoaders.loadNames() }
-            guard let entry = loadedPeople.randomElement() else { return }
+            if loadedPeople.isEmpty { loadedPeople = GameDataLoaders.loadCharacters() }
+            let people = loadedPeople.filter { $0.matchesDifficulty(difficulty.rawValue) }
+            guard let entry = people.randomElement() else { return }
             let name = entry.name.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !name.isEmpty else { return }
             targetWord = name
@@ -715,27 +716,18 @@ struct HangmanGameView: View {
             if displayWord.isEmpty {
                 displayWord = masked(from: targetWord)
             }
-            currentTargetReference = entry.firstReference
+            currentTargetReference = nil
         case .places:
-            if loadedPlaces.isEmpty { loadedPlaces = GameDataLoaders.loadLocations() }
-            guard !loadedPlaces.isEmpty else { return }
-            var picked: String? = nil
-            for _ in 0..<50 {
-                if let entry = loadedPlaces.randomElement() {
-                    let loc = entry.location.trimmingCharacters(in: .whitespacesAndNewlines)
-                    if !loc.isEmpty {
-                        picked = loc
-                        break
-                    }
-                }
-            }
-            guard let loc = picked else { return }
-            targetWord = loc
+            if loadedPlaces.isEmpty { loadedPlaces = GameDataLoaders.loadLocationChallenges() }
+            guard let entry = loadedPlaces.randomElement() else { return }
+            let location = entry.locationName.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !location.isEmpty else { return }
+            targetWord = location
             displayWord = masked(from: targetWord)
             if displayWord.isEmpty {
                 displayWord = masked(from: targetWord)
             }
-            currentTargetReference = loadedPlaces.first { $0.location.caseInsensitiveCompare(targetWord) == .orderedSame }?.firstReference
+            currentTargetReference = entry.scriptureMentioned
         case .all:
             break
         }

@@ -61,6 +61,7 @@ struct WhoAmIGameView: View {
                         promptIsName: vm.mode == .names,
                         choices: vm.choices,
                         roundOver: vm.roundOver,
+                        isGameComplete: vm.isGameComplete,
                         correctChoice: vm.correctChoice,
                         selectedChoice: vm.selectedChoice,
                         isTimed: vm.difficulty.timeLimit > 0,
@@ -173,23 +174,18 @@ struct WhoAmIGameView: View {
                     if vm.roundOver {
                         GameRoundNavigationButtons(
                             canGoPrevious: false,
-                            canGoNext: true,
+                            canGoNext: !vm.isGameComplete,
                             onPrevious: {},
                             onNext: { vm.nextRound() }
                         )
+                        if vm.isGameComplete {
+                            Text("You answered every available question.")
+                                .font(.headline)
+                                .foregroundStyle(.green)
+                        }
                     } else {
                         Button("Skip") { vm.skipOrTimeout() }
                             .buttonStyle(ModernPillButtonStyle(tint: .orange))
-                    }
-
-                    if vm.roundOver {
-                        Label("Tap an answer to see its references", systemImage: "hand.tap.fill")
-                            .font(.headline)
-                            .foregroundStyle(.tint)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 10)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .background(.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
 
                     if debugAutoWinEnabled, vm.started, !vm.roundOver, vm.selectedChoice == nil {
@@ -523,6 +519,7 @@ private struct WhoAmIIPadGameBoard: View {
     let promptIsName: Bool
     let choices: [String]
     let roundOver: Bool
+    let isGameComplete: Bool
     let correctChoice: String
     let selectedChoice: String?
     let isTimed: Bool
@@ -568,6 +565,7 @@ private struct WhoAmIIPadGameBoard: View {
             promptIsName: promptIsName,
             choices: choices,
             roundOver: roundOver,
+            isGameComplete: isGameComplete,
             correctChoice: correctChoice,
             selectedChoice: selectedChoice,
             showsDebugWin: showsDebugWin,
@@ -599,6 +597,7 @@ private struct WhoAmIPlayCard: View {
     let promptIsName: Bool
     let choices: [String]
     let roundOver: Bool
+    let isGameComplete: Bool
     let correctChoice: String
     let selectedChoice: String?
     let showsDebugWin: Bool
@@ -665,23 +664,18 @@ private struct WhoAmIPlayCard: View {
             if roundOver {
                 GameRoundNavigationButtons(
                     canGoPrevious: false,
-                    canGoNext: true,
+                    canGoNext: !isGameComplete,
                     onPrevious: {},
                     onNext: onNext
                 )
+                if isGameComplete {
+                    Text("You answered every available question.")
+                        .font(.headline)
+                        .foregroundStyle(.green)
+                }
             } else {
                 Button("Skip", action: onSkip)
                     .buttonStyle(ModernPillButtonStyle(tint: .orange))
-            }
-
-            if roundOver {
-                Label("Tap an answer to see its references", systemImage: "hand.tap.fill")
-                    .font(.headline)
-                    .foregroundStyle(.tint)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .frame(maxWidth: .infinity)
-                    .background(.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
 
             if showsDebugWin && !roundOver {

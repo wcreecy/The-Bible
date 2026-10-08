@@ -1,0 +1,3283 @@
+[
+  {
+    "id": 1,
+    "name": "Aaron",
+    "books": [
+      "Exodus",
+      "Leviticus",
+      "Numbers",
+      "Deuteronomy",
+      "Joshua",
+      "Judges",
+      "1 Samuel",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Ezra",
+      "Nehemiah",
+      "Psalms",
+      "Micah",
+      "Luke",
+      "Acts",
+      "Hebrews"
+    ],
+    "short_description": "Brother of Moses and first high priest",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 2,
+    "name": "Abednego",
+    "books": [
+      "Daniel"
+    ],
+    "short_description": "Friend of Daniel who survived the fiery furnace",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 3,
+    "name": "Abel",
+    "books": [
+      "Genesis",
+      "Matthew",
+      "Luke",
+      "Hebrews",
+      "1 John"
+    ],
+    "short_description": "Son of Adam and Eve murdered by Cain",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 4,
+    "name": "Abigail",
+    "books": [
+      "1 Samuel",
+      "2 Samuel",
+      "1 Chronicles"
+    ],
+    "short_description": "Wise woman who became David's wife",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 5,
+    "name": "Abimelech (king of Gerar)",
+    "books": [
+      "Genesis"
+    ],
+    "short_description": "King of Gerar who encountered Abraham",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 6,
+    "name": "Abner",
+    "books": [
+      "1 Samuel",
+      "2 Samuel",
+      "1 Kings",
+      "1 Chronicles"
+    ],
+    "short_description": "Commander of Saul's army",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 7,
+    "name": "Abraham",
+    "books": [
+      "Genesis",
+      "Exodus",
+      "Leviticus",
+      "Numbers",
+      "Deuteronomy",
+      "Joshua",
+      "1 Kings",
+      "2 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Nehemiah",
+      "Psalms",
+      "Isaiah",
+      "Jeremiah",
+      "Ezekiel",
+      "Micah",
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John",
+      "Acts",
+      "Romans",
+      "2 Corinthians",
+      "Galatians",
+      "Hebrews",
+      "James",
+      "1 Peter"
+    ],
+    "short_description": "Patriarch and father of Isaac",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 8,
+    "name": "Absalom",
+    "books": [
+      "2 Samuel",
+      "1 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Psalms"
+    ],
+    "short_description": "Son of David who rebelled against him",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 9,
+    "name": "Adam",
+    "books": [
+      "Genesis",
+      "Deuteronomy",
+      "1 Chronicles",
+      "Job",
+      "Luke",
+      "Romans",
+      "1 Corinthians",
+      "1 Timothy",
+      "Jude"
+    ],
+    "short_description": "First man",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 10,
+    "name": "Adonijah",
+    "books": [
+      "2 Samuel",
+      "1 Kings"
+    ],
+    "short_description": "Son of David who attempted to claim the throne",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 11,
+    "name": "Agabus",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Prophet who warned Paul",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 12,
+    "name": "Ahab",
+    "books": [
+      "1 Kings",
+      "2 Kings",
+      "2 Chronicles",
+      "Micah"
+    ],
+    "short_description": "King of Israel and husband of Jezebel",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 13,
+    "name": "Ahasuerus",
+    "books": [
+      "Ezra",
+      "Esther",
+      "Daniel"
+    ],
+    "short_description": "Persian king in the book of Esther",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 14,
+    "name": "Ahaz",
+    "books": [
+      "2 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Isaiah",
+      "Hosea",
+      "Micah",
+      "Matthew"
+    ],
+    "short_description": "King of Judah in the days of Isaiah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 15,
+    "name": "Ahijah",
+    "books": [
+      "1 Kings",
+      "2 Chronicles"
+    ],
+    "short_description": "Prophet who foretold the division of Solomon's kingdom",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 16,
+    "name": "Ahimaaz",
+    "books": [
+      "2 Samuel"
+    ],
+    "short_description": "Priest's son who carried news to David",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 17,
+    "name": "Ahimelech",
+    "books": [
+      "1 Samuel",
+      "2 Samuel",
+      "Psalms"
+    ],
+    "short_description": "Priest who aided David at Nob",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 18,
+    "name": "Ahithophel",
+    "books": [
+      "2 Samuel",
+      "1 Chronicles"
+    ],
+    "short_description": "David's counselor who supported Absalom",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 19,
+    "name": "Amasa",
+    "books": [
+      "2 Samuel",
+      "1 Kings",
+      "1 Chronicles"
+    ],
+    "short_description": "Commander who joined Absalom's rebellion",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 20,
+    "name": "Amnon",
+    "books": [
+      "2 Samuel",
+      "1 Chronicles"
+    ],
+    "short_description": "David's son who assaulted his sister Tamar",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 21,
+    "name": "Amos",
+    "books": [
+      "Amos"
+    ],
+    "short_description": "Prophet who called Israel to justice",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 22,
+    "name": "Anak",
+    "books": [
+      "Numbers",
+      "Joshua"
+    ],
+    "short_description": "Ancestor of the Anakim encountered in Canaan",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 23,
+    "name": "Ananias (disciple of Damascus)",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Disciple who restored Saul's sight",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 24,
+    "name": "Ananias (husband of Sapphira)",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Man who lied about an offering to the church",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 25,
+    "name": "Andrew",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John",
+      "Acts"
+    ],
+    "short_description": "Apostle and brother of Simon Peter",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 26,
+    "name": "Anna",
+    "books": [
+      "Luke"
+    ],
+    "short_description": "Prophetess who recognized the infant Jesus",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 27,
+    "name": "Antipas",
+    "books": [
+      "Revelation"
+    ],
+    "short_description": "Faithful witness addressed by Christ to Pergamos",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 28,
+    "name": "Apollos",
+    "books": [
+      "Acts",
+      "1 Corinthians",
+      "Titus"
+    ],
+    "short_description": "Eloquent Christian teacher",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 29,
+    "name": "Aquila",
+    "books": [
+      "Acts",
+      "Romans",
+      "1 Corinthians",
+      "2 Timothy"
+    ],
+    "short_description": "Early Christian missionary and tentmaker",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 30,
+    "name": "Aristarchus",
+    "books": [
+      "Acts",
+      "Colossians",
+      "Philemon"
+    ],
+    "short_description": "Companion of Paul during missionary journeys",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 31,
+    "name": "Artemas",
+    "books": [
+      "Titus"
+    ],
+    "short_description": "Coworker Paul considered sending to Titus",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 32,
+    "name": "Asa",
+    "books": [
+      "1 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Jeremiah",
+      "Matthew"
+    ],
+    "short_description": "King of Judah who instituted reforms",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 33,
+    "name": "Asaph",
+    "books": [
+      "1 Chronicles",
+      "2 Chronicles",
+      "Ezra",
+      "Nehemiah",
+      "Psalms",
+      "Isaiah"
+    ],
+    "short_description": "Levite and worship leader",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 34,
+    "name": "Azariah",
+    "books": [
+      "2 Chronicles"
+    ],
+    "short_description": "Priest who resisted King Uzziah's unlawful offering",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 35,
+    "name": "Balaam",
+    "books": [
+      "Numbers",
+      "Deuteronomy",
+      "Joshua",
+      "Nehemiah",
+      "Micah",
+      "2 Peter",
+      "Jude",
+      "Revelation"
+    ],
+    "short_description": "Diviner who was hired to curse Israel",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 36,
+    "name": "Balak",
+    "books": [
+      "Numbers",
+      "Joshua",
+      "Judges",
+      "Micah",
+      "Revelation"
+    ],
+    "short_description": "King of Moab who summoned Balaam",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 37,
+    "name": "Barabbas",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John"
+    ],
+    "short_description": "Prisoner released instead of Jesus",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 38,
+    "name": "Barak",
+    "books": [
+      "Judges",
+      "Hebrews"
+    ],
+    "short_description": "Military leader who worked with Deborah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 39,
+    "name": "Barnabas",
+    "books": [
+      "Acts",
+      "1 Corinthians",
+      "Galatians",
+      "Colossians"
+    ],
+    "short_description": "Early missionary and companion of Paul",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 40,
+    "name": "Bartholomew",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "Acts"
+    ],
+    "short_description": "One of the twelve apostles",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 41,
+    "name": "Bartimaeus",
+    "books": [
+      "Mark"
+    ],
+    "short_description": "Blind man healed by Jesus",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 42,
+    "name": "Baruch",
+    "books": [
+      "Jeremiah"
+    ],
+    "short_description": "Scribe who recorded Jeremiah's prophecies",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 43,
+    "name": "Bathsheba",
+    "books": [
+      "2 Samuel",
+      "1 Kings",
+      "1 Chronicles",
+      "Psalms"
+    ],
+    "short_description": "Wife of Uriah who later married David",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 44,
+    "name": "Belshazzar",
+    "books": [
+      "Daniel"
+    ],
+    "short_description": "Babylonian ruler who saw writing on the wall",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 45,
+    "name": "Benaiah",
+    "books": [
+      "2 Samuel",
+      "1 Kings",
+      "1 Chronicles"
+    ],
+    "short_description": "Warrior who served David and Solomon",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 46,
+    "name": "Benjamin",
+    "books": [
+      "Genesis",
+      "Exodus",
+      "Numbers",
+      "Deuteronomy",
+      "Joshua",
+      "Judges",
+      "1 Samuel",
+      "2 Samuel",
+      "1 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Ezra",
+      "Nehemiah",
+      "Psalms",
+      "Jeremiah",
+      "Ezekiel",
+      "Hosea",
+      "Obadiah",
+      "Zechariah",
+      "Acts",
+      "Romans",
+      "Philippians",
+      "Revelation"
+    ],
+    "short_description": "Youngest son of Jacob and Rachel",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 47,
+    "name": "Berechiah",
+    "books": [
+      "Zechariah"
+    ],
+    "short_description": "Father of the prophet Zechariah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 48,
+    "name": "Berenice",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Royal woman present at Paul's hearing",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 49,
+    "name": "Bezalel",
+    "books": [
+      "Exodus",
+      "1 Chronicles"
+    ],
+    "short_description": "Craftsman chosen to make the tabernacle furnishings",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 50,
+    "name": "Bildad",
+    "books": [
+      "Job"
+    ],
+    "short_description": "One of Job's three friends",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 51,
+    "name": "Bilhah",
+    "books": [
+      "Genesis",
+      "1 Chronicles"
+    ],
+    "short_description": "Rachel's handmaid and mother of Dan and Naphtali",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 52,
+    "name": "Blastus",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Herod's chamberlain approached by Tyre and Sidon",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 53,
+    "name": "Boaz",
+    "books": [
+      "Ruth",
+      "1 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Matthew",
+      "Luke"
+    ],
+    "short_description": "Kinsman-redeemer who married Ruth",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 54,
+    "name": "Caiaphas",
+    "books": [
+      "Matthew",
+      "Luke",
+      "John",
+      "Acts"
+    ],
+    "short_description": "High priest involved in Jesus' trial",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 55,
+    "name": "Cain",
+    "books": [
+      "Genesis",
+      "Hebrews",
+      "1 John",
+      "Jude"
+    ],
+    "short_description": "First son of Adam and Eve",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 56,
+    "name": "Caleb",
+    "books": [
+      "Numbers",
+      "Deuteronomy",
+      "Joshua",
+      "Judges",
+      "1 Samuel",
+      "1 Chronicles"
+    ],
+    "short_description": "Faithful spy who entered the promised land",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 57,
+    "name": "Chloe",
+    "books": [
+      "1 Corinthians"
+    ],
+    "short_description": "Woman whose household reported divisions at Corinth",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 58,
+    "name": "Cleopas",
+    "books": [
+      "Luke"
+    ],
+    "short_description": "Disciple who met the risen Jesus on the road to Emmaus",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 59,
+    "name": "Cornelius",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Roman centurion who received Peter's message",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 60,
+    "name": "Crispus",
+    "books": [
+      "Acts",
+      "1 Corinthians"
+    ],
+    "short_description": "Synagogue ruler who believed in Jesus",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 61,
+    "name": "Cyrus",
+    "books": [
+      "2 Chronicles",
+      "Ezra",
+      "Isaiah",
+      "Daniel"
+    ],
+    "short_description": "Persian king who authorized return from exile",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 62,
+    "name": "Damaris",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Athenian woman who believed Paul's teaching",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 63,
+    "name": "Daniel",
+    "books": [
+      "Ezekiel",
+      "Daniel",
+      "Matthew",
+      "Mark"
+    ],
+    "short_description": "Prophet and Judean exile in Babylon",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 64,
+    "name": "Dathan",
+    "books": [
+      "Numbers",
+      "Deuteronomy",
+      "Psalms"
+    ],
+    "short_description": "Rebel who opposed Moses in the wilderness",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 65,
+    "name": "David",
+    "books": [
+      "Ruth",
+      "1 Samuel",
+      "2 Samuel",
+      "1 Kings",
+      "2 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Ezra",
+      "Nehemiah",
+      "Psalms",
+      "Proverbs",
+      "Ecclesiastes",
+      "Song of Solomon",
+      "Isaiah",
+      "Jeremiah",
+      "Ezekiel",
+      "Hosea",
+      "Amos",
+      "Zechariah",
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John",
+      "Acts",
+      "Romans",
+      "2 Timothy",
+      "Hebrews",
+      "Revelation"
+    ],
+    "short_description": "Shepherd who became king of Israel",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 66,
+    "name": "Deborah",
+    "books": [
+      "Judges"
+    ],
+    "short_description": "Prophetess and judge of Israel",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 67,
+    "name": "Delilah",
+    "books": [
+      "Judges"
+    ],
+    "short_description": "Woman who betrayed Samson",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 68,
+    "name": "Demas",
+    "books": [
+      "Colossians",
+      "Philemon",
+      "2 Timothy"
+    ],
+    "short_description": "Former coworker who deserted Paul",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 69,
+    "name": "Demetrius (commended believer)",
+    "books": [
+      "3 John"
+    ],
+    "short_description": "Believer praised in John's third letter",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 70,
+    "name": "Demetrius (silversmith)",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Ephesian artisan who stirred opposition to Paul",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 71,
+    "name": "Dinah",
+    "books": [
+      "Genesis"
+    ],
+    "short_description": "Daughter of Jacob and Leah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 72,
+    "name": "Diotrephes",
+    "books": [
+      "3 John"
+    ],
+    "short_description": "Church leader who resisted John's messengers",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 73,
+    "name": "Dorcas",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Disciple raised to life through Peter",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 74,
+    "name": "Ebedmelech",
+    "books": [
+      "Jeremiah"
+    ],
+    "short_description": "Ethiopian official who rescued Jeremiah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 75,
+    "name": "Eglon",
+    "books": [
+      "Judges"
+    ],
+    "short_description": "Moabite king defeated by Ehud",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 76,
+    "name": "Ehud",
+    "books": [
+      "Judges"
+    ],
+    "short_description": "Left-handed judge who delivered Israel from Moab",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 77,
+    "name": "Eli",
+    "books": [
+      "1 Samuel",
+      "1 Kings"
+    ],
+    "short_description": "Priest who mentored Samuel",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 78,
+    "name": "Elihu",
+    "books": [
+      "Job"
+    ],
+    "short_description": "Younger speaker who responded to Job and his friends",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 79,
+    "name": "Elijah",
+    "books": [
+      "1 Kings",
+      "2 Kings",
+      "2 Chronicles",
+      "Malachi",
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John",
+      "Romans",
+      "James"
+    ],
+    "short_description": "Prophet who confronted Ahab and Baal worship",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 80,
+    "name": "Elimelech",
+    "books": [
+      "Ruth"
+    ],
+    "short_description": "Naomi's husband",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 81,
+    "name": "Elisabeth",
+    "books": [
+      "Luke"
+    ],
+    "short_description": "Mother of John the Baptist",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 82,
+    "name": "Elisha",
+    "books": [
+      "1 Kings",
+      "2 Kings",
+      "Luke"
+    ],
+    "short_description": "Prophet who succeeded Elijah",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 83,
+    "name": "Elymas",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Sorcerer who opposed Paul in Cyprus",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 84,
+    "name": "Enoch",
+    "books": [
+      "Genesis",
+      "1 Chronicles",
+      "Luke",
+      "Hebrews",
+      "Jude"
+    ],
+    "short_description": "Patriarch who walked with God",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 85,
+    "name": "Enos",
+    "books": [
+      "Genesis",
+      "1 Chronicles",
+      "Luke"
+    ],
+    "short_description": "Son of Seth and ancestor of Noah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 86,
+    "name": "Epaphras",
+    "books": [
+      "Colossians",
+      "Philemon"
+    ],
+    "short_description": "Believer who ministered among the Colossians",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 87,
+    "name": "Epaphroditus",
+    "books": [
+      "Philippians"
+    ],
+    "short_description": "Messenger of the Philippian church",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 88,
+    "name": "Erastus",
+    "books": [
+      "Acts",
+      "Romans",
+      "2 Timothy"
+    ],
+    "short_description": "Coworker of Paul and city official",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 89,
+    "name": "Esau",
+    "books": [
+      "Genesis",
+      "Exodus",
+      "Numbers",
+      "Deuteronomy",
+      "Joshua",
+      "Judges",
+      "1 Samuel",
+      "2 Samuel",
+      "1 Kings",
+      "2 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Psalms",
+      "Isaiah",
+      "Jeremiah",
+      "Lamentations",
+      "Ezekiel",
+      "Daniel",
+      "Joel",
+      "Amos",
+      "Obadiah",
+      "Malachi",
+      "Romans",
+      "Hebrews"
+    ],
+    "short_description": "Twin brother of Jacob",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 90,
+    "name": "Esther",
+    "books": [
+      "Esther"
+    ],
+    "short_description": "Jewish queen who interceded for her people",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 91,
+    "name": "Eunice",
+    "books": [
+      "2 Timothy"
+    ],
+    "short_description": "Mother of Timothy",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 92,
+    "name": "Eutychus",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Young man revived after falling from a window",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 93,
+    "name": "Eve",
+    "books": [
+      "Genesis",
+      "2 Corinthians",
+      "1 Timothy"
+    ],
+    "short_description": "First woman",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 94,
+    "name": "Ezekiel",
+    "books": [
+      "Ezekiel"
+    ],
+    "short_description": "Prophet among the Babylonian exiles",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 95,
+    "name": "Ezra",
+    "books": [
+      "Ezra",
+      "Nehemiah"
+    ],
+    "short_description": "Scribe and priest who taught the law",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 96,
+    "name": "Felix",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Roman governor who heard Paul's defense",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 97,
+    "name": "Festus",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Roman governor who heard Paul's case",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 98,
+    "name": "Gad",
+    "books": [
+      "1 Samuel",
+      "2 Samuel",
+      "1 Chronicles",
+      "2 Chronicles"
+    ],
+    "short_description": "Prophet and counselor to King David",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 99,
+    "name": "Gaius (host of Paul)",
+    "books": [
+      "Romans"
+    ],
+    "short_description": "Believer who hosted Paul and the church",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 100,
+    "name": "Gamaliel",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Pharisee and teacher of the law in Acts",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 101,
+    "name": "Gehazi",
+    "books": [
+      "2 Kings"
+    ],
+    "short_description": "Servant of the prophet Elisha",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 102,
+    "name": "Gideon",
+    "books": [
+      "Judges",
+      "1 Samuel",
+      "Hebrews"
+    ],
+    "short_description": "Judge who defeated Midian",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 103,
+    "name": "Goliath",
+    "books": [
+      "1 Samuel",
+      "2 Samuel",
+      "1 Chronicles"
+    ],
+    "short_description": "Philistine champion defeated by David",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 104,
+    "name": "Habakkuk",
+    "books": [
+      "Habakkuk"
+    ],
+    "short_description": "Prophet who questioned injustice",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 105,
+    "name": "Hagar",
+    "books": [
+      "Genesis",
+      "Galatians"
+    ],
+    "short_description": "Egyptian servant of Sarah and mother of Ishmael",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 106,
+    "name": "Haman",
+    "books": [
+      "Esther"
+    ],
+    "short_description": "Royal official who plotted against the Jews",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 107,
+    "name": "Hannah",
+    "books": [
+      "1 Samuel"
+    ],
+    "short_description": "Mother of Samuel who prayed for a child",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 108,
+    "name": "Herod Agrippa I",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Ruler who persecuted the early church",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 109,
+    "name": "Herod Agrippa II",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Judean ruler who listened to a prisoner's defense before a Roman governor",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 110,
+    "name": "Herod Antipas",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "Acts"
+    ],
+    "short_description": "Tetrarch who executed John the Baptist",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 111,
+    "name": "Herod the Great",
+    "books": [
+      "Matthew",
+      "Luke"
+    ],
+    "short_description": "Judean king who ordered the killing of infants in Bethlehem",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 112,
+    "name": "Hezekiah",
+    "books": [
+      "2 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Proverbs",
+      "Isaiah",
+      "Jeremiah",
+      "Hosea",
+      "Micah",
+      "Matthew"
+    ],
+    "short_description": "King of Judah who trusted the LORD",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 113,
+    "name": "Hiram (king of Tyre)",
+    "books": [
+      "2 Samuel",
+      "1 Kings",
+      "1 Chronicles",
+      "2 Chronicles"
+    ],
+    "short_description": "King who supplied materials for David and Solomon",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 114,
+    "name": "Hophni",
+    "books": [
+      "1 Samuel"
+    ],
+    "short_description": "Corrupt son of Eli the priest",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 115,
+    "name": "Hosea",
+    "books": [
+      "Hosea",
+      "Romans"
+    ],
+    "short_description": "Prophet whose marriage symbolizes covenant faithfulness",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 116,
+    "name": "Huldah",
+    "books": [
+      "2 Kings",
+      "2 Chronicles"
+    ],
+    "short_description": "Prophetess consulted during Josiah's reign",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 117,
+    "name": "Hur",
+    "books": [
+      "Exodus",
+      "1 Chronicles"
+    ],
+    "short_description": "Israelite who held up Moses' hands",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 118,
+    "name": "Ibzan",
+    "books": [
+      "Judges"
+    ],
+    "short_description": "Judge of Israel after Jephthah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 119,
+    "name": "Ichabod",
+    "books": [
+      "1 Samuel"
+    ],
+    "short_description": "Son born to Phinehas after the ark was captured",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 120,
+    "name": "Isaac",
+    "books": [
+      "Genesis",
+      "Exodus",
+      "Leviticus",
+      "Numbers",
+      "Deuteronomy",
+      "Joshua",
+      "1 Kings",
+      "2 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Psalms",
+      "Jeremiah",
+      "Amos",
+      "Matthew",
+      "Mark",
+      "Luke",
+      "Acts",
+      "Romans",
+      "Galatians",
+      "Hebrews",
+      "James"
+    ],
+    "short_description": "Son of Abraham and Sarah",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 121,
+    "name": "Isaiah",
+    "books": [
+      "2 Kings",
+      "2 Chronicles",
+      "Isaiah",
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John",
+      "Acts",
+      "Romans"
+    ],
+    "short_description": "Prophet in Judah",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 122,
+    "name": "Ishmael",
+    "books": [
+      "Genesis",
+      "1 Chronicles"
+    ],
+    "short_description": "Son of Abraham and Hagar",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 123,
+    "name": "Ittai",
+    "books": [
+      "2 Samuel"
+    ],
+    "short_description": "Gittite commander loyal to David",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 124,
+    "name": "Jabez",
+    "books": [
+      "1 Chronicles"
+    ],
+    "short_description": "Man known for a prayer asking God's blessing",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 125,
+    "name": "Jacob",
+    "books": [
+      "Matthew"
+    ],
+    "short_description": "Patriarch also called Israel",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 126,
+    "name": "Jael",
+    "books": [
+      "Judges"
+    ],
+    "short_description": "Woman who defeated Sisera",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 127,
+    "name": "Jair",
+    "books": [
+      "Judges"
+    ],
+    "short_description": "Judge who led Israel twenty-two years",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 128,
+    "name": "Jairus",
+    "books": [
+      "Mark",
+      "Luke"
+    ],
+    "short_description": "Synagogue leader whose daughter Jesus raised",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 129,
+    "name": "James (brother of Jesus)",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Acts",
+      "Galatians",
+      "1 Corinthians"
+    ],
+    "short_description": "Leader of the Jerusalem church who spoke at its council",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 130,
+    "name": "James (son of Alphaeus)",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "Acts"
+    ],
+    "short_description": "One of the twelve apostles, identified by his father",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 131,
+    "name": "James (son of Zebedee)",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "Acts"
+    ],
+    "short_description": "Fisherman, brother of an apostle, and one of the Twelve; executed by a king",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 132,
+    "name": "Jephthah",
+    "books": [
+      "Judges",
+      "1 Samuel",
+      "Hebrews"
+    ],
+    "short_description": "Judge who fought the Ammonites",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 133,
+    "name": "Jeremiah",
+    "books": [
+      "2 Chronicles",
+      "Ezra",
+      "Jeremiah",
+      "Daniel",
+      "Matthew"
+    ],
+    "short_description": "Prophet who warned Judah of judgment",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 134,
+    "name": "Jesse",
+    "books": [
+      "Ruth",
+      "1 Samuel",
+      "2 Samuel",
+      "1 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Psalms",
+      "Isaiah",
+      "Matthew",
+      "Luke",
+      "Acts",
+      "Romans"
+    ],
+    "short_description": "Father of King David",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 135,
+    "name": "Jesus Christ",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John",
+      "Acts",
+      "Romans",
+      "1 Corinthians",
+      "2 Corinthians",
+      "Galatians",
+      "Ephesians",
+      "Philippians",
+      "Colossians",
+      "1 Thessalonians",
+      "2 Thessalonians",
+      "1 Timothy",
+      "2 Timothy",
+      "Titus",
+      "Philemon",
+      "Hebrews",
+      "James",
+      "1 Peter",
+      "2 Peter",
+      "1 John",
+      "2 John",
+      "3 John",
+      "Jude",
+      "Revelation"
+    ],
+    "short_description": "Born in Bethlehem, performed miracles, was crucified, and rose from the dead",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 136,
+    "name": "Jethro",
+    "books": [
+      "Exodus",
+      "Numbers"
+    ],
+    "short_description": "Father-in-law of Moses and priest of Midian",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 137,
+    "name": "Jezebel",
+    "books": [
+      "1 Kings",
+      "2 Kings",
+      "Revelation"
+    ],
+    "short_description": "Queen of Israel and wife of Ahab",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 138,
+    "name": "Joab",
+    "books": [
+      "1 Samuel",
+      "2 Samuel",
+      "1 Kings",
+      "1 Chronicles",
+      "Psalms"
+    ],
+    "short_description": "Commander of King David's army",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 139,
+    "name": "Joanna",
+    "books": [
+      "Luke"
+    ],
+    "short_description": "Woman who supported Jesus' ministry",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 140,
+    "name": "Joash (father of Gideon)",
+    "books": [
+      "Judges"
+    ],
+    "short_description": "Father of Gideon who defended him against Baal's worshipers",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 141,
+    "name": "Joash (king of Israel)",
+    "books": [
+      "2 Kings",
+      "2 Chronicles"
+    ],
+    "short_description": "King of Israel during Elisha's final illness",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 142,
+    "name": "Joash (king of Judah)",
+    "books": [
+      "2 Kings",
+      "2 Chronicles"
+    ],
+    "short_description": "Boy king of Judah who repaired the temple",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 143,
+    "name": "Job",
+    "books": [
+      "Job",
+      "Ezekiel",
+      "James"
+    ],
+    "short_description": "Righteous man tested through suffering",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 144,
+    "name": "Jochebed",
+    "books": [
+      "Exodus",
+      "Numbers"
+    ],
+    "short_description": "Mother of Moses, Aaron, and Miriam",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 145,
+    "name": "Joel",
+    "books": [
+      "Joel",
+      "Acts"
+    ],
+    "short_description": "Prophet who proclaimed the day of the LORD",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 146,
+    "name": "John (son of Zebedee)",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "Acts",
+      "Galatians"
+    ],
+    "short_description": "Fisherman, brother of an apostle, and one of the Twelve",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 147,
+    "name": "John Mark",
+    "books": [
+      "Acts",
+      "2 Timothy",
+      "Philemon",
+      "1 Peter"
+    ],
+    "short_description": "Missionary coworker who accompanied Barnabas and Paul",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 148,
+    "name": "John the Baptist",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John",
+      "Acts"
+    ],
+    "short_description": "Wilderness preacher who baptized in the Jordan River and prepared the way for the Messiah",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 149,
+    "name": "Jonadab (son of Rechab)",
+    "books": [
+      "2 Kings",
+      "Jeremiah"
+    ],
+    "short_description": "Ancestor of the Rechabites who commanded abstinence",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 150,
+    "name": "Jonah",
+    "books": [
+      "2 Kings",
+      "Jonah",
+      "Matthew",
+      "Luke"
+    ],
+    "short_description": "Prophet sent to Nineveh",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 151,
+    "name": "Jonathan",
+    "books": [
+      "1 Samuel",
+      "2 Samuel",
+      "1 Chronicles",
+      "Jeremiah"
+    ],
+    "short_description": "Son of Saul and friend of David",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 152,
+    "name": "Joseph (husband of Mary)",
+    "books": [
+      "Matthew",
+      "Luke",
+      "John"
+    ],
+    "short_description": "Carpenter entrusted with raising the child born in Bethlehem",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 153,
+    "name": "Joseph (of Arimathaea)",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John"
+    ],
+    "short_description": "Council member who provided a new tomb for the crucified Messiah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 154,
+    "name": "Joseph (son of Jacob)",
+    "books": [
+      "Genesis",
+      "Exodus",
+      "Numbers",
+      "Deuteronomy",
+      "Joshua",
+      "Psalms",
+      "Acts",
+      "Hebrews",
+      "Revelation"
+    ],
+    "short_description": "Dream interpreter sold into slavery by his brothers who later governed in Egypt",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 155,
+    "name": "Joses (brother of Jesus)",
+    "books": [
+      "Matthew",
+      "Mark"
+    ],
+    "short_description": "Named among Jesus' brothers",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 156,
+    "name": "Joshua",
+    "books": [
+      "Exodus",
+      "Numbers",
+      "Deuteronomy",
+      "Joshua",
+      "Judges",
+      "1 Kings",
+      "1 Chronicles",
+      "Nehemiah",
+      "Acts"
+    ],
+    "short_description": "Successor of Moses who led Israel",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 157,
+    "name": "Josiah",
+    "books": [
+      "1 Kings",
+      "2 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Jeremiah",
+      "Zephaniah",
+      "Matthew"
+    ],
+    "short_description": "King of Judah who renewed covenant worship",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 158,
+    "name": "Jotham (king of Judah)",
+    "books": [
+      "2 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Isaiah",
+      "Matthew"
+    ],
+    "short_description": "King of Judah and father of Ahaz",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 159,
+    "name": "Jotham (son of Gideon)",
+    "books": [
+      "Judges"
+    ],
+    "short_description": "Survivor of Abimelech's killing of Gideon's sons",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 160,
+    "name": "Judah",
+    "books": [
+      "Genesis",
+      "Exodus",
+      "Numbers",
+      "Deuteronomy",
+      "Joshua",
+      "Judges",
+      "Ruth",
+      "1 Samuel",
+      "2 Samuel",
+      "1 Kings",
+      "2 Kings",
+      "Jeremiah"
+    ],
+    "short_description": "Son of Jacob and Leah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 161,
+    "name": "Judas Iscariot",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John",
+      "Acts"
+    ],
+    "short_description": "One of the twelve apostles who betrayed his teacher for thirty pieces of silver",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 162,
+    "name": "Korah",
+    "books": [
+      "Exodus",
+      "Numbers",
+      "1 Chronicles",
+      "Jude"
+    ],
+    "short_description": "Levite who led a rebellion against Moses",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 163,
+    "name": "Laban",
+    "books": [
+      "Genesis"
+    ],
+    "short_description": "Brother of Rebekah and father-in-law of Jacob",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 164,
+    "name": "Lamech (father of Noah)",
+    "books": [
+      "Genesis",
+      "1 Chronicles",
+      "Luke"
+    ],
+    "short_description": "Father of Noah in the genealogy of Seth",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 165,
+    "name": "Lazarus (in Jesus’ parable)",
+    "books": [
+      "Luke"
+    ],
+    "short_description": "Poor man in Jesus' parable",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 166,
+    "name": "Lazarus (of Bethany)",
+    "books": [
+      "John"
+    ],
+    "short_description": "Brother of Mary and Martha raised by Jesus",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 167,
+    "name": "Leah",
+    "books": [
+      "Genesis",
+      "Ruth"
+    ],
+    "short_description": "Wife of Jacob and mother of six sons",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 168,
+    "name": "Lemuel",
+    "books": [
+      "Proverbs"
+    ],
+    "short_description": "King addressed in a mother's teachings in Proverbs",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 169,
+    "name": "Levi",
+    "books": [
+      "Genesis",
+      "Exodus",
+      "Numbers",
+      "Deuteronomy",
+      "Joshua",
+      "1 Kings",
+      "1 Chronicles",
+      "Ezra",
+      "Nehemiah",
+      "Psalms",
+      "Ezekiel",
+      "Zechariah",
+      "Malachi",
+      "Hebrews",
+      "Revelation"
+    ],
+    "short_description": "Son of Jacob and Leah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 170,
+    "name": "Lois",
+    "books": [
+      "2 Timothy"
+    ],
+    "short_description": "Grandmother of Timothy",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 171,
+    "name": "Lot",
+    "books": [
+      "Genesis",
+      "Deuteronomy",
+      "Psalms",
+      "Luke",
+      "2 Peter"
+    ],
+    "short_description": "Nephew of Abraham",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 172,
+    "name": "Lucius",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Teacher and prophet in the church at Antioch",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 173,
+    "name": "Luke",
+    "books": [
+      "Colossians",
+      "2 Timothy",
+      "Philemon"
+    ],
+    "short_description": "Companion of Paul and Gospel author",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 174,
+    "name": "Lydia",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Seller of purple who became a believer",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 175,
+    "name": "Mahlon",
+    "books": [
+      "Ruth"
+    ],
+    "short_description": "Husband of Ruth who died in Moab",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 176,
+    "name": "Malachi",
+    "books": [
+      "Malachi"
+    ],
+    "short_description": "Prophet who addressed postexilic worship",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 177,
+    "name": "Manasseh",
+    "books": [
+      "2 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Jeremiah",
+      "Matthew"
+    ],
+    "short_description": "King of Judah who repented after captivity",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 178,
+    "name": "Manoah",
+    "books": [
+      "Judges"
+    ],
+    "short_description": "Father of Samson",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 179,
+    "name": "Martha",
+    "books": [
+      "Luke",
+      "John"
+    ],
+    "short_description": "Sister of Mary and Lazarus",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 180,
+    "name": "Mary (mother of Jesus)",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John",
+      "Acts"
+    ],
+    "short_description": "Young woman visited by Gabriel who gave birth in Bethlehem",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 181,
+    "name": "Mary (mother of John Mark)",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Woman whose Jerusalem home hosted believers praying for an imprisoned apostle",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 182,
+    "name": "Mary (of Bethany)",
+    "books": [
+      "Luke",
+      "John"
+    ],
+    "short_description": "Sister of Martha and Lazarus who sat listening at the Lord’s feet",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 183,
+    "name": "Mary Magdalene",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John"
+    ],
+    "short_description": "Follower delivered from seven demons who witnessed the empty tomb",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 184,
+    "name": "Matthew",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "Acts"
+    ],
+    "short_description": "Tax collector and apostle",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 185,
+    "name": "Matthias",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Apostle selected to replace Judas",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 186,
+    "name": "Melchisedec",
+    "books": [
+      "Genesis",
+      "Psalms",
+      "Hebrews"
+    ],
+    "short_description": "King of Salem and priest of God",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 187,
+    "name": "Mephibosheth",
+    "books": [
+      "2 Samuel",
+      "1 Chronicles"
+    ],
+    "short_description": "Son of Jonathan befriended by David",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 188,
+    "name": "Micah",
+    "books": [
+      "Jeremiah",
+      "Micah"
+    ],
+    "short_description": "Prophet who denounced injustice",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 189,
+    "name": "Micaiah",
+    "books": [
+      "1 Kings",
+      "2 Chronicles"
+    ],
+    "short_description": "Prophet who foretold Ahab's defeat",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 190,
+    "name": "Michal",
+    "books": [
+      "1 Samuel",
+      "2 Samuel",
+      "1 Chronicles"
+    ],
+    "short_description": "Daughter of Saul and wife of David",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 191,
+    "name": "Miriam",
+    "books": [
+      "Exodus",
+      "Numbers",
+      "Deuteronomy",
+      "1 Chronicles",
+      "Micah"
+    ],
+    "short_description": "Sister of Moses and Aaron",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 192,
+    "name": "Mishael",
+    "books": [
+      "Daniel"
+    ],
+    "short_description": "Hebrew name of Meshach, Daniel's companion",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 193,
+    "name": "Mordecai",
+    "books": [
+      "Esther"
+    ],
+    "short_description": "Jewish leader and cousin of Esther",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 194,
+    "name": "Moses",
+    "books": [
+      "Exodus",
+      "Leviticus",
+      "Numbers",
+      "Deuteronomy",
+      "Joshua",
+      "Judges",
+      "1 Samuel",
+      "1 Kings",
+      "2 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Ezra",
+      "Nehemiah",
+      "Psalms",
+      "Isaiah",
+      "Jeremiah",
+      "Daniel",
+      "Micah",
+      "Malachi",
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John",
+      "Acts",
+      "Romans",
+      "1 Corinthians",
+      "2 Corinthians",
+      "2 Timothy",
+      "Hebrews",
+      "Jude",
+      "Revelation"
+    ],
+    "short_description": "Prophet who led the Israelites from Egypt",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 195,
+    "name": "Naaman",
+    "books": [
+      "2 Kings",
+      "Luke"
+    ],
+    "short_description": "Syrian commander healed of leprosy",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 196,
+    "name": "Nabal",
+    "books": [
+      "1 Samuel",
+      "2 Samuel"
+    ],
+    "short_description": "Wealthy man who refused to aid David",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 197,
+    "name": "Nadab (son of Aaron)",
+    "books": [
+      "Exodus",
+      "Leviticus",
+      "Numbers",
+      "1 Chronicles"
+    ],
+    "short_description": "Priest who died after offering unauthorized fire",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 198,
+    "name": "Naomi",
+    "books": [
+      "Ruth"
+    ],
+    "short_description": "Mother-in-law of Ruth",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 199,
+    "name": "Nathan",
+    "books": [
+      "2 Samuel",
+      "1 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Psalms"
+    ],
+    "short_description": "Prophet who confronted King David",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 200,
+    "name": "Nathanael",
+    "books": [
+      "John"
+    ],
+    "short_description": "Israelite whom Philip brought to Jesus",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 201,
+    "name": "Nebuchadnezzar",
+    "books": [
+      "2 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Ezra",
+      "Nehemiah",
+      "Esther",
+      "Jeremiah",
+      "Ezekiel",
+      "Daniel"
+    ],
+    "short_description": "King of Babylon at the time of Daniel",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 202,
+    "name": "Nehemiah",
+    "books": [
+      "Ezra",
+      "Nehemiah"
+    ],
+    "short_description": "Governor who rebuilt Jerusalem's walls",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 203,
+    "name": "Nicanor",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "One of seven men chosen to serve the Jerusalem church",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 204,
+    "name": "Nicodemus",
+    "books": [
+      "John"
+    ],
+    "short_description": "Pharisee who visited Jesus by night",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 205,
+    "name": "Nimrod",
+    "books": [
+      "Genesis",
+      "1 Chronicles",
+      "Micah"
+    ],
+    "short_description": "Early mighty hunter and kingdom founder",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 206,
+    "name": "Noah",
+    "books": [
+      "Genesis",
+      "1 Chronicles",
+      "Isaiah",
+      "Ezekiel",
+      "Matthew",
+      "Luke",
+      "Hebrews",
+      "1 Peter",
+      "2 Peter"
+    ],
+    "short_description": "Righteous man who built the ark",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 207,
+    "name": "Obadiah",
+    "books": [
+      "Obadiah"
+    ],
+    "short_description": "Prophet whose brief book announces judgment on Edom",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 208,
+    "name": "Obed",
+    "books": [
+      "Ruth",
+      "1 Chronicles",
+      "Matthew",
+      "Luke"
+    ],
+    "short_description": "Son of Ruth and Boaz, grandfather of David",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 209,
+    "name": "Onan",
+    "books": [
+      "Genesis",
+      "Numbers",
+      "1 Chronicles"
+    ],
+    "short_description": "Son of Judah who died after refusing his duty to Tamar",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 210,
+    "name": "Onesimus",
+    "books": [
+      "Colossians",
+      "Philemon"
+    ],
+    "short_description": "Enslaved man on whose behalf Paul wrote",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 211,
+    "name": "Oreb",
+    "books": [
+      "Judges",
+      "Psalms",
+      "Isaiah"
+    ],
+    "short_description": "Midianite leader defeated during Gideon's campaign",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 212,
+    "name": "Orpah",
+    "books": [
+      "Ruth"
+    ],
+    "short_description": "Ruth's sister-in-law who returned to Moab",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 213,
+    "name": "Othniel",
+    "books": [
+      "Joshua",
+      "Judges",
+      "1 Chronicles"
+    ],
+    "short_description": "Judge who delivered Israel from oppression",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 214,
+    "name": "Pashur",
+    "books": [
+      "Jeremiah"
+    ],
+    "short_description": "Priest who opposed and imprisoned Jeremiah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 215,
+    "name": "Paul",
+    "books": [
+      "Acts",
+      "Romans",
+      "1 Corinthians",
+      "2 Corinthians",
+      "Galatians",
+      "Ephesians",
+      "Philippians",
+      "Colossians",
+      "1 Thessalonians",
+      "2 Thessalonians",
+      "1 Timothy",
+      "2 Timothy",
+      "Titus",
+      "Philemon",
+      "2 Peter"
+    ],
+    "short_description": "Apostle to the Gentiles",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 216,
+    "name": "Perez",
+    "books": [
+      "Genesis",
+      "Numbers",
+      "Ruth",
+      "1 Chronicles",
+      "Matthew",
+      "Luke"
+    ],
+    "short_description": "Son of Judah and Tamar, ancestor of David",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 217,
+    "name": "Philemon",
+    "books": [
+      "Philemon"
+    ],
+    "short_description": "Believer addressed by Paul concerning Onesimus",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 218,
+    "name": "Philip (apostle)",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John",
+      "Acts"
+    ],
+    "short_description": "One of the Twelve who brought Nathanael to meet the Messiah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 219,
+    "name": "Philip (evangelist)",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Preacher who explained Isaiah to an Ethiopian official and baptized him",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 220,
+    "name": "Phinehas",
+    "books": [
+      "Exodus",
+      "Numbers",
+      "Joshua",
+      "Judges",
+      "1 Chronicles",
+      "Ezra",
+      "Psalms"
+    ],
+    "short_description": "Priest and grandson of Aaron",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 221,
+    "name": "Phinehas (son of Eli)",
+    "books": [
+      "1 Samuel"
+    ],
+    "short_description": "Corrupt priest who died when the ark was captured",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 222,
+    "name": "Phoebe",
+    "books": [
+      "Romans"
+    ],
+    "short_description": "Church servant commended by Paul",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 223,
+    "name": "Pontius Pilate",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John",
+      "Acts",
+      "1 Timothy"
+    ],
+    "short_description": "Roman governor who authorized the crucifixion despite questioning the charge",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 224,
+    "name": "Potiphar",
+    "books": [
+      "Genesis"
+    ],
+    "short_description": "Egyptian officer who purchased Joseph",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 225,
+    "name": "Priscilla",
+    "books": [
+      "Acts",
+      "Romans",
+      "1 Corinthians",
+      "2 Timothy"
+    ],
+    "short_description": "Missionary and wife of Aquila",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 226,
+    "name": "Prochorus",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "One of seven men appointed to serve the church",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 227,
+    "name": "Publius",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Chief official of Malta who welcomed Paul",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 228,
+    "name": "Rachel",
+    "books": [
+      "Genesis",
+      "Ruth",
+      "1 Samuel",
+      "Jeremiah",
+      "Matthew"
+    ],
+    "short_description": "Wife of Jacob and mother of Joseph",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 229,
+    "name": "Rahab",
+    "books": [
+      "Joshua",
+      "Hebrews",
+      "James"
+    ],
+    "short_description": "Woman of Jericho who protected the spies",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 230,
+    "name": "Rebekah",
+    "books": [
+      "Genesis"
+    ],
+    "short_description": "Wife of Isaac and mother of Jacob",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 231,
+    "name": "Rehoboam",
+    "books": [
+      "1 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Matthew"
+    ],
+    "short_description": "Son of Solomon and king of Judah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 232,
+    "name": "Reuben",
+    "books": [
+      "Genesis",
+      "Exodus",
+      "Numbers",
+      "Deuteronomy",
+      "Joshua",
+      "Judges",
+      "1 Chronicles",
+      "Ezekiel",
+      "Revelation"
+    ],
+    "short_description": "Firstborn son of Jacob",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 233,
+    "name": "Rhoda",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Servant girl who recognized Peter's voice",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 234,
+    "name": "Ruth",
+    "books": [
+      "Ruth",
+      "Matthew"
+    ],
+    "short_description": "Moabite woman and ancestor of David",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 235,
+    "name": "Salome",
+    "books": [
+      "Mark"
+    ],
+    "short_description": "Woman who witnessed Jesus' crucifixion",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 236,
+    "name": "Samson",
+    "books": [
+      "Judges",
+      "Hebrews"
+    ],
+    "short_description": "Judge known for extraordinary strength",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 237,
+    "name": "Samuel",
+    "books": [
+      "1 Samuel",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Psalms",
+      "Jeremiah",
+      "Acts",
+      "Hebrews"
+    ],
+    "short_description": "Prophet and judge who anointed kings",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 238,
+    "name": "Sapphira",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Woman who deceived the early church with Ananias",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 239,
+    "name": "Sarah",
+    "books": [
+      "Genesis",
+      "Isaiah",
+      "Romans",
+      "Hebrews",
+      "1 Peter"
+    ],
+    "short_description": "Wife of Abraham and mother of Isaac",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 240,
+    "name": "Saul (king of Israel)",
+    "books": [
+      "1 Samuel",
+      "2 Samuel",
+      "1 Chronicles",
+      "Acts"
+    ],
+    "short_description": "First king of Israel",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 241,
+    "name": "Seraiah",
+    "books": [
+      "Jeremiah"
+    ],
+    "short_description": "Officer sent by Jeremiah with a prophetic scroll",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 242,
+    "name": "Seth",
+    "books": [
+      "Genesis",
+      "Numbers",
+      "1 Chronicles",
+      "Luke"
+    ],
+    "short_description": "Son of Adam and Eve",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 243,
+    "name": "Shadrach",
+    "books": [
+      "Daniel"
+    ],
+    "short_description": "Daniel's companion in Babylon",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 244,
+    "name": "Shallum (king of Israel)",
+    "books": [
+      "2 Kings"
+    ],
+    "short_description": "King who ruled Israel for one month",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 245,
+    "name": "Shamgar",
+    "books": [
+      "Judges"
+    ],
+    "short_description": "Judge who delivered Israel with an ox goad",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 246,
+    "name": "Sheba (son of Bichri)",
+    "books": [
+      "2 Samuel"
+    ],
+    "short_description": "Benjamite who led a rebellion against David",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 247,
+    "name": "Shem",
+    "books": [
+      "Genesis",
+      "1 Chronicles",
+      "Luke"
+    ],
+    "short_description": "Son of Noah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 248,
+    "name": "Shimei (son of Gera)",
+    "books": [
+      "2 Samuel",
+      "1 Kings"
+    ],
+    "short_description": "Man who cursed David during Absalom's revolt",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 249,
+    "name": "Silas",
+    "books": [
+      "Acts",
+      "2 Corinthians",
+      "1 Thessalonians",
+      "2 Thessalonians",
+      "1 Peter"
+    ],
+    "short_description": "Missionary companion of Paul",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 250,
+    "name": "Simeon",
+    "books": [
+      "Luke"
+    ],
+    "short_description": "Righteous man who met the infant Jesus",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 251,
+    "name": "Simon (sorcerer)",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Samaritan magician rebuked for trying to buy spiritual authority",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 252,
+    "name": "Simon Peter",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John",
+      "Acts",
+      "Galatians",
+      "1 Corinthians",
+      "1 Peter",
+      "2 Peter"
+    ],
+    "short_description": "Fisherman who denied his teacher three times and later preached at Pentecost",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 253,
+    "name": "Sisera",
+    "books": [
+      "Judges",
+      "1 Samuel",
+      "Psalms"
+    ],
+    "short_description": "Canaanite commander defeated in Deborah's day",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 254,
+    "name": "Solomon",
+    "books": [
+      "2 Samuel",
+      "1 Kings",
+      "2 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Ezra",
+      "Nehemiah",
+      "Psalms",
+      "Proverbs",
+      "Song of Solomon",
+      "Jeremiah",
+      "Matthew",
+      "Luke",
+      "John",
+      "Acts"
+    ],
+    "short_description": "Son of David and king of Israel",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 255,
+    "name": "Sosthenes",
+    "books": [
+      "Acts",
+      "1 Corinthians"
+    ],
+    "short_description": "Brother named alongside Paul in the Corinthian letter",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 256,
+    "name": "Stephen",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "First recorded Christian martyr",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 257,
+    "name": "Susanna",
+    "books": [
+      "Luke"
+    ],
+    "short_description": "Woman who supported Jesus' ministry",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 258,
+    "name": "Tamar (daughter of David)",
+    "books": [
+      "2 Samuel",
+      "1 Chronicles"
+    ],
+    "short_description": "Daughter of David and sister of Absalom",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 259,
+    "name": "Tamar (daughter-in-law of Judah)",
+    "books": [
+      "Genesis",
+      "Ruth",
+      "1 Chronicles",
+      "Matthew"
+    ],
+    "short_description": "Daughter-in-law of Judah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 260,
+    "name": "Tertius",
+    "books": [
+      "Romans"
+    ],
+    "short_description": "Scribe who wrote down Paul's letter to the Romans",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 261,
+    "name": "Tertullus",
+    "books": [
+      "Acts"
+    ],
+    "short_description": "Orator who prosecuted Paul before Felix",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 262,
+    "name": "Theophilus",
+    "books": [
+      "Luke",
+      "Acts"
+    ],
+    "short_description": "Recipient addressed in Luke and Acts",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 263,
+    "name": "Thomas",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John",
+      "Acts"
+    ],
+    "short_description": "One of the twelve apostles",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 264,
+    "name": "Timotheus",
+    "books": [
+      "Acts",
+      "Romans",
+      "1 Corinthians",
+      "2 Corinthians",
+      "Philippians",
+      "Colossians",
+      "1 Thessalonians",
+      "2 Thessalonians",
+      "1 Timothy",
+      "2 Timothy",
+      "Philemon",
+      "Hebrews"
+    ],
+    "short_description": "Companion of Paul also called Timothy",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 265,
+    "name": "Titus",
+    "books": [
+      "2 Corinthians",
+      "Galatians",
+      "2 Timothy",
+      "Titus"
+    ],
+    "short_description": "Companion and delegate of Paul",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 266,
+    "name": "Tola",
+    "books": [
+      "Judges"
+    ],
+    "short_description": "Judge of Israel from the tribe of Issachar",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 267,
+    "name": "Tryphena",
+    "books": [
+      "Romans"
+    ],
+    "short_description": "Christian worker greeted by Paul",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 268,
+    "name": "Tryphosa",
+    "books": [
+      "Romans"
+    ],
+    "short_description": "Christian worker greeted by Paul",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 269,
+    "name": "Tychicus",
+    "books": [
+      "Acts",
+      "Ephesians",
+      "Colossians",
+      "2 Timothy",
+      "Titus"
+    ],
+    "short_description": "Messenger and companion of Paul",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 270,
+    "name": "Uriah",
+    "books": [
+      "2 Samuel",
+      "1 Kings",
+      "1 Chronicles",
+      "Matthew"
+    ],
+    "short_description": "Hittite soldier whose wife was taken by Israel’s king",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 271,
+    "name": "Uzzah",
+    "books": [
+      "2 Samuel",
+      "1 Chronicles"
+    ],
+    "short_description": "Man who touched the ark and died as it was transported",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 272,
+    "name": "Uzziah",
+    "books": [
+      "2 Kings",
+      "2 Chronicles",
+      "Isaiah",
+      "Hosea",
+      "Amos",
+      "Zechariah",
+      "Matthew"
+    ],
+    "short_description": "King of Judah who was struck with leprosy",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 273,
+    "name": "Vashti",
+    "books": [
+      "Esther"
+    ],
+    "short_description": "Queen deposed by Ahasuerus",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 274,
+    "name": "Zacchaeus",
+    "books": [
+      "Luke"
+    ],
+    "short_description": "Tax collector who welcomed Jesus",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 275,
+    "name": "Zacharias",
+    "books": [
+      "Luke"
+    ],
+    "short_description": "Father of John the Baptist",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 276,
+    "name": "Zebedee",
+    "books": [
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John"
+    ],
+    "short_description": "Father of the apostles James and John",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 277,
+    "name": "Zebulun",
+    "books": [
+      "Genesis",
+      "Exodus",
+      "Numbers",
+      "Deuteronomy",
+      "Joshua",
+      "Judges",
+      "1 Chronicles",
+      "Ezekiel",
+      "Revelation"
+    ],
+    "short_description": "Son of Jacob and Leah",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 278,
+    "name": "Zechariah",
+    "books": [
+      "Ezra",
+      "Zechariah"
+    ],
+    "short_description": "Prophet associated with restoration after exile",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 279,
+    "name": "Zedekiah (king of Judah)",
+    "books": [
+      "2 Kings",
+      "1 Chronicles",
+      "2 Chronicles",
+      "Jeremiah",
+      "Ezekiel"
+    ],
+    "short_description": "Last king of Judah before Jerusalem's fall",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 280,
+    "name": "Zelophehad",
+    "books": [
+      "Numbers",
+      "Joshua",
+      "1 Chronicles"
+    ],
+    "short_description": "Man whose daughters appealed for inheritance rights",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 281,
+    "name": "Zephaniah",
+    "books": [
+      "Zephaniah"
+    ],
+    "short_description": "Prophet who warned of the day of the LORD",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 282,
+    "name": "Zerubbabel",
+    "books": [
+      "1 Chronicles",
+      "Ezra",
+      "Nehemiah",
+      "Haggai",
+      "Zechariah",
+      "Matthew"
+    ],
+    "short_description": "Judean governor who led the return from exile",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 283,
+    "name": "Zipporah",
+    "books": [
+      "Exodus"
+    ],
+    "short_description": "Wife of Moses who accompanied him from Midian",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 284,
+    "name": "Zophar",
+    "books": [
+      "Job"
+    ],
+    "short_description": "One of Job's three friends",
+    "difficulty": "Hard"
+  }
+]

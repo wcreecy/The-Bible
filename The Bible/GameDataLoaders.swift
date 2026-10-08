@@ -24,6 +24,52 @@ struct BibleName: Decodable, Identifiable, Hashable {
     }
 }
 
+struct BibleCharacter: Decodable, Identifiable, Hashable {
+    let id: Int
+    let name: String
+    let books: [String]
+    let shortDescription: String
+    let difficulty: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case books
+        case shortDescription = "short_description"
+        case difficulty
+    }
+
+    func matchesDifficulty(_ selectedDifficulty: String) -> Bool {
+        switch selectedDifficulty.lowercased() {
+        case "easy":
+            return difficulty.caseInsensitiveCompare("Easy") == .orderedSame
+        case "normal", "medium":
+            return difficulty.caseInsensitiveCompare("Medium") == .orderedSame
+                || difficulty.caseInsensitiveCompare("Normal") == .orderedSame
+        case "hard":
+            return difficulty.caseInsensitiveCompare("Hard") == .orderedSame
+        default:
+            return true
+        }
+    }
+}
+
+struct BibleLocationChallenge: Decodable, Identifiable, Hashable {
+    let id: Int
+    let locationName: String
+    let scriptureMentioned: String
+    let shortDescription: String
+    let difficulty: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case locationName = "location_name"
+        case scriptureMentioned = "scripture_mentioned"
+        case shortDescription = "short_description"
+        case difficulty
+    }
+}
+
 struct BibleLocation: Decodable, Identifiable, Hashable {
     // Identity is the location name
     var id: String { location }
@@ -84,10 +130,18 @@ struct BibleLocation: Decodable, Identifiable, Hashable {
 actor GameDataCache {
     static let shared = GameDataCache()
     private var names: [BibleName]? = nil
+    private var characters: [BibleCharacter]? = nil
+    private var locationChallenges: [BibleLocationChallenge]? = nil
     private var locations: [BibleLocation]? = nil
 
     func getNames() -> [BibleName]? { names }
     func setNames(_ v: [BibleName]) { names = v }
+
+    func getCharacters() -> [BibleCharacter]? { characters }
+    func setCharacters(_ v: [BibleCharacter]) { characters = v }
+
+    func getLocationChallenges() -> [BibleLocationChallenge]? { locationChallenges }
+    func setLocationChallenges(_ v: [BibleLocationChallenge]) { locationChallenges = v }
 
     func getLocations() -> [BibleLocation]? { locations }
     func setLocations(_ v: [BibleLocation]) { locations = v }
@@ -101,6 +155,28 @@ enum GameDataLoaders {
         }
         // If file missing or failed to parse, return empty (no legacy fallbacks)
         print("⚠️ names.json could not be loaded or parsed; returning empty names list.")
+        return []
+    }
+
+    static func loadCharacters() -> [BibleCharacter] {
+        if let characters: [BibleCharacter] = tryLoadArray(
+            [BibleCharacter].self,
+            resource: "Bible_Characters_Game_Clues_With_Difficulty"
+        ) {
+            return characters
+        }
+        print("⚠️ Bible_Characters_Game_Clues_With_Difficulty.json could not be loaded or decoded.")
+        return []
+    }
+
+    static func loadLocationChallenges() -> [BibleLocationChallenge] {
+        if let locations: [BibleLocationChallenge] = tryLoadArray(
+            [BibleLocationChallenge].self,
+            resource: "bible_locations"
+        ) {
+            return locations
+        }
+        print("⚠️ bible_locations.json could not be loaded or decoded.")
         return []
     }
 
@@ -135,6 +211,32 @@ enum GameDataLoaders {
             }
         }
         await cache.setNames(loaded)
+        return loaded
+    }
+
+    static func loadCharactersAsync() async -> [BibleCharacter] {
+        let cache = GameDataCache.shared
+        if let cached = await cache.getCharacters() { return cached }
+
+        let loaded: [BibleCharacter] = await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                continuation.resume(returning: loadCharacters())
+            }
+        }
+        await cache.setCharacters(loaded)
+        return loaded
+    }
+
+    static func loadLocationChallengesAsync() async -> [BibleLocationChallenge] {
+        let cache = GameDataCache.shared
+        if let cached = await cache.getLocationChallenges() { return cached }
+
+        let loaded: [BibleLocationChallenge] = await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                continuation.resume(returning: loadLocationChallenges())
+            }
+        }
+        await cache.setLocationChallenges(loaded)
         return loaded
     }
 
