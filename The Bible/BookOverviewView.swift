@@ -28,17 +28,37 @@ struct BookOverviewView: View {
     private func overviewContent(_ overview: BibleBookOverview) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                Text(overview.plainEnglishSummary)
-                    .font(.body)
+                OverviewHeroCard(
+                    title: "Book Summary",
+                    icon: "book.closed",
+                    content: overview.plainEnglishSummary
+                )
 
-                OverviewDetailSection(title: "Theme", content: overview.overallTheme)
-                OverviewDetailSection(title: "Purpose", content: overview.purpose)
-                OverviewDetailSection(
-                    title: "Author or Attribution",
+                OverviewHeroCard(
+                    title: "Theme",
+                    icon: "sparkles",
+                    content: overview.overallTheme
+                )
+                OverviewHeroCard(
+                    title: "Purpose",
+                    icon: "target",
+                    content: overview.purpose
+                )
+                OverviewHeroCard(
+                    title: "Author",
+                    icon: "person.fill",
                     content: overview.traditionalAuthorOrAttribution
                 )
-                OverviewDetailSection(title: "Original Audience", content: overview.originalAudience)
-                OverviewDetailSection(title: "Historical Context", content: overview.historicalContext)
+                OverviewHeroCard(
+                    title: "Original Audience",
+                    icon: "person.2.fill",
+                    content: overview.originalAudience
+                )
+                OverviewHeroCard(
+                    title: "Historical Context",
+                    icon: "calendar",
+                    content: overview.historicalContext
+                )
 
                 if !overview.movements.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
@@ -82,6 +102,24 @@ struct BookOverviewView: View {
         isLoading = true
         overview = await BibleBookOverviewRepository.shared.overview(forBookNamed: bookName)
         isLoading = false
+    }
+}
+
+private struct OverviewHeroCard: View {
+    let title: String
+    let icon: String
+    let content: String
+
+    var body: some View {
+        HeroCard(
+            title: title,
+            icon: icon
+        ) {
+            Text(content)
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
 }
 
