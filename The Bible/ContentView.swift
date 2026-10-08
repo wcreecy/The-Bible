@@ -185,8 +185,10 @@ struct ContentView: View {
         .onChange(of: selectedTab) { oldValue, newValue in
             recordUsageElapsed(for: oldValue)
 
-            // When leaving Games tab, persist latest session accuracy baseline for the Home games card caret
-            if previousTab == .games && newValue != .games {
+            // Leaving Games ends any active round and returns its navigation stack to the game list.
+            if oldValue == .games && newValue != .games {
+                returnToGameSelection()
+
                 let today = GameStats.shared.todayStats()
                 // Reuse the existing baseline key the GamesCard reads
                 UserDefaults.standard.set(today.pct, forKey: "gamesLastWeekAccuracyPct")
@@ -325,8 +327,13 @@ struct ContentView: View {
                 applyBackgroundElapsedIfAny()
                 // Start foreground usage timer
                 startUsageTimerIfNeeded()
-            case .inactive, .background:
-                // Remember when we went foreground to compute elapsed when returning
+            case .inactive:
+                // Remember when we went foreground to compute elapsed when returning.
+                lastBackgroundedAt = Date().timeIntervalSince1970
+                stopUsageTimer()
+            case .background:
+                // Backgrounding ends an active game round so returning to Games shows its selection screen.
+                returnToGameSelection()
                 lastBackgroundedAt = Date().timeIntervalSince1970
                 stopUsageTimer()
             @unknown default:
@@ -336,6 +343,11 @@ struct ContentView: View {
     }
 
     // MARK: - Daily usage tracking (unchanged)...
+
+    private func returnToGameSelection() {
+        guard !gamesPath.isEmpty else { return }
+        gamesPath = NavigationPath()
+    }
 
     private func handleTabNotification(_ notification: Notification) {
         if notification.name == .openVerseOfDayNotification {
