@@ -5,6 +5,69 @@ struct ChapterDetailKey: Identifiable, Hashable {
     var id: String { bookName }
 }
 
+private struct GenesisChapterSectionHeader: View {
+    let chapterCount: Int
+
+    var body: some View {
+        HStack(spacing: 14) {
+            GenesisCreationEmblem()
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Genesis")
+                    .font(.system(.largeTitle, design: .serif, weight: .bold))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.orange, .yellow],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+
+                Text("The beginning")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                Text("\(chapterCount) chapters")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(.vertical, 8)
+        .textCase(nil)
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private struct GenesisCreationEmblem: View {
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [.orange, .yellow, .green],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+
+            Image(systemName: "sun.max.fill")
+                .font(.system(size: 27, weight: .medium))
+                .foregroundStyle(.white)
+                .offset(x: -7, y: -7)
+
+            Image(systemName: "leaf.fill")
+                .font(.system(size: 19, weight: .bold))
+                .foregroundStyle(.white.opacity(0.94))
+                .rotationEffect(.degrees(-25))
+                .offset(x: 10, y: 10)
+        }
+        .frame(width: 60, height: 60)
+        .accessibilityHidden(true)
+    }
+}
+
 struct BookChaptersDetailView: View {
     let bookName: String
 
@@ -50,7 +113,11 @@ struct BookChaptersDetailView: View {
                             .accessibilityLabel("Chapter \(chap) \(isRead ? "read" : "unread")")
                         }
                     } header: {
-                        Text(b.name)
+                        if b.name == "Genesis" {
+                            GenesisChapterSectionHeader(chapterCount: chapterNumbers.count)
+                        } else {
+                            Text(b.name)
+                        }
                     } footer: {
                         let readCount = chapterNumbers.reduce(0) { acc, chap in
                             let total = b.chapters.first(where: { $0.number == chap })?.verses.count ?? 0
