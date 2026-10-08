@@ -25,6 +25,8 @@ struct ReadingView: View {
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
     @AppStorage("showReadVerseCheckmarks") private var showVerseStatusIcons: Bool = false
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    @AppStorage("focusReadingEnabled") private var focusReadingEnabled = false
+    @State private var isFocusModePresented = false
     @State private var seenVerseNumbers: Set<Int> = []
     @State private var seenVerseLocation: String = ""
 
@@ -96,7 +98,16 @@ struct ReadingView: View {
                         Image(systemName: "magnifyingglass")
                     }
                     .accessibilityLabel("Search Bible")
+
+                    Button {
+                        isFocusModePresented = true
+                    } label: {
+                        Image(systemName: "arrow.up.left.and.arrow.down.right")
+                    }
+                    .accessibilityLabel("Enter Focus Mode")
+                    .accessibilityHint("Shows one verse at a time")
                 }
+
                 ToolbarItem(placement: .principal) {
                     Button {
                         let h = UIImpactFeedbackGenerator(style: .light)
@@ -136,6 +147,7 @@ struct ReadingView: View {
             }
             .onAppear {
                 viewModel.onAppear()
+                isFocusModePresented = focusReadingEnabled
                 saveReaderPosition(verseNumber: viewModel.currentVerse)
                 refreshSeenVerses()
                 // Ensure newest-only ReadingProgress row
@@ -181,6 +193,23 @@ struct ReadingView: View {
                 action: undoFavoriteRemoval
             )
             .persistenceFailureAlert(failure: $persistenceFailure)
+            .fullScreenCover(isPresented: $isFocusModePresented) {
+                FocusReadingView(
+                    initialLocation: FocusVerseLocation(
+                        bookName: viewModel.currentBook.name,
+                        chapterNumber: viewModel.currentChapter.number,
+                        verseNumber: viewModel.currentVerse
+                    ),
+                    readerFontSize: readerFontSize,
+                    onLocationChange: { location in
+                        viewModel.show(location: location)
+                        saveReaderPosition(verseNumber: location.verseNumber)
+                    },
+                    onExit: {
+                        isFocusModePresented = false
+                    }
+                )
+            }
     }
 
     @ViewBuilder

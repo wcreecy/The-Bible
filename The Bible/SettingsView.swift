@@ -125,9 +125,25 @@ private struct SettingsReadingAndDailyLifeLinksSection: View {
 
 private struct SettingsReadingProgressSection: View {
     @AppStorage("showReadVerseCheckmarks") private var showVerseStatusIcons = false
+    @AppStorage("focusReadingEnabled") private var focusReadingEnabled = false
 
     var body: some View {
         Section {
+            Toggle(isOn: $focusReadingEnabled) {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Focus Reading")
+                        Text("Open the reader with one verse on screen")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "arrow.up.left.and.arrow.down.right")
+                        .foregroundStyle(.tint)
+                }
+            }
+            .accessibilityIdentifier("focusReadingToggle")
+
             Toggle(isOn: $showVerseStatusIcons) {
                 Label {
                     VStack(alignment: .leading, spacing: 2) {
@@ -381,6 +397,7 @@ private enum DeveloperSettingsReset {
             "contextualTipsEnabled": false,
             "readerFontSize": 17.0,
             "showReadVerseCheckmarks": false,
+            "focusReadingEnabled": false,
             "homeCustomizeButtonVisible": true,
             "homeBibleReaderVisible": HomeLayoutStore.defaultBibleReaderVisible,
             "noteEditorTextSizeStep": 0,

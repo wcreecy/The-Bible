@@ -206,6 +206,22 @@ final class ReadingViewModel: ObservableObject {
 
     // MARK: - Navigation
 
+    func show(location: FocusVerseLocation) {
+        guard let book = BibleData.books.first(where: { $0.name == location.bookName }),
+              let chapterIndex = book.chapters.firstIndex(where: { $0.number == location.chapterNumber }) else {
+            return
+        }
+
+        currentBook = book
+        currentBookNameIndex = orderedBookNames.firstIndex(of: book.name)
+        currentChapterIndex = chapterIndex
+        currentVerse = location.verseNumber
+        topVisibleVerseID = rowID(for: location.verseNumber)
+        ReadingTimeTracker.shared.setCurrentLocation(bookName: book.name, chapter: location.chapterNumber)
+        resetInitialMarkingAfterChapterChange()
+        markActivity()
+    }
+
     func nextChapter() {
         guard let bookIdx = indexOfCurrentBookInCanonical() else { return }
         let chapters = currentBook.chapters
