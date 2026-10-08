@@ -824,8 +824,7 @@ struct HomeView: View {
         .onReceive(NotificationCenter.default.publisher(for: .resetPrayerTimer)) { _ in
             timerController.stop()
         }
-        .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
-        }
+
         .onChange(of: progressList) { _, _ in
             mirrorLastReadToAppGroup()
         }
@@ -849,9 +848,7 @@ struct HomeView: View {
         .onChange(of: votdRefresh1Minute) { _, _ in votdVM.refreshScheduleChanged() }
         .onChange(of: votdRefresh2Hour) { _, _ in votdVM.refreshScheduleChanged() }
         .onChange(of: votdRefresh2Minute) { _, _ in votdVM.refreshScheduleChanged() }
-        .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
-            // bibleVM already refreshes on appear/active
-        }
+
         .sheet(isPresented: $showPrayerStudySheet) {
             PrayerStudyTimerSetupView(onStart: { minutes in
                 timerController.start(minutes: minutes)

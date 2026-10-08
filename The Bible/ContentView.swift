@@ -524,7 +524,9 @@ struct ContentView: View {
         guard usageTimer == nil else { return }
 
         lastUsageUpdate = Date()
-        usageTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+        // Usage is calculated from elapsed wall time, so a coarse cadence preserves
+        // accuracy while avoiding per-second UserDefaults and iCloud work.
+        usageTimer = Timer.scheduledTimer(withTimeInterval: 15.0, repeats: true) { _ in
             recordUsageElapsed(for: selectedTab)
         }
         if let timer = usageTimer {

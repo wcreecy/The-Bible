@@ -636,14 +636,6 @@ struct SearchResult: Identifiable, Hashable, Sendable {
 actor BibleSearchIndex {
     static let shared = BibleSearchIndex()
 
-    private struct SourceEntry: Sendable {
-        let bookIndex: Int
-        let bookName: String
-        let chapterNumber: Int
-        let verseNumber: Int
-        let verseText: String
-    }
-
     private struct Entry: Sendable {
         let bookIndex: Int
         let bookName: String
@@ -654,7 +646,7 @@ actor BibleSearchIndex {
     }
 
     private var entries: [Entry]?
-    private var sourceTask: Task<[SourceEntry], Never>?
+    private var indexBuildTask: Task<[Entry], Never>?
 
     func search(
         tokens: [String],
@@ -689,41 +681,34 @@ actor BibleSearchIndex {
     private func indexedVerses() async -> [Entry] {
         if let entries { return entries }
 
-        let task: Task<[SourceEntry], Never>
-        if let sourceTask {
-            task = sourceTask
+        let task: Task<[Entry], Never>
+        if let indexBuildTask {
+            task = indexBuildTask
         } else {
-            let newTask = Task { @MainActor in
-                BibleData.books.enumerated().flatMap { bookIndex, book in
+            let books = await MainActor.run { BibleData.books }
+            let newTask = Task.detached(priority: .userInitiated) {
+                books.enumerated().flatMap { bookIndex, book in
                     book.chapters.flatMap { chapter in
                         chapter.verses.map { verse in
-                            SourceEntry(
+                            Entry(
                                 bookIndex: bookIndex,
                                 bookName: book.name,
                                 chapterNumber: chapter.number,
                                 verseNumber: verse.number,
-                                verseText: verse.text
+                                verseText: verse.text,
+                                normalizedText: verse.text.lowercased()
                             )
                         }
                     }
                 }
             }
-            sourceTask = newTask
+            indexBuildTask = newTask
             task = newTask
         }
 
-        let source = await task.value
-        let built = source.map { source in
-            Entry(
-                bookIndex: source.bookIndex,
-                bookName: source.bookName,
-                chapterNumber: source.chapterNumber,
-                verseNumber: source.verseNumber,
-                verseText: source.verseText,
-                normalizedText: source.verseText.lowercased()
-            )
-        }
+        let built = await task.value
         entries = built
+        indexBuildTask = nil
         return built
     }
 }

@@ -52,6 +52,16 @@ struct VerseNoteEditorView: View {
     @State private var selectedCategory: NoteCategory
     @State private var persistenceFailure: PersistenceFailure?
     @State private var selectedScriptureReference: ScriptureRef?
+    @State private var referenceLinkTask: Task<Void, Never>?
+
+    private func scheduleReferenceLinking() {
+        referenceLinkTask?.cancel()
+        referenceLinkTask = Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(300))
+            guard !Task.isCancelled else { return }
+            linkScriptureReferences()
+        }
+    }
 
     init(
         verse: VerseActionReference,
@@ -159,7 +169,10 @@ struct VerseNoteEditorView: View {
         .persistenceFailureAlert(failure: $persistenceFailure)
         .onAppear(perform: linkScriptureReferences)
         .onChange(of: String(noteText.characters)) { _, _ in
-            linkScriptureReferences()
+            scheduleReferenceLinking()
+        }
+        .onDisappear {
+            referenceLinkTask?.cancel()
         }
         .onReceive(NotificationCenter.default.publisher(for: .openScripturePreview)) { notification in
             guard let url = notification.object as? URL,
@@ -2733,6 +2746,16 @@ private struct UserNoteEditorView: View {
     @State private var selectedCategory: NoteCategory
     @State private var persistenceFailure: PersistenceFailure?
     @State private var selectedScriptureReference: ScriptureRef?
+    @State private var referenceLinkTask: Task<Void, Never>?
+
+    private func scheduleReferenceLinking() {
+        referenceLinkTask?.cancel()
+        referenceLinkTask = Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(300))
+            guard !Task.isCancelled else { return }
+            linkScriptureReferences()
+        }
+    }
 
     init(existingNote: UserNote?, defaultCategory: NoteCategory = .personal) {
         self.existingNote = existingNote
@@ -2819,7 +2842,10 @@ private struct UserNoteEditorView: View {
         .persistenceFailureAlert(failure: $persistenceFailure)
         .onAppear(perform: linkScriptureReferences)
         .onChange(of: String(noteText.characters)) { _, _ in
-            linkScriptureReferences()
+            scheduleReferenceLinking()
+        }
+        .onDisappear {
+            referenceLinkTask?.cancel()
         }
         .onReceive(NotificationCenter.default.publisher(for: .openScripturePreview)) { notification in
             guard let url = notification.object as? URL,
