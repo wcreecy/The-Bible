@@ -45,7 +45,18 @@ actor ChapterInsightsRepository {
         enum CodingKeys: String, CodingKey {
             case theme
             case explanationAndTakeaway = "explanation_and_takeaway"
+            case explanationAndLesson = "explanation_and_lesson"
             case scriptureReferences = "scripture_references"
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            theme = try container.decode(String.self, forKey: .theme)
+            explanationAndTakeaway = try container.decodeIfPresent(
+                String.self,
+                forKey: .explanationAndTakeaway
+            ) ?? container.decode(String.self, forKey: .explanationAndLesson)
+            scriptureReferences = try container.decode([String].self, forKey: .scriptureReferences)
         }
     }
 
@@ -62,6 +73,35 @@ actor ChapterInsightsRepository {
             case connectionToChapter = "connection_to_the_chapter"
             case customsAndTraditions = "customs_and_traditions"
             case whyItMatters = "why_it_matters"
+            case titleCaseHistoricalSetting = "Historical Setting"
+            case titleCaseWhatWasHappening = "What Was Happening"
+            case titleCaseConnectionToChapter = "Connection to the Chapter"
+            case titleCaseCustomsAndTraditions = "Customs and Traditions"
+            case titleCaseWhyItMatters = "Why It Matters"
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            historicalSetting = try container.decodeIfPresent(
+                String.self,
+                forKey: .historicalSetting
+            ) ?? container.decode(String.self, forKey: .titleCaseHistoricalSetting)
+            whatWasHappening = try container.decodeIfPresent(
+                String.self,
+                forKey: .whatWasHappening
+            ) ?? container.decode(String.self, forKey: .titleCaseWhatWasHappening)
+            connectionToChapter = try container.decodeIfPresent(
+                String.self,
+                forKey: .connectionToChapter
+            ) ?? container.decode(String.self, forKey: .titleCaseConnectionToChapter)
+            customsAndTraditions = try container.decodeIfPresent(
+                String.self,
+                forKey: .customsAndTraditions
+            ) ?? container.decode(String.self, forKey: .titleCaseCustomsAndTraditions)
+            whyItMatters = try container.decodeIfPresent(
+                String.self,
+                forKey: .whyItMatters
+            ) ?? container.decode(String.self, forKey: .titleCaseWhyItMatters)
         }
     }
 
@@ -92,7 +132,7 @@ actor ChapterInsightsRepository {
             return loadEmbeddedJSONInsights(chapterNumber: chapterNumber, database: database)
         case "Leviticus":
             return loadLeviticusInsights(chapterNumber: chapterNumber, database: database)
-        case "Numbers", "Deuteronomy", "Joshua":
+        case "Numbers", "Deuteronomy", "Joshua", "Judges":
             return loadSimpleOverviewInsights(chapterNumber: chapterNumber, database: database)
         default:
             return loadInsights(chapterNumber: chapterNumber, database: database)
@@ -113,6 +153,8 @@ actor ChapterInsightsRepository {
             "Deuteronomy_Chapter_Overviews_34"
         case "Joshua":
             "Joshua_Chapter_Overviews_24"
+        case "Judges":
+            "Judges_Chapter_Overviews_21"
         default:
             nil
         }
