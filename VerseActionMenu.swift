@@ -15,6 +15,7 @@ struct VerseActionReference: Hashable {
 
 enum VerseActionPresentation {
     case buttons
+    case focus
     case menu
 }
 
@@ -125,6 +126,22 @@ struct VerseActionMenu: View {
                 .accessibilityLabel("Share")
             }
             .font(.title3)
+            .buttonStyle(.plain)
+
+        case .focus:
+            HStack(spacing: 18) {
+                Button(action: toggleFavorite) {
+                    Image(systemName: isFavorite ? "heart.fill" : "heart")
+                        .foregroundStyle(isFavorite ? AnyShapeStyle(.red) : AnyShapeStyle(.primary))
+                }
+                .accessibilityLabel(isFavorite ? "Remove from Favorites" : "Add to Favorites")
+
+                Button(action: bookmark) {
+                    Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
+                        .foregroundStyle(isBookmarked ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.primary))
+                }
+                .accessibilityLabel(isBookmarked ? "Remove Continue Reading bookmark" : "Set as Continue Reading")
+            }
             .buttonStyle(.plain)
 
         case .menu:
