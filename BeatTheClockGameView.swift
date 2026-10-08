@@ -35,6 +35,19 @@ struct BeatTheClockGameView: View {
         }
     }
 
+    private struct Question: Identifiable {
+        enum Subject {
+            case person
+            case place
+        }
+
+        let id: String
+        let subject: Subject
+        let label: String
+        let acceptableBooks: Set<String>
+        let referenceBookName: String?
+    }
+
     @State private var started: Bool = false
     @AppStorage("beatTheClockDifficulty") private var difficulty: Difficulty = .normal
     @AppStorage("beatTheClockCategory") private var category: Category = .people
@@ -45,6 +58,8 @@ struct BeatTheClockGameView: View {
     // Data
     @State private var loadedPeople: [BibleCharacter] = []
     @State private var loadedPlaces: [BibleLocationChallenge] = []
+    @State private var questionDeck: [Question] = []
+    @State private var bookChoices: [String] = []
 
     // Current round
     @State private var targetLabel: String = ""
@@ -81,20 +96,24 @@ struct BeatTheClockGameView: View {
     private var allBookNames: [String] { BibleData.books.map { $0.name } }
 
     private var peopleForSelectedDifficulty: [BibleCharacter] {
-        loadedPeople.filter { $0.matchesDifficulty(difficulty.rawValue) }
+        loadedPeople.filter { matchesSelectedDifficulty($0.difficulty) }
+    }
+
+    private var placesForSelectedDifficulty: [BibleLocationChallenge] {
+        loadedPlaces.filter { matchesSelectedDifficulty($0.difficulty) }
     }
 
     private var filteredBooks: [String] {
         let text = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return [] }
-        return allBookNames.filter { $0.localizedCaseInsensitiveContains(text) }.sorted()
+        return bookChoices.filter { $0.localizedCaseInsensitiveContains(text) }
     }
 
     private var roundTime: Int {
         switch difficulty {
         case .easy: return 25
         case .normal: return 15
-        case .hard: return 8
+        case .hard: return 10
         }
     }
 
@@ -388,6 +407,12 @@ struct BeatTheClockGameView: View {
             // Switch to this difficulty’s persisted streaks
             seedStreakFromPersistence()
         }
+        .onDisappear {
+            // Leaving after answering begins a new game session on return.
+            if started && answered > 0 {
+                resetGameSession()
+            }
+        }
         .onReceive(timer) { _ in
             guard started, !selectionLocked else { return }
             if remainingSeconds > 0 {
@@ -439,6 +464,8 @@ struct BeatTheClockGameView: View {
     private func startGame() {
         score = 0
         answered = 0
+        questionDeck = makeQuestionDeck()
+        guard !questionDeck.isEmpty else { return }
         started = true
         // Do NOT reset persistent streaks here; seed from persistence
         seedStreakFromPersistence()
@@ -450,53 +477,87 @@ struct BeatTheClockGameView: View {
         searchText = ""
         remainingSeconds = roundTime
         acceptableBooks = []
+        bookChoices = allBookNames.shuffled()
         pulse = false
         roundResultIsCorrect = nil
 
-        switch category {
-        case .people:
-            guard let entry = peopleForSelectedDifficulty.randomElement() else { targetLabel = ""; referenceBookName = nil; return }
-            currentEntryIsPerson = true
-            targetLabel = entry.name
-            referenceBookName = entry.books.first
-        case .places:
-            guard let entry = loadedPlaces.randomElement() else { targetLabel = ""; referenceBookName = nil; return }
-            currentEntryIsPerson = false
-            targetLabel = entry.locationName
-            referenceBookName = parseBookName(from: entry.scriptureMentioned)
-        case .both:
-            let usePerson: Bool
-            if peopleForSelectedDifficulty.isEmpty && loadedPlaces.isEmpty {
-                targetLabel = ""; referenceBookName = nil; return
-            } else if peopleForSelectedDifficulty.isEmpty {
-                usePerson = false
-            } else if loadedPlaces.isEmpty {
-                usePerson = true
-            } else {
-                usePerson = Bool.random()
-            }
-            if usePerson, let entry = peopleForSelectedDifficulty.randomElement() {
-                currentEntryIsPerson = true
-                targetLabel = entry.name
-                referenceBookName = entry.books.first
-            } else if let entry = loadedPlaces.randomElement() {
-                currentEntryIsPerson = false
-                targetLabel = entry.locationName
-                referenceBookName = parseBookName(from: entry.scriptureMentioned)
-            } else {
-                targetLabel = ""; referenceBookName = nil; return
-            }
+        guard let question = questionDeck.popLast() else {
+            finishGame()
+            return
         }
-        acceptableBooks = currentEntryIsPerson
-            ? Set(peopleForSelectedDifficulty.first(where: { $0.name == targetLabel })?.books ?? [])
-            : []
 
-        if !currentEntryIsPerson, let ref = referenceBookName {
-            acceptableBooks.insert(ref)
-        }
+        currentEntryIsPerson = question.subject == .person
+        targetLabel = question.label
+        referenceBookName = question.referenceBookName
+        acceptableBooks = question.acceptableBooks
         DispatchQueue.main.async {
             self.searchFieldFocused = true
         }
+    }
+
+    private func matchesSelectedDifficulty(_ questionDifficulty: String) -> Bool {
+        let normalizedDifficulty = questionDifficulty.lowercased()
+
+        switch difficulty {
+        case .easy:
+            return normalizedDifficulty == "easy"
+        case .normal:
+            // The catalog currently uses "Medium" for the Normal tier.
+            return normalizedDifficulty == "easy"
+                || normalizedDifficulty == "normal"
+                || normalizedDifficulty == "medium"
+        case .hard:
+            return true
+        }
+    }
+
+    private func makeQuestionDeck() -> [Question] {
+        let people = peopleForSelectedDifficulty.map { entry in
+            Question(
+                id: "person-\(entry.id)",
+                subject: .person,
+                label: entry.name,
+                acceptableBooks: Set(entry.books),
+                referenceBookName: entry.books.first
+            )
+        }
+        let places = placesForSelectedDifficulty.map { entry in
+            let referenceBookName = parseBookName(from: entry.scriptureMentioned)
+            return Question(
+                id: "place-\(entry.id)",
+                subject: .place,
+                label: entry.locationName,
+                acceptableBooks: referenceBookName.map { [$0] } ?? [],
+                referenceBookName: referenceBookName
+            )
+        }
+
+        switch category {
+        case .people:
+            return people.shuffled()
+        case .places:
+            return places.shuffled()
+        case .both:
+            return (people + places).shuffled()
+        }
+    }
+
+    private func finishGame() {
+        started = false
+        selectionLocked = true
+        searchFieldFocused = false
+        questionDeck = []
+    }
+
+    private func resetGameSession() {
+        started = false
+        selectionLocked = false
+        remainingSeconds = 0
+        questionDeck = []
+        searchText = ""
+        acceptableBooks = []
+        bookChoices = []
+        searchFieldFocused = false
     }
 
     private func submitCurrentEntry() {
