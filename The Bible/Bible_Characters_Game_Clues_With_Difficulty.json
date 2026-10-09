@@ -39,8 +39,7 @@
       "Genesis",
       "Matthew",
       "Luke",
-      "Hebrews",
-      "1 John"
+      "Hebrews"
     ],
     "short_description": "Son of Adam and Eve murdered by Cain",
     "difficulty": "Easy"
@@ -178,8 +177,7 @@
     "name": "Ahasuerus",
     "books": [
       "Ezra",
-      "Esther",
-      "Daniel"
+      "Esther"
     ],
     "short_description": "Persian king in the book of Esther",
     "difficulty": "Medium"
@@ -213,7 +211,8 @@
     "id": 16,
     "name": "Ahimaaz",
     "books": [
-      "2 Samuel"
+      "2 Samuel",
+      "1 Chronicles"
     ],
     "short_description": "Priest's son who carried news to David",
     "difficulty": "Hard"
@@ -223,7 +222,6 @@
     "name": "Ahimelech",
     "books": [
       "1 Samuel",
-      "2 Samuel",
       "Psalms"
     ],
     "short_description": "Priest who aided David at Nob",
@@ -392,8 +390,7 @@
       "2 Chronicles",
       "Ezra",
       "Nehemiah",
-      "Psalms",
-      "Isaiah"
+      "Psalms"
     ],
     "short_description": "Levite and worship leader",
     "difficulty": "Hard"
@@ -586,7 +583,8 @@
     "name": "Bezalel",
     "books": [
       "Exodus",
-      "1 Chronicles"
+      "1 Chronicles",
+      "2 Chronicles"
     ],
     "short_description": "Craftsman chosen to make the tabernacle furnishings",
     "difficulty": "Medium"
@@ -624,9 +622,7 @@
     "name": "Boaz",
     "books": [
       "Ruth",
-      "1 Kings",
       "1 Chronicles",
-      "2 Chronicles",
       "Matthew",
       "Luke"
     ],
@@ -811,8 +807,8 @@
     "name": "Demas",
     "books": [
       "Colossians",
-      "Philemon",
-      "2 Timothy"
+      "2 Timothy",
+      "Philemon"
     ],
     "short_description": "Former coworker who deserted Paul",
     "difficulty": "Medium"
@@ -1023,25 +1019,10 @@
     "name": "Esau",
     "books": [
       "Genesis",
-      "Exodus",
-      "Numbers",
       "Deuteronomy",
       "Joshua",
-      "Judges",
-      "1 Samuel",
-      "2 Samuel",
-      "1 Kings",
-      "2 Kings",
       "1 Chronicles",
-      "2 Chronicles",
-      "Psalms",
-      "Isaiah",
       "Jeremiah",
-      "Lamentations",
-      "Ezekiel",
-      "Daniel",
-      "Joel",
-      "Amos",
       "Obadiah",
       "Malachi",
       "Romans",
@@ -1425,12 +1406,49 @@
   },
   {
     "id": 125,
-    "name": "Jacob",
+    "name": "Jacob (son of Isaac)",
+    "books": [
+      "Genesis",
+      "Exodus",
+      "Leviticus",
+      "Numbers",
+      "Deuteronomy",
+      "Joshua",
+      "1 Samuel",
+      "2 Samuel",
+      "1 Kings",
+      "2 Kings",
+      "1 Chronicles",
+      "Psalms",
+      "Isaiah",
+      "Jeremiah",
+      "Lamentations",
+      "Ezekiel",
+      "Hosea",
+      "Amos",
+      "Obadiah",
+      "Micah",
+      "Nahum",
+      "Malachi",
+      "Matthew",
+      "Mark",
+      "Luke",
+      "John",
+      "Acts",
+      "Romans",
+      "Hebrews"
+    ],
+    "short_description": "Patriarch who wrestled with God and was given a new name",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 285,
+    "name": "Jacob (son of Matthan)",
     "books": [
       "Matthew"
     ],
-    "short_description": "Patriarch also called Israel",
-    "difficulty": "Easy"
+    "short_description": "Named in Jesus' genealogy as the father of Mary's husband",
+    "difficulty": "Hard"
   },
   {
     "id": 126,
@@ -1467,8 +1485,8 @@
       "Matthew",
       "Mark",
       "Acts",
-      "Galatians",
-      "1 Corinthians"
+      "1 Corinthians",
+      "Galatians"
     ],
     "short_description": "Leader of the Jerusalem church who spoke at its council",
     "difficulty": "Medium"
@@ -1569,7 +1587,6 @@
       "2 Peter",
       "1 John",
       "2 John",
-      "3 John",
       "Jude",
       "Revelation"
     ],
@@ -1591,8 +1608,7 @@
     "name": "Jezebel",
     "books": [
       "1 Kings",
-      "2 Kings",
-      "Revelation"
+      "2 Kings"
     ],
     "short_description": "Queen of Israel and wife of Ahab",
     "difficulty": "Easy"
@@ -1625,7 +1641,7 @@
     "books": [
       "Judges"
     ],
-    "short_description": "Father of Gideon who defended him against Baal's worshipers",
+    "short_description": "Defended his son against Baal's worshipers",
     "difficulty": "Medium"
   },
   {
@@ -1697,6 +1713,7 @@
     "name": "John Mark",
     "books": [
       "Acts",
+      "Colossians",
       "2 Timothy",
       "Philemon",
       "1 Peter"
@@ -1745,8 +1762,7 @@
     "books": [
       "1 Samuel",
       "2 Samuel",
-      "1 Chronicles",
-      "Jeremiah"
+      "1 Chronicles"
     ],
     "short_description": "Son of Saul and friend of David",
     "difficulty": "Medium"
@@ -1783,7 +1799,9 @@
       "Numbers",
       "Deuteronomy",
       "Joshua",
+      "1 Chronicles",
       "Psalms",
+      "John",
       "Acts",
       "Hebrews",
       "Revelation"
@@ -1813,7 +1831,8 @@
       "1 Kings",
       "1 Chronicles",
       "Nehemiah",
-      "Acts"
+      "Acts",
+      "Hebrews"
     ],
     "short_description": "Successor of Moses who led Israel",
     "difficulty": "Easy"
@@ -1841,6 +1860,8 @@
       "1 Chronicles",
       "2 Chronicles",
       "Isaiah",
+      "Hosea",
+      "Micah",
       "Matthew"
     ],
     "short_description": "King of Judah and father of Ahaz",
@@ -1870,7 +1891,10 @@
       "2 Samuel",
       "1 Kings",
       "2 Kings",
-      "Jeremiah"
+      "1 Chronicles",
+      "Jeremiah",
+      "Matthew",
+      "Luke"
     ],
     "short_description": "Son of Jacob and Leah",
     "difficulty": "Medium"
@@ -1895,6 +1919,7 @@
       "Exodus",
       "Numbers",
       "1 Chronicles",
+      "Psalms",
       "Jude"
     ],
     "short_description": "Levite who led a rebellion against Moses",
@@ -2658,6 +2683,7 @@
     "name": "Rahab",
     "books": [
       "Joshua",
+      "Matthew",
       "Hebrews",
       "James"
     ],
@@ -2668,7 +2694,8 @@
     "id": 230,
     "name": "Rebekah",
     "books": [
-      "Genesis"
+      "Genesis",
+      "Romans"
     ],
     "short_description": "Wife of Isaac and mother of Jacob",
     "difficulty": "Easy"
@@ -2784,6 +2811,7 @@
       "1 Samuel",
       "2 Samuel",
       "1 Chronicles",
+      "Psalms",
       "Acts"
     ],
     "short_description": "First king of Israel",
@@ -2907,8 +2935,8 @@
       "Luke",
       "John",
       "Acts",
-      "Galatians",
       "1 Corinthians",
+      "Galatians",
       "1 Peter",
       "2 Peter"
     ],
@@ -3222,8 +3250,7 @@
       "2 Kings",
       "1 Chronicles",
       "2 Chronicles",
-      "Jeremiah",
-      "Ezekiel"
+      "Jeremiah"
     ],
     "short_description": "Last king of Judah before Jerusalem's fall",
     "difficulty": "Medium"
@@ -3257,7 +3284,8 @@
       "Nehemiah",
       "Haggai",
       "Zechariah",
-      "Matthew"
+      "Matthew",
+      "Luke"
     ],
     "short_description": "Judean governor who led the return from exile",
     "difficulty": "Medium"
