@@ -86,9 +86,14 @@ struct BookOverviewView: View {
                     }
                 }
 
+                if !overview.keyFigures.isEmpty {
+                    KeyFiguresSection(keyFigures: overview.keyFigures)
+                }
+
                 if !overview.interpretiveNotes.isEmpty {
-                    OverviewDetailSection(
+                    OverviewHeroCard(
                         title: "Interpretive Notes",
+                        icon: "text.book.closed",
                         content: overview.interpretiveNotes
                     )
                 }
@@ -123,16 +128,29 @@ private struct OverviewHeroCard: View {
     }
 }
 
-private struct OverviewDetailSection: View {
-    let title: LocalizedStringKey
-    let content: String
+private struct KeyFiguresSection: View {
+    let keyFigures: [BibleBookKeyFigure]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .font(.title3.weight(.semibold))
-            Text(content)
-                .foregroundStyle(.secondary)
+        HeroCard(
+            title: "Key Figures",
+            icon: "person.2.fill"
+        ) {
+            VStack(alignment: .leading, spacing: 12) {
+                ForEach(keyFigures) { figure in
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(figure.name)
+                            .font(.headline)
+                        Text(figure.description)
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    if figure.id != keyFigures.last?.id {
+                        Divider()
+                    }
+                }
+            }
         }
     }
 }

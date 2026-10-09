@@ -12,6 +12,7 @@ struct BibleBookOverview: Equatable, Sendable {
     let plainEnglishSummary: String
     let interpretiveNotes: String
     let movements: [BibleBookMovement]
+    let keyFigures: [BibleBookKeyFigure]
 }
 
 struct BibleBookMovement: Identifiable, Equatable, Sendable {
@@ -20,6 +21,13 @@ struct BibleBookMovement: Identifiable, Equatable, Sendable {
     let title: String
     let description: String
     let keyPassages: [String]
+}
+
+struct BibleBookKeyFigure: Identifiable, Equatable, Sendable {
+    let id: Int
+    let sequence: Int
+    let name: String
+    let description: String
 }
 
 actor BibleBookOverviewRepository {
@@ -84,7 +92,8 @@ actor BibleBookOverviewRepository {
             overallTheme: columnText(statement, at: 7),
             plainEnglishSummary: columnText(statement, at: 8),
             interpretiveNotes: columnText(statement, at: 9),
-            movements: loadMovements(forBookID: bookID, database: database)
+            movements: loadMovements(forBookID: bookID, database: database),
+            keyFigures: loadKeyFigures(forBookID: bookID, database: database)
         )
     }
 
@@ -125,6 +134,38 @@ actor BibleBookOverviewRepository {
             ))
         }
         return movements
+    }
+
+    private func loadKeyFigures(
+        forBookID bookID: Int,
+        database: OpaquePointer
+    ) -> [BibleBookKeyFigure] {
+        let query = """
+        SELECT id, sequence, name, description
+        FROM book_key_figures
+        WHERE book_id = ?
+        ORDER BY sequence;
+        """
+
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return []
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_int(statement, 1, Int32(bookID))
+
+        var keyFigures: [BibleBookKeyFigure] = []
+        while sqlite3_step(statement) == SQLITE_ROW {
+            keyFigures.append(BibleBookKeyFigure(
+                id: Int(sqlite3_column_int(statement, 0)),
+                sequence: Int(sqlite3_column_int(statement, 1)),
+                name: columnText(statement, at: 2),
+                description: columnText(statement, at: 3)
+            ))
+        }
+        return keyFigures
     }
 
     private func columnText(_ statement: OpaquePointer, at index: Int32) -> String {
