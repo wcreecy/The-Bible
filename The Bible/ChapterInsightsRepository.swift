@@ -89,6 +89,7 @@ actor ChapterInsightsRepository {
             case historicalSetting = "historical_setting"
             case whatWasHappening = "what_was_happening"
             case connectionToChapter = "connection_to_the_chapter"
+            case alternateConnectionToChapter = "connection_to_chapter"
             case customsAndTraditions = "customs_and_traditions"
             case whyItMatters = "why_it_matters"
             case titleCaseHistoricalSetting = "Historical Setting"
@@ -111,6 +112,9 @@ actor ChapterInsightsRepository {
             connectionToChapter = try container.decodeIfPresent(
                 String.self,
                 forKey: .connectionToChapter
+            ) ?? container.decodeIfPresent(
+                String.self,
+                forKey: .alternateConnectionToChapter
             ) ?? container.decode(String.self, forKey: .titleCaseConnectionToChapter)
             customsAndTraditions = try container.decodeIfPresent(
                 String.self,
@@ -150,7 +154,7 @@ actor ChapterInsightsRepository {
             return loadEmbeddedJSONInsights(chapterNumber: chapterNumber, database: database)
         case "Leviticus":
             return loadLeviticusInsights(chapterNumber: chapterNumber, database: database)
-        case "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings":
+        case "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings":
             return loadSimpleOverviewInsights(chapterNumber: chapterNumber, database: database)
         default:
             return loadInsights(chapterNumber: chapterNumber, database: database)
@@ -181,6 +185,8 @@ actor ChapterInsightsRepository {
             "2_Samuel_Chapter_Overviews_24"
         case "1 Kings":
             "1_Kings_Chapter_Overviews_22"
+        case "2 Kings":
+            "2_Kings_Chapter_Overviews_25"
         default:
             nil
         }
