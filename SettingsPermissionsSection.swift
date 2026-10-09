@@ -7,10 +7,97 @@ import UserNotifications
 struct SettingsPermissionsSection: View {
     @Environment(\.scenePhase) private var scenePhase
 
+    @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
+
+    var body: some View {
+        Section {
+            Button(action: handleNotificationsAction) {
+                HStack {
+                    Label("Notifications", systemImage: "bell.badge")
+                    Spacer()
+                    Text(notificationStatusText)
+                        .foregroundStyle(notificationStatusColor)
+                }
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("notificationsPermissionRow")
+
+            HStack {
+                Label("Photo Selection", systemImage: "photo.on.rectangle")
+                Spacer()
+                Text("Ask When Used")
+                    .foregroundStyle(.secondary)
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityHint("The system photo picker shares only photos you select and does not require full library access.")
+        } header: {
+            Text("Permissions")
+                .foregroundStyle(.primary)
+        } footer: {
+            Text("Photo backgrounds use the system picker, so the app only receives photos you select. Prayer Timer Alarms, Live Activities, and Mindful Minutes are managed in Prayer Timer settings.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .headerProminence(.increased)
+        .task {
+            await updateStatus()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+            Task {
+                await updateStatus()
+            }
+        }
+    }
+
+    private var notificationStatusText: LocalizedStringKey {
+        switch notificationStatus {
+        case .authorized: "Allowed"
+        case .denied: "Denied"
+        case .notDetermined: "Not Requested"
+        case .provisional: "Provisional"
+        case .ephemeral: "Temporary"
+        @unknown default: "Unknown"
+        }
+    }
+
+    private var notificationStatusColor: Color {
+        switch notificationStatus {
+        case .authorized, .provisional, .ephemeral: .green
+        case .denied: .orange
+        case .notDetermined: .secondary
+        @unknown default: .secondary
+        }
+    }
+
+    private func handleNotificationsAction() {
+        if notificationStatus == .notDetermined {
+            Task {
+                _ = try? await UNUserNotificationCenter.current()
+                    .requestAuthorization(options: [.alert, .sound, .badge])
+                await updateStatus()
+            }
+        } else {
+            openSystemSettings()
+        }
+    }
+
+    @MainActor
+    private func updateStatus() async {
+        notificationStatus = await UNUserNotificationCenter.current()
+            .notificationSettings()
+            .authorizationStatus
+    }
+}
+
+/// Prayer Timer–related access (AlarmKit, Health, Live Activities), shown on the
+/// Prayer Timer settings page so everything about the timer lives in one place.
+struct SettingsPrayerTimerAccessSection: View {
+    @Environment(\.scenePhase) private var scenePhase
+
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
     @AppStorage("healthKitMindfulMinutesEnabled") private var mindfulMinutesEnabled: Bool = false
 
-    @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
     @State private var alarmStatus: PrayerTimerAlarmScheduler.AuthorizationStatus = .unavailable
     @State private var isRequestingAlarmAuthorization = false
     @State private var showAlarmSettingsAlert = false
@@ -19,16 +106,6 @@ struct SettingsPermissionsSection: View {
 
     var body: some View {
         Section {
-            permissionRow(
-                title: "Notifications",
-                systemImage: "bell.badge",
-                status: notificationStatusText,
-                statusColor: notificationStatusColor
-            ) {
-                handleNotificationsAction()
-            }
-            .accessibilityIdentifier("notificationsPermissionRow")
-
             if #available(iOS 26.1, *) {
                 Toggle(isOn: alarmAuthorizationBinding) {
                     Label {
@@ -43,24 +120,6 @@ struct SettingsPermissionsSection: View {
                     }
                 }
                 .accessibilityIdentifier("alarmKitPermissionRow")
-            }
-
-            Toggle(isOn: $mindfulMinutesEnabled) {
-                Label {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Mindful Minutes")
-                        Text(mindfulMinutesStatusText)
-                            .font(.caption)
-                            .foregroundStyle(mindfulMinutesStatusColor)
-                    }
-                } icon: {
-                    Image(systemName: "heart.text.square")
-                }
-            }
-            .disabled(mindfulMinutesStatus == nil)
-            .accessibilityIdentifier("mindfulMinutesToggle")
-            .onChange(of: mindfulMinutesEnabled) { _, enabled in
-                handleMindfulMinutesToggle(enabled)
             }
 
             Toggle(isOn: $liveActivitiesEnabled) {
@@ -87,19 +146,28 @@ struct SettingsPermissionsSection: View {
                     .accessibilityIdentifier("liveActivitiesSystemSettingsButton")
             }
 
-            HStack {
-                Label("Photo Selection", systemImage: "photo.on.rectangle")
-                Spacer()
-                Text("Ask When Used")
-                    .foregroundStyle(.secondary)
+            Toggle(isOn: $mindfulMinutesEnabled) {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Mindful Minutes")
+                        Text(mindfulMinutesStatusText)
+                            .font(.caption)
+                            .foregroundStyle(mindfulMinutesStatusColor)
+                    }
+                } icon: {
+                    Image(systemName: "heart.text.square")
+                }
             }
-            .accessibilityElement(children: .combine)
-            .accessibilityHint("The system photo picker shares only photos you select and does not require full library access.")
+            .disabled(mindfulMinutesStatus == nil)
+            .accessibilityIdentifier("mindfulMinutesToggle")
+            .onChange(of: mindfulMinutesEnabled) { _, enabled in
+                handleMindfulMinutesToggle(enabled)
+            }
         } header: {
-            Text("Permissions & Access")
+            Text("Alarms & Health")
                 .foregroundStyle(.primary)
         } footer: {
-            Text("Health access is requested only when you turn on Mindful Minutes here. Photo backgrounds use the system picker, so the app only receives photos you select.")
+            Text("Health access is requested only when you turn on Mindful Minutes here.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -111,51 +179,11 @@ struct SettingsPermissionsSection: View {
             Text("The Bible can only show the AlarmKit permission prompt once. To change a previous decision, allow Prayer Timer Alarms in iOS Settings.")
         }
         .task {
-            await updateStatuses()
+            updateStatuses()
         }
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
-            Task {
-                await updateStatuses()
-            }
-        }
-    }
-
-    private func permissionRow(
-        title: LocalizedStringKey,
-        systemImage: String,
-        status: LocalizedStringKey,
-        statusColor: Color,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            HStack {
-                Label(title, systemImage: systemImage)
-                Spacer()
-                Text(status)
-                    .foregroundStyle(statusColor)
-            }
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var notificationStatusText: LocalizedStringKey {
-        switch notificationStatus {
-        case .authorized: "Allowed"
-        case .denied: "Denied"
-        case .notDetermined: "Not Requested"
-        case .provisional: "Provisional"
-        case .ephemeral: "Temporary"
-        @unknown default: "Unknown"
-        }
-    }
-
-    private var notificationStatusColor: Color {
-        switch notificationStatus {
-        case .authorized, .provisional, .ephemeral: .green
-        case .denied: .orange
-        case .notDetermined: .secondary
-        @unknown default: .secondary
+            updateStatuses()
         }
     }
 
@@ -201,18 +229,6 @@ struct SettingsPermissionsSection: View {
         case .sharingDenied: .orange
         case .notDetermined, nil: .secondary
         @unknown default: .secondary
-        }
-    }
-
-    private func handleNotificationsAction() {
-        if notificationStatus == .notDetermined {
-            Task {
-                _ = try? await UNUserNotificationCenter.current()
-                    .requestAuthorization(options: [.alert, .sound, .badge])
-                await updateStatuses()
-            }
-        } else {
-            openSystemSettings()
         }
     }
 
@@ -269,10 +285,7 @@ struct SettingsPermissionsSection: View {
     }
 
     @MainActor
-    private func updateStatuses() async {
-        notificationStatus = await UNUserNotificationCenter.current()
-            .notificationSettings()
-            .authorizationStatus
+    private func updateStatuses() {
         alarmStatus = PrayerTimerAlarmScheduler.authorizationStatus()
         mindfulMinutesStatus = HealthKitManager.shared.mindfulMinutesAuthorizationStatus()
         if mindfulMinutesStatus == nil || mindfulMinutesStatus == .sharingDenied {
@@ -280,9 +293,9 @@ struct SettingsPermissionsSection: View {
         }
         areSystemLiveActivitiesEnabled = ActivityAuthorizationInfo().areActivitiesEnabled
     }
+}
 
-    private func openSystemSettings() {
-        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
-        UIApplication.shared.open(url)
-    }
+private func openSystemSettings() {
+    guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+    UIApplication.shared.open(url)
 }
