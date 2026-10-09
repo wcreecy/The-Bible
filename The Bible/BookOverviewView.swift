@@ -61,29 +61,7 @@ struct BookOverviewView: View {
                 )
 
                 if !overview.movements.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Book Movements")
-                            .font(.title3.weight(.semibold))
-
-                        ForEach(overview.movements) { movement in
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(movement.title)
-                                    .font(.headline)
-                                Text(movement.description)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-
-                                if !movement.keyPassages.isEmpty {
-                                    Text(movement.keyPassages.formatted(.list(type: .and)))
-                                        .font(.caption)
-                                        .foregroundStyle(.tint)
-                                }
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(AppDesignMetrics.cardPadding)
-                            .heroCardSurface()
-                        }
-                    }
+                    KeyEventsSection(movements: overview.movements)
                 }
 
                 if !overview.keyFigures.isEmpty {
@@ -124,6 +102,39 @@ private struct OverviewHeroCard: View {
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+private struct KeyEventsSection: View {
+    let movements: [BibleBookMovement]
+
+    var body: some View {
+        HeroCard(
+            title: "Key Events",
+            icon: "calendar"
+        ) {
+            VStack(alignment: .leading, spacing: 12) {
+                ForEach(movements) { movement in
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(movement.title)
+                            .font(.headline)
+                        Text(movement.description)
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+
+                        if !movement.keyPassages.isEmpty {
+                            Text(movement.keyPassages.formatted(.list(type: .and)))
+                                .font(.caption)
+                                .foregroundStyle(.tint)
+                        }
+                    }
+
+                    if movement.id != movements.last?.id {
+                        Divider()
+                    }
+                }
+            }
         }
     }
 }

@@ -175,8 +175,18 @@ actor ChapterInsightsRepository {
             )
         case "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings",
              "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "1 John", "Job", "Psalms", "Proverbs",
-             "Ecclesiastes", "Song of Solomon", "Isaiah", "Jeremiah", "Lamentations":
+             "Ecclesiastes", "Song of Solomon", "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea",
+             "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah",
+             "Malachi":
             return loadSimpleOverviewInsights(chapterNumber: chapterNumber, database: database)
+        case "Galatians", "Ephesians", "Philippians":
+            return loadRelationalInsights(chapterNumber: chapterNumber, database: database)
+        case "Colossians", "1 Thessalonians":
+            return loadStructuredInsights(
+                bookName: bookName,
+                chapterNumber: chapterNumber,
+                database: database
+            )
         default:
             return loadInsights(chapterNumber: chapterNumber, database: database)
         }
@@ -234,6 +244,44 @@ actor ChapterInsightsRepository {
             "Jeremiah_Chapter_Overviews_52"
         case "Lamentations":
             "Lamentations_Chapter_Overviews_5"
+        case "Ezekiel":
+            "26_Ezekiel_Chapter_Overviews_48"
+        case "Daniel":
+            "27_Daniel_Chapter_Overviews_12"
+        case "Hosea":
+            "28_Hosea_Chapter_Overviews_14"
+        case "Joel":
+            "29_Joel_Chapter_Overviews_3"
+        case "Amos":
+            "30_Amos_Chapter_Overviews_9"
+        case "Obadiah":
+            "31_Obadiah_Chapter_Overviews_1"
+        case "Jonah":
+            "32_Jonah_Chapter_Overviews_4"
+        case "Micah":
+            "33_Micah_Chapter_Overviews_7"
+        case "Nahum":
+            "34_Nahum_Chapter_Overviews_3"
+        case "Habakkuk":
+            "35_Habakkuk_Chapter_Overviews_3"
+        case "Zephaniah":
+            "36_Zephaniah_Chapter_Overviews_3"
+        case "Haggai":
+            "37_Haggai_Chapter_Overviews_2"
+        case "Zechariah":
+            "38_Zechariah_Chapter_Overviews_14"
+        case "Malachi":
+            "39_Malachi_Chapter_Overviews_4"
+        case "Galatians":
+            "Galatians_Chapter_Overviews_6"
+        case "Ephesians":
+            "Ephesians_Chapter_Overviews_6"
+        case "Philippians":
+            "Philippians_Chapter_Overviews_4"
+        case "Colossians":
+            "Colossians_Chapter_Overviews_4"
+        case "1 Thessalonians":
+            "1_Thessalonians_Chapter_Overviews_5"
         case "Revelation":
             "Revelation_Chapter_Overviews_22"
         case "2 Thessalonians":
@@ -427,6 +475,129 @@ actor ChapterInsightsRepository {
         defer { sqlite3_finalize(statement) }
 
         sqlite3_bind_int(statement, 1, Int32(chapterNumber))
+        var entries: [String] = []
+        while sqlite3_step(statement) == SQLITE_ROW {
+            entries.append(formatter(statement))
+        }
+        return entries.joined(separator: "\n\n")
+    }
+
+    private func loadRelationalInsights(
+        chapterNumber: Int,
+        database: OpaquePointer
+    ) -> ChapterInsights? {
+        let query = """
+        SELECT chapters.id, chapters.reference, chapters.summary,
+               historical_context.historical_setting, historical_context.what_was_happening,
+               historical_context.connection_to_chapter, historical_context.why_it_matters
+        FROM chapters
+        LEFT JOIN historical_context ON historical_context.chapter_id = chapters.id
+        WHERE chapters.chapter_number = ?
+        LIMIT 1;
+        """
+
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return nil
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_int(statement, 1, Int32(chapterNumber))
+        guard sqlite3_step(statement) == SQLITE_ROW else { return nil }
+
+        let chapterID = sqlite3_column_int(statement, 0)
+        let chapterEvents = relationalTextList(
+            query: "SELECT point FROM chapter_events WHERE chapter_id = ? ORDER BY sort_order;",
+            chapterID: chapterID,
+            database: database,
+            formatter: { columnText($0, at: 0) }
+        )
+        return ChapterInsights(
+            reference: columnText(statement, at: 1),
+            overallSummary: columnText(statement, at: 2),
+            historicalSetting: columnText(statement, at: 3),
+            whatWasHappening: chapterEvents.isEmpty ? columnText(statement, at: 4) : chapterEvents,
+            connectionToChapter: columnText(statement, at: 5),
+            customsAndTraditions: relationalTextList(
+                query: "SELECT custom, explanation FROM customs_traditions WHERE chapter_id = ? ORDER BY sort_order;",
+                chapterID: chapterID,
+                database: database,
+                formatter: { "\(columnText($0, at: 0)): \(columnText($0, at: 1))" }
+            ),
+            whyItMatters: columnText(statement, at: 6),
+            keyFigures: relationalFigures(chapterID: chapterID, database: database),
+            keyThemes: relationalThemes(chapterID: chapterID, database: database)
+        )
+    }
+
+    private func relationalFigures(chapterID: Int32, database: OpaquePointer) -> [ChapterKeyFigure] {
+        let query = """
+        SELECT id, name, who_they_are, role_in_chapter, significance
+        FROM key_figures
+        WHERE chapter_id = ?
+        ORDER BY sort_order;
+        """
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else { return [] }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_int(statement, 1, chapterID)
+        var figures: [ChapterKeyFigure] = []
+        while sqlite3_step(statement) == SQLITE_ROW {
+            figures.append(ChapterKeyFigure(
+                id: Int(sqlite3_column_int(statement, 0)),
+                name: columnText(statement, at: 1),
+                roleAndSignificance: [columnText(statement, at: 2), columnText(statement, at: 3), columnText(statement, at: 4)]
+                    .filter { !$0.isEmpty }
+                    .joined(separator: " ")
+            ))
+        }
+        return figures
+    }
+
+    private func relationalThemes(chapterID: Int32, database: OpaquePointer) -> [ChapterKeyTheme] {
+        let query = """
+        SELECT id, theme, explanation, significance, takeaway, refs
+        FROM key_themes
+        WHERE chapter_id = ?
+        ORDER BY sort_order;
+        """
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else { return [] }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_int(statement, 1, chapterID)
+        var themes: [ChapterKeyTheme] = []
+        while sqlite3_step(statement) == SQLITE_ROW {
+            themes.append(ChapterKeyTheme(
+                id: Int(sqlite3_column_int(statement, 0)),
+                theme: columnText(statement, at: 1),
+                explanation: [columnText(statement, at: 2), columnText(statement, at: 3), columnText(statement, at: 4)]
+                    .filter { !$0.isEmpty }
+                    .joined(separator: "\n\n"),
+                scriptureReferences: columnText(statement, at: 5)
+                    .split(separator: ";")
+                    .map { String($0).trimmingCharacters(in: .whitespaces) }
+            ))
+        }
+        return themes
+    }
+
+    private func relationalTextList(
+        query: String,
+        chapterID: Int32,
+        database: OpaquePointer,
+        formatter: (OpaquePointer) -> String
+    ) -> String {
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else { return "" }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_int(statement, 1, chapterID)
         var entries: [String] = []
         while sqlite3_step(statement) == SQLITE_ROW {
             entries.append(formatter(statement))
