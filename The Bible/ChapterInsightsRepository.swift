@@ -166,14 +166,15 @@ actor ChapterInsightsRepository {
             return loadEmbeddedJSONInsights(chapterNumber: chapterNumber, database: database)
         case "Leviticus":
             return loadLeviticusInsights(chapterNumber: chapterNumber, database: database)
-        case "Revelation", "1 Peter", "2 Peter", "2 John", "3 John", "Jude":
+        case "Revelation", "Hebrews", "Philemon", "James", "1 Peter", "2 Peter", "2 John", "3 John", "Jude":
             return loadStructuredInsights(
                 bookName: bookName,
                 chapterNumber: chapterNumber,
                 database: database
             )
         case "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings",
-             "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "1 John", "Job", "Psalms":
+             "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "1 John", "Job", "Psalms", "Proverbs",
+             "Ecclesiastes", "Song of Solomon":
             return loadSimpleOverviewInsights(chapterNumber: chapterNumber, database: database)
         default:
             return loadInsights(chapterNumber: chapterNumber, database: database)
@@ -220,8 +221,20 @@ actor ChapterInsightsRepository {
             "Job_Chapter_Overviews_42"
         case "Psalms":
             "Psalms_Chapter_Overviews_150"
+        case "Proverbs":
+            "Proverbs_Chapter_Overviews_31"
+        case "Ecclesiastes":
+            "Ecclesiastes_Chapter_Overviews_12"
+        case "Song of Solomon":
+            "Song_of_Solomon_Chapter_Overviews_8"
         case "Revelation":
             "Revelation_Chapter_Overviews_22"
+        case "Hebrews":
+            "Hebrews_Chapter_Overviews_13"
+        case "Philemon":
+            "Philemon_Chapter_Overviews_1"
+        case "James":
+            "James_Chapter_Overviews_5"
         case "1 Peter":
             "1_Peter_Chapter_Overviews_5"
         case "2 Peter":
