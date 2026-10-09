@@ -3,6 +3,14 @@ import SwiftUI
 struct ChaptersView: View {
     let book: Book
     @EnvironmentObject private var coordinator: NavigationCoordinator
+    @State private var completedChapters: Set<String> = []
+
+    // Cells grow with Dynamic Type so numbers stay readable at large sizes.
+    @ScaledMetric(relativeTo: .body) private var cellMinimumWidth: CGFloat = 56
+
+    private var gridColumns: [GridItem] {
+        [GridItem(.adaptive(minimum: cellMinimumWidth), spacing: 10)]
+    }
 
     var body: some View {
         ScrollView {
@@ -43,32 +51,21 @@ struct ChaptersView: View {
                 .foregroundStyle(.primary)
                 .heroCardSurface()
 
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    ForEach(book.chapters) { chapter in
-                    Button {
-                        coordinator.push(.chapter(book: book, chapter: chapter))
-                    } label: {
-                        HStack(spacing: 0) {
-                            Text("Chapter \(chapter.number)")
-                            Text(" of \(book.chapters.count)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(.tertiary)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .frame(minHeight: AppDesignMetrics.selectionRowMinHeight)
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.primary)
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("\(book.chapters.count) chapters")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
 
-                    if chapter.number != book.chapters.last?.number {
-                        Divider()
+                    LazyVGrid(columns: gridColumns, spacing: 10) {
+                        ForEach(book.chapters) { chapter in
+                            ChapterNumberButton(
+                                number: chapter.number,
+                                isCompleted: completedChapters.contains("\(book.name):\(chapter.number)")
+                            ) {
+                                coordinator.push(.reader(book: book, chapter: chapter, startVerse: 1))
+                            }
+                        }
                     }
-                }
                 }
                 .padding(AppDesignMetrics.cardPadding)
                 .heroCardSurface()
@@ -80,6 +77,47 @@ struct ChaptersView: View {
         // Genesis already has its own styled title card in the content.
         .navigationTitle(book.name == "Genesis" ? "" : book.name)
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear(perform: refreshCompletedChapters)
+        .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
+            refreshCompletedChapters()
+        }
+    }
+
+    private func refreshCompletedChapters() {
+        completedChapters = BibleStatsStore.shared.loadVisitedChapters()
+    }
+}
+
+/// A chapter cell in the chapter grid; completed chapters are tinted green.
+private struct ChapterNumberButton: View {
+    let number: Int
+    let isCompleted: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text("\(number)")
+                .font(.body.weight(.semibold))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .frame(maxWidth: .infinity)
+                .aspectRatio(1, contentMode: .fit)
+                .foregroundStyle(isCompleted ? Color.green : Color.primary)
+                .background(
+                    (isCompleted ? Color.green : Color.accentColor).opacity(0.12),
+                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                )
+                .overlay {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .strokeBorder((isCompleted ? Color.green : Color.accentColor).opacity(0.25), lineWidth: 1)
+                }
+                .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Chapter \(number)")
+        .accessibilityValue(isCompleted ? "Read" : "")
+        .accessibilityHint("Opens the chapter")
     }
 }
 

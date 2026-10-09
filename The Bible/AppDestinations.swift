@@ -21,8 +21,8 @@ extension View {
                         book: book,
                         chapter: chapter,
                         startVerse: startVerse,
-                        onNavigateBack: {
-                            coordinator.navigateBackFromReader(book: book, chapter: chapter)
+                        onNavigateBack: { currentBook in
+                            coordinator.navigateBackFromReader(book: currentBook)
                         },
                         onBookSelected: { selectedBook in
                             coordinator.showChapters(for: selectedBook)

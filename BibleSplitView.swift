@@ -601,7 +601,7 @@ struct BibleSplitView: View {
                             onSearch: {
                                 detailPath.append(SearchRoute())
                             },
-                            onNavigateBack: {
+                            onNavigateBack: { _ in
                                 selectedBook = book
                                 detailPath = NavigationPath()
                                 detailPath.append(ChapterRoute(

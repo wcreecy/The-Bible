@@ -14,7 +14,8 @@ struct ReadingView: View {
     let chapter: Chapter
     let startVerse: Int
     let onSearch: (() -> Void)?
-    let onNavigateBack: (() -> Void)?
+    /// Called with the book currently shown, which can differ from `book` after swiping chapters.
+    let onNavigateBack: ((Book) -> Void)?
     let onBookSelected: ((Book) -> Void)?
 
     // View model and stores
@@ -50,7 +51,7 @@ struct ReadingView: View {
         chapter: Chapter,
         startVerse: Int,
         onSearch: (() -> Void)? = nil,
-        onNavigateBack: (() -> Void)? = nil,
+        onNavigateBack: ((Book) -> Void)? = nil,
         onBookSelected: ((Book) -> Void)? = nil
     ) {
         self.book = book
@@ -83,10 +84,12 @@ struct ReadingView: View {
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
                     if let onNavigateBack {
-                        Button(action: onNavigateBack) {
+                        Button {
+                            onNavigateBack(viewModel.currentBook)
+                        } label: {
                             Image(systemName: "chevron.backward")
                         }
-                        .accessibilityLabel("Back to verse selection")
+                        .accessibilityLabel("Back to chapters")
                     }
                 }
 

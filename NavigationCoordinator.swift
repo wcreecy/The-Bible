@@ -17,25 +17,16 @@ final class NavigationCoordinator: ObservableObject {
         path.removeAll()
     }
 
-    func showReaderHierarchy(book: Book, chapter: Chapter, startVerse: Int) {
-        path = [
-            .book(book),
-            .chapter(book: book, chapter: chapter),
-            .reader(book: book, chapter: chapter, startVerse: startVerse)
-        ]
-    }
-
-    func navigateBackFromReader(book: Book, chapter: Chapter) {
+    /// Returns from the reader to the chapter grid for the book being read. Pops when
+    /// that grid is already underneath; otherwise (deep links, swiping into another
+    /// book) replaces the stack with it.
+    func navigateBackFromReader(book: Book) {
         if path.count >= 2,
-           case .chapter(let previousBook, let previousChapter) = path[path.count - 2],
-           previousBook == book,
-           previousChapter == chapter {
+           case .book(let previousBook) = path[path.count - 2],
+           previousBook.name == book.name {
             pop()
         } else {
-            path = [
-                .book(book),
-                .chapter(book: book, chapter: chapter)
-            ]
+            path = [.book(book)]
         }
     }
 
