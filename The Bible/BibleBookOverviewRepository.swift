@@ -11,8 +11,14 @@ struct BibleBookOverview: Equatable, Sendable {
     let overallTheme: String
     let plainEnglishSummary: String
     let interpretiveNotes: String
+    let keyScripture: BibleKeyScripture
     let movements: [BibleBookMovement]
     let keyFigures: [BibleBookKeyFigure]
+}
+
+struct BibleKeyScripture: Equatable, Sendable {
+    let reference: String
+    let text: String
 }
 
 struct BibleBookMovement: Identifiable, Equatable, Sendable {
@@ -64,7 +70,8 @@ actor BibleBookOverviewRepository {
         let query = """
         SELECT id, name, testament, traditional_author_or_attribution,
                original_audience, purpose, historical_context, overall_theme,
-               plain_english_summary, interpretive_notes
+               plain_english_summary, interpretive_notes, key_scripture_reference,
+               key_scripture_text
         FROM books
         WHERE name = ?
         LIMIT 1;
@@ -92,6 +99,10 @@ actor BibleBookOverviewRepository {
             overallTheme: columnText(statement, at: 7),
             plainEnglishSummary: columnText(statement, at: 8),
             interpretiveNotes: columnText(statement, at: 9),
+            keyScripture: BibleKeyScripture(
+                reference: columnText(statement, at: 10),
+                text: columnText(statement, at: 11)
+            ),
             movements: loadMovements(forBookID: bookID, database: database),
             keyFigures: loadKeyFigures(forBookID: bookID, database: database)
         )

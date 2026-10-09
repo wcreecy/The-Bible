@@ -39,6 +39,8 @@ struct BookOverviewView: View {
                     icon: "sparkles",
                     content: overview.overallTheme
                 )
+
+                KeyScriptureSection(keyScripture: overview.keyScripture)
                 OverviewHeroCard(
                     title: "Purpose",
                     icon: "target",
@@ -102,6 +104,25 @@ private struct OverviewHeroCard: View {
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+private struct KeyScriptureSection: View {
+    let keyScripture: BibleKeyScripture
+
+    var body: some View {
+        HeroCard(title: "Key Scripture", icon: "quote.bubble") {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(keyScripture.reference)
+                    .font(.headline)
+                    .foregroundStyle(.tint)
+
+                Text("“\(keyScripture.text)”")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
     }
 }
