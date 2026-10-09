@@ -1,57 +1,25 @@
 import SwiftUI
 
+/// Home header shared by iPhone and iPad: a time-of-day greeting, today's reading goal
+/// and streak, and quick actions. The layout adapts to the available width.
 struct TitleCardView: View {
     let isPad: Bool
     let goalMinutes: Int
     let todayReadingSeconds: Int
     let streak: Int
-    let goalMessage: String
     let onSearch: () -> Void
-    let onRead: () -> Void
     let onFavorites: () -> Void
+    let onOpenGoal: () -> Void
 
-    private var buttonScale: CGFloat { isPad ? 1.25 : 1.0 }
-    private var titleFont: Font { isPad ? .system(.largeTitle, design: .default) : .largeTitle }
-    private var titleWeight: Font.Weight { .black }
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
-    // Progress fraction 0...1 for gradient fill text
+    private var goalSeconds: Int { max(1, goalMinutes) * 60 }
+    private var readingMinutes: Int { max(0, todayReadingSeconds) / 60 }
+    private var isGoalMet: Bool { todayReadingSeconds >= goalSeconds }
+
+    // Progress fraction 0...1 toward today's goal
     private var progress: Double {
-        let goalSeconds = max(1, goalMinutes) * 60
-        return min(1.0, Double(max(0, todayReadingSeconds)) / Double(goalSeconds))
-    }
-
-    private struct ProgressFillText: View {
-        let text: String
-        let font: Font
-        let progress: Double // 0...1
-
-        private var gradient: LinearGradient {
-            LinearGradient(colors: [.blue, .red], startPoint: .leading, endPoint: .trailing)
-        }
-
-        var body: some View {
-            ZStack(alignment: .leading) {
-                Text(text)
-                    .font(font)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .allowsTightening(true)
-                Text(text)
-                    .font(font)
-                    .foregroundStyle(gradient)
-                    .lineLimit(1)
-                    .allowsTightening(true)
-                    .mask(
-                        GeometryReader { geo in
-                            let width = max(0, min(1, progress)) * geo.size.width
-                            Rectangle()
-                                .frame(width: width, height: geo.size.height)
-                                .alignmentGuide(.leading) { d in d[.leading] }
-                        }
-                    )
-            }
-            .accessibilityLabel(text)
-        }
+        min(1.0, Double(max(0, todayReadingSeconds)) / Double(goalSeconds))
     }
 
     private var greeting: String {
@@ -67,78 +35,127 @@ struct TitleCardView: View {
     }
 
     var body: some View {
-        Group {
-            if isPad {
-                iPadHeader
-            } else {
-                HeroCard(
-                    title: "Word of God",
-                    subtitle: nil,
-                    icon: "book.fill",
-                    tint: .blue,
-                    titleFont: titleFont,
-                    titleFontWeight: titleWeight,
-                    centerHeader: true
-                ) {
-                    phoneContent
-                }
+        VStack(alignment: .leading, spacing: 10) {
+            topRow
+            goalSummary
+            if !isPad {
+                actionButtons
             }
         }
-        .frame(maxWidth: .infinity, alignment: .center)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, 4)
+        .adaptiveBackgroundForeground(tab: .home)
     }
 
-    private var iPadHeader: some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text(greeting)
-                .font(.largeTitle.weight(.black))
+    // MARK: - Greeting row
 
-            Spacer()
-
-            Text(Date(), format: .dateTime.weekday(.wide).month().day())
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.secondary)
-        }
-        .accessibilityElement(children: .combine)
-    }
-
-    private var phoneContent: some View {
-        VStack(spacing: 8) {
-            ProgressFillText(
-                text: goalMessage,
-                font: .subheadline.weight(.semibold),
-                progress: progress
-            )
-            .frame(maxWidth: .infinity, alignment: .center)
-            .multilineTextAlignment(.center)
-            .accessibilityLabel("\(goalMessage) Daily goal progress \(Int((progress * 100).rounded())) percent. Current streak \(streak) days.")
-
-            phoneActionButtons
-                .frame(maxWidth: .infinity, alignment: .center)
+    @ViewBuilder
+    private var topRow: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 4) {
+                greetingText
+                dateText
+                if isPad { actionButtons }
+            }
+        } else {
+            HStack(alignment: .firstTextBaseline, spacing: 12) {
+                greetingText
+                Spacer(minLength: 8)
+                dateText
+                if isPad { actionButtons }
+            }
         }
     }
 
-    private var phoneActionButtons: some View {
+    private var greetingText: some View {
+        Text(greeting)
+            .font(.largeTitle.weight(.black))
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .accessibilityAddTraits(.isHeader)
+    }
+
+    private var dateText: some View {
+        Text(Date(), format: .dateTime.weekday(.abbreviated).month(.abbreviated).day())
+            .font(.subheadline.weight(.medium))
+            .foregroundStyle(.secondary)
+    }
+
+    // MARK: - Goal and streak
+
+    private var goalSummary: some View {
+        Button(action: onOpenGoal) {
+            VStack(alignment: .leading, spacing: 6) {
+                goalText
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                ProgressView(value: progress)
+                    .tint(isGoalMet ? .green : .accentColor)
+                    .accessibilityHidden(true)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(goalAccessibilityLabel)
+        .accessibilityHint("Opens your reading stats")
+        .accessibilityAddTraits(.isButton)
+    }
+
+    @ViewBuilder
+    private var goalText: some View {
+        if isGoalMet {
+            Label {
+                Text("Goal met · \(readingMinutes) min today\(streakSuffix)")
+            } icon: {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+            }
+        } else if streak > 0 {
+            Label {
+                Text("\(streak)-day streak · \(readingMinutes) of \(goalMinutes) min today")
+            } icon: {
+                Image(systemName: "flame.fill")
+                    .foregroundStyle(.orange)
+            }
+        } else {
+            // A zero streak is left out rather than shown as discouraging feedback.
+            Label {
+                Text("\(readingMinutes) of \(goalMinutes) min today")
+            } icon: {
+                Image(systemName: "book")
+                    .foregroundStyle(Color.accentColor)
+            }
+        }
+    }
+
+    private var streakSuffix: String {
+        streak > 0 ? " · \(streak)-day streak" : ""
+    }
+
+    private var goalAccessibilityLabel: String {
+        var parts = ["\(readingMinutes) of \(goalMinutes) minutes read today"]
+        if isGoalMet { parts.insert("Daily goal met", at: 0) }
+        if streak > 0 { parts.append("\(streak) day streak") }
+        return parts.joined(separator: ". ")
+    }
+
+    // MARK: - Quick actions
+
+    private var actionButtons: some View {
         HStack(spacing: 12) {
             Button(action: onSearch) {
                 Label("Search", systemImage: "magnifyingglass")
                     .lineLimit(1)
-                    .allowsTightening(true)
             }
-            .buttonStyle(SubtlePillButtonStyle(emphasized: false, sizeScale: buttonScale))
-
-            Button(action: onRead) {
-                Label("Read", systemImage: "book")
-                    .lineLimit(1)
-                    .allowsTightening(true)
-            }
-            .buttonStyle(SubtlePillButtonStyle(emphasized: false, sizeScale: buttonScale))
+            .buttonStyle(SubtlePillButtonStyle(emphasized: false))
 
             Button(action: onFavorites) {
                 Label("Favorites", systemImage: "heart")
                     .lineLimit(1)
-                    .allowsTightening(true)
             }
-            .buttonStyle(SubtlePillButtonStyle(emphasized: false, sizeScale: buttonScale))
+            .buttonStyle(SubtlePillButtonStyle(emphasized: false))
         }
     }
 }

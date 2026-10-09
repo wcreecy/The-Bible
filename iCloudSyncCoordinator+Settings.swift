@@ -3,12 +3,17 @@ import Foundation
 @MainActor
 extension iCloudSyncCoordinator {
     // Settings keys to sync across devices
-    // - dailyGoalMinutes: simple Int
-    // - dailyGoalHistoryChanges: JSON Data of [ { isoDate: String, minutes: Int } ]
+    // - dailyGoalMinutes: simple Int, last writer wins by timestamp
+    // - dailyGoalHistoryChanges: JSON Data of [ { isoDate: String, minutes: Int } ], merged as a union
     static let settingsKeys: [String] = [
         "dailyGoalMinutes",
         "dailyGoalHistoryChanges"
     ]
+
+    private struct GoalChange: Codable, Equatable {
+        let isoDate: String
+        let minutes: Int
+    }
 
     // Local -> KVS
     func mirrorSettingsKeyToKVS(_ key: String) {
@@ -16,20 +21,27 @@ extension iCloudSyncCoordinator {
 
         switch key {
         case "dailyGoalMinutes":
+            // Only publish when this device made the most recent change. Background
+            // pushes otherwise overwrite a newer goal chosen on another device.
+            let localTimestamp = readLocalTimestamp(for: key)
+            let remoteTimestamp = readRemoteTimestamp(for: key)
+            let hasRemote = kvs.object(forKey: key) != nil
+            guard localTimestamp > remoteTimestamp || (!hasRemote && defaults.object(forKey: key) != nil) else {
+                return
+            }
             let local = defaults.integer(forKey: key)
-            let remoteObj = kvs.object(forKey: key) as? NSNumber
-            let remote = remoteObj?.intValue
-            if remote == nil || remote != local {
+            if (kvs.object(forKey: key) as? NSNumber)?.intValue != local {
                 kvs.set(local, forKey: key)
+            }
+            if localTimestamp > 0 {
+                kvs.set(localTimestamp, forKey: tsKey(for: key))
             }
 
         case "dailyGoalHistoryChanges":
-            // Stored as Data (JSON array of { isoDate, minutes })
-            if let localData = defaults.data(forKey: key) {
-                let remoteData = kvs.data(forKey: key)
-                if remoteData != localData {
-                    kvs.set(localData, forKey: key)
-                }
+            // Publish the union so entries recorded only on another device are kept.
+            guard let merged = mergedGoalHistory() else { return }
+            if kvs.data(forKey: key) != merged {
+                kvs.set(merged, forKey: key)
             }
 
         default:
@@ -43,52 +55,59 @@ extension iCloudSyncCoordinator {
 
         switch key {
         case "dailyGoalMinutes":
+            guard kvs.object(forKey: key) != nil else { break }
+            let remoteTimestamp = readRemoteTimestamp(for: key)
+            let localTimestamp = readLocalTimestamp(for: key)
             let remoteVal = Int(kvs.longLong(forKey: key))
-            if defaults.integer(forKey: key) != remoteVal {
-                defaults.set(remoteVal, forKey: key)
+
+            if remoteTimestamp > localTimestamp || (remoteTimestamp == 0 && localTimestamp == 0) {
+                if defaults.integer(forKey: key) != remoteVal {
+                    defaults.set(remoteVal, forKey: key)
+                }
+                if remoteTimestamp > 0 {
+                    defaults.set(remoteTimestamp, forKey: tsKey(for: key))
+                }
+                BibleStatsStore.shared.resetCaches()
+                NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+            } else if localTimestamp > remoteTimestamp {
+                // This device's goal is newer; republish it.
+                mirrorSettingsKeyToKVS(key)
+                enqueueKeyForSync(key)
             }
 
         case "dailyGoalHistoryChanges":
-            // Merge remote and local history arrays by isoDate (union).
-            // For duplicates, prefer the remote entry.
-            struct GoalChange: Codable, Equatable { let isoDate: String; let minutes: Int }
-
-            guard let remoteData = kvs.data(forKey: key) else { break }
-            let localData = defaults.data(forKey: key)
-
-            // If we have no local data, just accept remote wholesale.
-            guard let localData else {
-                defaults.set(remoteData, forKey: key)
-                // Notify readers that evaluation context changed
+            guard kvs.data(forKey: key) != nil, let merged = mergedGoalHistory() else { break }
+            if defaults.data(forKey: key) != merged {
+                defaults.set(merged, forKey: key)
                 BibleStatsStore.shared.resetCaches()
                 NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
-                break
             }
-
-            // Decode both sides; if decoding fails, prefer remote.
-            let decoder = JSONDecoder()
-            let localArr = (try? decoder.decode([GoalChange].self, from: localData)) ?? []
-            let remoteArr = (try? decoder.decode([GoalChange].self, from: remoteData)) ?? []
-
-            // Union by isoDate; remote wins on conflicts.
-            var merged: [String: GoalChange] = Dictionary(uniqueKeysWithValues: localArr.map { ($0.isoDate, $0) })
-            for r in remoteArr { merged[r.isoDate] = r }
-
-            // Sort by isoDate ascending for stability
-            let mergedArr = merged.values.sorted { $0.isoDate < $1.isoDate }
-            if let encoded = try? JSONEncoder().encode(mergedArr) {
-                defaults.set(encoded, forKey: key)
-            } else {
-                // Fallback: if encoding fails, at least set the remote payload.
-                defaults.set(remoteData, forKey: key)
+            if kvs.data(forKey: key) != merged {
+                kvs.set(merged, forKey: key)
+                enqueueKeyForSync(key)
             }
-
-            // Notify readers that evaluation context changed
-            BibleStatsStore.shared.resetCaches()
-            NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
 
         default:
             break
         }
+    }
+
+    /// Union of local and remote goal history by date. For the same date, the remote
+    /// entry wins so all devices converge on one value.
+    private func mergedGoalHistory() -> Data? {
+        let key = "dailyGoalHistoryChanges"
+        let localData = defaults.data(forKey: key)
+        let remoteData = kvs.data(forKey: key)
+        guard localData != nil || remoteData != nil else { return nil }
+
+        let localArr = decode(localData, as: [GoalChange].self) ?? []
+        let remoteArr = decode(remoteData, as: [GoalChange].self) ?? []
+
+        var merged: [String: GoalChange] = [:]
+        for change in localArr { merged[change.isoDate] = change }
+        for change in remoteArr { merged[change.isoDate] = change }
+
+        let sorted = merged.values.sorted { $0.isoDate < $1.isoDate }
+        return try? JSONEncoder().encode(sorted)
     }
 }
