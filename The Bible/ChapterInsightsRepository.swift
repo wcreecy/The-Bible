@@ -166,8 +166,14 @@ actor ChapterInsightsRepository {
             return loadEmbeddedJSONInsights(chapterNumber: chapterNumber, database: database)
         case "Leviticus":
             return loadLeviticusInsights(chapterNumber: chapterNumber, database: database)
+        case "Revelation", "1 Peter", "2 Peter", "2 John", "3 John", "Jude":
+            return loadStructuredInsights(
+                bookName: bookName,
+                chapterNumber: chapterNumber,
+                database: database
+            )
         case "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings",
-             "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther":
+             "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "1 John", "Job", "Psalms":
             return loadSimpleOverviewInsights(chapterNumber: chapterNumber, database: database)
         default:
             return loadInsights(chapterNumber: chapterNumber, database: database)
@@ -210,9 +216,194 @@ actor ChapterInsightsRepository {
             "Nehemiah_Chapter_Overviews_13"
         case "Esther":
             "Esther_Chapter_Overviews_10"
+        case "Job":
+            "Job_Chapter_Overviews_42"
+        case "Psalms":
+            "Psalms_Chapter_Overviews_150"
+        case "Revelation":
+            "Revelation_Chapter_Overviews_22"
+        case "1 Peter":
+            "1_Peter_Chapter_Overviews_5"
+        case "2 Peter":
+            "2_Peter_Chapter_Overviews_3"
+        case "1 John":
+            "1_John_Chapter_Overviews_5"
+        case "2 John":
+            "2_John_Chapter_Overviews_1"
+        case "3 John":
+            "3_John_Chapter_Overviews_1"
+        case "Jude":
+            "Jude_Chapter_Overviews_1"
         default:
             nil
         }
+    }
+
+    private func loadStructuredInsights(
+        bookName: String,
+        chapterNumber: Int,
+        database: OpaquePointer
+    ) -> ChapterInsights? {
+        let query = """
+        SELECT title, summary, historical_setting, connection_to_chapter, why_it_matters
+        FROM chapters
+        WHERE chapter = ?
+        LIMIT 1;
+        """
+
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return nil
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_int(statement, 1, Int32(chapterNumber))
+        guard sqlite3_step(statement) == SQLITE_ROW else { return nil }
+
+        return ChapterInsights(
+            reference: "\(bookName) \(chapterNumber): \(columnText(statement, at: 0))",
+            overallSummary: columnText(statement, at: 1),
+            historicalSetting: columnText(statement, at: 2),
+            whatWasHappening: loadRevelationStatements(
+                chapterNumber: chapterNumber,
+                database: database
+            ),
+            connectionToChapter: columnText(statement, at: 3),
+            customsAndTraditions: loadRevelationCustoms(
+                chapterNumber: chapterNumber,
+                database: database
+            ),
+            whyItMatters: columnText(statement, at: 4),
+            keyFigures: loadRevelationFigures(chapterNumber: chapterNumber, database: database),
+            keyThemes: loadRevelationThemes(chapterNumber: chapterNumber, database: database)
+        )
+    }
+
+    private func loadRevelationFigures(
+        chapterNumber: Int,
+        database: OpaquePointer
+    ) -> [ChapterKeyFigure] {
+        let query = """
+        SELECT id, name, role_in_chapter, significance
+        FROM key_figures
+        WHERE chapter = ?
+        ORDER BY seq;
+        """
+
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return []
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_int(statement, 1, Int32(chapterNumber))
+        var figures: [ChapterKeyFigure] = []
+        while sqlite3_step(statement) == SQLITE_ROW {
+            let details = [columnText(statement, at: 2), columnText(statement, at: 3)]
+                .filter { !$0.isEmpty }
+                .joined(separator: " ")
+
+            figures.append(ChapterKeyFigure(
+                id: Int(sqlite3_column_int(statement, 0)),
+                name: columnText(statement, at: 1),
+                roleAndSignificance: details
+            ))
+        }
+        return figures
+    }
+
+    private func loadRevelationThemes(
+        chapterNumber: Int,
+        database: OpaquePointer
+    ) -> [ChapterKeyTheme] {
+        let query = """
+        SELECT id, theme, explanation, takeaway
+        FROM key_themes
+        WHERE chapter = ?
+        ORDER BY seq;
+        """
+
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return []
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_int(statement, 1, Int32(chapterNumber))
+        var themes: [ChapterKeyTheme] = []
+        while sqlite3_step(statement) == SQLITE_ROW {
+            let explanation = [columnText(statement, at: 2), columnText(statement, at: 3)]
+                .filter { !$0.isEmpty }
+                .joined(separator: "\n\n")
+
+            themes.append(ChapterKeyTheme(
+                id: Int(sqlite3_column_int(statement, 0)),
+                theme: columnText(statement, at: 1),
+                explanation: explanation,
+                scriptureReferences: []
+            ))
+        }
+        return themes
+    }
+
+    private func loadRevelationStatements(
+        chapterNumber: Int,
+        database: OpaquePointer
+    ) -> String {
+        let query = """
+        SELECT statement
+        FROM what_was_happening
+        WHERE chapter = ?
+        ORDER BY seq;
+        """
+        return loadRevelationTextList(
+            query: query,
+            chapterNumber: chapterNumber,
+            database: database,
+            formatter: { columnText($0, at: 0) }
+        )
+    }
+
+    private func loadRevelationCustoms(
+        chapterNumber: Int,
+        database: OpaquePointer
+    ) -> String {
+        let query = """
+        SELECT item, explanation
+        FROM customs_and_traditions
+        WHERE chapter = ?
+        ORDER BY seq;
+        """
+        return loadRevelationTextList(
+            query: query,
+            chapterNumber: chapterNumber,
+            database: database,
+            formatter: { "\(columnText($0, at: 0)): \(columnText($0, at: 1))" }
+        )
+    }
+
+    private func loadRevelationTextList(
+        query: String,
+        chapterNumber: Int,
+        database: OpaquePointer,
+        formatter: (OpaquePointer) -> String
+    ) -> String {
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return ""
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_int(statement, 1, Int32(chapterNumber))
+        var entries: [String] = []
+        while sqlite3_step(statement) == SQLITE_ROW {
+            entries.append(formatter(statement))
+        }
+        return entries.joined(separator: "\n\n")
     }
 
     private func loadSimpleOverviewInsights(chapterNumber: Int, database: OpaquePointer) -> ChapterInsights? {

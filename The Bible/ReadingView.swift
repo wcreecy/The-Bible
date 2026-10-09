@@ -192,6 +192,13 @@ struct ReadingView: View {
                 saveVisibleReaderPosition()
                 viewModel.onDisappear()
             }
+            .onChange(of: startVerse) { _, verseNumber in
+                viewModel.show(location: FocusVerseLocation(
+                    bookName: book.name,
+                    chapterNumber: chapter.number,
+                    verseNumber: verseNumber
+                ))
+            }
             .onChange(of: showVerseStatusIcons) { _, isEnabled in
                 if isEnabled {
                     refreshSeenVerses()
