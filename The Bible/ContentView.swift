@@ -130,155 +130,13 @@ struct ContentView: View {
         .background(AppBackgroundView(tab: selectedTab))
         // Apply your preferred color scheme even on the Settings tab so it updates in place.
         .preferredColorScheme(preferredScheme)
-        .onAppear {
-            // START iCloud KVS coordinator so game/bible stats pull/merge on launch.
-            iCloudSyncCoordinator.shared.start()
-
-            // One-time cleanup of deprecated keys
-            UserDefaults.standard.removeObject(forKey: "fontFamilyPreference")
-
-            if !didCleanupAppTimeKeys {
-                UserDefaults.standard.removeObject(forKey: "appTotalActiveSeconds")
-                UserDefaults.standard.removeObject(forKey: "appActiveStart")
-                didCleanupAppTimeKeys = true
-            }
-            if !didCleanupKeepScreenOnKey {
-                UserDefaults.standard.removeObject(forKey: "keepScreenOn")
-                didCleanupKeepScreenOnKey = true
-            }
-
-            bibleStore.ensureLoaded()
-            openBibleReaderAtLaunchIfNeeded()
-
-            Task.detached {
-                _ = await BibleReferenceLinker.linkify("")
-            }
-
-            Task { @MainActor in
-                await Task.yield()
-                if selectedTab == .home {
-                    ensureSavedFocusLiveActivityIfNeeded()
-                }
-            }
-
-            // Initialize daily usage tracking day key and rollover timer
-            initializeUsageDayIfNeeded()
-            scheduleMidnightRollover()
-            if scenePhase == .active {
-                startUsageTimerIfNeeded()
-            }
-
-            // Initialize previousTab at launch
-            previousTab = selectedTab
-            handlePendingVerseOfDayNotification()
-
-        }
+        .onAppear { handleAppear() }
         .onChange(of: selectedTab) { oldValue, newValue in
-            recordUsageElapsed(for: oldValue)
-
-            // Leaving Games ends any active round and returns its navigation stack to the game list.
-            if oldValue == .games && newValue != .games {
-                returnToGameSelection()
-
-                let today = GameStats.shared.todayStats()
-                // Reuse the existing baseline key the GamesCard reads
-                UserDefaults.standard.set(today.pct, forKey: "gamesLastWeekAccuracyPct")
-                // Notify listeners that game stats context changed so Home card can animate if visible
-                NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
-            }
-
-            // When entering Games tab, capture session baseline of all‑time Gamer Score
-            if newValue == .games {
-                let baselinePct = GameStats.shared.breakdownSnapshot().percentage
-                UserDefaults.standard.set(baselinePct, forKey: "gamesSessionBaselinePct")
-            }
-
-            if newValue == .home {
-                Task { @MainActor in
-                    await Task.yield()
-                    ensureSavedFocusLiveActivityIfNeeded()
-                }
-            }
-            // Update previousTab for next transition detection
-            previousTab = newValue
+            handleSelectedTabChange(from: oldValue, to: newValue)
         }
-        .onOpenURL { url in
-            // Handle taps from widgets and other custom links.
-            guard url.scheme?.lowercased() == "thebible" else { return }
-            let host = url.host?.lowercased() ?? ""
-
-            // NEW: thebible://home -> switch to Home tab
-            if host == "home" {
-                selectedTab = .home
-                return
-            }
-
-            // Supported deep link: thebible://open?book=Name&chapter=Int&verse=Int
-            guard host == "open" else { return }
-            guard let comps = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
-            var params: [String: String] = [:]
-            comps.queryItems?.forEach { params[$0.name.lowercased()] = $0.value ?? "" }
-            guard
-                let book = params["book"], !book.isEmpty,
-                let chapStr = params["chapter"], let chapter = Int(chapStr),
-                let verseStr = params["verse"], let verse = Int(verseStr)
-            else { return }
-
-            // Forward to existing in-app router via notification
-            NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
-                "book": book,
-                "chapter": chapter,
-                "verse": verse
-            ])
-        }
+        .onOpenURL { url in handleOpenURL(url) }
         .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { note in
-            // Avoid handling the relayed copy we post for iPad; let BibleSplitView consume that
-            if let relayed = note.userInfo?["relayed"] as? Bool, relayed {
-                return
-            }
-
-            guard
-                let bookName = note.userInfo?["book"] as? String,
-                let chapterNum = note.userInfo?["chapter"] as? Int,
-                let verseNum = note.userInfo?["verse"] as? Int
-            else { return }
-
-            if usesWideLayout {
-                // Store the route in ContentView so a newly created split view
-                // can consume it after the tab switch. A transient notification
-                // could arrive before that view is in the hierarchy.
-                launchBibleLocation = BibleReaderLocation(
-                    bookName: bookName,
-                    chapterNumber: chapterNum,
-                    verseNumber: verseNum
-                )
-                selectedTab = .bible
-
-                // Search focus can cause iPadOS to dismiss the floating tab
-                // bar. Recreate only the TabView container after this cross-tab
-                // handoff so the system restores its top-level controls.
-                DispatchQueue.main.async {
-                    tabViewRecoveryID &+= 1
-                }
-            } else {
-                // Switch to Bible tab first
-                selectedTab = .bible
-                // iPhone: push a Route.reader on the Bible NavigationStack
-                guard
-                    let book = bibleStore.books.first(where: { $0.name == bookName }),
-                    let chapter = book.chapters.first(where: { $0.number == chapterNum })
-                else { return }
-
-                // Ensure we’re on the Bible tab before pushing; reset the stack to avoid stacking multiple readers
-                DispatchQueue.main.async {
-                    bibleCoordinator.reset() // <-- prevent duplicate stacked readers after deep links
-                    bibleCoordinator.push(.reader(book: book, chapter: chapter, startVerse: verseNum))
-                    // Safety net: Ensure the reading tracker is running even if the inner view's onAppear is delayed.
-                    ReadingTimeTracker.shared.start(bookName: book.name, chapter: chapter.number)
-                    ReadingTimeTracker.shared.setCurrentLocation(bookName: book.name, chapter: chapter.number)
-                    ReadingTimeTracker.shared.resume()
-                }
-            }
+            handleOpenBibleReference(note)
         }
         .onReceive(
             NotificationCenter.default.publisher(for: .switchToTab)
@@ -309,27 +167,187 @@ struct ContentView: View {
             }
         }
         .onChange(of: scenePhase) { _, newValue in
-            switch newValue {
-            case .active:
-                // Re-run start (idempotent) to ensure any missed merges are reconciled on resume.
-                iCloudSyncCoordinator.shared.start()
+            handleScenePhaseChange(newValue)
+        }
+    }
 
-                // Account for any background elapsed time while the prayer timer was running
-                applyBackgroundElapsedIfAny()
-                // Start foreground usage timer
-                startUsageTimerIfNeeded()
-            case .inactive:
-                // Remember when we went foreground to compute elapsed when returning.
-                lastBackgroundedAt = Date().timeIntervalSince1970
-                stopUsageTimer()
-            case .background:
-                // Backgrounding ends an active game round so returning to Games shows its selection screen.
-                returnToGameSelection()
-                lastBackgroundedAt = Date().timeIntervalSince1970
-                stopUsageTimer()
-            @unknown default:
-                break
+    // MARK: - Body event handlers
+    // Kept out of `body` so the modifier chain type-checks quickly.
+
+    private func handleAppear() {
+        // START iCloud KVS coordinator so game/bible stats pull/merge on launch.
+        iCloudSyncCoordinator.shared.start()
+
+        // One-time cleanup of deprecated keys
+        UserDefaults.standard.removeObject(forKey: "fontFamilyPreference")
+
+        if !didCleanupAppTimeKeys {
+            UserDefaults.standard.removeObject(forKey: "appTotalActiveSeconds")
+            UserDefaults.standard.removeObject(forKey: "appActiveStart")
+            didCleanupAppTimeKeys = true
+        }
+        if !didCleanupKeepScreenOnKey {
+            UserDefaults.standard.removeObject(forKey: "keepScreenOn")
+            didCleanupKeepScreenOnKey = true
+        }
+
+        bibleStore.ensureLoaded()
+        openBibleReaderAtLaunchIfNeeded()
+
+        Task.detached {
+            _ = await BibleReferenceLinker.linkify("")
+        }
+
+        Task { @MainActor in
+            await Task.yield()
+            if selectedTab == .home {
+                ensureSavedFocusLiveActivityIfNeeded()
             }
+        }
+
+        // Initialize daily usage tracking day key and rollover timer
+        initializeUsageDayIfNeeded()
+        scheduleMidnightRollover()
+        if scenePhase == .active {
+            startUsageTimerIfNeeded()
+        }
+
+        // Initialize previousTab at launch
+        previousTab = selectedTab
+        handlePendingVerseOfDayNotification()
+    }
+
+    private func handleSelectedTabChange(from oldValue: AppTab, to newValue: AppTab) {
+        recordUsageElapsed(for: oldValue)
+
+        // Leaving Games ends any active round and returns its navigation stack to the game list.
+        if oldValue == .games && newValue != .games {
+            returnToGameSelection()
+
+            let today = GameStats.shared.todayStats()
+            // Reuse the existing baseline key the GamesCard reads
+            UserDefaults.standard.set(today.pct, forKey: "gamesLastWeekAccuracyPct")
+            // Notify listeners that game stats context changed so Home card can animate if visible
+            NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
+        }
+
+        // When entering Games tab, capture session baseline of all‑time Gamer Score
+        if newValue == .games {
+            let baselinePct = GameStats.shared.breakdownSnapshot().percentage
+            UserDefaults.standard.set(baselinePct, forKey: "gamesSessionBaselinePct")
+        }
+
+        if newValue == .home {
+            Task { @MainActor in
+                await Task.yield()
+                ensureSavedFocusLiveActivityIfNeeded()
+            }
+        }
+        // Update previousTab for next transition detection
+        previousTab = newValue
+    }
+
+    private func handleOpenURL(_ url: URL) {
+        // Handle taps from widgets and other custom links.
+        guard url.scheme?.lowercased() == "thebible" else { return }
+        let host = url.host?.lowercased() ?? ""
+
+        // NEW: thebible://home -> switch to Home tab
+        if host == "home" {
+            selectedTab = .home
+            return
+        }
+
+        // Supported deep link: thebible://open?book=Name&chapter=Int&verse=Int
+        guard host == "open" else { return }
+        guard let comps = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
+        var params: [String: String] = [:]
+        comps.queryItems?.forEach { params[$0.name.lowercased()] = $0.value ?? "" }
+        guard
+            let book = params["book"], !book.isEmpty,
+            let chapStr = params["chapter"], let chapter = Int(chapStr),
+            let verseStr = params["verse"], let verse = Int(verseStr)
+        else { return }
+
+        // Forward to existing in-app router via notification
+        NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
+            "book": book,
+            "chapter": chapter,
+            "verse": verse
+        ])
+    }
+
+    private func handleOpenBibleReference(_ note: Notification) {
+        // Avoid handling the relayed copy we post for iPad; let BibleSplitView consume that
+        if let relayed = note.userInfo?["relayed"] as? Bool, relayed {
+            return
+        }
+
+        guard
+            let bookName = note.userInfo?["book"] as? String,
+            let chapterNum = note.userInfo?["chapter"] as? Int,
+            let verseNum = note.userInfo?["verse"] as? Int
+        else { return }
+
+        if usesWideLayout {
+            // Store the route in ContentView so a newly created split view
+            // can consume it after the tab switch. A transient notification
+            // could arrive before that view is in the hierarchy.
+            launchBibleLocation = BibleReaderLocation(
+                bookName: bookName,
+                chapterNumber: chapterNum,
+                verseNumber: verseNum
+            )
+            selectedTab = .bible
+
+            // Search focus can cause iPadOS to dismiss the floating tab
+            // bar. Recreate only the TabView container after this cross-tab
+            // handoff so the system restores its top-level controls.
+            DispatchQueue.main.async {
+                tabViewRecoveryID &+= 1
+            }
+        } else {
+            // Switch to Bible tab first
+            selectedTab = .bible
+            // iPhone: push a Route.reader on the Bible NavigationStack
+            guard
+                let book = bibleStore.books.first(where: { $0.name == bookName }),
+                let chapter = book.chapters.first(where: { $0.number == chapterNum })
+            else { return }
+
+            // Ensure we’re on the Bible tab before pushing; reset the stack to avoid stacking multiple readers
+            DispatchQueue.main.async {
+                bibleCoordinator.reset() // <-- prevent duplicate stacked readers after deep links
+                bibleCoordinator.push(.reader(book: book, chapter: chapter, startVerse: verseNum))
+                // Safety net: Ensure the reading tracker is running even if the inner view's onAppear is delayed.
+                ReadingTimeTracker.shared.start(bookName: book.name, chapter: chapter.number)
+                ReadingTimeTracker.shared.setCurrentLocation(bookName: book.name, chapter: chapter.number)
+                ReadingTimeTracker.shared.resume()
+            }
+        }
+    }
+
+    private func handleScenePhaseChange(_ newValue: ScenePhase) {
+        switch newValue {
+        case .active:
+            // Re-run start (idempotent) to ensure any missed merges are reconciled on resume.
+            iCloudSyncCoordinator.shared.start()
+
+            // Account for any background elapsed time while the prayer timer was running
+            applyBackgroundElapsedIfAny()
+            // Start foreground usage timer
+            startUsageTimerIfNeeded()
+        case .inactive:
+            // Remember when we went foreground to compute elapsed when returning.
+            lastBackgroundedAt = Date().timeIntervalSince1970
+            stopUsageTimer()
+        case .background:
+            // Backgrounding ends an active game round so returning to Games shows its selection screen.
+            returnToGameSelection()
+            lastBackgroundedAt = Date().timeIntervalSince1970
+            stopUsageTimer()
+        @unknown default:
+            break
         }
     }
 

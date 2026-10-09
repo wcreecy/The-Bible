@@ -217,9 +217,9 @@ struct SearchHomeCard: View {
             )
         }
 
-        // A bare book name opens its first chapter. Require two characters so single letters
-        // don't hijack keyword searches.
-        guard query.count >= 2,
+        // A bare book name opens its first chapter. Require three characters so short words
+        // like "am" or "is" aren't treated as book abbreviations.
+        guard query.count >= 3,
               !BibleReferenceParser.isReferenceShaped(query),
               let bookIndex = BibleReferenceParser.bookIndex(matching: query, in: books),
               let chapter = books[bookIndex].chapters.first,
