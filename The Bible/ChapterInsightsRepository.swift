@@ -166,7 +166,8 @@ actor ChapterInsightsRepository {
             return loadEmbeddedJSONInsights(chapterNumber: chapterNumber, database: database)
         case "Leviticus":
             return loadLeviticusInsights(chapterNumber: chapterNumber, database: database)
-        case "Revelation", "Hebrews", "Philemon", "James", "1 Peter", "2 Peter", "2 John", "3 John", "Jude":
+        case "Revelation", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Hebrews", "Philemon", "James",
+             "1 Peter", "2 Peter", "2 John", "3 John", "Jude":
             return loadStructuredInsights(
                 bookName: bookName,
                 chapterNumber: chapterNumber,
@@ -174,7 +175,7 @@ actor ChapterInsightsRepository {
             )
         case "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings",
              "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "1 John", "Job", "Psalms", "Proverbs",
-             "Ecclesiastes", "Song of Solomon":
+             "Ecclesiastes", "Song of Solomon", "Isaiah", "Jeremiah", "Lamentations":
             return loadSimpleOverviewInsights(chapterNumber: chapterNumber, database: database)
         default:
             return loadInsights(chapterNumber: chapterNumber, database: database)
@@ -227,8 +228,22 @@ actor ChapterInsightsRepository {
             "Ecclesiastes_Chapter_Overviews_12"
         case "Song of Solomon":
             "Song_of_Solomon_Chapter_Overviews_8"
+        case "Isaiah":
+            "Isaiah_Chapter_Overviews_66"
+        case "Jeremiah":
+            "Jeremiah_Chapter_Overviews_52"
+        case "Lamentations":
+            "Lamentations_Chapter_Overviews_5"
         case "Revelation":
             "Revelation_Chapter_Overviews_22"
+        case "2 Thessalonians":
+            "2_Thessalonians_Chapter_Overviews_3"
+        case "1 Timothy":
+            "1_Timothy_Chapter_Overviews_6"
+        case "2 Timothy":
+            "2_Timothy_Chapter_Overviews_4"
+        case "Titus":
+            "Titus_Chapter_Overviews_3"
         case "Hebrews":
             "Hebrews_Chapter_Overviews_13"
         case "Philemon":
