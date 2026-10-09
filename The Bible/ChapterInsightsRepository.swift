@@ -177,7 +177,7 @@ actor ChapterInsightsRepository {
              "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "1 John", "Job", "Psalms", "Proverbs",
              "Ecclesiastes", "Song of Solomon", "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea",
              "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah",
-             "Malachi":
+             "Malachi", "Matthew", "Mark", "Luke", "John", "Acts", "Romans", "1 Corinthians", "2 Corinthians":
             return loadSimpleOverviewInsights(chapterNumber: chapterNumber, database: database)
         case "Galatians", "Ephesians", "Philippians":
             return loadRelationalInsights(chapterNumber: chapterNumber, database: database)
@@ -272,6 +272,22 @@ actor ChapterInsightsRepository {
             "38_Zechariah_Chapter_Overviews_14"
         case "Malachi":
             "39_Malachi_Chapter_Overviews_4"
+        case "Matthew":
+            "40_Matthew_Chapter_Overviews_28"
+        case "Mark":
+            "41_Mark_Chapter_Overviews_16"
+        case "Luke":
+            "42_Luke_Chapter_Overviews_24"
+        case "John":
+            "43_John_Chapter_Overviews_21"
+        case "Acts":
+            "44_Acts_Chapter_Overviews_28"
+        case "Romans":
+            "45_Romans_Chapter_Overviews_16"
+        case "1 Corinthians":
+            "46_1_Corinthians_Chapter_Overviews_16"
+        case "2 Corinthians":
+            "47_2_Corinthians_Chapter_Overviews_13"
         case "Galatians":
             "Galatians_Chapter_Overviews_6"
         case "Ephesians":

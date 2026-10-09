@@ -7,19 +7,17 @@ struct SettingsView: View {
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = "system"
     var body: some View {
         Form {
-            SettingsAppearanceLinksSection()
+            SettingsPersonalizeLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
-            SettingsAppExperienceLinksSection()
+            SettingsReadingLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
-            SettingsBibleReaderLinksSection()
+            SettingsPrayerLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
-            SettingsDailyPracticeLinksSection()
-                .listRowBackground(HeroCardListRowBackground())
-            SettingsAccessAndSyncLinksSection()
-                .listRowBackground(HeroCardListRowBackground())
-            SettingsDataManagementLinksSection()
+            SettingsPrivacyAndSyncLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
             SettingsHelpSection()
+                .listRowBackground(HeroCardListRowBackground())
+            SettingsDataManagementLinksSection()
                 .listRowBackground(HeroCardListRowBackground())
 
             #if DEBUG
@@ -37,9 +35,9 @@ struct SettingsView: View {
     }
 }
 
-private struct SettingsAppearanceLinksSection: View {
+private struct SettingsPersonalizeLinksSection: View {
     var body: some View {
-        Section("Appearance") {
+        Section("Personalize") {
             NavigationLink {
                 SettingsAppearanceDetailView()
             } label: {
@@ -61,22 +59,6 @@ private struct SettingsAppearanceLinksSection: View {
             }
 
             NavigationLink {
-                SettingsWidgetAppearanceDetailView()
-            } label: {
-                SettingsNavigationRow(
-                    title: "Widget Appearance",
-                    subtitle: "Choose backgrounds for your widgets",
-                    systemImage: "rectangle.3.group"
-                )
-            }
-        }
-    }
-}
-
-private struct SettingsAppExperienceLinksSection: View {
-    var body: some View {
-        Section("App Experience") {
-            NavigationLink {
                 SettingsLaunchTabSection()
             } label: {
                 SettingsNavigationRow(
@@ -85,36 +67,30 @@ private struct SettingsAppExperienceLinksSection: View {
                     systemImage: "rectangle.on.rectangle"
                 )
             }
-        }
-    }
-}
 
-private struct SettingsBibleReaderLinksSection: View {
-    var body: some View {
-        Section("Bible Reader") {
             NavigationLink {
-                SettingsBibleReaderDetailView()
+                SettingsWidgetAppearanceDetailView()
             } label: {
                 SettingsNavigationRow(
-                    title: "Bible Reader",
-                    subtitle: "Reading progress and verse indicators",
-                    systemImage: "book"
+                    title: "Widgets",
+                    subtitle: "Choose backgrounds for your widgets",
+                    systemImage: "rectangle.3.group"
                 )
             }
         }
     }
 }
 
-private struct SettingsDailyPracticeLinksSection: View {
+private struct SettingsReadingLinksSection: View {
     var body: some View {
-        Section("Daily Practice") {
+        Section("Reading") {
             NavigationLink {
-                SettingsVerseOfTheDayDetailView()
+                SettingsBibleReaderDetailView()
             } label: {
                 SettingsNavigationRow(
-                    title: "Verse of the Day",
-                    subtitle: "Source, refresh schedule, and notifications",
-                    systemImage: "book.pages"
+                    title: "Bible Reader",
+                    subtitle: "Focus Reading and verse indicators",
+                    systemImage: "book"
                 )
             }
 
@@ -129,11 +105,27 @@ private struct SettingsDailyPracticeLinksSection: View {
             }
 
             NavigationLink {
+                SettingsVerseOfTheDayDetailView()
+            } label: {
+                SettingsNavigationRow(
+                    title: "Verse of the Day",
+                    subtitle: "Source, refresh schedule, and notifications",
+                    systemImage: "book.pages"
+                )
+            }
+        }
+    }
+}
+
+private struct SettingsPrayerLinksSection: View {
+    var body: some View {
+        Section("Prayer") {
+            NavigationLink {
                 SettingsTimerDetailView()
             } label: {
                 SettingsNavigationRow(
                     title: "Prayer Timer",
-                    subtitle: "Choose the timer completion sound",
+                    subtitle: "Sound, alarms, Live Activities, and Mindful Minutes",
                     systemImage: "timer"
                 )
             }
@@ -187,18 +179,18 @@ private struct SettingsReadingProgressSection: View {
     }
 }
 
-private struct SettingsAccessAndSyncLinksSection: View {
+private struct SettingsPrivacyAndSyncLinksSection: View {
     @EnvironmentObject private var cloudKitManager: CloudKitManager
     @State private var lastSyncActivity: Date?
 
     var body: some View {
-        Section("Access & Sync") {
+        Section("Privacy & Sync") {
             NavigationLink {
                 SettingsPermissionsDetailView()
             } label: {
                 SettingsNavigationRow(
-                    title: "Permissions & Access",
-                    subtitle: "Notifications, Health, and Live Activities",
+                    title: "Permissions",
+                    subtitle: "Notifications and photo access",
                     systemImage: "hand.raised"
                 )
             }
@@ -251,7 +243,7 @@ private struct SettingsAccessAndSyncLinksSection: View {
 
 private struct SettingsDataManagementLinksSection: View {
     var body: some View {
-        Section("Data Management") {
+        Section {
             NavigationLink {
                 SettingsResetDataDetailView()
             } label: {
@@ -301,11 +293,31 @@ private struct SettingsHelpSection: View {
                 )
             }
             .accessibilityIdentifier("shareFeedbackLink")
+
+            LabeledContent {
+                Text(appVersion)
+            } label: {
+                Label {
+                    Text("Version")
+                } icon: {
+                    Image(systemName: "info.circle")
+                        .foregroundStyle(.tint)
+                }
+            }
+            .accessibilityIdentifier("appVersionRow")
         } header: {
             Text("Help")
         } footer: {
             Text("Tips appear near features such as favorites, reader gestures, verse actions, stats, widgets, timers, Health, and Home customization.")
         }
+    }
+
+    /// Marketing version and build number, e.g. "1.2 (45)".
+    private var appVersion: String {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "—"
+        guard let build = info?["CFBundleVersion"] as? String else { return version }
+        return "\(version) (\(build))"
     }
 }
 
@@ -426,8 +438,8 @@ private enum DeveloperSettingsReset {
             "homeCustomizeButtonVisible": true,
             "homeBibleReaderVisible": HomeLayoutStore.defaultBibleReaderVisible,
             "noteEditorTextSizeStep": 0,
-            "notesHighlightsSort": "Newest",
-            "notesTabSort": "Newest",
+            "notesTabSortField": "modified",
+            "notesTabSortAscending": false,
             "bibleBooksSortAlphabetical": false,
             "bibleRecentSearches": "",
             "lastReadWidgetBackground": "system",
@@ -533,7 +545,7 @@ private struct SettingsAppearanceDetailView: View {
 
 private struct SettingsWidgetAppearanceDetailView: View {
     var body: some View {
-        SettingsDetailForm(title: "Widget Appearance") {
+        SettingsDetailForm(title: "Widgets") {
             SettingsWidgetAppearanceSection()
         }
     }
@@ -729,13 +741,14 @@ private struct SettingsTimerDetailView: View {
     var body: some View {
         SettingsDetailForm(title: "Prayer Timer") {
             SettingsTimerSection()
+            SettingsPrayerTimerAccessSection()
         }
     }
 }
 
 private struct SettingsPermissionsDetailView: View {
     var body: some View {
-        SettingsDetailForm(title: "Permissions & Access") {
+        SettingsDetailForm(title: "Permissions") {
             SettingsPermissionsSection()
         }
     }

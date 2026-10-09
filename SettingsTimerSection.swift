@@ -7,7 +7,7 @@ struct SettingsTimerSection: View {
 
     var body: some View {
         Section(
-            header: Text("Timer").foregroundStyle(.primary),
+            header: Text("Sound").foregroundStyle(.primary),
             footer: Text("Sound played when the timer ends.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)

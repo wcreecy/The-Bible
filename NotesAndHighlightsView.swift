@@ -656,7 +656,7 @@ private struct NoteCategoryMenu: View {
 
     var body: some View {
         Menu {
-            Picker("Category", selection: $category) {
+            Picker("Tag", selection: $category) {
                 ForEach(NoteCategory.allCases) { option in
                     Text(option.title).tag(option)
                 }
@@ -666,7 +666,7 @@ private struct NoteCategoryMenu: View {
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.tint)
         }
-        .accessibilityLabel("Note category")
+        .accessibilityLabel("Note tag")
         .accessibilityValue(Text(category.title))
     }
 }
@@ -719,62 +719,48 @@ private struct HighlightColorPicker: View {
     }
 }
 
-private enum NotesHighlightsSort: String, CaseIterable, Identifiable {
-    case modifiedNewest
-    case modifiedOldest
-    case addedNewest
-    case addedOldest
-    case bibleOrder
-    case highlightColor
-    case reference
+private enum NotesTabSort: String, CaseIterable, Identifiable {
+    case modified
+    case created
+    case title
+    case tag
+    case color
 
     var id: String { rawValue }
 
     var title: LocalizedStringResource {
         switch self {
-        case .modifiedNewest: "Modified: Newest First"
-        case .modifiedOldest: "Modified: Oldest First"
-        case .addedNewest: "Added: Newest First"
-        case .addedOldest: "Added: Oldest First"
-        case .bibleOrder: "Bible Order"
-        case .highlightColor: "Highlight Color"
-        case .reference: "Reference A–Z"
+        case .modified: "Date Modified"
+        case .created: "Date Created"
+        case .title: "Title"
+        case .tag: "Tag"
+        case .color: "Highlight Color"
         }
     }
 
     var systemImage: String {
         switch self {
-        case .modifiedNewest, .modifiedOldest: "pencil.and.list.clipboard"
-        case .addedNewest, .addedOldest: "calendar"
-        case .bibleOrder: "book"
-        case .highlightColor: "paintpalette"
-        case .reference: "textformat.abc"
+        case .modified: "pencil"
+        case .created: "calendar"
+        case .title: "textformat"
+        case .tag: "tag"
+        case .color: "highlighter"
         }
     }
-}
 
-private enum NotesTabSort: String, CaseIterable, Identifiable {
-    case modifiedNewest
-    case modifiedOldest
-    case createdNewest
-    case createdOldest
-    case highlightColor
-    case tag
-    case titleAscending
-    case titleDescending
-
-    var id: String { rawValue }
-
-    var title: LocalizedStringResource {
+    /// Dates read most naturally newest-first; text-based fields read A–Z.
+    var defaultAscending: Bool {
         switch self {
-        case .modifiedNewest: "Modified: Newest First"
-        case .modifiedOldest: "Modified: Oldest First"
-        case .createdNewest: "Created: Newest First"
-        case .createdOldest: "Created: Oldest First"
-        case .highlightColor: "Color"
-        case .tag: "Tag"
-        case .titleAscending: "Title: A–Z"
-        case .titleDescending: "Title: Z–A"
+        case .modified, .created: false
+        case .title, .tag, .color: true
+        }
+    }
+
+    func orderTitle(ascending: Bool) -> LocalizedStringResource {
+        switch self {
+        case .modified, .created: ascending ? "Oldest First" : "Newest First"
+        case .title, .tag: ascending ? "A–Z" : "Z–A"
+        case .color: ascending ? "Ascending" : "Descending"
         }
     }
 }
@@ -789,7 +775,7 @@ private enum NotesFilter: String, CaseIterable, Identifiable {
 
     var title: LocalizedStringResource {
         switch self {
-        case .all: "All Tags"
+        case .all: "All"
         case .sermon: "Sermon"
         case .personal: "Personal"
         case .scripture: "Scripture"
@@ -888,6 +874,48 @@ private enum NotesListItem: Identifiable {
         }
     }
 
+    /// Whether the entry has written content, as opposed to being a verse highlight only.
+    var hasNoteText: Bool {
+        switch self {
+        case .scripture(let note): !note.title.isEmpty || !note.content.isEmpty
+        case .user: true
+        }
+    }
+
+    /// Scripture notes with a highlight keep the highlight when their note is deleted,
+    /// matching the editor's "Remove Note" behavior. Highlight-only entries remove the highlight.
+    var deleteTitle: LocalizedStringResource {
+        guard !highlightColor.isEmpty else { return "Delete" }
+        return hasNoteText ? "Delete Note" : "Remove Highlight"
+    }
+
+    var shareText: String {
+        switch self {
+        case .scripture(let note):
+            let title = note.title.isEmpty ? "Scripture Note" : note.title
+            return "\(title)\n\(note.bookName) \(note.chapterNumber):\(note.verseNumber)\n\n\(note.verseText)\n\n\(note.content)"
+        case .user(let note):
+            let title = note.title.isEmpty ? "Untitled Note" : note.title
+            return "\(title)\n\n\(note.content)"
+        }
+    }
+
+    func toggleFavorite() {
+        switch self {
+        case .scripture(let note): note.isFavorite.toggle()
+        case .user(let note): note.isFavorite.toggle()
+        }
+    }
+
+    func openInBible() {
+        guard case .scripture(let note) = self else { return }
+        NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
+            "book": note.bookName,
+            "chapter": note.chapterNumber,
+            "verse": note.verseNumber
+        ])
+    }
+
     func matchesSearch(_ searchText: String) -> Bool {
         guard !searchText.isEmpty else { return true }
         switch self {
@@ -926,6 +954,10 @@ private enum NotesHighlightFilter: String, CaseIterable, Identifiable {
         case .purple: "Purple"
         }
     }
+
+    var highlightColor: VerseHighlightColor? {
+        VerseHighlightColor(rawValue: rawValue)
+    }
 }
 
 @MainActor
@@ -935,7 +967,8 @@ struct NotesAndHighlightsView: View {
     @Query(sort: \VerseNote.updatedAt, order: .reverse) private var scriptureNotes: [VerseNote]
     @Query(sort: \UserNote.updatedAt, order: .reverse) private var userNotes: [UserNote]
 
-    @AppStorage("notesTabSort") private var sortRawValue = NotesTabSort.modifiedNewest.rawValue
+    @AppStorage("notesTabSortField") private var sortFieldRawValue = NotesTabSort.modified.rawValue
+    @AppStorage("notesTabSortAscending") private var sortAscending = NotesTabSort.modified.defaultAscending
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @State private var selectedFilter = NotesFilter.all
     @State private var highlightFilter = NotesHighlightFilter.all
@@ -948,6 +981,7 @@ struct NotesAndHighlightsView: View {
     @State private var isShowingCompactDetail = false
     @State private var deletedNoteSnapshot: DeletedNoteSnapshot?
     @State private var isShowingDeleteUndo = false
+    @State private var deleteUndoText = ""
 
     var body: some View {
         Group {
@@ -982,21 +1016,11 @@ struct NotesAndHighlightsView: View {
         )
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
-                NotesFilterMenu(
-                    highlightFilter: $highlightFilter,
-                    presentation: .toolbar
+                NotesViewOptionsMenu(
+                    sortField: sortFieldBinding,
+                    sortAscending: $sortAscending,
+                    highlightFilter: $highlightFilter
                 )
-
-                Menu {
-                    Picker("Sort By", selection: $sortRawValue) {
-                        ForEach(NotesTabSort.allCases) { option in
-                            Text(option.title).tag(option.rawValue)
-                        }
-                    }
-                } label: {
-                    Label("Sort", systemImage: "arrow.up.arrow.down")
-                }
-                .accessibilityLabel("Sort notes")
 
                 Button {
                     isCreatingNote = true
@@ -1046,7 +1070,7 @@ struct NotesAndHighlightsView: View {
         .appToast(
             isPresented: $isShowingDeleteUndo,
             symbol: "trash",
-            text: "Note deleted",
+            text: deleteUndoText,
             tint: .red,
             actionTitle: "Undo",
             action: undoLastDeletion
@@ -1054,7 +1078,8 @@ struct NotesAndHighlightsView: View {
         .onAppear(perform: selectFirstVisibleNoteIfNeeded)
         .onChange(of: selectedFilter) { _, _ in selectFirstVisibleNoteIfNeeded() }
         .onChange(of: highlightFilter) { _, _ in selectFirstVisibleNoteIfNeeded() }
-        .onChange(of: sortRawValue) { _, _ in selectFirstVisibleNoteIfNeeded() }
+        .onChange(of: sortFieldRawValue) { _, _ in selectFirstVisibleNoteIfNeeded() }
+        .onChange(of: sortAscending) { _, _ in selectFirstVisibleNoteIfNeeded() }
         .onChange(of: searchText) { _, _ in selectFirstVisibleNoteIfNeeded() }
     }
 
@@ -1077,54 +1102,34 @@ struct NotesAndHighlightsView: View {
     }
 
     private var compactContent: some View {
-        ScrollView {
-            VStack(spacing: 12) {
-                NotesCategoryStrip(selection: $selectedFilter)
-                contextualTip
+        VStack(spacing: 12) {
+            NotesCategoryStrip(selection: $selectedFilter, highlightFilter: $highlightFilter)
+            contextualTip
 
-                NotesListCard(
-                    notes: visibleNotes,
-                    selectedScriptureNote: $selectedScriptureNote,
-                    selectedUserNote: $selectedUserNote,
-                    selectedFilter: $selectedFilter,
-                    showsClearFiltersAction: hasActiveFilters,
-                    clearFiltersAction: clearFilters,
-                    deleteAction: delete,
-                    selectionAction: { isShowingCompactDetail = true }
-                )
-                .frame(maxWidth: .infinity)
-                .frame(height: compactNotesCardHeight)
-                .heroCardSurface()
-            }
-            .padding(.horizontal)
-            .padding(.bottom)
+            notesList(
+                newNoteAction: nil,
+                selectAction: { item in
+                    select(item)
+                    isShowingCompactDetail = true
+                }
+            )
         }
+        .padding(.horizontal)
+        .padding(.bottom)
     }
 
     private var regularContent: some View {
         VStack(spacing: 12) {
-            NotesCategoryStrip(selection: $selectedFilter)
+            NotesCategoryStrip(selection: $selectedFilter, highlightFilter: $highlightFilter)
             contextualTip
 
             ResizableNotesColumns {
-                ScrollView {
-                    ExpandingNotesListCard(
-                        notes: visibleNotes,
-                        selectedScriptureNote: $selectedScriptureNote,
-                        selectedUserNote: $selectedUserNote,
-                        selectedFilter: $selectedFilter,
-                        showsClearFiltersAction: hasActiveFilters,
-                        clearFiltersAction: clearFilters,
-                        newNoteAction: { isCreatingNote = true },
-                        deleteAction: delete,
-                        selectionAction: {}
-                    )
-                    .frame(maxWidth: .infinity)
-                    .heroCardSurface()
-                    .padding(.horizontal, 2)
-                    .padding(.vertical, 12)
-                }
-                .scrollIndicators(.hidden)
+                notesList(
+                    newNoteAction: { isCreatingNote = true },
+                    selectAction: select
+                )
+                .padding(.horizontal, 2)
+                .padding(.vertical, 12)
             } detail: {
                 VStack(spacing: 12) {
                     if selectedNoteIsExcludedFromVisibleNotes {
@@ -1163,29 +1168,60 @@ struct NotesAndHighlightsView: View {
             ContextualTipView(
                 id: "notes.quickActions",
                 title: "Browse and manage notes",
-                message: "Filter by tag or highlight color. Select a note to follow links without editing, or swipe it for quick actions.",
+                message: "Filter by tag or highlight color. Select a note to follow links without editing, or swipe or press and hold it for quick actions.",
                 systemImage: "hand.point.up.left"
             )
         }
     }
 
+    private func notesList(
+        newNoteAction: (() -> Void)?,
+        selectAction: @escaping (NotesListItem) -> Void
+    ) -> some View {
+        NotesListCard(
+            notes: visibleNotes,
+            selectedID: selectedItem?.id,
+            filter: selectedFilter,
+            hasAnyNotes: !scriptureNotes.isEmpty || !userNotes.isEmpty,
+            showsClearFiltersAction: hasActiveFilters,
+            clearFiltersAction: clearFilters,
+            newNoteAction: newNoteAction,
+            createFirstNoteAction: { isCreatingNote = true },
+            selectAction: selectAction,
+            editAction: { item in
+                select(item)
+                isEditingSelection = true
+            },
+            deleteAction: delete
+        )
+    }
+
+    /// Notes matching the active tag, highlight filter, and search. Favorites are
+    /// pinned above the rest but are still subject to every filter.
     private var visibleNotes: [NotesListItem] {
         let allNotes = scriptureNotes.map(NotesListItem.scripture) + userNotes.map(NotesListItem.user)
-        let favorites = sort(allNotes.filter(\.isFavorite))
-        let filteredNotes = sort(allNotes.filter { note in
-            !note.isFavorite &&
+        let matchingNotes = allNotes.filter { note in
             matchesSelectedCategory(note.categoryRawValue) &&
                 matchesHighlight(note.highlightColor) &&
                 note.matchesSearch(searchText)
-        })
-        return favorites + filteredNotes
+        }
+        return sort(matchingNotes.filter(\.isFavorite)) + sort(matchingNotes.filter { !$0.isFavorite })
     }
 
-    private var compactNotesCardHeight: CGFloat {
-        let headerHeight: CGFloat = 44
-        let estimatedRowHeight: CGFloat = 90
-        let visibleRowCount = max(visibleNotes.count, 1)
-        return headerHeight + (CGFloat(visibleRowCount) * estimatedRowHeight)
+    private var sortField: NotesTabSort {
+        NotesTabSort(rawValue: sortFieldRawValue) ?? .modified
+    }
+
+    /// Picking a new sort field resets the direction to that field's natural order.
+    private var sortFieldBinding: Binding<NotesTabSort> {
+        Binding(
+            get: { sortField },
+            set: { newValue in
+                guard newValue != sortField else { return }
+                sortFieldRawValue = newValue.rawValue
+                sortAscending = newValue.defaultAscending
+            }
+        )
     }
 
     private var hasActiveFilters: Bool {
@@ -1213,35 +1249,42 @@ struct NotesAndHighlightsView: View {
     }
 
     private func sort(_ notes: [NotesListItem]) -> [NotesListItem] {
-        let selectedSort = NotesTabSort(rawValue: sortRawValue) ?? .modifiedNewest
-        switch selectedSort {
-        case .modifiedNewest:
-            return notes.sorted { ($0.updatedAt ?? .distantPast) > ($1.updatedAt ?? .distantPast) }
-        case .modifiedOldest:
-            return notes.sorted { ($0.updatedAt ?? .distantPast) < ($1.updatedAt ?? .distantPast) }
-        case .createdNewest:
-            return notes.sorted { ($0.createdAt ?? .distantPast) > ($1.createdAt ?? .distantPast) }
-        case .createdOldest:
-            return notes.sorted { ($0.createdAt ?? .distantPast) < ($1.createdAt ?? .distantPast) }
-        case .highlightColor:
-            return notes.sorted {
-                if $0.highlightColor != $1.highlightColor {
-                    return $0.highlightColor < $1.highlightColor
-                }
-                return $0.title.localizedStandardCompare($1.title) == .orderedAscending
+        let field = sortField
+        let ascending = sortAscending
+        return notes.sorted { lhs, rhs in
+            let order = Self.compare(lhs, rhs, by: field)
+            if order != .orderedSame {
+                return order == (ascending ? .orderedAscending : .orderedDescending)
             }
-        case .tag:
-            return notes.sorted {
-                if $0.categoryRawValue != $1.categoryRawValue {
-                    return $0.categoryRawValue.localizedStandardCompare($1.categoryRawValue) == .orderedAscending
-                }
-                return $0.title.localizedStandardCompare($1.title) == .orderedAscending
-            }
-        case .titleAscending:
-            return notes.sorted { $0.title.localizedStandardCompare($1.title) == .orderedAscending }
-        case .titleDescending:
-            return notes.sorted { $0.title.localizedStandardCompare($1.title) == .orderedDescending }
+            // Ties always fall back to title A–Z so the order is stable and predictable.
+            return lhs.title.localizedStandardCompare(rhs.title) == .orderedAscending
         }
+    }
+
+    private static func compare(
+        _ lhs: NotesListItem,
+        _ rhs: NotesListItem,
+        by field: NotesTabSort
+    ) -> ComparisonResult {
+        switch field {
+        case .modified:
+            return (lhs.updatedAt ?? .distantPast).compare(rhs.updatedAt ?? .distantPast)
+        case .created:
+            return (lhs.createdAt ?? .distantPast).compare(rhs.createdAt ?? .distantPast)
+        case .title:
+            return lhs.title.localizedStandardCompare(rhs.title)
+        case .tag:
+            return lhs.categoryRawValue.localizedStandardCompare(rhs.categoryRawValue)
+        case .color:
+            // Follow the highlight picker's color order; notes without a highlight sort last.
+            let left = colorPosition(lhs.highlightColor)
+            let right = colorPosition(rhs.highlightColor)
+            return left == right ? .orderedSame : (left < right ? .orderedAscending : .orderedDescending)
+        }
+    }
+
+    private static func colorPosition(_ rawValue: String) -> Int {
+        VerseHighlightColor.allCases.firstIndex { $0.rawValue == rawValue } ?? VerseHighlightColor.allCases.count
     }
 
     private var selectedNoteIsExcludedFromVisibleNotes: Bool {
@@ -1306,6 +1349,18 @@ struct NotesAndHighlightsView: View {
     }
 
     private func delete(_ item: NotesListItem) {
+        if case .scripture(let note) = item, !note.highlightColor.isEmpty, item.hasNoteText {
+            // Match the editor's "Remove Note": clear the written note but keep the verse highlight.
+            deletedNoteSnapshot = .scriptureText(note, VerseNoteSnapshot(note: note))
+            note.title = ""
+            note.content = ""
+            note.formattedContent = nil
+            note.updatedAt = Date()
+            try? modelContext.save()
+            showDeleteUndo("Note deleted · Highlight kept")
+            return
+        }
+
         let notesBeforeDeletion = visibleNotes
         let deletedIndex = notesBeforeDeletion.firstIndex { $0.id == item.id }
         let wasSelected: Bool
@@ -1331,6 +1386,11 @@ struct NotesAndHighlightsView: View {
             }
         }
 
+        showDeleteUndo(item.hasNoteText ? "Note deleted" : "Highlight removed")
+    }
+
+    private func showDeleteUndo(_ text: String) {
+        deleteUndoText = text
         isShowingDeleteUndo = false
         Task { @MainActor in
             await Task.yield()
@@ -1344,6 +1404,8 @@ struct NotesAndHighlightsView: View {
         guard let deletedNoteSnapshot else { return }
 
         switch deletedNoteSnapshot {
+        case .scriptureText(let note, let snapshot):
+            snapshot.restoreText(to: note)
         case .scripture(let snapshot, let wasSelected):
             let note = snapshot.makeNote()
             modelContext.insert(note)
@@ -1474,6 +1536,8 @@ private struct ResizableNotesColumns<ListContent: View, DetailContent: View>: Vi
 private enum DeletedNoteSnapshot {
     case scripture(VerseNoteSnapshot, wasSelected: Bool)
     case user(UserNoteSnapshot, wasSelected: Bool)
+    /// The note's text was cleared but the entry was kept for its verse highlight.
+    case scriptureText(VerseNote, VerseNoteSnapshot)
 }
 
 private struct VerseNoteSnapshot {
@@ -1520,6 +1584,13 @@ private struct VerseNoteSnapshot {
         note.createdAt = createdAt
         note.updatedAt = updatedAt
         return note
+    }
+
+    func restoreText(to note: VerseNote) {
+        note.title = title
+        note.content = content
+        note.formattedContent = formattedContent
+        note.updatedAt = updatedAt
     }
 }
 
@@ -1641,10 +1712,15 @@ private struct NotesKeyboardCommandResponder: UIViewRepresentable {
 
 private struct NotesCategoryStrip: View {
     @Binding var selection: NotesFilter
+    @Binding var highlightFilter: NotesHighlightFilter
 
     var body: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 8) {
+                if highlightFilter != .all {
+                    activeHighlightChip
+                }
+
                 ForEach(NotesFilter.allCases) { filter in
                     Button {
                         withAnimation(.snappy) {
@@ -1669,6 +1745,331 @@ private struct NotesCategoryStrip: View {
         }
         .scrollIndicators(.hidden)
     }
+
+    /// Makes an active highlight filter visible and removable with one tap.
+    private var activeHighlightChip: some View {
+        Button {
+            withAnimation(.snappy) {
+                highlightFilter = .all
+            }
+        } label: {
+            HStack(spacing: 6) {
+                if let color = highlightFilter.highlightColor?.color {
+                    Circle()
+                        .fill(color)
+                        .frame(width: 12, height: 12)
+                } else {
+                    Image(systemName: "circle.slash")
+                }
+                Text(highlightFilter.title)
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundStyle(.secondary)
+            }
+            .font(.subheadline.weight(.semibold))
+            .padding(.horizontal, 14)
+            .frame(minHeight: 40)
+            .foregroundStyle(.primary)
+            .background(Color.accentColor.opacity(0.15), in: Capsule())
+            .overlay {
+                Capsule().strokeBorder(Color.accentColor.opacity(0.5))
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Highlight filter")
+        .accessibilityValue(Text(highlightFilter.title))
+        .accessibilityHint("Removes the highlight color filter")
+    }
+}
+
+private struct NotesListCard: View {
+    let notes: [NotesListItem]
+    let selectedID: NotesListItem.ID?
+    let filter: NotesFilter
+    let hasAnyNotes: Bool
+    let showsClearFiltersAction: Bool
+    let clearFiltersAction: () -> Void
+    /// When provided, an inline "New Note" button appears in the list header.
+    let newNoteAction: (() -> Void)?
+    let createFirstNoteAction: () -> Void
+    let selectAction: (NotesListItem) -> Void
+    let editAction: (NotesListItem) -> Void
+    let deleteAction: (NotesListItem) -> Void
+
+    var body: some View {
+        List {
+            summaryHeader
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+                .listRowInsets(
+                    EdgeInsets(
+                        top: AppDesignMetrics.cardPadding,
+                        leading: AppDesignMetrics.cardPadding,
+                        bottom: 4,
+                        trailing: AppDesignMetrics.cardPadding
+                    )
+                )
+
+            if notes.isEmpty {
+                emptyState
+                    .padding(.vertical, 40)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+            } else if favoriteNotes.isEmpty {
+                rows(for: otherNotes)
+            } else {
+                groupHeader("Favorites", systemImage: "star.fill")
+                rows(for: favoriteNotes)
+
+                if !otherNotes.isEmpty {
+                    groupHeader("Notes", systemImage: "note.text")
+                    rows(for: otherNotes)
+                }
+            }
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .contentMargins(.vertical, 0, for: .scrollContent)
+        .clipShape(.rect(cornerRadius: AppDesignMetrics.cardCornerRadius))
+        .heroCardSurface()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var favoriteNotes: [NotesListItem] {
+        notes.filter(\.isFavorite)
+    }
+
+    private var otherNotes: [NotesListItem] {
+        notes.filter { !$0.isFavorite }
+    }
+
+    private var summaryHeader: some View {
+        HStack(spacing: 8) {
+            Text(filter.libraryTitle(noteCount: notes.count))
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
+            Spacer(minLength: 8)
+
+            if showsClearFiltersAction {
+                // Icon-only when sharing the header with the New Note button.
+                if newNoteAction == nil {
+                    clearFiltersButton.labelStyle(.titleAndIcon)
+                } else {
+                    clearFiltersButton.labelStyle(.iconOnly)
+                }
+            }
+
+            if let newNoteAction {
+                Button("New Note", systemImage: "plus", action: newNoteAction)
+                    .font(.caption.weight(.semibold))
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var clearFiltersButton: some View {
+        Button("Clear All Filters", systemImage: "line.3.horizontal.decrease.circle") {
+            clearFiltersAction()
+        }
+        .font(.caption.weight(.semibold))
+        .buttonStyle(.bordered)
+        .controlSize(.small)
+        .accessibilityLabel("Clear all filters")
+    }
+
+    private func groupHeader(_ title: LocalizedStringKey, systemImage: String) -> some View {
+        Label(title, systemImage: systemImage)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .textCase(.uppercase)
+            .accessibilityAddTraits(.isHeader)
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
+            .listRowInsets(
+                EdgeInsets(
+                    top: 12,
+                    leading: AppDesignMetrics.cardPadding,
+                    bottom: 4,
+                    trailing: AppDesignMetrics.cardPadding
+                )
+            )
+    }
+
+    @ViewBuilder
+    private var emptyState: some View {
+        if hasAnyNotes {
+            ContentUnavailableView {
+                Label("No Matching Notes", systemImage: "note.text")
+            } description: {
+                Text("Try another tag, color, or search.")
+            } actions: {
+                if showsClearFiltersAction {
+                    Button("Clear All Filters", systemImage: "line.3.horizontal.decrease.circle") {
+                        clearFiltersAction()
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            }
+        } else {
+            ContentUnavailableView {
+                Label("No Notes Yet", systemImage: "note.text")
+            } description: {
+                Text("Tap + to write a note, or press and hold a verse in the Bible to add a note or highlight.")
+            } actions: {
+                Button("New Note", systemImage: "plus", action: createFirstNoteAction)
+                    .buttonStyle(.borderedProminent)
+            }
+        }
+    }
+
+    private func rows(for items: [NotesListItem]) -> some View {
+        ForEach(items) { item in
+            NotesListRow(
+                item: item,
+                isSelected: item.id == selectedID,
+                selectAction: { selectAction(item) },
+                editAction: { editAction(item) },
+                deleteAction: { deleteAction(item) }
+            )
+            .listRowBackground(
+                item.id == selectedID ? Color.accentColor.opacity(0.13) : Color.clear
+            )
+            .listRowSeparator(item.id == items.last?.id ? .hidden : .visible)
+            .listRowSeparatorTint(Color.primary.opacity(0.09))
+            .listRowInsets(EdgeInsets())
+        }
+    }
+}
+
+/// A note row with the same quick actions everywhere: swipe on iPhone and iPad,
+/// plus a press-and-hold (or right-click) menu.
+private struct NotesListRow: View {
+    @Environment(\.modelContext) private var modelContext
+
+    let item: NotesListItem
+    let isSelected: Bool
+    let selectAction: () -> Void
+    let editAction: () -> Void
+    let deleteAction: () -> Void
+
+    var body: some View {
+        NotesTitleButton(
+            title: item.title,
+            preview: item.preview,
+            reference: item.reference,
+            tag: NoteCategory(rawValue: item.categoryRawValue)?.title,
+            highlight: VerseHighlightColor(rawValue: item.highlightColor),
+            isFavorite: item.isFavorite,
+            updatedAt: item.updatedAt ?? item.createdAt,
+            isSelected: isSelected,
+            action: selectAction
+        )
+        .swipeActions(edge: .leading) {
+            favoriteButton
+                .tint(.yellow)
+        }
+        .swipeActions(edge: .trailing) {
+            deleteButton
+        }
+        .contextMenu {
+            favoriteButton
+
+            Button("Edit", systemImage: "pencil", action: editAction)
+
+            ShareLink(item: item.shareText) {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+
+            if item.reference != nil {
+                Button("Open in Bible", systemImage: "book.closed") {
+                    item.openInBible()
+                }
+            }
+
+            Divider()
+
+            deleteButton
+        }
+    }
+
+    private var favoriteButton: some View {
+        Button {
+            item.toggleFavorite()
+            try? modelContext.save()
+            Haptics.selection()
+        } label: {
+            Label(
+                item.isFavorite ? "Unfavorite" : "Favorite",
+                systemImage: item.isFavorite ? "star.slash" : "star"
+            )
+        }
+    }
+
+    private var deleteButton: some View {
+        Button(role: .destructive, action: deleteAction) {
+            Label {
+                Text(item.deleteTitle)
+            } icon: {
+                Image(systemName: "trash")
+            }
+        }
+    }
+}
+
+/// Combines sorting and the highlight color filter into a single toolbar menu.
+private struct NotesViewOptionsMenu: View {
+    @Binding var sortField: NotesTabSort
+    @Binding var sortAscending: Bool
+    @Binding var highlightFilter: NotesHighlightFilter
+
+    var body: some View {
+        Menu {
+            Section("Sort By") {
+                Picker("Sort By", selection: $sortField) {
+                    ForEach(NotesTabSort.allCases) { option in
+                        Label(option.title, systemImage: option.systemImage)
+                            .tag(option)
+                    }
+                }
+                .pickerStyle(.inline)
+            }
+
+            Section {
+                Picker("Order", selection: $sortAscending) {
+                    Text(sortField.orderTitle(ascending: false)).tag(false)
+                    Text(sortField.orderTitle(ascending: true)).tag(true)
+                }
+                .pickerStyle(.inline)
+            }
+
+            Section("Filter") {
+                Picker(selection: $highlightFilter) {
+                    ForEach(NotesHighlightFilter.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                } label: {
+                    Label("Highlight Color", systemImage: "highlighter")
+                    Text(highlightFilter.title)
+                }
+                .pickerStyle(.menu)
+            }
+        } label: {
+            Image(
+                systemName: highlightFilter == .all
+                    ? "line.3.horizontal.decrease"
+                    : "line.3.horizontal.decrease.circle.fill"
+            )
+            .foregroundStyle(
+                highlightFilter == .all
+                    ? AnyShapeStyle(.primary)
+                    : AnyShapeStyle(.tint)
+            )
+        }
+        .accessibilityLabel("Sort and filter notes")
+        .accessibilityValue(Text(sortField.title))
+    }
 }
 
 private extension NotesFilter {
@@ -1690,384 +2091,6 @@ private extension NotesFilter {
         case .personal: .personal
         case .scripture: .scripture
         }
-    }
-}
-
-private struct NotesListCard: View {
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-
-    let notes: [NotesListItem]
-    @Binding var selectedScriptureNote: VerseNote?
-    @Binding var selectedUserNote: UserNote?
-    @Binding var selectedFilter: NotesFilter
-    let showsClearFiltersAction: Bool
-    let clearFiltersAction: () -> Void
-    let deleteAction: (NotesListItem) -> Void
-    let selectionAction: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            List {
-                HStack(spacing: 8) {
-                    Text(selectedFilter.libraryTitle(noteCount: notes.count))
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-
-                    Spacer(minLength: 8)
-
-                    if showsClearFiltersAction {
-                        Button("Clear All Filters", systemImage: "line.3.horizontal.decrease.circle") {
-                            clearFiltersAction()
-                        }
-                        .font(.caption.weight(.semibold))
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-                        .accessibilityLabel("Clear all filters")
-                    }
-                }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(
-                        EdgeInsets(
-                            top: AppDesignMetrics.cardPadding,
-                            leading: AppDesignMetrics.cardPadding,
-                            bottom: 4,
-                            trailing: AppDesignMetrics.cardPadding
-                        )
-                    )
-
-                if notes.isEmpty {
-                    ContentUnavailableView {
-                        Label("No Notes", systemImage: "note.text")
-                    } description: {
-                        Text("Try another tag, color, sort order, or search.")
-                    } actions: {
-                        if showsClearFiltersAction {
-                            Button("Clear All Filters", systemImage: "line.3.horizontal.decrease.circle") {
-                                clearFiltersAction()
-                            }
-                            .buttonStyle(.borderedProminent)
-                        }
-                    }
-                    .padding(.top, 40)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                } else {
-                    ForEach(notes) { item in
-                        switch item {
-                        case .scripture(let note):
-                            NotesTitleButton(
-                                title: item.title,
-                                preview: item.preview,
-                                reference: item.reference,
-                                tag: NoteCategory(rawValue: note.categoryRawValue)?.title,
-                                highlight: VerseHighlightColor(rawValue: note.highlightColor),
-                                isFavorite: note.isFavorite,
-                                updatedAt: note.updatedAt ?? note.createdAt,
-                                isSelected: selectedScriptureNote === note
-                            ) {
-                                selectedScriptureNote = note
-                                selectedUserNote = nil
-                                selectionAction()
-                            }
-                            .swipeActions(edge: .leading) {
-                                Button {
-                                    toggleFavorite(note)
-                                } label: {
-                                    Label(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star")
-                                }
-                                .tint(.yellow)
-                            }
-                            .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) { deleteAction(.scripture(note)) } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                            }
-                            .listRowBackground(
-                                selectedScriptureNote === note
-                                    ? Color.accentColor.opacity(0.13)
-                                    : Color.clear
-                            )
-                            .listRowSeparator(
-                                item.id == notes.last?.id ? .hidden : .visible
-                            )
-                            .listRowSeparatorTint(Color.primary.opacity(0.09))
-                            .listRowInsets(EdgeInsets())
-                        case .user(let note):
-                            NotesTitleButton(
-                                title: item.title,
-                                preview: item.preview,
-                                reference: nil,
-                                tag: NoteCategory(rawValue: note.categoryRawValue)?.title,
-                                highlight: nil,
-                                isFavorite: note.isFavorite,
-                                updatedAt: note.updatedAt ?? note.createdAt,
-                                isSelected: selectedUserNote === note
-                            ) {
-                                selectedUserNote = note
-                                selectedScriptureNote = nil
-                                selectionAction()
-                            }
-                            .swipeActions(edge: .leading) {
-                                Button {
-                                    toggleFavorite(note)
-                                } label: {
-                                    Label(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star")
-                                }
-                                .tint(.yellow)
-                            }
-                            .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) { deleteAction(.user(note)) } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                            }
-                            .listRowBackground(
-                                selectedUserNote === note
-                                    ? Color.accentColor.opacity(0.13)
-                                    : Color.clear
-                            )
-                            .listRowSeparator(
-                                item.id == notes.last?.id ? .hidden : .visible
-                            )
-                            .listRowSeparatorTint(Color.primary.opacity(0.09))
-                            .listRowInsets(EdgeInsets())
-                        }
-                    }
-                }
-            }
-            .listStyle(.plain)
-            .scrollDisabled(horizontalSizeClass == .compact)
-            .scrollContentBackground(.hidden)
-            .contentMargins(.vertical, 0, for: .scrollContent)
-        }
-        .background(Color.clear)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    private func toggleFavorite(_ note: VerseNote) {
-        note.isFavorite.toggle()
-        try? modelContext.save()
-    }
-
-    private func toggleFavorite(_ note: UserNote) {
-        note.isFavorite.toggle()
-        try? modelContext.save()
-    }
-}
-
-private struct ExpandingNotesListCard: View {
-    @Environment(\.modelContext) private var modelContext
-
-    let notes: [NotesListItem]
-    @Binding var selectedScriptureNote: VerseNote?
-    @Binding var selectedUserNote: UserNote?
-    @Binding var selectedFilter: NotesFilter
-    let showsClearFiltersAction: Bool
-    let clearFiltersAction: () -> Void
-    let newNoteAction: () -> Void
-    let deleteAction: (NotesListItem) -> Void
-    let selectionAction: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 8) {
-                Text(selectedFilter.libraryTitle(noteCount: notes.count))
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-
-                Spacer(minLength: 8)
-
-                if showsClearFiltersAction {
-                    Button {
-                        clearFiltersAction()
-                    } label: {
-                        Label("Clear All Filters", systemImage: "line.3.horizontal.decrease.circle")
-                    }
-                    .labelStyle(.iconOnly)
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-                    .accessibilityLabel("Clear all filters")
-                }
-
-                Button("New Note", systemImage: "plus") {
-                    newNoteAction()
-                }
-                .font(.caption.weight(.semibold))
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-            }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(
-                    EdgeInsets(
-                        top: AppDesignMetrics.cardPadding,
-                        leading: AppDesignMetrics.cardPadding,
-                        bottom: 4,
-                        trailing: AppDesignMetrics.cardPadding
-                    )
-                )
-
-            if notes.isEmpty {
-                ContentUnavailableView {
-                    Label("No Notes", systemImage: "note.text")
-                } description: {
-                    Text("Try another tag, color, sort order, or search.")
-                } actions: {
-                    if showsClearFiltersAction {
-                        Button("Clear All Filters", systemImage: "line.3.horizontal.decrease.circle") {
-                            clearFiltersAction()
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
-                }
-                .padding(.vertical, 40)
-                .frame(maxWidth: .infinity)
-            } else {
-                ForEach(notes) { item in
-                    noteRow(item)
-
-                    if item.id != notes.last?.id {
-                        Divider()
-                            .padding(.leading, 16)
-                            .foregroundStyle(Color.primary.opacity(0.09))
-                    }
-                }
-            }
-        }
-        .frame(maxWidth: .infinity)
-    }
-
-    @ViewBuilder
-    private func noteRow(_ item: NotesListItem) -> some View {
-        switch item {
-        case .scripture(let note):
-            NotesTitleButton(
-                title: item.title,
-                preview: item.preview,
-                reference: item.reference,
-                tag: NoteCategory(rawValue: note.categoryRawValue)?.title,
-                highlight: VerseHighlightColor(rawValue: note.highlightColor),
-                isFavorite: note.isFavorite,
-                updatedAt: note.updatedAt ?? note.createdAt,
-                isSelected: selectedScriptureNote === note
-            ) {
-                selectedScriptureNote = note
-                selectedUserNote = nil
-                selectionAction()
-            }
-            .background(
-                selectedScriptureNote === note
-                    ? Color.accentColor.opacity(0.13)
-                    : Color.clear
-            )
-            .swipeActions(edge: .leading) {
-                Button {
-                    toggleFavorite(note)
-                } label: {
-                    Label(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star")
-                }
-                .tint(.yellow)
-            }
-            .swipeActions(edge: .trailing) {
-                Button(role: .destructive) { deleteAction(.scripture(note)) } label: {
-                    Label("Delete", systemImage: "trash")
-                }
-            }
-
-        case .user(let note):
-            NotesTitleButton(
-                title: item.title,
-                preview: item.preview,
-                reference: nil,
-                tag: NoteCategory(rawValue: note.categoryRawValue)?.title,
-                highlight: nil,
-                isFavorite: note.isFavorite,
-                updatedAt: note.updatedAt ?? note.createdAt,
-                isSelected: selectedUserNote === note
-            ) {
-                selectedUserNote = note
-                selectedScriptureNote = nil
-                selectionAction()
-            }
-            .background(
-                selectedUserNote === note
-                    ? Color.accentColor.opacity(0.13)
-                    : Color.clear
-            )
-            .swipeActions(edge: .leading) {
-                Button {
-                    toggleFavorite(note)
-                } label: {
-                    Label(note.isFavorite ? "Unfavorite" : "Favorite", systemImage: note.isFavorite ? "star.slash" : "star")
-                }
-                .tint(.yellow)
-            }
-            .swipeActions(edge: .trailing) {
-                Button(role: .destructive) { deleteAction(.user(note)) } label: {
-                    Label("Delete", systemImage: "trash")
-                }
-            }
-        }
-    }
-
-    private func toggleFavorite(_ note: VerseNote) {
-        note.isFavorite.toggle()
-        try? modelContext.save()
-    }
-
-    private func toggleFavorite(_ note: UserNote) {
-        note.isFavorite.toggle()
-        try? modelContext.save()
-    }
-}
-
-private struct NotesFilterMenu: View {
-    enum Presentation {
-        case pill
-        case toolbar
-    }
-
-    @Binding var highlightFilter: NotesHighlightFilter
-    var presentation: Presentation = .pill
-
-    @ViewBuilder
-    var body: some View {
-        switch presentation {
-        case .pill:
-            filterMenu {
-                Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
-            }
-            .buttonStyle(.bordered)
-            .controlSize(.small)
-        case .toolbar:
-            filterMenu {
-                Image(
-                    systemName: highlightFilter == .all
-                        ? "line.3.horizontal.decrease"
-                        : "line.3.horizontal.decrease.circle.fill"
-                )
-                .foregroundStyle(
-                    highlightFilter == .all
-                        ? AnyShapeStyle(.primary)
-                        : AnyShapeStyle(.tint)
-                )
-            }
-        }
-    }
-
-    private func filterMenu<Label: View>(@ViewBuilder label: () -> Label) -> some View {
-        Menu {
-            Picker("Highlight Color", selection: $highlightFilter) {
-                ForEach(NotesHighlightFilter.allCases) { option in
-                    Text(option.title).tag(option)
-                }
-            }
-        } label: {
-            label()
-        }
-        .accessibilityLabel("Filter notes")
-        .accessibilityValue(Text(highlightFilter.title))
     }
 }
 
@@ -2130,7 +2153,7 @@ private struct NotesTitleButton: View {
                         }
                         Spacer(minLength: 0)
                         if let updatedAt {
-                            Text(updatedAt, format: .dateTime.month(.abbreviated).day())
+                            Text(updatedAt, format: rowDateFormat(for: updatedAt))
                         }
                     }
                     .font(.caption2)
@@ -2144,6 +2167,12 @@ private struct NotesTitleButton: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+    }
+
+    /// Omits the year for this year's notes so older notes aren't mistaken for recent ones.
+    private func rowDateFormat(for date: Date) -> Date.FormatStyle {
+        let style = Date.FormatStyle.dateTime.month(.abbreviated).day()
+        return Calendar.current.isDate(date, equalTo: .now, toGranularity: .year) ? style : style.year()
     }
 }
 
@@ -2162,9 +2191,9 @@ private struct NoteDetailCard: View {
                     title: scriptureNote.title.isEmpty ? "Scripture Note" : scriptureNote.title,
                     subtitle: "\(scriptureNote.bookName) \(scriptureNote.chapterNumber):\(scriptureNote.verseNumber)",
                     isFavorite: scriptureNote.isFavorite,
-                    shareText: scriptureShareText(scriptureNote),
+                    shareText: NotesListItem.scripture(scriptureNote).shareText,
                     favoriteAction: { toggleFavorite(scriptureNote) },
-                    openBibleAction: { openInBible(scriptureNote) },
+                    openBibleAction: { NotesListItem.scripture(scriptureNote).openInBible() },
                     editAction: editAction
                 )
                 ScrollView {
@@ -2188,7 +2217,7 @@ private struct NoteDetailCard: View {
                     title: userNote.title.isEmpty ? "Untitled Note" : userNote.title,
                     subtitle: nil,
                     isFavorite: userNote.isFavorite,
-                    shareText: userShareText(userNote),
+                    shareText: NotesListItem.user(userNote).shareText,
                     favoriteAction: { toggleFavorite(userNote) },
                     openBibleAction: nil,
                     editAction: editAction
@@ -2256,24 +2285,6 @@ private struct NoteDetailCard: View {
         note.isFavorite.toggle()
         try? modelContext.save()
         Haptics.selection()
-    }
-
-    private func openInBible(_ note: VerseNote) {
-        NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
-            "book": note.bookName,
-            "chapter": note.chapterNumber,
-            "verse": note.verseNumber
-        ])
-    }
-
-    private func scriptureShareText(_ note: VerseNote) -> String {
-        let title = note.title.isEmpty ? "Scripture Note" : note.title
-        return "\(title)\n\(note.bookName) \(note.chapterNumber):\(note.verseNumber)\n\n\(note.verseText)\n\n\(note.content)"
-    }
-
-    private func userShareText(_ note: UserNote) -> String {
-        let title = note.title.isEmpty ? "Untitled Note" : note.title
-        return "\(title)\n\n\(note.content)"
     }
 
 }
@@ -2356,232 +2367,6 @@ private struct NoteDetailHeader: View {
     }
 }
 
-@MainActor
-private struct ScriptureNotesView: View {
-    @Query(sort: \VerseNote.updatedAt, order: .reverse) private var notes: [VerseNote]
-    @AppStorage("notesHighlightsSort") private var sortRawValue = NotesHighlightsSort.modifiedNewest.rawValue
-    @State private var searchText = ""
-    @State private var selectedNote: VerseNote?
-
-    var body: some View {
-        List {
-            if visibleNotes.isEmpty {
-                ContentUnavailableView(
-                    searchText.isEmpty ? "No Notes or Highlights" : "No Results",
-                    systemImage: searchText.isEmpty ? "highlighter" : "magnifyingglass",
-                    description: Text(searchText.isEmpty
-                        ? "Press and hold a verse to add a private note or highlight."
-                        : "Try searching for a reference, verse, or note.")
-                )
-                .listRowBackground(Color.clear)
-            } else {
-                ForEach(visibleNotes) { note in
-                    Button {
-                        selectedNote = note
-                    } label: {
-                        NoteHighlightRow(
-                            title: note.title,
-                            reference: "\(note.bookName) \(note.chapterNumber):\(note.verseNumber)",
-                            verseText: note.verseText,
-                            noteText: formattedContent(for: note),
-                            highlight: VerseHighlightColor(rawValue: note.highlightColor),
-                            createdAt: note.createdAt,
-                            updatedAt: note.updatedAt
-                        )
-                    }
-                    .buttonStyle(.plain)
-                    .swipeActions(edge: .leading) {
-                        Button("Open", systemImage: "book") {
-                            open(note)
-                        }
-                        .tint(.accentColor)
-                    }
-                }
-                .onDelete(perform: delete)
-                .listRowBackground(HeroCardListRowBackground())
-            }
-        }
-        .scrollContentBackground(.hidden)
-        .background(AppBackgroundView(tab: .notes))
-        .navigationTitle("Notes")
-        .searchable(text: $searchText, prompt: "Search notes and verses")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Picker("Sort By", selection: $sortRawValue) {
-                        ForEach(NotesHighlightsSort.allCases) { option in
-                            Label(option.title, systemImage: option.systemImage)
-                                .tag(option.rawValue)
-                        }
-                    }
-                } label: {
-                    Label("Sort", systemImage: "arrow.up.arrow.down")
-                }
-                .accessibilityLabel("Sort notes and highlights")
-            }
-        }
-        .sheet(item: $selectedNote) { note in
-            NavigationStack {
-                VerseNoteEditorView(
-                    verse: VerseActionReference(
-                        bookName: note.bookName,
-                        chapterNumber: note.chapterNumber,
-                        verseNumber: note.verseNumber,
-                        verseText: note.verseText
-                    ),
-                    existingNote: note,
-                    preservesHighlightWhenRemovingNote: true
-                )
-                .toolbar {
-                    ToolbarItem(placement: .bottomBar) {
-                        Button("Open in Bible", systemImage: "book") {
-                            selectedNote = nil
-                            open(note)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private var visibleNotes: [VerseNote] {
-        let filteredNotes: [VerseNote]
-        if searchText.isEmpty {
-            filteredNotes = notes
-        } else {
-            filteredNotes = notes.filter {
-                $0.bookName.localizedCaseInsensitiveContains(searchText) ||
-                $0.verseText.localizedCaseInsensitiveContains(searchText) ||
-                $0.content.localizedCaseInsensitiveContains(searchText) ||
-                "\($0.chapterNumber):\($0.verseNumber)".localizedCaseInsensitiveContains(searchText)
-            }
-        }
-
-        let selectedSort = NotesHighlightsSort(rawValue: sortRawValue) ?? .modifiedNewest
-        switch selectedSort {
-        case .modifiedNewest:
-            return filteredNotes.sorted { ($0.updatedAt ?? .distantPast) > ($1.updatedAt ?? .distantPast) }
-        case .modifiedOldest:
-            return filteredNotes.sorted { ($0.updatedAt ?? .distantPast) < ($1.updatedAt ?? .distantPast) }
-        case .addedNewest:
-            return filteredNotes.sorted { ($0.createdAt ?? .distantPast) > ($1.createdAt ?? .distantPast) }
-        case .addedOldest:
-            return filteredNotes.sorted { ($0.createdAt ?? .distantPast) < ($1.createdAt ?? .distantPast) }
-        case .bibleOrder:
-            let bookPositions = Dictionary(
-                uniqueKeysWithValues: BibleData.books.enumerated().map { ($0.element.name, $0.offset) }
-            )
-            return filteredNotes.sorted {
-                let left = bookPositions[$0.bookName] ?? .max
-                let right = bookPositions[$1.bookName] ?? .max
-                if left != right { return left < right }
-                if $0.chapterNumber != $1.chapterNumber { return $0.chapterNumber < $1.chapterNumber }
-                return $0.verseNumber < $1.verseNumber
-            }
-        case .highlightColor:
-            let colorPositions = Dictionary(
-                uniqueKeysWithValues: VerseHighlightColor.allCases.enumerated().map { ($0.element.rawValue, $0.offset) }
-            )
-            return filteredNotes.sorted {
-                let left = colorPositions[$0.highlightColor] ?? .max
-                let right = colorPositions[$1.highlightColor] ?? .max
-                if left != right { return left < right }
-                return referencePrecedes($0, $1)
-            }
-        case .reference:
-            return filteredNotes.sorted(by: referencePrecedes)
-        }
-    }
-
-    private func referencePrecedes(_ left: VerseNote, _ right: VerseNote) -> Bool {
-        let comparison = left.bookName.localizedStandardCompare(right.bookName)
-        if comparison != .orderedSame { return comparison == .orderedAscending }
-        if left.chapterNumber != right.chapterNumber { return left.chapterNumber < right.chapterNumber }
-        return left.verseNumber < right.verseNumber
-    }
-
-    private func formattedContent(for note: VerseNote) -> AttributedString {
-        if let data = note.formattedContent,
-           let formatted = try? JSONDecoder().decode(AttributedString.self, from: data) {
-            return formatted
-        }
-        return AttributedString(note.content)
-    }
-
-    private func open(_ note: VerseNote) {
-        NotificationCenter.default.post(
-            name: .openBibleReference,
-            object: nil,
-            userInfo: [
-                "book": note.bookName,
-                "chapter": note.chapterNumber,
-                "verse": note.verseNumber
-            ]
-        )
-    }
-
-    private func delete(at offsets: IndexSet) {
-        for index in offsets {
-            modelContext.delete(visibleNotes[index])
-        }
-        try? modelContext.save()
-    }
-
-    @Environment(\.modelContext) private var modelContext
-}
-
-private struct NoteHighlightRow: View {
-    let title: String
-    let reference: String
-    let verseText: String
-    let noteText: AttributedString
-    let highlight: VerseHighlightColor?
-    let createdAt: Date?
-    let updatedAt: Date?
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            RoundedRectangle(cornerRadius: 3)
-                .fill(highlight?.color ?? .clear)
-                .frame(width: 6)
-                .overlay {
-                    if highlight == nil {
-                        RoundedRectangle(cornerRadius: 3)
-                            .fill(Color.secondary.opacity(0.2))
-                    }
-                }
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text(title.isEmpty ? reference : title)
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                if !title.isEmpty {
-                    Text(reference)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Text(verseText)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(3)
-                if !noteText.characters.isEmpty {
-                    HStack(alignment: .firstTextBaseline, spacing: 6) {
-                        Image(systemName: "note.text")
-                        Text(noteText)
-                    }
-                        .font(.subheadline)
-                        .foregroundStyle(.primary)
-                        .lineLimit(3)
-                }
-                NoteTimestampView(createdAt: createdAt, updatedAt: updatedAt)
-            }
-        }
-        .padding(.vertical, 4)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .contentShape(.rect)
-    }
-}
-
 private struct NoteTimestampView: View {
     let createdAt: Date?
     let updatedAt: Date?
@@ -2613,120 +2398,6 @@ private struct NoteTimestampView: View {
 
     private var displayDate: Date? {
         wasModified ? updatedAt : (createdAt ?? updatedAt)
-    }
-}
-
-@MainActor
-private struct UserNotesView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query(sort: \UserNote.updatedAt, order: .reverse) private var notes: [UserNote]
-    @State private var searchText = ""
-    @State private var selectedNote: UserNote?
-    @State private var isCreatingNote = false
-
-    var body: some View {
-        List {
-            if visibleNotes.isEmpty {
-                ContentUnavailableView(
-                    searchText.isEmpty ? "No Personal Notes" : "No Results",
-                    systemImage: searchText.isEmpty ? "note.text" : "magnifyingglass",
-                    description: Text(searchText.isEmpty
-                        ? "Tap the plus button to create your first note."
-                        : "Try searching for a note title or its contents.")
-                )
-                .listRowBackground(Color.clear)
-            } else {
-                ForEach(visibleNotes) { note in
-                    Button {
-                        selectedNote = note
-                    } label: {
-                        UserNoteRow(
-                            title: note.title,
-                            content: formattedContent(for: note),
-                            createdAt: note.createdAt,
-                            updatedAt: note.updatedAt
-                        )
-                    }
-                    .buttonStyle(.plain)
-                }
-                .onDelete(perform: delete)
-                .listRowBackground(HeroCardListRowBackground())
-            }
-        }
-        .scrollContentBackground(.hidden)
-        .background(AppBackgroundView(tab: .notes))
-        .navigationTitle("My Notes")
-        .searchable(text: $searchText, prompt: "Search personal notes")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    isCreatingNote = true
-                } label: {
-                    Image(systemName: "plus")
-                }
-                .accessibilityLabel("Create note")
-            }
-        }
-        .fullScreenCover(isPresented: $isCreatingNote) {
-            NavigationStack {
-                UserNoteEditorView(existingNote: nil)
-            }
-        }
-        .fullScreenCover(item: $selectedNote) { note in
-            NavigationStack {
-                UserNoteEditorView(existingNote: note)
-            }
-        }
-    }
-
-    private var visibleNotes: [UserNote] {
-        guard !searchText.isEmpty else { return notes }
-        return notes.filter {
-            $0.title.localizedCaseInsensitiveContains(searchText) ||
-            $0.content.localizedCaseInsensitiveContains(searchText)
-        }
-    }
-
-    private func formattedContent(for note: UserNote) -> AttributedString {
-        if let data = note.formattedContent,
-           let formatted = try? JSONDecoder().decode(AttributedString.self, from: data) {
-            return formatted
-        }
-        return AttributedString(note.content)
-    }
-
-    private func delete(at offsets: IndexSet) {
-        for index in offsets {
-            modelContext.delete(visibleNotes[index])
-        }
-        try? modelContext.save()
-    }
-}
-
-private struct UserNoteRow: View {
-    let title: String
-    let content: AttributedString
-    let createdAt: Date?
-    let updatedAt: Date?
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title.isEmpty ? "Untitled Note" : title)
-                .font(.headline)
-                .foregroundStyle(.primary)
-
-            if !content.characters.isEmpty {
-                Text(content)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(4)
-            }
-
-            NoteTimestampView(createdAt: createdAt, updatedAt: updatedAt)
-        }
-        .padding(.vertical, 6)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .contentShape(.rect)
     }
 }
 
