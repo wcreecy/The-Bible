@@ -51,7 +51,7 @@ struct FocusReadingView: View {
                 }
                 .scrollTargetLayout()
             }
-            .scrollPosition(id: $visibleVerseID)
+            .scrollPosition(id: $visibleVerseID, anchor: .center)
             .scrollTargetBehavior(.paging)
             .scrollIndicators(.hidden)
             .onChange(of: visibleVerseID) { _, newValue in
