@@ -33,17 +33,29 @@ actor ChapterInsightsRepository {
 
         enum CodingKeys: String, CodingKey {
             case name
+            case nameOrGroup = "name_or_group"
             case roleAndSignificance = "role_and_significance"
             case role
+            case significance
         }
 
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            name = try container.decode(String.self, forKey: .name)
-            roleAndSignificance = try container.decodeIfPresent(
+            name = try container.decodeIfPresent(String.self, forKey: .name)
+                ?? container.decode(String.self, forKey: .nameOrGroup)
+
+            if let roleAndSignificance = try container.decodeIfPresent(
                 String.self,
                 forKey: .roleAndSignificance
-            ) ?? container.decode(String.self, forKey: .role)
+            ) {
+                self.roleAndSignificance = roleAndSignificance
+            } else {
+                let role = try container.decodeIfPresent(String.self, forKey: .role)
+                let significance = try container.decodeIfPresent(String.self, forKey: .significance)
+                self.roleAndSignificance = [role, significance]
+                    .compactMap { $0 }
+                    .joined(separator: " ")
+            }
         }
     }
 
@@ -154,7 +166,8 @@ actor ChapterInsightsRepository {
             return loadEmbeddedJSONInsights(chapterNumber: chapterNumber, database: database)
         case "Leviticus":
             return loadLeviticusInsights(chapterNumber: chapterNumber, database: database)
-        case "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings":
+        case "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings",
+             "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther":
             return loadSimpleOverviewInsights(chapterNumber: chapterNumber, database: database)
         default:
             return loadInsights(chapterNumber: chapterNumber, database: database)
@@ -187,6 +200,16 @@ actor ChapterInsightsRepository {
             "1_Kings_Chapter_Overviews_22"
         case "2 Kings":
             "2_Kings_Chapter_Overviews_25"
+        case "1 Chronicles":
+            "1_Chronicles_Chapter_Overviews_29"
+        case "2 Chronicles":
+            "2_Chronicles_Chapter_Overviews_36"
+        case "Ezra":
+            "Ezra_Chapter_Overviews_10"
+        case "Nehemiah":
+            "Nehemiah_Chapter_Overviews_13"
+        case "Esther":
+            "Esther_Chapter_Overviews_10"
         default:
             nil
         }
