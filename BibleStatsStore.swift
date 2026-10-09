@@ -19,6 +19,8 @@ final class BibleStatsStore {
         static let keySeenVersesByChapter = "seenVersesByChapter"   // [String: [Int]] keyed by "Book:Chapter"
         static let keyChapterCompletionDates = "chapterCompletionDates" // [String: Date] keyed by "Book:Chapter"
         static let keyReadingContributions = "readingTimeContributionsV2"
+        static let keyChapterResetDates = "chapterResetDates"           // [String: Date] keyed by "Book:Chapter"
+        static let keySeenVersesUpdatedAt = "seenVersesUpdatedAt"       // [String: Date] keyed by "Book:Chapter"
         // Swap this to your app group if desired:
         static var provider: UserDefaults { UserDefaults.standard }
 
@@ -110,6 +112,8 @@ final class BibleStatsStore {
         d.removeObject(forKey: Defaults.keySeenVersesByChapter)
         d.removeObject(forKey: Defaults.keyChapterCompletionDates)
         d.removeObject(forKey: Defaults.keyReadingContributions)
+        d.removeObject(forKey: Defaults.keyChapterResetDates)
+        d.removeObject(forKey: Defaults.keySeenVersesUpdatedAt)
         resetCaches()
     }
 

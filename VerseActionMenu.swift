@@ -210,15 +210,19 @@ struct VerseActionMenu: View {
     }
 
     private func toggleFavorite() {
-        if let existing = favorites.first(where: {
+        // Synced devices can briefly hold duplicates; removing one would leave the verse favorited.
+        let existing = favorites.filter {
             $0.bookName == verse.bookName &&
             $0.chapterNumber == verse.chapterNumber &&
             $0.verseNumber == verse.verseNumber
-        }) {
+        }
+        if !existing.isEmpty {
             ModelContextPersistence.perform(
                 in: modelContext,
                 operation: {
-                    modelContext.delete(existing)
+                    for favorite in existing {
+                        modelContext.delete(favorite)
+                    }
                     try modelContext.save()
                 },
                 onSuccess: {

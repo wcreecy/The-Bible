@@ -79,6 +79,12 @@ final class PrayerTimerController: ObservableObject {
                 }
             }
         }
+
+        // A mindful session can only be open while the timer is actively counting down.
+        // Discard any start date left behind by an earlier launch.
+        if !storedRunning || storedPaused {
+            mindfulStartDate = 0
+        }
         updateTickerSubscription()
     }
 
@@ -96,14 +102,10 @@ final class PrayerTimerController: ObservableObject {
                 handleTimerFinished()
             }
         }
-        startMindfulLoggingIfNeeded()
         updateTickerSubscription()
     }
 
     func onSceneBecameInactiveOrBackground() {
-        if !isRunning {
-            stopMindfulLogging()
-        }
         updateTickerSubscription()
     }
 
@@ -132,7 +134,7 @@ final class PrayerTimerController: ObservableObject {
         suppressTimerActivityUpdatesUntil = Date().addingTimeInterval(1.0)
         suppressTimerRecomputeUntil = Date().addingTimeInterval(1.75)
 
-        startMindfulLoggingIfNeeded()
+        beginMindfulSession(at: start)
         scheduleCompletionAlert(at: end)
 
         PrayerTimerActivityController.shared.start(
@@ -157,7 +159,9 @@ final class PrayerTimerController: ObservableObject {
             storedRemainingWhenPaused = newRemain
             cancelNotification()
             cancelAlarm()
+            endMindfulSession(at: Date())
         } else {
+            beginMindfulSession(at: Date())
             let newEnd = Date().addingTimeInterval(TimeInterval(remainingSeconds))
             storedEndDate = newEnd.timeIntervalSince1970
             liveEndDate = storedEndDate
@@ -212,9 +216,7 @@ final class PrayerTimerController: ObservableObject {
     }
 
     func stop() {
-        if UIApplication.shared.applicationState != .active {
-            stopMindfulLogging()
-        }
+        endMindfulSession(at: Date())
         resetTimerState()
         cancelNotification()
         cancelAlarm()
@@ -282,11 +284,18 @@ final class PrayerTimerController: ObservableObject {
 
     private func handleTimerFinished() {
         if !isRunning { return }
-        if UIApplication.shared.applicationState != .active {
-            stopMindfulLogging()
-        }
+
+        // The timer may finish while the app is suspended; the session ends at the
+        // scheduled end date, not when the app next runs.
+        let scheduledEnd = storedEndDate > 0
+            ? Date(timeIntervalSince1970: storedEndDate)
+            : Date()
+        endMindfulSession(at: min(Date(), scheduledEnd))
+
+        let completedMinutes = storedTotalSeconds / 60
         cancelNotification()
         resetTimerState()
+        TodayChallengeStore.shared.recordPrayerTimerCompletion(minutes: completedMinutes)
         PrayerTimerActivityController.shared.finish()
         showFinishedAlert = true
         startFinishAlerts()
@@ -346,30 +355,27 @@ final class PrayerTimerController: ObservableObject {
 
     // MARK: - HealthKit mindful logging
 
-    private func startMindfulLoggingIfNeeded() {
+    // A mindful session covers only the time the timer is actively counting down:
+    // it opens on start/resume and closes on pause, stop, or finish.
+    private func beginMindfulSession(at date: Date) {
         guard HealthKitManager.shared.isMindfulMinutesEnabled,
               HealthKitManager.shared.mindfulMinutesAuthorizationStatus() == .sharingAuthorized else {
             mindfulStartDate = 0
             return
         }
-        if mindfulStartDate == 0 {
-            mindfulStartDate = Date().timeIntervalSince1970
-        }
+        mindfulStartDate = date.timeIntervalSince1970
     }
 
-    private func stopMindfulLogging() {
-        guard HealthKitManager.shared.isMindfulMinutesEnabled,
+    private func endMindfulSession(at endDate: Date) {
+        defer { mindfulStartDate = 0 }
+        guard mindfulStartDate > 0,
+              HealthKitManager.shared.isMindfulMinutesEnabled,
               HealthKitManager.shared.mindfulMinutesAuthorizationStatus() == .sharingAuthorized else {
-            mindfulStartDate = 0
             return
         }
-        if mindfulStartDate > 0 {
-            let startDate = Date(timeIntervalSince1970: mindfulStartDate)
-            let endDate = Date()
-            if endDate > startDate {
-                HealthKitManager.shared.saveMindfulSession(start: startDate, end: endDate, completion: nil)
-            }
-            mindfulStartDate = 0
+        let startDate = Date(timeIntervalSince1970: mindfulStartDate)
+        if endDate > startDate {
+            HealthKitManager.shared.saveMindfulSession(start: startDate, end: endDate, completion: nil)
         }
     }
 

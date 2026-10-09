@@ -21,6 +21,11 @@ final class DailyGoalHistoryStore {
         return max(1, storedMinutes ?? 30)
     }
 
+    /// Drops the in-memory copy after the stored history is replaced by an iCloud merge.
+    func invalidateCache() {
+        cache = nil
+    }
+
     private func load() -> [Change] {
         if let cache { return cache }
         guard let data = defaults.data(forKey: historyKey) else {

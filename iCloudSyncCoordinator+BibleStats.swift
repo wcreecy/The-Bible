@@ -11,6 +11,8 @@ extension iCloudSyncCoordinator {
     static var stats_keySeenVersesByChapter: String { BibleStatsStore.Defaults.keySeenVersesByChapter }
     static var stats_keyChapterCompletionDates: String { BibleStatsStore.Defaults.keyChapterCompletionDates }
     static var stats_keyReadingContributions: String { BibleStatsStore.Defaults.keyReadingContributions }
+    static var stats_keyChapterResetDates: String { BibleStatsStore.Defaults.keyChapterResetDates }
+    static var stats_keySeenVersesUpdatedAt: String { BibleStatsStore.Defaults.keySeenVersesUpdatedAt }
     // Reading sessions (JSON array)
     static var stats_keyReadingSessions: String { "readingSessions" }
 
@@ -23,7 +25,20 @@ extension iCloudSyncCoordinator {
             stats_keyLastRead,
             stats_keySeenVersesByChapter,
             stats_keyChapterCompletionDates,
-            stats_keyReadingContributions
+            stats_keyReadingContributions,
+            stats_keyChapterResetDates,
+            stats_keySeenVersesUpdatedAt
+        ]
+    }
+
+    /// Keys whose merged values can resurrect a chapter that was marked unread.
+    private static var chapterProgressKeys: Set<String> {
+        [
+            stats_keySeenVersesByChapter,
+            stats_keyVisitedChapters,
+            stats_keyChapterCompletionDates,
+            stats_keyChapterResetDates,
+            stats_keySeenVersesUpdatedAt
         ]
     }
 
@@ -152,6 +167,11 @@ extension iCloudSyncCoordinator {
             let merged = mergeDateMap(localData: localData, remoteData: remoteData, type: Map.self, strategy: .earliest)
             if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
 
+        case Self.stats_keyChapterResetDates, Self.stats_keySeenVersesUpdatedAt:
+            typealias Map = [String: Date]
+            let merged = mergeDateMap(localData: localData, remoteData: remoteData, type: Map.self, strategy: .latest)
+            if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
+
         case Self.stats_keyLastRead:
             typealias Entry = BibleStatsStore.LastRead
             // If remote payload is present but decodes to nil (corrupt), treat as clear.
@@ -170,6 +190,13 @@ extension iCloudSyncCoordinator {
 
         default:
             break
+        }
+
+        // Drop progress for chapters marked unread before the union is republished,
+        // so a stale device's verses do not bring them back.
+        if Self.chapterProgressKeys.contains(key) {
+            BibleStatsStore.shared.resetCaches()
+            BibleStatsStore.shared.applyChapterResets()
         }
 
         // Publish a repaired union back to KVS. This is important when this device

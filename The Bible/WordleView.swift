@@ -101,9 +101,13 @@ struct WordleView: View {
     private let persistentBestStreakKey = "wordlePersistentBestStreak"
     private let practiceWordBagKey = "wordlePracticeWordBag"
     private let lastPracticeWordKey = "wordleLastPracticeWord"
+    private let dailyWordAssignmentKey = "wordleDailyWordAssignment"
+    private let recentDailyWordsKey = "wordleRecentDailyWords"
+    private let recentDailyWordLimit = 365
 
+    // Daily streaks count consecutive solved days, derived from the synced solved-days map.
     private func readPersistentStreak() -> Int {
-        return max(0, UserDefaults.standard.integer(forKey: persistentStreakKey))
+        GameStats.shared.wordleDailyWinStreak()
     }
 
     private func writePersistentStreak(_ value: Int) {
@@ -163,9 +167,9 @@ struct WordleView: View {
     }
     #endif
 
-    private static let kjvAnswerWords: [String] = {
+    private static func kjvAnswerWords(from books: [Book]) -> [String] {
         var set = Set<String>() // uppercase tokens
-        for book in BibleData.books {
+        for book in books {
             for chapter in book.chapters {
                 for verse in chapter.verses {
                     let upper = verse.text.uppercased()
@@ -198,7 +202,7 @@ struct WordleView: View {
         let sorted = set.sorted()
         return sorted.isEmpty ? ["JESUS","GRACE","FAITH","ANGEL","CROSS","ABRAM","SARAH","JONAH","MOSES","DAVID","SALEM","TITUS","JAMES","PETER","JUDAH"] : sorted
         #endif
-    }()
+    }
 
     // MARK: - Verse index (random occurrence for each 5-letter word) — exact tokens only
     private struct VerseRefInfo {
@@ -209,11 +213,11 @@ struct WordleView: View {
         var display: String { "\(bookName) \(chapter):\(verse)" }
     }
 
-    private static let verseIndex: [String: VerseRefInfo] = {
+    private static func makeVerseIndex(for words: [String], in books: [Book]) -> [String: VerseRefInfo] {
         var map: [String: VerseRefInfo] = [:]
         var counts: [String: Int] = [:]
-        let allowed = Set(kjvAnswerWords)
-        for book in BibleData.books {
+        let allowed = Set(words)
+        for book in books {
             for chapter in book.chapters {
                 for verse in chapter.verses {
                     let upper = verse.text.uppercased()
@@ -229,13 +233,36 @@ struct WordleView: View {
             }
         }
         return map
-    }()
+    }
 
-    private static let filteredAnswerWords: [String] = {
-        let pool = kjvAnswerWords
-        let filtered = pool.filter { verseIndex[$0] != nil }
-        return filtered.isEmpty ? pool : filtered
-    }()
+    // The answer pool (5-letter KJV words recognized by the English dictionary) and
+    // a verse reference for each word.
+    private struct AnswerBank {
+        let words: [String]
+        let verseIndex: [String: VerseRefInfo]
+    }
+
+    // Built on first use and cached only once the full corpus has loaded, so an early
+    // access during launch cannot pin the small fallback corpus for the whole session.
+    private static var cachedAnswerBank: AnswerBank?
+
+    private static var answerBank: AnswerBank {
+        if let cachedAnswerBank { return cachedAnswerBank }
+
+        let books = BibleData.books
+        let pool = kjvAnswerWords(from: books)
+        let index = makeVerseIndex(for: pool, in: books)
+        let filtered = pool.filter { index[$0] != nil }
+        let words = filtered.isEmpty ? pool : filtered
+        let bank = AnswerBank(words: words, verseIndex: index)
+        if !books.isEmpty {
+            cachedAnswerBank = bank
+        }
+        return bank
+    }
+
+    private static var filteredAnswerWords: [String] { answerBank.words }
+    private static var verseIndex: [String: VerseRefInfo] { answerBank.verseIndex }
 
     private static func findExactOccurrence(for word: String) -> VerseRefInfo? {
         let target = word.uppercased()
@@ -1103,6 +1130,16 @@ struct WordleView: View {
     }
 
     private func startNewRound(practice: Bool) {
+        // Answers come from the corpus; wait for it rather than drawing from the
+        // launch-time fallback, which would give a different Daily word.
+        guard !BibleData.books.isEmpty else {
+            Task {
+                _ = await BibleRepository.shared.loadAllBooks()
+                startNewRound(practice: practice)
+            }
+            return
+        }
+
         if !practice {
             hardModeEnabled = true
         }
@@ -1156,7 +1193,8 @@ struct WordleView: View {
             if win {
                 score += 1
 
-                let persisted = readPersistentStreak() + 1
+                // Counts today plus the run of solved days immediately before it.
+                let persisted = GameStats.shared.wordleDailyWinStreak(treatingTodayAsSolved: true)
                 writePersistentStreak(persisted)
                 currentStreak = persisted
 
@@ -1265,19 +1303,37 @@ struct WordleView: View {
     }
 
     // MARK: - Word of day (from filtered pool with references)
-    private func wordOfDay(date: Date = Date()) -> String {
+    /// Today's Daily word: picked at random the first time Daily is played each day and
+    /// kept for the rest of that day. Recent Daily answers are skipped so words don't repeat.
+    private func wordOfDay() -> String {
+        let defaults = UserDefaults.standard
         let pool = Self.filteredAnswerWords
-        let idx = Self.dayIndex(for: date) % max(1, pool.count)
-        return pool[idx]
+        guard !pool.isEmpty else { return "JESUS" }
+
+        if let data = defaults.data(forKey: dailyWordAssignmentKey),
+           let assignment = try? JSONDecoder().decode(DailyWordAssignment.self, from: data),
+           assignment.dayKey == todayKey,
+           pool.contains(assignment.word) {
+            return assignment.word
+        }
+
+        var recent = defaults.stringArray(forKey: recentDailyWordsKey) ?? []
+        let recentSet = Set(recent)
+        let word = pool.filter { !recentSet.contains($0) }.randomElement()
+            ?? pool.randomElement()
+            ?? "JESUS"
+
+        recent.append(word)
+        defaults.set(Array(recent.suffix(recentDailyWordLimit)), forKey: recentDailyWordsKey)
+        if let data = try? JSONEncoder().encode(DailyWordAssignment(dayKey: todayKey, word: word)) {
+            defaults.set(data, forKey: dailyWordAssignmentKey)
+        }
+        return word
     }
 
-    private static func dayIndex(for date: Date, calendar: Calendar = .autoupdatingCurrent) -> Int {
-        var cal = calendar
-        cal.timeZone = .autoupdatingCurrent
-        let start = cal.startOfDay(for: date)
-        let ref = cal.startOfDay(for: Date(timeIntervalSince1970: 1640995200)) // 2022-01-01
-        let comps = cal.dateComponents([.day], from: ref, to: start)
-        return max(0, comps.day ?? 0)
+    private struct DailyWordAssignment: Codable {
+        let dayKey: String
+        let word: String
     }
 
     private static func localDayKey(for date: Date, calendar: Calendar = .autoupdatingCurrent) -> String {
@@ -1444,9 +1500,9 @@ private struct WordSetupCard: View {
         case (.daily, true):
             "Solve today’s five-letter word in six guesses. Hard difficulty requires green letters to stay fixed and yellow letters to be reused. Daily can be played once per day, and your score is recorded."
         case (.practice, false):
-            "Solve a five-letter word in six guesses. Normal difficulty has no required-letter restrictions. Practice offers unlimited games, but scores are not recorded."
+            "Solve a five-letter word in six guesses. Normal difficulty has no required-letter restrictions. Practice offers unlimited games, and results are tracked separately from Daily in your stats."
         case (.practice, true):
-            "Solve a five-letter word in six guesses. Hard difficulty requires green letters to stay fixed and yellow letters to be reused. Practice offers unlimited games, but scores are not recorded."
+            "Solve a five-letter word in six guesses. Hard difficulty requires green letters to stay fixed and yellow letters to be reused. Practice offers unlimited games, and results are tracked separately from Daily in your stats."
         }
     }
 
@@ -1841,3 +1897,4 @@ private struct FilledGameKeyButtonStyle: ButtonStyle {
             .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
     }
 }
+

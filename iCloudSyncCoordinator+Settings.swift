@@ -43,6 +43,10 @@ extension iCloudSyncCoordinator {
             if kvs.data(forKey: key) != merged {
                 kvs.set(merged, forKey: key)
             }
+            let localTimestamp = readLocalTimestamp(for: key)
+            if localTimestamp > readRemoteTimestamp(for: key) {
+                kvs.set(localTimestamp, forKey: tsKey(for: key))
+            }
 
         default:
             break
@@ -79,6 +83,7 @@ extension iCloudSyncCoordinator {
             guard kvs.data(forKey: key) != nil, let merged = mergedGoalHistory() else { break }
             if defaults.data(forKey: key) != merged {
                 defaults.set(merged, forKey: key)
+                DailyGoalHistoryStore.shared.invalidateCache()
                 BibleStatsStore.shared.resetCaches()
                 NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
             }
@@ -92,8 +97,8 @@ extension iCloudSyncCoordinator {
         }
     }
 
-    /// Union of local and remote goal history by date. For the same date, the remote
-    /// entry wins so all devices converge on one value.
+    /// Union of local and remote goal history by date. For the same date, the side
+    /// written most recently wins so all devices converge on the latest choice.
     private func mergedGoalHistory() -> Data? {
         let key = "dailyGoalHistoryChanges"
         let localData = defaults.data(forKey: key)
@@ -102,10 +107,12 @@ extension iCloudSyncCoordinator {
 
         let localArr = decode(localData, as: [GoalChange].self) ?? []
         let remoteArr = decode(remoteData, as: [GoalChange].self) ?? []
+        let localIsNewer = readLocalTimestamp(for: key) > readRemoteTimestamp(for: key)
 
         var merged: [String: GoalChange] = [:]
-        for change in localArr { merged[change.isoDate] = change }
-        for change in remoteArr { merged[change.isoDate] = change }
+        let (older, newer) = localIsNewer ? (remoteArr, localArr) : (localArr, remoteArr)
+        for change in older { merged[change.isoDate] = change }
+        for change in newer { merged[change.isoDate] = change }
 
         let sorted = merged.values.sorted { $0.isoDate < $1.isoDate }
         return try? JSONEncoder().encode(sorted)

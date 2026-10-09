@@ -28,6 +28,30 @@ extension Notification.Name {
     static let openGameStart = Notification.Name("openGameStart")
 }
 
+/// Opens a game from elsewhere in the app (for example a Today challenge).
+/// The request is held until the Games screen consumes it, because the Games tab
+/// may not have been created yet when the request is made.
+@MainActor
+enum GameLaunchRequest {
+    private(set) static var pendingGameName: String?
+
+    /// Switches to the Games tab and opens the game with the given display name.
+    static func open(gameName: String) {
+        pendingGameName = gameName
+        NotificationCenter.default.post(
+            name: .switchToTab,
+            object: nil,
+            userInfo: ["tab": AppTab.games.rawValue]
+        )
+        NotificationCenter.default.post(name: .openGameStart, object: nil)
+    }
+
+    static func consume() -> String? {
+        defer { pendingGameName = nil }
+        return pendingGameName
+    }
+}
+
 private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
     case quiz
     case hangman
@@ -175,11 +199,10 @@ struct GamesView: View {
         }
         .onAppear {
             loadTodayWordResult()
+            openPendingGameIfNeeded()
         }
-        .onReceive(NotificationCenter.default.publisher(for: .openGameStart)) { note in
-            guard let name = note.userInfo?["gameName"] as? String,
-                  let route = GameRoute.allCases.first(where: { $0.displayName == name }) else { return }
-            path.append(route)
+        .onReceive(NotificationCenter.default.publisher(for: .openGameStart)) { _ in
+            openPendingGameIfNeeded()
         }
         .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
             refreshToken &+= 1
@@ -260,6 +283,15 @@ struct GamesView: View {
 
     private func present(_ route: GameRoute) {
         path.append(route)
+    }
+
+    /// Opens a game requested from outside the Games tab, replacing any open game.
+    private func openPendingGameIfNeeded() {
+        guard let name = GameLaunchRequest.consume(),
+              let route = GameRoute.allCases.first(where: { $0.displayName == name }) else { return }
+        var newPath = NavigationPath()
+        newPath.append(route)
+        path = newPath
     }
 
     private func openVerse(_ verse: HomeVerseRef) {

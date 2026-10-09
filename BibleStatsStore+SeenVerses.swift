@@ -85,6 +85,7 @@ extension BibleStatsStore {
 
         guard changed else { return }
         persistSeenVerseMap(seenMap, notify: false)
+        recordSeenVerseUpdates(for: Set(totalsByChapter.keys), at: date)
 
         var visited = loadVisitedChapters()
         var completionDates = loadChapterCompletionDates()
@@ -149,6 +150,72 @@ extension BibleStatsStore {
             let components = calendar.dateComponents([.year, .month], from: completionDate)
             return components.year == year && components.month == month
         }
+    }
+
+    // MARK: - Marking chapters unread
+
+    // Seen verses merge across devices as a union, so clearing them locally is not enough:
+    // another device would restore them. A synced reset date marks the chapter unread
+    // everywhere, and verses recorded after that date still count.
+
+    /// Marks a chapter unread on every device.
+    func markChapterUnread(bookName: String, chapter: Int, date: Date = Date()) {
+        let key = "\(bookName):\(chapter)"
+        var resets: [String: Date] = loadJSON(key: Defaults.keyChapterResetDates, default: [:])
+        resets[key] = date
+        saveJSON(resets, key: Defaults.keyChapterResetDates)
+        iCloudSyncCoordinator.shared.pushKey(Defaults.keyChapterResetDates)
+
+        applyChapterResets()
+        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+    }
+
+    /// Clears progress for chapters marked unread after their verses were last recorded.
+    /// Run after local resets and after merging progress from iCloud.
+    @discardableResult
+    func applyChapterResets() -> Bool {
+        let resets: [String: Date] = loadJSON(key: Defaults.keyChapterResetDates, default: [:])
+        guard !resets.isEmpty else { return false }
+        let updates: [String: Date] = loadJSON(key: Defaults.keySeenVersesUpdatedAt, default: [:])
+
+        ensureSeenVerseCacheLoaded()
+        var seenMap = cacheSeenVersesByChapter ?? [:]
+        var visited = loadVisitedChapters()
+        var completionDates = loadChapterCompletionDates()
+        var seenChanged = false
+        var visitedChanged = false
+        var datesChanged = false
+
+        for (key, resetDate) in resets where (updates[key] ?? .distantPast) <= resetDate {
+            if seenMap.removeValue(forKey: key) != nil { seenChanged = true }
+            if visited.remove(key) != nil { visitedChanged = true }
+            if completionDates.removeValue(forKey: key) != nil { datesChanged = true }
+        }
+
+        if seenChanged {
+            persistSeenVerseMap(seenMap, notify: false)
+        }
+        if visitedChanged {
+            cacheVisitedChapters = visited
+            saveJSON(Array(visited).sorted(), key: Defaults.keyVisitedChapters)
+            iCloudSyncCoordinator.shared.pushKey(Defaults.keyVisitedChapters)
+        }
+        if datesChanged {
+            cacheChapterCompletionDates = completionDates
+            saveJSON(completionDates, key: Defaults.keyChapterCompletionDates)
+            iCloudSyncCoordinator.shared.pushKey(Defaults.keyChapterCompletionDates)
+        }
+        return seenChanged || visitedChanged || datesChanged
+    }
+
+    private func recordSeenVerseUpdates(for chapterKeys: Set<String>, at date: Date) {
+        guard !chapterKeys.isEmpty else { return }
+        var updates: [String: Date] = loadJSON(key: Defaults.keySeenVersesUpdatedAt, default: [:])
+        for key in chapterKeys {
+            updates[key] = max(updates[key] ?? .distantPast, date)
+        }
+        saveJSON(updates, key: Defaults.keySeenVersesUpdatedAt)
+        iCloudSyncCoordinator.shared.pushKey(Defaults.keySeenVersesUpdatedAt)
     }
 
     private func ensureSeenVerseCacheLoaded() {

@@ -159,3 +159,29 @@ struct TitleCardView: View {
         }
     }
 }
+
+#Preview("In progress") {
+    TitleCardView(
+        isPad: false,
+        goalMinutes: 30,
+        todayReadingSeconds: 12 * 60,
+        streak: 4,
+        onSearch: {},
+        onFavorites: {},
+        onOpenGoal: {}
+    )
+    .padding()
+}
+
+#Preview("Goal met") {
+    TitleCardView(
+        isPad: false,
+        goalMinutes: 30,
+        todayReadingSeconds: 34 * 60,
+        streak: 5,
+        onSearch: {},
+        onFavorites: {},
+        onOpenGoal: {}
+    )
+    .padding()
+}

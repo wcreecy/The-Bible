@@ -1575,6 +1575,50 @@ final class GameStats: ObservableObject {
         return keys
     }
 
+    /// Consecutive calendar days with a solved Daily WORD, ending today (or yesterday if
+    /// today's Daily has not been played yet). A missed day or a loss ends the streak.
+    /// - Parameter treatingTodayAsSolved: Counts today as solved before the result is recorded.
+    func wordleDailyWinStreak(
+        treatingTodayAsSolved: Bool = false,
+        now: Date = Date(),
+        calendar: Calendar = .autoupdatingCurrent
+    ) -> Int {
+        var cal = calendar
+        cal.timeZone = .autoupdatingCurrent
+        let solved: [String: Int] = loadJSONMap(forKey: "wordleDailySolvedDays")
+        let todayKey = Self.localDayKey(for: now, calendar: cal)
+
+        func isSolved(_ key: String) -> Bool {
+            solved[key] == 1 || (treatingTodayAsSolved && key == todayKey)
+        }
+
+        var day = cal.startOfDay(for: now)
+        if !isSolved(todayKey) {
+            // A Daily loss today ends the streak immediately.
+            if playedDailyWithoutWinning(on: todayKey) { return 0 }
+            guard let yesterday = cal.date(byAdding: .day, value: -1, to: day) else { return 0 }
+            day = yesterday
+        }
+
+        var streak = 0
+        while isSolved(Self.localDayKey(for: day, calendar: cal)) {
+            streak += 1
+            guard let previous = cal.date(byAdding: .day, value: -1, to: day) else { break }
+            day = previous
+        }
+        return streak
+    }
+
+    private func playedDailyWithoutWinning(on dayKey: String) -> Bool {
+        struct DailyResult: Decodable { let won: Bool }
+        guard let data = UserDefaults.standard.data(forKey: "wordleDailyResultMap"),
+              let results = try? JSONDecoder().decode([String: DailyResult].self, from: data),
+              let result = results[dayKey] else {
+            return false
+        }
+        return !result.won
+    }
+
     private func loadHangmanPerCategoryMaps() -> (answered: [String: Int], correct: [String: Int]) {
         let a: [String: Int] = loadJSONMap(forKey: "hangmanPerCategoryAnsweredMap")
         let c: [String: Int] = loadJSONMap(forKey: "hangmanPerCategoryCorrectMap")

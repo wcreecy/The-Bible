@@ -49,13 +49,15 @@ struct HomeLayoutStore {
             ]
         }
 
+        // iPhone: get back into the text first, then the daily verse and challenges.
+        // Streak and Prayer Timer sit under Show More; the rest are opt-in.
         return [
-            .verseOfDay,
             .resumeReading,
+            .verseOfDay,
             .today,
-            .search,
-            .timer,
             .streaks,
+            .timer,
+            .search,
             .bibleStats,
             .dailyFocus
         ]
@@ -64,10 +66,13 @@ struct HomeLayoutStore {
         if UIDevice.current.userInterfaceIdiom == .pad {
             return [.today, .bibleStats, .dailyFocus, .streaks]
         }
-        return [.today, .search, .timer, .bibleStats, .dailyFocus, .streaks]
+        // Search duplicates the header's Search button; App Activity and Daily Focus are opt-in.
+        return [.search, .bibleStats, .dailyFocus]
     }
-    static let baselineMain: Set<HomeCardID> = [.verseOfDay, .resumeReading]
-    static let defaultShowMoreVisible = false
+    // Cards shown above Show More on iPhone. The iPad dashboard does not use this set.
+    static let baselineMain: Set<HomeCardID> = [.resumeReading, .verseOfDay, .today]
+    // Shows the Show More button so the cards beneath it are discoverable.
+    static let defaultShowMoreVisible = true
     static let defaultBibleReaderVisible = false
 
     init() {}

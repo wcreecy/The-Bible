@@ -6,12 +6,15 @@
 //
 
 import Combine
+import CoreData
+import SwiftData
 import SwiftUI
 import UIKit
 import ObjectiveC
 
 struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.modelContext) private var modelContext
     // Separate coordinators per tab to avoid path leakage/corruption
     @StateObject private var homeCoordinator = NavigationCoordinator()
     @StateObject private var bibleCoordinator = NavigationCoordinator()
@@ -169,6 +172,14 @@ struct ContentView: View {
         .onChange(of: scenePhase) { _, newValue in
             handleScenePhaseChange(newValue)
         }
+        // CloudKit imports can deliver a favorite or note for a verse that already has
+        // one from this device; resolve those duplicates after each import settles.
+        .onReceive(
+            NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)
+                .debounce(for: .seconds(2), scheduler: RunLoop.main)
+        ) { _ in
+            SwiftDataDeduplicator.run(in: modelContext)
+        }
     }
 
     // MARK: - Body event handlers
@@ -193,6 +204,7 @@ struct ContentView: View {
 
         bibleStore.ensureLoaded()
         openBibleReaderAtLaunchIfNeeded()
+        SwiftDataDeduplicator.run(in: modelContext)
 
         Task.detached {
             _ = await BibleReferenceLinker.linkify("")
@@ -332,6 +344,8 @@ struct ContentView: View {
         case .active:
             // Re-run start (idempotent) to ensure any missed merges are reconciled on resume.
             iCloudSyncCoordinator.shared.start()
+
+            SwiftDataDeduplicator.run(in: modelContext)
 
             // Account for any background elapsed time while the prayer timer was running
             applyBackgroundElapsedIfAny()

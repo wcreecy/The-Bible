@@ -330,18 +330,20 @@ private enum FocusPage: Identifiable {
         }
     }
 
-    static let all: [FocusPage] = BibleData.books.flatMap { book in
-        book.chapters.flatMap { chapter in
-            let marker = FocusPage.chapter(bookName: book.name, chapterNumber: chapter.number)
-            let verses = chapter.verses.map { verse in
-                FocusPage.verse(FocusVerse(
-                    bookName: book.name,
-                    chapterNumber: chapter.number,
-                    verseNumber: verse.number,
-                    text: verse.text
-                ))
+    static func all(in books: [Book]) -> [FocusPage] {
+        books.flatMap { book in
+            book.chapters.flatMap { chapter in
+                let marker = FocusPage.chapter(bookName: book.name, chapterNumber: chapter.number)
+                let verses = chapter.verses.map { verse in
+                    FocusPage.verse(FocusVerse(
+                        bookName: book.name,
+                        chapterNumber: chapter.number,
+                        verseNumber: verse.number,
+                        text: verse.text
+                    ))
+                }
+                return [marker] + verses
             }
-            return [marker] + verses
         }
     }
 }
@@ -351,10 +353,22 @@ private struct FocusPageIndex {
     let pagesByID: [String: FocusPage]
     let versesByID: [String: FocusVerse]
 
-    static let shared = FocusPageIndex()
+    // Cached only once built from the loaded corpus, so opening Focus Mode during
+    // launch cannot pin an empty index for the rest of the session.
+    private static var cached: FocusPageIndex?
 
-    private init() {
-        let pages = FocusPage.all
+    static var shared: FocusPageIndex {
+        if let cached { return cached }
+        let books = BibleData.books
+        let index = FocusPageIndex(books: books)
+        if !books.isEmpty {
+            cached = index
+        }
+        return index
+    }
+
+    private init(books: [Book]) {
+        let pages = FocusPage.all(in: books)
         self.pages = pages
         pagesByID = Dictionary(uniqueKeysWithValues: pages.map { ($0.id, $0) })
         versesByID = Dictionary(uniqueKeysWithValues: pages.compactMap { page in

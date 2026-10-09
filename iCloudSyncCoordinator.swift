@@ -93,6 +93,9 @@ final class iCloudSyncCoordinator {
 
     // MARK: - Public API
 
+    /// Whether the initial iCloud download has finished and local values may be published.
+    var isInitialDownloadComplete: Bool { hasCompletedInitialDownload }
+
     func start() {
         if didStart {
             refreshNow()
@@ -149,6 +152,9 @@ final class iCloudSyncCoordinator {
         let repaired = normalizeGameCountersInvariant()
         let migrated = migrateRefMatchToVerseMatchIfNeeded()
         enqueueKeysForSync(repaired.union(migrated))
+
+        // Join (or migrate into) the per-device game ledger now that cloud values are known.
+        GameStatsLedger.shared.reconcile()
         updateStoreMetrics()
         NotificationCenter.default.post(name: .iCloudSyncStatusChanged, object: nil)
     }
@@ -156,6 +162,12 @@ final class iCloudSyncCoordinator {
     // Call after local writes if you want to eagerly push a specific key.
     func pushKey(_ key: String) {
         guard allKnownKeys.contains(key) else { return }
+
+        // Game counters and maps sync through the per-device ledger.
+        if GameStatsLedger.isManaged(key) {
+            GameStatsLedger.shared.scheduleFlush()
+            return
+        }
 
         // Every local stats mutation gets a timestamp. This lets another device
         // choose the complete value from the most recent writer.
@@ -179,6 +191,7 @@ final class iCloudSyncCoordinator {
             completion?()
             return
         }
+        GameStatsLedger.shared.reconcile()
         for key in allKnownKeys {
             mirrorLocalKeyToKVS(key)
         }
@@ -210,6 +223,8 @@ final class iCloudSyncCoordinator {
             BibleStatsStore.Defaults.keyLastRead,
             BibleStatsStore.Defaults.keySeenVersesByChapter,
             BibleStatsStore.Defaults.keyChapterCompletionDates,
+            BibleStatsStore.Defaults.keyChapterResetDates,
+            BibleStatsStore.Defaults.keySeenVersesUpdatedAt,
             "readingSessions"
         ]
         for k in kvsKeysToRemove {
@@ -258,12 +273,14 @@ final class iCloudSyncCoordinator {
             + Self.quizKeys
             + Self.quizPerBookMapKeys
             + Self.quizPerBookDailyMapKeys
+            + Self.verseMatchPerBookDailyMapKeys
             + Self.verseMatchPerBookMapKeys
             + Self.hangmanPerCategoryMapKeys
             + Self.beatClockPerTypeMapKeys
             + Self.bookOrderKeys
             + Self.whoAmIKeys
             + Self.wordleKeys
+            + Self.wordSearchKeys
             + Self.gameDailyAndLastPlayedKeys
             + Self.wordleSolvedMapKeys
             + Self.wordleDailyResultKeys
@@ -327,6 +344,11 @@ final class iCloudSyncCoordinator {
         }
 
         let changedKeys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String] ?? []
+
+        // Another device published its game ledger; rebuild game totals.
+        if changedKeys.contains(where: { $0.hasPrefix(GameStatsLedger.kvsKeyPrefix) }) {
+            GameStatsLedger.shared.reconcile()
+        }
 
         // If a reset-epoch changed, run a full reconcile so we clear local immediately.
         if changedKeys.contains(gameStatsResetEpochKVSKey) {
@@ -518,6 +540,14 @@ final class iCloudSyncCoordinator {
         scheduleDebouncedSynchronize()
     }
 
+    /// Schedules a synchronize for values written directly to the store, such as ledgers.
+    func requestSynchronize() {
+        pendingKeys.insert(Self.synchronizeRequestKey)
+        scheduleDebouncedSynchronize()
+    }
+
+    private static let synchronizeRequestKey = "__synchronizeRequest__"
+
     func scheduleDebouncedSynchronize() {
         // Nothing to do
         guard !pendingKeys.isEmpty else { return }
@@ -640,6 +670,7 @@ final class iCloudSyncCoordinator {
                 mergedGameKey = true
                 // Stamp last-seen epoch locally to prevent re-clearing
                 defaults.set(incomingGameEpoch, forKey: gameStatsLastSeenEpochLocalKey)
+                GameStatsLedger.shared.resetForNewEpoch()
             }
         }
 
@@ -691,6 +722,10 @@ final class iCloudSyncCoordinator {
                 NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
             }
             lastMergeDate = Date()
+        }
+
+        if hasCompletedInitialDownload {
+            GameStatsLedger.shared.reconcile()
         }
     }
 

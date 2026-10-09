@@ -149,10 +149,8 @@ struct BookChaptersDetailView: View {
     }
 
     private func clearChapter(bookName: String, chapterNumber: Int) {
-        BibleStatsStore.shared.saveSeenVerses([], bookName: bookName, chapter: chapterNumber)
-        var v = BibleStatsStore.shared.loadVisitedChapters()
-        v.remove("\(bookName):\(chapterNumber)")
-        BibleStatsStore.shared.saveVisitedChapters(v)
+        // Clears verses, visited state, and the completion date on every device.
+        BibleStatsStore.shared.markChapterUnread(bookName: bookName, chapter: chapterNumber)
         refreshID = UUID()
         NotificationCenter.default.post(name: .chapterProgressChanged, object: nil)
     }

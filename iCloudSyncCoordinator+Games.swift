@@ -134,6 +134,23 @@ extension iCloudSyncCoordinator {
         "quizPerBookDailyCorrect"
     ]
 
+    // Per-book daily maps used by the detailed Verse Match statistics screen.
+    static let verseMatchPerBookDailyMapKeys: [String] = [
+        "versematchPerBookDailyAnswered",
+        "versematchPerBookDailyCorrect"
+    ]
+
+    // Game keys: Word Search (easy/normal/hard + combined "all")
+    static let wordSearchKeys: [String] = {
+        var keys: [String] = []
+        for d in ["easy", "normal", "hard", "all"] {
+            keys.append("wordsearchAllTimeCorrect_\(d)")
+            keys.append("wordsearchAllTimeAnswered_\(d)")
+            keys.append("wordsearchAllTimeBestStreak_\(d)")
+        }
+        return keys
+    }()
+
     // Game keys: Book Order — now per-difficulty (easy/normal/hard/all) + legacy unsuffixed for reset/back-compat
     static let bookOrderKeys: [String] = {
         let diffs = ["easy", "normal", "hard", "all"]
@@ -161,7 +178,7 @@ extension iCloudSyncCoordinator {
     // Streak values stored separately from the all-time counters by the remaining games.
     // These are local-only today, but still form part of the user's game history.
     static let additionalPersistentStreakKeys: [String] = {
-        var keys = ["wordlePersistentStreak", "wordlePersistentBestStreak"]
+        var keys = ["wordlePersistentStreak", "wordlePersistentBestStreak", "wordsearchCurrentStreak"]
         for difficulty in ["easy", "normal", "hard"] {
             keys.append("quizPersistentStreak_\(difficulty)")
             keys.append("quizPersistentBestStreak_\(difficulty)")
@@ -183,9 +200,9 @@ extension iCloudSyncCoordinator {
         Set(
             Self.hangmanKeys + Self.beatClockKeys + Self.refMatchKeys
                 + Self.verseMatchKeys + Self.quizKeys + Self.bookOrderKeys
-                + Self.whoAmIKeys + Self.wordleKeys
+                + Self.whoAmIKeys + Self.wordleKeys + Self.wordSearchKeys
                 + Self.gameDailyAndLastPlayedKeys + Self.quizPerBookMapKeys
-                + Self.quizPerBookDailyMapKeys
+                + Self.quizPerBookDailyMapKeys + Self.verseMatchPerBookDailyMapKeys
                 + Self.verseMatchPerBookMapKeys + Self.beatClockPerTypeMapKeys
                 + Self.hangmanPerCategoryMapKeys + Self.perGameDailyMapKeys
                 + Self.wordleSolvedMapKeys + Self.wordleDailyResultKeys
@@ -283,7 +300,7 @@ extension iCloudSyncCoordinator {
 
     // NEW: Per-game (and per-WORD-mode) daily maps (JSON [String:Int]) — now mirrored via KVS
     static let perGameDailyMapKeys: [String] = {
-        let gameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","word"]
+        let gameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","wordsearch","word"]
         var keys: [String] = []
         for g in gameKeys {
             keys.append("gamesDailyAnswered_\(g)")
@@ -319,6 +336,7 @@ extension iCloudSyncCoordinator {
     func isTimestampedStatsKey(_ key: String) -> Bool {
         Self.bibleStatsKeys.contains(key)
             || Self.sessionKeys.contains(key)
+            || Self.settingsKeys.contains(key)
             || allKnownGameDataKeys.contains(key)
     }
 
@@ -332,11 +350,16 @@ extension iCloudSyncCoordinator {
         Self.quizKeys.contains(key) ||
         Self.bookOrderKeys.contains(key) ||
         Self.whoAmIKeys.contains(key) ||
-        Self.wordleKeys.contains(key)
+        Self.wordleKeys.contains(key) ||
+        Self.wordSearchKeys.contains(key)
     }
 
     // Local -> KVS for games
     func mirrorGamesKeyToKVS(_ key: String) {
+        // Counters and maps are published through per-device ledgers. Their legacy
+        // shared keys stay frozen so devices migrating later read a stable baseline.
+        guard !GameStatsLedger.isManaged(key) else { return }
+
         let localTimestamp = readLocalTimestamp(for: key)
         let remoteTimestamp = readRemoteTimestamp(for: key)
         guard remoteTimestamp <= localTimestamp || (remoteTimestamp == 0 && localTimestamp == 0) else {
@@ -422,6 +445,9 @@ extension iCloudSyncCoordinator {
 
     // KVS -> Local for games
     func mergeGamesIncoming(forKey key: String) {
+        // Ledger-managed values are rebuilt from every device's ledger instead.
+        guard !GameStatsLedger.isManaged(key) else { return }
+
         let remoteTimestamp = readRemoteTimestamp(for: key)
         let localTimestamp = readLocalTimestamp(for: key)
         if remoteTimestamp > 0 || localTimestamp > 0 {
@@ -625,6 +651,7 @@ extension iCloudSyncCoordinator {
             + Self.bookOrderKeys
             + Self.whoAmIKeys
             + Self.wordleKeys
+            + Self.wordSearchKeys
         )
         for key in gameKeys {
             defaults.set(0, forKey: key)
@@ -662,6 +689,7 @@ extension iCloudSyncCoordinator {
             + Self.bookOrderKeys
             + Self.whoAmIKeys
             + Self.wordleKeys
+            + Self.wordSearchKeys
         )
         for key in gameKeys {
             defaults.removeObject(forKey: key)
@@ -691,12 +719,13 @@ extension iCloudSyncCoordinator {
                     "versematchPerBookAnsweredMap", "versematchPerBookCorrectMap",
                     "wordleDailySolvedDays", "wordleDailyResultMap",
                     "wordleDailyCompletedDay", "wordleDailyTarget",
-                    "quizPerBookDailyAnswered", "quizPerBookDailyCorrect"] {
+                    "quizPerBookDailyAnswered", "quizPerBookDailyCorrect",
+                    "versematchPerBookDailyAnswered", "versematchPerBookDailyCorrect"] {
             defaults.removeObject(forKey: key)
         }
 
         // 3) Clear per-game daily maps locally
-        let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","word"]
+        let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","wordsearch","word"]
         for g in perGameKeys {
             defaults.removeObject(forKey: "gamesDailyAnswered_\(g)")
             defaults.removeObject(forKey: "gamesDailyCorrect_\(g)")
@@ -757,6 +786,8 @@ extension iCloudSyncCoordinator {
         }
         defaults.removeObject(forKey: "quizPerBookDailyAnswered")
         defaults.removeObject(forKey: "quizPerBookDailyCorrect")
+        defaults.removeObject(forKey: "versematchPerBookDailyAnswered")
+        defaults.removeObject(forKey: "versematchPerBookDailyCorrect")
         enqueueKeysForSync(["quizPerBookAnsweredMap", "quizPerBookCorrectMap"])
 
         // 2c.1) Clear Hangman per-category analytics (all-time maps mirrored)
@@ -785,7 +816,7 @@ extension iCloudSyncCoordinator {
         defaults.removeObject(forKey: "wordleDailyTarget")
 
         // 3) Clear per-game daily maps (now mirrored — clear both local and remote)
-        let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","word"]
+        let perGameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","wordsearch","word"]
         for g in perGameKeys {
             let aKey = "gamesDailyAnswered_\(g)"
             let cKey = "gamesDailyCorrect_\(g)"
@@ -799,6 +830,10 @@ extension iCloudSyncCoordinator {
         let now = Date().timeIntervalSince1970
         kvs.set(now, forKey: "gameStatsResetEpoch")
         defaults.set(now, forKey: "gameStatsLastSeenResetEpoch")
+
+        // 4b) Start an empty per-device ledger for the new epoch so older ledgers,
+        // including those from other devices, no longer count toward totals.
+        GameStatsLedger.shared.resetForNewEpoch()
 
         // 5) Notify UI to recompute all derived metrics to zero (streaks, Qs/day, 7D accuracy, per-game charts, insights)
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
@@ -817,10 +852,8 @@ extension iCloudSyncCoordinator {
             let c = max(0, defaults.integer(forKey: correctKey))
             let a = max(0, defaults.integer(forKey: answeredKey))
             if a < c {
+                // Local only: the ledger publishes the change on its next reconcile.
                 defaults.set(c, forKey: answeredKey)
-                writeLocalTimestampNow(for: answeredKey)
-                kvs.set(c, forKey: answeredKey)
-                writeRemoteTimestampNow(for: answeredKey)
                 changed.insert(answeredKey)
             }
         }
@@ -860,6 +893,9 @@ extension iCloudSyncCoordinator {
         // Wordle (daily/free/all + normal/hard)
         repairSuffixed(prefix: "wordle", diffs: ["daily","free","all","normal","hard"])
 
+        // Word Search (easy/normal/hard/all)
+        repairSuffixed(prefix: "wordsearch", diffs: ["easy","normal","hard","all"])
+
         return changed
     }
 
@@ -893,16 +929,10 @@ extension iCloudSyncCoordinator {
             guard hasSrc, !hasDst else { return }
 
             // Copy source into destination
+            // Local only: the ledger publishes the copied values on its next reconcile.
             defaults.set(srcCv, forKey: dstC)
             defaults.set(srcAv, forKey: dstA)
             defaults.set(srcBv, forKey: dstB)
-            writeLocalTimestampNow(for: dstC); writeRemoteTimestampNow(for: dstC)
-            writeLocalTimestampNow(for: dstA); writeRemoteTimestampNow(for: dstA)
-            writeLocalTimestampNow(for: dstB); writeRemoteTimestampNow(for: dstB)
-
-            kvs.set(srcCv, forKey: dstC)
-            kvs.set(srcAv, forKey: dstA)
-            kvs.set(srcBv, forKey: dstB)
 
             changed.formUnion([dstC, dstA, dstB])
         }

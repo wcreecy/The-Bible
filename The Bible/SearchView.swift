@@ -602,7 +602,9 @@ actor BibleSearchIndex {
         if let indexBuildTask {
             task = indexBuildTask
         } else {
-            let books = await MainActor.run { BibleData.books }
+            // Wait for the corpus rather than reading the synchronous snapshot, which is
+            // empty during launch and would otherwise be cached as an empty index.
+            let books = await BibleRepository.shared.loadAllBooks()
             let newTask = Task.detached(priority: .userInitiated) {
                 books.enumerated().flatMap { bookIndex, book in
                     book.chapters.flatMap { chapter in

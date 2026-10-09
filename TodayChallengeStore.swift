@@ -85,6 +85,7 @@ final class TodayChallengeStore: ObservableObject {
     private let cloudStorageKey = "todayChallengesSnapshotV2"
     private let catalog = TodayChallengeCatalog.load()
     private let cloudStore = NSUbiquitousKeyValueStore.default
+    private var corpusWaitTask: Task<Void, Never>?
 
     private init() {
         cloudStore.synchronize()
@@ -155,8 +156,7 @@ final class TodayChallengeStore: ObservableObject {
             guard challenge.kind == .readChapter,
                   let bookName = challenge.bookName,
                   let chapterNumber = challenge.chapterNumber,
-                  let book = BibleData.books.first(where: { $0.name == bookName })
-                    ?? BibleData.fallbackBooks.first(where: { $0.name == bookName }),
+                  let book = BibleData.books.first(where: { $0.name == bookName }),
                   let chapter = book.chapters.first(where: { $0.number == chapterNumber }) else {
                 return false
             }
@@ -204,9 +204,25 @@ final class TodayChallengeStore: ObservableObject {
             } else {
                 publishToCloud(localSnapshot)
             }
+        } else if BibleData.books.isEmpty {
+            // Reading challenges are drawn from the corpus, which loads asynchronously.
+            // Creating them now would pick only from the small fallback corpus.
+            createChallengesWhenCorpusLoads()
         } else {
             challenges = makeChallenges()
             save()
+        }
+    }
+
+    private func createChallengesWhenCorpusLoads() {
+        guard corpusWaitTask == nil else { return }
+        corpusWaitTask = Task { [weak self] in
+            _ = await BibleRepository.shared.loadAllBooks()
+            guard let self else { return }
+            corpusWaitTask = nil
+            loadOrCreateForToday()
+            syncCompletedReadingChallenges()
+            syncGameProgress()
         }
     }
 
@@ -339,9 +355,8 @@ final class TodayChallengeStore: ObservableObject {
     }
 
     private func makeReadingChallenge(excluding readingTargets: Set<String>) -> TodayChallenge {
-        // The corpus loads asynchronously, so the cache can be empty during app launch.
-        // Use the bundled fallback corpus until the full corpus is available.
-        let availableBooks = BibleData.books.isEmpty ? BibleData.fallbackBooks : BibleData.books
+        // Challenges are only created once the corpus has loaded (see loadOrCreateForToday).
+        let availableBooks = BibleData.books
         guard let initialBook = availableBooks.randomElement() else {
             assertionFailure("Bible fallback corpus must contain at least one book.")
             return TodayChallenge(
@@ -421,9 +436,7 @@ final class TodayChallengeStore: ObservableObject {
                 title: "Reflect on your blessings",
                 detail: "Name three things you are grateful for."
             )
-        let bookName = BibleData.books.randomElement()?.name
-            ?? BibleData.fallbackBooks.randomElement()?.name
-            ?? "Genesis"
+        let bookName = BibleData.books.randomElement()?.name ?? "Genesis"
         let prayerFocus = catalog.prayerFocuses.randomElement() ?? "peace"
         let title = task.title
             .replacingOccurrences(of: "{{bookName}}", with: bookName)
@@ -447,6 +460,8 @@ struct HomeTodayCard: View {
     @ObservedObject private var store = TodayChallengeStore.shared
 
     let readingProgress: ReadingProgress?
+    /// Starts the Home prayer timer for the given number of minutes.
+    let onStartPrayerTimer: (Int) -> Void
 
     var body: some View {
         HeroCard(title: "Today", icon: "checklist", tint: .teal) {
@@ -473,7 +488,7 @@ struct HomeTodayCard: View {
 
                 ForEach(store.challenges) { challenge in
                     TodayChallengeRow(challenge: challenge) {
-                        store.toggleManualChallenge(id: challenge.id)
+                        perform(challenge)
                     }
                 }
             }
@@ -491,23 +506,47 @@ struct HomeTodayCard: View {
             store.refresh(readingProgress: readingProgress)
         }
     }
+
+    /// Takes the person straight to the activity a challenge describes.
+    private func perform(_ challenge: TodayChallenge) {
+        switch challenge.kind {
+        case .readChapter:
+            guard let bookName = challenge.bookName, let chapter = challenge.chapterNumber else { return }
+            Haptics.selection()
+            NotificationCenter.default.post(
+                name: .openBibleReference,
+                object: nil,
+                userInfo: ["book": bookName, "chapter": chapter, "verse": 1]
+            )
+        case .playGame:
+            guard let gameName = challenge.gameName else { return }
+            Haptics.selection()
+            GameLaunchRequest.open(gameName: gameName)
+        case .prayerTimer:
+            guard !challenge.isCompleted, let minutes = challenge.minimumMinutes else { return }
+            Haptics.selection()
+            onStartPrayerTimer(minutes)
+        case .reflection:
+            store.toggleManualChallenge(id: challenge.id)
+        }
+    }
 }
 
 private struct TodayChallengeRow: View {
     let challenge: TodayChallenge
-    let toggleManualCompletion: () -> Void
+    let action: () -> Void
+
+    /// Completed prayer challenges have nothing left to start.
+    private var isActionable: Bool {
+        !(challenge.kind == .prayerTimer && challenge.isCompleted)
+    }
 
     var body: some View {
-        Group {
-            if challenge.kind == .reflection {
-                Button(action: toggleManualCompletion) {
-                    rowContent
-                }
-                .buttonStyle(.plain)
-            } else {
-                rowContent
-            }
+        Button(action: action) {
+            rowContent
         }
+        .buttonStyle(.plain)
+        .disabled(!isActionable)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityLabel)
         .accessibilityHint(accessibilityHint)
@@ -532,8 +571,27 @@ private struct TodayChallengeRow: View {
             }
 
             Spacer(minLength: 0)
+
+            if let actionLabel {
+                Label(actionLabel.title, systemImage: actionLabel.systemImage)
+                    .labelStyle(.iconOnly)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Color.accentColor)
+                    .padding(.top, 2)
+                    .accessibilityHidden(true)
+            }
         }
         .contentShape(Rectangle())
+    }
+
+    /// The trailing affordance for rows that open another part of the app.
+    private var actionLabel: (title: String, systemImage: String)? {
+        switch challenge.kind {
+        case .readChapter: ("Read", "book")
+        case .playGame: ("Play", "gamecontroller")
+        case .prayerTimer: challenge.isCompleted ? nil : ("Start", "timer")
+        case .reflection: nil
+        }
     }
 
     private var accessibilityLabel: String {
@@ -541,8 +599,15 @@ private struct TodayChallengeRow: View {
     }
 
     private var accessibilityHint: String {
-        challenge.kind == .reflection && !challenge.isCompleted
-            ? "Double tap to mark complete."
-            : challenge.detail
+        switch challenge.kind {
+        case .readChapter:
+            "Opens the chapter."
+        case .playGame:
+            "Opens the game."
+        case .prayerTimer:
+            challenge.isCompleted ? "" : "Starts a prayer timer."
+        case .reflection:
+            challenge.isCompleted ? "Double tap to mark incomplete." : "Double tap to mark complete."
+        }
     }
 }

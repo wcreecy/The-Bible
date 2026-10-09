@@ -439,7 +439,7 @@ struct HomeView: View {
                 )
             }
         case .today:
-            HomeTodayCard(readingProgress: progress)
+            HomeTodayCard(readingProgress: progress, onStartPrayerTimer: startPrayerChallengeTimer)
         case .streaks:
             streaksCard
         case .bibleStats:
@@ -478,12 +478,8 @@ struct HomeView: View {
             goalMinutes: dailyGoalMinutes,
             todayReadingSeconds: bibleVM.todaySeconds,
             streak: StreakTracker.currentStreak,
-            goalMessage: "Study to shew thyself approved unto God",
             onSearch: {
                 coordinator.push(.search)
-            },
-            onRead: {
-                DispatchQueue.main.async { switchTo(.bible) }
             },
             onFavorites: {
                 DispatchQueue.main.async {
@@ -493,6 +489,10 @@ struct HomeView: View {
                         userInfo: ["tabName": "favorites"]
                     )
                 }
+            },
+            onOpenGoal: {
+                UserDefaults.standard.set("Reading Stats", forKey: "statsSelectedMode")
+                NotificationCenter.default.post(name: .openStats, object: nil)
             }
         )
     }
@@ -863,6 +863,29 @@ struct HomeView: View {
             }
         } message: {
             Text("Your prayer/study timer has completed.")
+        }
+    }
+
+    /// Starts the prayer timer from a Today challenge and makes sure its card is visible.
+    private func startPrayerChallengeTimer(minutes: Int) {
+        if timerController.isRunning {
+            verseActionToastSymbol = "timer"
+            verseActionToastText = "A prayer timer is already running"
+            verseActionToastTint = .orange
+        } else {
+            timerController.start(minutes: minutes)
+            verseActionToastSymbol = "timer"
+            verseActionToastText = "Prayer timer started · \(minutes) min"
+            verseActionToastTint = .green
+        }
+
+        // The timer card may sit under Show More or be hidden; reveal it when possible.
+        if moreCards.contains(.timer) && showMoreVisible {
+            withAnimation(.snappy) { showMoreCards = true }
+        }
+
+        withAnimation(.spring()) {
+            showCopyToast = true
         }
     }
 
