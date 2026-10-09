@@ -1172,6 +1172,35 @@ final class GameStats: ObservableObject {
         }
     }
 
+    // MARK: - Play time
+
+    static let dailyPlaySecondsKey = "gamesDailyPlaySeconds"
+    static let allTimePlaySecondsKey = "allTimeUsageGameSeconds"
+
+    /// Adds time spent with a game screen open. Synced per device through the game ledger.
+    func recordPlayTime(seconds: Int, endingAt end: Date = Date()) {
+        guard seconds > 0 else { return }
+        let start = end.addingTimeInterval(-TimeInterval(seconds))
+        var daily: [String: Int] = loadJSONMap(forKey: Self.dailyPlaySecondsKey)
+        for allocation in ReadingTimeTracker.dailyAllocations(seconds: seconds, from: start, to: end) {
+            daily[Self.localDayKey(for: allocation.date), default: 0] += allocation.seconds
+        }
+        saveJSONMap(daily, forKey: Self.dailyPlaySecondsKey)
+
+        let defaults = UserDefaults.standard
+        defaults.set(max(0, defaults.integer(forKey: Self.allTimePlaySecondsKey)) + seconds, forKey: Self.allTimePlaySecondsKey)
+        iCloudSyncCoordinator.shared.pushKey(Self.allTimePlaySecondsKey)
+    }
+
+    func playSeconds(on date: Date = Date()) -> Int {
+        let daily: [String: Int] = loadJSONMap(forKey: Self.dailyPlaySecondsKey)
+        return max(0, daily[Self.localDayKey(for: date)] ?? 0)
+    }
+
+    var allTimePlaySeconds: Int {
+        max(0, UserDefaults.standard.integer(forKey: Self.allTimePlaySecondsKey))
+    }
+
     func todayStats(now: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> (answered: Int, correct: Int, pct: Double) {
         let key = Self.localDayKey(for: now, calendar: calendar)
         let answeredMap: [String: Int] = loadJSONMap(forKey: "gamesDailyAnswered")

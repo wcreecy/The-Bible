@@ -36,25 +36,12 @@ struct ContentView: View {
     // One-time cleanup for deprecated keepScreenOn setting
     @AppStorage("didCleanupKeepScreenOnKey") private var didCleanupKeepScreenOnKey: Bool = false
 
-    // Daily usage tracking (per local day)
     @Environment(\.scenePhase) private var scenePhase
-    @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds: Int = 0
-    @AppStorage("dailyUsageReadingSeconds") private var dailyUsageReadingSeconds: Int = 0
-    @AppStorage("dailyUsageGameSeconds") private var dailyUsageGameSeconds: Int = 0
-    @AppStorage("allTimeUsageReadingSeconds") private var allTimeUsageReadingSeconds: Int = 0
-    @AppStorage("allTimeUsageGameSeconds") private var allTimeUsageGameSeconds: Int = 0
-    @AppStorage("dailyUsageTodayKey") private var dailyUsageTodayKey: String = ""
-    @State private var usageTimer: Timer? = nil
-    @State private var lastUsageUpdate: Date?
-    @State private var nextMidnightTimer: Timer? = nil
 
-    // Prayer timer state (to account for background time)
-    @AppStorage("prayerTimerRunning") private var prayerTimerRunning: Bool = false
-    @AppStorage("prayerTimerPaused") private var prayerTimerPaused: Bool = false
-    @AppStorage("prayerTimerEndDate") private var prayerTimerEndDate: Double = 0
-
-    // Track when we went inactive/background to compute elapsed when returning
-    @AppStorage("lastBackgroundedAt") private var lastBackgroundedAt: Double = 0
+    // Game time is counted only while a game screen is open in the foreground.
+    // Reading time comes from ReadingTimeTracker, the single source for reading stats.
+    @State private var gameTimeStart: Date?
+    @State private var gameTimeFlushTimer: Timer?
 
     private var preferredScheme: ColorScheme? { (ColorSchemePreference(rawValue: colorSchemePreferenceRaw) ?? .system).colorScheme }
     private var usesWideLayout: Bool { horizontalSizeClass == .regular }
@@ -172,6 +159,9 @@ struct ContentView: View {
         .onChange(of: scenePhase) { _, newValue in
             handleScenePhaseChange(newValue)
         }
+        .onChange(of: gamesPath) { _, _ in
+            updateGameTimeTracking()
+        }
         // CloudKit imports can deliver a favorite or note for a verse that already has
         // one from this device; resolve those duplicates after each import settles.
         .onReceive(
@@ -217,12 +207,8 @@ struct ContentView: View {
             }
         }
 
-        // Initialize daily usage tracking day key and rollover timer
-        initializeUsageDayIfNeeded()
-        scheduleMidnightRollover()
-        if scenePhase == .active {
-            startUsageTimerIfNeeded()
-        }
+        UserDefaults.standard.removeObject(forKey: "lastBackgroundedAt")
+        updateGameTimeTracking()
 
         // Initialize previousTab at launch
         previousTab = selectedTab
@@ -230,7 +216,7 @@ struct ContentView: View {
     }
 
     private func handleSelectedTabChange(from oldValue: AppTab, to newValue: AppTab) {
-        recordUsageElapsed(for: oldValue)
+        updateGameTimeTracking()
 
         // Leaving Games ends any active round and returns its navigation stack to the game list.
         if oldValue == .games && newValue != .games {
@@ -346,20 +332,13 @@ struct ContentView: View {
             iCloudSyncCoordinator.shared.start()
 
             SwiftDataDeduplicator.run(in: modelContext)
-
-            // Account for any background elapsed time while the prayer timer was running
-            applyBackgroundElapsedIfAny()
-            // Start foreground usage timer
-            startUsageTimerIfNeeded()
+            updateGameTimeTracking()
         case .inactive:
-            // Remember when we went foreground to compute elapsed when returning.
-            lastBackgroundedAt = Date().timeIntervalSince1970
-            stopUsageTimer()
+            updateGameTimeTracking()
         case .background:
+            updateGameTimeTracking()
             // Backgrounding ends an active game round so returning to Games shows its selection screen.
             returnToGameSelection()
-            lastBackgroundedAt = Date().timeIntervalSince1970
-            stopUsageTimer()
         @unknown default:
             break
         }
@@ -464,13 +443,6 @@ struct ContentView: View {
         }
     }
 
-    private func todayKey(for date: Date = Date()) -> String {
-        let cal = Calendar.current
-        let comps = cal.dateComponents([.year, .month, .day], from: date)
-        let y = comps.year ?? 0, m = comps.month ?? 0, d = comps.day ?? 0
-        return String(format: "%04d-%02d-%02d", y, m, d)
-    }
-
     private func handlePendingVerseOfDayNotification() {
         let defaults = UserDefaults.standard
         guard defaults.bool(forKey: "pendingVerseOfDayNotification") else { return }
@@ -501,147 +473,38 @@ struct ContentView: View {
         }
     }
 
-    private func initializeUsageDayIfNeeded() {
-        let key = todayKey()
-        if dailyUsageTodayKey != key {
-            resetDailyUsage(for: key)
-        }
+    // MARK: - Game time
 
-        // Existing installs may already have today's usage but no cumulative counters.
-        allTimeUsageReadingSeconds = max(allTimeUsageReadingSeconds, dailyUsageReadingSeconds)
-        allTimeUsageGameSeconds = max(allTimeUsageGameSeconds, dailyUsageGameSeconds)
+    private var isPlayingGame: Bool {
+        scenePhase == .active && selectedTab == .games && !gamesPath.isEmpty
     }
 
-    private func resetDailyUsage(for dayKey: String) {
-        dailyUsageTodayKey = dayKey
-        dailyUsageTodaySeconds = 0
-        dailyUsageReadingSeconds = 0
-        dailyUsageGameSeconds = 0
-        pushUsageKeys([
-            "dailyUsageTodayKey",
-            "dailyUsageTodaySeconds",
-            "dailyUsageReadingSeconds",
-            "dailyUsageGameSeconds"
-        ])
-    }
-
-    private func scheduleMidnightRollover() {
-        nextMidnightTimer?.invalidate()
-        let cal = Calendar.current
-        let now = Date()
-        guard let startOfTomorrow = cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: now)) else { return }
-        let interval = startOfTomorrow.timeIntervalSince(now)
-        nextMidnightTimer = Timer.scheduledTimer(withTimeInterval: max(1, interval), repeats: false) { _ in
-            // Rollover day
-            resetDailyUsage(for: todayKey())
-            // Reschedule for next midnight
-            scheduleMidnightRollover()
-        }
-        if let t = nextMidnightTimer {
-            RunLoop.main.add(t, forMode: .common)
-        }
-    }
-
-    private func startUsageTimerIfNeeded() {
-        initializeUsageDayIfNeeded()
-        guard usageTimer == nil else { return }
-
-        lastUsageUpdate = Date()
-        // Usage is calculated from elapsed wall time, so a coarse cadence preserves
-        // accuracy while avoiding per-second UserDefaults and iCloud work.
-        usageTimer = Timer.scheduledTimer(withTimeInterval: 15.0, repeats: true) { _ in
-            recordUsageElapsed(for: selectedTab)
-        }
-        if let timer = usageTimer {
-            RunLoop.main.add(timer, forMode: .common)
-        }
-    }
-
-    private func stopUsageTimer() {
-        recordUsageElapsed(for: selectedTab)
-        usageTimer?.invalidate()
-        usageTimer = nil
-        lastUsageUpdate = nil
-    }
-
-    private func recordUsageElapsed(for tab: AppTab) {
-        guard let previousUpdate = lastUsageUpdate else { return }
-
-        let now = Date()
-        let elapsedSeconds = Int(now.timeIntervalSince(previousUpdate))
-        guard elapsedSeconds > 0 else { return }
-
-        lastUsageUpdate = previousUpdate.addingTimeInterval(TimeInterval(elapsedSeconds))
-        initializeUsageDayIfNeeded()
-        dailyUsageTodaySeconds += elapsedSeconds
-
-        switch tab {
-        case .games:
-            dailyUsageGameSeconds += elapsedSeconds
-            allTimeUsageGameSeconds = max(
-                allTimeUsageGameSeconds + elapsedSeconds,
-                dailyUsageGameSeconds
-            )
-            pushUsageKeys([
-                "dailyUsageGameSeconds",
-                "allTimeUsageGameSeconds"
-            ])
-        case .bible, .notes:
-            dailyUsageReadingSeconds += elapsedSeconds
-            allTimeUsageReadingSeconds = max(
-                allTimeUsageReadingSeconds + elapsedSeconds,
-                dailyUsageReadingSeconds
-            )
-            pushUsageKeys([
-                "dailyUsageReadingSeconds",
-                "allTimeUsageReadingSeconds"
-            ])
-        case .more:
-            if case .favorites? = morePath.last {
-                dailyUsageReadingSeconds += elapsedSeconds
-                allTimeUsageReadingSeconds = max(
-                    allTimeUsageReadingSeconds + elapsedSeconds,
-                    dailyUsageReadingSeconds
-                )
-                pushUsageKeys([
-                    "dailyUsageReadingSeconds",
-                    "allTimeUsageReadingSeconds"
-                ])
+    /// Starts or stops counting game time to match whether a game screen is open.
+    /// Call after any change to the scene phase, selected tab, or Games navigation.
+    private func updateGameTimeTracking() {
+        if isPlayingGame {
+            guard gameTimeStart == nil else { return }
+            gameTimeStart = Date()
+            // Persist periodically so a crash or force quit loses at most a few seconds.
+            let timer = Timer(timeInterval: 15, repeats: true) { _ in
+                MainActor.assumeIsolated { flushGameTime() }
             }
-        case .home:
-            break
-        }
-
-        iCloudSyncCoordinator.shared.pushKey("dailyUsageTodaySeconds")
-    }
-
-    private func pushUsageKeys(_ keys: [String]) {
-        for key in keys {
-            iCloudSyncCoordinator.shared.pushKey(key)
+            RunLoop.main.add(timer, forMode: .common)
+            gameTimeFlushTimer = timer
+        } else {
+            flushGameTime()
+            gameTimeStart = nil
+            gameTimeFlushTimer?.invalidate()
+            gameTimeFlushTimer = nil
         }
     }
 
-    private func applyBackgroundElapsedIfAny() {
-        guard lastBackgroundedAt > 0 else { return }
-        let now = Date().timeIntervalSince1970
-        let backgroundDelta = max(0, now - lastBackgroundedAt)
-
-        var addSeconds = 0
-
-        // If Prayer Timer was running and not paused, count up to its end date
-        if prayerTimerRunning && !prayerTimerPaused && prayerTimerEndDate > 0 {
-            let cappedEnd = max(0, prayerTimerEndDate - lastBackgroundedAt)
-            let timerDelta = Int(min(backgroundDelta, cappedEnd))
-            addSeconds += max(0, timerDelta)
-        }
-
-        if addSeconds > 0 {
-            // Ensure we're on today's bucket
-            initializeUsageDayIfNeeded()
-            dailyUsageTodaySeconds += addSeconds
-        }
-
-        lastBackgroundedAt = 0
+    private func flushGameTime() {
+        guard let start = gameTimeStart else { return }
+        let elapsed = Int(Date().timeIntervalSince(start))
+        guard elapsed > 0 else { return }
+        gameTimeStart = start.addingTimeInterval(TimeInterval(elapsed))
+        GameStats.shared.recordPlayTime(seconds: elapsed, endingAt: Date())
     }
 
     // MARK: - Tab reselection

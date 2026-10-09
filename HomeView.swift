@@ -247,7 +247,6 @@ struct HomeView: View {
 
     // Daily goal values for flame progress
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
-    @AppStorage("dailyUsageTodaySeconds") private var dailyUsageTodaySeconds: Int = 0
 
     @ViewBuilder
     private var streaksCard: some View {

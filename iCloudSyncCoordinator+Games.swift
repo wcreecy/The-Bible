@@ -140,6 +140,10 @@ extension iCloudSyncCoordinator {
         "versematchPerBookDailyCorrect"
     ]
 
+    // Time spent with a game screen open: all-time seconds and a per-day map.
+    static let gamePlayTimeCounterKeys: [String] = ["allTimeUsageGameSeconds"]
+    static let gamePlayTimeMapKeys: [String] = ["gamesDailyPlaySeconds"]
+
     // Game keys: Word Search (easy/normal/hard + combined "all")
     static let wordSearchKeys: [String] = {
         var keys: [String] = []
@@ -201,6 +205,7 @@ extension iCloudSyncCoordinator {
             Self.hangmanKeys + Self.beatClockKeys + Self.refMatchKeys
                 + Self.verseMatchKeys + Self.quizKeys + Self.bookOrderKeys
                 + Self.whoAmIKeys + Self.wordleKeys + Self.wordSearchKeys
+                + Self.gamePlayTimeCounterKeys + Self.gamePlayTimeMapKeys
                 + Self.gameDailyAndLastPlayedKeys + Self.quizPerBookMapKeys
                 + Self.quizPerBookDailyMapKeys + Self.verseMatchPerBookDailyMapKeys
                 + Self.verseMatchPerBookMapKeys + Self.beatClockPerTypeMapKeys

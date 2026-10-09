@@ -6,32 +6,29 @@ struct BibleStatsCard: View {
     let onOpenReadingStats: () -> Void
     let onOpenGameStats: () -> Void
 
-    @AppStorage("dailyUsageReadingSeconds") private var readingUsageSeconds: Int = 0
-    @AppStorage("dailyUsageGameSeconds") private var gameUsageSeconds: Int = 0
-    @AppStorage("allTimeUsageReadingSeconds") private var allTimeReadingSeconds: Int = 0
-    @AppStorage("allTimeUsageGameSeconds") private var allTimeGameSeconds: Int = 0
+    // Reading time is active reading in the Bible reader (the same source as Stats and
+    // the daily goal). Game time is time spent with a game open. Both sync per device.
+    @State private var todayGameSeconds = 0
+    @State private var allTimeGameSeconds = 0
 
     var body: some View {
         HeroCard(
             title: "App Activity",
-            subtitle: "How you spend your time",
+            subtitle: "Active reading and game time",
             icon: "chart.bar.fill",
             tint: .teal
         ) {
             VStack(alignment: .leading, spacing: 14) {
                 ActivityTimeGraph(
-                    title: "Today’s App Time",
-                    readingSeconds: readingUsageSeconds,
-                    gameSeconds: gameUsageSeconds
+                    title: "Today",
+                    readingSeconds: bibleVM.todaySeconds,
+                    gameSeconds: todayGameSeconds
                 )
 
                 ActivityTimeGraph(
-                    title: "All-Time App Time",
-                    readingSeconds: max(
-                        allTimeReadingSeconds,
-                        max(readingUsageSeconds, bibleVM.totalSeconds)
-                    ),
-                    gameSeconds: max(allTimeGameSeconds, gameUsageSeconds)
+                    title: "All Time",
+                    readingSeconds: bibleVM.totalSeconds,
+                    gameSeconds: allTimeGameSeconds
                 )
 
                 HStack(spacing: 10) {
@@ -56,21 +53,23 @@ struct BibleStatsCard: View {
             }
             .onAppear {
                 bibleVM.refresh()
-                allTimeReadingSeconds = max(
-                    allTimeReadingSeconds,
-                    max(readingUsageSeconds, bibleVM.totalSeconds)
-                )
+                refreshGameTime()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active {
                     bibleVM.refresh()
-                    allTimeReadingSeconds = max(
-                        allTimeReadingSeconds,
-                        max(readingUsageSeconds, bibleVM.totalSeconds)
-                    )
+                    refreshGameTime()
                 }
             }
+            .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
+                refreshGameTime()
+            }
         }
+    }
+
+    private func refreshGameTime() {
+        todayGameSeconds = GameStats.shared.playSeconds()
+        allTimeGameSeconds = GameStats.shared.allTimePlaySeconds
     }
 }
 

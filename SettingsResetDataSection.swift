@@ -78,27 +78,10 @@ struct SettingsResetDataSection: View {
             iCloudSyncCoordinator.shared.resetAllBibleStatsAndSessions()
         }
 
-        resetAppActivity(category: category)
+        // Reading time comes from reading stats and game time from the game ledger,
+        // so each reset above also clears the matching App Activity totals.
         resetConfirmationText = ""
         Haptics.success()
-    }
-
-    private func resetAppActivity(category: AppActivityCategory) {
-        let keys: [String]
-        switch category {
-        case .reading:
-            keys = [
-                "dailyUsageReadingSeconds",
-                "allTimeUsageReadingSeconds"
-            ]
-        case .games:
-            keys = [
-                "dailyUsageGameSeconds",
-                "allTimeUsageGameSeconds"
-            ]
-        }
-
-        iCloudSyncCoordinator.shared.resetAppActivity(keys: keys)
     }
 }
 

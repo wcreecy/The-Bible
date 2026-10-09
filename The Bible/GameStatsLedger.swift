@@ -68,6 +68,7 @@ final class GameStatsLedger {
                 + iCloudSyncCoordinator.whoAmIKeys
                 + iCloudSyncCoordinator.wordleKeys
                 + iCloudSyncCoordinator.wordSearchKeys
+                + iCloudSyncCoordinator.gamePlayTimeCounterKeys
         )
     }
 
@@ -80,6 +81,7 @@ final class GameStatsLedger {
                 + iCloudSyncCoordinator.verseMatchPerBookMapKeys
                 + iCloudSyncCoordinator.hangmanPerCategoryMapKeys
                 + iCloudSyncCoordinator.beatClockPerTypeMapKeys
+                + iCloudSyncCoordinator.gamePlayTimeMapKeys
         )
     }
 
