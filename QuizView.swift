@@ -500,6 +500,10 @@ struct QuizView: View {
             // Seed streaks from persisted values so they survive navigation/relaunch
             seedStreakFromPersistence()
         }
+        // Sort out list and repeated verses while the start screen is showing.
+        .task {
+            await QuizVerseFilter.prepare()
+        }
         // When difficulty changes, switch to that difficulty’s persisted streaks
         .onChange(of: quizDifficulty) { _, _ in
             seedStreakFromPersistence()
@@ -579,16 +583,19 @@ struct QuizView: View {
         let questionBooks = quizDifficulty == "hard"
             ? pools.books.filter { $0.name != "Acts" && $0.name != "Revelation" }
             : pools.books
+        let difficulty = quizDifficulty
         questionBag = questionBooks.flatMap { book in
             book.chapters.flatMap { chapter in
-                chapter.verses.map { verse in
-                    VerseCandidate(
-                        text: verse.text,
-                        bookName: book.name,
-                        chapter: chapter.number,
-                        verse: verse.number
-                    )
-                }
+                chapter.verses
+                    .filter { QuizVerseFilter.isQuizzable($0.text, difficulty: difficulty) }
+                    .map { verse in
+                        VerseCandidate(
+                            text: verse.text,
+                            bookName: book.name,
+                            chapter: chapter.number,
+                            verse: verse.number
+                        )
+                    }
             }
         }
         .shuffled()
