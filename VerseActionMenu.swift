@@ -263,11 +263,14 @@ struct VerseActionMenu: View {
     private func bookmark() {
         // Synced devices can briefly hold duplicates; removing one would leave the verse bookmarked.
         let existing = matchingBookmarks
+        // There is a single bookmark (the Continue Reading point), so setting one moves it here.
+        let previous = bookmarks
 
         ModelContextPersistence.perform(
             in: modelContext,
             operation: {
                 if existing.isEmpty {
+                    previous.forEach(modelContext.delete)
                     let bookmark = Bookmark()
                     bookmark.bookName = verse.bookName
                     bookmark.chapterNumber = verse.chapterNumber

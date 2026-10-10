@@ -22,20 +22,6 @@ extension BibleStatsStore {
         NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
 
-    func addToToday(bookName: String, seconds: Int, calendar: Calendar = .autoupdatingCurrent) {
-        add(bookName: bookName, seconds: seconds, on: Date(), calendar: calendar)
-    }
-
-    func add(bookName: String, seconds: Int, on date: Date, calendar: Calendar = .autoupdatingCurrent) {
-        guard seconds > 0, !bookName.isEmpty else { return }
-        var dict = loadDailyTotalsByBook()
-        let day = Self.isoDateString(date, calendar: calendar)
-        var perBook = dict[day] ?? [:]
-        perBook[bookName, default: 0] += seconds
-        dict[day] = perBook
-        saveDailyTotalsByBook(dict)
-    }
-
     // MARK: - OT/NT split
 
     // Splits a per-book totals map into Old Testament vs New Testament sums.

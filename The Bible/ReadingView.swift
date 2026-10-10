@@ -43,7 +43,6 @@ struct ReadingView: View {
     @State private var favoriteToastText: String = "Added to Favorites"
     @State private var favoriteToastSymbol: String = "heart.fill"
     @State private var favoriteToastTint: Color = .pink
-    @State private var removedFavorite: RemovedReadingFavorite?
     @State private var persistenceFailure: PersistenceFailure?
     @State private var isBookPickerPresented = false
 
@@ -237,9 +236,7 @@ struct ReadingView: View {
                 isPresented: $showFavoriteToast,
                 symbol: favoriteToastSymbol,
                 text: favoriteToastText,
-                tint: favoriteToastTint,
-                actionTitle: removedFavorite == nil ? nil : "Undo",
-                action: undoFavoriteRemoval
+                tint: favoriteToastTint
             )
             .persistenceFailureAlert(failure: $persistenceFailure)
             .onChange(of: isFocusModePresented) { _, isPresented in
@@ -602,105 +599,5 @@ struct ReadingView: View {
             fav.chapterNumber == viewModel.currentChapter.number &&
             fav.verseNumber == verse.number
         }
-    }
-
-    private func toggleFavorite(for: Verse) {
-        let verse = `for`
-
-        if let existing = favorites.first(where: {
-            $0.bookName == viewModel.currentBook.name &&
-            $0.chapterNumber == viewModel.currentChapter.number &&
-            $0.verseNumber == verse.number
-        }) {
-            let removalSnapshot = RemovedReadingFavorite(existing)
-            ModelContextPersistence.perform(
-                in: modelContext,
-                operation: {
-                    modelContext.delete(existing)
-                    try modelContext.save()
-                },
-                onSuccess: {
-                    removedFavorite = removalSnapshot
-                    favoriteToastSymbol = "heart.slash"
-                    favoriteToastTint = .gray
-                    favoriteToastText = "Removed Favorite"
-                    withAnimation(.spring()) { showFavoriteToast = true }
-                },
-                onFailure: { persistenceFailure = $0 }
-            )
-        } else {
-            ModelContextPersistence.perform(
-                in: modelContext,
-                operation: {
-                    let favorite = Favorite(
-                        bookName: viewModel.currentBook.name,
-                        chapterNumber: viewModel.currentChapter.number,
-                        verseNumber: verse.number,
-                        verseText: verse.text
-                    )
-                    modelContext.insert(favorite)
-                    try modelContext.save()
-                },
-                onSuccess: {
-                    removedFavorite = nil
-                    favoriteToastSymbol = "heart.fill"
-                    favoriteToastTint = .pink
-                    favoriteToastText = "Added to Favorites"
-                    Haptics.success()
-                    withAnimation(.spring()) { showFavoriteToast = true }
-                },
-                onFailure: { persistenceFailure = $0 }
-            )
-        }
-        viewModel.markActivity()
-    }
-
-    private func undoFavoriteRemoval() {
-        guard let removedFavorite else { return }
-
-        ModelContextPersistence.perform(
-            in: modelContext,
-            operation: {
-                modelContext.insert(removedFavorite.model)
-                try modelContext.save()
-            },
-            onSuccess: {
-                self.removedFavorite = nil
-                Haptics.success()
-            },
-            onFailure: { persistenceFailure = $0 }
-        )
-    }
-
-    // MARK: - Share helper
-
-    private func shareText(bookName: String, chapter: Int, verse: Int, text: String) -> String {
-        "\(text)\n\(bookName) \(chapter):\(verse)"
-    }
-}
-
-private struct RemovedReadingFavorite {
-    let bookName: String
-    let chapterNumber: Int
-    let verseNumber: Int
-    let verseText: String
-    let createdAt: Date
-
-    init(_ favorite: Favorite) {
-        bookName = favorite.bookName
-        chapterNumber = favorite.chapterNumber
-        verseNumber = favorite.verseNumber
-        verseText = favorite.verseText
-        createdAt = favorite.createdAt
-    }
-
-    var model: Favorite {
-        Favorite(
-            bookName: bookName,
-            chapterNumber: chapterNumber,
-            verseNumber: verseNumber,
-            verseText: verseText,
-            createdAt: createdAt
-        )
     }
 }

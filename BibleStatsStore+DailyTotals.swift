@@ -21,46 +21,4 @@ extension BibleStatsStore {
         iCloudSyncCoordinator.shared.pushKey(Defaults.keyDailyTotals)
         NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
     }
-
-    func addToToday(seconds: Int, calendar: Calendar = .autoupdatingCurrent) {
-        add(seconds: seconds, on: Date(), calendar: calendar)
-    }
-
-    func add(seconds: Int, on date: Date, calendar: Calendar = .autoupdatingCurrent) {
-        guard seconds > 0 else { return }
-        var dict = loadDailyTotals()
-        let day = Self.isoDateString(date, calendar: calendar)
-        dict[day, default: 0] += seconds
-        saveDailyTotals(dict)
-    }
-
-    func totalForLast(days: Int, including today: Date = Date(), calendar: Calendar = .autoupdatingCurrent) -> Int {
-        guard days > 0 else { return 0 }
-        let dict = loadDailyTotals()
-        var sum = 0
-        for i in 0..<days {
-            if let date = calendar.date(byAdding: .day, value: -i, to: today) {
-                let key = Self.isoDateString(date, calendar: calendar)
-                sum += dict[key, default: 0]
-            }
-        }
-        return sum
-    }
-
-    // MARK: - Month totals (overall)
-
-    // Sum of all daily totals for the calendar month containing `date` (local time).
-    func totalForMonth(containing date: Date, calendar: Calendar = .autoupdatingCurrent) -> Int {
-        var cal = calendar
-        cal.timeZone = .autoupdatingCurrent
-
-        let daily = loadDailyTotals()
-        let keys = Self.isoKeysForMonth(containing: date, calendar: cal)
-        var sum = 0
-        for k in keys {
-            sum += max(0, daily[k, default: 0])
-        }
-        return sum
-    }
-
 }

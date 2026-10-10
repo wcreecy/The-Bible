@@ -5,9 +5,7 @@ import UIKit
 struct VersesView: View {
     let book: Book
     let chapter: Chapter
-    @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var coordinator: NavigationCoordinator
-    @Query private var favorites: [Favorite]
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage(RedLetterText.suppliedWordsInItalicsKey) private var italicizesSuppliedWords = false
 
@@ -152,34 +150,6 @@ struct VersesView: View {
         withAnimation(.spring()) { showToast = true }
     }
 
-    private func isFavorited(_ verse: Verse) -> Bool {
-        favorites.contains { fav in
-            fav.bookName == book.name && fav.chapterNumber == chapter.number && fav.verseNumber == verse.number
-        }
-    }
-
-    private func toggleFavorite(for verse: Verse) {
-        if let existing = favorites.first(where: { $0.bookName == book.name && $0.chapterNumber == chapter.number && $0.verseNumber == verse.number }) {
-            modelContext.delete(existing)
-            try? modelContext.save()
-            toastSymbol = "xmark.circle.fill"
-            toastTint = .red
-            toastText = "Removed Favorite"
-        } else {
-            let fav = Favorite(
-                bookName: book.name,
-                chapterNumber: chapter.number,
-                verseNumber: verse.number,
-                verseText: verse.text
-            )
-            modelContext.insert(fav)
-            try? modelContext.save()
-            toastSymbol = "heart.fill"
-            toastTint = .pink
-            toastText = "Favorited \(book.name) \(chapter.number):\(verse.number)"
-        }
-        withAnimation(.spring()) { showToast = true }
-    }
 }
 
 #Preview {

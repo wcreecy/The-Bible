@@ -20,13 +20,4 @@ extension BibleStatsStore {
         cacheTotals = decoded
         return decoded
     }
-
-    func saveTotals(_ totals: [String: Int]) {
-        cacheTotals = totals
-        saveJSON(totals, key: Defaults.keyTotals)
-        // Optional: push totals to iCloud KVS for faster propagation
-        iCloudSyncCoordinator.shared.pushKey(Defaults.keyTotals)
-        // Notify listeners that aggregates changed
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
-    }
 }

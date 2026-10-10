@@ -144,8 +144,6 @@ struct HomeView: View {
     // Finish alert presented by the controller
     @State private var finishHapticTimer: Timer? = nil
 
-    @Environment(\.modelContext) private var modelContext
-    @Query private var favorites: [Favorite]
     @EnvironmentObject private var coordinator: NavigationCoordinator
 
     @State private var showCopyToast: Bool = false
@@ -177,18 +175,13 @@ struct HomeView: View {
     private var verseCardIcon: String { isEvening ? "moon.stars" : "sun.max.fill" }
 
     private var isPad: Bool { horizontalSizeClass == .regular }
-    /// Where reading stopped, on any device; the single source for Continue Reading.
-    private var position: BibleStatsStore.LastRead? {
-        ReadingPositionStore.shared.current
-    }
+    // Newest first; synced devices can briefly hold more than one bookmark.
+    @Query(sort: [SortDescriptor(\Bookmark.createdAt, order: .reverse)]) private var bookmarks: [Bookmark]
 
-    private var positionVerseText: String? {
-        guard let position,
-              let book = bibleStore.books.first(where: { $0.name == position.bookName }),
-              let chapter = book.chapters.first(where: { $0.number == position.chapterNumber }) else {
-            return nil
-        }
-        return chapter.verses.first(where: { $0.number == (position.verseNumber ?? 1) })?.text
+    /// The verse the reader bookmarked; the single source for Continue Reading.
+    /// (The automatic last-read position only drives where the Bible tab opens.)
+    private var bookmark: Bookmark? {
+        bookmarks.first
     }
 
     // Verse-of-the-Day: configurable times and scheduler (delegated to VM, keep keys observed)
@@ -384,8 +377,7 @@ struct HomeView: View {
             )
         case .resumeReading:
             ResumeReadingCard(
-                position: position,
-                verseText: positionVerseText,
+                bookmark: bookmark,
                 usesCompactLayout: !isPad,
                 onOpenReference: { _ in openContinueReading() },
                 onStartReading: {
@@ -400,18 +392,6 @@ struct HomeView: View {
                     )
                 }
             )
-        case .bookmarks:
-            HomeBookmarksCard { bookmark in
-                NotificationCenter.default.post(
-                    name: .openBibleReference,
-                    object: nil,
-                    userInfo: [
-                        "book": bookmark.bookName,
-                        "chapter": bookmark.chapterNumber,
-                        "verse": bookmark.verseNumber
-                    ]
-                )
-            }
         case .search:
             SearchHomeCard { result in
                 NotificationCenter.default.post(
@@ -608,9 +588,9 @@ struct HomeView: View {
 
             minimalHomeActionCard(
                 title: "Continue Reading",
-                message: position.map { "\($0.bookName) \($0.chapterNumber):\($0.verseNumber ?? 1)" } ?? "Start at Genesis 1",
-                verseText: positionVerseText,
-                icon: "play.fill",
+                message: bookmark.map { "\($0.bookName) \($0.chapterNumber):\($0.verseNumber)" } ?? "Start at Genesis 1",
+                verseText: bookmark?.verseText,
+                icon: "bookmark.fill",
                 tint: .indigo,
                 action: openContinueReading
             )
@@ -670,14 +650,14 @@ struct HomeView: View {
     }
 
     private func openContinueReading() {
-        if let position {
+        if let bookmark {
             NotificationCenter.default.post(
                 name: .openBibleReference,
                 object: nil,
                 userInfo: [
-                    "book": position.bookName,
-                    "chapter": position.chapterNumber,
-                    "verse": position.verseNumber ?? 1
+                    "book": bookmark.bookName,
+                    "chapter": bookmark.chapterNumber,
+                    "verse": bookmark.verseNumber
                 ]
             )
         } else {
@@ -889,45 +869,8 @@ struct HomeView: View {
         }
     }
 
-    private func copyVerse(_ v: HomeVerseRef) {
-        UIPasteboard.general.string = shareText(bookName: v.bookName, chapter: v.chapterNumber, verse: v.verseNumber, text: v.verseText)
-        withAnimation(.spring()) { showCopyToast = true }
-    }
-
-    private func isFavorited(_ v: HomeVerseRef) -> Bool {
-        favorites.contains { fav in
-            fav.bookName == v.bookName && fav.chapterNumber == v.chapterNumber && fav.verseNumber == v.verseNumber
-        }
-    }
-
-    private func toggleFavorite(for v: HomeVerseRef) {
-        if let existing = favorites.first(where: { $0.bookName == v.bookName && $0.chapterNumber == v.chapterNumber && $0.verseNumber == v.verseNumber }) {
-            modelContext.delete(existing)
-            try? modelContext.save()
-        } else {
-            let fav = Favorite(bookName: v.bookName, chapterNumber: v.chapterNumber, verseNumber: v.verseNumber, verseText: v.verseText)
-            modelContext.insert(fav)
-            try? modelContext.save()
-        }
-    }
-
-    // MARK: - Small helpers moved out of ViewBuilder to avoid result-builder declaration errors
-
-    private func uniqueMaxIndex<T: Comparable & Equatable>(_ values: [T]) -> Int? {
-        guard let maxVal = values.max() else { return nil }
-        let indices = values.enumerated().filter { $0.element == maxVal }.map { $0.offset }
-        return indices.count == 1 ? indices.first : nil
-    }
-
-    private func uniqueMinIndex<T: Comparable & Equatable>(_ values: [T]) -> Int? {
-        guard let minVal = values.min() else { return nil }
-        let indices = values.enumerated().filter { $0.element == minVal }.map { $0.offset }
-        return indices.count == 1 ? indices.first : nil
-    }
-
-
 }
 
-// Note: HeroCard, button styles, DayCell, WeekRow,
+// Note: HeroCard, button styles,
 // PrayerStudyTimerSetupView, and DebouncedWidgetReloader have been
 // moved to their own files as part of UI extraction.

@@ -92,7 +92,18 @@ struct FavoritesView: View {
         .background(AppBackgroundView(tab: .more))
         .navigationTitle("Favorites (\(favorites.count))")
         .navigationBarTitleDisplayMode(.large)
-        .toolbar { EditButton() }
+        .toolbar {
+            if !favorites.isEmpty {
+                ToolbarItem(placement: .topBarLeading) {
+                    NavigationLink {
+                        FavoritesFlashcardsView()
+                    } label: {
+                        Label("Flashcards", systemImage: "rectangle.on.rectangle.angled")
+                    }
+                }
+            }
+            ToolbarItem(placement: .primaryAction) { EditButton() }
+        }
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search favorites")
         .appToast(
             isPresented: $showRemovalToast,

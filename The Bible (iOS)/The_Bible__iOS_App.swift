@@ -140,8 +140,6 @@ struct The_Bible__iOS_App: App {
                 configurations: cloudKitConfig
             )
             print("✅ CloudKit-backed ModelContainer initialized successfully.")
-            // Flag for Settings "Sync Status" UI
-            UserDefaults.standard.set(true, forKey: "swiftdataCloudKitEnabled")
 
             // Attempt to log the underlying store location(s) if available
             print("🔎 CloudKit ModelContainer ready. (Local cache path is managed by the system.)")
@@ -149,7 +147,6 @@ struct The_Bible__iOS_App: App {
         } catch {
             logError("Failed to create CloudKit-backed ModelContainer", error: error)
             print("⚠️ Falling back to local on-disk SwiftData store.")
-            UserDefaults.standard.set(false, forKey: "swiftdataCloudKitEnabled")
         }
 
         // Fallback: default local store (on-disk)
@@ -164,7 +161,6 @@ struct The_Bible__iOS_App: App {
                     UserNote.self
             )
             print("ℹ️ Using local on-disk SwiftData store (no CloudKit). Data will NOT sync between devices.")
-            UserDefaults.standard.set(false, forKey: "swiftdataCloudKitEnabled")
 
             print("🔎 Probing likely store locations (after local container init)…")
             logLikelyStoreLocations()
@@ -173,7 +169,6 @@ struct The_Bible__iOS_App: App {
         } catch {
             logError("Failed to create local on-disk ModelContainer", error: error)
             print("⚠️ Attempting in-memory fallback.")
-            UserDefaults.standard.set(false, forKey: "swiftdataCloudKitEnabled")
         }
 
         // Final fallback: in-memory so the app can still run
@@ -190,7 +185,6 @@ struct The_Bible__iOS_App: App {
                 configurations: memoryConfig
             )
             print("ℹ️ Using in-memory SwiftData store. Data will NOT persist or sync.")
-            UserDefaults.standard.set(false, forKey: "swiftdataCloudKitEnabled")
             return container
         } catch {
             fatalError("Could not create any ModelContainer (including in-memory): \(error)")

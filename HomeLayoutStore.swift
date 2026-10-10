@@ -19,8 +19,6 @@ struct HomeLayoutStore {
     private static let keyFavBibleReaderVisible = "homeCardFavoriteBibleReaderVisible"
     private static let keyTodayVisibilityMigrated = "homeTodayVisibilityMigratedV1"
     private static let keyFavoriteTodayVisibilityMigrated = "homeFavoriteTodayVisibilityMigratedV1"
-    private static let keyBookmarksVisibilityMigrated = "homeBookmarksVisibilityMigratedV1"
-    private static let keyFavoriteBookmarksVisibilityMigrated = "homeFavoriteBookmarksVisibilityMigratedV1"
 
     // Underlying storage
     @AppStorage(Self.keyOrder) private var orderRaw: String = ""
@@ -35,8 +33,6 @@ struct HomeLayoutStore {
     @AppStorage(Self.keyFavBibleReaderVisible) private var favBibleReaderVisible: Bool = Self.defaultBibleReaderVisible
     @AppStorage(Self.keyTodayVisibilityMigrated) private var todayVisibilityMigrated = false
     @AppStorage(Self.keyFavoriteTodayVisibilityMigrated) private var favoriteTodayVisibilityMigrated = false
-    @AppStorage(Self.keyBookmarksVisibilityMigrated) private var bookmarksVisibilityMigrated = false
-    @AppStorage(Self.keyFavoriteBookmarksVisibilityMigrated) private var favoriteBookmarksVisibilityMigrated = false
 
     // Baseline hidden set used when no hidden config exists
     static var baselineOrder: [HomeCardID] {
@@ -46,7 +42,6 @@ struct HomeLayoutStore {
                 .today,
                 .search,
                 .resumeReading,
-                .bookmarks,
                 .timer,
                 .streaks,
                 .bibleStats,
@@ -58,7 +53,6 @@ struct HomeLayoutStore {
         // Streak and Prayer Timer sit under Show More; the rest are opt-in.
         return [
             .resumeReading,
-            .bookmarks,
             .verseOfDay,
             .today,
             .streaks,
@@ -70,10 +64,10 @@ struct HomeLayoutStore {
     }
     static var baselineHidden: Set<HomeCardID> {
         if UIDevice.current.userInterfaceIdiom == .pad {
-            return [.today, .bookmarks, .bibleStats, .dailyFocus, .streaks]
+            return [.today, .bibleStats, .dailyFocus, .streaks]
         }
         // Search duplicates the header's Search button; App Activity and Daily Focus are opt-in.
-        return [.bookmarks, .search, .bibleStats, .dailyFocus]
+        return [.search, .bibleStats, .dailyFocus]
     }
     // Cards shown above Show More on iPhone. The iPad dashboard does not use this set.
     static let baselineMain: Set<HomeCardID> = [.resumeReading, .verseOfDay, .today]
@@ -107,11 +101,7 @@ struct HomeLayoutStore {
                 if !todayVisibilityMigrated && !ids.contains(HomeCardID.today.rawValue) {
                     hidden.insert(.today)
                 }
-                if !bookmarksVisibilityMigrated && !ids.contains(HomeCardID.bookmarks.rawValue) {
-                    hidden.insert(.bookmarks)
-                }
                 todayVisibilityMigrated = true
-                bookmarksVisibilityMigrated = true
                 return hidden
             } else {
                 return Self.baselineHidden
@@ -149,7 +139,6 @@ struct HomeLayoutStore {
         mainRaw = encode(main)
         self.showMoreVisible = showMoreVisible
         todayVisibilityMigrated = true
-        bookmarksVisibilityMigrated = true
 
         notifyChanged()
     }
@@ -214,18 +203,10 @@ struct HomeLayoutStore {
             if !favoriteTodayVisibilityMigrated && !hiddenIDs.contains(HomeCardID.today.rawValue) {
                 hidden.insert(.today)
             }
-            if !favoriteBookmarksVisibilityMigrated && !hiddenIDs.contains(HomeCardID.bookmarks.rawValue) {
-                hidden.insert(.bookmarks)
-            }
             favoriteTodayVisibilityMigrated = true
-            favoriteBookmarksVisibilityMigrated = true
         } else if !favoriteTodayVisibilityMigrated {
             hidden.insert(.today)
             favoriteTodayVisibilityMigrated = true
-        }
-        if !favoriteBookmarksVisibilityMigrated {
-            hidden.insert(.bookmarks)
-            favoriteBookmarksVisibilityMigrated = true
         }
         let main = decodeSet(from: favMainRaw) ?? Self.baselineMain
         return (order, hidden, main, favShowMoreVisible, favBibleReaderVisible)

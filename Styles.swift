@@ -230,25 +230,3 @@ public struct GameKeyButtonStyle: ButtonStyle {
             .animation(.spring(response: 0.22, dampingFraction: 0.85), value: configuration.isPressed)
     }
 }
-
-/// A compact, borderless toolbar style (no background fill).
-/// Use this when you want the button to appear as just text (or an icon) in toolbars.
-public struct ToolbarPillButtonStyle: ButtonStyle {
-    public var tint: Color = .accentColor
-    @Environment(\.isEnabled) private var isEnabled
-
-    public init(tint: Color = .accentColor) { self.tint = tint }
-
-    public func makeBody(configuration: Configuration) -> some View {
-        let pressed = configuration.isPressed
-        configuration.label
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(isEnabled ? tint : .secondary)
-            .padding(.vertical, 6)
-            .padding(.horizontal, 6)
-            .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .opacity(pressed ? 0.7 : 1.0)
-            .scaleEffect(pressed ? 0.98 : 1.0)
-            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
-    }
-}
