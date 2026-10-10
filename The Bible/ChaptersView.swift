@@ -88,7 +88,7 @@ struct ChaptersView: View {
     }
 }
 
-/// A chapter cell in the chapter grid; completed chapters are tinted green.
+/// A chapter cell in the chapter grid; the number turns green once the chapter is read.
 private struct ChapterNumberButton: View {
     let number: Int
     let isCompleted: Bool
@@ -96,23 +96,21 @@ private struct ChapterNumberButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text("\(number)")
-                .font(.body.weight(.semibold))
-                .monospacedDigit()
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-                .frame(maxWidth: .infinity)
+            // The square cell sets the size and the number is laid over it, so the
+            // number gets the full cell width and three-digit chapters are never truncated.
+            Color.clear
                 .aspectRatio(1, contentMode: .fit)
-                .foregroundStyle(isCompleted ? Color.green : Color.primary)
-                .background(
-                    (isCompleted ? Color.green : Color.accentColor).opacity(0.12),
-                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-                )
                 .overlay {
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .strokeBorder((isCompleted ? Color.green : Color.accentColor).opacity(0.25), lineWidth: 1)
+                    Text("\(number)")
+                        .font(.body.weight(.semibold))
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
+                        .allowsTightening(true)
+                        .foregroundStyle(isCompleted ? Color.green : Color.primary)
+                        .padding(.horizontal, 2)
                 }
-                .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Chapter \(number)")
@@ -185,7 +183,12 @@ private struct GenesisCreationEmblem: View {
 }
 
 #Preview {
+    // Psalms-sized sample book so the preview shows three-digit chapter numbers.
     NavigationStack {
-        ChaptersView(book: BibleData.books.first!)
+        ChaptersView(book: Book(
+            name: "Psalms",
+            chapters: (1...150).map { Chapter(number: $0, verses: [Verse(number: 1, text: "")]) }
+        ))
+        .environmentObject(NavigationCoordinator())
     }
 }
