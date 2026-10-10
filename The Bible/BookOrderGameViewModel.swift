@@ -175,31 +175,14 @@ final class BookOrderGameViewModel {
         combinedOrMax("bookorderAllTimeBestStreak")
     }
 
-    // MARK: - Persistent streak helpers (per difficulty)
-    private var persistentStreakKey: String { "bookorderPersistentStreak_\(keySuffix)" }
-    private var persistentBestKey: String { "bookorderPersistentBestStreak_\(keySuffix)" }
+    // MARK: - Persistent streak (per difficulty)
+    private var persistentStreak: PersistentGameStreak {
+        PersistentGameStreak(game: "bookorder", variant: keySuffix)
+    }
 
-    private func readPersistentStreak() -> Int {
-        max(0, UserDefaults.standard.integer(forKey: persistentStreakKey))
-    }
-    private func writePersistentStreak(_ value: Int) {
-        let v = max(0, value)
-        UserDefaults.standard.set(v, forKey: persistentStreakKey)
-        iCloudSyncCoordinator.shared.pushKey(persistentStreakKey)
-    }
-    private func readPersistentBest() -> Int {
-        max(0, UserDefaults.standard.integer(forKey: persistentBestKey))
-    }
-    private func writePersistentBest(_ value: Int) {
-        let v = max(0, value)
-        UserDefaults.standard.set(v, forKey: persistentBestKey)
-        iCloudSyncCoordinator.shared.pushKey(persistentBestKey)
-    }
     private func seedStreakFromPersistence() {
-        let persisted = readPersistentStreak()
-        currentStreak = persisted
-        let persistedBest = readPersistentBest()
-        currentBestStreak = max(currentBestStreak, persistedBest)
+        currentStreak = persistentStreak.current
+        currentBestStreak = max(currentBestStreak, persistentStreak.best)
     }
     
     func startGame() {
@@ -409,22 +392,15 @@ final class BookOrderGameViewModel {
             wasCorrect = true
             score += 1
 
-            // Persistent streak: increment on correct
-            let persisted = readPersistentStreak() + 1
-            writePersistentStreak(persisted)
-            currentStreak = persisted
-
-            // Update persistent best if needed
-            let bestPersisted = readPersistentBest()
-            if persisted > bestPersisted {
-                writePersistentBest(persisted)
-            }
-            currentBestStreak = max(currentBestStreak, persisted, readPersistentBest())
+            // Persistent streak: extend on correct
+            let streak = persistentStreak.recordWin()
+            currentStreak = streak.current
+            currentBestStreak = max(currentBestStreak, streak.best)
         } else {
             wasCorrect = false
 
             // Persistent streak: reset on incorrect
-            writePersistentStreak(0)
+            persistentStreak.reset()
             currentStreak = 0
 
             showingCorrectOrder = true

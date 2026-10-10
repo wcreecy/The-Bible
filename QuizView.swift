@@ -44,7 +44,7 @@ struct QuizView: View {
         )
     }
 
-    // MARK: - Persistent streak helpers (per difficulty)
+    // MARK: - Persistent streak (per difficulty)
     private func streakSuffix() -> String {
         switch quizDifficulty {
         case "normal": return "normal"
@@ -52,33 +52,14 @@ struct QuizView: View {
         default: return "easy"
         }
     }
-    private func persistentStreakKey() -> String { "quizPersistentStreak_\(streakSuffix())" }
-    private func persistentBestKey() -> String { "quizPersistentBestStreak_\(streakSuffix())" }
 
-    private func readPersistentStreak() -> Int {
-        max(0, UserDefaults.standard.integer(forKey: persistentStreakKey()))
+    private var persistentStreak: PersistentGameStreak {
+        PersistentGameStreak(game: "quiz", variant: streakSuffix())
     }
-    private func writePersistentStreak(_ value: Int) {
-        let v = max(0, value)
-        let key = persistentStreakKey()
-        UserDefaults.standard.set(v, forKey: key)
-        iCloudSyncCoordinator.shared.pushKey(key)
-    }
-    private func readPersistentBest() -> Int {
-        max(0, UserDefaults.standard.integer(forKey: persistentBestKey()))
-    }
-    private func writePersistentBest(_ value: Int) {
-        let v = max(0, value)
-        let key = persistentBestKey()
-        UserDefaults.standard.set(v, forKey: key)
-        iCloudSyncCoordinator.shared.pushKey(key)
-    }
+
     private func seedStreakFromPersistence() {
-        let persisted = readPersistentStreak()
-        currentStreak = persisted
-        // Keep session best at least as high as persisted best
-        let persistedBest = readPersistentBest()
-        bestStreak = max(bestStreak, persistedBest)
+        currentStreak = persistentStreak.current
+        bestStreak = max(bestStreak, persistentStreak.best)
     }
     
     private struct QuizQuestion: Identifiable {
@@ -815,18 +796,10 @@ struct QuizView: View {
         if isCorrect {
             score += 1
 
-            // Persistent streak: increment on correct
-            let persisted = readPersistentStreak() + 1
-            writePersistentStreak(persisted)
-            currentStreak = persisted
-
-            // Update persistent best if needed
-            let bestPersisted = readPersistentBest()
-            if persisted > bestPersisted {
-                writePersistentBest(persisted)
-            }
-            // Keep session best in sync
-            bestStreak = max(bestStreak, persisted, readPersistentBest())
+            // Persistent streak: extend on correct
+            let streak = persistentStreak.recordWin()
+            currentStreak = streak.current
+            bestStreak = max(bestStreak, streak.best)
 
             recordRound(correct: 1, answered: 1, bestStreak: bestStreak)
             // Per-book maps
@@ -836,7 +809,7 @@ struct QuizView: View {
             #endif
         } else {
             // Persistent streak: reset on incorrect
-            writePersistentStreak(0)
+            persistentStreak.reset()
             currentStreak = 0
 
             recordRound(correct: 0, answered: 1, bestStreak: bestStreak)
@@ -977,7 +950,7 @@ struct QuizView: View {
         sessionAnswered += 1
 
         // Timeout is incorrect -> reset persistent streak
-        writePersistentStreak(0)
+        persistentStreak.reset()
         currentStreak = 0
 
         recordRound(correct: 0, answered: 1, bestStreak: bestStreak)

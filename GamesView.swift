@@ -144,18 +144,15 @@ struct GamesView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Query(sort: \Favorite.createdAt, order: .reverse) private var favorites: [Favorite]
 
-    @State private var todayWordResult: DailyWordResult?
-    @State private var refreshToken = 0
+    /// Row progress text, rebuilt only when stats change. Building it reads about a hundred
+    /// stored values, so it must not run on every redraw.
+    @State private var progressByRoute: [GameRoute: String] = [:]
     @State private var verseToRememberOffset = 0
 
     private var allRoutes: [GameRoute] {
         GameRoute.allCases.sorted {
             $0.displayName.localizedStandardCompare($1.displayName) == .orderedAscending
         }
-    }
-
-    private var statsByName: [String: GameStats.GameBreakdown.Entry] {
-        Dictionary(uniqueKeysWithValues: GameStats.shared.breakdownSnapshot().entries.map { ($0.name, $0) })
     }
 
     private var verseToRemember: HomeVerseRef? {
@@ -206,19 +203,17 @@ struct GamesView: View {
             destination(for: route)
         }
         .onAppear {
-            loadTodayWordResult()
+            refreshProgress()
             openPendingGameIfNeeded()
         }
         .onReceive(NotificationCenter.default.publisher(for: .openGameStart)) { _ in
             openPendingGameIfNeeded()
         }
         .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
-            refreshToken &+= 1
-            loadTodayWordResult()
+            refreshProgress()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
-            refreshToken &+= 1
-            loadTodayWordResult()
+            refreshProgress()
         }
     }
 
@@ -227,7 +222,7 @@ struct GamesView: View {
             title: "All Games",
             routes: allRoutes,
             usesExpandedLayout: horizontalSizeClass == .regular,
-            progress: progressText,
+            progress: { progressByRoute[$0] ?? "Not played" },
             onSelect: present
         )
         .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -271,14 +266,27 @@ struct GamesView: View {
         }
     }
 
-    private func progressText(for route: GameRoute) -> String {
-        _ = refreshToken
+    private func refreshProgress() {
+        let statsByName = Dictionary(
+            GameStats.shared.breakdownSnapshot().entries.map { ($0.name, $0) },
+            uniquingKeysWith: { first, _ in first }
+        )
+        let todayWordResult = loadTodayWordResult()
+        progressByRoute = Dictionary(uniqueKeysWithValues: GameRoute.allCases.map { route in
+            (route, progressText(for: route, entry: statsByName[route.displayName], todayWordResult: todayWordResult))
+        })
+    }
 
+    private func progressText(
+        for route: GameRoute,
+        entry: GameStats.GameBreakdown.Entry?,
+        todayWordResult: DailyWordResult?
+    ) -> String {
         if route == .wordle, let result = todayWordResult {
             return result.won ? "Solved in \(result.guesses)/6" : "Try again tomorrow"
         }
 
-        guard let entry = statsByName[route.displayName], entry.answered > 0 else {
+        guard let entry, entry.answered > 0 else {
             return "Not played"
         }
 
@@ -314,14 +322,12 @@ struct GamesView: View {
         )
     }
 
-    private func loadTodayWordResult() {
-        let today = GameStats.localDayKey(for: Date())
+    private func loadTodayWordResult() -> DailyWordResult? {
         guard let data = UserDefaults.standard.data(forKey: "wordleDailyResultMap"),
               let results = try? JSONDecoder().decode([String: DailyWordResult].self, from: data) else {
-            todayWordResult = nil
-            return
+            return nil
         }
-        todayWordResult = results[today]
+        return results[GameStats.localDayKey(for: Date())]
     }
 }
 

@@ -96,37 +96,13 @@ struct WordleView: View {
     // NEW: confirmation for reveal
     @State private var confirmReveal: Bool = false
 
-    // MARK: - Persistent WORD streak helpers (overall, survives app relaunch)
-    private let persistentStreakKey = "wordlePersistentStreak"
-    private let persistentBestStreakKey = "wordlePersistentBestStreak"
+    // MARK: - Persistent WORD streak (overall, survives app relaunch)
+    private let persistentStreak = PersistentGameStreak(game: "wordle")
     private let practiceWordBagKey = "wordlePracticeWordBag"
     private let lastPracticeWordKey = "wordleLastPracticeWord"
     private let dailyWordAssignmentKey = "wordleDailyWordAssignment"
     private let recentDailyWordsKey = "wordleRecentDailyWords"
     private let recentDailyWordLimit = 365
-
-    // Daily streaks count consecutive solved days, derived from the synced solved-days map.
-    private func readPersistentStreak() -> Int {
-        GameStats.shared.wordleDailyWinStreak()
-    }
-
-    private func writePersistentStreak(_ value: Int) {
-        let v = max(0, value)
-        let defaults = UserDefaults.standard
-        defaults.set(v, forKey: persistentStreakKey)
-        iCloudSyncCoordinator.shared.pushKey(persistentStreakKey)
-    }
-
-    private func readPersistentBest() -> Int {
-        return max(0, UserDefaults.standard.integer(forKey: persistentBestStreakKey))
-    }
-
-    private func writePersistentBest(_ value: Int) {
-        let v = max(0, value)
-        let defaults = UserDefaults.standard
-        defaults.set(v, forKey: persistentBestStreakKey)
-        iCloudSyncCoordinator.shared.pushKey(persistentBestStreakKey)
-    }
 
     // MARK: - Helpers for tokenization
     private static func sanitizeLetters(_ s: String) -> String {
@@ -493,11 +469,9 @@ struct WordleView: View {
         }
         // Seed session streaks from persistent values so they survive navigation/relaunch
         .onAppear {
-            let persistedCurrent = readPersistentStreak()
-            currentStreak = persistedCurrent
-            // Keep session best at least as high as persisted best
-            let persistedBest = readPersistentBest()
-            currentBestStreak = max(currentBestStreak, persistedBest)
+            // Daily streaks count consecutive solved days, derived from the synced solved-days map.
+            currentStreak = GameStats.shared.wordleDailyWinStreak()
+            currentBestStreak = max(currentBestStreak, persistentStreak.best)
 
             if mode == .daily {
                 hardModeEnabled = true
@@ -1194,18 +1168,14 @@ struct WordleView: View {
                 score += 1
 
                 // Counts today plus the run of solved days immediately before it.
-                let persisted = GameStats.shared.wordleDailyWinStreak(treatingTodayAsSolved: true)
-                writePersistentStreak(persisted)
-                currentStreak = persisted
-
-                let bestPersisted = readPersistentBest()
-                if persisted > bestPersisted {
-                    writePersistentBest(persisted)
-                }
-                currentBestStreak = max(currentBestStreak, persisted, readPersistentBest())
+                let streak = persistentStreak.recordWin(
+                    reaching: GameStats.shared.wordleDailyWinStreak(treatingTodayAsSolved: true)
+                )
+                currentStreak = streak.current
+                currentBestStreak = max(currentBestStreak, streak.best)
             } else {
                 // A Daily loss, including Reveal, ends the tracked streak.
-                writePersistentStreak(0)
+                persistentStreak.reset()
                 currentStreak = 0
             }
 

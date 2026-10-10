@@ -87,38 +87,14 @@ struct HangmanGameView: View {
     @State private var showsOnScreenKeyboard: Bool = true
     @State private var showsHangmanCardFirst: Bool = false
 
-    // MARK: - Persistent streak helpers (per difficulty)
-    private func persistentKeys() -> (current: String, best: String) {
-        let suf = difficultyKeySuffix()
-        return ("hangmanPersistentStreak_\(suf)", "hangmanPersistentBestStreak_\(suf)")
+    // MARK: - Persistent streak (per difficulty)
+    private var persistentStreak: PersistentGameStreak {
+        PersistentGameStreak(game: "hangman", variant: difficultyKeySuffix())
     }
-    private func readPersistentStreak() -> Int {
-        let key = persistentKeys().current
-        return max(0, UserDefaults.standard.integer(forKey: key))
-    }
-    private func writePersistentStreak(_ value: Int) {
-        let v = max(0, value)
-        let key = persistentKeys().current
-        UserDefaults.standard.set(v, forKey: key)
-        // Optional: push to iCloud KVS (local persistence requirement does not need it)
-        iCloudSyncCoordinator.shared.pushKey(key)
-    }
-    private func readPersistentBest() -> Int {
-        let key = persistentKeys().best
-        return max(0, UserDefaults.standard.integer(forKey: key))
-    }
-    private func writePersistentBest(_ value: Int) {
-        let v = max(0, value)
-        let key = persistentKeys().best
-        UserDefaults.standard.set(v, forKey: key)
-        iCloudSyncCoordinator.shared.pushKey(key)
-    }
+
     private func seedStreakFromPersistence() {
-        let persistedCurrent = readPersistentStreak()
-        currentStreak = persistedCurrent
-        // Keep session best at least as high as persisted best
-        let persistedBest = readPersistentBest()
-        currentBestStreak = max(currentBestStreak, persistedBest)
+        currentStreak = persistentStreak.current
+        currentBestStreak = max(currentBestStreak, persistentStreak.best)
     }
 
     var body: some View {
@@ -630,23 +606,16 @@ struct HangmanGameView: View {
 
         // Persistent streak updates
         if win {
-            // Persistent streak: increment on win
-            let persisted = readPersistentStreak() + 1
-            writePersistentStreak(persisted)
-            currentStreak = persisted
-
-            // Update persistent best if needed
-            let bestPersisted = readPersistentBest()
-            if persisted > bestPersisted {
-                writePersistentBest(persisted)
-            }
-            currentBestStreak = max(currentBestStreak, persisted, readPersistentBest())
+            // Persistent streak: extend on correct
+            let streak = persistentStreak.recordWin()
+            currentStreak = streak.current
+            currentBestStreak = max(currentBestStreak, streak.best)
 
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
         } else {
             // Persistent streak: reset on loss
-            writePersistentStreak(0)
+            persistentStreak.reset()
             currentStreak = 0
         }
 

@@ -34,35 +34,8 @@ extension View {
 
                 case .search:
                     SearchView()
-
-                // Games
-                case .gameQuiz:
-                    GameBackgroundContainer { QuizView() }
-                case .gameBeatTheClock:
-                    GameBackgroundContainer { BeatTheClockGameView() }
-                case .gameVerseMatch:
-                    GameBackgroundContainer { VerseMatchGameView() }
-                case .gameBookOrder:
-                    GameBackgroundContainer { BookOrderGameView() }
-                case .gameHangman:
-                    GameBackgroundContainer { HangmanGameView() }
-                case .gameWhoAmI:
-                    GameBackgroundContainer { WhoAmIGameView() }
-                case .gameWordle:
-                    GameBackgroundContainer { WordleView() }
                 }
             }
     }
 }
 
-private struct GameBackgroundContainer<Content: View>: View {
-    @ViewBuilder let content: Content
-
-    var body: some View {
-        ZStack {
-            AppBackgroundView(tab: .games)
-            content
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}

@@ -122,7 +122,7 @@ struct BeatTheClockGameView: View {
         return !selectionLocked && !trimmed.isEmpty
     }
 
-    // MARK: - Persistent streak helpers (per difficulty)
+    // MARK: - Persistent streak (per difficulty)
     private func persistentSuffix() -> String {
         switch difficulty {
         case .easy: return "easy"
@@ -130,32 +130,14 @@ struct BeatTheClockGameView: View {
         case .hard: return "hard"
         }
     }
-    private func persistentStreakKey() -> String { "beatclockPersistentStreak_\(persistentSuffix())" }
-    private func persistentBestKey() -> String { "beatclockPersistentBestStreak_\(persistentSuffix())" }
 
-    private func readPersistentStreak() -> Int {
-        max(0, UserDefaults.standard.integer(forKey: persistentStreakKey()))
+    private var persistentStreak: PersistentGameStreak {
+        PersistentGameStreak(game: "beatclock", variant: persistentSuffix())
     }
-    private func writePersistentStreak(_ value: Int) {
-        let v = max(0, value)
-        let key = persistentStreakKey()
-        UserDefaults.standard.set(v, forKey: key)
-        iCloudSyncCoordinator.shared.pushKey(key)
-    }
-    private func readPersistentBest() -> Int {
-        max(0, UserDefaults.standard.integer(forKey: persistentBestKey()))
-    }
-    private func writePersistentBest(_ value: Int) {
-        let v = max(0, value)
-        let key = persistentBestKey()
-        UserDefaults.standard.set(v, forKey: key)
-        iCloudSyncCoordinator.shared.pushKey(key)
-    }
+
     private func seedStreakFromPersistence() {
-        let persisted = readPersistentStreak()
-        currentStreak = persisted
-        let persistedBest = readPersistentBest()
-        currentBestStreak = max(currentBestStreak, persistedBest)
+        currentStreak = persistentStreak.current
+        currentBestStreak = max(currentBestStreak, persistentStreak.best)
     }
 
     var body: some View {
@@ -575,17 +557,10 @@ struct BeatTheClockGameView: View {
         if accepted {
             score += 1
 
-            // Persistent streak: increment on correct
-            let persisted = readPersistentStreak() + 1
-            writePersistentStreak(persisted)
-            currentStreak = persisted
-
-            // Update persistent best if needed
-            let bestPersisted = readPersistentBest()
-            if persisted > bestPersisted {
-                writePersistentBest(persisted)
-            }
-            currentBestStreak = max(currentBestStreak, persisted, readPersistentBest())
+            // Persistent streak: extend on correct
+            let streak = persistentStreak.recordWin()
+            currentStreak = streak.current
+            currentBestStreak = max(currentBestStreak, streak.best)
 
             GameStats.shared.recordRound(
                 game: .beatclock,
@@ -602,7 +577,7 @@ struct BeatTheClockGameView: View {
             let generator = UINotificationFeedbackGenerator(); generator.notificationOccurred(.success)
         } else {
             // Persistent streak: reset on incorrect
-            writePersistentStreak(0)
+            persistentStreak.reset()
             currentStreak = 0
 
             GameStats.shared.recordRound(
@@ -629,17 +604,10 @@ struct BeatTheClockGameView: View {
         if correct {
             score += 1
 
-            // Persistent streak: increment on correct
-            let persisted = readPersistentStreak() + 1
-            writePersistentStreak(persisted)
-            currentStreak = persisted
-
-            // Update persistent best if needed
-            let bestPersisted = readPersistentBest()
-            if persisted > bestPersisted {
-                writePersistentBest(persisted)
-            }
-            currentBestStreak = max(currentBestStreak, persisted, readPersistentBest())
+            // Persistent streak: extend on correct
+            let streak = persistentStreak.recordWin()
+            currentStreak = streak.current
+            currentBestStreak = max(currentBestStreak, streak.best)
 
             GameStats.shared.recordRound(
                 game: .beatclock,
@@ -654,7 +622,7 @@ struct BeatTheClockGameView: View {
             GameStats.shared.recordBeatClockType(type: typeName, answered: 1, correct: 1)
         } else {
             // Persistent streak: reset on incorrect
-            writePersistentStreak(0)
+            persistentStreak.reset()
             currentStreak = 0
 
             GameStats.shared.recordRound(
