@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-RESOURCES = ROOT / "The Bible" / "The Bible (iOS)"
+RESOURCES = ROOT / "The Bible (iOS)"
 OUTPUT = RESOURCES / "BibleInsights.sqlite"
 
 
@@ -228,13 +228,12 @@ def import_structured(destination, source, book):
 
 
 def import_book_overviews(destination):
-    source = sqlite3.connect(RESOURCES / "Bible_Book_Overviews_66.sqlite")
     destination.execute("ATTACH DATABASE ? AS legacy_books", (str(RESOURCES / "Bible_Book_Overviews_66.sqlite"),))
     destination.execute("INSERT INTO book_overviews SELECT * FROM legacy_books.books")
     destination.execute("INSERT INTO book_movements (book_name, sequence, title, description, key_passages_json) SELECT books.name, book_movements.sequence, book_movements.title, book_movements.description, book_movements.key_passages_json FROM legacy_books.book_movements JOIN legacy_books.books ON books.id = book_movements.book_id")
     destination.execute("INSERT INTO book_key_figures (book_name, sequence, name, description) SELECT books.name, book_key_figures.sequence, book_key_figures.name, book_key_figures.description FROM legacy_books.book_key_figures JOIN legacy_books.books ON books.id = book_key_figures.book_id")
+    destination.commit()
     destination.execute("DETACH DATABASE legacy_books")
-    source.close()
 
 
 def create_schema(destination):
@@ -304,6 +303,7 @@ def main():
         else:
             raise RuntimeError(f"Unrecognized schema: {path.name}")
         source.close()
+    destination.commit()
     destination.execute("VACUUM")
     destination.close()
 
