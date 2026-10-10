@@ -160,7 +160,15 @@ struct GamesView: View {
 
     private var verseToRemember: HomeVerseRef? {
         guard !favorites.isEmpty else { return nil }
-        let day = Calendar.current.ordinality(of: .day, in: .era, for: Date()) ?? 0
+        // Count local days; `ordinality(of: .day, in: .era)` counts in UTC and would change
+        // the verse in the evening rather than at midnight.
+        let calendar = Calendar.current
+        let reference = calendar.date(from: DateComponents(year: 2001, month: 1, day: 1)) ?? .distantPast
+        let day = calendar.dateComponents(
+            [.day],
+            from: calendar.startOfDay(for: reference),
+            to: calendar.startOfDay(for: Date())
+        ).day ?? 0
         let favorite = favorites[(day + verseToRememberOffset) % favorites.count]
         return HomeVerseRef(
             bookName: favorite.bookName,

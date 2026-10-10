@@ -117,18 +117,12 @@ struct PinnedVerseProvider: AppIntentTimelineProvider {
             .trimmingCharacters(in: .whitespacesAndNewlines)
         let chapter = shared.integer(forKey: "pinnedVerseChapter")
         let verse = shared.integer(forKey: "pinnedVerseNumber")
-        var text = (shared.string(forKey: "pinnedVerseText") ?? "")
+        // Pinning always saves the verse text, so the widget never needs the full Bible.
+        let text = (shared.string(forKey: "pinnedVerseText") ?? "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !book.isEmpty, chapter > 0, verse > 0 else {
             return nil
-        }
-
-        if text.isEmpty,
-           let bibleBook = BibleData.books.first(where: { $0.name == book }),
-           let bibleChapter = bibleBook.chapters.first(where: { $0.number == chapter }),
-           let bibleVerse = bibleChapter.verses.first(where: { $0.number == verse }) {
-            text = bibleVerse.text
         }
 
         return (book, max(1, chapter), max(1, verse), text)
