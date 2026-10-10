@@ -1,15 +1,16 @@
 import SwiftUI
 
 struct ResumeReadingCard: View {
-    let progress: ReadingProgress?
+    /// Where reading stopped (see `ReadingPositionStore`).
+    let position: BibleStatsStore.LastRead?
     let verseText: String?
     let usesCompactLayout: Bool
-    let onOpenReference: (ReadingProgress) -> Void
+    let onOpenReference: (BibleStatsStore.LastRead) -> Void
     let onStartReading: () -> Void
 
     var body: some View {
-        if let progress {
-            Button(action: { onOpenReference(progress) }) {
+        if let position {
+            Button(action: { onOpenReference(position) }) {
                 HeroCard(
                     title: "",
                     subtitle: nil,
@@ -30,7 +31,7 @@ struct ResumeReadingCard: View {
 
                     if usesCompactLayout {
                         HStack(alignment: .firstTextBaseline, spacing: 6) {
-                            Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
+                            Text("\(position.bookName) \(position.chapterNumber):\(position.verseNumber ?? 1)")
                                 .font(.body.weight(.semibold))
                                 .foregroundStyle(.primary)
                                 .lineLimit(1)
@@ -46,7 +47,7 @@ struct ResumeReadingCard: View {
                         }
                     } else {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("\(progress.bookName) \(progress.chapterNumber):\(progress.verseNumber)")
+                            Text("\(position.bookName) \(position.chapterNumber):\(position.verseNumber ?? 1)")
                                 .font(.body.weight(.semibold))
                                 .foregroundStyle(.primary)
 

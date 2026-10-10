@@ -191,6 +191,8 @@ struct ContentView: View {
         }
 
         bibleStore.ensureLoaded()
+        // Seeds the single reading position from the records it replaced (runs once).
+        ReadingPositionStore.shared.migrateIfNeeded(modelContext: modelContext)
         openBibleReaderAtLaunchIfNeeded()
         SwiftDataDeduplicator.run(in: modelContext)
 
@@ -335,6 +337,7 @@ struct ContentView: View {
             updateGameTimeTracking()
         case .background:
             updateGameTimeTracking()
+            ReadingPositionStore.shared.flush()
             // Backgrounding ends an active game round so returning to Games shows its selection screen.
             returnToGameSelection()
         @unknown default:
@@ -383,7 +386,7 @@ struct ContentView: View {
                   let genesisOne = genesis.chapters.first(where: { $0.number == 1 }) ?? genesis.chapters.first
             else { return }
 
-            let savedLocation = DeviceReaderPositionStore.load()
+            let savedLocation = ReadingPositionStore.shared.current
             let savedBook = savedLocation.flatMap { location in
                 books.first(where: { $0.name == location.bookName })
             }
@@ -391,7 +394,7 @@ struct ContentView: View {
                 savedBook?.chapters.first(where: { $0.number == location.chapterNumber })
             }
             let savedVerse = savedLocation.flatMap { location in
-                savedChapter?.verses.first(where: { $0.number == location.verseNumber })?.number
+                savedChapter?.verses.first(where: { $0.number == (location.verseNumber ?? 1) })?.number
             }
 
             let book: Book

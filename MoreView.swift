@@ -2,6 +2,7 @@ import SwiftUI
 
 enum MoreDestination: Hashable {
     case favorites
+    case bookmarks
     case stats
     case settings
 }
@@ -12,6 +13,10 @@ struct MoreView: View {
             Section {
                 NavigationLink(value: MoreDestination.favorites) {
                     Label("Favorites", systemImage: "heart")
+                }
+
+                NavigationLink(value: MoreDestination.bookmarks) {
+                    Label("Bookmarks", systemImage: "bookmark")
                 }
 
                 NavigationLink(value: MoreDestination.stats) {
@@ -32,6 +37,8 @@ struct MoreView: View {
             switch destination {
             case .favorites:
                 FavoritesView()
+            case .bookmarks:
+                BookmarksView()
             case .stats:
                 StatsView()
             case .settings:

@@ -364,7 +364,7 @@ final class iCloudSyncCoordinator {
         // A timestamp and its value may arrive in separate notifications. Resolve
         // timestamp companion keys back to their data keys so neither update is lost.
         let keysToProcess = Set(changedKeys.compactMap { changedKey -> String? in
-            if allKnownKeys.contains(changedKey) || Self.lastReadWidgetKeys.contains(changedKey) {
+            if allKnownKeys.contains(changedKey) {
                 return changedKey
             }
             let prefix = "__ts__"
@@ -423,37 +423,6 @@ final class iCloudSyncCoordinator {
         // Record last merge time
         lastMergeDate = Date()
         updateStoreMetrics()
-
-        // Special-case: Last Read widget keys are not in allKnownKeys (they live as raw KVS/app-group values for widgets).
-        if keysToProcess.contains(where: { Self.lastReadWidgetKeys.contains($0) }) {
-            // Ensure latest values are pulled to local KVS store
-            kvs.synchronize()
-
-            // Mirror KVS -> App Group UserDefaults read by the widget
-            if let shared = UserDefaults(suiteName: "group.bible.app") {
-                if let book = kvs.string(forKey: "lastReadBook") {
-                    shared.set(book, forKey: "lastReadBook")
-                }
-                if let chapObj = kvs.object(forKey: "lastReadChapter") as? NSNumber {
-                    shared.set(chapObj.intValue, forKey: "lastReadChapter")
-                } else {
-                    let chap = Int(kvs.longLong(forKey: "lastReadChapter"))
-                    if chap != 0 { shared.set(chap, forKey: "lastReadChapter") }
-                }
-                if let verseObj = kvs.object(forKey: "lastReadVerse") as? NSNumber {
-                    shared.set(verseObj.intValue, forKey: "lastReadVerse")
-                } else {
-                    let verse = Int(kvs.longLong(forKey: "lastReadVerse"))
-                    if verse != 0 { shared.set(verse, forKey: "lastReadVerse") }
-                }
-                if let text = kvs.string(forKey: "lastReadText") {
-                    shared.set(text, forKey: "lastReadText")
-                }
-                shared.synchronize()
-            }
-
-            DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
-        }
     }
 
     @objc
@@ -776,7 +745,9 @@ extension Notification.Name {
     static let iCloudSyncStatusChanged = Notification.Name("iCloudSyncStatusChanged")
 }
 
-// MARK: - Last Read widget keys (KVS/App Group)
+// MARK: - Last Read widget keys
+// The widget copy is written by ReadingPositionStore; resets also clear values older
+// versions wrote directly to iCloud.
 private extension iCloudSyncCoordinator {
     static let lastReadWidgetKeys: Set<String> = [
         "lastReadBook",

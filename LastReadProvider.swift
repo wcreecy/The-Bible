@@ -86,23 +86,7 @@ struct LastReadProvider: AppIntentTimelineProvider {
 
     private func loadEntry(configuration: Intent) -> Entry {
         let backgroundStyleRaw = configuration.background.resolvedRawValue
-        let kvs = NSUbiquitousKeyValueStore.default
-        let bookKVS = kvs.string(forKey: "lastReadBook") ?? ""
-        let chapterKVS = Int(kvs.longLong(forKey: "lastReadChapter"))
-        let verseKVS = Int(kvs.longLong(forKey: "lastReadVerse"))
-        let textKVS = kvs.string(forKey: "lastReadText") ?? ""
-
-        if !bookKVS.isEmpty, chapterKVS > 0, verseKVS > 0, !textKVS.isEmpty {
-            return Entry(
-                date: Date(),
-                text: textKVS,
-                book: bookKVS,
-                chapter: chapterKVS,
-                verse: verseKVS,
-                backgroundStyleRaw: backgroundStyleRaw
-            )
-        }
-
+        // The app mirrors its synced reading position into the app group.
         let shared = UserDefaults(suiteName: "group.bible.app")
         return Entry(
             date: Date(),

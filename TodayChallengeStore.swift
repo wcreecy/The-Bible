@@ -92,20 +92,11 @@ final class TodayChallengeStore: ObservableObject {
         loadOrCreateForToday()
     }
 
-    func refresh(readingProgress: ReadingProgress?) {
+    func refresh() {
         loadOrCreateForToday()
-        syncReadingProgress(readingProgress)
+        // A chapter task is complete when every verse in it is recorded as read.
+        syncCompletedReadingChallenges()
         syncGameProgress()
-    }
-
-    func recordReadingProgress(bookName: String, chapterNumber: Int) {
-        loadOrCreateForToday()
-
-        updateChallenges { challenge in
-            challenge.kind == .readChapter &&
-            challenge.bookName == bookName &&
-            challenge.chapterNumber == chapterNumber
-        }
     }
 
     func recordPrayerTimerCompletion(minutes: Int) {
@@ -134,22 +125,6 @@ final class TodayChallengeStore: ObservableObject {
         save()
     }
     #endif
-
-    private func syncReadingProgress(_ readingProgress: ReadingProgress?) {
-        // ReadingProgress is only the saved resume location. A chapter task is
-        // complete when every verse is recorded as read, regardless of whether
-        // the person set a Continue Reading bookmark.
-        guard let readingProgress else {
-            syncCompletedReadingChallenges()
-            return
-        }
-
-        recordReadingProgress(
-            bookName: readingProgress.bookName,
-            chapterNumber: readingProgress.chapterNumber
-        )
-        syncCompletedReadingChallenges()
-    }
 
     private func syncCompletedReadingChallenges() {
         updateChallenges { challenge in
@@ -459,7 +434,6 @@ final class TodayChallengeStore: ObservableObject {
 struct HomeTodayCard: View {
     @ObservedObject private var store = TodayChallengeStore.shared
 
-    let readingProgress: ReadingProgress?
     /// Starts the Home prayer timer for the given number of minutes.
     let onStartPrayerTimer: (Int) -> Void
 
@@ -494,16 +468,16 @@ struct HomeTodayCard: View {
             }
         }
         .onAppear {
-            store.refresh(readingProgress: readingProgress)
+            store.refresh()
         }
         .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
-            store.refresh(readingProgress: readingProgress)
+            store.refresh()
         }
         .onReceive(NotificationCenter.default.publisher(
             for: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
             object: NSUbiquitousKeyValueStore.default
         )) { _ in
-            store.refresh(readingProgress: readingProgress)
+            store.refresh()
         }
     }
 

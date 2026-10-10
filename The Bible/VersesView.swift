@@ -131,11 +131,11 @@ struct VersesView: View {
         case .bookmarked:
             toastSymbol = "bookmark.fill"
             toastTint = .accentColor
-            toastText = "Set as Continue Reading"
+            toastText = "Bookmarked"
         case .removedBookmark:
             toastSymbol = "bookmark"
             toastTint = .secondary
-            toastText = "Removed Continue Reading"
+            toastText = "Removed Bookmark"
         case .pinned:
             toastSymbol = "pin.fill"
             toastTint = .red

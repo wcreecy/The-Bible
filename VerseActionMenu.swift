@@ -34,9 +34,9 @@ struct VerseActionMenu: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
     @Query private var notes: [VerseNote]
+    @Query private var bookmarks: [Bookmark]
     @StateObject private var pinnedStore = PinnedVerseStore()
     @State private var persistenceFailure: PersistenceFailure?
-    @State private var isBookmarked: Bool = false
     @State private var isShowingNoteEditor = false
 
     let verse: VerseActionReference
@@ -50,6 +50,16 @@ struct VerseActionMenu: View {
             $0.verseNumber == verse.verseNumber
         }
     }
+
+    private var matchingBookmarks: [Bookmark] {
+        bookmarks.filter {
+            $0.bookName == verse.bookName &&
+            $0.chapterNumber == verse.chapterNumber &&
+            $0.verseNumber == verse.verseNumber
+        }
+    }
+
+    private var isBookmarked: Bool { !matchingBookmarks.isEmpty }
 
     private var isPinned: Bool {
         pinnedStore.isPinned(
@@ -71,10 +81,6 @@ struct VerseActionMenu: View {
         actionPresentation
             .task(id: verse) {
                 await pinnedStore.load()
-                let defaults = UserDefaults(suiteName: "group.bible.app")
-                isBookmarked = defaults?.string(forKey: "lastReadBook") == verse.bookName &&
-                    defaults?.integer(forKey: "lastReadChapter") == verse.chapterNumber &&
-                    defaults?.integer(forKey: "lastReadVerse") == verse.verseNumber
             }
             .persistenceFailureAlert(failure: $persistenceFailure)
             .sheet(isPresented: $isShowingNoteEditor) {
@@ -105,7 +111,7 @@ struct VerseActionMenu: View {
                     Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                         .foregroundStyle(isBookmarked ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.primary))
                 }
-                .accessibilityLabel(isBookmarked ? "Remove Continue Reading bookmark" : "Set as Continue Reading")
+                .accessibilityLabel(isBookmarked ? "Remove Bookmark" : "Add Bookmark")
 
                 Button(action: togglePin) {
                     Image(systemName: isPinned ? "pin.fill" : "pin")
@@ -140,7 +146,7 @@ struct VerseActionMenu: View {
                     Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                         .foregroundStyle(isBookmarked ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.primary))
                 }
-                .accessibilityLabel(isBookmarked ? "Remove Continue Reading bookmark" : "Set as Continue Reading")
+                .accessibilityLabel(isBookmarked ? "Remove Bookmark" : "Add Bookmark")
 
                 Menu {
                     Button(action: copy) {
@@ -182,7 +188,7 @@ struct VerseActionMenu: View {
 
                 Button(action: bookmark) {
                     Label(
-                        isBookmarked ? "Remove Continue Reading Bookmark" : "Set as Continue Reading",
+                        isBookmarked ? "Remove Bookmark" : "Add Bookmark",
                         systemImage: isBookmarked ? "bookmark.fill" : "bookmark"
                     )
                 }
@@ -255,33 +261,32 @@ struct VerseActionMenu: View {
     }
 
     private func bookmark() {
-        let removesBookmark = isBookmarked
+        // Synced devices can briefly hold duplicates; removing one would leave the verse bookmarked.
+        let existing = matchingBookmarks
 
         ModelContextPersistence.perform(
             in: modelContext,
             operation: {
-                if removesBookmark {
-                    try ReadingProgressStore.clear(in: modelContext)
+                if existing.isEmpty {
+                    let bookmark = Bookmark()
+                    bookmark.bookName = verse.bookName
+                    bookmark.chapterNumber = verse.chapterNumber
+                    bookmark.verseNumber = verse.verseNumber
+                    bookmark.verseText = verse.verseText
+                    bookmark.createdAt = Date()
+                    modelContext.insert(bookmark)
                 } else {
-                    try ReadingProgressStore.save(
-                        in: modelContext,
-                        bookName: verse.bookName,
-                        chapter: verse.chapterNumber,
-                        verse: verse.verseNumber
-                    )
+                    existing.forEach(modelContext.delete)
                 }
+                try modelContext.save()
             },
             onSuccess: {
-                if removesBookmark {
-                    VerseActionPersistence.clearBookmark()
-                    isBookmarked = false
-                    Haptics.selection()
-                    onFeedback(.removedBookmark)
-                } else {
-                    VerseActionPersistence.mirrorBookmark(verse)
-                    isBookmarked = true
+                if existing.isEmpty {
                     Haptics.success()
                     onFeedback(.bookmarked)
+                } else {
+                    Haptics.selection()
+                    onFeedback(.removedBookmark)
                 }
             },
             onFailure: { persistenceFailure = $0 }
@@ -310,53 +315,5 @@ struct VerseActionMenu: View {
         UIPasteboard.general.string = verse.shareText
         Haptics.selection()
         onFeedback(.copied)
-    }
-}
-
-@MainActor
-private enum VerseActionPersistence {
-    static func mirrorBookmark(_ verse: VerseActionReference) {
-        if let shared = UserDefaults(suiteName: "group.bible.app") {
-            shared.set(verse.bookName, forKey: "lastReadBook")
-            shared.set(verse.chapterNumber, forKey: "lastReadChapter")
-            shared.set(verse.verseNumber, forKey: "lastReadVerse")
-            shared.set(verse.verseText, forKey: "lastReadText")
-        }
-
-        let ubiquitousStore = NSUbiquitousKeyValueStore.default
-        ubiquitousStore.set(verse.bookName, forKey: "lastReadBook")
-        ubiquitousStore.set(Int64(verse.chapterNumber), forKey: "lastReadChapter")
-        ubiquitousStore.set(Int64(verse.verseNumber), forKey: "lastReadVerse")
-        ubiquitousStore.set(verse.verseText, forKey: "lastReadText")
-        ubiquitousStore.synchronize()
-
-        BibleStatsStore.shared.saveLastRead(
-            bookName: verse.bookName,
-            chapterNumber: verse.chapterNumber,
-            date: Date()
-        )
-        ReadingTimeTracker.shared.setCurrentLocation(
-            bookName: verse.bookName,
-            chapter: verse.chapterNumber
-        )
-        DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
-    }
-
-    static func clearBookmark() {
-        let keys = ["lastReadBook", "lastReadChapter", "lastReadVerse", "lastReadText"]
-
-        if let shared = UserDefaults(suiteName: "group.bible.app") {
-            for key in keys {
-                shared.removeObject(forKey: key)
-            }
-        }
-
-        let ubiquitousStore = NSUbiquitousKeyValueStore.default
-        for key in keys {
-            ubiquitousStore.removeObject(forKey: key)
-        }
-        ubiquitousStore.synchronize()
-
-        DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
     }
 }

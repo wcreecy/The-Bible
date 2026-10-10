@@ -18,8 +18,9 @@ enum SwiftDataDeduplicator {
         // cleaned here too.
         let cleanedText = StoredVerseTextCleaner.cleanModels(in: context)
         let removedFavorites = dedupeFavorites(in: context)
+        let removedBookmarks = dedupeBookmarks(in: context)
         let removedNotes = dedupeVerseNotes(in: context)
-        guard cleanedText || removedFavorites || removedNotes else { return }
+        guard cleanedText || removedFavorites || removedBookmarks || removedNotes else { return }
         try? context.save()
     }
 
@@ -40,6 +41,29 @@ enum SwiftDataDeduplicator {
             )
             if !seen.insert(key).inserted {
                 context.delete(favorite)
+                removed = true
+            }
+        }
+        return removed
+    }
+
+    /// Keeps the earliest bookmark for each verse.
+    private static func dedupeBookmarks(in context: ModelContext) -> Bool {
+        let descriptor = FetchDescriptor<Bookmark>(
+            sortBy: [SortDescriptor(\Bookmark.createdAt, order: .forward)]
+        )
+        guard let bookmarks = try? context.fetch(descriptor), bookmarks.count > 1 else { return false }
+
+        var seen = Set<VerseKey>()
+        var removed = false
+        for bookmark in bookmarks {
+            let key = VerseKey(
+                bookName: bookmark.bookName,
+                chapterNumber: bookmark.chapterNumber,
+                verseNumber: bookmark.verseNumber
+            )
+            if !seen.insert(key).inserted {
+                context.delete(bookmark)
                 removed = true
             }
         }
@@ -96,16 +120,20 @@ private extension VerseNote {
 }
 
 /// Removes KJV translator markup from verse text saved before the Bible text was cleaned
-/// at load time (favorites, notes, and verses copied for Home and the widgets).
+/// at load time (favorites, bookmarks, notes, and verses copied for Home and the widgets).
 @MainActor
 enum StoredVerseTextCleaner {
     private static let defaultsCleanedKey = "didCleanSavedVerseTextV1"
 
-    /// Cleans favorites and notes. Returns whether any record changed.
+    /// Cleans favorites, bookmarks, and notes. Returns whether any record changed.
     static func cleanModels(in context: ModelContext) -> Bool {
         var changed = false
         for favorite in (try? context.fetch(FetchDescriptor<Favorite>())) ?? [] where needsCleaning(favorite.verseText) {
             favorite.verseText = KJVTextCleaner.clean(favorite.verseText).text
+            changed = true
+        }
+        for bookmark in (try? context.fetch(FetchDescriptor<Bookmark>())) ?? [] where needsCleaning(bookmark.verseText) {
+            bookmark.verseText = KJVTextCleaner.clean(bookmark.verseText).text
             changed = true
         }
         for note in (try? context.fetch(FetchDescriptor<VerseNote>())) ?? [] where needsCleaning(note.verseText) {

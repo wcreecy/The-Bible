@@ -126,8 +126,6 @@ private struct HomeDashboardColumns<Header: View, Tip: View, Main: View, Sidebar
 }
 
 struct HomeView: View {
-    // Always keep newest progress first so `progressList.first` is canonical
-    @Query(sort: \ReadingProgress.updatedAt, order: .reverse) private var progressList: [ReadingProgress]
     @State private var showPrayerStudySheet: Bool = false
 
     @StateObject private var timerController = PrayerTimerController()
@@ -179,17 +177,18 @@ struct HomeView: View {
     private var verseCardIcon: String { isEvening ? "moon.stars" : "sun.max.fill" }
 
     private var isPad: Bool { horizontalSizeClass == .regular }
-    var progress: ReadingProgress? {
-        progressList.first
+    /// Where reading stopped, on any device; the single source for Continue Reading.
+    private var position: BibleStatsStore.LastRead? {
+        ReadingPositionStore.shared.current
     }
 
-    private var progressVerseText: String? {
-        guard let progress,
-              let book = bibleStore.books.first(where: { $0.name == progress.bookName }),
-              let chapter = book.chapters.first(where: { $0.number == progress.chapterNumber }) else {
+    private var positionVerseText: String? {
+        guard let position,
+              let book = bibleStore.books.first(where: { $0.name == position.bookName }),
+              let chapter = book.chapters.first(where: { $0.number == position.chapterNumber }) else {
             return nil
         }
-        return chapter.verses.first(where: { $0.number == progress.verseNumber })?.text
+        return chapter.verses.first(where: { $0.number == (position.verseNumber ?? 1) })?.text
     }
 
     // Verse-of-the-Day: configurable times and scheduler (delegated to VM, keep keys observed)
@@ -201,20 +200,6 @@ struct HomeView: View {
 
     // Bible store for async/on-demand loading
     @StateObject private var bibleStore = BibleStore.shared
-
-    private func mirrorLastReadToAppGroup() {
-        guard let shared = sharedDefaults else { return }
-        guard let p = progress else { return }
-        if let book = bibleStore.books.first(where: { $0.name == p.bookName }),
-           let chapter = book.chapters.first(where: { $0.number == p.chapterNumber }),
-           let verse = chapter.verses.first(where: { $0.number == p.verseNumber }) {
-            shared.set(p.bookName, forKey: "lastReadBook")
-            shared.set(p.chapterNumber, forKey: "lastReadChapter")
-            shared.set(p.verseNumber, forKey: "lastReadVerse")
-            shared.set(verse.text, forKey: "lastReadText")
-            DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
-        }
-    }
 
     private func handleOpenPendingVerse() {
         guard let shared = sharedDefaults else { return }
@@ -399,20 +384,10 @@ struct HomeView: View {
             )
         case .resumeReading:
             ResumeReadingCard(
-                progress: progress,
-                verseText: progressVerseText,
+                position: position,
+                verseText: positionVerseText,
                 usesCompactLayout: !isPad,
-                onOpenReference: { p in
-                    NotificationCenter.default.post(
-                        name: .openBibleReference,
-                        object: nil,
-                        userInfo: [
-                            "book": p.bookName,
-                            "chapter": p.chapterNumber,
-                            "verse": p.verseNumber
-                        ]
-                    )
-                },
+                onOpenReference: { _ in openContinueReading() },
                 onStartReading: {
                     NotificationCenter.default.post(
                         name: .openBibleReference,
@@ -438,7 +413,7 @@ struct HomeView: View {
                 )
             }
         case .today:
-            HomeTodayCard(readingProgress: progress, onStartPrayerTimer: startPrayerChallengeTimer)
+            HomeTodayCard(onStartPrayerTimer: startPrayerChallengeTimer)
         case .streaks:
             streaksCard
         case .bibleStats:
@@ -612,17 +587,17 @@ struct HomeView: View {
     private var minimalHomeQuickActions: some View {
         HStack(alignment: .top, spacing: 16) {
             minimalHomeActionCard(
-                title: "Read",
-                message: "Open the Bible",
+                title: "Books",
+                message: "Browse the Bible",
                 icon: "book.fill",
                 tint: .blue,
-                action: openLastReadPosition
+                action: { switchTo(.bible) }
             )
 
             minimalHomeActionCard(
                 title: "Continue Reading",
-                message: progress.map { "\($0.bookName) \($0.chapterNumber):\($0.verseNumber)" } ?? "Start at Genesis 1",
-                verseText: progressVerseText,
+                message: position.map { "\($0.bookName) \($0.chapterNumber):\($0.verseNumber ?? 1)" } ?? "Start at Genesis 1",
+                verseText: positionVerseText,
                 icon: "bookmark.fill",
                 tint: .indigo,
                 action: openContinueReading
@@ -683,14 +658,14 @@ struct HomeView: View {
     }
 
     private func openContinueReading() {
-        if let progress {
+        if let position {
             NotificationCenter.default.post(
                 name: .openBibleReference,
                 object: nil,
                 userInfo: [
-                    "book": progress.bookName,
-                    "chapter": progress.chapterNumber,
-                    "verse": progress.verseNumber
+                    "book": position.bookName,
+                    "chapter": position.chapterNumber,
+                    "verse": position.verseNumber ?? 1
                 ]
             )
         } else {
@@ -704,23 +679,6 @@ struct HomeView: View {
                 ]
             )
         }
-    }
-
-    private func openLastReadPosition() {
-        guard let location = DeviceReaderPositionStore.load() else {
-            switchTo(.bible)
-            return
-        }
-
-        NotificationCenter.default.post(
-            name: .openBibleReference,
-            object: nil,
-            userInfo: [
-                "book": location.bookName,
-                "chapter": location.chapterNumber,
-                "verse": location.verseNumber
-            ]
-        )
     }
 
     private var customizeHomeLink: some View {
@@ -803,9 +761,6 @@ struct HomeView: View {
             // Focus initial load
             focusVM.loadFromStorage()
 
-            dedupeReadingProgress()
-
-            mirrorLastReadToAppGroup()
             handleOpenPendingVerse()
 
             // Controllers
@@ -824,9 +779,6 @@ struct HomeView: View {
             timerController.stop()
         }
 
-        .onChange(of: progressList) { _, _ in
-            mirrorLastReadToAppGroup()
-        }
         .onChange(of: scenePhase) { _, newPhase in
             switch newPhase {
             case .active:
@@ -900,11 +852,11 @@ struct HomeView: View {
             verseActionToastTint = .secondary
         case .bookmarked:
             verseActionToastSymbol = "bookmark.fill"
-            verseActionToastText = "Set as Continue Reading"
+            verseActionToastText = "Bookmarked"
             verseActionToastTint = .accentColor
         case .removedBookmark:
             verseActionToastSymbol = "bookmark"
-            verseActionToastText = "Removed Continue Reading"
+            verseActionToastText = "Removed Bookmark"
             verseActionToastTint = .secondary
         case .pinned:
             verseActionToastSymbol = "pin.fill"
@@ -961,15 +913,6 @@ struct HomeView: View {
         return indices.count == 1 ? indices.first : nil
     }
 
-    // MARK: - ReadingProgress safety dedupe on Home (one-time)
-    private func dedupeReadingProgress() {
-        guard progressList.count > 1 else { return }
-        let toDelete = progressList.dropFirst()
-        for p in toDelete {
-            modelContext.delete(p)
-        }
-        try? modelContext.save()
-    }
 
 }
 

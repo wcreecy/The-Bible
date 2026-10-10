@@ -10,6 +10,8 @@ final class ReaderSettings {
     init() {}
 }
 
+/// Legacy manual "Continue Reading" bookmark. Kept in the CloudKit-backed schema so
+/// existing stores open unchanged; it is only read once to seed `ReadingPositionStore`.
 @Model
 final class ReadingProgress {
     // Remove unique constraint for CloudKit compatibility

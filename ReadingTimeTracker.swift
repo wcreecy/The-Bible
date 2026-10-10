@@ -173,8 +173,9 @@ final class ReadingTimeTracker: ObservableObject {
             }
         }
 
-        if segmentRecordedSeconds > 0, let chapter = currentChapterNumber {
-            BibleStatsStore.shared.saveLastRead(bookName: book, chapterNumber: chapter, date: Date())
+        // The reading position itself is recorded by the reader (ReadingPositionStore),
+        // which knows the verse; this only reports that totals changed.
+        if segmentRecordedSeconds > 0 {
             lastTotalsVersion &+= 1
         }
         clearSegmentState()

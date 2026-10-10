@@ -14,12 +14,22 @@ extension BibleStatsStore {
         return decoded
     }
 
-    func saveLastRead(bookName: String, chapterNumber: Int, date: Date) {
-        let entry = LastRead(bookName: bookName, chapterNumber: chapterNumber, date: date)
+    /// Saves and syncs the reading position. Reading-position updates are frequent, so
+    /// callers that only move the position pass `notify: false` and post
+    /// `.readingPositionChanged` instead of the app-wide stats notification.
+    func saveLastRead(bookName: String, chapterNumber: Int, verseNumber: Int? = nil, date: Date, notify: Bool = true) {
+        let entry = LastRead(bookName: bookName, chapterNumber: chapterNumber, verseNumber: verseNumber, date: date)
         cacheLastRead = entry
         saveJSON(entry, key: Defaults.keyLastRead)
-        // Push and notify
         iCloudSyncCoordinator.shared.pushKey(Defaults.keyLastRead)
-        NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        if notify {
+            NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
+        }
+    }
+
+    func clearLastRead() {
+        cacheLastRead = nil
+        Defaults.provider.removeObject(forKey: Defaults.keyLastRead)
+        iCloudSyncCoordinator.shared.pushKey(Defaults.keyLastRead)
     }
 }

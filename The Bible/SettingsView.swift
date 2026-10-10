@@ -188,7 +188,7 @@ private struct SettingsReadingProgressSection: View {
             Text("Bible Reader")
         } footer: {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Heart: favorite • Note: has a note • Bookmark: continue reading • Checkmark: read")
+                Text("Heart: favorite • Note: has a note • Bookmark: bookmarked • Checkmark: read")
                 Text("Read indicators reflect your reading progress and disappear when reading statistics are reset.")
                 Text("Printed King James Bibles set supplied words in italics, such as “ye *are* the branches.”")
             }

@@ -30,10 +30,20 @@ final class BibleStatsStore {
 
     // MARK: - Models
 
+    /// Where the person stopped reading: the single synced reading position, managed by
+    /// `ReadingPositionStore`. `verseNumber` is absent in entries saved by older versions.
     struct LastRead: Codable, Equatable {
         let bookName: String
         let chapterNumber: Int
+        var verseNumber: Int?
         let date: Date
+
+        init(bookName: String, chapterNumber: Int, verseNumber: Int? = nil, date: Date) {
+            self.bookName = bookName
+            self.chapterNumber = chapterNumber
+            self.verseNumber = verseNumber
+            self.date = date
+        }
     }
 
     struct StatisticsSnapshot {

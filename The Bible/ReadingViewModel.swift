@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import WidgetKit
 import Combine
 import SwiftData
 
@@ -235,25 +234,6 @@ final class ReadingViewModel: ObservableObject {
         if menuVerse != nil { menuVerse = nil }
     }
 
-    // MARK: - Bookmark (Continue Reading / Last Read)
-
-    func bookmarkVerse(context: ModelContext, verse: Verse) throws {
-        // Persist Continue Reading before updating its mirrors.
-        try ReadingProgressStore.save(in: context, bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number)
-
-        // Mirror Last Read for widget (App Group + iCloud KVS)
-        mirrorLastReadToAppGroup(bookName: currentBook.name, chapter: currentChapter.number, verse: verse.number, text: verse.text)
-
-        // Also persist Stats "Last Read" (cross‑device, used by StatsView)
-        BibleStatsStore.shared.saveLastRead(bookName: currentBook.name, chapterNumber: currentChapter.number, date: Date())
-
-        // Update tracker location
-        ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)
-
-        // Activity
-        markActivity()
-    }
-
     // MARK: - Pinned verse
 
     func isPinned(_ verseNumber: Int) -> Bool {
@@ -367,29 +347,6 @@ final class ReadingViewModel: ObservableObject {
 
     func rowID(for verseNumber: Int) -> String {
         "\(currentBook.name)-\(currentChapter.number)-\(verseNumber)"
-    }
-
-    // MARK: - Widget mirroring (Last Read)
-
-    private func mirrorLastReadToAppGroup(bookName: String, chapter: Int, verse: Int, text: String) {
-        // Local device: App Group (for widgets on this device)
-        if let shared = UserDefaults(suiteName: "group.bible.app") {
-            shared.set(bookName, forKey: "lastReadBook")
-            shared.set(chapter, forKey: "lastReadChapter")
-            shared.set(verse, forKey: "lastReadVerse")
-            shared.set(text, forKey: "lastReadText")
-        }
-
-        // Cross-device: iCloud KVS (so other devices’ widgets can read without launching the app)
-        let kvs = NSUbiquitousKeyValueStore.default
-        kvs.set(bookName, forKey: "lastReadBook")
-        kvs.set(Int64(chapter), forKey: "lastReadChapter")
-        kvs.set(Int64(verse), forKey: "lastReadVerse")
-        kvs.set(text, forKey: "lastReadText")
-        kvs.synchronize()
-
-        // Nudge widgets locally
-        DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
     }
 }
 

@@ -8,6 +8,7 @@ struct ReadingView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var favorites: [Favorite]
     @Query private var verseNotes: [VerseNote]
+    @Query private var bookmarks: [Bookmark]
     @Environment(\.scenePhase) private var scenePhase
 
     let book: Book
@@ -36,9 +37,6 @@ struct ReadingView: View {
     @State private var seenVerseLocation: String = ""
 
     // Observe app-group "last read" to render bookmark icon state live
-    @AppStorage("lastReadBook", store: UserDefaults(suiteName: "group.bible.app")!) private var lastReadBook: String = ""
-    @AppStorage("lastReadChapter", store: UserDefaults(suiteName: "group.bible.app")!) private var lastReadChapter: Int = 0
-    @AppStorage("lastReadVerse", store: UserDefaults(suiteName: "group.bible.app")!) private var lastReadVerse: Int = 0
 
     // Toast state
     @State private var showFavoriteToast: Bool = false
@@ -194,11 +192,10 @@ struct ReadingView: View {
                 }
                 saveReaderPosition(verseNumber: viewModel.currentVerse)
                 refreshSeenVerses()
-                // Ensure newest-only ReadingProgress row
-                ReadingProgressStore.dedupe(in: modelContext)
             }
             .onDisappear {
                 saveVisibleReaderPosition()
+                ReadingPositionStore.shared.flush()
                 viewModel.onDisappear()
             }
             .onChange(of: startVerse) { _, verseNumber in
@@ -221,6 +218,7 @@ struct ReadingView: View {
 
                 if newPhase == .inactive || newPhase == .background {
                     saveVisibleReaderPosition()
+                    ReadingPositionStore.shared.flush()
                 }
 
                 // Fallback nudge on app activation (device B):
@@ -257,11 +255,11 @@ struct ReadingView: View {
                     readerFontSize: readerFontSize,
                     onLocationChange: { location in
                         viewModel.noteFocusLocation(location)
-                        DeviceReaderPositionStore.save(BibleReaderLocation(
+                        ReadingPositionStore.shared.record(
                             bookName: location.bookName,
-                            chapterNumber: location.chapterNumber,
-                            verseNumber: location.verseNumber
-                        ))
+                            chapter: location.chapterNumber,
+                            verse: location.verseNumber
+                        )
                     },
                     onVisibleVerseChange: { location in
                         viewModel.focusVisibleVerseChanged(location)
@@ -305,7 +303,7 @@ struct ReadingView: View {
                         ContextualTipView(
                             id: "reader.statusIcons",
                             title: "Understand verse icons",
-                            message: "Heart: favorite • Note: has a note • Bookmark: continue reading • Checkmark: read. Show or hide them in Settings › Bible Reader.",
+                            message: "Heart: favorite • Note: has a note • Bookmark: bookmarked • Checkmark: read. Show or hide them in Settings › Bible Reader.",
                             systemImage: "info.circle"
                         )
                         .padding(.bottom, 12)
@@ -446,11 +444,11 @@ struct ReadingView: View {
     }
 
     private func saveReaderPosition(verseNumber: Int) {
-        DeviceReaderPositionStore.save(BibleReaderLocation(
+        ReadingPositionStore.shared.record(
             bookName: viewModel.currentBook.name,
-            chapterNumber: viewModel.currentChapter.number,
-            verseNumber: verseNumber
-        ))
+            chapter: viewModel.currentChapter.number,
+            verse: verseNumber
+        )
     }
 
     private func refreshSeenVerses() {
@@ -487,9 +485,11 @@ struct ReadingView: View {
     }
 
     private func isBookmarked(_ verse: Verse) -> Bool {
-        lastReadBook == viewModel.currentBook.name &&
-        lastReadChapter == viewModel.currentChapter.number &&
-        lastReadVerse == verse.number
+        bookmarks.contains {
+            $0.bookName == viewModel.currentBook.name &&
+            $0.chapterNumber == viewModel.currentChapter.number &&
+            $0.verseNumber == verse.number
+        }
     }
 
     // MARK: - Overlay Arrows
@@ -568,11 +568,11 @@ struct ReadingView: View {
         case .bookmarked:
             favoriteToastSymbol = "bookmark.fill"
             favoriteToastTint = .accentColor
-            favoriteToastText = "Set as Continue Reading"
+            favoriteToastText = "Bookmarked"
         case .removedBookmark:
             favoriteToastSymbol = "bookmark"
             favoriteToastTint = .secondary
-            favoriteToastText = "Removed Continue Reading"
+            favoriteToastText = "Removed Bookmark"
         case .pinned:
             favoriteToastSymbol = "pin.fill"
             favoriteToastTint = .red
@@ -602,23 +602,6 @@ struct ReadingView: View {
             fav.chapterNumber == viewModel.currentChapter.number &&
             fav.verseNumber == verse.number
         }
-    }
-
-    private func saveBookmark(for verse: Verse) {
-        ModelContextPersistence.perform(
-            in: modelContext,
-            operation: {
-                try viewModel.bookmarkVerse(context: modelContext, verse: verse)
-            },
-            onSuccess: {
-                Haptics.success()
-                favoriteToastSymbol = "bookmark.fill"
-                favoriteToastTint = .accentColor
-                favoriteToastText = "Set as Continue Reading"
-                withAnimation(.spring()) { showFavoriteToast = true }
-            },
-            onFailure: { persistenceFailure = $0 }
-        )
     }
 
     private func toggleFavorite(for: Verse) {
