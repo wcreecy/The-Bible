@@ -1,64 +1,19 @@
 import SwiftUI
 
 struct SearchView: View {
-    // MARK: - Query & Results
-    @State private var query: String = ""
-    @State private var results: [SearchResult] = []
-    @State private var searchTask: Task<Void, Never>? = nil
-    @State private var isSearching: Bool = false
+    @State private var model = BibleSearchModel()
     @FocusState private var isSearchFieldFocused: Bool
-    @AppStorage("bibleRecentSearches") private var recentSearchesStorage: String = ""
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
-    private let suggestedSearches = ["love", "faith", "peace", "John 3:16", "Psalm 23"]
-
-    // MARK: - Scope State
-    private enum SearchScope: String, CaseIterable, Identifiable {
-        case all = "OT & NT"
-        case ot = "OT"
-        case nt = "NT"
-        case specific = "Book"
-        var id: String { rawValue }
-    }
-    @State private var scope: SearchScope = .all
-
     // Specific book picker state
-    @State private var selectedBook: Book? = nil
     @State private var showBookPicker: Bool = false
     @State private var bookQuery: String = ""
-
-    // MARK: - Tokenization
-    private var tokens: [String] {
-        query
-            .lowercased()
-            .split { $0.isWhitespace || $0.isPunctuation }
-            .map(String.init)
-            .filter { !$0.isEmpty }
-    }
-
-    private var canSearch: Bool {
-        !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
-
-    private var recentSearches: [String] {
-        recentSearchesStorage
-            .components(separatedBy: "\n")
-            .filter { !$0.isEmpty }
-    }
-
-    // MARK: - Canon helpers (split OT/NT by Matthew)
-    private var canon: [Book] { BibleData.books }
-    private var indexMap: [String: Int] {
-        Dictionary(uniqueKeysWithValues: canon.enumerated().map { ($1.name, $0) })
-    }
-    private var matthewIndex: Int { indexMap["Matthew"] ?? Int.max }
 
     // Books for the popover list (filtered by bookQuery)
     private var filteredBooksForPicker: [Book] {
         let q = bookQuery.trimmingCharacters(in: .whitespacesAndNewlines)
-        let base = canon
-        guard !q.isEmpty else { return base }
-        return base.filter { $0.name.localizedCaseInsensitiveContains(q) }
+        guard !q.isEmpty else { return BibleData.books }
+        return BibleData.books.filter { $0.name.localizedCaseInsensitiveContains(q) }
     }
 
     // MARK: - Body
@@ -80,62 +35,11 @@ struct SearchView: View {
             // Scope controls below the search field
             scopeControls
 
-            Group {
-                if canSearch {
-                    if isSearching {
-                        ProgressView("Searching…")
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    } else if results.isEmpty {
-                        ContentUnavailableView(
-                            "No Results",
-                            systemImage: "magnifyingglass",
-                            description: Text("Try different keywords or check spelling.")
-                        )
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    } else {
-                        List(results) { item in
-                            SearchResultRow(
-                                item: item,
-                                highlightedText: highlightedVerseText(item),
-                                onOpen: { openInBibleTab(item) }
-                            )
-                        }
-                        .scrollContentBackground(.hidden)
-                        .background(Color.clear)
-                    }
-                } else {
-                    searchSuggestions
-                }
-            }
+            BibleSearchResultsView(model: model, onOpen: openInBibleTab)
         }
         .background(AppBackgroundView(tab: .bible))
         .navigationTitle("Search")
         .navigationBarTitleDisplayMode(.inline)
-        .onChange(of: query) { _, newValue in
-            // Some hardware keyboard layouts send ";" for Shift-; in the search field.
-            // A semicolon is not meaningful in a Bible reference, so treat it as ":".
-            let normalizedQuery = newValue.replacingOccurrences(of: ";", with: ":")
-            guard normalizedQuery == newValue else {
-                query = normalizedQuery
-                return
-            }
-
-            debounceSearch()
-        }
-        .onChange(of: scope) { _, _ in
-            // If switching away from Specific Book, clear selection visibility but keep last choice
-            // Re-run search with new scope
-            performSearch()
-        }
-        .onChange(of: selectedBook) { _, _ in
-            // When a specific book changes, re-run search if scope is specific
-            if scope == .specific {
-                performSearch()
-            }
-        }
-        .onAppear {
-            performSearch()
-        }
         // Popover for selecting a specific book (searchable & scrollable)
         .popover(isPresented: $showBookPicker, arrowEdge: .top) {
             VStack(spacing: 0) {
@@ -181,12 +85,12 @@ struct SearchView: View {
 
                 List(filteredBooksForPicker, id: \.name) { book in
                     Button {
-                        selectedBook = book
+                        model.scopeBook = book
                         showBookPicker = false
                     } label: {
                         HStack {
                             Text(book.name)
-                            if selectedBook?.name == book.name {
+                            if model.scopeBook?.name == book.name {
                                 Spacer()
                                 Image(systemName: "checkmark").foregroundStyle(Color.accentColor)
                             }
@@ -204,16 +108,16 @@ struct SearchView: View {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(.secondary)
 
-            TextField("Search words or a reference", text: $query)
+            TextField("Search words or a reference", text: $model.query)
                 .focused($isSearchFieldFocused)
                 .textInputAutocapitalization(.words)
                 .autocorrectionDisabled(true)
                 .submitLabel(.search)
                 .onSubmit(submitSearch)
 
-            if !query.isEmpty {
+            if !model.query.isEmpty {
                 Button {
-                    query = ""
+                    model.query = ""
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundStyle(.secondary)
@@ -240,9 +144,8 @@ struct SearchView: View {
     private var scopeControls: some View {
         // Segmented control for scope + conditional specific-book selector
         VStack(spacing: 8) {
-            // Segmented control directly (no large backdrop)
-            Picker("Scope", selection: $scope) {
-                ForEach(SearchScope.allCases) { s in
+            Picker("Scope", selection: $model.scope) {
+                ForEach(BibleSearchScope.allCases) { s in
                     Text(s.rawValue).tag(s)
                 }
             }
@@ -250,14 +153,14 @@ struct SearchView: View {
             .padding([.horizontal, .top])
 
             HStack {
-                Text(resultStatusText)
+                Text(model.statusText)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Spacer()
             }
             .padding(.horizontal)
 
-            if scope == .specific {
+            if model.scope == .book {
                 HStack(spacing: 12) {
                     // Button that shows current selection and opens the dropdown
                     Button {
@@ -265,7 +168,7 @@ struct SearchView: View {
                     } label: {
                         HStack {
                             Image(systemName: "book")
-                            Text(selectedBook?.name ?? "Choose a Book")
+                            Text(model.scopeBook?.name ?? "Choose a Book")
                                 .lineLimit(1)
                                 .truncationMode(.tail)
                             Spacer(minLength: 0)
@@ -281,9 +184,9 @@ struct SearchView: View {
                     .buttonStyle(.plain)
 
                     // Quick clear if a book is selected
-                    if selectedBook != nil {
+                    if model.scopeBook != nil {
                         Button {
-                            selectedBook = nil
+                            model.scopeBook = nil
                         } label: {
                             Image(systemName: "xmark.circle.fill")
                                 .foregroundStyle(.secondary)
@@ -297,50 +200,7 @@ struct SearchView: View {
                 .transition(.opacity)
             }
         }
-        .animation(.easeInOut, value: scope)
-    }
-
-    private var resultStatusText: String {
-        if isSearching { return "Searching…" }
-        guard canSearch else { return "Ready to search" }
-        return results.count == 1 ? "1 result" : "\(results.count) results"
-    }
-
-    private var searchSuggestions: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                suggestionSection(title: "Suggested", systemImage: "magnifyingglass", searches: suggestedSearches)
-                if !recentSearches.isEmpty {
-                    suggestionSection(title: "Recent", systemImage: "clock.arrow.circlepath", searches: recentSearches)
-                }
-            }
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
-    private func suggestionSection(
-        title: LocalizedStringKey,
-        systemImage: String,
-        searches: [String]
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(title)
-                .font(.headline)
-            ForEach(searches, id: \.self) { search in
-                Button {
-                    query = search
-                    saveRecentSearch(search)
-                } label: {
-                    Label(search, systemImage: systemImage)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.vertical, 4)
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .padding(16)
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .animation(.easeInOut, value: model.scope)
     }
 
     // MARK: - Open in Bible Tab
@@ -363,177 +223,10 @@ struct SearchView: View {
     }
 
     private func submitSearch() {
-        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        saveRecentSearch(trimmedQuery)
-
-        if let referenceResults = resultsForReference(trimmedQuery),
-           referenceResults.count == 1,
-           let directResult = referenceResults.first {
+        model.saveRecentSearch()
+        if let directResult = model.directReferenceResult() {
             openInBibleTab(directResult)
-        } else {
-            performSearch()
         }
-    }
-
-    private func highlightedVerseText(_ item: SearchResult) -> AttributedString {
-        var highlighted = AttributedString(item.verseText)
-        guard !item.isReferenceMatch else { return highlighted }
-
-        for token in tokens {
-            if let range = highlighted.range(
-                of: token,
-                options: [.caseInsensitive, .diacriticInsensitive]
-            ) {
-                highlighted[range].backgroundColor = Color.accentColor.opacity(0.22)
-                highlighted[range].font = .body.bold()
-            }
-        }
-
-        return highlighted
-    }
-
-    // MARK: - Search Execution
-    private func debounceSearch() {
-        searchTask?.cancel()
-        let currentQuery = query
-        let currentScope = scope
-        let currentSelectedBook = selectedBook
-        isSearching = !currentQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        searchTask = Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(300))
-            guard !Task.isCancelled else { return }
-            await performSearchAsync(for: currentQuery, scope: currentScope, selectedBook: currentSelectedBook)
-        }
-    }
-
-    private func performSearch() {
-        searchTask?.cancel()
-        let current = query
-        let currentScope = scope
-        let currentSelectedBook = selectedBook
-        isSearching = !current.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        searchTask = Task {
-            await performSearchAsync(for: current, scope: currentScope, selectedBook: currentSelectedBook)
-        }
-    }
-
-    @MainActor
-    private func performSearchAsync(for query: String, scope: SearchScope, selectedBook: Book?) async {
-        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        let tokens = trimmedQuery
-            .lowercased()
-            .split { $0.isWhitespace || $0.isPunctuation }
-            .map(String.init)
-            .filter { !$0.isEmpty }
-
-        guard !tokens.isEmpty else {
-            results = []
-            isSearching = false
-            return
-        }
-
-        if let referenceResults = resultsForReference(trimmedQuery) {
-            results = referenceResults
-            isSearching = false
-            saveRecentSearch(trimmedQuery)
-            return
-        }
-
-        // Restrict the immutable index without copying Book or Chapter values.
-        let allowedBookIndices: Range<Int>?
-        switch scope {
-        case .all:
-            allowedBookIndices = nil
-        case .ot:
-            allowedBookIndices = 0..<matthewIndex
-        case .nt:
-            allowedBookIndices = matthewIndex..<canon.count
-        case .specific:
-            if let selectedBook,
-               let bookIndex = indexMap[selectedBook.name] {
-                allowedBookIndices = bookIndex..<(bookIndex + 1)
-            } else {
-                // No specific book selected yet
-                results = []
-                isSearching = false
-                return
-            }
-        }
-
-        let found = await BibleSearchIndex.shared.search(
-            tokens: tokens,
-            allowedBookIndices: allowedBookIndices,
-            maxResults: 200
-        )
-
-        // Update UI on main actor
-        guard !Task.isCancelled else { return }
-        results = found
-        isSearching = false
-        saveRecentSearch(trimmedQuery)
-    }
-
-    private func saveRecentSearch(_ search: String) {
-        let trimmed = search.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-
-        var searches = recentSearches.filter {
-            $0.compare(trimmed, options: [.caseInsensitive, .diacriticInsensitive]) != .orderedSame
-        }
-        searches.insert(trimmed, at: 0)
-        recentSearchesStorage = searches.prefix(6).joined(separator: "\n")
-    }
-
-    private func resultsForReference(_ query: String) -> [SearchResult]? {
-        BibleReferenceParser.results(for: query, in: canon)
-    }
-}
-
-private struct SearchResultRow: View {
-    let item: SearchResult
-    let highlightedText: AttributedString
-    let onOpen: () -> Void
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Button(action: onOpen) {
-                VStack(alignment: .leading, spacing: 6) {
-                    if item.isReferenceMatch {
-                        Label("Direct Reference", systemImage: "arrow.up.right.square")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(Color.accentColor)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.accentColor.opacity(0.12), in: Capsule())
-                    }
-
-                    Text(highlightedText)
-                        .font(.body)
-                        .foregroundStyle(.primary)
-                        .lineLimit(3)
-
-                    Text("\(item.bookName) \(item.chapterNumber):\(item.verseNumber)")
-                        .font(.caption)
-                        .foregroundStyle(item.isReferenceMatch ? Color.accentColor : Color.secondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .buttonStyle(.plain)
-
-            VerseActionMenu(
-                verse: VerseActionReference(
-                    bookName: item.bookName,
-                    chapterNumber: item.chapterNumber,
-                    verseNumber: item.verseNumber,
-                    verseText: item.verseText
-                )
-            )
-        }
-        .listRowBackground(
-            item.isReferenceMatch
-                ? Color.accentColor.opacity(0.08)
-                : Color.clear
-        )
     }
 }
 

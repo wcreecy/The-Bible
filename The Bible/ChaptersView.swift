@@ -1,8 +1,10 @@
 import SwiftUI
 
+/// Chapter grid for a book, shared by iPhone navigation and the iPad split view.
 struct ChaptersView: View {
     let book: Book
-    @EnvironmentObject private var coordinator: NavigationCoordinator
+    /// Opens the chosen chapter; the host decides how (iPhone stack or iPad detail).
+    let onSelectChapter: (Chapter) -> Void
     @State private var completedChapters: Set<String> = []
 
     // Cells grow with Dynamic Type so numbers stay readable at large sizes.
@@ -17,8 +19,8 @@ struct ChaptersView: View {
             LazyVStack(alignment: .leading, spacing: 16) {
                 if book.name == "Genesis" {
                     GenesisChapterHeader(chapterCount: book.chapters.count)
-                } else if let theme = BibleSplitView.BookChapterTheme.themes[book.name] {
-                    BibleSplitView.ThemedBookChaptersHeader(title: book.name, theme: theme)
+                } else if let theme = BookChapterTheme.themes[book.name] {
+                    ThemedBookChaptersHeader(title: book.name, theme: theme)
                 }
 
                 NavigationLink {
@@ -62,7 +64,7 @@ struct ChaptersView: View {
                                 number: chapter.number,
                                 isCompleted: completedChapters.contains("\(book.name):\(chapter.number)")
                             ) {
-                                coordinator.push(.reader(book: book, chapter: chapter, startVerse: 1))
+                                onSelectChapter(chapter)
                             }
                         }
                     }
@@ -185,10 +187,12 @@ private struct GenesisCreationEmblem: View {
 #Preview {
     // Psalms-sized sample book so the preview shows three-digit chapter numbers.
     NavigationStack {
-        ChaptersView(book: Book(
-            name: "Psalms",
-            chapters: (1...150).map { Chapter(number: $0, verses: [Verse(number: 1, text: "")]) }
-        ))
-        .environmentObject(NavigationCoordinator())
+        ChaptersView(
+            book: Book(
+                name: "Psalms",
+                chapters: (1...150).map { Chapter(number: $0, verses: [Verse(number: 1, text: "")]) }
+            ),
+            onSelectChapter: { _ in }
+        )
     }
 }

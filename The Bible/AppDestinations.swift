@@ -10,7 +10,9 @@ extension View {
             .navigationDestination(for: Route.self) { route in
                 switch route {
                 case .book(let book):
-                    ChaptersView(book: book)
+                    ChaptersView(book: book) { chapter in
+                        coordinator.push(.reader(book: book, chapter: chapter, startVerse: 1))
+                    }
 
                 case .chapter(let book, let chapter):
                     // Show the verses list so the user can pick which verse to read.

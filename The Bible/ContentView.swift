@@ -26,7 +26,6 @@ struct ContentView: View {
     @State private var selectedTab: AppTab = .home
     @State private var tabViewRecoveryID = 0
     @State private var bibleSearchRequestID: Int = 0
-    @State private var bibleBookSelectionRequestID: Int = 0
     @State private var launchBibleLocation: BibleReaderLocation?
     
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
@@ -69,7 +68,6 @@ struct ContentView: View {
             if usesWideLayout {
                 BibleSplitView(
                     searchRequestID: bibleSearchRequestID,
-                    bookSelectionRequestID: bibleBookSelectionRequestID,
                     initialReaderLocation: launchBibleLocation
                 )
                     .tabItem { Label("Bible", systemImage: "book") }
