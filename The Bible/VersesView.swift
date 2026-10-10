@@ -77,7 +77,7 @@ struct VersesView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("\(book.name) \(chapter.number):\(verse.number)")
                             .font(.title3).bold()
-                        Text(verse.text)
+                        Text(verse.redLetterAttributedText)
                             .font(.body)
                             .fixedSize(horizontal: false, vertical: true)
                     }

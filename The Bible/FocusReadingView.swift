@@ -310,7 +310,7 @@ private struct FocusVersePage: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            Text(verse.text)
+            Text(verse.redLetterAttributedText)
                 .font(.system(size: defaultReaderFontSize + CGFloat(readerFontSize - 17) + focusFontAdjustment))
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
@@ -455,7 +455,8 @@ private struct FocusPageMap {
             bookName: book.name,
             chapterNumber: chapter.number,
             verseNumber: verse.number,
-            text: verse.text
+            text: verse.text,
+            redLetterRanges: verse.redLetterRanges
         ))
     }
 
@@ -482,6 +483,11 @@ private struct FocusVerse: Identifiable {
     let chapterNumber: Int
     let verseNumber: Int
     let text: String
+    let redLetterRanges: [Range<Int>]
+
+    var redLetterAttributedText: AttributedString {
+        RedLetterText.attributedText(text, redLetterRanges: redLetterRanges)
+    }
 
     var id: String {
         "verse-\(bookName)-\(chapterNumber)-\(verseNumber)"

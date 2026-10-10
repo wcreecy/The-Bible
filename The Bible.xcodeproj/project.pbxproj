@@ -65,6 +65,7 @@
 		2C3A48EB2EFC12EB0040AC67 /* AllGamesComparisonCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3A48EA2EFC12EB0040AC67 /* AllGamesComparisonCardView.swift */; };
 		2C3F38102EC4042D002CA795 /* Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3F380F2EC4042D002CA795 /* Styles.swift */; };
 		2C40D8E23079119300839A64 /* SearchHomeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C40D8E13079119300839A64 /* SearchHomeCard.swift */; };
+		2C40DA6C307A720E00839A64 /* RedLetterVerseText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C40DA6B307A720E00839A64 /* RedLetterVerseText.swift */; };
 		2C462E272ED7BC0500AE0E5F /* StreakTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C462E262ED7BC0400AE0E5F /* StreakTracker.swift */; };
 		2C49CF462EBE10000006FF79 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56D972EB3895400A657FA /* HomeView.swift */; };
 		2C49CF472EBE10070006FF79 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB56DEF2EB3942900A657FA /* Toast.swift */; };
@@ -277,6 +278,7 @@
 		2C3B0F882EB14F3E0089556C /* The BibleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The BibleUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C3F380F2EC4042D002CA795 /* Styles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Styles.swift; sourceTree = "<group>"; };
 		2C40D8E13079119300839A64 /* SearchHomeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHomeCard.swift; sourceTree = "<group>"; };
+		2C40DA6B307A720E00839A64 /* RedLetterVerseText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedLetterVerseText.swift; sourceTree = "<group>"; };
 		2C462E262ED7BC0400AE0E5F /* StreakTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakTracker.swift; sourceTree = "<group>"; };
 		2C49CF002EBE0F6C0006FF79 /* Bible.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bible.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C49CF102EBE0F6D0006FF79 /* The Bible (iOS)Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The Bible (iOS)Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -667,6 +669,7 @@
 				2C7E791130727A8600179A65 /* PrayerTimerAlarmScheduler.swift */,
 				2C514D0D3075CFBE000CFC0D /* ReadingHistoryCalendarCard.swift */,
 				2C40D8E13079119300839A64 /* SearchHomeCard.swift */,
+				2C40DA6B307A720E00839A64 /* RedLetterVerseText.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1108,6 +1111,7 @@
 				2CB929AD306BEBD900B03AB0 /* ReadingInsightsCardView.swift in Sources */,
 				2CD7D8252EC9FF9A00849235 /* LastReadWidget.swift in Sources */,
 				2C49CF822EBE27D40006FF79 /* PrayerTimerActivityController.swift in Sources */,
+				2C40DA6C307A720E00839A64 /* RedLetterVerseText.swift in Sources */,
 				2C2765742EE8D61600A321FE /* VerseOfDayViewModel.swift in Sources */,
 				2C2764E82EE8C20700A321FE /* DayCell.swift in Sources */,
 				2CB92B7D306D3D8600B03AB0 /* HomeBibleReaderCard.swift in Sources */,

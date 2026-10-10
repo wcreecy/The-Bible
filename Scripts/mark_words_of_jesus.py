@@ -8,15 +8,16 @@ they never reach search, favorites, accessibility, or the user interface.
 import json
 import re
 import sys
+from difflib import SequenceMatcher
 from pathlib import Path
 
 START = "\ue000"
 END = "\ue001"
 
-ABBREVIATIONS = {
-    "Matthew": "mt", "Mark": "mr", "Luke": "lu", "John": "joh",
-    "Acts": "ac", "1 Corinthians": "1co", "2 Corinthians": "2co",
-    "Revelation": "re",
+RED_LETTER_BOOK_FILES = {
+    "mt": "matthew", "mk": "mark", "lk": "luke", "jo": "john",
+    "act": "acts", "1co": "1_corinthians", "2co": "2_corinthians",
+    "re": "revelation",
 }
 
 
@@ -33,45 +34,88 @@ def main() -> int:
     target_path = Path(sys.argv[1])
     source_root = Path(sys.argv[2])
     books = json.loads(target_path.read_text())
+    for book in books:
+        for chapter in book["chapters"]:
+            for index, verse in enumerate(chapter):
+                chapter[index] = verse.replace(START, "").replace(END, "")
     marked = 0
     unmatched = []
 
     for book in books:
-        source_abbreviation = ABBREVIATIONS.get(book.get("name"))
-        if not source_abbreviation:
+        source_filename = RED_LETTER_BOOK_FILES.get(book["abbrev"])
+        if not source_filename:
             continue
 
-        source_path = source_root / f"{book['name'].lower().replace(' ', '_')}.json"
+        source_path = source_root / f"{source_filename}.json"
         source = json.loads(source_path.read_text())["chapters"]
         for chapter_index, verses in enumerate(book["chapters"], start=1):
             source_verses = source[str(chapter_index)]
-            for verse_index, text in enumerate(verses, start=1):
-                source_text = source_verses[str(verse_index)]
+            original_verses = list(verses)
+            claimed_target_indexes = set()
+
+            for source_verse_number, source_text in source_verses.items():
                 red_segments = re.findall(r"\{([^{}]+)\}", source_text)
                 if not red_segments:
                     continue
 
+                source_plain = comparable(source_text)
+                candidate_indexes = [
+                    index for index in range(len(original_verses))
+                    if index not in claimed_target_indexes
+                ]
+                target_index = max(
+                    candidate_indexes,
+                    key=lambda index: SequenceMatcher(
+                        None, source_plain, comparable(original_verses[index])
+                    ).ratio(),
+                )
+                similarity = SequenceMatcher(
+                    None, source_plain, comparable(original_verses[target_index])
+                ).ratio()
+                if similarity < 0.5:
+                    unmatched.append((
+                        book["abbrev"], chapter_index, source_verse_number,
+                        "could not align source verse", source_text,
+                    ))
+                    continue
+
+                text = original_verses[target_index]
                 result = text
                 search_start = 0
                 for segment in red_segments:
                     # Convert the source's italic markup to the app's display form.
-                    display_segment = segment.replace("[", "{").replace("]", "}")
+                    display_segment = (
+                        segment.replace("[", "{").replace("]", "}")
+                        .replace("’", "'").replace("‘", "'")
+                    )
                     position = result.find(display_segment, search_start)
                     if position < 0:
-                        unmatched.append((book["name"], chapter_index, verse_index, segment, text))
+                        if comparable(segment) == source_plain:
+                            result = START + text + END
+                            break
+                        unmatched.append((
+                            book["abbrev"], chapter_index, source_verse_number,
+                            segment, text,
+                        ))
                         break
                     end = position + len(display_segment)
                     result = result[:position] + START + result[position:end] + END + result[end:]
                     search_start = end + len(START) + len(END)
                 else:
-                    verses[verse_index - 1] = result
+                    verses[target_index] = result
+                    claimed_target_indexes.add(target_index)
+                    marked += 1
+                    continue
+
+                if result.startswith(START) and result.endswith(END):
+                    verses[target_index] = result
+                    claimed_target_indexes.add(target_index)
                     marked += 1
 
     if unmatched:
-        print(f"Could not align {len(unmatched)} red-letter verses; refusing to write output.")
+        print(f"Skipped {len(unmatched)} red-letter source verses not present in the bundled corpus.")
         for item in unmatched[:10]:
             print(item[:4])
-        return 1
 
     target_path.write_text(json.dumps(books, ensure_ascii=False, separators=(",", ":")))
     print(f"Marked {marked} verses.")

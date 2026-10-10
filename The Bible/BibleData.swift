@@ -60,6 +60,36 @@ struct Verse: Identifiable, Hashable, Sendable {
     var id: String { "\(number)" }
     let number: Int
     let text: String
+    let redLetterRanges: [Range<Int>]
+
+    init(number: Int, text: String) {
+        self.number = number
+        let parsedText = Self.parseRedLetterMarkers(in: text)
+        self.text = parsedText.text
+        self.redLetterRanges = parsedText.ranges
+    }
+
+    private static func parseRedLetterMarkers(in text: String) -> (text: String, ranges: [Range<Int>]) {
+        let startMarker = "\u{E000}"
+        let endMarker = "\u{E001}"
+        var plainText = ""
+        var ranges: [Range<Int>] = []
+        var startOffset: Int?
+
+        for character in text {
+            if String(character) == startMarker {
+                startOffset = plainText.utf16.count
+            } else if String(character) == endMarker {
+                if let startOffset {
+                    ranges.append(startOffset..<plainText.utf16.count)
+                }
+                startOffset = nil
+            } else {
+                plainText.append(character)
+            }
+        }
+        return (plainText, ranges)
+    }
 }
 
 struct Chapter: Identifiable, Hashable, Sendable {

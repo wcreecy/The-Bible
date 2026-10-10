@@ -24,7 +24,7 @@ struct ReadingVerseRow: View {
     var body: some View {
         Group {
             VStack(alignment: .leading, spacing: 6) {
-                Text(verse.text)
+                Text(verse.redLetterAttributedText)
                     .font(.system(size: defaultReaderFontSize + CGFloat(readerFontSize - 17)))
                     .foregroundStyle(.primary)
                     .fixedSize(horizontal: false, vertical: true)
