@@ -303,6 +303,7 @@ private struct FocusVersePage: View {
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @ScaledMetric(relativeTo: .body) private var defaultReaderFontSize: CGFloat = 17
+    @AppStorage(RedLetterText.suppliedWordsInItalicsKey) private var italicizesSuppliedWords = false
 
     private var focusFontAdjustment: CGFloat {
         horizontalSizeClass == .regular ? 4 : 0
@@ -310,7 +311,7 @@ private struct FocusVersePage: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            Text(verse.redLetterAttributedText)
+            Text(verse.attributedText(italicizingSuppliedWords: italicizesSuppliedWords))
                 .font(.system(size: defaultReaderFontSize + CGFloat(readerFontSize - 17) + focusFontAdjustment))
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
@@ -456,7 +457,8 @@ private struct FocusPageMap {
             chapterNumber: chapter.number,
             verseNumber: verse.number,
             text: verse.text,
-            redLetterRanges: verse.redLetterRanges
+            redLetterRanges: verse.redLetterRanges,
+            suppliedWordRanges: verse.suppliedWordRanges
         ))
     }
 
@@ -484,9 +486,15 @@ private struct FocusVerse: Identifiable {
     let verseNumber: Int
     let text: String
     let redLetterRanges: [Range<Int>]
+    let suppliedWordRanges: [Range<Int>]
 
-    var redLetterAttributedText: AttributedString {
-        RedLetterText.attributedText(text, redLetterRanges: redLetterRanges)
+    func attributedText(italicizingSuppliedWords: Bool) -> AttributedString {
+        RedLetterText.attributedText(
+            text,
+            redLetterRanges: redLetterRanges,
+            suppliedWordRanges: suppliedWordRanges,
+            italicizesSuppliedWords: italicizingSuppliedWords
+        )
     }
 
     var id: String {

@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import WidgetKit
 
 /// Removes duplicate per-verse records created when the same verse is favorited or
 /// highlighted on two devices before CloudKit syncs. CloudKit-backed SwiftData stores
@@ -13,9 +14,12 @@ enum SwiftDataDeduplicator {
     }
 
     static func run(in context: ModelContext) {
+        // Runs whenever synced records may arrive, so text saved by older versions is
+        // cleaned here too.
+        let cleanedText = StoredVerseTextCleaner.cleanModels(in: context)
         let removedFavorites = dedupeFavorites(in: context)
         let removedNotes = dedupeVerseNotes(in: context)
-        guard removedFavorites || removedNotes else { return }
+        guard cleanedText || removedFavorites || removedNotes else { return }
         try? context.save()
     }
 
@@ -88,5 +92,56 @@ private extension VerseNote {
 
         return title == other.title.trimmingCharacters(in: .whitespacesAndNewlines)
             && content == other.content.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}
+
+/// Removes KJV translator markup from verse text saved before the Bible text was cleaned
+/// at load time (favorites, notes, and verses copied for Home and the widgets).
+@MainActor
+enum StoredVerseTextCleaner {
+    private static let defaultsCleanedKey = "didCleanSavedVerseTextV1"
+
+    /// Cleans favorites and notes. Returns whether any record changed.
+    static func cleanModels(in context: ModelContext) -> Bool {
+        var changed = false
+        for favorite in (try? context.fetch(FetchDescriptor<Favorite>())) ?? [] where needsCleaning(favorite.verseText) {
+            favorite.verseText = KJVTextCleaner.clean(favorite.verseText).text
+            changed = true
+        }
+        for note in (try? context.fetch(FetchDescriptor<VerseNote>())) ?? [] where needsCleaning(note.verseText) {
+            note.verseText = KJVTextCleaner.clean(note.verseText).text
+            changed = true
+        }
+        return changed
+    }
+
+    /// Cleans verse text copied into settings for Verse of the Day, the pinned verse,
+    /// and Last Read. Runs once, at launch, before any screen reads those values.
+    static func cleanSavedTextIfNeeded() {
+        let standard = UserDefaults.standard
+        guard !standard.bool(forKey: defaultsCleanedKey) else { return }
+
+        clean(key: "verseOfDayText", in: standard)
+        if let shared = UserDefaults(suiteName: "group.bible.app") {
+            for key in ["verseOfDayText", "pinnedVerseText", "lastReadText"] {
+                clean(key: key, in: shared)
+            }
+        }
+        let cloud = NSUbiquitousKeyValueStore.default
+        if let text = cloud.string(forKey: "lastReadText"), needsCleaning(text) {
+            cloud.set(KJVTextCleaner.clean(text).text, forKey: "lastReadText")
+        }
+
+        standard.set(true, forKey: defaultsCleanedKey)
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    private static func clean(key: String, in defaults: UserDefaults) {
+        guard let text = defaults.string(forKey: key), needsCleaning(text) else { return }
+        defaults.set(KJVTextCleaner.clean(text).text, forKey: key)
+    }
+
+    private static func needsCleaning(_ text: String) -> Bool {
+        text.contains { $0 == "{" || $0 == "}" || $0 == "\u{E000}" || $0 == "\u{E001}" }
     }
 }

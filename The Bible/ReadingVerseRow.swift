@@ -16,6 +16,7 @@ struct ReadingVerseRow: View {
 
     // Preserve the reader's size preference while scaling its 17-point baseline with Dynamic Type.
     @ScaledMetric(relativeTo: .body) private var defaultReaderFontSize: CGFloat = 17
+    @AppStorage(RedLetterText.suppliedWordsInItalicsKey) private var italicizesSuppliedWords = false
 
     let onVisibilityChange: (Bool) -> Void
     let onTap: (Verse) -> Void
@@ -24,7 +25,7 @@ struct ReadingVerseRow: View {
     var body: some View {
         Group {
             VStack(alignment: .leading, spacing: 6) {
-                Text(verse.redLetterAttributedText)
+                Text(verse.attributedText(italicizingSuppliedWords: italicizesSuppliedWords))
                     .font(.system(size: defaultReaderFontSize + CGFloat(readerFontSize - 17)))
                     .foregroundStyle(.primary)
                     .fixedSize(horizontal: false, vertical: true)

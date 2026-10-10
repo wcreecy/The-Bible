@@ -9,6 +9,7 @@ struct VersesView: View {
     @EnvironmentObject private var coordinator: NavigationCoordinator
     @Query private var favorites: [Favorite]
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    @AppStorage(RedLetterText.suppliedWordsInItalicsKey) private var italicizesSuppliedWords = false
 
     @State private var showToast: Bool = false
     @State private var toastText: String = ""
@@ -77,7 +78,7 @@ struct VersesView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("\(book.name) \(chapter.number):\(verse.number)")
                             .font(.title3).bold()
-                        Text(verse.redLetterAttributedText)
+                        Text(verse.attributedText(italicizingSuppliedWords: italicizesSuppliedWords))
                             .font(.body)
                             .fixedSize(horizontal: false, vertical: true)
                     }

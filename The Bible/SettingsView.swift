@@ -136,6 +136,7 @@ private struct SettingsPrayerLinksSection: View {
 private struct SettingsReadingProgressSection: View {
     @AppStorage("showReadVerseCheckmarks") private var showVerseStatusIcons = false
     @AppStorage("focusReadingEnabled") private var focusReadingEnabled = false
+    @AppStorage(RedLetterText.suppliedWordsInItalicsKey) private var italicizesSuppliedWords = false
 
     var body: some View {
         Section {
@@ -168,12 +169,28 @@ private struct SettingsReadingProgressSection: View {
                 }
             }
             .accessibilityIdentifier("readVerseCheckmarksToggle")
+
+            Toggle(isOn: $italicizesSuppliedWords) {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Supplied Words in Italics")
+                        Text("Italicize words the KJV translators added for clarity")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "italic")
+                        .foregroundStyle(.tint)
+                }
+            }
+            .accessibilityIdentifier("suppliedWordsItalicsToggle")
         } header: {
             Text("Bible Reader")
         } footer: {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Heart: favorite • Note: has a note • Bookmark: continue reading • Checkmark: read")
                 Text("Read indicators reflect your reading progress and disappear when reading statistics are reset.")
+                Text("Printed King James Bibles set supplied words in italics, such as “ye *are* the branches.”")
             }
         }
     }

@@ -20,6 +20,8 @@ final class BibleAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificatio
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+        // Before any screen reads saved verse text, remove markup saved by older versions.
+        StoredVerseTextCleaner.cleanSavedTextIfNeeded()
         return true
     }
 
