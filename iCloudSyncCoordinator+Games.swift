@@ -200,20 +200,22 @@ extension iCloudSyncCoordinator {
             + additionalPersistentStreakKeys
     }
 
-    var allKnownGameDataKeys: Set<String> {
+    var allKnownGameDataKeys: Set<String> { Self.allKnownGameDataKeySet }
+
+    private static let allKnownGameDataKeySet: Set<String> = {
         Set(
-            Self.hangmanKeys + Self.beatClockKeys + Self.refMatchKeys
-                + Self.verseMatchKeys + Self.quizKeys + Self.bookOrderKeys
-                + Self.whoAmIKeys + Self.wordleKeys + Self.wordSearchKeys
-                + Self.gamePlayTimeCounterKeys + Self.gamePlayTimeMapKeys
-                + Self.gameDailyAndLastPlayedKeys + Self.quizPerBookMapKeys
-                + Self.quizPerBookDailyMapKeys + Self.verseMatchPerBookDailyMapKeys
-                + Self.verseMatchPerBookMapKeys + Self.beatClockPerTypeMapKeys
-                + Self.hangmanPerCategoryMapKeys + Self.perGameDailyMapKeys
-                + Self.wordleSolvedMapKeys + Self.wordleDailyResultKeys
-                + Self.wordleDailyFlagKeys + Self.allPersistentStreakKeys
+            hangmanKeys + beatClockKeys + refMatchKeys
+                + verseMatchKeys + quizKeys + bookOrderKeys
+                + whoAmIKeys + wordleKeys + wordSearchKeys
+                + gamePlayTimeCounterKeys + gamePlayTimeMapKeys
+                + gameDailyAndLastPlayedKeys + quizPerBookMapKeys
+                + quizPerBookDailyMapKeys + verseMatchPerBookDailyMapKeys
+                + verseMatchPerBookMapKeys + beatClockPerTypeMapKeys
+                + hangmanPerCategoryMapKeys + perGameDailyMapKeys
+                + wordleSolvedMapKeys + wordleDailyResultKeys
+                + wordleDailyFlagKeys + allPersistentStreakKeys
         )
-    }
+    }()
 
     // Game keys: Who am I? (easy/normal/hard + combined "all")
     static let whoAmIKeys: [String] = {
@@ -339,25 +341,40 @@ extension iCloudSyncCoordinator {
     }
 
     func isTimestampedStatsKey(_ key: String) -> Bool {
-        Self.bibleStatsKeys.contains(key)
-            || Self.sessionKeys.contains(key)
-            || Self.settingsKeys.contains(key)
-            || allKnownGameDataKeys.contains(key)
+        Self.timestampedStatsKeySet.contains(key)
     }
+
+    private static let timestampedStatsKeySet: Set<String> = {
+        Set(bibleStatsKeys + sessionKeys + settingsKeys).union(allKnownGameDataKeySet)
+    }()
 
     // Identify game counter keys
     func isGameCounterKey(_ key: String) -> Bool {
-        Self.allPersistentStreakKeys.contains(key) ||
-        Self.hangmanKeys.contains(key) ||
-        Self.beatClockKeys.contains(key) ||
-        Self.refMatchKeys.contains(key) ||
-        Self.verseMatchKeys.contains(key) ||
-        Self.quizKeys.contains(key) ||
-        Self.bookOrderKeys.contains(key) ||
-        Self.whoAmIKeys.contains(key) ||
-        Self.wordleKeys.contains(key) ||
-        Self.wordSearchKeys.contains(key)
+        Self.gameCounterKeySet.contains(key)
     }
+
+    private static let gameCounterKeySet: Set<String> = {
+        Set(
+            allPersistentStreakKeys + hangmanKeys + beatClockKeys + refMatchKeys
+                + verseMatchKeys + quizKeys + bookOrderKeys + whoAmIKeys
+                + wordleKeys + wordSearchKeys
+        )
+    }()
+
+    /// Keys merged and mirrored by the games code: counters plus the daily, per-book,
+    /// per-category, and WORD maps.
+    func isGamesDomainKey(_ key: String) -> Bool {
+        Self.gamesDomainKeySet.contains(key)
+    }
+
+    private static let gamesDomainKeySet: Set<String> = {
+        gameCounterKeySet.union(
+            gameDailyAndLastPlayedKeys + quizPerBookMapKeys + quizPerBookDailyMapKeys
+                + verseMatchPerBookMapKeys + beatClockPerTypeMapKeys + hangmanPerCategoryMapKeys
+                + perGameDailyMapKeys + wordleSolvedMapKeys + wordleDailyResultKeys
+                + wordleDailyFlagKeys
+        )
+    }()
 
     // Local -> KVS for games
     func mirrorGamesKeyToKVS(_ key: String) {

@@ -174,7 +174,7 @@ struct ContentView: View {
     // Kept out of `body` so the modifier chain type-checks quickly.
 
     private func handleAppear() {
-        // START iCloud KVS coordinator so game/bible stats pull/merge on launch.
+        // The only place iCloud key-value sync starts; stats pull and merge on launch.
         iCloudSyncCoordinator.shared.start()
 
         // One-time cleanup of deprecated keys
@@ -328,8 +328,8 @@ struct ContentView: View {
     private func handleScenePhaseChange(_ newValue: ScenePhase) {
         switch newValue {
         case .active:
-            // Re-run start (idempotent) to ensure any missed merges are reconciled on resume.
-            iCloudSyncCoordinator.shared.start()
+            // Pull and merge stats changed on other devices while the app was away.
+            iCloudSyncCoordinator.shared.refreshNow()
 
             SwiftDataDeduplicator.run(in: modelContext)
             updateGameTimeTracking()

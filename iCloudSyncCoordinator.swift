@@ -28,6 +28,7 @@ final class iCloudSyncCoordinator {
     private(set) var approximateCloudBytes: Int = 0
     private(set) var cloudKeyCount: Int = 0
     private var initialSyncTask: Task<Void, Never>?
+    private var metricsTask: Task<Void, Never>?
     private var hasCompletedInitialDownload = false
 
     // One-time bootstrap flag so we push existing local values to KVS on first run after adding sync.
@@ -96,6 +97,7 @@ final class iCloudSyncCoordinator {
     /// Whether the initial iCloud download has finished and local values may be published.
     var isInitialDownloadComplete: Bool { hasCompletedInitialDownload }
 
+    /// Starts sync once per launch (ContentView calls it). Later calls just refresh.
     func start() {
         if didStart {
             refreshNow()
@@ -260,36 +262,39 @@ final class iCloudSyncCoordinator {
 
     // MARK: - Key sets (union)
 
-    var allKnownKeys: Set<String> {
+    /// Every key this coordinator syncs. The lists are fixed, so the set is built once.
+    var allKnownKeys: Set<String> { Self.allKnownKeySet }
+
+    private static let allKnownKeySet: Set<String> = {
         Set(
-            Self.bibleStatsKeys
-            + Self.sessionKeys
-            + Self.settingsKeys
-            + Self.gamePlayTimeCounterKeys
-            + Self.gamePlayTimeMapKeys
-            + Self.hangmanKeys
-            + Self.beatClockKeys
-            + Self.refMatchKeys
-            + Self.verseMatchKeys
-            + Self.quizKeys
-            + Self.quizPerBookMapKeys
-            + Self.quizPerBookDailyMapKeys
-            + Self.verseMatchPerBookDailyMapKeys
-            + Self.verseMatchPerBookMapKeys
-            + Self.hangmanPerCategoryMapKeys
-            + Self.beatClockPerTypeMapKeys
-            + Self.bookOrderKeys
-            + Self.whoAmIKeys
-            + Self.wordleKeys
-            + Self.wordSearchKeys
-            + Self.gameDailyAndLastPlayedKeys
-            + Self.wordleSolvedMapKeys
-            + Self.wordleDailyResultKeys
-            + Self.wordleDailyFlagKeys
-            + Self.perGameDailyMapKeys
-            + Self.allPersistentStreakKeys
+            bibleStatsKeys
+            + sessionKeys
+            + settingsKeys
+            + gamePlayTimeCounterKeys
+            + gamePlayTimeMapKeys
+            + hangmanKeys
+            + beatClockKeys
+            + refMatchKeys
+            + verseMatchKeys
+            + quizKeys
+            + quizPerBookMapKeys
+            + quizPerBookDailyMapKeys
+            + verseMatchPerBookDailyMapKeys
+            + verseMatchPerBookMapKeys
+            + hangmanPerCategoryMapKeys
+            + beatClockPerTypeMapKeys
+            + bookOrderKeys
+            + whoAmIKeys
+            + wordleKeys
+            + wordSearchKeys
+            + gameDailyAndLastPlayedKeys
+            + wordleSolvedMapKeys
+            + wordleDailyResultKeys
+            + wordleDailyFlagKeys
+            + perGameDailyMapKeys
+            + allPersistentStreakKeys
         )
-    }
+    }()
 
     // MARK: - Bootstrap helpers
 
@@ -378,17 +383,7 @@ final class iCloudSyncCoordinator {
         var mergedGameKey = false
 
         for key in keysToProcess {
-            if isGameCounterKey(key)
-                || Self.gameDailyAndLastPlayedKeys.contains(key)
-                || Self.quizPerBookMapKeys.contains(key)
-                || Self.quizPerBookDailyMapKeys.contains(key)
-                || Self.verseMatchPerBookMapKeys.contains(key)
-                || Self.beatClockPerTypeMapKeys.contains(key)
-                || Self.hangmanPerCategoryMapKeys.contains(key)
-                || Self.perGameDailyMapKeys.contains(key)
-                || Self.wordleSolvedMapKeys.contains(key)
-                || Self.wordleDailyResultKeys.contains(key)
-                || Self.wordleDailyFlagKeys.contains(key) {
+            if isGamesDomainKey(key) {
                 mergedGameKey = true
             }
             // Merge only for domains we own in coordinator
@@ -468,17 +463,7 @@ final class iCloudSyncCoordinator {
             mirrorSettingsKeyToKVS(key)
             return
         }
-        if Self.gameDailyAndLastPlayedKeys.contains(key)
-            || isGameCounterKey(key)
-            || Self.quizPerBookMapKeys.contains(key)
-            || Self.quizPerBookDailyMapKeys.contains(key)
-            || Self.verseMatchPerBookMapKeys.contains(key)
-            || Self.beatClockPerTypeMapKeys.contains(key)
-            || Self.hangmanPerCategoryMapKeys.contains(key)
-            || Self.perGameDailyMapKeys.contains(key)
-            || Self.wordleSolvedMapKeys.contains(key)
-            || Self.wordleDailyResultKeys.contains(key)
-            || Self.wordleDailyFlagKeys.contains(key) {
+        if isGamesDomainKey(key) {
             mirrorGamesKeyToKVS(key)
             return
         }
@@ -553,17 +538,7 @@ final class iCloudSyncCoordinator {
             mergeSettingsIncoming(forKey: key)
             return
         }
-        if Self.gameDailyAndLastPlayedKeys.contains(key)
-            || isGameCounterKey(key)
-            || Self.quizPerBookMapKeys.contains(key)
-            || Self.quizPerBookDailyMapKeys.contains(key)
-            || Self.verseMatchPerBookMapKeys.contains(key)
-            || Self.beatClockPerTypeMapKeys.contains(key)
-            || Self.hangmanPerCategoryMapKeys.contains(key)
-            || Self.perGameDailyMapKeys.contains(key)
-            || Self.wordleSolvedMapKeys.contains(key)
-            || Self.wordleDailyResultKeys.contains(key)
-            || Self.wordleDailyFlagKeys.contains(key) {
+        if isGamesDomainKey(key) {
             mergeGamesIncoming(forKey: key)
             return
         }
@@ -648,17 +623,7 @@ final class iCloudSyncCoordinator {
             let hasRemote = (kvs.object(forKey: key) != nil) || (remoteDict.keys.contains(key))
 
             if hasRemote {
-                if isGameCounterKey(key)
-                    || Self.gameDailyAndLastPlayedKeys.contains(key)
-                    || Self.quizPerBookMapKeys.contains(key)
-                    || Self.quizPerBookDailyMapKeys.contains(key)
-                    || Self.verseMatchPerBookMapKeys.contains(key)
-                    || Self.beatClockPerTypeMapKeys.contains(key)
-                    || Self.hangmanPerCategoryMapKeys.contains(key)
-                    || Self.perGameDailyMapKeys.contains(key)
-                    || Self.wordleSolvedMapKeys.contains(key)
-                    || Self.wordleDailyResultKeys.contains(key)
-                    || Self.wordleDailyFlagKeys.contains(key) {
+                if isGamesDomainKey(key) {
                     mergedGameKey = true
                 }
                 mergeIncomingKVSValue(forKey: key)
@@ -728,16 +693,33 @@ final class iCloudSyncCoordinator {
         NotificationCenter.default.post(name: .iCloudSyncStatusChanged, object: nil)
     }
 
+    /// Measures the iCloud store for the Settings usage line. Serializing every value is
+    /// slow, so it runs off the main thread, once per burst of sync activity.
     private func updateStoreMetrics() {
-        let representation = kvs.dictionaryRepresentation
-        cloudKeyCount = representation.count
-        approximateCloudBytes = representation.values.reduce(0) { partial, value in
+        metricsTask?.cancel()
+        metricsTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(1))
+            guard !Task.isCancelled else { return }
+            let metrics = await Task.detached(priority: .utility) {
+                Self.measureStore()
+            }.value
+            guard !Task.isCancelled, let self else { return }
+            self.cloudKeyCount = metrics.keyCount
+            self.approximateCloudBytes = metrics.bytes
+            NotificationCenter.default.post(name: .iCloudSyncStatusChanged, object: nil)
+        }
+    }
+
+    private nonisolated static func measureStore() -> (keyCount: Int, bytes: Int) {
+        let representation = NSUbiquitousKeyValueStore.default.dictionaryRepresentation
+        let bytes = representation.values.reduce(0) { partial, value in
             partial + ((try? PropertyListSerialization.data(
                 fromPropertyList: value,
                 format: .binary,
                 options: 0
             ).count) ?? 0)
         }
+        return (representation.count, bytes)
     }
 }
 

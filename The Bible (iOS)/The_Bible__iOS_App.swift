@@ -206,7 +206,7 @@ struct The_Bible__iOS_App: App {
                 .environmentObject(cloudKitManager)
                 .task {
                     await cloudKitManager.prepare()
-                    iCloudSyncCoordinator.shared.start()
+                    // iCloud key-value sync is started by ContentView.
 
                     // Run the GMT→local daily key migration once before any stats/streaks are read.
                     BibleStatsStore.shared.migrateDailyKeysFromGMTToLocalIfNeeded()
@@ -216,17 +216,12 @@ struct The_Bible__iOS_App: App {
                 .onChange(of: scenePhase) { _, newPhase in
                     switch newPhase {
                     case .active:
-                        // Pull and reconcile any stats updated on another device.
-                        iCloudSyncCoordinator.shared.start()
                         UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
                         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
                         Task { await cloudKitManager.refresh() }
                     case .background:
-                        Task {
-                            await cloudKitManager.flushPending()
-                            // Opportunistically push all known KVS keys on background
-                            iCloudSyncCoordinator.shared.pushAllNow()
-                        }
+                        // iCloudSyncCoordinator pushes its own keys when the app enters the background.
+                        Task { await cloudKitManager.flushPending() }
                     default:
                         break
                     }
