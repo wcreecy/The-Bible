@@ -95,6 +95,16 @@ final class GameStatsLedger {
         Set(iCloudSyncCoordinator.quizPerBookDailyMapKeys + iCloudSyncCoordinator.verseMatchPerBookDailyMapKeys)
     }
 
+    /// Maps keyed by `yyyy-MM-dd` day (outer key for nested maps). Days older than the
+    /// retention cutoff are dropped so the ledgers stay well under iCloud's 1 MB limit.
+    /// All-time game counters are separate keys and aren't affected. WORD's solved days
+    /// are kept in full because its streak is counted from them.
+    static var dayKeyedMapKeys: Set<String> {
+        Set(["gamesDailyAnswered", "gamesDailyCorrect"]
+            + iCloudSyncCoordinator.perGameDailyMapKeys
+            + iCloudSyncCoordinator.gamePlayTimeMapKeys)
+    }
+
     static var managedKeys: Set<String> {
         counterKeys.union(sumMapKeys).union(maxMapKeys).union(nestedMapKeys)
     }
@@ -131,11 +141,14 @@ final class GameStatsLedger {
         let epoch = defaults.double(forKey: lastSeenEpochKey)
         guard kvs.double(forKey: resetEpochKVSKey) <= epoch else { return }
 
+        let cutoff = StatsHistoryRetention.cutoffDayKey()
         var own = loadOrCreateOwnPayload(epoch: epoch)
         captureLocalChanges(into: &own.contributions)
+        own.baseline = Self.trimmed(own.baseline, before: cutoff)
+        own.contributions = Self.trimmed(own.contributions, before: cutoff)
         saveOwnPayload(own)
 
-        let totals = computeTotals(own: own, epoch: epoch)
+        let totals = computeTotals(own: own, epoch: epoch, cutoff: cutoff)
         let changed = apply(totals)
         saveSnapshot(totals)
 
@@ -164,7 +177,7 @@ final class GameStatsLedger {
 
         // Rebuild totals so any ledgers already recorded under this epoch are kept.
         if iCloudSyncCoordinator.shared.isInitialDownloadComplete {
-            let totals = computeTotals(own: own, epoch: epoch)
+            let totals = computeTotals(own: own, epoch: epoch, cutoff: StatsHistoryRetention.cutoffDayKey())
             _ = apply(totals)
             saveSnapshot(totals)
         }
@@ -318,13 +331,20 @@ final class GameStatsLedger {
 
     // MARK: - Totals
 
-    private func computeTotals(own: Payload, epoch: Double) -> Section {
+    private func computeTotals(own: Payload, epoch: Double, cutoff: String) -> Section {
         var payloads: [Payload] = [own]
         for (key, value) in kvs.dictionaryRepresentation where key.hasPrefix(Self.kvsKeyPrefix) {
             guard key != ownKVSKey,
                   let payload = decodePayload(value as? Data),
                   payload.epoch >= epoch else { continue }
             payloads.append(payload)
+        }
+        // Devices that haven't updated yet may still publish older days; skip them.
+        payloads = payloads.map { payload in
+            var payload = payload
+            payload.baseline = Self.trimmed(payload.baseline, before: cutoff)
+            payload.contributions = Self.trimmed(payload.contributions, before: cutoff)
+            return payload
         }
 
         var totals = Section()
@@ -459,6 +479,22 @@ final class GameStatsLedger {
     }
 
     // MARK: - Helpers
+
+    /// Removes day entries before `cutoff` from the day-keyed maps.
+    private static func trimmed(_ section: Section, before cutoff: String) -> Section {
+        var section = section
+        for key in dayKeyedMapKeys {
+            guard let map = section.maps[key] else { continue }
+            let kept = map.filter { !StatsHistoryRetention.isBeforeCutoff($0.key, cutoff: cutoff) }
+            section.maps[key] = kept.isEmpty ? nil : kept
+        }
+        for key in nestedMapKeys {
+            guard let nested = section.nestedMaps[key] else { continue }
+            let kept = nested.filter { !StatsHistoryRetention.isBeforeCutoff($0.key, cutoff: cutoff) }
+            section.nestedMaps[key] = kept.isEmpty ? nil : kept
+        }
+        return section
+    }
 
     private func mergeMax(_ lhs: [String: Int], _ rhs: [String: Int]) -> [String: Int] {
         var merged = lhs

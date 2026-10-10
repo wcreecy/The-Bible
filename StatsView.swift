@@ -735,6 +735,13 @@ struct StatsView: View {
                     entries.append((cal.startOfDay(for: date), max(0, seconds)))
                 }
             }
+            // Reading older than the retention cutoff is kept as yearly totals. It always
+            // spans more than a year, so the chart uses yearly bars and stays exact.
+            for (year, seconds) in BibleStatsStore.shared.loadReadingHistoryArchive()?.years ?? [:] {
+                if let year = Int(year), let date = cal.date(from: DateComponents(year: year, month: 1, day: 1)) {
+                    entries.append((date, max(0, seconds)))
+                }
+            }
             guard !entries.isEmpty else {
                 totalsDaily = []
                 allTimeAggregation = .daily

@@ -237,9 +237,10 @@ final class StatsViewModel {
             return map
         }
 
-        // All-time per-book derived by summing all dailyByBook entries (ensures seconds + prevents legacy drift)
+        // All-time per-book derived by summing all dailyByBook entries (ensures seconds + prevents legacy drift),
+        // plus reading older than the retention cutoff, which is kept in the archive.
         do {
-            var allTimeMap: [String: Int] = [:]
+            var allTimeMap = BibleStatsStore.shared.archivedBookTotals()
             for (_, perBook) in dailyByBook {
                 for (book, sec) in perBook {
                     allTimeMap[book, default: 0] += max(0, sec)

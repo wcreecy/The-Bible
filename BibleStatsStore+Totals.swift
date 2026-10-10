@@ -6,7 +6,8 @@ extension BibleStatsStore {
 
     func loadTotals() -> [String: Int] {
         if Defaults.provider.data(forKey: Defaults.keyReadingContributions) != nil {
-            var totals: [String: Int] = [:]
+            // Reading older than the retention cutoff lives in the archive.
+            var totals = archivedBookTotals()
             for books in derivedDailyTotalsByBook().values {
                 for (book, seconds) in books {
                     totals[book, default: 0] += max(0, seconds)

@@ -13,6 +13,7 @@ extension iCloudSyncCoordinator {
     static var stats_keyReadingContributions: String { BibleStatsStore.Defaults.keyReadingContributions }
     static var stats_keyChapterResetDates: String { BibleStatsStore.Defaults.keyChapterResetDates }
     static var stats_keySeenVersesUpdatedAt: String { BibleStatsStore.Defaults.keySeenVersesUpdatedAt }
+    static var stats_keyReadingHistoryArchive: String { BibleStatsStore.Defaults.keyReadingHistoryArchive }
     // Reading sessions (JSON array)
     static var stats_keyReadingSessions: String { "readingSessions" }
 
@@ -27,7 +28,8 @@ extension iCloudSyncCoordinator {
             stats_keyChapterCompletionDates,
             stats_keyReadingContributions,
             stats_keyChapterResetDates,
-            stats_keySeenVersesUpdatedAt
+            stats_keySeenVersesUpdatedAt,
+            stats_keyReadingHistoryArchive
         ]
     }
 
@@ -140,8 +142,28 @@ extension iCloudSyncCoordinator {
             if let remote = decode(remoteData, as: Map.self), remote.isEmpty {
                 clearAndNotify(); return
             }
-            let merged = mergeContributionMap(localData: localData, remoteData: remoteData)
+            // Days the archive already covers are dropped, so a device that hasn't
+            // trimmed yet can't add them back.
+            let merged = BibleStatsStore.shared.compactedContributions(
+                mergeContributionMap(localData: localData, remoteData: remoteData)
+            )
             if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
+
+        case Self.stats_keyReadingHistoryArchive:
+            guard let remote = decode(remoteData, as: ReadingHistoryArchive.self), !remote.isEmpty else { return }
+            let local = decode(localData, as: ReadingHistoryArchive.self) ?? ReadingHistoryArchive()
+            var contributions = BibleStatsStore.shared.loadReadingContributions()
+            let before = contributions
+            let merged = ReadingHistoryArchive.merged(
+                local: local,
+                remote: remote,
+                localContributions: &contributions
+            )
+            if let data = try? JSONEncoder().encode(merged) { defaults.set(data, forKey: key) }
+            if contributions != before,
+               let data = try? JSONEncoder().encode(contributions) {
+                defaults.set(data, forKey: Self.stats_keyReadingContributions)
+            }
 
         case Self.stats_keyVisitedChapters:
             typealias Arr = [String]

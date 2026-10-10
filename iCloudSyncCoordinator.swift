@@ -127,6 +127,7 @@ final class iCloudSyncCoordinator {
         guard succeeded else { return }
         if hasCompletedInitialDownload {
             reconcileAllKeysFromKVS()
+            BibleStatsStore.shared.compactReadingHistoryIfNeeded()
             updateStoreMetrics()
         }
     }
@@ -157,6 +158,9 @@ final class iCloudSyncCoordinator {
 
         // Join (or migrate into) the per-device game ledger now that cloud values are known.
         GameStatsLedger.shared.reconcile()
+        // Fold reading history older than ~2 years into its archive, after merging, so
+        // the archive is built from every device's days.
+        BibleStatsStore.shared.compactReadingHistoryIfNeeded()
         updateStoreMetrics()
         NotificationCenter.default.post(name: .iCloudSyncStatusChanged, object: nil)
     }
@@ -227,6 +231,7 @@ final class iCloudSyncCoordinator {
             BibleStatsStore.Defaults.keyChapterCompletionDates,
             BibleStatsStore.Defaults.keyChapterResetDates,
             BibleStatsStore.Defaults.keySeenVersesUpdatedAt,
+            BibleStatsStore.Defaults.keyReadingHistoryArchive,
             "readingSessions"
         ]
         for k in kvsKeysToRemove {

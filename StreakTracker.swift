@@ -12,6 +12,14 @@ enum StreakTracker {
         return cal
     }
 
+    /// Reading older than the retention cutoff is summarized in the archive; streaks
+    /// continue from its saved run instead of from per-day records.
+    private static var archivedStreak: (cutoff: Date, runAtCutoff: Int, best: Int)? {
+        guard let archive = BibleStatsStore.shared.loadReadingHistoryArchive(),
+              let cutoff = StatsHistoryRetention.date(fromDayKey: archive.cutoff) else { return nil }
+        return (calendar.startOfDay(for: cutoff), archive.streakRunAtCutoff, archive.bestStreak)
+    }
+
     // MARK: - Settings (history-aware)
 
     /// Returns the daily goal in seconds for the given local day, using goal history.
@@ -59,7 +67,12 @@ enum StreakTracker {
             day = yesterday
         }
 
+        let archived = archivedStreak
         for _ in 0..<1825 {
+            if let archived, day < archived.cutoff {
+                count += archived.runAtCutoff
+                break
+            }
             guard isGoalMet(on: day, dailyTotals: dailyTotals, calendar: cal) else { break }
             count += 1
             guard let previous = cal.date(byAdding: .day, value: -1, to: day) else { break }
@@ -81,6 +94,11 @@ enum StreakTracker {
         var best = 0
         var current = 0
         var cursor = start
+        if let archived = archivedStreak, archived.cutoff > start {
+            cursor = archived.cutoff
+            current = archived.runAtCutoff
+            best = max(archived.best, current)
+        }
         while cursor <= today {
             if isGoalMet(on: cursor, dailyTotals: dailyTotals, calendar: cal) {
                 current += 1
@@ -124,7 +142,12 @@ enum StreakTracker {
         }
 
         // Walk back while each day meets the goal for its own day
+        let archived = archivedStreak
         for _ in 0..<1825 {
+            if let archived, day < archived.cutoff {
+                count += archived.runAtCutoff
+                break
+            }
             if isGoalMet(on: day) {
                 count += 1
                 guard let prev = cal.date(byAdding: .day, value: -1, to: day) else { break }
@@ -145,6 +168,11 @@ enum StreakTracker {
         var best = 0
         var current = 0
         var cursor = start
+        if let archived = archivedStreak, archived.cutoff > start {
+            cursor = archived.cutoff
+            current = archived.runAtCutoff
+            best = max(archived.best, current)
+        }
         while cursor <= today {
             if isGoalMet(on: cursor) {
                 current += 1
