@@ -27,6 +27,11 @@ final class ReadingViewModel: ObservableObject {
     private lazy var verseReadingTracker = VerseReadingTracker { updates in
         BibleStatsStore.shared.markVersesSeen(updates)
     }
+    // Focus Mode shows one verse per page, so a shorter dwell is enough to count it as read.
+    private lazy var focusVerseTracker = VerseReadingTracker(dwellDuration: 3) { updates in
+        BibleStatsStore.shared.markVersesSeen(updates)
+    }
+    private(set) var isFocusModeActive = false
 
     // Services
     let pinnedStore: PinnedVerseStore
@@ -82,6 +87,8 @@ final class ReadingViewModel: ObservableObject {
     }
 
     func onDisappear() {
+        // Presenting Focus Mode can hide the reader; reading continues there.
+        guard !isFocusModeActive else { return }
         inactivityMonitor.cancel()
         verseReadingTracker.stop()
         ReadingTimeTracker.shared.stopAndFlush()
@@ -90,11 +97,16 @@ final class ReadingViewModel: ObservableObject {
     func onScenePhaseChanged(_ phase: ScenePhase) {
         switch phase {
         case .active:
-            verseReadingTracker.setActive(true)
+            if isFocusModeActive {
+                focusVerseTracker.setActive(true)
+            } else {
+                verseReadingTracker.setActive(true)
+            }
             ReadingTimeTracker.shared.resume()
             markActivity()
         case .inactive, .background:
             verseReadingTracker.setActive(false)
+            focusVerseTracker.setActive(false)
             ReadingTimeTracker.shared.pause()
             inactivityMonitor.cancel()
         @unknown default:
@@ -119,6 +131,46 @@ final class ReadingViewModel: ObservableObject {
     func markActivity() {
         ReadingTimeTracker.shared.resume()
         inactivityMonitor.markActivity()
+    }
+
+    // MARK: - Focus Mode
+
+    /// Switches read tracking between the reader's verse rows and Focus Mode pages.
+    /// While Focus Mode covers the reader, its rows must not count as read.
+    func setFocusModeActive(_ active: Bool) {
+        guard active != isFocusModeActive else { return }
+        isFocusModeActive = active
+        if active {
+            verseReadingTracker.setActive(false)
+            focusVerseTracker.setActive(true)
+            ReadingTimeTracker.shared.start(bookName: currentBook.name, chapter: currentChapter.number)
+            ReadingTimeTracker.shared.resume()
+            markActivity()
+        } else {
+            focusVerseTracker.stop()
+            verseReadingTracker.setActive(true)
+        }
+    }
+
+    /// Reports the verse currently shown in Focus Mode, or `nil` for a chapter title page.
+    func focusVisibleVerseChanged(_ location: FocusVerseLocation?) {
+        // Only one verse is on screen at a time; leaving it cancels its pending dwell.
+        focusVerseTracker.resetVisibility()
+        guard isFocusModeActive,
+              let location,
+              let book = BibleData.books.first(where: { $0.name == location.bookName }),
+              let chapter = book.chapters.first(where: { $0.number == location.chapterNumber }) else { return }
+
+        focusVerseTracker.setActive(true)
+        focusVerseTracker.visibilityChanged(
+            SeenVerseUpdate(
+                bookName: location.bookName,
+                chapter: location.chapterNumber,
+                verse: location.verseNumber,
+                totalVerses: chapter.verses.count
+            ),
+            isVisible: true
+        )
     }
 
     // MARK: - Verse reading progress

@@ -4,6 +4,8 @@ struct FocusReadingView: View {
     let initialLocation: FocusVerseLocation
     let readerFontSize: Double
     let onLocationChange: (FocusVerseLocation) -> Void
+    /// The verse on screen, or `nil` while a chapter title page is shown.
+    let onVisibleVerseChange: (FocusVerseLocation?) -> Void
     let onExit: () -> Void
 
     @State private var visibleVerseID: String?
@@ -18,11 +20,13 @@ struct FocusReadingView: View {
         initialLocation: FocusVerseLocation,
         readerFontSize: Double,
         onLocationChange: @escaping (FocusVerseLocation) -> Void,
+        onVisibleVerseChange: @escaping (FocusVerseLocation?) -> Void,
         onExit: @escaping () -> Void
     ) {
         self.initialLocation = initialLocation
         self.readerFontSize = readerFontSize
         self.onLocationChange = onLocationChange
+        self.onVisibleVerseChange = onVisibleVerseChange
         self.onExit = onExit
         _visibleVerseID = State(initialValue: initialLocation.id)
     }
@@ -37,6 +41,14 @@ struct FocusReadingView: View {
 
     private var currentVerse: FocusVerse? {
         pageIndex.versesByID[currentLocation.id]
+    }
+
+    private func reportVisibleVerse(_ page: FocusPage) {
+        if case .verse(let verse) = page {
+            onVisibleVerseChange(verse.location)
+        } else {
+            onVisibleVerseChange(nil)
+        }
     }
 
     var body: some View {
@@ -56,8 +68,17 @@ struct FocusReadingView: View {
             .scrollIndicators(.hidden)
             .onChange(of: visibleVerseID) { _, newValue in
                 guard let newValue,
-                      let page = pageIndex.pagesByID[newValue] else { return }
+                      let page = pageIndex.pagesByID[newValue] else {
+                    onVisibleVerseChange(nil)
+                    return
+                }
                 onLocationChange(page.location)
+                reportVisibleVerse(page)
+            }
+            .onAppear {
+                if let visibleVerseID, let page = pageIndex.pagesByID[visibleVerseID] {
+                    reportVisibleVerse(page)
+                }
             }
             .onTapGesture {
                 showsControls = true

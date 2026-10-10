@@ -28,6 +28,9 @@ struct ReadingView: View {
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage("focusReadingEnabled") private var focusReadingEnabled = false
     @State private var isFocusModePresented = false
+    // The Focus Reading setting opens Focus Mode once per visit, not every time the
+    // reader reappears (for example after Focus Mode is dismissed).
+    @State private var didAutoPresentFocusMode = false
     @State private var isChapterInsightsPresented = false
     @State private var seenVerseNumbers: Set<Int> = []
     @State private var seenVerseLocation: String = ""
@@ -127,7 +130,7 @@ struct ReadingView: View {
                         Divider()
 
                         Button {
-                            isFocusModePresented = true
+                            presentFocusMode()
                         } label: {
                             Label("Enter Focus Mode", systemImage: "arrow.up.left.and.arrow.down.right")
                         }
@@ -185,7 +188,10 @@ struct ReadingView: View {
             }
             .onAppear {
                 viewModel.onAppear()
-                isFocusModePresented = focusReadingEnabled
+                if focusReadingEnabled && !didAutoPresentFocusMode {
+                    didAutoPresentFocusMode = true
+                    presentFocusMode()
+                }
                 saveReaderPosition(verseNumber: viewModel.currentVerse)
                 refreshSeenVerses()
                 // Ensure newest-only ReadingProgress row
@@ -238,6 +244,9 @@ struct ReadingView: View {
                 action: undoFavoriteRemoval
             )
             .persistenceFailureAlert(failure: $persistenceFailure)
+            .onChange(of: isFocusModePresented) { _, isPresented in
+                viewModel.setFocusModeActive(isPresented)
+            }
             .fullScreenCover(isPresented: $isFocusModePresented) {
                 FocusReadingView(
                     initialLocation: FocusVerseLocation(
@@ -249,6 +258,9 @@ struct ReadingView: View {
                     onLocationChange: { location in
                         viewModel.show(location: location)
                         saveReaderPosition(verseNumber: location.verseNumber)
+                    },
+                    onVisibleVerseChange: { location in
+                        viewModel.focusVisibleVerseChanged(location)
                     },
                     onExit: {
                         isFocusModePresented = false
@@ -405,6 +417,12 @@ struct ReadingView: View {
                     viewModel.markActivity()
                 }
         )
+    }
+
+    /// Hands read tracking to Focus Mode before its cover hides the reader's rows.
+    private func presentFocusMode() {
+        viewModel.setFocusModeActive(true)
+        isFocusModePresented = true
     }
 
     private var verseLocationKey: String {
