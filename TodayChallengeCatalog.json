@@ -21,7 +21,15 @@
     "guidance",
     "direction",
     "peace",
-    "health"
+    "health",
+    "love",
+    "joy",
+    "patience",
+    "kindness",
+    "goodness",
+    "faithfulness",
+    "gentleness",
+    "self-control"
   ],
   "reflectionTasks": [
     {
@@ -89,6 +97,14 @@
       "detail": "Put your thoughts and requests to God into words."
     },
     {
+      "title": "Pray one sentence of Scripture",
+      "detail": "Turn a verse into a short prayer to God."
+    },
+    {
+      "title": "Add a verse to your bookmarks",
+      "detail": "Save one verse you want to return to."
+    },
+    {
       "title": "Spend 5 minutes in silence with God",
       "detail": "Set aside quiet time without distractions."
     },
@@ -105,20 +121,8 @@
       "detail": "Make sure they know."
     },
     {
-      "title": "Tell someone a joke",
-      "detail": "Share a little joy today."
-    },
-    {
-      "title": "Take a different route",
-      "detail": "Notice something new on your way today."
-    },
-    {
       "title": "Sing a song out loud",
       "detail": "Let a little joy fill the moment."
-    },
-    {
-      "title": "Remember a dream",
-      "detail": "Write down a dream or reflect on what it brought to mind."
     },
     {
       "title": "Pray for {{prayerFocus}}",
