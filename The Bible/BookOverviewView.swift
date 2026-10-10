@@ -63,7 +63,7 @@ struct BookOverviewView: View {
                 )
 
                 if !overview.movements.isEmpty {
-                    KeyEventsSection(movements: overview.movements)
+                    KeyEventsSection(bookName: bookName, movements: overview.movements)
                 }
 
                 if !overview.keyFigures.isEmpty {
@@ -81,6 +81,7 @@ struct BookOverviewView: View {
             .padding()
         }
         .background(AppBackgroundView(tab: .bible))
+        .scripturePassagePreviews()
     }
 
     private func loadOverview() async {
@@ -100,7 +101,7 @@ private struct OverviewHeroCard: View {
             title: title,
             icon: icon
         ) {
-            Text(content)
+            LinkedScriptureText(content)
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -114,9 +115,17 @@ private struct KeyScriptureSection: View {
     var body: some View {
         HeroCard(title: "Key Scripture", icon: "quote.bubble") {
             VStack(alignment: .leading, spacing: 8) {
-                Text(keyScripture.reference)
-                    .font(.headline)
-                    .foregroundStyle(.tint)
+                if let reference = PassageReferenceParser.parse(keyScripture.reference) {
+                    Link(destination: reference.url) {
+                        Label(reference.displayTitle, systemImage: "book")
+                            .font(.headline)
+                    }
+                    .accessibilityHint("Shows a preview of the passage")
+                } else {
+                    Text(keyScripture.reference)
+                        .font(.headline)
+                        .foregroundStyle(.tint)
+                }
 
                 Text("“\(keyScripture.text)”")
                     .font(.body)
@@ -128,6 +137,7 @@ private struct KeyScriptureSection: View {
 }
 
 private struct KeyEventsSection: View {
+    let bookName: String
     let movements: [BibleBookMovement]
 
     var body: some View {
@@ -140,14 +150,12 @@ private struct KeyEventsSection: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(movement.title)
                             .font(.headline)
-                        Text(movement.description)
+                        LinkedScriptureText(movement.description)
                             .font(.body)
                             .foregroundStyle(.secondary)
 
                         if !movement.keyPassages.isEmpty {
-                            Text(movement.keyPassages.formatted(.list(type: .and)))
-                                .font(.caption)
-                                .foregroundStyle(.tint)
+                            PassageReferenceChips(references: movement.keyPassages, book: bookName)
                         }
                     }
 
@@ -173,7 +181,7 @@ private struct KeyFiguresSection: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(figure.name)
                             .font(.headline)
-                        Text(figure.description)
+                        LinkedScriptureText(figure.description)
                             .font(.body)
                             .foregroundStyle(.secondary)
                     }

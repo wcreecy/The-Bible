@@ -41,14 +41,16 @@ struct ChapterInsightsView: View {
                             VStack(alignment: .leading, spacing: 6) {
                                 Text(theme.theme)
                                     .font(.headline)
-                                Text(theme.explanation)
+                                LinkedScriptureText(theme.explanation)
                                     .font(.subheadline)
                                     .foregroundStyle(.secondary)
 
                                 if !theme.scriptureReferences.isEmpty {
-                                    Text(theme.scriptureReferences.formatted(.list(type: .and)))
-                                        .font(.caption)
-                                        .foregroundStyle(.tint)
+                                    PassageReferenceChips(
+                                        references: theme.scriptureReferences,
+                                        book: bookName,
+                                        chapter: chapterNumber
+                                    )
                                 }
                             }
                         }
@@ -61,7 +63,7 @@ struct ChapterInsightsView: View {
                             VStack(alignment: .leading, spacing: 6) {
                                 Text(figure.name)
                                     .font(.headline)
-                                Text(figure.roleAndSignificance)
+                                LinkedScriptureText(figure.roleAndSignificance)
                                     .font(.subheadline)
                                     .foregroundStyle(.secondary)
                             }
@@ -78,6 +80,7 @@ struct ChapterInsightsView: View {
             .padding()
         }
         .background(AppBackgroundView(tab: .bible))
+        .scripturePassagePreviews()
     }
 
     private func loadInsights() async {
@@ -97,7 +100,7 @@ private struct ChapterInsightCard: View {
 
     var body: some View {
         HeroCard(title: title, icon: icon) {
-            Text(content)
+            LinkedScriptureText(content)
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)

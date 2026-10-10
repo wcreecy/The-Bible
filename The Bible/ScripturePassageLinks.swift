@@ -114,6 +114,65 @@ enum PassageReferenceParser {
         return match.reference
     }
 
+    /// Parses a reference-list entry, filling in what the study data leaves out using the
+    /// book and chapter being shown. Handles entries such as "1:2-4" (no book), "20-23"
+    /// (verses only), "Leviticus 1:1:1–3" (doubled chapter), and "3:11-13,40-45" (several
+    /// passages), which becomes one reference per passage.
+    static func parseList(_ text: String, book contextBook: String?, chapter contextChapter: Int?) -> [PassageReference] {
+        if let reference = parse(text) { return [reference] }
+
+        var entry = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        // "Leviticus 1:1:1–3" → "Leviticus 1:1–3"
+        entry = entry.replacingOccurrences(
+            of: #"(\d+):\1:(\d)"#,
+            with: "$1:$2",
+            options: .regularExpression
+        )
+
+        // Split off a leading book name; the rest is chapter/verse locations.
+        var bookName = contextBook
+        var locations = entry
+        if let leading = leadingBookName(in: entry) {
+            bookName = leading.book
+            locations = leading.remainder
+        } else if let first = entry.first, !first.isNumber {
+            return []
+        }
+        guard let bookName else { return [] }
+
+        var chapter = contextChapter
+        var references: [PassageReference] = []
+        for part in locations.split(whereSeparator: { $0 == "," || $0 == ";" }) {
+            let piece = part.trimmingCharacters(in: .whitespaces)
+            guard let firstCharacter = piece.first, firstCharacter.isNumber else { continue }
+            let candidate: String
+            if piece.contains(":") {
+                // "3:11-13" names its own chapter, which later pieces inherit.
+                chapter = piece.split(separator: ":").first.flatMap { Int($0) } ?? chapter
+                candidate = "\(bookName) \(piece)"
+            } else if let chapter {
+                // "40-45" continues in the current chapter.
+                candidate = "\(bookName) \(chapter):\(piece)"
+            } else {
+                candidate = "\(bookName) \(piece)"
+            }
+            if let reference = parse(candidate) {
+                references.append(reference)
+            }
+        }
+        return references
+    }
+
+    /// A book name at the start of `text` (including spellings such as "Psalm") and the text after it.
+    private static func leadingBookName(in text: String) -> (book: String, remainder: String)? {
+        let names = (BibleData.books.map(\.name) + aliases.keys).sorted { $0.count > $1.count }
+        for name in names where text.hasPrefix(name + " ") {
+            let remainder = text.dropFirst(name.count).trimmingCharacters(in: .whitespaces)
+            return (aliases[name] ?? name, remainder)
+        }
+        return nil
+    }
+
     /// Every valid reference in `text` with its location.
     static func matches(in text: String) -> [(range: Range<String.Index>, reference: PassageReference)] {
         guard let regex else { return [] }
@@ -208,15 +267,39 @@ struct LinkedScriptureText: View {
     }
 }
 
-/// A wrapping row of tappable reference chips. Entries that are not valid references
-/// are shown as plain labels.
+/// A wrapping row of tappable reference chips. `book` and `chapter` fill in entries that
+/// omit them; entries that still cannot be read are shown as plain labels.
 struct PassageReferenceChips: View {
     let references: [String]
+    var book: String?
+    var chapter: Int?
+
+    private enum Chip: Identifiable {
+        case passage(PassageReference)
+        case text(String)
+
+        var id: String {
+            switch self {
+            case .passage(let reference): "passage-\(reference.id)"
+            case .text(let text): "text-\(text)"
+            }
+        }
+    }
+
+    private var chips: [Chip] {
+        var seen = Set<String>()
+        return references.flatMap { text -> [Chip] in
+            let parsed = PassageReferenceParser.parseList(text, book: book, chapter: chapter)
+            let entries = parsed.isEmpty ? [Chip.text(text)] : parsed.map(Chip.passage)
+            return entries.filter { seen.insert($0.id).inserted }
+        }
+    }
 
     var body: some View {
         PassageFlowLayout(spacing: 8) {
-            ForEach(Array(references.enumerated()), id: \.offset) { _, text in
-                if let reference = PassageReferenceParser.parse(text) {
+            ForEach(chips) { chip in
+                switch chip {
+                case .passage(let reference):
                     Link(destination: reference.url) {
                         Label(reference.displayTitle, systemImage: "book")
                             .font(.caption.weight(.semibold))
@@ -225,7 +308,7 @@ struct PassageReferenceChips: View {
                             .background(Color.accentColor.opacity(0.12), in: Capsule())
                     }
                     .accessibilityHint("Shows a preview of the passage")
-                } else {
+                case .text(let text):
                     Text(text)
                         .font(.caption)
                         .foregroundStyle(.secondary)
