@@ -1,36 +1,39 @@
 import SwiftUI
 
+/// Home card for the reader's focus for the day.
+///
+/// With nothing saved it is a single prompt field. Once saved it shows the focus as content,
+/// with Edit and a ⋯ menu for Clear; editing works on a draft until Save.
 struct DailyFocusCard: View {
-    @Binding var focusTitle: String
-    @Binding var focusBody: String
-    @Binding var hasSavedFocus: Bool
-    @Binding var focusSavedAt: Date?
-
-    // Accept focus bindings from parent instead of declaring local @FocusState
-    var focusTitleIsFocused: FocusState<Bool>.Binding
-    var focusBodyIsFocused: FocusState<Bool>.Binding
-
-    @Binding var isFocusBodyExpanded: Bool
-
+    let focus: FocusViewModel
     let liveActivitiesEnabled: Bool
-
-    // Actions provided by HomeView to keep behavior centralized
-    let onSave: () -> Void
-    let onClear: () -> Void
     let onEnableLiveActivities: () -> Void
 
-    // Local popover state
-    @State private var showFocusInfoPopover: Bool = false
+    private enum Field { case title, notes }
 
-    private var hasTitle: Bool {
-        !focusTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    @State private var isEditing = false
+    @State private var draftTitle = ""
+    @State private var draftBody = ""
+    @State private var showsNotes = false
+    @State private var isConfirmingClear = false
+    @FocusState private var focusedField: Field?
+
+    /// The Live Activities reminder appears after a save while they are off, until dismissed once.
+    @AppStorage("focusLiveActivitiesHintDismissed") private var liveActivitiesHintDismissed = false
+
+    private var showsSavedFocus: Bool { focus.hasSaved && !isEditing }
+
+    private var canSave: Bool {
+        focus.hasNonWhitespaceLetters(in: draftTitle) || focus.hasNonWhitespaceLetters(in: draftBody)
     }
 
-    private var hasTypedLetter: Bool {
-        let letters = CharacterSet.letters
-        let t = focusTitle.unicodeScalars.contains { letters.contains($0) }
-        let b = focusBody.unicodeScalars.contains { letters.contains($0) }
-        return t || b
+    /// The empty state stays a lone prompt until the reader starts typing.
+    private var showsEditorActions: Bool {
+        focusedField != nil || canSave || showsNotes || isEditing
+    }
+
+    private var showsLiveActivitiesHint: Bool {
+        showsSavedFocus && !liveActivitiesEnabled && !liveActivitiesHintDismissed
     }
 
     var body: some View {
@@ -39,158 +42,234 @@ struct DailyFocusCard: View {
             subtitle: nil,
             icon: "target",
             tint: .purple,
-            trailingAccessory: {
-                HStack(spacing: 8) {
-                    if hasSavedFocus {
-                        Text("Saved")
-                            .font(.caption2).bold()
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Capsule().fill(Color.green.opacity(0.15)))
-                            .overlay(Capsule().stroke(Color.green.opacity(0.5), lineWidth: 1))
-                            .foregroundStyle(.green)
-                            .accessibilityHidden(false)
-                            .accessibilityLabel("Saved Focus")
-                    }
-                    Button {
-                        showFocusInfoPopover.toggle()
+            trailingAccessory: { trailingControls }
+        ) {
+            VStack(alignment: .leading, spacing: 12) {
+                if showsSavedFocus {
+                    savedFocus
+                } else {
+                    editor
+                }
+
+                if showsLiveActivitiesHint {
+                    liveActivitiesHint
+                }
+            }
+        }
+        .confirmationDialog("Clear your focus?", isPresented: $isConfirmingClear, titleVisibility: .visible) {
+            Button("Clear Focus", role: .destructive, action: clear)
+        } message: {
+            Text("It will also be removed from the Lock Screen.")
+        }
+    }
+
+    // MARK: - Saved
+
+    @ViewBuilder
+    private var trailingControls: some View {
+        if showsSavedFocus {
+            HStack(spacing: 8) {
+                Button("Edit", action: beginEditing)
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .tint(.purple)
+                    .accessibilityLabel("Edit Focus")
+
+                Menu {
+                    Button(role: .destructive) {
+                        isConfirmingClear = true
                     } label: {
-                        Image(systemName: "info.circle")
-                            .font(.title3)
+                        Label("Clear Focus", systemImage: "xmark.circle")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .font(.title3)
+                }
+                .accessibilityLabel("More Focus Options")
+            }
+        }
+    }
+
+    private var savedFocus: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            if !focus.title.isEmpty {
+                Text(focus.title)
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            if !focus.body.isEmpty {
+                Text(focus.body)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Today's focus")
+        .accessibilityValue([focus.title, focus.body].filter { !$0.isEmpty }.joined(separator: ". "))
+    }
+
+    private var liveActivitiesHint: some View {
+        HStack(alignment: .center, spacing: 8) {
+            Image(systemName: "livephoto.slash")
+                .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
+            Text("Turn on Live Activities to see your focus on the Lock Screen.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 8)
+            Button("Enable") {
+                liveActivitiesHintDismissed = true
+                onEnableLiveActivities()
+            }
+            .buttonStyle(ModernPillButtonStyle(tint: .purple))
+            .controlSize(.small)
+            Button {
+                liveActivitiesHintDismissed = true
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Dismiss")
+        }
+    }
+
+    // MARK: - Editing
+
+    private var editor: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            TextField("What's your focus today?", text: $draftTitle)
+                .textFieldStyle(.roundedBorder)
+                .submitLabel(.done)
+                .focused($focusedField, equals: .title)
+                .onSubmit {
+                    if canSave { save() }
+                }
+
+            if showsNotes {
+                ZStack(alignment: .topLeading) {
+                    if draftBody.isEmpty {
+                        Text("Notes")
+                            .foregroundStyle(.secondary)
+                            .padding(.top, 8)
+                            .padding(.leading, 5)
+                            .accessibilityHidden(true)
+                    }
+                    TextEditor(text: $draftBody)
+                        .focused($focusedField, equals: .notes)
+                        .frame(minHeight: 100)
+                        .scrollContentBackground(.hidden)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                        )
+                        .accessibilityLabel("Focus Notes")
+                }
+            }
+
+            if showsEditorActions {
+                HStack(spacing: 12) {
+                    Button(action: toggleNotes) {
+                        Label(
+                            showsNotes ? "Hide Notes" : "Add Notes",
+                            systemImage: showsNotes ? "chevron.up" : "chevron.down"
+                        )
+                        .font(.subheadline.weight(.semibold))
                     }
                     .buttonStyle(.plain)
-                    .popover(isPresented: $showFocusInfoPopover) {
-                        ScrollView {
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text("About Daily Focus")
-                                    .font(.headline)
-                                Text("Type a title and optional notes, then save. Your focus will appear on the dynamic island (iPhone only) and the lock screen when live activities are enabled (enable/disable live activities from the app's settings menu).")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                    .multilineTextAlignment(.leading)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                Button("Got it") { showFocusInfoPopover = false }
-                                    .buttonStyle(ModernPillButtonStyle(tint: .purple))
-                            }
-                            .padding()
-                        }
-                        .presentationDetents([.medium, .large])
+                    .foregroundStyle(.purple)
+
+                    Spacer()
+
+                    if isEditing {
+                        Button("Cancel", action: cancelEditing)
+                            .buttonStyle(.plain)
+                            .foregroundStyle(.secondary)
                     }
+
+                    Button("Save", action: save)
+                        .buttonStyle(ModernPillButtonStyle(tint: .purple))
+                        .controlSize(.regular)
+                        .disabled(!canSave)
+                        .accessibilityLabel("Save Focus")
                 }
             }
-        ) {
-            VStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Today's Focus")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    TextField("What's your focus on today?", text: $focusTitle)
-                        .textFieldStyle(.roundedBorder)
-                        .submitLabel(.done)
-                        .focused(focusTitleIsFocused)
-                }
 
-                if hasTitle && isFocusBodyExpanded {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Notes")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        ZStack(alignment: .topLeading) {
-                            if focusBody.isEmpty {
-                                Text("Enter your focus notes…")
-                                    .foregroundStyle(.secondary)
-                                    .padding(.top, 8)
-                                    .padding(.leading, 5)
-                            }
-                            TextEditor(text: $focusBody)
-                                .focused(focusBodyIsFocused)
-                                .frame(minHeight: 120)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                        .stroke(Color.gray.opacity(0.25), lineWidth: 1)
-                                )
-                        }
-                    }
-                }
-
-                HStack(spacing: 12) {
-                    Button(action: onSave) {
-                        Label("Save", systemImage: "square.and.arrow.down")
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .green))
-                    .controlSize(.regular)
-                    .accessibilityLabel("Save Focus")
-                    .accessibilityHint("Saves your daily focus and shows it on the Dynamic Island")
-                    .disabled(!hasTypedLetter)
-
-                    Button(role: .destructive, action: onClear) {
-                        Label("Clear", systemImage: "xmark.circle.fill")
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .red))
-                    .controlSize(.regular)
-                    .accessibilityLabel("Clear Focus")
-                    .accessibilityHint("Clears your daily focus and removes it from the Dynamic Island")
-                    .disabled(!hasTitle)
-
-                    if hasTitle {
-                        Button {
-                            withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                                isFocusBodyExpanded = true
-                            }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                focusBodyIsFocused.wrappedValue = true
-                            }
-                        } label: {
-                            Image(systemName: "chevron.down.circle")
-                                .font(.title3)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Show Notes")
-                        .accessibilityHint("Opens the focus notes field")
-                    }
-                }
-                .padding(.top, 4)
-                .toolbar {
-                    ToolbarItem(placement: .keyboard) {
-                        Button("Done") {
-                            focusTitleIsFocused.wrappedValue = false
-                            focusBodyIsFocused.wrappedValue = false
-                        }
-                    }
-                }
-
-                if hasSavedFocus, let savedAt = focusSavedAt {
-                    let cal = Calendar.current
-                    let isToday = cal.isDateInToday(savedAt)
-                    HStack(spacing: 6) {
-                        Image(systemName: "checkmark.seal")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                        Text(isToday ? "Today’s Focus saved at \(savedAt.formatted(date: .omitted, time: .shortened))"
-                                     : "Focus saved on \(savedAt.formatted(date: .abbreviated, time: .shortened))")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                    }
-                    .padding(.top, 2)
-                }
-
-                if !liveActivitiesEnabled {
-                    HStack(alignment: .center, spacing: 8) {
-                        Image(systemName: "livephoto.slash")
-                            .foregroundStyle(.secondary)
-                        Text("Live Activities are off. Enable in Settings to show your Focus on the Lock Screen and Dynamic Island.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                        Spacer(minLength: 8)
-                        Button("Enable", action: onEnableLiveActivities)
-                            .buttonStyle(ModernPillButtonStyle(tint: .purple))
-                            .controlSize(.small)
-                    }
-                    .padding(.top, 6)
-                }
+            if liveActivitiesEnabled {
+                Text("Your saved focus appears on the Lock Screen and in the Dynamic Island.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
+        }
+        .toolbar {
+            ToolbarItem(placement: .keyboard) {
+                Button("Done") { focusedField = nil }
+            }
+        }
+    }
+
+    // MARK: - Actions
+
+    private func beginEditing() {
+        draftTitle = focus.title
+        draftBody = focus.body
+        withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+            // A notes-only focus opens with its notes showing so they can be edited.
+            showsNotes = !focus.body.isEmpty
+            isEditing = true
+        }
+        focusSoon(focus.title.isEmpty && !focus.body.isEmpty ? .notes : .title)
+    }
+
+    private func toggleNotes() {
+        withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+            showsNotes.toggle()
+        }
+        if showsNotes {
+            focusSoon(.notes)
+        } else if focusedField == .notes {
+            focusedField = nil
+        }
+    }
+
+    private func save() {
+        guard canSave else { return }
+        focus.save(title: draftTitle, body: draftBody)
+        Haptics.success()
+        endEditing()
+    }
+
+    private func cancelEditing() {
+        endEditing()
+    }
+
+    private func clear() {
+        focus.clear()
+        Haptics.selection()
+        endEditing()
+    }
+
+    private func endEditing() {
+        focusedField = nil
+        withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+            isEditing = false
+            showsNotes = false
+        }
+        draftTitle = ""
+        draftBody = ""
+    }
+
+    /// Fields that are appearing need a moment to exist before they can take focus.
+    private func focusSoon(_ field: Field) {
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(100))
+            focusedField = field
         }
     }
 }
