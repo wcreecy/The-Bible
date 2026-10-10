@@ -256,8 +256,12 @@ struct ReadingView: View {
                     ),
                     readerFontSize: readerFontSize,
                     onLocationChange: { location in
-                        viewModel.show(location: location)
-                        saveReaderPosition(verseNumber: location.verseNumber)
+                        viewModel.noteFocusLocation(location)
+                        DeviceReaderPositionStore.save(BibleReaderLocation(
+                            bookName: location.bookName,
+                            chapterNumber: location.chapterNumber,
+                            verseNumber: location.verseNumber
+                        ))
                     },
                     onVisibleVerseChange: { location in
                         viewModel.focusVisibleVerseChanged(location)

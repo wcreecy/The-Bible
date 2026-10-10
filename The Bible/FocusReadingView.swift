@@ -8,13 +8,18 @@ struct FocusReadingView: View {
     let onVisibleVerseChange: (FocusVerseLocation?) -> Void
     let onExit: () -> Void
 
-    @State private var visibleVerseID: String?
+    /// Index of the page on screen in `pageMap`.
+    @State private var visiblePageIndex: Int?
+    // Position is reported only once scrolling settles, not for every page passed mid-swipe.
+    @State private var scrollPhase: ScrollPhase = .idle
+    @State private var lastReportedPageIndex: Int?
     @State private var showsControls = false
     @State private var isLocationPickerPresented = false
     @State private var isChapterInsightsPresented = false
     @AppStorage("hasSeenFocusModeControlsHint") private var hasSeenControlsHint = false
 
-    private let pageIndex = FocusPageIndex.shared
+    // Maps page numbers to Bible locations; pages themselves are built only when shown.
+    private let pageMap: FocusPageMap
 
     init(
         initialLocation: FocusVerseLocation,
@@ -28,19 +33,34 @@ struct FocusReadingView: View {
         self.onLocationChange = onLocationChange
         self.onVisibleVerseChange = onVisibleVerseChange
         self.onExit = onExit
-        _visibleVerseID = State(initialValue: initialLocation.id)
+        let pageMap = FocusPageMap(books: BibleData.books)
+        self.pageMap = pageMap
+        _visiblePageIndex = State(initialValue: pageMap.index(of: initialLocation))
+    }
+
+    private var visiblePage: FocusPage? {
+        visiblePageIndex.flatMap(pageMap.page(at:))
     }
 
     private var currentLocation: FocusVerseLocation {
-        guard let visibleVerseID,
-              let page = pageIndex.pagesByID[visibleVerseID] else {
-            return initialLocation
-        }
-        return page.location
+        visiblePage?.location ?? initialLocation
     }
 
     private var currentVerse: FocusVerse? {
-        pageIndex.versesByID[currentLocation.id]
+        guard case .verse(let verse) = visiblePage else { return nil }
+        return verse
+    }
+
+    /// Reports the page the reader has settled on, once per page.
+    private func reportSettledPage() {
+        guard visiblePageIndex != lastReportedPageIndex else { return }
+        lastReportedPageIndex = visiblePageIndex
+        guard let page = visiblePage else {
+            onVisibleVerseChange(nil)
+            return
+        }
+        onLocationChange(page.location)
+        reportVisibleVerse(page)
     }
 
     private func reportVisibleVerse(_ page: FocusPage) {
@@ -54,32 +74,25 @@ struct FocusReadingView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             ScrollView {
-                LazyVStack(spacing: 0) {
-                    ForEach(pageIndex.pages) { page in
-                        FocusPageView(page: page, readerFontSize: readerFontSize)
-                            .containerRelativeFrame(.vertical)
-                            .id(page.id)
-                    }
-                }
-                .scrollTargetLayout()
+                FocusPageList(pageMap: pageMap, readerFontSize: readerFontSize)
+                    .equatable()
             }
-            .scrollPosition(id: $visibleVerseID, anchor: .center)
+            .scrollPosition(id: $visiblePageIndex, anchor: .center)
             .scrollTargetBehavior(.paging)
             .scrollIndicators(.hidden)
-            .onChange(of: visibleVerseID) { _, newValue in
-                guard let newValue,
-                      let page = pageIndex.pagesByID[newValue] else {
-                    onVisibleVerseChange(nil)
-                    return
-                }
-                onLocationChange(page.location)
-                reportVisibleVerse(page)
-            }
-            .onAppear {
-                if let visibleVerseID, let page = pageIndex.pagesByID[visibleVerseID] {
-                    reportVisibleVerse(page)
+            .onScrollPhaseChange { _, newPhase in
+                scrollPhase = newPhase
+                if newPhase == .idle {
+                    reportSettledPage()
                 }
             }
+            .onChange(of: visiblePageIndex) { _, _ in
+                // Programmatic jumps (Go to Verse) land without a scroll phase change.
+                if scrollPhase == .idle {
+                    reportSettledPage()
+                }
+            }
+            .onAppear(perform: reportSettledPage)
             .onTapGesture {
                 showsControls = true
                 hasSeenControlsHint = true
@@ -114,8 +127,8 @@ struct FocusReadingView: View {
         .background(Color(uiColor: .systemBackground))
         .sheet(isPresented: $isLocationPickerPresented) {
             FocusLocationPicker(initialLocation: currentLocation) { location in
-                visibleVerseID = location.id
-                onLocationChange(location)
+                // Moving the scroll position reports the new location through onChange.
+                visiblePageIndex = pageMap.index(of: location)
                 isLocationPickerPresented = false
             }
         }
@@ -350,52 +363,117 @@ private enum FocusPage: Identifiable {
             verse.location
         }
     }
+}
 
-    static func all(in books: [Book]) -> [FocusPage] {
-        books.flatMap { book in
-            book.chapters.flatMap { chapter in
-                let marker = FocusPage.chapter(bookName: book.name, chapterNumber: chapter.number)
-                let verses = chapter.verses.map { verse in
-                    FocusPage.verse(FocusVerse(
-                        bookName: book.name,
-                        chapterNumber: chapter.number,
-                        verseNumber: verse.number,
-                        text: verse.text
-                    ))
+/// The lazily built list of every Focus Mode page. It is equatable so changes elsewhere
+/// in Focus Mode (controls, scroll phase) skip re-evaluating all 32,000+ page identities.
+private struct FocusPageList: View, Equatable {
+    let pageMap: FocusPageMap
+    let readerFontSize: Double
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.pageMap.pageCount == rhs.pageMap.pageCount && lhs.readerFontSize == rhs.readerFontSize
+    }
+
+    var body: some View {
+        // SwiftUI creates only the pages near the screen; the list never changes while
+        // Focus Mode is open.
+        LazyVStack(spacing: 0) {
+            ForEach(0..<pageMap.pageCount, id: \.self) { index in
+                if let page = pageMap.page(at: index) {
+                    FocusPageView(page: page, readerFontSize: readerFontSize)
+                        .containerRelativeFrame(.vertical)
                 }
-                return [marker] + verses
             }
         }
+        .scrollTargetLayout()
     }
 }
 
-private struct FocusPageIndex {
-    let pages: [FocusPage]
-    let pagesByID: [String: FocusPage]
-    let versesByID: [String: FocusVerse]
-
-    // Cached only once built from the loaded corpus, so opening Focus Mode during
-    // launch cannot pin an empty index for the rest of the session.
-    private static var cached: FocusPageIndex?
-
-    static var shared: FocusPageIndex {
-        if let cached { return cached }
-        let books = BibleData.books
-        let index = FocusPageIndex(books: books)
-        if !books.isEmpty {
-            cached = index
-        }
-        return index
+/// Numbers every Focus Mode page across the Bible (a title page per chapter followed by
+/// its verses) without building them. One entry per chapter locates any page number.
+private struct FocusPageMap {
+    private struct ChapterEntry {
+        let bookIndex: Int
+        let chapterIndex: Int
+        /// Page number of this chapter's title page; its verses follow it.
+        let firstPage: Int
+        let verseCount: Int
     }
 
-    private init(books: [Book]) {
-        let pages = FocusPage.all(in: books)
-        self.pages = pages
-        pagesByID = Dictionary(uniqueKeysWithValues: pages.map { ($0.id, $0) })
-        versesByID = Dictionary(uniqueKeysWithValues: pages.compactMap { page in
-            guard case let .verse(verse) = page else { return nil }
-            return (verse.id, verse)
-        })
+    private let books: [Book]
+    private let chapters: [ChapterEntry]
+    private let chapterLookup: [String: Int]
+    let pageCount: Int
+
+    init(books: [Book]) {
+        self.books = books
+        var chapters: [ChapterEntry] = []
+        var lookup: [String: Int] = [:]
+        var nextPage = 0
+        for (bookIndex, book) in books.enumerated() {
+            for (chapterIndex, chapter) in book.chapters.enumerated() {
+                lookup[Self.key(book.name, chapter.number)] = chapters.count
+                chapters.append(ChapterEntry(
+                    bookIndex: bookIndex,
+                    chapterIndex: chapterIndex,
+                    firstPage: nextPage,
+                    verseCount: chapter.verses.count
+                ))
+                nextPage += 1 + chapter.verses.count
+            }
+        }
+        self.chapters = chapters
+        chapterLookup = lookup
+        pageCount = nextPage
+    }
+
+    func page(at index: Int) -> FocusPage? {
+        guard index >= 0, index < pageCount else { return nil }
+
+        // Last chapter whose title page is at or before `index`.
+        var low = 0
+        var high = chapters.count - 1
+        while low < high {
+            let mid = (low + high + 1) / 2
+            if chapters[mid].firstPage <= index {
+                low = mid
+            } else {
+                high = mid - 1
+            }
+        }
+
+        let entry = chapters[low]
+        let book = books[entry.bookIndex]
+        let chapter = book.chapters[entry.chapterIndex]
+        let offset = index - entry.firstPage
+        guard offset > 0 else {
+            return .chapter(bookName: book.name, chapterNumber: chapter.number)
+        }
+        let verse = chapter.verses[offset - 1]
+        return .verse(FocusVerse(
+            bookName: book.name,
+            chapterNumber: chapter.number,
+            verseNumber: verse.number,
+            text: verse.text
+        ))
+    }
+
+    /// The page showing a verse, or its chapter's title page if the verse does not exist.
+    func index(of location: FocusVerseLocation) -> Int? {
+        guard let chapterPosition = chapterLookup[Self.key(location.bookName, location.chapterNumber)] else {
+            return nil
+        }
+        let entry = chapters[chapterPosition]
+        let verses = books[entry.bookIndex].chapters[entry.chapterIndex].verses
+        guard let verseOffset = verses.firstIndex(where: { $0.number == location.verseNumber }) else {
+            return entry.firstPage
+        }
+        return entry.firstPage + 1 + verseOffset
+    }
+
+    private static func key(_ bookName: String, _ chapterNumber: Int) -> String {
+        "\(bookName):\(chapterNumber)"
     }
 }
 

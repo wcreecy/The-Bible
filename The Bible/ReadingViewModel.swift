@@ -32,6 +32,9 @@ final class ReadingViewModel: ObservableObject {
         BibleStatsStore.shared.markVersesSeen(updates)
     }
     private(set) var isFocusModeActive = false
+    /// The latest Focus Mode location, applied to the reader when Focus Mode closes so
+    /// the reader hidden behind it does not redraw on every page.
+    private var pendingFocusLocation: FocusVerseLocation?
 
     // Services
     let pinnedStore: PinnedVerseStore
@@ -148,8 +151,19 @@ final class ReadingViewModel: ObservableObject {
             markActivity()
         } else {
             focusVerseTracker.stop()
+            if let pendingFocusLocation {
+                self.pendingFocusLocation = nil
+                show(location: pendingFocusLocation)
+            }
             verseReadingTracker.setActive(true)
         }
+    }
+
+    /// Records where Focus Mode is without updating the hidden reader's published state.
+    func noteFocusLocation(_ location: FocusVerseLocation) {
+        pendingFocusLocation = location
+        ReadingTimeTracker.shared.setCurrentLocation(bookName: location.bookName, chapter: location.chapterNumber)
+        markActivity()
     }
 
     /// Reports the verse currently shown in Focus Mode, or `nil` for a chapter title page.
