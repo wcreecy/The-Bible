@@ -1,5 +1,4 @@
 import Foundation
-import Combine
 import Observation
 
 @MainActor
@@ -51,43 +50,75 @@ final class StatsViewModel {
     var lastSessionSeconds: Int = 0
     var readingInsights = ReadingInsights()
 
-    // Observers/subscriptions
-    private var cancellables: Set<AnyCancellable> = []
+    // MARK: - Refresh scheduling
 
-    func start() {
-        // ReadingTimeTracker publisher
-        ReadingTimeTracker.shared.$lastTotalsVersion
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                Task { @MainActor in
-                    self?.refreshAll()
+    /// Reading saves its time about every 15 seconds and each save posts a stats
+    /// notification. Rebuilding everything is expensive, so updates are coalesced and only
+    /// applied while Stats is on screen; changes made while it's hidden are applied when
+    /// it next appears.
+    @ObservationIgnored private var observationTask: Task<Void, Never>?
+    @ObservationIgnored private var pendingRefresh: Task<Void, Never>?
+    @ObservationIgnored private var isVisible = false
+    @ObservationIgnored private var isStale = true
+    private static let refreshDelay: Duration = .milliseconds(500)
+
+    /// Call when Stats appears. Refreshes now if anything changed while it was hidden,
+    /// and returns whether it did.
+    @discardableResult
+    func start() -> Bool {
+        isVisible = true
+        startObservingIfNeeded()
+        guard isStale else { return false }
+        refreshAll()
+        return true
+    }
+
+    /// Call when Stats disappears. Later changes wait until it's shown again.
+    func stop() {
+        isVisible = false
+        if pendingRefresh != nil {
+            pendingRefresh?.cancel()
+            pendingRefresh = nil
+            isStale = true
+        }
+    }
+
+    private func startObservingIfNeeded() {
+        guard observationTask == nil else { return }
+        observationTask = Task { [weak self] in
+            await withTaskGroup(of: Void.self) { group in
+                // Session appends and reading-time saves both post this notification.
+                for name in [Notification.Name.bibleStatsExternallyUpdated, .chapterProgressChanged] {
+                    group.addTask { @MainActor [weak self] in
+                        for await _ in NotificationCenter.default.notifications(named: name) {
+                            self?.statsDidChange()
+                        }
+                    }
                 }
             }
-            .store(in: &cancellables)
+        }
+    }
 
-        // External updates to Bible stats
-        NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                Task { @MainActor in self?.refreshAll() }
-            }
-            .store(in: &cancellables)
+    private func statsDidChange() {
+        isStale = true
+        guard isVisible, pendingRefresh == nil else { return }
+        pendingRefresh = Task { [weak self] in
+            try? await Task.sleep(for: Self.refreshDelay)
+            guard !Task.isCancelled, let self else { return }
+            self.pendingRefresh = nil
+            self.refreshAll()
+        }
+    }
 
-        // Chapter progress changes
-        NotificationCenter.default.publisher(for: .chapterProgressChanged)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                Task { @MainActor in self?.refreshAll() }
-            }
-            .store(in: &cancellables)
-
-        // Initial load
-        refreshAll()
+    deinit {
+        observationTask?.cancel()
+        pendingRefresh?.cancel()
     }
 
     // MARK: - Public refresh entry point
 
     func refreshAll() {
+        isStale = false
         var calendar = Calendar.autoupdatingCurrent
         calendar.timeZone = TimeZone.autoupdatingCurrent
         let now = Date()

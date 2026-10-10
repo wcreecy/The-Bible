@@ -232,10 +232,15 @@ struct StatsView: View {
         .navigationTitle("Stats")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            model.start()
-            recomputeOTNTFromScope()
-            recomputeGenresFromScope()
-            recomputeTotalsCardMetrics()
+            // A refresh recomputes the cards through `refreshRevision` below.
+            if !model.start() {
+                recomputeOTNTFromScope()
+                recomputeGenresFromScope()
+                recomputeTotalsCardMetrics()
+            }
+        }
+        .onDisappear {
+            model.stop()
         }
         .sheet(item: chapterDetailItemBinding) { key in
             NavigationStack {
