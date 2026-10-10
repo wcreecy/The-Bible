@@ -25,7 +25,7 @@ enum HomeCardID: String, CaseIterable, Identifiable, Codable, Hashable {
         case .dailyFocus: return "target"
         case .timer: return "timer"
         case .today: return "checklist"
-        case .resumeReading: return "bookmark.fill"
+        case .resumeReading: return "play.fill"
         case .search: return "magnifyingglass"
         case .streaks: return "flame.fill"
         case .bibleStats: return "chart.bar.fill"

@@ -598,7 +598,7 @@ struct HomeView: View {
                 title: "Continue Reading",
                 message: position.map { "\($0.bookName) \($0.chapterNumber):\($0.verseNumber ?? 1)" } ?? "Start at Genesis 1",
                 verseText: positionVerseText,
-                icon: "bookmark.fill",
+                icon: "play.fill",
                 tint: .indigo,
                 action: openContinueReading
             )

@@ -19,7 +19,7 @@ struct ResumeReadingCard: View {
                 ) {
                     HStack(alignment: .center, spacing: 12) {
                         HStack(spacing: 8) {
-                            Image(systemName: "bookmark.fill")
+                            Image(systemName: "play.fill")
                                 .font(.title3)
                                 .foregroundStyle(Color.accentColor)
                             Text("Continue Reading")
