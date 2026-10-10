@@ -50,6 +50,25 @@ final class PrayerTimerActivityController {
         }
     }
     
+    /// Shows a newly saved focus. A running prayer timer shares this Live Activity, so it
+    /// keeps going and just picks up the new text instead of being replaced.
+    func showFocus(title: String?, body: String?) {
+        if let timerActivity = Self.runningTimerActivity() {
+            Self.setFocus(on: timerActivity, title: title, body: body)
+        } else {
+            ensureActivityForFocus(title: title, body: body)
+        }
+    }
+
+    /// Removes the focus without ending a running prayer timer.
+    func clearFocus() {
+        if let timerActivity = Self.runningTimerActivity() {
+            Self.setFocus(on: timerActivity, title: nil, body: nil)
+        } else {
+            cancel()
+        }
+    }
+
     func ensureActivityForFocus(title: String?, body: String?) {
         guard #available(iOS 16.1, *) else { return }
         Self.endAllPrayerActivities()
@@ -98,6 +117,35 @@ final class PrayerTimerActivityController {
             }
         } catch {
             print("Failed to start Focus Live Activity (ensureIfNone): \(error)")
+        }
+    }
+
+    // MARK: - Focus helpers
+
+    /// Focus-only activities use the "Focus" status; anything else is a prayer timer.
+    private static func runningTimerActivity() -> Activity<PrayerTimerAttributes>? {
+        Activity<PrayerTimerAttributes>.activities.first { act in
+            if #available(iOS 17.0, *) {
+                return act.content.state.status != "Focus"
+            } else {
+                return act.contentState.status != "Focus"
+            }
+        }
+    }
+
+    private static func setFocus(on act: Activity<PrayerTimerAttributes>, title: String?, body: String?) {
+        Task {
+            if #available(iOS 17.0, *) {
+                var state = act.content.state
+                state.focusTitle = title
+                state.focusBody = body
+                await act.update(ActivityContent(state: state, staleDate: .now.addingTimeInterval(1)))
+            } else {
+                var state = act.contentState
+                state.focusTitle = title
+                state.focusBody = body
+                await act.update(using: state)
+            }
         }
     }
 

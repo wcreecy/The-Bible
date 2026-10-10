@@ -136,11 +136,6 @@ struct HomeView: View {
 
     private var sharedDefaults: UserDefaults? { UserDefaults(suiteName: "group.bible.app") }
 
-    // Focus UI-only state (kept in HomeView)
-    @FocusState private var focusTitleIsFocused: Bool
-    @FocusState private var focusBodyIsFocused: Bool
-    @State private var isFocusBodyExpanded: Bool = false
-
     // Finish alert presented by the controller
     @State private var finishHapticTimer: Timer? = nil
 
@@ -150,7 +145,6 @@ struct HomeView: View {
     @State private var verseActionToastSymbol: String = "doc.on.doc"
     @State private var verseActionToastText: String = "Copied to Clipboard"
     @State private var verseActionToastTint: Color = .accentColor
-    @State private var showFocusSavedToast: Bool = false
     @State private var lastVerseAutoRefreshToken: String = ""
 
     @Environment(\.scenePhase) private var scenePhase
@@ -331,26 +325,8 @@ struct HomeView: View {
             }
         case .dailyFocus:
             DailyFocusCard(
-                focusTitle: $focusVM.title,
-                focusBody: $focusVM.body,
-                hasSavedFocus: $focusVM.hasSaved,
-                focusSavedAt: $focusVM.savedAt,
-                focusTitleIsFocused: _focusTitleIsFocused.projectedValue,
-                focusBodyIsFocused: _focusBodyIsFocused.projectedValue,
-                isFocusBodyExpanded: $isFocusBodyExpanded,
+                focus: focusVM,
                 liveActivitiesEnabled: liveActivitiesEnabled,
-                onSave: {
-                    focusVM.save()
-                    focusTitleIsFocused = false
-                    focusBodyIsFocused = false
-                    withAnimation(.spring()) { showFocusSavedToast = true }
-                },
-                onClear: {
-                    focusVM.clear()
-                    focusTitleIsFocused = false
-                    focusBodyIsFocused = false
-                    isFocusBodyExpanded = false
-                },
                 onEnableLiveActivities: {
                     NotificationCenter.default.post(name: .openSettingsTab, object: nil)
                 }
@@ -742,7 +718,6 @@ struct HomeView: View {
             text: verseActionToastText,
             tint: verseActionToastTint
         )
-        .appToast(isPresented: $showFocusSavedToast, symbol: "checkmark.seal.fill", text: "Focus Saved", tint: .green)
         .onAppear {
             loadHomeLayout()
             bibleStore.ensureLoaded()
