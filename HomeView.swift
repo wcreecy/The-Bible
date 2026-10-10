@@ -400,6 +400,18 @@ struct HomeView: View {
                     )
                 }
             )
+        case .bookmarks:
+            HomeBookmarksCard { bookmark in
+                NotificationCenter.default.post(
+                    name: .openBibleReference,
+                    object: nil,
+                    userInfo: [
+                        "book": bookmark.bookName,
+                        "chapter": bookmark.chapterNumber,
+                        "verse": bookmark.verseNumber
+                    ]
+                )
+            }
         case .search:
             SearchHomeCard { result in
                 NotificationCenter.default.post(
