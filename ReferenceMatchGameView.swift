@@ -1,124 +1,320 @@
 import SwiftUI
 import SwiftData
 
-private struct MatchChoice: Hashable, Identifiable {
-    let id = UUID()
-    let snippet: String
+/// A verse that can be asked or offered as a choice.
+private struct MatchVerse: Hashable {
     let bookName: String
     let chapterNumber: Int
     let verseNumber: Int
     let verseText: String
+
+    var reference: String { "\(bookName) \(chapterNumber):\(verseNumber)" }
+
+    /// Lowercased letters only, so verses with the same words count as the same text.
+    var normalizedText: String {
+        verseText.lowercased().split { !$0.isLetter }.joined(separator: " ")
+    }
+}
+
+private struct MatchQuestion {
+    let verse: MatchVerse
+    let options: [MatchVerse]
+    let correctIndex: Int
+    var selectedIndex: Int?
+}
+
+/// The well-known verses shared with the lock-screen widget (`LockScreenVerses.json`).
+private enum WellKnownVerses {
+    private struct Entry: Decodable {
+        let book: String
+        let chapter: Int
+        let verse: Int
+        let text: String
+    }
+
+    static func load() -> [MatchVerse] {
+        guard let url = Bundle.main.url(forResource: "LockScreenVerses", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let entries = try? JSONDecoder().decode([Entry].self, from: data) else { return [] }
+        return entries.map {
+            MatchVerse(bookName: $0.book, chapterNumber: $0.chapter, verseNumber: $0.verse, verseText: $0.text)
+        }
+    }
 }
 
 struct VerseMatchGameView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Query private var favorites: [Favorite]
 
-    enum Difficulty: String, CaseIterable, Identifiable { case easy, normal, hard; var id: String { rawValue } }
-    enum TestamentScope: String, CaseIterable, Identifiable {
-        case whole
-        case old
-        case new
-
+    enum Difficulty: String, CaseIterable, Identifiable {
+        case easy, normal, hard
         var id: String { rawValue }
 
-        var title: String {
+        var title: LocalizedStringResource {
             switch self {
-            case .whole: "Old & New Testaments"
-            case .old: "Old Testament"
-            case .new: "New Testament"
+            case .easy: "Easy"
+            case .normal: "Normal"
+            case .hard: "Hard"
             }
         }
 
-        var pickerTitle: String {
+        var detail: LocalizedStringResource {
             switch self {
-            case .whole: "OT & NT"
-            case .old: "OT"
-            case .new: "NT"
+            case .easy: "Wrong choices come from other parts of the Bible."
+            case .normal: "Wrong choices come from anywhere in your categories."
+            case .hard: "Every choice comes from the same book as the reference."
+            }
+        }
+
+        var statsDifficulty: GameStats.Difficulty {
+            switch self {
+            case .easy: .easy
+            case .normal: .normal
+            case .hard: .hard
             }
         }
     }
 
-    enum VerseSection: String, CaseIterable, Identifiable {
-        case law
-        case history
-        case poetry
-        case majorProphets
-        case minorProphets
-        case gospels
-        case acts
-        case epistles
-        case apocalypse
-
+    enum VersePool: String, CaseIterable, Identifiable {
+        case wellKnown, favorites, any
         var id: String { rawValue }
 
-        var title: String {
+        var title: LocalizedStringResource {
             switch self {
-            case .law: "Law"
-            case .history: "History"
-            case .poetry: "Poetry"
-            case .majorProphets: "Major Prophets"
-            case .minorProphets: "Minor Prophets"
-            case .gospels: "Gospels"
-            case .acts: "Acts"
-            case .epistles: "Epistles"
-            case .apocalypse: "Apocalypse"
+            case .wellKnown: "Well-known"
+            case .favorites: "Favorites"
+            case .any: "Any verse"
             }
         }
     }
+
+    typealias VerseSection = QuizView.VerseSection
+
+    static let questionsPerGame = 10
+    /// "Any verse" skips longer verses so four choices stay readable.
+    static let maximumWords = 50
+
+    private enum Phase {
+        case setup
+        case playing
+        case results
+    }
+
     @AppStorage("verseMatchDifficulty") private var difficulty: Difficulty = .normal
-
-    @State private var started = false
-    @AppStorage("versematchScope") private var verseScopeRaw: String = "whole"
+    @AppStorage("versematchPool") private var pool: VersePool = .wellKnown
+    // Replaced by the category quick picks; read once to carry an old choice over.
+    @AppStorage("versematchScope") private var legacyScope: String = "whole"
     @AppStorage("versematchSections") private var verseSectionsRaw: String = ""
 
-    private var testamentScope: TestamentScope {
-        TestamentScope(rawValue: verseScopeRaw) ?? .whole
-    }
+    // Global Auto‑Win debug toggle
+    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
+
+    @State private var phase: Phase = .setup
+    @State private var isFilterReady = QuizVerseFilter.isReady
+    @State private var wellKnownVerses: [MatchVerse] = []
+    /// Fair verses (no lists, repeats, or very long verses) by book, for "Any verse" and fill-in choices.
+    @State private var anyVersesByBook: [String: [MatchVerse]] = [:]
+
+    @State private var history: [MatchQuestion] = []
+    @State private var currentIndex: Int = -1
+    @State private var questionBag: [MatchVerse] = []
+    @State private var totalQuestions: Int = 0
+
+    // Scoring
+    @State private var score: Int = 0
+    @State private var answered: Int = 0
+    @State private var sessionStreak: Int = 0
+    @State private var sessionBestStreak: Int = 0
+    @State private var currentBestStreak: Int = 0
+    @State private var bestGameScore: Int = 0
+    @State private var isNewBestGame: Bool = false
+
+    @State private var referenceOnLeading = true
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    // MARK: - Derived state
 
     private var selectedSections: Set<VerseSection> {
         Set(verseSectionsRaw.split(separator: ",").compactMap { VerseSection(rawValue: String($0)) })
     }
 
-    private var availableSections: [VerseSection] {
-        sections(for: testamentScope)
-    }
-
+    /// An empty stored selection means every category.
     private var displayedSelectedSections: Set<VerseSection> {
-        selectedSections.isEmpty ? Set(availableSections) : selectedSections.intersection(availableSections)
+        selectedSections.isEmpty ? Set(VerseSection.allCases) : selectedSections
     }
 
-    private var selectedSectionsTitle: String {
-        let selected = availableSections.filter { selectedSections.contains($0) }
-        return selected.isEmpty ? "All Biblical Categories" : selected.map(\.title).joined(separator: ", ")
+    private var poolBookNames: Set<String> {
+        Set(displayedSelectedSections.flatMap(\.bookNames))
     }
 
-    private func sections(for scope: TestamentScope) -> [VerseSection] {
-        switch scope {
-        case .whole:
-            VerseSection.allCases
-        case .old:
-            [.law, .history, .poetry, .majorProphets, .minorProphets]
-        case .new:
-            [.gospels, .acts, .epistles, .apocalypse]
+    private var favoriteVerses: [MatchVerse] {
+        favorites.map {
+            MatchVerse(bookName: $0.bookName, chapterNumber: $0.chapterNumber,
+                       verseNumber: $0.verseNumber, verseText: $0.verseText)
         }
+    }
+
+    /// The pool's own verses within the chosen categories, before any fill-in.
+    private var preferredVerses: [MatchVerse] {
+        let books = poolBookNames
+        switch pool {
+        case .wellKnown: return wellKnownVerses.filter { books.contains($0.bookName) }
+        case .favorites: return uniqueByReference(favoriteVerses).filter { books.contains($0.bookName) }
+        case .any: return []
+        }
+    }
+
+    private var canStart: Bool {
+        isFilterReady && (pool != .favorites || !preferredVerses.isEmpty)
+    }
+
+    private var poolDetail: String {
+        let count = preferredVerses.count
+        switch pool {
+        case .wellKnown:
+            return count >= Self.questionsPerGame
+                ? String(localized: "\(count) popular verses in your categories.")
+                : String(localized: "Only \(count) popular verses in your categories; other verses fill the rest.")
+        case .favorites:
+            return count == 0
+                ? String(localized: "No favorite verses in your categories yet. Save some while reading.")
+                : String(localized: "\(count) of your favorite verses in your categories.")
+        case .any:
+            return String(localized: "Any verse from your categories.")
+        }
+    }
+
+    private var current: MatchQuestion? {
+        history.indices.contains(currentIndex) ? history[currentIndex] : nil
+    }
+
+    private var isViewingPrevious: Bool { currentIndex < history.count - 1 }
+    private var isAnswered: Bool { current?.selectedIndex != nil }
+    private var isOnLastQuestion: Bool { !isViewingPrevious && history.count >= totalQuestions }
+
+    // MARK: - Persistent streak (per difficulty)
+    private var persistentStreak: PersistentGameStreak {
+        PersistentGameStreak(game: "versematch", variant: difficulty.rawValue)
+    }
+
+    private var bestGameScoreKey: String { "versematchBestGameScore_\(difficulty.rawValue)" }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                switch phase {
+                case .setup:
+                    setupContent
+                case .playing:
+                    gameContent
+                case .results:
+                    Spacer(minLength: 32)
+                    VerseMatchResultsCard(
+                        score: score,
+                        total: totalQuestions,
+                        bestStreak: sessionBestStreak,
+                        bestGameScore: bestGameScore,
+                        isNewBest: isNewBestGame,
+                        onPlayAgain: startGame,
+                        onChangeSettings: { phase = .setup }
+                    )
+                    .frame(maxWidth: .infinity)
+                }
+            }
+            .padding()
+        }
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                if phase != .setup {
+                    GameNavigationTitle(title: "Verse Match", systemImage: "text.quote", tint: .orange)
+                }
+            }
+        }
+        .onAppear {
+            migrateLegacyScope()
+            currentBestStreak = persistentStreak.best
+            if wellKnownVerses.isEmpty {
+                wellKnownVerses = WellKnownVerses.load()
+            }
+        }
+        // Sort out list and repeated verses while the start screen is showing.
+        .task {
+            await QuizVerseFilter.prepare()
+            isFilterReady = true
+        }
+        .onChange(of: difficulty) { _, _ in
+            currentBestStreak = persistentStreak.best
+        }
+        .onDisappear {
+            // Leaving after answering begins a new game on return.
+            if phase != .setup && answered > 0 {
+                phase = .setup
+            }
+        }
+    }
+
+    // MARK: - Setup
+
+    @ViewBuilder
+    private var setupContent: some View {
+        Spacer(minLength: 32)
+        Text("Choose the verse text that matches the reference.")
+            .gameStartDescriptionStyle(title: "Verse Match", systemImage: "text.quote", tint: .orange)
+
+        GameSplashLaunchLayout(tint: .orange, isStartEnabled: canStart, startAction: startGame) {
+            GameLobbyPreview(kind: .verseMatch)
+        } configuration: {
+            VerseMatchSetupControls(
+                difficulty: $difficulty,
+                pool: $pool,
+                poolDetail: poolDetail
+            )
+
+            VStack(alignment: .leading, spacing: 8) {
+                QuizCategoryQuickPicks(selection: sectionSelection)
+
+                GameStartMultiPickerCard(
+                    title: "Biblical Categories",
+                    selection: sectionSelection,
+                    options: VerseSection.allCases
+                ) { section in
+                    Text(section.title)
+                }
+            }
+            .frame(maxWidth: 620)
+            .padding(.horizontal)
+
+            if !isFilterReady {
+                Label {
+                    Text("Preparing verses…")
+                } icon: {
+                    ProgressView()
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal)
+            }
+        } facts: {
+            GameSplashFacts(
+                first: ("number", "\(Self.questionsPerGame)", String(localized: "Questions")),
+                second: ("text.quote", String(localized: pool.title), String(localized: "Verses")),
+                third: ("square.stack.3d.up", "4", String(localized: "Choices"))
+            )
+        }
+        Spacer(minLength: 32)
+    }
+
+    private var sectionSelection: Binding<Set<VerseSection>> {
+        Binding(
+            get: { displayedSelectedSections },
+            set: storeSelectedSections
+        )
     }
 
     private func storeSelectedSections(_ sections: Set<VerseSection>) {
-        let singleBookSections: Set<VerseSection> = [.acts, .apocalypse]
-        let isInvalidSelection = !sections.isEmpty && sections.isSubset(of: singleBookSections)
-
-        if isInvalidSelection {
-            let currentSelection = selectedSections.intersection(availableSections)
-            guard !currentSelection.isSubset(of: singleBookSections) || currentSelection.isEmpty else {
-                verseSectionsRaw = ""
-                return
-            }
-            return
-        }
-
-        if sections == Set(availableSections) {
+        guard !sections.isEmpty else { return }
+        if sections == Set(VerseSection.allCases) {
             verseSectionsRaw = ""
         } else {
             verseSectionsRaw = VerseSection.allCases
@@ -128,775 +324,284 @@ struct VerseMatchGameView: View {
         }
     }
 
-    // Global Auto‑Win debug toggle
-    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
-
-    @State private var questionNumber: Int = 0
-    @State private var score: Int = 0
-    @State private var answered: Int = 0
-
-    @State private var currentStreak: Int = 0
-    @State private var currentBestStreak: Int = 0
-
-    // History of questions to support Previous/Next navigation
-    @State private var history: [(book: Book, chapter: Chapter, verse: Verse, options: [MatchChoice], correctIndex: Int, selectedIndex: Int?)] = []
-    @State private var currentIndex: Int = -1
-
-    // Aggregated all-time stats across all difficulties (use combined “_all” keys)
-    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "versematchAllTimeCorrect_all") }
-    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "versematchAllTimeAnswered_all") }
-    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "versematchAllTimeBestStreak_all") }
-
-    @State private var refBook: Book? = nil
-    @State private var refChapter: Chapter? = nil
-    @State private var refVerse: Verse? = nil
-
-    @State private var options: [MatchChoice] = []
-    @State private var correctIndex: Int = -1
-    @State private var selectedIndex: Int? = nil
-    @State private var referenceOnLeading = true
-
-    // MARK: - Persistent streak (per difficulty)
-    private var persistentStreak: PersistentGameStreak {
-        PersistentGameStreak(game: "versematch", variant: difficultyKeySuffix())
+    /// The Testament picker was folded into the categories; apply an old choice once.
+    private func migrateLegacyScope() {
+        guard legacyScope == "old" || legacyScope == "new" else { return }
+        let testamentSections = Set(VerseSection.allCases.filter { $0.isOldTestament == (legacyScope == "old") })
+        let kept = selectedSections.intersection(testamentSections)
+        storeSelectedSections(kept.isEmpty ? testamentSections : kept)
+        legacyScope = "whole"
     }
 
-    private func seedStreakFromPersistence() {
-        currentStreak = persistentStreak.current
-        currentBestStreak = max(currentBestStreak, persistentStreak.best)
-    }
+    // MARK: - Gameplay
 
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                if !started {
-                    Spacer(minLength: 32)
-                    Text("Choose the verse text that matches the reference.")
-                        .gameStartDescriptionStyle(title: "Verse Match", systemImage: "text.quote", tint: .orange)
+    @ViewBuilder
+    private var gameContent: some View {
+        if let current {
+            GameScoreboardCard(
+                currentCorrect: score,
+                currentAnswered: answered,
+                currentStreak: sessionStreak,
+                game: .versematch,
+                style: horizontalSizeClass == .regular ? .dashboard : .compact
+            )
 
-                    GameSplashLaunchLayout(tint: .orange, startAction: startGame) {
-                        GameLobbyPreview(kind: .verseMatch)
-                    } configuration: {
-                        VerseMatchSetupCard(
-                            testament: testamentScope,
-                            difficulty: difficulty,
-                            categories: selectedSectionsTitle,
-                            usesCustomCategories: !selectedSections.isEmpty
-                        )
+            VerseMatchBoard(
+                reference: current.verse.reference,
+                progressText: String(localized: "Question \(currentIndex + 1) of \(totalQuestions)"),
+                options: current.options,
+                selectedIndex: current.selectedIndex,
+                correctIndex: current.correctIndex,
+                isLocked: isAnswered || isViewingPrevious,
+                usesSideBySideLayout: horizontalSizeClass == .regular,
+                referenceOnLeading: $referenceOnLeading,
+                onSelect: select
+            )
 
-                        VerseMatchSetupControls(
-                            testament: Binding(
-                                get: { testamentScope },
-                                set: { scope in
-                                    verseScopeRaw = scope.rawValue
-                                    storeSelectedSections(selectedSections.intersection(sections(for: scope)))
-                                }
-                            ),
-                            difficulty: $difficulty
-                        )
-
-                        GameStartMultiPickerCard(
-                            title: "Biblical Categories",
-                            selection: Binding<Set<VerseSection>>(
-                                get: { displayedSelectedSections },
-                                set: storeSelectedSections
-                            ),
-                            options: availableSections
-                        ) { section in
-                            Text(section.title)
-                        }
-                        .frame(maxWidth: 620)
-                        .padding(.horizontal)
-                    } facts: {
-                        GameSplashFacts(
-                            first: ("number", "Reference", "Question"),
-                            second: ("text.quote", "Verse", "Find the match"),
-                            third: ("checkmark.circle", "Choose", "Your task")
-                        )
-                    }
-                    Spacer(minLength: 32)
-                } else {
-                    GameScoreboardCard(
-                        currentCorrect: score,
-                        currentAnswered: answered,
-                        currentStreak: currentStreak,
-                        game: .versematch,
-                        style: horizontalSizeClass == .regular ? .dashboard : .compact
-                    )
-
-                    VerseMatchBoard(
-                        referenceBookName: refBook?.name,
-                        referenceChapterNumber: refChapter?.number,
-                        referenceVerseNumber: refVerse?.number,
-                        options: options,
-                        selectedIndex: selectedIndex,
-                        correctIndex: correctIndex,
-                        usesSideBySideLayout: horizontalSizeClass == .regular,
-                        referenceOnLeading: $referenceOnLeading,
-                        onSelect: select
-                    )
-
-                    GameRoundNavigationButtons(
-                        canGoPrevious: currentIndex > 0 && selectedIndex != nil,
-                        canGoNext: selectedIndex != nil,
-                        onPrevious: {
-                            currentIndex -= 1
-                            loadFromHistory()
-                        },
-                        onNext: {
-                            if currentIndex < history.count - 1 {
-                                currentIndex += 1
-                                loadFromHistory()
-                            } else {
-                                nextQuestion()
-                            }
-                        }
-                    )
-
-                    // DEBUG: WIN button
-                    if debugAutoWinEnabled, started, selectedIndex == nil, correctIndex >= 0 {
-                        Button("WIN") {
-                            select(correctIndex)
-                        }
-                        .buttonStyle(ModernPillButtonStyle(tint: .red))
-                        .controlSize(.large)
-                        .padding(.top, 6)
-                        .accessibilityLabel("Win this round")
-                    }
-                }
-            }
-            .padding()
-        }
-        .navigationTitle("")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                if started {
-                    GameNavigationTitle(title: "Verse Match", systemImage: "text.quote", tint: .orange)
-                }
+            if isAnswered {
+                VerseMatchNavigationButtons(
+                    canGoPrevious: currentIndex > 0,
+                    isLastQuestion: isOnLastQuestion,
+                    onPrevious: { currentIndex -= 1 },
+                    onNext: showNext
+                )
             }
 
-        }
-        .onAppear {
-            storeSelectedSections(displayedSelectedSections)
-            // Seed streaks from persisted values so they survive navigation/relaunch
-            seedStreakFromPersistence()
-        }
-        .onChange(of: difficulty) { _, _ in
-            // Switch to this difficulty’s persisted streaks
-            seedStreakFromPersistence()
+            // DEBUG: WIN button
+            if debugAutoWinEnabled, !isAnswered, !isViewingPrevious {
+                Button("WIN") {
+                    select(current.correctIndex)
+                }
+                .buttonStyle(ModernPillButtonStyle(tint: .red))
+                .controlSize(.large)
+                .padding(.top, 6)
+                .accessibilityLabel("Win this round")
+            }
         }
     }
 
     // MARK: - Game flow
 
     private func startGame() {
-        score = 0
-        answered = 0
-        // Do NOT reset persistent streaks here; seed from persistence
-        seedStreakFromPersistence()
-        questionNumber = 0
-        started = true
+        guard canStart else { return }
+        anyVersesByBook = buildAnyVerses()
+        questionBag = buildQuestionBag()
+        guard !questionBag.isEmpty else { return }
+        totalQuestions = min(Self.questionsPerGame, questionBag.count)
         history = []
         currentIndex = -1
-        generateQuestion()
+        score = 0
+        answered = 0
+        sessionStreak = 0
+        sessionBestStreak = 0
+        isNewBestGame = false
+        currentBestStreak = persistentStreak.best
+        phase = .playing
+        appendNextQuestion()
     }
 
-    private func nextQuestion() {
-        questionNumber += 1
-        selectedIndex = nil
-        generateQuestion()
-    }
-
-    private func select(_ idx: Int) {
-        guard selectedIndex == nil else { return }
-        selectedIndex = idx
-        if currentIndex >= 0 && currentIndex < history.count {
-            history[currentIndex].selectedIndex = idx
-        }
-        answered += 1
-        if idx == correctIndex { score += 1 }
-
-        let isCorrect = (idx == correctIndex)
-
-        if isCorrect {
-            // Persistent streak: extend on correct
-            let streak = persistentStreak.recordWin()
-            currentStreak = streak.current
-            currentBestStreak = max(currentBestStreak, streak.best)
-
-            let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(.success)
-
-            GameStats.shared.recordRound(
-                game: .versematch,
-                difficulty: mapDifficulty(difficulty),
-                correct: 1,
-                answered: 1,
-                currentBestStreak: currentBestStreak
-            )
-
-            // NEW: per-book aggregation for Verse Match (syncs via KVS)
-            if let b = refBook {
-                GameStats.shared.recordVerseMatchPerBook(bookName: b.name, answered: 1, correct: 1)
-            }
+    private func showNext() {
+        if isViewingPrevious {
+            currentIndex += 1
+        } else if history.count >= totalQuestions {
+            showResults()
         } else {
-            // Persistent streak: reset on incorrect
-            persistentStreak.reset()
-            currentStreak = 0
-
-            GameStats.shared.recordRound(
-                game: .versematch,
-                difficulty: mapDifficulty(difficulty),
-                correct: 0,
-                answered: 1,
-                currentBestStreak: currentBestStreak
-            )
-
-            // NEW: answered-only for the correct book
-            if let b = refBook {
-                GameStats.shared.recordVerseMatchPerBook(bookName: b.name, answered: 1, correct: 0)
-            }
+            appendNextQuestion()
         }
     }
 
-    // MARK: - Question generation and history
-
-    private func generateQuestion(maxAttempts: Int = 8) {
-        var attempts = 0
-        while attempts < maxAttempts {
-            attempts += 1
-
-            // Choose a reference book/chapter/verse according to scope (reference respects scope)
-            let books = scopedBooks()
-            guard let book = books.randomElement(),
-                  let chapter = book.chapters.randomElement(),
-                  let verse = chapter.verses.randomElement()
-            else { return }
-
-            // Build correct option
-            let correct = MatchChoice(
-                snippet: snippet(for: verse.text),
-                bookName: book.name,
-                chapterNumber: chapter.number,
-                verseNumber: verse.number,
-                verseText: verse.text
-            )
-
-            // Build distractors according to difficulty rules
-            let neededDistractors = 3 // 4 options total
-            var distractors: [MatchChoice] = []
-
-            switch difficulty {
-            case .easy:
-                if selectedSections.isEmpty {
-                    // Preserve the original Easy rule when no sections are selected.
-                    guard let built = makeDistinctBookDistractorsAcrossAll(
-                        excluding: (book: book.name, chapter: chapter.number, verse: verse.number),
-                        count: neededDistractors
-                    ) else { continue }
-                    distractors = built
-                } else {
-                    let selectedBookNames = Set(books.map(\.name))
-                    let randomBooks = BibleData.books.filter { !selectedBookNames.contains($0.name) }
-                    guard let selected = makeSectionScopedDistractors(
-                        from: books,
-                        excluding: (book: book.name, chapter: chapter.number, verse: verse.number),
-                        count: 2
-                    ),
-                    let random = makeDistinctBookDistractors(
-                        from: randomBooks,
-                        excludingBookName: book.name,
-                        excludingReference: (book: book.name, chapter: chapter.number, verse: verse.number),
-                        count: 1
-                    ) else { continue }
-                    distractors = selected + random
-                }
-
-            case .normal:
-                let sameTestamentBooks = booksInSameTestament(as: book)
-                if selectedSections.isEmpty {
-                    guard let built = makeDistinctBookDistractors(
-                        from: sameTestamentBooks,
-                        excludingBookName: book.name,
-                        excludingReference: (book: book.name, chapter: chapter.number, verse: verse.number),
-                        count: neededDistractors
-                    ) else { continue }
-                    distractors = built
-                } else {
-                    let selectedBookNames = Set(books.map(\.name))
-                    let randomBooks = sameTestamentBooks.filter { !selectedBookNames.contains($0.name) }
-                    guard let sameBook = makeDistractorsSameBookStrict(
-                        book: book,
-                        excluding: (chapter: chapter.number, verse: verse.number),
-                        count: 1
-                    ),
-                    let selected = makeDistinctBookDistractors(
-                        from: books,
-                        excludingBookName: book.name,
-                        excludingReference: (book: book.name, chapter: chapter.number, verse: verse.number),
-                        count: 1
-                    ),
-                    let random = makeDistinctBookDistractors(
-                        from: randomBooks,
-                        excludingBookName: book.name,
-                        excludingReference: (book: book.name, chapter: chapter.number, verse: verse.number),
-                        count: 1
-                    ) else { continue }
-                    distractors = sameBook + selected + random
-                }
-
-            case .hard:
-                // Hard: strictly same book; if not enough, re-roll
-                if let built = makeDistractorsSameBookStrict(
-                    book: book,
-                    excluding: (chapter: chapter.number, verse: verse.number),
-                    count: neededDistractors
-                ) {
-                    distractors = built
-                } else {
-                    continue // re-roll
-                }
-            }
-
-            var opts = distractors
-            opts.append(correct)
-            opts.shuffle()
-
-            guard let correctIdx = opts.firstIndex(where: { $0.bookName == book.name && $0.chapterNumber == chapter.number && $0.verseNumber == verse.number }) else {
-                continue // re-roll
-            }
-
-            // Update current ref
-            refBook = book
-            refChapter = chapter
-            refVerse = verse
-            options = opts
-            correctIndex = correctIdx
-            selectedIndex = nil
-
-            // Append to history and advance index
-            history.append((book: book, chapter: chapter, verse: verse, options: opts, correctIndex: correctIdx, selectedIndex: nil))
+    private func appendNextQuestion() {
+        while let verse = questionBag.popLast() {
+            let wrong = wrongChoices(for: verse)
+            guard wrong.count == 3 else { continue }
+            let options = (wrong + [verse]).shuffled()
+            guard let correctIndex = options.firstIndex(of: verse) else { continue }
+            history.append(MatchQuestion(verse: verse, options: options, correctIndex: correctIndex))
             currentIndex = history.count - 1
             return
         }
-
-        // Fallback if we couldn't generate a valid question after attempts (keep last known state)
-        refBook = nil
-        refChapter = nil
-        refVerse = nil
-        options = []
-        correctIndex = -1
-        selectedIndex = nil
+        // Ran out of usable verses early; end with what was played.
+        totalQuestions = history.count
+        showResults()
     }
 
-    private func loadFromHistory() {
-        guard currentIndex >= 0 && currentIndex < history.count else { return }
-        let entry = history[currentIndex]
-        refBook = entry.book
-        refChapter = entry.chapter
-        refVerse = entry.verse
-        options = entry.options
-        correctIndex = entry.correctIndex
-        selectedIndex = entry.selectedIndex
+    private func showResults() {
+        let previousBest = UserDefaults.standard.integer(forKey: bestGameScoreKey)
+        isNewBestGame = score > previousBest
+        bestGameScore = max(previousBest, score)
+        if isNewBestGame {
+            UserDefaults.standard.set(score, forKey: bestGameScoreKey)
+        }
+        phase = .results
     }
 
-    // MARK: - Option visuals
+    private func select(_ index: Int) {
+        guard !isViewingPrevious, let current, current.selectedIndex == nil else { return }
+        history[currentIndex].selectedIndex = index
+        answered += 1
 
-    private func buttonBackground(forIndex idx: Int) -> Color {
-        guard let sel = selectedIndex else {
-            return Color(.secondarySystemBackground)
-        }
-        if idx == correctIndex {
-            return Color.green.opacity(0.18)
-        }
-        if idx == sel, sel != correctIndex {
-            return Color.red.opacity(0.18)
-        }
-        return Color(.secondarySystemBackground)
-    }
-
-    private func buttonBorder(forIndex idx: Int) -> Color {
-        guard let sel = selectedIndex else {
-            return Color.black.opacity(0.12)
-        }
-        if idx == correctIndex {
-            return Color.green.opacity(0.6)
-        }
-        if idx == sel, sel != correctIndex {
-            return Color.red.opacity(0.6)
-        }
-        return Color.black.opacity(0.12)
-    }
-
-    // MARK: - Favorites helpers (SwiftData)
-
-    private func toggleFavoriteCurrent() {
-        guard let b = refBook, let c = refChapter, let v = refVerse else { return }
-        toggleFavorite(bookName: b.name, chapterNumber: c.number, verseNumber: v.number, verseText: v.text)
-    }
-
-    private func toggleFavorite(bookName: String, chapterNumber: Int, verseNumber: Int, verseText: String) {
-        if let existing = favorites.first(where: { $0.bookName == bookName && $0.chapterNumber == chapterNumber && $0.verseNumber == verseNumber }) {
-            modelContext.delete(existing)
-            try? modelContext.save()
+        let isCorrect = index == current.correctIndex
+        if isCorrect {
+            score += 1
+            sessionStreak += 1
+            sessionBestStreak = max(sessionBestStreak, sessionStreak)
+            // Persistent streak: extend on correct
+            let streak = persistentStreak.recordWin()
+            currentBestStreak = max(currentBestStreak, streak.best)
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
         } else {
-            let fav = Favorite(bookName: bookName, chapterNumber: chapterNumber, verseNumber: verseNumber, verseText: verseText)
-            modelContext.insert(fav)
-            try? modelContext.save()
-        }
-    }
-
-    private func isFavorited(bookName: String, chapterNumber: Int, verseNumber: Int) -> Bool {
-        favorites.contains { $0.bookName == bookName && $0.chapterNumber == chapterNumber && $0.verseNumber == verseNumber }
-    }
-
-    // MARK: - Generation utilities
-
-    private func scopedBooks() -> [Book] {
-        let testamentBooks: [Book]
-        switch testamentScope {
-        case .whole:
-            testamentBooks = BibleData.books
-        case .old:
-            testamentBooks = booksInOT()
-        case .new:
-            testamentBooks = booksInNT()
+            // Persistent streak: reset on incorrect
+            sessionStreak = 0
+            persistentStreak.reset()
+            UINotificationFeedbackGenerator().notificationOccurred(.error)
         }
 
-        guard !selectedSections.isEmpty else { return testamentBooks }
-
-        let sectionBookNames = Set(selectedSections.flatMap { books(in: $0).map(\.name) })
-        return testamentBooks.filter { sectionBookNames.contains($0.name) }
-    }
-
-    private func books(in section: VerseSection) -> [Book] {
-        switch section {
-        case .law:
-            books(named: ["Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy"])
-        case .history:
-            books(from: "Joshua", through: "Esther")
-        case .poetry:
-            books(from: "Job", through: "Song of Solomon")
-        case .majorProphets:
-            books(from: "Isaiah", through: "Daniel")
-        case .minorProphets:
-            books(from: "Hosea", through: "Malachi")
-        case .gospels:
-            books(from: "Matthew", through: "John")
-        case .acts:
-            books(named: ["Acts"])
-        case .epistles:
-            books(from: "Romans", through: "Jude")
-        case .apocalypse:
-            books(named: ["Revelation"])
-        }
-    }
-
-    private func books(named names: Set<String>) -> [Book] {
-        BibleData.books.filter { names.contains($0.name) }
-    }
-
-    private func books(from firstBookName: String, through lastBookName: String) -> [Book] {
-        let all = BibleData.books
-        guard let firstIndex = all.firstIndex(where: { $0.name == firstBookName }),
-              let lastIndex = all.firstIndex(where: { $0.name == lastBookName }),
-              firstIndex <= lastIndex else {
-            return []
-        }
-        return Array(all[firstIndex...lastIndex])
-    }
-
-    private func booksInOT() -> [Book] {
-        let all = BibleData.books
-        guard let mattIdx = all.firstIndex(where: { $0.name == "Matthew" }) else { return all } // fallback: all if not found
-        return Array(all.prefix(mattIdx))
-    }
-
-    private func booksInNT() -> [Book] {
-        let all = BibleData.books
-        guard let mattIdx = all.firstIndex(where: { $0.name == "Matthew" }) else { return [] } // fallback: none if not found
-        return Array(all.suffix(from: mattIdx))
-    }
-
-    private func booksInSameTestament(as book: Book) -> [Book] {
-        let all = BibleData.books
-        guard let mattIdx = all.firstIndex(where: { $0.name == "Matthew" }),
-              let idx = all.firstIndex(where: { $0.name == book.name }) else {
-            // fallback to whole scope if unknown
-            return scopedBooks()
-        }
-        if idx < mattIdx {
-            // OT
-            return Array(all.prefix(mattIdx))
-        } else {
-            // NT
-            return Array(all.suffix(from: mattIdx))
-        }
-    }
-
-    // Distinct-book distractors across all books (ignores scope for Easy)
-    private func makeDistinctBookDistractorsAcrossAll(
-        excluding target: (book: String, chapter: Int, verse: Int),
-        count: Int
-    ) -> [MatchChoice]? {
-        let allBooks = BibleData.books
-        return makeDistinctBookDistractors(
-            from: allBooks,
-            excludingBookName: target.book,
-            excludingReference: (book: target.book, chapter: target.chapter, verse: target.verse),
-            count: count
+        GameStats.shared.recordRound(
+            game: .versematch,
+            difficulty: difficulty.statsDifficulty,
+            correct: isCorrect ? 1 : 0,
+            answered: 1,
+            currentBestStreak: currentBestStreak
         )
+        GameStats.shared.recordVerseMatchPerBook(bookName: current.verse.bookName, answered: 1, correct: isCorrect ? 1 : 0)
     }
 
-    // Distinct-book distractors from a given set of books
-    private func makeDistinctBookDistractors(
-        from books: [Book],
-        excludingBookName: String,
-        excludingReference: (book: String, chapter: Int, verse: Int),
-        count: Int
-    ) -> [MatchChoice]? {
-        var usedBooks = Set<String>()
-        var out: [MatchChoice] = []
+    // MARK: - Verses
 
-        // Shuffle book order first to encourage wide spread
-        for b in books.shuffled() {
-            guard b.name != excludingBookName else { continue }
-            if usedBooks.contains(b.name) { continue }
-
-            // Find any verse in this book that isn't the exact reference (book/chapter/verse)
-            var foundOption: MatchChoice? = nil
-            outer: for c in b.chapters.shuffled() {
-                for v in c.verses.shuffled() {
-                    if b.name == excludingReference.book && c.number == excludingReference.chapter && v.number == excludingReference.verse {
-                        continue
-                    }
-                    foundOption = MatchChoice(
-                        snippet: snippet(for: v.text),
-                        bookName: b.name,
-                        chapterNumber: c.number,
-                        verseNumber: v.number,
-                        verseText: v.text
-                    )
-                    break outer
-                }
-            }
-
-            if let opt = foundOption {
-                usedBooks.insert(b.name)
-                out.append(opt)
-                if out.count >= count { return out }
-            }
-        }
-
-        // Not enough distinct books found
-        return nil
+    private func uniqueByReference(_ verses: [MatchVerse]) -> [MatchVerse] {
+        var seen: Set<String> = []
+        return verses.filter { seen.insert($0.reference).inserted }
     }
 
-    private func makeSectionScopedDistractors(
-        from books: [Book],
-        excluding target: (book: String, chapter: Int, verse: Int),
-        count: Int
-    ) -> [MatchChoice]? {
-        if let distinctBooks = makeDistinctBookDistractors(
-            from: books,
-            excludingBookName: target.book,
-            excludingReference: target,
-            count: count
-        ) {
-            return distinctBooks
-        }
-
-        var candidates: [MatchChoice] = []
-        for book in books {
-            for chapter in book.chapters {
-                for verse in chapter.verses {
-                    guard book.name != target.book
-                            || chapter.number != target.chapter
-                            || verse.number != target.verse else { continue }
-                    candidates.append(MatchChoice(
-                        snippet: snippet(for: verse.text),
-                        bookName: book.name,
-                        chapterNumber: chapter.number,
-                        verseNumber: verse.number,
-                        verseText: verse.text
-                    ))
+    /// Every fair verse, grouped by book: no lists, cross-book repeats, or very long verses.
+    private func buildAnyVerses() -> [String: [MatchVerse]] {
+        var result: [String: [MatchVerse]] = [:]
+        for book in BibleData.books {
+            result[book.name] = book.chapters.flatMap { chapter in
+                chapter.verses.compactMap { verse -> MatchVerse? in
+                    guard QuizVerseFilter.isQuizzable(book: book.name, chapter: chapter.number, verse: verse.number, difficulty: "normal"),
+                          verse.text.split(separator: " ").count <= Self.maximumWords else { return nil }
+                    return MatchVerse(bookName: book.name, chapterNumber: chapter.number,
+                                      verseNumber: verse.number, verseText: verse.text)
                 }
             }
         }
-
-        guard candidates.count >= count else { return nil }
-        return Array(candidates.shuffled().prefix(count))
+        return result
     }
 
-    // Strict same-book distractors; returns nil if not enough to meet count
-    private func makeDistractorsSameBookStrict(
-        book: Book,
-        excluding target: (chapter: Int, verse: Int),
-        count: Int
-    ) -> [MatchChoice]? {
-        var picks: Set<String> = []
-        var out: [MatchChoice] = []
-        for c in book.chapters.shuffled() {
-            for v in c.verses.shuffled() {
-                if c.number == target.chapter && v.number == target.verse { continue }
-                let key = "\(c.number)-\(v.number)"
-                if picks.contains(key) { continue }
-                picks.insert(key)
-                out.append(MatchChoice(
-                    snippet: snippet(for: v.text),
-                    bookName: book.name,
-                    chapterNumber: c.number,
-                    verseNumber: v.number,
-                    verseText: v.text
-                ))
-                if out.count >= count { return out }
-            }
-        }
-        // If not enough within the same book, return nil so caller can re-roll
-        return nil
-    }
-
-    private func snippet(for text: String) -> String {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        let maxLen = 160
-        if trimmed.count <= maxLen { return "“\(trimmed)”" }
-        let idx = trimmed.index(trimmed.startIndex, offsetBy: maxLen)
-        return "“\(trimmed[..<idx])…”"
-    }
-
-    // MARK: - Stats helpers
-
-    private func difficultyKeySuffix() -> String {
-        switch difficulty { case .easy: return "easy"; case .normal: return "normal"; case .hard: return "hard" }
-    }
-
-    private func mapDifficulty(_ d: Difficulty) -> GameStats.Difficulty {
-        switch d {
-        case .easy: return .easy
-        case .normal: return .normal
-        case .hard: return .hard
-        }
-    }
-}
-
-private struct VerseMatchSetupCard: View {
-    let testament: VerseMatchGameView.TestamentScope
-    let difficulty: VerseMatchGameView.Difficulty
-    let categories: String
-    let usesCustomCategories: Bool
-
-    private var testamentTitle: LocalizedStringResource {
-        switch testament {
-        case .whole: "Old & New Testaments"
-        case .old: "Old Testament"
-        case .new: "New Testament"
+    /// Verses to ask, drawn evenly across every verse rather than book by book.
+    private func buildQuestionBag() -> [MatchVerse] {
+        let books = poolBookNames
+        let anyVerses = anyVersesByBook.filter { books.contains($0.key) }.values.flatMap { $0 }
+        switch pool {
+        case .any:
+            return anyVerses.shuffled()
+        case .wellKnown, .favorites:
+            let preferred = preferredVerses.shuffled()
+            guard preferred.count < Self.questionsPerGame, pool == .wellKnown else { return preferred }
+            // Few popular verses in these categories: top up with other verses, asked last.
+            let used = Set(preferred.map(\.reference))
+            let fill = anyVerses.filter { !used.contains($0.reference) }.shuffled()
+                .prefix(Self.questionsPerGame - preferred.count)
+            return Array(fill) + preferred
         }
     }
 
-    private var difficultyTitle: LocalizedStringResource {
+    /// Picks three wrong verses with different text, following the Quiz's rules for books:
+    /// Easy uses other sections, Normal anywhere in your categories, Hard the same book.
+    /// Verses from the chosen pool are tried before other verses.
+    private func wrongChoices(for target: MatchVerse) -> [MatchVerse] {
+        let canon = BibleCanon.fallbackCanon
+        let categories = poolBookNames
+        let section = VerseSection.containing(target.bookName)
+        let isOld = section?.isOldTestament ?? true
+        let sameTestament = canon.filter { VerseSection.containing($0)?.isOldTestament == isOld }
+
+        let bookTiers: [[String]]
         switch difficulty {
-        case .easy: "Easy"
-        case .normal: "Normal"
-        case .hard: "Hard"
-        }
-    }
-
-    private var testamentSummary: LocalizedStringResource {
-        switch testament {
-        case .whole: "References will come from the Old and New Testaments."
-        case .old: "References will come from the Old Testament."
-        case .new: "References will come from the New Testament."
-        }
-    }
-
-    private var difficultySummary: LocalizedStringResource {
-        switch difficulty {
-        case .easy where usesCustomCategories:
-            "Three answer choices will come from your selected Biblical Categories and one from elsewhere."
         case .easy:
-            "Answer choices can come from any book in the Bible."
-        case .normal where usesCustomCategories:
-            "Two answer choices will come from the reference book, one from your selected Biblical Categories, and one from elsewhere in the same testament."
+            let otherSections = canon.filter { VerseSection.containing($0) != section }
+            bookTiers = [otherSections.filter(categories.contains), otherSections]
         case .normal:
-            "Answer choices will come from the same testament as the reference."
+            bookTiers = [canon.filter(categories.contains), sameTestament, canon]
         case .hard:
-            "Every answer choice will come from the same book as the reference."
+            // Fall back to the same section only if the book lacks three usable verses.
+            let family = Set((section?.hardFamily ?? []).flatMap(\.bookNames))
+            bookTiers = [[target.bookName], canon.filter(family.contains)]
         }
-    }
+        let distinctBooks = difficulty != .hard
+        let preferred = pool == .any ? [] : preferredVerses
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Your Game", systemImage: "checklist")
-                .font(.headline)
-                .foregroundStyle(.tint)
+        var picks: [MatchVerse] = []
+        var usedTexts: Set<String> = [target.normalizedText]
+        var usedBooks: Set<String> = distinctBooks ? [target.bookName] : []
 
-            VStack(alignment: .leading, spacing: 6) {
-                Text(testamentSummary)
-                Text(difficultySummary)
+        func add(_ verse: MatchVerse) {
+            guard picks.count < 3, verse.reference != target.reference,
+                  !usedBooks.contains(verse.bookName),
+                  !usedTexts.contains(verse.normalizedText) else { return }
+            usedTexts.insert(verse.normalizedText)
+            if distinctBooks { usedBooks.insert(verse.bookName) }
+            picks.append(verse)
+        }
+
+        for tier in bookTiers where picks.count < 3 {
+            let tierBooks = Set(tier)
+            for verse in preferred.shuffled() where tierBooks.contains(verse.bookName) {
+                add(verse)
             }
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-            .fixedSize(horizontal: false, vertical: true)
-
-            Divider()
-
-            LabeledContent("Difficulty") {
-                Text(difficultyTitle)
-                    .fontWeight(.semibold)
-            }
-
-            LabeledContent("Testament") {
-                Text(testamentTitle)
-                    .fontWeight(.semibold)
-            }
-
-            LabeledContent("Biblical Categories") {
-                Text(categories)
-                    .fontWeight(.semibold)
-                    .multilineTextAlignment(.trailing)
+            for book in tier.shuffled() where picks.count < 3 {
+                let verses = anyVersesByBook[book] ?? []
+                for verse in verses.shuffled().prefix(distinctBooks ? 3 : 30) {
+                    add(verse)
+                }
             }
         }
-        .padding(16)
-        .frame(maxWidth: 620, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
-        }
-        .padding(.horizontal)
-        .accessibilityElement(children: .contain)
+        return picks
     }
 }
+
+// MARK: - Setup views
 
 private struct VerseMatchSetupControls: View {
-    @Binding var testament: VerseMatchGameView.TestamentScope
     @Binding var difficulty: VerseMatchGameView.Difficulty
+    @Binding var pool: VerseMatchGameView.VersePool
+    let poolDetail: String
 
     var body: some View {
         VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Verses")
+                    .font(.headline)
+
+                Picker("Verses", selection: $pool) {
+                    ForEach(VerseMatchGameView.VersePool.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                Text(poolDetail)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
             VStack(alignment: .leading, spacing: 8) {
                 Text("Difficulty")
                     .font(.headline)
 
                 Picker("Difficulty", selection: $difficulty) {
-                    Text("Easy").tag(VerseMatchGameView.Difficulty.easy)
-                    Text("Normal").tag(VerseMatchGameView.Difficulty.normal)
-                    Text("Hard").tag(VerseMatchGameView.Difficulty.hard)
+                    ForEach(VerseMatchGameView.Difficulty.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
                 }
                 .pickerStyle(.segmented)
-            }
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Testament")
-                    .font(.headline)
-
-                Picker("Testament", selection: $testament) {
-                    Text("OT/NT").tag(VerseMatchGameView.TestamentScope.whole)
-                    Text("OT").tag(VerseMatchGameView.TestamentScope.old)
-                    Text("NT").tag(VerseMatchGameView.TestamentScope.new)
-                }
-                .pickerStyle(.segmented)
+                Text(difficulty.detail)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
         .frame(maxWidth: 620)
@@ -904,13 +609,15 @@ private struct VerseMatchSetupControls: View {
     }
 }
 
+// MARK: - Gameplay views
+
 private struct VerseMatchBoard: View {
-    let referenceBookName: String?
-    let referenceChapterNumber: Int?
-    let referenceVerseNumber: Int?
-    let options: [MatchChoice]
+    let reference: String
+    let progressText: String
+    let options: [MatchVerse]
     let selectedIndex: Int?
     let correctIndex: Int
+    let isLocked: Bool
     let usesSideBySideLayout: Bool
     @Binding var referenceOnLeading: Bool
     let onSelect: (Int) -> Void
@@ -937,9 +644,8 @@ private struct VerseMatchBoard: View {
 
     private var referenceCard: some View {
         VerseMatchReferenceCard(
-            bookName: referenceBookName,
-            chapterNumber: referenceChapterNumber,
-            verseNumber: referenceVerseNumber,
+            reference: reference,
+            progressText: progressText,
             showsSwapButton: usesSideBySideLayout,
             onSwap: { referenceOnLeading.toggle() }
         )
@@ -951,6 +657,7 @@ private struct VerseMatchBoard: View {
             options: options,
             selectedIndex: selectedIndex,
             correctIndex: correctIndex,
+            isLocked: isLocked,
             onSelect: onSelect
         )
         .frame(maxWidth: .infinity)
@@ -958,28 +665,25 @@ private struct VerseMatchBoard: View {
 }
 
 private struct VerseMatchReferenceCard: View {
-    let bookName: String?
-    let chapterNumber: Int?
-    let verseNumber: Int?
+    let reference: String
+    let progressText: String
     let showsSwapButton: Bool
     let onSwap: () -> Void
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            VStack {
+            VStack(spacing: 8) {
+                Text(progressText)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+
                 Spacer(minLength: 12)
 
-                if let bookName, let chapterNumber, let verseNumber {
-                    Text("\(bookName) \(chapterNumber):\(verseNumber)")
-                        .font(.largeTitle.weight(.semibold))
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-                } else {
-                    Text("No reference")
-                        .font(.title2)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity)
-                }
+                Text(reference)
+                    .font(.largeTitle.weight(.semibold))
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
 
                 Spacer(minLength: 12)
             }
@@ -993,78 +697,92 @@ private struct VerseMatchReferenceCard: View {
                 .accessibilityHint("Moves the reference and answers cards to opposite sides.")
             }
         }
-        .frame(maxWidth: .infinity, minHeight: 280)
+        .frame(maxWidth: .infinity, minHeight: showsSwapButton ? 280 : 160)
         .padding(AppDesignMetrics.cardPadding)
         .heroCardSurface()
     }
 }
 
 private struct VerseMatchAnswersCard: View {
-    let options: [MatchChoice]
+    let options: [MatchVerse]
     let selectedIndex: Int?
     let correctIndex: Int
+    let isLocked: Bool
     let onSelect: (Int) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-                Label("Potential Answers", systemImage: "text.page")
-                    .font(.headline)
+            Label("Potential Answers", systemImage: "text.page")
+                .font(.headline)
 
-                Text("Which verse matches this reference?")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+            Text("Which verse matches this reference?")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
 
-                ForEach(Array(options.enumerated()), id: \.element.id) { index, option in
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(option.snippet)
+            ForEach(Array(options.enumerated()), id: \.element) { index, option in
+                VStack(alignment: .leading, spacing: 6) {
+                    Button {
+                        onSelect(index)
+                    } label: {
+                        Text("“\(option.verseText)”")
                             .font(.body)
                             .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
                             .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(isLocked)
+                    .accessibilityValue(accessibilityState(for: index))
 
-                        if selectedIndex != nil {
-                            HStack(spacing: 8) {
-                                Text("\(option.bookName) \(option.chapterNumber):\(option.verseNumber)")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                    if selectedIndex != nil {
+                        HStack(spacing: 8) {
+                            Text(option.reference)
+                                .font(.caption.weight(index == correctIndex ? .bold : .regular))
+                                .foregroundStyle(index == correctIndex ? Color.green : Color.secondary)
 
-                                Spacer()
+                            Spacer()
 
-                                VerseActionMenu(
-                                    verse: VerseActionReference(
-                                        bookName: option.bookName,
-                                        chapterNumber: option.chapterNumber,
-                                        verseNumber: option.verseNumber,
-                                        verseText: option.verseText
-                                    )
+                            VerseActionMenu(
+                                verse: VerseActionReference(
+                                    bookName: option.bookName,
+                                    chapterNumber: option.chapterNumber,
+                                    verseNumber: option.verseNumber,
+                                    verseText: option.verseText
                                 )
-                            }
-                        }
-                    }
-                    .padding()
-                    .background(backgroundColor(for: index))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .stroke(borderColor(for: index), lineWidth: 1)
-                    }
-                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        if selectedIndex == nil {
-                            onSelect(index)
+                            )
                         }
                     }
                 }
-
-                if let selectedIndex {
-                    Text(selectedIndex == correctIndex ? "Correct!" : "Not quite.")
-                        .font(.headline)
-                        .foregroundStyle(selectedIndex == correctIndex ? .green : .red)
-                        .padding(.top, 4)
+                .padding()
+                .background(backgroundColor(for: index))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(borderColor(for: index), lineWidth: 1)
                 }
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
+
+            if let selectedIndex {
+                Label(
+                    selectedIndex == correctIndex ? "Correct!" : "Not quite",
+                    systemImage: selectedIndex == correctIndex ? "checkmark.circle.fill" : "xmark.circle.fill"
+                )
+                .font(.headline)
+                .foregroundStyle(selectedIndex == correctIndex ? .green : .red)
+                .padding(.top, 4)
+            }
+        }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppDesignMetrics.cardPadding)
         .heroCardSurface()
+    }
+
+    private func accessibilityState(for index: Int) -> String {
+        guard let selectedIndex else { return "" }
+        if index == correctIndex { return String(localized: "Correct answer") }
+        if index == selectedIndex { return String(localized: "Your answer, incorrect") }
+        return ""
     }
 
     private func backgroundColor(for index: Int) -> Color {
@@ -1091,5 +809,78 @@ private struct VerseMatchAnswersCard: View {
             return Color.red.opacity(0.6)
         }
         return Color.black.opacity(0.12)
+    }
+}
+
+private struct VerseMatchNavigationButtons: View {
+    let canGoPrevious: Bool
+    let isLastQuestion: Bool
+    let onPrevious: () -> Void
+    let onNext: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Button("Previous", systemImage: "arrow.left", action: onPrevious)
+                .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                .disabled(!canGoPrevious)
+
+            if isLastQuestion {
+                Button("See Results", systemImage: "flag.checkered", action: onNext)
+                    .buttonStyle(GameProminentButtonStyle(tint: .orange))
+            } else {
+                Button("Next", systemImage: "arrow.right", action: onNext)
+                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+            }
+        }
+    }
+}
+
+private struct VerseMatchResultsCard: View {
+    let score: Int
+    let total: Int
+    let bestStreak: Int
+    let bestGameScore: Int
+    let isNewBest: Bool
+    let onPlayAgain: () -> Void
+    let onChangeSettings: () -> Void
+
+    private var accuracy: Int {
+        guard total > 0 else { return 0 }
+        return Int((Double(score) / Double(total) * 100).rounded())
+    }
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Image(systemName: isNewBest ? "trophy.fill" : "flag.checkered")
+                .font(.system(size: 52, weight: .semibold))
+                .foregroundStyle(isNewBest ? Color.yellow : Color.orange)
+
+            VStack(spacing: 6) {
+                Text(isNewBest ? "New Best Game!" : "Game Over")
+                    .font(.title.weight(.bold))
+
+                Text("\(score) of \(total) correct")
+                    .font(.title2.weight(.semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
+            }
+
+            GameSplashFacts(
+                first: ("percent", "\(accuracy)%", String(localized: "Accuracy")),
+                second: ("flame.fill", "\(bestStreak)", String(localized: "Best streak")),
+                third: ("trophy", "\(bestGameScore)/\(total)", String(localized: "Best game"))
+            )
+
+            VStack(spacing: 10) {
+                Button("Play Again", systemImage: "arrow.clockwise", action: onPlayAgain)
+                    .buttonStyle(GameProminentButtonStyle(tint: .orange))
+
+                Button("Change Settings", systemImage: "slider.horizontal.3", action: onChangeSettings)
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+            }
+        }
+        .padding(24)
+        .frame(maxWidth: 520)
+        .heroCardSurface()
     }
 }
