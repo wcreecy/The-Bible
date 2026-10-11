@@ -147,10 +147,7 @@ actor ChapterInsightsRepository {
 
         var themes: [ChapterKeyTheme] = []
         while sqlite3_step(statement) == SQLITE_ROW {
-            let references = (try? JSONDecoder().decode(
-                [String].self,
-                from: Data(Self.columnText(statement, at: 3).utf8)
-            )) ?? []
+            let references = Self.decodeReferences(Self.columnText(statement, at: 3))
             themes.append(
                 ChapterKeyTheme(
                     id: Int(sqlite3_column_int(statement, 0)),
@@ -161,6 +158,18 @@ actor ChapterInsightsRepository {
             )
         }
         return themes
+    }
+
+    /// Most rows store a JSON array of references, but some store a single JSON string.
+    private static func decodeReferences(_ json: String) -> [String] {
+        let data = Data(json.utf8)
+        if let references = try? JSONDecoder().decode([String].self, from: data) {
+            return references
+        }
+        if let reference = try? JSONDecoder().decode(String.self, from: data), !reference.isEmpty {
+            return [reference]
+        }
+        return []
     }
 
     private static func columnText(_ statement: OpaquePointer, at index: Int32) -> String {
