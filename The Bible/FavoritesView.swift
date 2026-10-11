@@ -1,55 +1,70 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct FavoritesView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query(sort: [SortDescriptor(\Favorite.createdAt, order: .reverse)]) private var favorites: [Favorite]
-    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    /// How the list is ordered.
+    enum SortOrder: String, CaseIterable, Identifiable {
+        case recent
+        case bibleOrder
 
-    @State private var searchText: String = ""
-    @State private var removedFavorites: [RemovedFavorite] = []
-    @State private var showRemovalToast: Bool = false
-    @State private var persistenceFailure: PersistenceFailure?
+        var id: String { rawValue }
 
-    // Tokenize the search text into lowercase words
-    private var tokens: [String] {
-        searchText
-            .lowercased()
-            .split { $0.isWhitespace || $0.isPunctuation }
-            .map(String.init)
-            .filter { !$0.isEmpty }
-    }
-
-    // Filter favorites by all tokens (match in verse text, book name, or reference)
-    private var filteredFavorites: [Favorite] {
-        guard !tokens.isEmpty else { return favorites }
-        return favorites.filter { fav in
-            let verse = fav.verseText.lowercased()
-            let book = fav.bookName.lowercased()
-            let reference = "\(fav.bookName) \(fav.chapterNumber):\(fav.verseNumber)".lowercased()
-            // Require all tokens to be found somewhere
-            for t in tokens {
-                if !verse.contains(t) && !book.contains(t) && !reference.contains(t) {
-                    return false
-                }
+        var title: LocalizedStringResource {
+            switch self {
+            case .recent: "Recently Saved"
+            case .bibleOrder: "Bible Order"
             }
-            return true
         }
     }
 
+    /// The single toast this screen shows.
+    private enum ToastMessage: Equatable {
+        case removed(count: Int)
+        case copied
+    }
+
+    /// A group of rows: one untitled group for Recently Saved, one per book for Bible Order.
+    private struct FavoriteSection: Identifiable {
+        let title: String?
+        let favorites: [Favorite]
+        var id: String { title ?? "all" }
+    }
+
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: [SortDescriptor(\Favorite.createdAt, order: .reverse)]) private var favorites: [Favorite]
+    @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    @AppStorage("favoritesSortOrder") private var sortOrder: SortOrder = .recent
+
+    @State private var searchText: String = ""
+    @State private var removedFavorites: [RemovedFavorite] = []
+    @State private var toastMessage: ToastMessage?
+    @State private var persistenceFailure: PersistenceFailure?
+
+    private var isSearching: Bool {
+        !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var countSubtitle: String {
+        favorites.count == 1 ? String(localized: "1 verse") : String(localized: "\(favorites.count) verses")
+    }
+
     var body: some View {
+        // Computed once per update and shared by the list and its delete handlers.
+        let sections = makeSections(from: filteredFavorites())
+
         Group {
             if favorites.isEmpty {
                 ContentUnavailableView(
                     "No Favorites",
                     systemImage: "heart",
-                    description: Text("Long-press a verse and choose Favorite to save it here.")
+                    description: Text("Long-press a verse and tap the heart to save it here.")
                 )
-            } else if filteredFavorites.isEmpty && !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            } else if sections.isEmpty && isSearching {
                 ContentUnavailableView(
                     "No Matches",
                     systemImage: "magnifyingglass",
-                    description: Text("Try different keywords or check spelling.")
+                    description: Text("Try a reference like “John 3” or words from the verse.")
                 )
             } else {
                 List {
@@ -57,64 +72,169 @@ struct FavoritesView: View {
                         ContextualTipView(
                             id: "favorites.management",
                             title: "Open and manage favorites",
-                            message: "Tap a favorite to open its verse. Swipe it, or use Edit, to remove it with an option to undo.",
+                            message: "Tap a favorite to open its verse. Long-press for Copy and Share, or swipe to share or remove it, with an option to undo.",
                             systemImage: "heart.text.clipboard"
                         )
                         .listRowSeparator(.hidden)
                         .listRowBackground(Color.clear)
                     }
 
-                    ForEach(filteredFavorites) { fav in
-                        // Tap to open this favorite in the Bible tab via the central router
-                        Button {
-                            openInBibleTab(fav)
-                        } label: {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(fav.verseText)
-                                    .font(.body)
-                                    .lineLimit(3)
-                                Text("\(fav.bookName) \(fav.chapterNumber):\(fav.verseNumber)")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                Text(fav.createdAt.formatted(date: .abbreviated, time: .shortened))
-                                    .font(.caption2)
-                                    .foregroundStyle(.tertiary)
+                    if !isSearching {
+                        Section {
+                            NavigationLink {
+                                FavoritesFlashcardsView()
+                            } label: {
+                                Label {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("Practice as Flashcards")
+                                            .font(.headline)
+                                        Text("Memorize your \(countSubtitle)")
+                                            .font(.subheadline)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                } icon: {
+                                    Image(systemName: "rectangle.on.rectangle.angled")
+                                        .foregroundStyle(.tint)
+                                }
                             }
                         }
-                        .buttonStyle(.plain)
+                        .listRowBackground(HeroCardListRowBackground())
                     }
-                    .onDelete(perform: deleteFiltered)
-                    .listRowBackground(HeroCardListRowBackground())
+
+                    ForEach(sections) { section in
+                        Section {
+                            ForEach(section.favorites) { favorite in
+                                row(for: favorite)
+                            }
+                            .onDelete { offsets in
+                                remove(offsets.map { section.favorites[$0] })
+                            }
+                            .listRowBackground(HeroCardListRowBackground())
+                        } header: {
+                            if let title = section.title {
+                                Text(title)
+                            }
+                        }
+                    }
                 }
                 .scrollContentBackground(.hidden)
             }
         }
         .background(AppBackgroundView(tab: .more))
-        .navigationTitle("Favorites (\(favorites.count))")
+        .navigationTitle("Favorites")
+        .navigationSubtitle(favorites.isEmpty ? "" : countSubtitle)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             if !favorites.isEmpty {
-                ToolbarItem(placement: .topBarLeading) {
-                    NavigationLink {
-                        FavoritesFlashcardsView()
+                ToolbarItem(placement: .primaryAction) {
+                    Menu {
+                        Picker("Sort By", selection: $sortOrder) {
+                            ForEach(SortOrder.allCases) { order in
+                                Text(order.title).tag(order)
+                            }
+                        }
                     } label: {
-                        Label("Flashcards", systemImage: "rectangle.on.rectangle.angled")
+                        Label("Sort", systemImage: "arrow.up.arrow.down")
                     }
                 }
+                ToolbarItem(placement: .primaryAction) { EditButton() }
             }
-            ToolbarItem(placement: .primaryAction) { EditButton() }
         }
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search favorites")
         .appToast(
-            isPresented: $showRemovalToast,
-            symbol: "heart.slash",
-            text: removedFavorites.count == 1 ? "Favorite removed" : "Favorites removed",
+            isPresented: Binding(
+                get: { toastMessage != nil },
+                set: { if !$0 { toastMessage = nil } }
+            ),
+            symbol: toastMessage == .copied ? "doc.on.doc" : "heart.slash",
+            text: toastText,
             tint: .secondary,
-            actionTitle: "Undo",
-            action: undoFavoriteRemoval
+            actionTitle: isShowingRemovalToast ? "Undo" : nil,
+            action: isShowingRemovalToast ? undoFavoriteRemoval : nil
         )
         .persistenceFailureAlert(failure: $persistenceFailure)
     }
+
+    // MARK: - Row
+
+    private func row(for favorite: Favorite) -> some View {
+        Button {
+            openInBibleTab(favorite)
+        } label: {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(favorite.reference)
+                    .font(.headline)
+                Text(favorite.currentVerseText)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(3)
+                Text("Saved \(favorite.createdAt.formatted(date: .abbreviated, time: .omitted))")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Opens the verse in the Bible")
+        .contextMenu {
+            Button("Open in Bible", systemImage: "book") { openInBibleTab(favorite) }
+            Button("Copy", systemImage: "doc.on.doc") { copy(favorite) }
+            ShareLink(item: favorite.shareText) {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+            Divider()
+            Button("Remove Favorite", systemImage: "heart.slash", role: .destructive) { remove([favorite]) }
+        }
+        .swipeActions(edge: .leading) {
+            ShareLink(item: favorite.shareText) {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+            .tint(.blue)
+        }
+        .swipeActions(edge: .trailing) {
+            Button("Remove", systemImage: "heart.slash", role: .destructive) { remove([favorite]) }
+        }
+    }
+
+    // MARK: - Filtering and grouping
+
+    private func filteredFavorites() -> [Favorite] {
+        guard let query = FavoriteSearchQuery(searchText, bookNames: bookNames) else { return favorites }
+        return favorites.filter { query.matches($0) }
+    }
+
+    private func makeSections(from list: [Favorite]) -> [FavoriteSection] {
+        guard !list.isEmpty else { return [] }
+        switch sortOrder {
+        case .recent:
+            return [FavoriteSection(title: nil, favorites: list)]
+        case .bibleOrder:
+            let bookIndex = Dictionary(bookNames.enumerated().map { ($1, $0) }, uniquingKeysWith: { first, _ in first })
+            let sorted = list.sorted {
+                let lhs = (bookIndex[$0.bookName] ?? .max, $0.chapterNumber, $0.verseNumber)
+                let rhs = (bookIndex[$1.bookName] ?? .max, $1.chapterNumber, $1.verseNumber)
+                return lhs < rhs
+            }
+            var sections: [FavoriteSection] = []
+            for favorite in sorted {
+                if let last = sections.last, last.title == favorite.bookName {
+                    sections[sections.count - 1] = FavoriteSection(title: last.title, favorites: last.favorites + [favorite])
+                } else {
+                    sections.append(FavoriteSection(title: favorite.bookName, favorites: [favorite]))
+                }
+            }
+            return sections
+        }
+    }
+
+    /// Book names in Bible order, or the favorites' own books while the Bible is loading.
+    private var bookNames: [String] {
+        let names = BibleData.books.map(\.name)
+        return names.isEmpty ? Array(Set(favorites.map(\.bookName))).sorted() : names
+    }
+
+    // MARK: - Actions
 
     // Switches to the Bible tab and opens the verse.
     private func openInBibleTab(_ fav: Favorite) {
@@ -125,15 +245,20 @@ struct FavoritesView: View {
         )
     }
 
-    // Delete using indices from the filtered list to ensure correct items are removed
-    private func deleteFiltered(at offsets: IndexSet) {
-        let itemsToDelete = offsets.map { filteredFavorites[$0] }
-        let removalSnapshot = itemsToDelete.map { RemovedFavorite($0) }
+    private func copy(_ favorite: Favorite) {
+        UIPasteboard.general.string = favorite.shareText
+        Haptics.success()
+        toastMessage = .copied
+    }
+
+    private func remove(_ items: [Favorite]) {
+        guard !items.isEmpty else { return }
+        let removalSnapshot = items.map { RemovedFavorite($0) }
 
         ModelContextPersistence.perform(
             in: modelContext,
             operation: {
-                for item in itemsToDelete {
+                for item in items {
                     modelContext.delete(item)
                 }
                 try modelContext.save()
@@ -141,10 +266,23 @@ struct FavoritesView: View {
             onSuccess: {
                 removedFavorites = removalSnapshot
                 Haptics.selection()
-                showRemovalToast = true
+                toastMessage = .removed(count: removalSnapshot.count)
             },
             onFailure: { persistenceFailure = $0 }
         )
+    }
+
+    private var isShowingRemovalToast: Bool {
+        if case .removed = toastMessage { return true }
+        return false
+    }
+
+    private var toastText: String {
+        switch toastMessage {
+        case .copied: String(localized: "Copied")
+        case .removed(let count): count == 1 ? String(localized: "Favorite removed") : String(localized: "Favorites removed")
+        case nil: ""
+        }
     }
 
     private func undoFavoriteRemoval() {
@@ -164,6 +302,57 @@ struct FavoritesView: View {
             },
             onFailure: { persistenceFailure = $0 }
         )
+    }
+}
+
+/// Parses a Favorites search. A query that starts with a book name ("1 John", "John 3:16")
+/// narrows to that book, with the next numbers taken as chapter and verse. Anything else
+/// must appear in the verse text or book name, and bare numbers must equal the chapter or
+/// verse, so "1" doesn't match every reference that merely contains a 1.
+private struct FavoriteSearchQuery {
+    let book: String?
+    let numbers: [Int]
+    let words: [String]
+
+    @MainActor
+    init?(_ text: String, bookNames: [String]) {
+        var query = text.lowercased()
+            .split(whereSeparator: \.isWhitespace)
+            .joined(separator: " ")
+        guard !query.isEmpty else { return nil }
+
+        // Longest matching book name first, so "1 John" wins over "John".
+        var matchedBook: String?
+        for name in bookNames.sorted(by: { $0.count > $1.count }) {
+            let lower = name.lowercased()
+            // Also accept the singular "Psalm".
+            let forms = lower.hasSuffix("s") ? [lower, String(lower.dropLast())] : [lower]
+            if let form = forms.first(where: { query == $0 || query.hasPrefix($0 + " ") || query.hasPrefix($0 + ":") }) {
+                matchedBook = name
+                query = String(query.dropFirst(form.count))
+                break
+            }
+        }
+
+        let tokens = query.split { !$0.isLetter && !$0.isNumber }.map(String.init)
+        book = matchedBook
+        numbers = tokens.compactMap { Int($0) }
+        words = tokens.filter { Int($0) == nil }
+    }
+
+    @MainActor
+    func matches(_ favorite: Favorite) -> Bool {
+        let verseText = favorite.currentVerseText.lowercased()
+        let bookName = favorite.bookName.lowercased()
+
+        if let book {
+            guard favorite.bookName == book else { return false }
+            if numbers.count > 0, favorite.chapterNumber != numbers[0] { return false }
+            if numbers.count > 1, favorite.verseNumber != numbers[1] { return false }
+        } else if !numbers.allSatisfy({ $0 == favorite.chapterNumber || $0 == favorite.verseNumber }) {
+            return false
+        }
+        return words.allSatisfy { verseText.contains($0) || bookName.contains($0) }
     }
 }
 
