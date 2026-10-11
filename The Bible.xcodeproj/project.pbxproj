@@ -29,11 +29,6 @@
 		2C2765742EE8D61600A321FE /* VerseOfDayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2765732EE8D61600A321FE /* VerseOfDayViewModel.swift */; };
 		2C2765762EE8E30D00A321FE /* FocusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2765752EE8E30D00A321FE /* FocusViewModel.swift */; };
 		2C2765782EE8E5B800A321FE /* PrayerTimerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2765772EE8E5B800A321FE /* PrayerTimerController.swift */; };
-		2CA7DD00307B400000000002 /* StudyHomeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7DD00307B400000000001 /* StudyHomeCard.swift */; };
-		2CA7DC00307B300000000002 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7DC00307B300000000001 /* AppRouter.swift */; };
-		2CA7DC00307B300000000004 /* NotificationObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7DC00307B300000000003 /* NotificationObservation.swift */; };
-		2CA7DC00307B300000000006 /* PrayerStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7DC00307B300000000005 /* PrayerStats.swift */; };
-		2CA7DC00307B300000000008 /* iCloudSyncCoordinator+Prayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7DC00307B300000000007 /* iCloudSyncCoordinator+Prayer.swift */; };
 		2C27657E2EE8ECB400A321FE /* StreaksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C27657D2EE8ECB400A321FE /* StreaksViewModel.swift */; };
 		2C2877AD2EEC7DF800806395 /* WhoAmIGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2877AC2EEC7DF800806395 /* WhoAmIGameViewModel.swift */; };
 		2C2877AF2EEC7DFD00806395 /* WhoAmIGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2877AE2EEC7DFD00806395 /* WhoAmIGameView.swift */; };
@@ -121,6 +116,11 @@
 		2C98EBE03071360B00FBAED3 /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C98EBDF3071360B00FBAED3 /* FeedbackView.swift */; };
 		2C9CD7852EE2FFB90073622F /* GameStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9CD7842EE2FFB90073622F /* GameStats.swift */; };
 		2CA7DBB5307B249E009CE9AC /* UITestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7DBB4307B249E009CE9AC /* UITestSupport.swift */; };
+		2CA7DC00307B300000000002 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7DC00307B300000000001 /* AppRouter.swift */; };
+		2CA7DC00307B300000000004 /* NotificationObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7DC00307B300000000003 /* NotificationObservation.swift */; };
+		2CA7DC00307B300000000006 /* PrayerStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7DC00307B300000000005 /* PrayerStats.swift */; };
+		2CA7DC00307B300000000008 /* iCloudSyncCoordinator+Prayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7DC00307B300000000007 /* iCloudSyncCoordinator+Prayer.swift */; };
+		2CA7DD00307B400000000002 /* StudyHomeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7DD00307B400000000001 /* StudyHomeCard.swift */; };
 		2CB309D32EC2CE2D0032CB7D /* BibleReferenceLinker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB309D22EC2CE2D0032CB7D /* BibleReferenceLinker.swift */; };
 		2CB929A9306BD98000B03AB0 /* ContextualTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB929A8306BD98000B03AB0 /* ContextualTipView.swift */; };
 		2CB929AB306BEBD900B03AB0 /* ReadingInsights.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB929AA306BEBD900B03AB0 /* ReadingInsights.swift */; };
@@ -222,11 +222,6 @@
 		2C2765732EE8D61600A321FE /* VerseOfDayViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerseOfDayViewModel.swift; sourceTree = "<group>"; };
 		2C2765752EE8E30D00A321FE /* FocusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusViewModel.swift; sourceTree = "<group>"; };
 		2C2765772EE8E5B800A321FE /* PrayerTimerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimerController.swift; sourceTree = "<group>"; };
-		2CA7DD00307B400000000001 /* StudyHomeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyHomeCard.swift; sourceTree = "<group>"; };
-		2CA7DC00307B300000000001 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
-		2CA7DC00307B300000000003 /* NotificationObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationObservation.swift; sourceTree = "<group>"; };
-		2CA7DC00307B300000000005 /* PrayerStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerStats.swift; sourceTree = "<group>"; };
-		2CA7DC00307B300000000007 /* iCloudSyncCoordinator+Prayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "iCloudSyncCoordinator+Prayer.swift"; sourceTree = "<group>"; };
 		2C27657D2EE8ECB400A321FE /* StreaksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreaksViewModel.swift; sourceTree = "<group>"; };
 		2C279CFF2EBCC62A0023C46B /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		2C279D012EBCC62C0023C46B /* NavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationCoordinator.swift; sourceTree = "<group>"; };
@@ -307,6 +302,11 @@
 		2C98EBDF3071360B00FBAED3 /* FeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
 		2C9CD7842EE2FFB90073622F /* GameStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStats.swift; sourceTree = "<group>"; };
 		2CA7DBB4307B249E009CE9AC /* UITestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestSupport.swift; sourceTree = "<group>"; };
+		2CA7DC00307B300000000001 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
+		2CA7DC00307B300000000003 /* NotificationObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationObservation.swift; sourceTree = "<group>"; };
+		2CA7DC00307B300000000005 /* PrayerStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerStats.swift; sourceTree = "<group>"; };
+		2CA7DC00307B300000000007 /* iCloudSyncCoordinator+Prayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "iCloudSyncCoordinator+Prayer.swift"; sourceTree = "<group>"; };
+		2CA7DD00307B400000000001 /* StudyHomeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyHomeCard.swift; sourceTree = "<group>"; };
 		2CB309D22EC2CE2D0032CB7D /* BibleReferenceLinker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleReferenceLinker.swift; sourceTree = "<group>"; };
 		2CB56D972EB3895400A657FA /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		2CB56DEF2EB3942900A657FA /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };

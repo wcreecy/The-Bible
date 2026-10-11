@@ -899,8 +899,8 @@ private struct QuizDifficultyControl: View {
     }
 }
 
-/// One-tap shortcuts for the whole Bible or one Testament.
-private struct QuizCategoryQuickPicks: View {
+/// One-tap shortcuts for the whole Bible or one Testament. Also used by Verse Match.
+struct QuizCategoryQuickPicks: View {
     @Binding var selection: Set<QuizView.VerseSection>
 
     private var oldTestament: Set<QuizView.VerseSection> {

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Builds `The Bible Widgets/LockScreenVerses.json` for the lock-screen verse widget.
+"""Builds `The Bible Widgets/LockScreenVerses.json` for the lock-screen verse widget, and the
+same list as `The Bible/LockScreenVerses.json` for the app (Verse Match's well-known verses).
 
 Verse text is copied exactly from the bundled KJV (`The Bible/kjv.json`), so nothing is
 retyped by hand. The list is shuffled once with a fixed seed; the widget shows the verses
@@ -16,6 +17,8 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 KJV = ROOT / "The Bible" / "kjv.json"
 OUTPUT = ROOT / "The Bible Widgets" / "LockScreenVerses.json"
+# The widget and the app are separate targets, so each bundles its own copy.
+APP_OUTPUT = ROOT / "The Bible" / "LockScreenVerses.json"
 SEED = 2026
 
 # Same abbreviation-to-name mapping the app uses (BibleData.swift).
@@ -157,8 +160,10 @@ def main() -> int:
         return 1
 
     random.Random(SEED).shuffle(verses)
-    OUTPUT.write_text(json.dumps(verses, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    print(f"Wrote {len(verses)} verses ({OUTPUT.stat().st_size // 1024} KB) to {OUTPUT.relative_to(ROOT)}")
+    contents = json.dumps(verses, ensure_ascii=False, indent=1) + "\n"
+    for path in (OUTPUT, APP_OUTPUT):
+        path.write_text(contents, encoding="utf-8")
+        print(f"Wrote {len(verses)} verses ({path.stat().st_size // 1024} KB) to {path.relative_to(ROOT)}")
     return 0
 
 
