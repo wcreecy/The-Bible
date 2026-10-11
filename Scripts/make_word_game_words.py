@@ -128,7 +128,7 @@ TAMAR
 CYRUS|Ezra 1:1
 HIRAM|1 Kings 5:1
 NABAL|1 Samuel 25:3
-HEROD|Matthew 2:16
+HEROD|Matthew 2:1
 JAMES|Mark 1:19
 TITUS|Titus 1:4
 SILAS|Acts 16:25
@@ -170,7 +170,7 @@ ITALY|Acts 27:1
 SALEM|Genesis 14:18
 ENDOR|1 Samuel 28:7
 SYRIA|Luke 2:2
-RAMAH|Matthew 2:18
+RAMAH|1 Samuel 1:19
 TABOR
 SIDON|Matthew 11:21
 PURIM|Esther 9:26
@@ -207,10 +207,10 @@ FRUIT|Galatians 5:22
 FIELD|Matthew 6:28
 NIGHT|Psalms 30:5
 MOUNT|Matthew 24:3
-FEAST
+FEAST|Luke 2:41
 FLOCK|Luke 2:8
 CLOUD|Exodus 13:21
-LINEN
+LINEN|Revelation 19:8
 IMAGE|Genesis 1:27
 HONEY|Exodus 3:8
 WIDOW|Mark 12:42
@@ -218,7 +218,7 @@ QUEEN|Esther 2:17
 WHEAT|John 12:24
 CEDAR|Psalms 92:12
 TOWER|Genesis 11:4
-SNARE
+SNARE|Psalms 91:3
 SPEAR|1 Samuel 17:45
 SMOKE|Exodus 19:18
 FLOOD|Genesis 7:17
@@ -226,7 +226,7 @@ STAFF|Psalms 23:4
 HORSE|Revelation 6:2
 OLIVE|Genesis 8:11
 BROOK|1 Samuel 17:40
-PORCH
+PORCH|John 10:23
 FLAME
 THIEF|1 Thessalonians 5:2
 EAGLE|Deuteronomy 32:11
@@ -234,13 +234,13 @@ SWINE|Matthew 7:6
 MAKER|Psalms 95:6
 CHAFF|Psalms 1:4
 BRIDE|Revelation 21:2
-STORM
+STORM|Mark 4:37
 CAMEL|Matthew 19:24
 IVORY|1 Kings 10:18
 PALSY|Mark 2:3
-LEPER
+LEPER|Matthew 8:2
 SIEGE
-BEARD
+BEARD|Psalms 133:2
 ARROW|Psalms 91:5
 LAVER
 WHEEL|Ezekiel 1:16
@@ -259,7 +259,7 @@ SOWER|Mark 4:14
 TARES|Matthew 13:25
 RABBI|John 3:2
 THORN|2 Corinthians 12:7
-COUCH
+COUCH|Luke 5:19
 KNIFE|Genesis 22:10
 FROST
 LUCRE|1 Timothy 3:3
@@ -269,7 +269,7 @@ STORK|Jeremiah 8:7
 FLINT
 GOURD|Jonah 4:6
 PENNY|Matthew 20:2
-BLADE
+BLADE|Mark 4:28
 DOWRY
 FLUTE|Daniel 3:5
 WHALE|Matthew 12:40
@@ -306,18 +306,18 @@ ANVIL|Isaiah 41:7
 MIDST|Matthew 18:20
 MIGHT|Zechariah 4:6
 SIGHT|2 Corinthians 5:7
-RIGHT
+RIGHT|Psalms 16:11
 CHIEF|Ephesians 2:20
 MONEY|1 Timothy 6:10
 COURT
-ENEMY
+ENEMY|Romans 12:20
 BRASS
 NOISE|Psalms 100:1
-RULER
+RULER|John 3:1
 TABLE|Psalms 23:5
 DREAM|Genesis 37:5
 YOUTH|Ecclesiastes 12:1
-GRAVE
+GRAVE|1 Corinthians 15:55
 GRASS|Isaiah 40:8
 FLOUR
 WAGES|Romans 6:23
@@ -334,7 +334,7 @@ THIGH|Genesis 32:25
 PITCH|Genesis 6:14
 FLOOR
 FAULT
-CLOTH
+CLOTH|Matthew 9:16
 GROVE
 SHORE
 STRAW|Exodus 5:7
@@ -398,17 +398,17 @@ ARISE|Isaiah 60:1
 TEACH|Psalms 25:4
 WRITE|Habakkuk 2:2
 CARRY|Isaiah 40:11
-SLEEP
+SLEEP|Psalms 4:8
 ABIDE|John 15:4
 DWELL|Psalms 23:6
 CEASE
 RAISE|John 6:40
 SWEAR|Matthew 5:34
-WATCH|Matthew 26:41
-TARRY
-TOUCH
+WATCH|Mark 13:37
+TARRY|Luke 24:49
+TOUCH|Mark 5:28
 MOURN|Matthew 5:4
-UTTER
+UTTER|Matthew 13:35
 SPARE
 VISIT|James 1:27
 SHOUT|Joshua 6:5
@@ -416,21 +416,21 @@ SHINE|Matthew 5:16
 LEARN|Matthew 11:29
 FETCH
 YIELD
-PLUCK
+PLUCK|John 10:28
 LODGE|Ruth 1:16
 THANK|Philippians 1:3
 EXALT|Psalms 34:3
 PROVE|Malachi 3:10
 STEAL|Exodus 20:15
-MARRY
+MARRY|Mark 12:25
 TASTE|Psalms 34:8
-GRANT
+GRANT|Revelation 3:21
 BOAST|Ephesians 2:9
 ABHOR|Romans 12:9
 LAUGH|Ecclesiastes 3:4
-GREET
+GREET|1 Peter 5:14
 SCORN
-REACH
+REACH|John 20:27
 CATCH|Luke 5:10
 PURGE|Psalms 51:7
 ENJOY|1 Timothy 6:17
@@ -441,7 +441,7 @@ COVET|Exodus 20:17
 REPAY|Romans 12:19
 DANCE|Ecclesiastes 3:4
 GROAN
-AGREE|Amos 3:3
+AGREE|Matthew 18:19
 RENEW|Isaiah 40:31
 WEIGH
 AMEND
@@ -463,7 +463,7 @@ STUDY|2 Timothy 2:15
 AVOID
 OFFER
 FIGHT|1 Timothy 6:12
-BREAK
+BREAK|Isaiah 42:3
 STAND|Ephesians 6:11
 APPLY|Psalms 90:12
 ADORN
@@ -473,12 +473,11 @@ GNASH
 WEAVE
 DROWN
 KNEAD
-SHAVE
 
 # Descriptions
-GREAT
-YOUNG
-WHOLE
+GREAT|Psalms 145:3
+YOUNG|Psalms 37:25
+WHOLE|Ecclesiastes 12:13
 CLEAN|Psalms 51:10
 SWEET|Psalms 119:103
 ALONE|Matthew 4:4
@@ -487,18 +486,17 @@ ALIVE|1 Corinthians 15:22
 EARLY|Psalms 63:1
 BLIND|John 9:25
 WHITE|Isaiah 1:18
-PLAIN
 FALSE|Exodus 20:16
 DAILY|Matthew 6:11
 PROUD|James 4:6
 NAKED|Job 1:21
 ANGRY|Ephesians 4:26
-TRULY
+TRULY|Psalms 62:1
 WEARY|Galatians 6:9
 GREEN|Psalms 23:2
 FAINT|Isaiah 40:31
 HEAVY|Matthew 11:28
-EMPTY
+EMPTY|Luke 1:53
 NEEDY
 QUIET|1 Thessalonians 4:11
 HAPPY|Psalms 144:15
@@ -520,9 +518,9 @@ STIFF
 SHARP|Revelation 1:16
 EQUAL|Philippians 2:6
 BROAD|Matthew 7:13
-INNER
+INNER|Ephesians 3:16
 UPPER|Mark 14:15
-ELDER
+ELDER|Luke 15:25
 QUICK|2 Timothy 4:1
 LEAST|Matthew 25:40
 OUTER|Matthew 8:12
@@ -548,7 +546,7 @@ TENTH
 
 def clean(raw: str) -> str:
     """Mirror KJVTextCleaner: drop {x: y} footnotes, keep {supplied} words, strip red-letter marks."""
-    text = raw.replace("", "").replace("", "")
+    text = raw.replace("\ue000", "").replace("\ue001", "")
     text = re.sub(r"\{[^{}]*:[^{}]*\}", "", text)
     text = text.replace("{", "").replace("}", "")
     return re.sub(r"\s+", " ", text).strip()

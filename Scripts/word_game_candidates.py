@@ -14,7 +14,7 @@ KJV = ROOT / "The Bible" / "kjv.json"
 
 def clean(raw: str) -> str:
     """Mirror KJVTextCleaner: drop {x: y} footnotes, keep {supplied} words, strip red-letter marks."""
-    text = raw.replace("", "").replace("", "")
+    text = raw.replace("\ue000", "").replace("\ue001", "")
     text = re.sub(r"\{[^{}]*:[^{}]*\}", "", text)
     text = text.replace("{", "").replace("}", "")
     return re.sub(r"\s+", " ", text).strip()

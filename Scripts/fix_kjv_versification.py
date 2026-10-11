@@ -24,8 +24,8 @@ ROOT = Path(__file__).resolve().parent.parent
 KJV = ROOT / "The Bible" / "kjv.json"
 REVIEW = ROOT / "Scripts" / "kjv_fixes_review.md"
 
-RED_START = ""
-RED_END = ""
+RED_START = "\ue000"
+RED_END = "\ue001"
 
 
 def red(text: str) -> str:
@@ -83,6 +83,11 @@ REV_12_18 = "And I stood upon the sand of the sea."
 REV_13_1_START = "And saw a beast rise up out of the sea"
 
 
+def plain(text: str) -> str:
+    """Text without red-letter marks, for matching."""
+    return text.replace(RED_START, "").replace(RED_END, "")
+
+
 def strip_markup(text: str) -> str:
     """Readable text for the review sheet: drop footnotes, supplied-word braces, red-letter marks."""
     text = text.replace(RED_START, "").replace(RED_END, "")
@@ -104,7 +109,7 @@ def main() -> int:
         if verses[verse - 1] == text:
             print(f"skip {book} {ch}:{verse} (already restored)")
             continue
-        if not verses[verse - 1].startswith(current_start):
+        if not plain(verses[verse - 1]).startswith(plain(current_start)):
             print(f"ERROR {book} {ch}:{verse}: unexpected text, not changing: {verses[verse - 1][:80]!r}")
             return 1
         verses.insert(verse - 1, text)
@@ -118,7 +123,7 @@ def main() -> int:
     # Re-join split verses.
     for book, ch, verse, second_start, join in SPLIT_VERSES:
         verses = chapter(book, ch)
-        if len(verses) <= verse or not verses[verse].startswith(second_start):
+        if len(verses) <= verse or not plain(verses[verse]).startswith(plain(second_start)):
             print(f"skip {book} {ch}:{verse} (already joined)")
             continue
         first, second = verses[verse - 1], verses[verse]

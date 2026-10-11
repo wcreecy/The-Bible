@@ -66,6 +66,9 @@ struct WordleView: View {
     // NEW: Hard Mode toggle (persisted locally; stats still aggregate with normal mode)
     @AppStorage("wordleHardModeEnabled") private var hardModeEnabled: Bool = false
 
+    // Difficulty captured when a round starts, so a round keeps its rules even if the setting changes.
+    @State private var roundHardMode: Bool = false
+
     // NEW: Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
@@ -103,6 +106,7 @@ struct WordleView: View {
     private let dailyWordAssignmentKey = "wordleDailyWordAssignment"
     private let recentDailyWordsKey = "wordleRecentDailyWords"
     private let recentDailyWordLimit = 365
+    private let dailyProgressKey = "wordleDailyProgress"
 
     // MARK: - Helpers for tokenization
     private static func sanitizeLetters(_ s: String) -> String {
@@ -266,7 +270,7 @@ struct WordleView: View {
     GeometryReader { geometry in
       let usesWideLayout = started && geometry.size.width >= 900
       let usesCompactPhoneLayout = started && geometry.size.width < 600
-      let correctLetters = Self.alphabet.filter {
+      let lettersInWord = Self.alphabet.filter {
         keyboardStates[$0] == .correct || keyboardStates[$0] == .present
       }
       let otherTriedLetters = Self.alphabet.filter { keyboardStates[$0] == .absent }
@@ -320,7 +324,7 @@ struct WordleView: View {
                 currentAnswered: answered,
                 currentStreak: mode == .daily ? currentStreak : practiceStreak,
                 game: .wordle,
-                wordMode: hardModeEnabled ? .hard : .normal,
+                wordMode: roundHardMode ? .hard : .normal,
                 style: usesWideLayout ? .dashboard : .compact
               )
             } board: {
@@ -346,10 +350,10 @@ struct WordleView: View {
               }
             } feedback: {
               VStack(spacing: 10) {
-                if !roundOver, let msg = message {
+                if let msg = message {
                   Text(msg)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.red)
+                    .foregroundStyle(roundOver ? (didWin ? Color.green : Color.secondary) : Color.red)
                     .multilineTextAlignment(.center)
                 }
 
@@ -359,7 +363,7 @@ struct WordleView: View {
               }
             } letterTray: {
               WordTriedLettersCard(
-                correctLetters: correctLetters,
+                lettersInWord: lettersInWord,
                 otherTriedLetters: otherTriedLetters
               )
             } inputControls: {
@@ -368,7 +372,7 @@ struct WordleView: View {
                   endOfRoundActionArea()
                 } else {
                   keyboardView(
-                    keyHeight: usesWideLayout ? 60 : (usesCompactPhoneLayout ? 32 : 48)
+                    keyHeight: usesWideLayout ? 64 : (usesCompactPhoneLayout ? 40 : 52)
                   )
 
                   if debugAutoWinEnabled {
@@ -472,15 +476,6 @@ struct WordleView: View {
             // Daily streaks count consecutive solved days, derived from the synced solved-days map.
             currentStreak = GameStats.shared.wordleDailyWinStreak()
             currentBestStreak = max(currentBestStreak, persistentStreak.best)
-
-            if mode == .daily {
-                hardModeEnabled = true
-            }
-        }
-        .onChange(of: mode) { _, newMode in
-            if newMode == .daily {
-                hardModeEnabled = true
-            }
         }
     }
 
@@ -592,6 +587,48 @@ struct WordleView: View {
         )
     }
 
+    /// A solid-colored board tile showing a letter and its evaluation.
+    private struct WordleTile: View {
+        let letter: String
+        let state: KeyState
+        let tileSize: CGFloat
+        let isNextInput: Bool
+
+        private var background: Color {
+            switch state {
+            case .unknown: Color(.secondarySystemBackground)
+            case .absent: .gray
+            case .present: .yellow
+            case .correct: .green
+            }
+        }
+
+        private var foreground: Color {
+            switch state {
+            case .unknown: .primary
+            case .present, .correct: .black
+            case .absent: .white
+            }
+        }
+
+        private var border: Color {
+            if isNextInput { return .blue.opacity(0.85) }
+            return state == .unknown ? Color.primary.opacity(0.08) : background
+        }
+
+        var body: some View {
+            Text(letter)
+                .font((tileSize > 48 ? Font.title : Font.title2).weight(.bold))
+                .foregroundStyle(foreground)
+                .frame(width: tileSize, height: tileSize)
+                .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(background))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(border, lineWidth: isNextInput ? 2 : 1)
+                )
+        }
+    }
+
     private struct WordleBoardView: View {
         let guesses: [String]
         let evaluations: [[KeyState]]
@@ -657,32 +694,14 @@ struct WordleView: View {
         ) -> some View {
             let isPinned = pinned[row][column] != nil
             let isNextInput = row == rowIndex && column == nextInputColumn && !isRoundOver
-            let background: Color = switch state {
-            case .unknown: Color(.secondarySystemBackground)
-            case .absent: .gray.opacity(0.35)
-            case .present: .yellow.opacity(0.45)
-            case .correct: .green.opacity(0.45)
-            }
-            let border: Color = {
-                if isNextInput { return .blue.opacity(0.85) }
-
-                switch state {
-                case .unknown: return Color.primary.opacity(0.08)
-                case .absent: return .gray.opacity(0.55)
-                case .present: return .yellow.opacity(0.65)
-                case .correct: return .green.opacity(0.65)
-                }
-            }()
 
             return ZStack(alignment: .topTrailing) {
-                Text(letter)
-                    .font((tileSize > 48 ? Font.title : Font.title2).weight(.bold))
-                    .frame(width: tileSize, height: tileSize)
-                    .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(background))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .stroke(border, lineWidth: isNextInput ? 2 : 1)
-                    )
+                WordleTile(
+                    letter: letter,
+                    state: state,
+                    tileSize: tileSize,
+                    isNextInput: isNextInput
+                )
 
                 if row == rowIndex, !isRoundOver, isPinned {
                     Button {
@@ -697,7 +716,6 @@ struct WordleView: View {
                     .accessibilityLabel("Clear pinned letter")
                 }
             }
-            .foregroundStyle(.primary)
             .monospaced()
             .accessibilityLabel(accessibilityLabel(letter: letter, row: row, column: column, isPinned: isPinned, isNextInput: isNextInput))
             .accessibilityHint(state == .correct && row < rowIndex && !isRoundOver ? "Tap to place and lock this letter in the current guess." : "")
@@ -842,7 +860,7 @@ struct WordleView: View {
                 onLetter(character)
             } label: {
                 Text(String(character))
-                    .font(.headline.weight(.semibold))
+                    .font((keyHeight > 40 ? Font.title3 : Font.headline).weight(.semibold))
                     .frame(maxWidth: .infinity, minHeight: keyHeight)
             }
         }
@@ -942,43 +960,102 @@ struct WordleView: View {
         }
 
         // NEW: Hard Mode validation (must keep greens; must use yellows elsewhere)
-        if hardModeEnabled, rowIndex > 0 {
+        if roundHardMode, rowIndex > 0 {
             if let violation = hardModeViolation(for: guess) {
                 message = violation
                 return
             }
         }
 
-        // Evaluate
-        let eval = evaluate(guess: guess, against: target)
-        evaluations[rowIndex] = eval
-        guesses[rowIndex] = guess
-        rowIndex += 1
-
-        // Update keyboard states with precedence
-        for (i, ch) in guess.enumerated() {
-            let newState = eval[i]
-            let old = keyboardStates[ch] ?? .unknown
-            keyboardStates[ch] = KeyState.merged(old, newState)
-        }
+        applyGuess(guess)
 
         if guess == target {
-            didWin = true
             endRound(win: true)
             return
         }
         if rowIndex >= 6 {
-            didWin = false
             endRound(win: false)
             return
         }
         // Prepare the next row and ensure its locked-letter slots are empty.
         currentInput = ""
-        // Do not clear previous row pins; they’re irrelevant now. Ensure next row pins are empty.
         if rowIndex < pinned.count {
             pinned[rowIndex] = Array(repeating: nil, count: 5)
         }
         message = nil
+
+        if mode == .daily {
+            saveDailyProgress()
+        }
+    }
+
+    /// Records a guess on the board, updates the keyboard colors, and advances to the next row.
+    @discardableResult
+    private func applyGuess(_ guess: String) -> [KeyState] {
+        let eval = evaluate(guess: guess, against: target)
+        evaluations[rowIndex] = eval
+        guesses[rowIndex] = guess
+        rowIndex += 1
+        mergeKeyboardStates(guess: guess, evaluation: eval)
+        return eval
+    }
+
+    // Update keyboard states with precedence
+    private func mergeKeyboardStates(guess: String, evaluation: [KeyState]) {
+        for (i, ch) in guess.enumerated() {
+            let old = keyboardStates[ch] ?? .unknown
+            keyboardStates[ch] = KeyState.merged(old, evaluation[i])
+        }
+    }
+
+    // MARK: - Daily progress
+    // An unfinished Daily is saved after every guess, so leaving and returning resumes
+    // the same board instead of granting a fresh set of guesses.
+    private struct DailyProgress: Codable {
+        let dayKey: String
+        let word: String
+        let hardMode: Bool
+        let guesses: [String]
+        let elapsedSeconds: Int
+    }
+
+    private func saveDailyProgress() {
+        let elapsed = max(0, Int(Date().timeIntervalSince(roundStartAt ?? Date())))
+        let progress = DailyProgress(
+            dayKey: todayKey,
+            word: target,
+            hardMode: roundHardMode,
+            guesses: Array(guesses.prefix(rowIndex)),
+            elapsedSeconds: elapsed
+        )
+        if let data = try? JSONEncoder().encode(progress) {
+            UserDefaults.standard.set(data, forKey: dailyProgressKey)
+        }
+    }
+
+    /// Restores today's unfinished Daily, if any. Returns true when guesses were restored.
+    @discardableResult
+    private func restoreDailyProgress() -> Bool {
+        guard let data = UserDefaults.standard.data(forKey: dailyProgressKey),
+              let progress = try? JSONDecoder().decode(DailyProgress.self, from: data),
+              progress.dayKey == todayKey,
+              progress.word == target else {
+            UserDefaults.standard.removeObject(forKey: dailyProgressKey)
+            return false
+        }
+
+        // The round keeps the difficulty it was started with.
+        roundHardMode = progress.hardMode
+        roundStartAt = Date().addingTimeInterval(-Double(progress.elapsedSeconds))
+        for guess in progress.guesses.prefix(6) where guess.count == 5 {
+            applyGuess(guess)
+        }
+
+        // Shouldn't happen (finished rounds clear their progress), but never leave a solved board open.
+        if guesses.prefix(rowIndex).contains(target) || rowIndex >= 6 {
+            endRound(win: guesses.prefix(rowIndex).contains(target))
+        }
+        return !progress.guesses.isEmpty
     }
 
     // Standard Wordle evaluation (two-pass to handle duplicates)
@@ -1114,9 +1191,7 @@ struct WordleView: View {
             return
         }
 
-        if !practice {
-            hardModeEnabled = true
-        }
+        roundHardMode = hardModeEnabled
 
         guesses = Array(repeating: "", count: 6)
         evaluations = Array(repeating: Array(repeating: .unknown, count: 5), count: 6)
@@ -1139,6 +1214,7 @@ struct WordleView: View {
             target = nextPracticeWord()
         } else {
             target = wordOfDay()
+            restoreDailyProgress()
         }
 
         started = true
@@ -1146,6 +1222,7 @@ struct WordleView: View {
 
     private func endRound(win: Bool) {
         roundOver = true
+        didWin = win
         // Clear current input to avoid duplicate rendering.
         currentInput = ""
 
@@ -1157,11 +1234,18 @@ struct WordleView: View {
 
         lastRoundElapsedSeconds = elapsedSeconds
 
-        message = win
-            ? (mode == .daily ? "You got it! See you tomorrow." : "You got it!")
-            : "The word was \(target)."
+        if win {
+            let tries = rowIndex == 1 ? "1 guess" : "\(rowIndex) guesses"
+            message = mode == .daily
+                ? "You got it in \(tries)! See you tomorrow."
+                : "You got it in \(tries)!"
+        } else {
+            // The answer box below shows the word, so the message only explains how the round ended.
+            message = rowIndex < 6 ? "Word revealed." : "Out of guesses."
+        }
 
         if mode == .daily {
+            UserDefaults.standard.removeObject(forKey: dailyProgressKey)
             answered += 1
 
             if win {
@@ -1181,14 +1265,14 @@ struct WordleView: View {
 
             GameStats.shared.recordWordleResult(
                 type: .daily,
-                mode: .hard,
+                mode: roundHardMode ? .hard : .normal,
                 won: win,
                 guesses: rowIndex,
                 currentBestStreak: currentBestStreak
             )
             GameStats.shared.recordWordleTime(
                 type: .daily,
-                mode: .hard,
+                mode: roundHardMode ? .hard : .normal,
                 won: win,
                 elapsedSeconds: elapsedSeconds
             )
@@ -1205,14 +1289,14 @@ struct WordleView: View {
 
             GameStats.shared.recordWordleResult(
                 type: .free,
-                mode: hardModeEnabled ? .hard : .normal,
+                mode: roundHardMode ? .hard : .normal,
                 won: win,
                 guesses: rowIndex,
                 currentBestStreak: practiceBestStreak
             )
             GameStats.shared.recordWordleTime(
                 type: .free,
-                mode: hardModeEnabled ? .hard : .normal,
+                mode: roundHardMode ? .hard : .normal,
                 won: win,
                 elapsedSeconds: elapsedSeconds
             )
@@ -1408,6 +1492,14 @@ struct WordleView: View {
                     .opacity(0.6)
                     .accessibilityHidden(true)
                 }
+
+                ShareLink(item: shareText) {
+                    Label("Share Result", systemImage: "square.and.arrow.up")
+                        .labelStyle(.iconOnly)
+                        .font(.headline)
+                }
+                .buttonStyle(ModernPillButtonStyle(tint: .mint))
+                .controlSize(.large)
             }
 
             HStack(spacing: 12) {
@@ -1433,6 +1525,23 @@ struct WordleView: View {
                 }
             }
         }
+    }
+
+    /// Spoiler-free result summary with an emoji grid of the guesses.
+    private var shareText: String {
+        let title = mode == .daily ? "WORD Daily \(todayKey)" : "WORD Practice"
+        let score = didWin ? "\(rowIndex)/6" : "X/6"
+        let difficulty = roundHardMode ? " (Hard)" : ""
+        let grid = evaluations.prefix(rowIndex).map { row in
+            row.map { state -> String in
+                switch state {
+                case .correct: "🟩"
+                case .present: "🟨"
+                case .absent, .unknown: "⬛"
+                }
+            }.joined()
+        }.joined(separator: "\n")
+        return "\(title) \(score)\(difficulty)\n\n\(grid)"
     }
 
   private func formatElapsed(_ s: Int) -> String {
@@ -1526,13 +1635,6 @@ private struct WordSetupControls: View {
                     Text("Hard").tag(true)
                 }
                 .pickerStyle(.segmented)
-                .disabled(mode == .daily)
-
-                if mode == .daily {
-                    Text("Daily games are always played in Hard mode.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
             }
 
             VStack(alignment: .leading, spacing: 8) {
@@ -1693,14 +1795,14 @@ private struct WordGameResponsiveLayout<
 }
 
 private struct WordTriedLettersCard: View {
-  let correctLetters: [Character]
+  let lettersInWord: [Character]
   let otherTriedLetters: [Character]
 
   var body: some View {
     VStack(alignment: .leading, spacing: 16) {
       WordLetterBox(
-        title: "Correct Letters",
-        letters: correctLetters,
+        title: "Letters in Word",
+        letters: lettersInWord,
         allowsShuffle: true
       )
       WordLetterBox(
@@ -1744,7 +1846,7 @@ private struct WordLetterBox: View {
           Button {
             shuffledOrder = letters.shuffled()
           } label: {
-            Label("Shuffle Correct Letters", systemImage: "shuffle")
+            Label("Shuffle Letters in Word", systemImage: "shuffle")
           }
           .labelStyle(.iconOnly)
           .buttonStyle(.bordered)
