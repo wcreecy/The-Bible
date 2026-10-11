@@ -1,3 +1,4 @@
+import Foundation
 import SwiftUI
 
 /// Home card that prepares the reader for the chapter they're about to read.
@@ -101,7 +102,7 @@ struct StudyHomeCard: View {
 
     @ViewBuilder
     private func chapterStudy(_ insights: ChapterInsights) -> some View {
-        expandableText(insights.overallSummary)
+        ChapterStudySummary(summary: insights.overallSummary)
 
         let themes = insights.keyThemes.prefix(Self.maximumThemes)
         if !themes.isEmpty {
@@ -340,6 +341,102 @@ struct StudyHomeCard: View {
             )
         }
         isLoading = false
+    }
+}
+
+private struct ChapterStudySummary: View {
+    let summary: String
+
+    @State private var showsFullSummary = false
+    @State private var collapsedSummaryHeight: CGFloat = 0
+    @State private var fullSummaryHeight: CGFloat = 0
+
+    private var sentences: [String] {
+        summary.sentences
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if showsFullSummary, summary.count > 650 {
+                ForEach(Array(sentences.enumerated()), id: \.offset) { _, sentence in
+                    SummaryBullet(text: sentence)
+                }
+            } else {
+                SummaryBullet(text: summary, lineLimit: showsFullSummary ? nil : 3)
+                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
+                        if !showsFullSummary {
+                            collapsedSummaryHeight = height
+                        }
+                    }
+                    .background {
+                        SummaryBullet(text: summary)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .hidden()
+                            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
+                                fullSummaryHeight = height
+                            }
+                    }
+            }
+
+            if fullSummaryHeight > collapsedSummaryHeight + 1 || showsFullSummary {
+                Button {
+                    withAnimation(.snappy) {
+                        showsFullSummary.toggle()
+                    }
+                } label: {
+                    Label(
+                        showsFullSummary ? "Less" : "More",
+                        systemImage: showsFullSummary ? "chevron.up" : "chevron.down"
+                    )
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.teal)
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint(showsFullSummary ? "Shows a three-line summary preview" : "Shows all summary points")
+            }
+        }
+    }
+}
+
+private struct SummaryBullet: View {
+    let text: String
+    var lineLimit: Int?
+
+    init(text: String, lineLimit: Int? = nil) {
+        self.text = text
+        self.lineLimit = lineLimit
+    }
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "circle.fill")
+                .font(.system(size: 5))
+                .foregroundStyle(.teal)
+                .padding(.top, 6)
+
+            LinkedScriptureText(text)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .lineLimit(lineLimit)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+private extension String {
+    var sentences: [String] {
+        var results: [String] = []
+        enumerateSubstrings(
+            in: startIndex..<endIndex,
+            options: [.bySentences, .substringNotRequired]
+        ) { _, range, _, _ in
+            let sentence = String(self[range]).trimmingCharacters(in: .whitespacesAndNewlines)
+            if !sentence.isEmpty {
+                results.append(sentence)
+            }
+        }
+        return results.isEmpty ? [self] : results
     }
 }
 
