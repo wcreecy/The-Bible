@@ -21,9 +21,8 @@ enum UITestSupport {
         overrides.merge([
             // Open on Home.
             LaunchTabPreference.defaultsKey: LaunchTabPreference.home.rawValue,
-            // Every Home card visible, with no Show More section.
+            // Every Home card visible.
             "homeCardHidden": "[]",
-            "homeShowMoreVisible": false,
             "homeTodayVisibilityMigratedV1": true,
             // No tips or permission prompts in the way.
             "contextualTipsEnabled": false,

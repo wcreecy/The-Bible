@@ -220,8 +220,7 @@ struct HomeView: View {
     /// Whether the Reading Streak card is on screen, so the header can skip repeating it.
     private func isStreaksCardShown(usesDashboard: Bool) -> Bool {
         guard !hiddenCards.contains(.streaks) else { return false }
-        if usesDashboard { return !showsMinimalHome }
-        return mainCards.contains(.streaks) || !showMoreVisible || showMoreCards
+        return !usesDashboard || !showsMinimalHome
     }
 
     // MARK: - Dynamic body using saved layout
@@ -235,46 +234,28 @@ struct HomeView: View {
 
     @State private var layoutOrder: [HomeCardID] = HomeLayoutStore.baselineOrder
     @State private var hiddenCards: Set<HomeCardID> = HomeLayoutStore.baselineHidden
-    @State private var mainCards: Set<HomeCardID> = HomeLayoutStore.baselineMain
-    @State private var showMoreVisible = HomeLayoutStore.defaultShowMoreVisible
-    @State private var showMoreCards: Bool = false
     @State private var hasFavoriteLayout: Bool = false
     /// Incremented by the Search card to ask Home to scroll it into view while typing.
     @State private var searchScrollRequest = 0
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
     @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
 
-    private var moreCards: [HomeCardID] {
-        layoutOrder.filter {
-            !mainCards.contains($0) && !hiddenCards.contains($0)
-        }
-    }
-
     private func loadHomeLayout() {
         let store = HomeLayoutStore()
         let loaded = store.load()
         layoutOrder = loaded.order
         hiddenCards = loaded.hidden
-        mainCards = loaded.main
-        showMoreVisible = loaded.showMoreVisible
         hasFavoriteLayout = store.hasFavorite
     }
 
     private func saveHomeLayout() {
-        HomeLayoutStore().save(
-            order: layoutOrder,
-            hidden: hiddenCards,
-            main: mainCards,
-            showMoreVisible: showMoreVisible
-        )
+        HomeLayoutStore().save(order: layoutOrder, hidden: hiddenCards)
     }
 
     private func saveFavoriteLayout() {
         HomeLayoutStore().saveFavorite(
             order: layoutOrder,
             hidden: hiddenCards,
-            main: mainCards,
-            showMoreVisible: showMoreVisible,
             bibleReaderVisible: bibleReaderVisible
         )
         hasFavoriteLayout = true
@@ -418,7 +399,7 @@ struct HomeView: View {
                 title: "Make Home your own",
                 message: isPad
                     ? "Your visible cards fill this dashboard automatically. Choose and reorder them from Customize Home."
-                    : "Expand Show More for prayer timers and other cards. You can choose and reorder Home cards in Settings.",
+                    : "Choose which cards appear here and reorder them from Customize Home.",
                 systemImage: "sparkles"
             )
         }
@@ -431,47 +412,9 @@ struct HomeView: View {
         contextualHomeTip
             .frame(maxWidth: .infinity)
 
-        ForEach(layoutOrder.filter { mainCards.contains($0) && !hiddenCards.contains($0) }) { cardID in
+        ForEach(layoutOrder.filter { !hiddenCards.contains($0) }) { cardID in
             card(for: cardID)
                 .frame(maxWidth: .infinity)
-        }
-
-        if !moreCards.isEmpty {
-            if showMoreVisible {
-                Button {
-                    withAnimation(.snappy) {
-                        showMoreCards.toggle()
-                    }
-                } label: {
-                    HStack {
-                        Label(
-                            showMoreCards ? "Show Less" : "Show More",
-                            systemImage: "square.grid.2x2"
-                        )
-                        Spacer()
-                        Image(systemName: "chevron.down")
-                            .rotationEffect(.degrees(showMoreCards ? 180 : 0))
-                    }
-                    .font(.headline)
-                    .padding(AppDesignMetrics.cardPadding)
-                    .imageOverlaySurface()
-                }
-                .buttonStyle(.plain)
-                .accessibilityHint(showMoreCards ? "Hides additional Home cards" : "Shows additional Home cards")
-
-                if showMoreCards {
-                    ForEach(moreCards) { cardID in
-                        card(for: cardID)
-                            .frame(maxWidth: .infinity)
-                    }
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-                }
-            } else {
-                ForEach(moreCards) { cardID in
-                    card(for: cardID)
-                        .frame(maxWidth: .infinity)
-                }
-            }
         }
 
         if customizeButtonVisible {
@@ -612,9 +555,7 @@ struct HomeView: View {
             HomeLayoutEditorView(
                 order: $layoutOrder,
                 hiddenSet: $hiddenCards,
-                mainSet: $mainCards,
-                showMoreVisible: $showMoreVisible,
-                allowsShowMore: !isPad,
+                usesDashboard: isPad,
                 onDone: saveHomeLayout,
                 onSaveFavorite: saveFavoriteLayout,
                 onResetToFavorite: applyFavoriteLayout,
@@ -668,9 +609,7 @@ struct HomeView: View {
                         HomeLayoutEditorView(
                             order: $layoutOrder,
                             hiddenSet: $hiddenCards,
-                            mainSet: $mainCards,
-                            showMoreVisible: $showMoreVisible,
-                            allowsShowMore: false,
+                            usesDashboard: true,
                             onDone: saveHomeLayout,
                             onSaveFavorite: saveFavoriteLayout,
                             onResetToFavorite: applyFavoriteLayout,
@@ -751,7 +690,7 @@ struct HomeView: View {
         }
     }
 
-    /// Starts the prayer timer from a Today challenge and makes sure its card is visible.
+    /// Starts the prayer timer from a Today challenge and confirms it with a toast.
     private func startPrayerChallengeTimer(minutes: Int) {
         if timerController.isRunning {
             verseActionToastSymbol = "timer"
@@ -762,11 +701,6 @@ struct HomeView: View {
             verseActionToastSymbol = "timer"
             verseActionToastText = "Prayer timer started · \(minutes) min"
             verseActionToastTint = .green
-        }
-
-        // The timer card may sit under Show More or be hidden; reveal it when possible.
-        if moreCards.contains(.timer) && showMoreVisible {
-            withAnimation(.snappy) { showMoreCards = true }
         }
 
         withAnimation(.spring()) {

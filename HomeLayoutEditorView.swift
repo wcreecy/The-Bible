@@ -3,9 +3,8 @@ import SwiftUI
 struct HomeLayoutEditorView: View {
     @Binding var order: [HomeCardID]
     @Binding var hiddenSet: Set<HomeCardID>
-    @Binding var mainSet: Set<HomeCardID>
-    @Binding var showMoreVisible: Bool
-    let allowsShowMore: Bool
+    /// The iPad dashboard pins Verse of the Day above the card grid, so it is toggled separately.
+    let usesDashboard: Bool
     var onDone: () -> Void
 
     var onSaveFavorite: () -> Void
@@ -16,12 +15,9 @@ struct HomeLayoutEditorView: View {
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
     @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
 
-    private var mainCards: [HomeCardID] {
-        order.filter { mainSet.contains($0) }
-    }
-
-    private var showMoreCards: [HomeCardID] {
-        order.filter { !mainSet.contains($0) }
+    /// The cards listed for reordering, in Home order.
+    private var listedCards: [HomeCardID] {
+        usesDashboard ? order.filter { $0 != .verseOfDay } : order
     }
 
     private func isVisible(_ id: HomeCardID) -> Bool {
@@ -40,8 +36,6 @@ struct HomeLayoutEditorView: View {
     private func resetToDefault() {
         order = HomeLayoutStore.baselineOrder
         hiddenSet = HomeLayoutStore.baselineHidden
-        mainSet = HomeLayoutStore.baselineMain
-        showMoreVisible = HomeLayoutStore.defaultShowMoreVisible
         customizeButtonVisible = true
         bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
         onDone()
@@ -64,65 +58,22 @@ struct HomeLayoutEditorView: View {
     }
 
     private func moveCard(_ id: HomeCardID, by offset: Int) {
-        if !allowsShowMore {
-            guard id != .verseOfDay else { return }
-            var cards = [.verseOfDay] + order.filter { $0 != .verseOfDay }
-            guard let index = cards.firstIndex(of: id) else { return }
-            let destination = index + offset
-            guard destination > 0, cards.indices.contains(destination) else { return }
-            cards.swapAt(index, destination)
-            order = cards
-            onDone()
-            return
-        }
-
-        var main = mainCards
-        var more = showMoreCards
-        if let index = main.firstIndex(of: id) {
-            let destination = index + offset
-            if main.indices.contains(destination) {
-                main.swapAt(index, destination)
-            } else if offset > 0 && index == main.index(before: main.endIndex) {
-                main.remove(at: index)
-                more.insert(id, at: more.startIndex)
-                mainSet.remove(id)
-            } else {
-                return
-            }
-        } else if let index = more.firstIndex(of: id) {
-            let destination = index + offset
-            if more.indices.contains(destination) {
-                more.swapAt(index, destination)
-            } else if offset < 0 && index == more.startIndex {
-                more.remove(at: index)
-                main.append(id)
-                mainSet.insert(id)
-            } else {
-                return
-            }
-        } else {
-            return
-        }
-        order = main + more
+        var cards = listedCards
+        guard let index = cards.firstIndex(of: id) else { return }
+        let destination = index + offset
+        guard cards.indices.contains(destination) else { return }
+        cards.swapAt(index, destination)
+        // The dashboard keeps Verse of the Day first; it is not part of the reorderable list there.
+        order = usesDashboard ? [.verseOfDay] + cards : cards
         onDone()
     }
 
     private func canMoveUp(_ id: HomeCardID) -> Bool {
-        if !allowsShowMore {
-            let cards = [.verseOfDay] + order.filter { $0 != .verseOfDay }
-            return id != .verseOfDay && cards.firstIndex(of: id).map { $0 > 1 } == true
-        }
-        if let index = mainCards.firstIndex(of: id) { return index > 0 }
-        return showMoreCards.contains(id)
+        listedCards.firstIndex(of: id).map { $0 > 0 } == true
     }
 
     private func canMoveDown(_ id: HomeCardID) -> Bool {
-        if !allowsShowMore {
-            let cards = [.verseOfDay] + order.filter { $0 != .verseOfDay }
-            return id != .verseOfDay && cards.firstIndex(of: id).map { $0 < cards.count - 1 } == true
-        }
-        if let index = mainCards.firstIndex(of: id) { return index < mainCards.count - 1 || allowsShowMore }
-        return showMoreCards.firstIndex(of: id).map { $0 < showMoreCards.count - 1 } == true
+        listedCards.firstIndex(of: id).map { $0 < listedCards.count - 1 } == true
     }
 
     private func layoutRow(for id: HomeCardID) -> some View {
@@ -191,15 +142,13 @@ struct HomeLayoutEditorView: View {
                 ContextualTipView(
                     id: "home.layoutEditor",
                     title: "Make Home yours",
-                    message: allowsShowMore
-                        ? "Use the arrow buttons to reorder cards or move them between Main Home and Show More."
-                        : "Use the eye buttons to show or hide cards, and the arrows to reorder them.",
+                    message: "Use the eye buttons to show or hide cards, and the arrows to reorder them.",
                     systemImage: "rectangle.grid.1x2"
                 )
                 .listRowSeparator(.hidden)
             }
 
-            if !allowsShowMore {
+            if usesDashboard {
                 Section {
                     Toggle(
                         "Verse of the Day",
@@ -223,45 +172,24 @@ struct HomeLayoutEditorView: View {
             }
 
             Section {
-                ForEach(allowsShowMore ? mainCards : order.filter { $0 != .verseOfDay }) { id in
+                ForEach(listedCards) { id in
                     layoutRow(for: id)
                 }
-            } header: {
-                Label(allowsShowMore ? "Main Home" : "Home Cards", systemImage: "house")
-            } footer: {
-                Text(allowsShowMore
-                    ? "Shown cards appear directly on Home. Use the arrows to arrange them."
-                    : "Shown cards appear on Home. Use the arrows to choose their order.")
-            }
 
-            if allowsShowMore {
-                Section {
-                    Toggle(isOn: $showMoreVisible) {
-                        Label("Show ‘Show More’ on Home", systemImage: showMoreVisible ? "eye" : "eye.slash")
-                    }
-                    .toggleStyle(StatusColorToggleStyle())
-                    .onChange(of: showMoreVisible) { _, _ in
-                        onDone()
-                    }
-
-                    ForEach(showMoreCards) { id in
-                        layoutRow(for: id)
-                    }
-
+                // iPad keeps Customize Home in the toolbar; iPhone shows it below the cards.
+                if !usesDashboard {
                     Toggle(isOn: $customizeButtonVisible) {
                         Label("Show ‘Customize Home’ on Home", systemImage: customizeButtonVisible ? "eye" : "eye.slash")
                     }
                     .toggleStyle(StatusColorToggleStyle())
-                } header: {
-                    Label("Inside Show More", systemImage: "square.grid.2x2")
-                } footer: {
-                    Text(showMoreVisible
-                        ? "Shown cards become visible only after Show More is expanded. Use the arrows to arrange them."
-                        : "Show More is hidden from Home. Shown cards appear directly on Home instead.")
                 }
+            } header: {
+                Label("Home Cards", systemImage: "house")
+            } footer: {
+                Text("Shown cards appear on Home. Use the arrows to choose their order.")
             }
 
-            if !allowsShowMore {
+            if usesDashboard {
                 Section {
                     VStack(alignment: .leading, spacing: 10) {
                         footerButton(

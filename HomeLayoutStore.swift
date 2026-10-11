@@ -9,13 +9,9 @@ struct HomeLayoutStore {
     // Keys (kept identical to existing usage)
     private static let keyOrder = "homeCardOrder"
     private static let keyHidden = "homeCardHidden"
-    private static let keyMain = "homeCardMain"
-    private static let keyShowMoreVisible = "homeShowMoreVisible"
     private static let keyBibleReaderVisible = "homeBibleReaderVisible"
     private static let keyFavOrder = "homeCardFavoriteOrder"
     private static let keyFavHidden = "homeCardFavoriteHidden"
-    private static let keyFavMain = "homeCardFavoriteMain"
-    private static let keyFavShowMoreVisible = "homeCardFavoriteShowMoreVisible"
     private static let keyFavBibleReaderVisible = "homeCardFavoriteBibleReaderVisible"
     private static let keyTodayVisibilityMigrated = "homeTodayVisibilityMigratedV1"
     private static let keyFavoriteTodayVisibilityMigrated = "homeFavoriteTodayVisibilityMigratedV1"
@@ -23,13 +19,9 @@ struct HomeLayoutStore {
     // Underlying storage
     @AppStorage(Self.keyOrder) private var orderRaw: String = ""
     @AppStorage(Self.keyHidden) private var hiddenRaw: String = ""
-    @AppStorage(Self.keyMain) private var mainRaw: String = ""
-    @AppStorage(Self.keyShowMoreVisible) private var showMoreVisible: Bool = Self.defaultShowMoreVisible
     @AppStorage(Self.keyBibleReaderVisible) private var bibleReaderVisible: Bool = Self.defaultBibleReaderVisible
     @AppStorage(Self.keyFavOrder) private var favOrderRaw: String = ""
     @AppStorage(Self.keyFavHidden) private var favHiddenRaw: String = ""
-    @AppStorage(Self.keyFavMain) private var favMainRaw: String = ""
-    @AppStorage(Self.keyFavShowMoreVisible) private var favShowMoreVisible: Bool = true
     @AppStorage(Self.keyFavBibleReaderVisible) private var favBibleReaderVisible: Bool = Self.defaultBibleReaderVisible
     @AppStorage(Self.keyTodayVisibilityMigrated) private var todayVisibilityMigrated = false
     @AppStorage(Self.keyFavoriteTodayVisibilityMigrated) private var favoriteTodayVisibilityMigrated = false
@@ -52,7 +44,7 @@ struct HomeLayoutStore {
         }
 
         // iPhone: get back into the text first, then the daily verse and challenges.
-        // Streak and Prayer Timer sit under Show More; the rest are opt-in.
+        // Search, App Activity and Daily Focus are opt-in.
         return [
             .resumeReading,
             .verseOfDay,
@@ -72,10 +64,6 @@ struct HomeLayoutStore {
         // Search duplicates the header's Search button; App Activity and Daily Focus are opt-in.
         return [.search, .bibleStats, .dailyFocus]
     }
-    // Cards shown above Show More on iPhone. The iPad dashboard does not use this set.
-    static let baselineMain: Set<HomeCardID> = [.resumeReading, .verseOfDay, .today]
-    // Shows the Show More button so the cards beneath it are discoverable.
-    static let defaultShowMoreVisible = true
     // The iPad Today's Reading panel; iPhone does not show it.
     static let defaultBibleReaderVisible = true
 
@@ -83,7 +71,7 @@ struct HomeLayoutStore {
 
     // MARK: - Core load/save
 
-    func load() -> (order: [HomeCardID], hidden: Set<HomeCardID>, main: Set<HomeCardID>, showMoreVisible: Bool) {
+    func load() -> (order: [HomeCardID], hidden: Set<HomeCardID>) {
         // Decode order
         let order: [HomeCardID] = {
             if let data = orderRaw.data(using: .utf8),
@@ -112,16 +100,10 @@ struct HomeLayoutStore {
             }
         }()
 
-        let main = decodeSet(from: mainRaw) ?? Self.baselineMain
-        return (order, hidden, main, showMoreVisible)
+        return (order, hidden)
     }
 
-    func save(
-        order: [HomeCardID],
-        hidden: Set<HomeCardID>,
-        main: Set<HomeCardID>,
-        showMoreVisible: Bool
-    ) {
+    func save(order: [HomeCardID], hidden: Set<HomeCardID>) {
         // Encode order
         do {
             let rawIDs = order.map { $0.rawValue }
@@ -140,8 +122,6 @@ struct HomeLayoutStore {
             // Keep prior value on failure
         }
 
-        mainRaw = encode(main)
-        self.showMoreVisible = showMoreVisible
         todayVisibilityMigrated = true
 
         notifyChanged()
@@ -156,8 +136,6 @@ struct HomeLayoutStore {
     func saveFavorite(
         order: [HomeCardID],
         hidden: Set<HomeCardID>,
-        main: Set<HomeCardID>,
-        showMoreVisible: Bool,
         bibleReaderVisible: Bool
     ) {
         // Encode order
@@ -178,8 +156,6 @@ struct HomeLayoutStore {
             // Keep prior value on failure
         }
 
-        favMainRaw = encode(main)
-        favShowMoreVisible = showMoreVisible
         favBibleReaderVisible = bibleReaderVisible
         favoriteTodayVisibilityMigrated = true
     }
@@ -187,8 +163,6 @@ struct HomeLayoutStore {
     func loadFavorite() -> (
         order: [HomeCardID],
         hidden: Set<HomeCardID>,
-        main: Set<HomeCardID>,
-        showMoreVisible: Bool,
         bibleReaderVisible: Bool
     )? {
         guard let orderData = favOrderRaw.data(using: .utf8),
@@ -212,33 +186,14 @@ struct HomeLayoutStore {
             hidden.insert(.today)
             favoriteTodayVisibilityMigrated = true
         }
-        let main = decodeSet(from: favMainRaw) ?? Self.baselineMain
-        return (order, hidden, main, favShowMoreVisible, favBibleReaderVisible)
+        return (order, hidden, favBibleReaderVisible)
     }
 
     // Applies favorite to current layout and notifies listeners
     func applyFavoriteIfAvailable() {
         guard let fav = loadFavorite() else { return }
         bibleReaderVisible = fav.bibleReaderVisible
-        save(
-            order: fav.order,
-            hidden: fav.hidden,
-            main: fav.main,
-            showMoreVisible: fav.showMoreVisible
-        )
-    }
-
-    private func encode(_ ids: Set<HomeCardID>) -> String {
-        let rawIDs = ids.map(\.rawValue)
-        guard let data = try? JSONEncoder().encode(rawIDs) else { return "" }
-        return String(data: data, encoding: .utf8) ?? ""
-    }
-
-    private func decodeSet(from rawValue: String) -> Set<HomeCardID>? {
-        guard !rawValue.isEmpty,
-              let data = rawValue.data(using: .utf8),
-              let ids = try? JSONDecoder().decode([String].self, from: data) else { return nil }
-        return Set(ids.compactMap(HomeCardID.init(rawValue:)))
+        save(order: fav.order, hidden: fav.hidden)
     }
 
     // MARK: - Notification
