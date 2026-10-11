@@ -1,77 +1,58 @@
 import SwiftUI
-import SwiftData
 
 #if canImport(UIKit)
 import UIKit
 #endif
 
 struct QuizView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var favorites: [Favorite]
-    
-    @AppStorage("quizScope") private var quizScopeRaw: String = "whole"
-    @AppStorage("quizSections") private var quizSectionsRaw: String = ""
-    @AppStorage("quizDifficulty") private var quizDifficulty: String = "normal"
-    
-    // COMBINED all-time stats (shared across difficulties)
-    @AppStorage("quizAllTimeCorrect_all") private var allTimeCorrectAll: Int = 0
-    @AppStorage("quizAllTimeAnswered_all") private var allTimeAnsweredAll: Int = 0
-    @AppStorage("quizAllTimeBestStreak_all") private var allTimeBestStreakAll: Int = 0
+    enum Difficulty: String, CaseIterable, Identifiable {
+        case easy
+        case normal
+        case hard
 
-    // Global Auto‑Win debug toggle
-    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
+        var id: String { rawValue }
 
-    // Display the shared all-time stats regardless of difficulty
-    private var allTimeCorrect: Int { allTimeCorrectAll }
-    private var allTimeAnswered: Int { allTimeAnsweredAll }
-    private var allTimeBestStreak: Int { allTimeBestStreakAll }
-    
-    // Centralized write to GameStats (iCloud KVS mirrored)
-    private func recordRound(correct: Int, answered: Int, bestStreak: Int) {
-        let diff: GameStats.Difficulty
-        switch quizDifficulty {
-        case "normal": diff = .normal
-        case "hard": diff = .hard
-        default: diff = .easy
+        var title: LocalizedStringResource {
+            switch self {
+            case .easy: "Easy"
+            case .normal: "Normal"
+            case .hard: "Hard"
+            }
         }
-        GameStats.shared.recordRound(
-            game: .quiz,
-            difficulty: diff,
-            correct: correct,
-            answered: answered,
-            currentBestStreak: bestStreak
-        )
-    }
 
-    // MARK: - Persistent streak (per difficulty)
-    private func streakSuffix() -> String {
-        switch quizDifficulty {
-        case "normal": return "normal"
-        case "hard": return "hard"
-        default: return "easy"
+        /// Seconds per verse, or nil for no time limit.
+        var timeLimit: Int? {
+            switch self {
+            case .easy: nil
+            case .normal: 15
+            case .hard: 12
+            }
+        }
+
+        /// Seconds the previous verse costs; free when there's no timer.
+        var contextCost: Int { timeLimit == nil ? 0 : QuizView.contextCost }
+
+        var detail: LocalizedStringResource {
+            switch self {
+            case .easy:
+                "No time limit. Wrong choices come from other parts of the Bible."
+            case .normal:
+                "15 seconds per verse. Wrong choices come from anywhere in your categories."
+            case .hard:
+                "12 seconds per verse. Wrong choices come from the same part of the Bible, such as all four Gospels."
+            }
+        }
+
+        var statsDifficulty: GameStats.Difficulty {
+            switch self {
+            case .easy: .easy
+            case .normal: .normal
+            case .hard: .hard
+            }
         }
     }
 
-    private var persistentStreak: PersistentGameStreak {
-        PersistentGameStreak(game: "quiz", variant: streakSuffix())
-    }
-
-    private func seedStreakFromPersistence() {
-        currentStreak = persistentStreak.current
-        bestStreak = max(bestStreak, persistentStreak.best)
-    }
-    
-    private struct QuizQuestion: Identifiable {
-        let id = UUID()
-        let verseText: String
-        let correctBook: String
-        let chapter: Int
-        let verse: Int
-        let options: [String]
-        var selected: String?
-    }
-
-    private enum VerseSection: String, CaseIterable, Identifiable {
+    enum VerseSection: String, CaseIterable, Identifiable {
         case law
         case history
         case poetry
@@ -80,11 +61,12 @@ struct QuizView: View {
         case gospels
         case acts
         case epistles
-        case apocalypse
+        // Stored as "apocalypse" in existing settings.
+        case revelation = "apocalypse"
 
         var id: String { rawValue }
 
-        var title: String {
+        var title: LocalizedStringResource {
             switch self {
             case .law: "Law"
             case .history: "History"
@@ -94,82 +76,56 @@ struct QuizView: View {
             case .gospels: "Gospels"
             case .acts: "Acts"
             case .epistles: "Epistles"
-            case .apocalypse: "Apocalypse"
+            case .revelation: "Revelation"
             }
         }
-    }
 
-    private var availableSections: [VerseSection] {
-        switch quizScopeRaw {
-        case "old": [.law, .history, .poetry, .majorProphets, .minorProphets]
-        case "new": [.gospels, .acts, .epistles, .apocalypse]
-        default: VerseSection.allCases
-        }
-    }
-
-    private var selectedSections: Set<VerseSection> {
-        Set(quizSectionsRaw.split(separator: ",").compactMap { VerseSection(rawValue: String($0)) })
-    }
-
-    private var displayedSelectedSections: Set<VerseSection> {
-        selectedSections.isEmpty ? Set(availableSections) : selectedSections.intersection(availableSections)
-    }
-
-    private var selectedSectionsTitle: String {
-        let selected = availableSections.filter { selectedSections.contains($0) }
-        return selected.isEmpty ? "All Biblical Categories" : selected.map(\.title).joined(separator: ", ")
-    }
-
-    private func storeSelectedSections(_ sections: Set<VerseSection>) {
-        let singleBookSections: Set<VerseSection> = [.acts, .apocalypse]
-        let isInvalidSelection = !sections.isEmpty && sections.isSubset(of: singleBookSections)
-
-        if isInvalidSelection {
-            let currentSelection = selectedSections.intersection(availableSections)
-            guard !currentSelection.isSubset(of: singleBookSections) || currentSelection.isEmpty else {
-                quizSectionsRaw = ""
-                rebuildPools()
-                return
+        var isOldTestament: Bool {
+            switch self {
+            case .law, .history, .poetry, .majorProphets, .minorProphets: true
+            case .gospels, .acts, .epistles, .revelation: false
             }
-            return
         }
 
-        if sections == Set(availableSections) {
-            quizSectionsRaw = ""
-        } else {
-            quizSectionsRaw = VerseSection.allCases
-                .filter { sections.contains($0) }
-                .map(\.rawValue)
-                .joined(separator: ",")
+        /// Positions in the 66-book canon.
+        private var canonRange: Range<Int> {
+            switch self {
+            case .law: 0..<5
+            case .history: 5..<17
+            case .poetry: 17..<22
+            case .majorProphets: 22..<27
+            case .minorProphets: 27..<39
+            case .gospels: 39..<43
+            case .acts: 43..<44
+            case .epistles: 44..<65
+            case .revelation: 65..<66
+            }
         }
-        rebuildPools()
+
+        var bookNames: [String] { Array(BibleCanon.fallbackCanon[canonRange]) }
+
+        /// Hard draws wrong choices from these sections. Acts and Revelation are single
+        /// books, so they share with their closest neighbors.
+        var hardFamily: [VerseSection] {
+            switch self {
+            case .acts: [.gospels, .acts]
+            case .revelation: [.epistles, .revelation]
+            default: [self]
+            }
+        }
+
+        static func containing(_ bookName: String) -> VerseSection? {
+            allCases.first { $0.bookNames.contains(bookName) }
+        }
     }
 
-    // MARK: - Canon sets for OT/NT
-    private static let oldTestamentSet: Set<String> = [
-        "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
-        "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings",
-        "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job",
-        "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah",
-        "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel",
-        "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk",
-        "Zephaniah", "Haggai", "Zechariah", "Malachi"
-    ]
-    private static let newTestamentSet: Set<String> = [
-        "Matthew", "Mark", "Luke", "John", "Acts", "Romans",
-        "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians",
-        "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians",
-        "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews",
-        "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John",
-        "Jude", "Revelation"
-    ]
+    static let questionsPerGame = 10
+    static let contextCost = 3
 
-    // MARK: - Precomputed pools for current scope/difficulty
-    private struct Pools {
-        let books: [Book]              // filtered by scope
-        let allNames: [String]         // names from books
-        let oldNames: [String]         // intersection with OT
-        let newNames: [String]         // intersection with NT
+    private enum Phase {
+        case setup
+        case playing
+        case results
     }
 
     private struct VerseCandidate {
@@ -177,258 +133,135 @@ struct QuizView: View {
         let bookName: String
         let chapter: Int
         let verse: Int
+        let contextText: String?
     }
 
-    @State private var pools: Pools = .init(books: [], allNames: [], oldNames: [], newNames: [])
+    private struct QuizQuestion: Identifiable {
+        let id = UUID()
+        let verseText: String
+        let correctBook: String
+        let chapter: Int
+        let verse: Int
+        /// The verse before this one, offered as a hint.
+        let contextText: String?
+        let options: [String]
+        var selected: String?
+        var outcome: QuizOutcome?
+        var contextRevealed = false
+    }
+
+    // Replaced by the category quick picks; read once to carry an old choice over.
+    @AppStorage("quizScope") private var legacyScope: String = "whole"
+    @AppStorage("quizSections") private var quizSectionsRaw: String = ""
+    @AppStorage("quizDifficulty") private var difficulty: Difficulty = .normal
+
+    // Global Auto‑Win debug toggle
+    @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
+
+    @State private var phase: Phase = .setup
+    @State private var isFilterReady = QuizVerseFilter.isReady
     @State private var questionBag: [VerseCandidate] = []
+    @State private var history: [QuizQuestion] = []
+    @State private var currentIndex: Int = -1
+    @State private var totalQuestions: Int = 0
 
-    private var isViewingPrevious: Bool {
-        currentIndex >= 0 && currentIndex < history.count - 1
-    }
-    
-    // Session / UI state
-    @State private var started = false
-    @State private var currentVerseText = ""
-    @State private var correctBookName = ""
-    @State private var options: [String] = []
-    @State private var selectedOption: String? = nil
+    // Scoring
     @State private var score = 0
-    @State private var questionNumber = 0
-    @State private var sessionAnswered = 0
-    @State private var currentChapterNumber: Int = 0
-    @State private var currentVerseNumber: Int = 0
-    
-    @State private var currentStreak: Int = 0
-    @State private var bestStreak: Int = 0
-    @State private var showAnswerReveal: Bool = false
+    @State private var answered = 0
+    @State private var sessionStreak = 0
+    @State private var sessionBestStreak = 0
+    @State private var bestStreak = 0
+    @State private var bestGameScore = 0
+    @State private var isNewBestGame = false
 
     // Timer
     @State private var remainingSeconds: Int = 0
+    @State private var timerID: Int = 0
     @State private var wasInRedZone: Bool = false
     @State private var pulseOn: Bool = false
     @State private var timerOnLeft: Bool = false
     @State private var usesMutedTimerStyle: Bool = false
 
-    // History / navigation
-    @State private var history: [QuizQuestion] = []
-    @State private var currentIndex: Int = -1
-    
-    // MARK: - Question buffer (prefetch)
-    @State private var questionBuffer: [QuizQuestion] = []
-    private let bufferSize: Int = 5
-    private let refillThreshold: Int = 3
-    @State private var isRefilling: Bool = false
+    // MARK: - Derived state
 
-    private var isPreviousEnabled: Bool {
-        guard started, currentIndex > 0 else { return false }
-        if currentIndex == history.count - 1, selectedOption == nil, (quizDifficulty == "normal" || quizDifficulty == "hard"), remainingSeconds > 0 {
-            return false
-        }
-        return true
+    private var persistentStreak: PersistentGameStreak {
+        PersistentGameStreak(game: "quiz", variant: difficulty.rawValue)
     }
 
-    private var isNextEnabled: Bool {
-        started && (selectedOption != nil || currentIndex < history.count - 1)
+    private var bestGameScoreKey: String { "quizBestGameScore_\(difficulty.rawValue)" }
+
+    private var selectedSections: Set<VerseSection> {
+        Set(quizSectionsRaw.split(separator: ",").compactMap { VerseSection(rawValue: String($0)) })
     }
-    
+
+    /// An empty stored selection means every category.
+    private var displayedSelectedSections: Set<VerseSection> {
+        selectedSections.isEmpty ? Set(VerseSection.allCases) : selectedSections
+    }
+
+    private var poolBookNames: Set<String> {
+        Set(displayedSelectedSections.flatMap(\.bookNames))
+    }
+
+    private var current: QuizQuestion? {
+        history.indices.contains(currentIndex) ? history[currentIndex] : nil
+    }
+
+    private var isViewingPrevious: Bool { currentIndex < history.count - 1 }
+
+    private var isAnswered: Bool { current?.outcome != nil }
+
+    private var isTimerRunning: Bool {
+        phase == .playing && difficulty.timeLimit != nil && !isViewingPrevious && !isAnswered
+    }
+
+    private var canGoPrevious: Bool {
+        currentIndex > 0 && (isAnswered || isViewingPrevious || difficulty.timeLimit == nil)
+    }
+
+    private var canGoNext: Bool { isViewingPrevious || isAnswered }
+
+    private var isOnLastQuestion: Bool { !isViewingPrevious && history.count >= totalQuestions }
+
+    private var canRevealContext: Bool {
+        guard let current, current.contextText != nil, !current.contextRevealed,
+              !isAnswered, !isViewingPrevious else { return false }
+        return difficulty.timeLimit == nil || remainingSeconds > difficulty.contextCost
+    }
+
+    private var progressText: String {
+        String(localized: "Question \(currentIndex + 1) of \(totalQuestions)")
+    }
+
     var body: some View {
         GeometryReader { geometry in
-            let usesSplitLayout = started && geometry.size.width >= 700
+            let usesSplitLayout = phase == .playing && geometry.size.width >= 700
 
             ZStack {
                 ScrollView {
                     VStack(spacing: 16) {
-                if !started {
-                    Text("Test your knowledge by guessing the book of the Bible from a given verse.")
-                        .gameStartDescriptionStyle(title: "Bible Quiz", systemImage: "questionmark.circle.fill", tint: .blue)
-                    
-                    GameSplashLaunchLayout(tint: .blue, startAction: startQuiz) {
-                        GameLobbyPreview(kind: .quiz)
-                    } configuration: {
-                        QuizSetupCard(
-                            scope: quizScopeRaw,
-                            difficulty: quizDifficulty,
-                            categories: selectedSectionsTitle
-                        )
-
-                        QuizSetupControls(
-                            scope: Binding(
-                                get: { quizScopeRaw },
-                                set: { newValue in
-                                    quizScopeRaw = newValue
-                                    storeSelectedSections(selectedSections.intersection(availableSections))
-                                }
-                            ),
-                            difficulty: Binding(
-                                get: { quizDifficulty },
-                                set: { newValue in
-                                    quizDifficulty = newValue
-                                    rebuildPools()
-                                }
-                            )
-                        )
-
-                        GameStartMultiPickerCard(
-                            title: "Biblical Categories",
-                            selection: Binding<Set<VerseSection>>(
-                                get: { displayedSelectedSections },
-                                set: storeSelectedSections
-                            ),
-                            options: availableSections
-                        ) { section in
-                            Text(section.title)
-                        }
-                        .frame(maxWidth: 620)
-                        .padding(.horizontal)
-                    } facts: {
-                        GameSplashFacts(
-                            first: ("text.quote", "Verse", "Question"),
-                            second: ("list.bullet", "4 choices", "Answer format"),
-                            third: ("book.closed", "Bible book", "Your answer")
-                        )
-                    }
-                    Spacer(minLength: 48)
-                } else if usesSplitLayout {
-                    QuizGameDashboard(
-                        score: score,
-                        answered: sessionAnswered,
-                        streak: currentStreak,
-                        allTimeCorrect: allTimeCorrect,
-                        allTimeAnswered: allTimeAnswered,
-                        allTimeBestStreak: allTimeBestStreak,
-                        verseText: currentVerseText,
-                        options: options,
-                        selectedOption: selectedOption,
-                        correctBookName: correctBookName,
-                        chapterNumber: currentChapterNumber,
-                        verseNumber: currentVerseNumber,
-                        showAnswerReveal: showAnswerReveal,
-                        isViewingPrevious: isViewingPrevious,
-                        canGoPrevious: isPreviousEnabled,
-                        canGoNext: isNextEnabled,
-                        showsDebugWin: debugAutoWinEnabled && selectedOption == nil,
-                        availableHeight: geometry.size.height - 32,
-                        onSelectOption: selectOption,
-                        onPrevious: showPrevious,
-                        onNext: showNext,
-                        onDebugWin: { selectOption(correctBookName) }
-                    )
-                } else {
-                    VStack(spacing: 16) {
-                        // Scoreboard
-                        GameScoreboardCard(
-                            currentCorrect: score,
-                            currentAnswered: sessionAnswered,
-                            currentStreak: currentStreak,
-                            game: .quiz
-                        )
-
-                        // Verse card
-                        VStack {
-                            Text("“\(currentVerseText)”")
-                                .italic()
-                                .font(.title3)
-                                .multilineTextAlignment(.center)
-                                .lineLimit(6)
-                                .truncationMode(.tail)
-                                .foregroundColor(.primary)
-                                .padding(24)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .fill(
-                                    LinearGradient(
-                                        colors: [Color(UIColor.secondarySystemBackground), Color(UIColor.systemBackground)],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .strokeBorder(quizQuestionBorderColor, lineWidth: quizQuestionBorderWidth)
-                        )
-                        .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
-                        .padding(.horizontal)
-                        
-                        if (quizDifficulty == "normal" || quizDifficulty == "hard") && selectedOption == nil {
-                            GameTimerCard(
-                                remainingSeconds: remainingSeconds,
-                                tint: timerColor(for: remainingSeconds),
-                                isPulsing: pulseOn
-                            )
-                            .padding(.horizontal)
-                        }
-                        
-                        Text("Which book is this from?")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal)
-                        
-                        LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
-                            ForEach(options, id: \.self) { option in
-                                Button {
-                                    selectOption(option)
-                                } label: {
-                                    Text(labelForOption(option))
-                                        .frame(maxWidth: .infinity)
-                                        .padding()
-                                        .foregroundColor(buttonForeground(for: option))
-                                }
-                                .disabled(selectedOption != nil || isViewingPrevious)
-                                .background(buttonBackground(for: option))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                        .stroke(
-                                            selectedOption != nil && option == correctBookName ? Color.green : Color.black.opacity(0.15),
-                                            lineWidth: selectedOption != nil && option == correctBookName ? 3 : 1
-                                        )
-                                )
-                                .cornerRadius(12)
-                                .font(.body)
+                        switch phase {
+                        case .setup:
+                            setupContent
+                        case .playing:
+                            if usesSplitLayout {
+                                dashboard(availableHeight: geometry.size.height - 32)
+                            } else {
+                                compactGameContent
                             }
-                        }
-                        .padding(.horizontal)
-                        
-                        if showAnswerReveal {
-                            HStack(spacing: 8) {
-                                Text("Correct answer: \(correctBookName) \(currentChapterNumber):\(currentVerseNumber)")
-                                    .font(.footnote)
-                                    .foregroundColor(.secondary)
-                                VerseActionMenu(
-                                    verse: VerseActionReference(
-                                        bookName: correctBookName,
-                                        chapterNumber: currentChapterNumber,
-                                        verseNumber: currentVerseNumber,
-                                        verseText: currentVerseText
-                                    )
-                                )
-                            }
-                            .padding(.top, 4)
-
-                            GameRoundNavigationButtons(
-                                canGoPrevious: isPreviousEnabled,
-                                canGoNext: isNextEnabled,
-                                onPrevious: showPrevious,
-                                onNext: showNext
+                        case .results:
+                            Spacer(minLength: 32)
+                            QuizResultsCard(
+                                score: score,
+                                total: totalQuestions,
+                                bestStreak: sessionBestStreak,
+                                bestGameScore: bestGameScore,
+                                isNewBest: isNewBestGame,
+                                onPlayAgain: startQuiz,
+                                onChangeSettings: resetToSetup
                             )
+                            .frame(maxWidth: .infinity)
                         }
-
-                        // DEBUG: WIN button
-                        if debugAutoWinEnabled, started, selectedOption == nil {
-                            Button("WIN") {
-                                // Equivalent to selecting the correct option
-                                selectOption(correctBookName)
-                            }
-                            .buttonStyle(ModernPillButtonStyle(tint: .red))
-                            .controlSize(.large)
-                            .padding(.top, 4)
-                            .accessibilityLabel("Win this round")
-                        }
-                    }
-                    .padding(.vertical)
-                }
                     }
                     .padding(.horizontal)
                 }
@@ -448,10 +281,10 @@ struct QuizView: View {
                 if usesSplitLayout {
                     QuizLargeTimerView(
                         remainingSeconds: remainingSeconds,
-                        tint: timerColor(for: remainingSeconds),
+                        tint: timerColor,
                         isPulsing: pulseOn,
-                        isTimed: quizDifficulty == "normal" || quizDifficulty == "hard",
-                        resultIsCorrect: selectedOption.map { $0 == correctBookName },
+                        isTimed: difficulty.timeLimit != nil,
+                        outcome: current?.outcome,
                         usesMutedStyle: $usesMutedTimerStyle,
                         onSwapSides: {
                             withAnimation(.snappy) {
@@ -465,19 +298,20 @@ struct QuizView: View {
             }
         }
         .background(AppBackgroundView(tab: .games))
-        .onEverySecond {
-            guard started else { return }
-            guard selectedOption == nil else { return }
-            guard quizDifficulty == "normal" || quizDifficulty == "hard" else { return }
-            guard remainingSeconds > 0 else { return }
-            remainingSeconds -= 1
-            if remainingSeconds == 0 {
-                timeOutQuestion()
+        // Restarts with each question so the first second is a full second.
+        .task(id: timerID) {
+            while !Task.isCancelled, isTimerRunning, remainingSeconds > 0 {
+                try? await Task.sleep(for: .seconds(1))
+                guard !Task.isCancelled, isTimerRunning else { return }
+                remainingSeconds -= 1
+                if remainingSeconds == 0 {
+                    finishQuestion(.timedOut, selected: nil)
+                }
             }
         }
-        .onChange(of: remainingSeconds) { _, newValue in
-            guard started, selectedOption == nil, (quizDifficulty == "normal" || quizDifficulty == "hard") else { return }
-            let inRed = isInRedZone(newValue)
+        .onChange(of: remainingSeconds) { _, _ in
+            guard isTimerRunning else { return }
+            let inRed = timerColor == .red
             if inRed && !wasInRedZone {
                 startTimerPulse()
             }
@@ -487,452 +321,514 @@ struct QuizView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                if started {
+                if phase != .setup {
                     GameNavigationTitle(title: "Bible Quiz", systemImage: "questionmark.circle.fill", tint: .blue)
                 }
             }
-
         }
         .onAppear {
-            storeSelectedSections(displayedSelectedSections)
-            // Seed streaks from persisted values so they survive navigation/relaunch
-            seedStreakFromPersistence()
+            migrateLegacyScope()
+            bestStreak = persistentStreak.best
         }
         // Sort out list and repeated verses while the start screen is showing.
         .task {
             await QuizVerseFilter.prepare()
+            isFilterReady = true
         }
-        // When difficulty changes, switch to that difficulty’s persisted streaks
-        .onChange(of: quizDifficulty) { _, _ in
-            seedStreakFromPersistence()
+        .onChange(of: difficulty) { _, _ in
+            bestStreak = persistentStreak.best
         }
-        // Do not reset persistent streaks on disappear; keep only session counters transient
-        .onDisappear { resetSessionScores() }
+        .onDisappear {
+            // Leaving after answering begins a new game on return.
+            if phase != .setup && answered > 0 {
+                resetToSetup()
+            }
+        }
     }
-    
-    // MARK: - Pools
-    private func rebuildPools() {
-        let books: [Book]
-        switch quizScopeRaw {
-        case "old":
-            books = BibleData.books.filter { Self.oldTestamentSet.contains($0.name) }
-        case "new":
-            books = BibleData.books.filter { Self.newTestamentSet.contains($0.name) }
-        default:
-            books = BibleData.books
+
+    // MARK: - Setup
+
+    @ViewBuilder
+    private var setupContent: some View {
+        Text("Test your knowledge by guessing the book of the Bible from a given verse.")
+            .gameStartDescriptionStyle(title: "Bible Quiz", systemImage: "questionmark.circle.fill", tint: .blue)
+
+        GameSplashLaunchLayout(tint: .blue, isStartEnabled: isFilterReady, startAction: startQuiz) {
+            GameLobbyPreview(kind: .quiz)
+        } configuration: {
+            QuizDifficultyControl(difficulty: $difficulty)
+
+            VStack(alignment: .leading, spacing: 8) {
+                QuizCategoryQuickPicks(selection: sectionSelection)
+
+                GameStartMultiPickerCard(
+                    title: "Biblical Categories",
+                    selection: sectionSelection,
+                    options: VerseSection.allCases
+                ) { section in
+                    Text(section.title)
+                }
+            }
+            .frame(maxWidth: 620)
+            .padding(.horizontal)
+
+            if !isFilterReady {
+                Label {
+                    Text("Preparing verses…")
+                } icon: {
+                    ProgressView()
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal)
+            }
+        } facts: {
+            GameSplashFacts(
+                first: ("number", "\(Self.questionsPerGame)", String(localized: "Questions")),
+                second: (
+                    "timer",
+                    difficulty.timeLimit.map { String(localized: "\($0) sec") } ?? String(localized: "No limit"),
+                    String(localized: "Per verse")
+                ),
+                third: (
+                    "text.alignleft",
+                    difficulty.contextCost == 0 ? String(localized: "Free") : String(localized: "−\(difficulty.contextCost) sec"),
+                    String(localized: "Previous verse")
+                )
+            )
         }
-        let scopedBooks: [Book]
-        if selectedSections.isEmpty {
-            scopedBooks = books
+        Spacer(minLength: 48)
+    }
+
+    private var sectionSelection: Binding<Set<VerseSection>> {
+        Binding(
+            get: { displayedSelectedSections },
+            set: storeSelectedSections
+        )
+    }
+
+    private func storeSelectedSections(_ sections: Set<VerseSection>) {
+        guard !sections.isEmpty else { return }
+        if sections == Set(VerseSection.allCases) {
+            quizSectionsRaw = ""
         } else {
-            let selectedBookNames = Set(selectedSections.flatMap { bookNames(in: $0) })
-            scopedBooks = books.filter { selectedBookNames.contains($0.name) }
+            quizSectionsRaw = VerseSection.allCases
+                .filter { sections.contains($0) }
+                .map(\.rawValue)
+                .joined(separator: ",")
         }
-
-        // The selected scope controls which verses can be asked, while difficulty
-        // independently controls the composition of the four answer choices.
-        let names = BibleData.books.map { $0.name }
-        let old = names.filter { Self.oldTestamentSet.contains($0) }
-        let new = names.filter { Self.newTestamentSet.contains($0) }
-        pools = Pools(books: scopedBooks, allNames: names, oldNames: old, newNames: new)
-        rebuildQuestionBag()
     }
 
-    private func bookNames(in section: VerseSection) -> Set<String> {
-        let names: [String]
-        switch section {
-        case .law:
-            names = ["Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy"]
-        case .history:
-            names = bookNames(from: "Joshua", through: "Esther")
-        case .poetry:
-            names = bookNames(from: "Job", through: "Song of Solomon")
-        case .majorProphets:
-            names = bookNames(from: "Isaiah", through: "Daniel")
-        case .minorProphets:
-            names = bookNames(from: "Hosea", through: "Malachi")
-        case .gospels:
-            names = bookNames(from: "Matthew", through: "John")
-        case .acts:
-            names = ["Acts"]
-        case .epistles:
-            names = bookNames(from: "Romans", through: "Jude")
-        case .apocalypse:
-            names = ["Revelation"]
+    /// The Testament picker was folded into the categories; apply an old choice once.
+    private func migrateLegacyScope() {
+        guard legacyScope == "old" || legacyScope == "new" else { return }
+        let testamentSections = Set(VerseSection.allCases.filter { $0.isOldTestament == (legacyScope == "old") })
+        let kept = selectedSections.intersection(testamentSections)
+        storeSelectedSections(kept.isEmpty ? testamentSections : kept)
+        legacyScope = "whole"
+    }
+
+    // MARK: - Gameplay layouts
+
+    private var contextRow: QuizContextRow? {
+        guard let current, let contextText = current.contextText else { return nil }
+        return QuizContextRow(
+            contextText: contextText,
+            isRevealed: current.contextRevealed || current.outcome != nil,
+            cost: difficulty.contextCost,
+            canReveal: canRevealContext,
+            onReveal: revealContext
+        )
+    }
+
+    @ViewBuilder
+    private var answerReveal: some View {
+        if let current, let outcome = current.outcome {
+            QuizAnswerReveal(
+                outcome: outcome,
+                bookName: current.correctBook,
+                chapterNumber: current.chapter,
+                verseNumber: current.verse,
+                verseText: current.verseText
+            )
         }
-        return Set(names)
     }
 
-    private func bookNames(from firstBookName: String, through lastBookName: String) -> [String] {
-        let names = BibleData.books.map(\.name)
-        guard let firstIndex = names.firstIndex(of: firstBookName),
-              let lastIndex = names.firstIndex(of: lastBookName),
-              firstIndex <= lastIndex else { return [] }
-        return Array(names[firstIndex...lastIndex])
+    private var navigationButtons: some View {
+        QuizNavigationButtons(
+            canGoPrevious: canGoPrevious,
+            canGoNext: canGoNext,
+            isLastQuestion: isOnLastQuestion,
+            onPrevious: showPrevious,
+            onNext: showNext
+        )
     }
 
-    private func bookNamesInSection(containing bookName: String) -> Set<String>? {
-        VerseSection.allCases
-            .map { bookNames(in: $0) }
-            .first { $0.contains(bookName) }
+    @ViewBuilder
+    private var compactGameContent: some View {
+        if let current {
+            VStack(spacing: 16) {
+                GameScoreboardCard(
+                    currentCorrect: score,
+                    currentAnswered: answered,
+                    currentStreak: sessionStreak,
+                    game: .quiz
+                )
+
+                // Verse card
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(progressText)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .center)
+
+                    Text("“\(current.verseText)”")
+                        .italic()
+                        .font(.title3)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .foregroundStyle(.primary)
+                        .frame(maxWidth: .infinity)
+
+                    contextRow
+                }
+                .padding(24)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color(UIColor.secondarySystemBackground), Color(UIColor.systemBackground)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .strokeBorder(
+                            isTimerRunning ? timerColor : Color.primary.opacity(0.12),
+                            lineWidth: isTimerRunning ? 2 : 1
+                        )
+                )
+                .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
+                .padding(.horizontal)
+
+                if isTimerRunning {
+                    GameTimerCard(
+                        remainingSeconds: remainingSeconds,
+                        tint: timerColor,
+                        isPulsing: pulseOn
+                    )
+                    .padding(.horizontal)
+                }
+
+                if !isAnswered {
+                    Text("Which book is this from?")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
+                }
+
+                LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
+                    ForEach(current.options, id: \.self) { option in
+                        Button {
+                            selectOption(option)
+                        } label: {
+                            Text(option)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .foregroundStyle(.primary)
+                        }
+                        .disabled(isAnswered || isViewingPrevious)
+                        .background(buttonBackground(for: option, in: current))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(
+                                    isAnswered && option == current.correctBook ? Color.green : Color.black.opacity(0.15),
+                                    lineWidth: isAnswered && option == current.correctBook ? 3 : 1
+                                )
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .font(.body)
+                    }
+                }
+                .padding(.horizontal)
+
+                if isAnswered {
+                    answerReveal
+                        .padding(.horizontal)
+
+                    navigationButtons
+                        .padding(.horizontal)
+                }
+
+                // DEBUG: WIN button
+                if debugAutoWinEnabled, !isAnswered, !isViewingPrevious {
+                    Button("WIN") {
+                        selectOption(current.correctBook)
+                    }
+                    .buttonStyle(ModernPillButtonStyle(tint: .red))
+                    .controlSize(.large)
+                    .padding(.top, 4)
+                    .accessibilityLabel("Win this round")
+                }
+            }
+            .padding(.vertical)
+        }
     }
 
-    private func rebuildQuestionBag() {
-        let questionBooks = quizDifficulty == "hard"
-            ? pools.books.filter { $0.name != "Acts" && $0.name != "Revelation" }
-            : pools.books
-        let difficulty = quizDifficulty
-        questionBag = questionBooks.flatMap { book in
-            book.chapters.flatMap { chapter in
-                chapter.verses
-                    .filter { QuizVerseFilter.isQuizzable($0.text, difficulty: difficulty) }
-                    .map { verse in
-                        VerseCandidate(
+    @ViewBuilder
+    private func dashboard(availableHeight: CGFloat) -> some View {
+        if let current {
+            VStack(spacing: 18) {
+                GameScoreboardCard(
+                    currentCorrect: score,
+                    currentAnswered: answered,
+                    currentStreak: sessionStreak,
+                    game: .quiz,
+                    style: .dashboard
+                )
+
+                QuizDashboardQuestion(
+                    progressText: progressText,
+                    verseText: current.verseText,
+                    contextRow: contextRow,
+                    options: current.options,
+                    selectedOption: current.selected,
+                    correctBookName: current.correctBook,
+                    isAnswered: isAnswered,
+                    isViewingPrevious: isViewingPrevious,
+                    onSelectOption: selectOption
+                )
+
+                answerReveal
+
+                Spacer(minLength: 0)
+
+                if debugAutoWinEnabled && !isAnswered && !isViewingPrevious {
+                    Button("Win", systemImage: "checkmark.seal.fill") {
+                        selectOption(current.correctBook)
+                    }
+                    .buttonStyle(GameProminentButtonStyle(tint: .red))
+                } else {
+                    navigationButtons
+                }
+            }
+            .padding(AppDesignMetrics.cardPadding)
+            .padding(.top, 12)
+            .frame(maxWidth: .infinity, minHeight: availableHeight, alignment: .top)
+        }
+    }
+
+    // MARK: - Questions
+
+    private func buildQuestionBag() -> [VerseCandidate] {
+        let pool = poolBookNames
+        let difficultyKey = difficulty.rawValue
+        return BibleData.books
+            .filter { pool.contains($0.name) }
+            .flatMap { book in
+                book.chapters.flatMap { chapter in
+                    chapter.verses.indices.compactMap { index -> VerseCandidate? in
+                        let verse = chapter.verses[index]
+                        guard QuizVerseFilter.isQuizzable(
+                            book: book.name,
+                            chapter: chapter.number,
+                            verse: verse.number,
+                            difficulty: difficultyKey
+                        ) else { return nil }
+                        return VerseCandidate(
                             text: verse.text,
                             bookName: book.name,
                             chapter: chapter.number,
-                            verse: verse.number
+                            verse: verse.number,
+                            contextText: index > 0 ? chapter.verses[index - 1].text : nil
                         )
                     }
-            }
-        }
-        .shuffled()
-    }
-
-    // MARK: - Buffer management
-    private func ensureBuffer(refillIfBelow threshold: Int) {
-        guard started else { return }
-        if questionBuffer.count < threshold {
-            refillBuffer()
-        }
-    }
-
-    private func refillBuffer() {
-        guard !isRefilling else { return }
-        guard !pools.books.isEmpty else { return }
-        isRefilling = true
-        let need = max(0, bufferSize - questionBuffer.count)
-        guard need > 0 else { isRefilling = false; return }
-
-        Task.detached(priority: .userInitiated) { [self] in
-            let generated: [QuizQuestion] = await withTaskGroup(of: QuizQuestion?.self) { group in
-                for _ in 0..<need {
-                    group.addTask {
-                        await MainActor.run {
-                            self.makeQuestion()
-                        }
-                    }
                 }
-                var results: [QuizQuestion] = []
-                for await item in group {
-                    if let q = item { results.append(q) }
-                }
-                return results
             }
-            await MainActor.run {
-                self.questionBuffer.append(contentsOf: generated)
-                self.isRefilling = false
-            }
-        }
+            .shuffled()
     }
 
-    private func popBufferedQuestion() -> QuizQuestion? {
-        if !questionBuffer.isEmpty {
-            return questionBuffer.removeFirst()
+    /// Picks three wrong books, drawing from each list in turn until there are enough.
+    private func wrongChoices(for correctBook: String) -> [String] {
+        let canon = BibleCanon.fallbackCanon
+        let pool = poolBookNames
+        let section = VerseSection.containing(correctBook)
+        let isOld = section?.isOldTestament ?? true
+        let sameTestament = canon.filter { VerseSection.containing($0)?.isOldTestament == isOld }
+
+        let tiers: [[String]]
+        switch difficulty {
+        case .easy:
+            let otherSections = canon.filter { VerseSection.containing($0) != section }
+            tiers = [otherSections.filter(pool.contains), otherSections]
+        case .normal:
+            tiers = [canon.filter(pool.contains), sameTestament, canon]
+        case .hard:
+            let family = Set((section?.hardFamily ?? []).flatMap(\.bookNames))
+            tiers = [
+                canon.filter { family.contains($0) && pool.contains($0) },
+                canon.filter(family.contains),
+                sameTestament
+            ]
         }
-        return makeQuestion()
+
+        var picks: [String] = []
+        for tier in tiers {
+            for name in tier.shuffled() where picks.count < 3 && name != correctBook && !picks.contains(name) {
+                picks.append(name)
+            }
+        }
+        return picks
     }
 
-    // Consumes the next unique verse from the shuffled bag and builds its choices.
     private func makeQuestion() -> QuizQuestion? {
-        if questionBag.isEmpty {
-            rebuildQuestionBag()
-        }
-
         guard let candidate = questionBag.popLast() else { return nil }
-
-        let verseText = candidate.text
-        let bookName = candidate.bookName
-        let chapterNum = candidate.chapter
-        let verseNum = candidate.verse
-
-        let correctName = bookName
-        let isOld = Self.oldTestamentSet.contains(correctName)
-
-        let wrongBooks: [String]
-        if selectedSections.isEmpty {
-            switch quizDifficulty {
-            case "easy":
-                var sameTestamentNames = isOld ? pools.oldNames : pools.newNames
-                sameTestamentNames.removeAll { $0 == correctName }
-                let otherTestamentNames = isOld ? pools.newNames : pools.oldNames
-
-                guard let sameTestamentWrong = sameTestamentNames.randomElement() else {
-                    return nil
-                }
-                wrongBooks = [sameTestamentWrong] + Array(otherTestamentNames.shuffled().prefix(2))
-            case "hard":
-                guard let sectionNames = bookNamesInSection(containing: correctName) else {
-                    return nil
-                }
-                wrongBooks = Array(sectionNames
-                    .filter { $0 != correctName }
-                    .shuffled()
-                    .prefix(3))
-            default:
-                var allNames = pools.allNames
-                allNames.removeAll { $0 == correctName }
-                wrongBooks = Array(allNames.shuffled().prefix(3))
-            }
-        } else {
-            let selectedNames: [String]
-            if quizDifficulty == "hard",
-               let sectionNames = bookNamesInSection(containing: correctName) {
-                selectedNames = pools.books.map(\.name).filter { sectionNames.contains($0) }
-            } else {
-                selectedNames = pools.books.map(\.name)
-            }
-            let selectedNameSet = Set(selectedNames)
-            let selectedWrongNames = selectedNames
-                .filter { $0 != correctName }
-                .shuffled()
-            let selectedWrongCount = switch quizDifficulty {
-            case "easy": 1
-            case "hard": 3
-            default: 2
-            }
-            let randomWrongCount = 3 - selectedWrongCount
-            let randomCandidateNames = quizDifficulty == "normal"
-                ? (isOld ? pools.oldNames : pools.newNames)
-                : pools.allNames
-            let randomWrongNames = randomCandidateNames
-                .filter { !selectedNameSet.contains($0) }
-                .shuffled()
-
-            guard selectedWrongNames.count >= selectedWrongCount,
-                  randomWrongNames.count >= randomWrongCount else {
-                return nil
-            }
-
-            wrongBooks = Array(selectedWrongNames.prefix(selectedWrongCount))
-                + Array(randomWrongNames.prefix(randomWrongCount))
-        }
-        let opts = (wrongBooks + [correctName]).shuffled()
-
         return QuizQuestion(
-            verseText: verseText,
-            correctBook: bookName,
-            chapter: chapterNum,
-            verse: verseNum,
-            options: opts,
-            selected: nil
+            verseText: candidate.text,
+            correctBook: candidate.bookName,
+            chapter: candidate.chapter,
+            verse: candidate.verse,
+            contextText: candidate.contextText,
+            options: (wrongChoices(for: candidate.bookName) + [candidate.bookName]).shuffled()
         )
     }
 
     // MARK: - Game flow
+
     private func startQuiz() {
-        // Do NOT reset persistent streaks; seed from persistence instead
-        seedStreakFromPersistence()
-        started = true
-        score = 0
-        questionNumber = 0
-        sessionAnswered = 0
+        guard isFilterReady else { return }
+        questionBag = buildQuestionBag()
+        guard !questionBag.isEmpty else { return }
+        totalQuestions = min(Self.questionsPerGame, questionBag.count)
         history = []
         currentIndex = -1
-        selectedOption = nil
-        showAnswerReveal = false
-
-        questionBuffer.removeAll()
-        rebuildQuestionBag()
-        refillBuffer()
-        if let q = popBufferedQuestion() {
-            appendAndLoad(q)
-        } else {
-            generateQuestion()
-        }
-        ensureBuffer(refillIfBelow: refillThreshold)
+        score = 0
+        answered = 0
+        sessionStreak = 0
+        sessionBestStreak = 0
+        isNewBestGame = false
+        bestStreak = persistentStreak.best
+        phase = .playing
+        appendNextQuestion()
     }
-    
-    private func generateQuestion() {
-        selectedOption = nil
-        showAnswerReveal = false
-        
-        switch quizDifficulty {
-        case "normal": remainingSeconds = 15
-        case "hard": remainingSeconds = 8
-        default: remainingSeconds = 0
-        }
-        
-        wasInRedZone = false
-        pulseOn = false
-        
-        guard let q = makeQuestion() else {
-            currentVerseText = "No verse found."
-            correctBookName = ""
-            options = []
+
+    private func appendNextQuestion() {
+        guard let question = makeQuestion() else {
+            showResults()
             return
         }
-        appendAndLoad(q)
-    }
-
-    private func appendAndLoad(_ q: QuizQuestion) {
-        history.append(q)
+        history.append(question)
         currentIndex = history.count - 1
-        loadQuestion(from: q)
-        switch quizDifficulty {
-        case "normal": remainingSeconds = 15
-        case "hard": remainingSeconds = 8
-        default: remainingSeconds = 0
-        }
+        remainingSeconds = difficulty.timeLimit ?? 0
         wasInRedZone = false
         pulseOn = false
+        timerID += 1
     }
-    
-    private func selectOption(_ name: String) {
-        guard selectedOption == nil else { return }
-        guard currentIndex >= 0 && currentIndex == history.count - 1 else { return }
-        pulseOn = false
+
+    private func showResults() {
+        let previousBest = UserDefaults.standard.integer(forKey: bestGameScoreKey)
+        isNewBestGame = score > previousBest
+        bestGameScore = max(previousBest, score)
+        if isNewBestGame {
+            UserDefaults.standard.set(score, forKey: bestGameScoreKey)
+        }
+        phase = .results
+    }
+
+    private func resetToSetup() {
+        phase = .setup
+        history = []
+        currentIndex = -1
+        questionBag = []
         remainingSeconds = 0
-        selectedOption = name
-        history[currentIndex].selected = name
-        sessionAnswered += 1
-
-        let isCorrect = (name == correctBookName)
-        if isCorrect {
-            score += 1
-
-            // Persistent streak: extend on correct
-            let streak = persistentStreak.recordWin()
-            currentStreak = streak.current
-            bestStreak = max(bestStreak, streak.best)
-
-            recordRound(correct: 1, answered: 1, bestStreak: bestStreak)
-            // Per-book maps
-            GameStats.shared.recordQuizPerBook(bookName: correctBookName, answered: 1, correct: 1)
-            #if canImport(UIKit)
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            #endif
-        } else {
-            // Persistent streak: reset on incorrect
-            persistentStreak.reset()
-            currentStreak = 0
-
-            recordRound(correct: 0, answered: 1, bestStreak: bestStreak)
-            // Answered-only for the referenced book
-            GameStats.shared.recordQuizPerBook(bookName: correctBookName, answered: 1, correct: 0)
-            #if canImport(UIKit)
-            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-            #endif
-        }
-        showAnswerReveal = true
+        score = 0
+        answered = 0
+        sessionStreak = 0
     }
-    
-    private func nextQuestion() {
-        questionNumber += 1
-        if let q = popBufferedQuestion() {
-            appendAndLoad(q)
-            ensureBuffer(refillIfBelow: refillThreshold)
-        } else {
-            generateQuestion()
-            ensureBuffer(refillIfBelow: refillThreshold)
-        }
-    }
-    
+
     private func showPrevious() {
-        guard currentIndex > 0 else { return }
+        guard canGoPrevious else { return }
         currentIndex -= 1
-        let q = history[currentIndex]
-        remainingSeconds = 0
-        loadQuestion(from: q)
     }
 
     private func showNext() {
-        if currentIndex < history.count - 1 {
+        if isViewingPrevious {
             currentIndex += 1
-            remainingSeconds = 0
-            loadQuestion(from: history[currentIndex])
+        } else if history.count >= totalQuestions {
+            showResults()
         } else {
-            nextQuestion()
+            appendNextQuestion()
         }
     }
-    
-    private func loadQuestion(from q: QuizQuestion) {
-        currentVerseText = q.verseText
-        correctBookName = q.verseText.isEmpty ? "" : q.correctBook
-        currentChapterNumber = q.chapter
-        currentVerseNumber = q.verse
-        options = q.options
-        selectedOption = q.selected
-        showAnswerReveal = q.selected != nil
+
+    private func revealContext() {
+        guard canRevealContext else { return }
+        history[currentIndex].contextRevealed = true
+        remainingSeconds -= difficulty.contextCost
     }
-    
-    private func resetSessionScores() {
-        // Do NOT reset persistent streaks on navigation changes.
-        score = 0
-        sessionAnswered = 0
-        // Keep currentStreak/bestStreak as-is (they reflect persisted values)
+
+    private func selectOption(_ name: String) {
+        guard let current else { return }
+        finishQuestion(name == current.correctBook ? .correct : .incorrect, selected: name)
     }
-    
+
+    /// Records the answer (or timeout) on the latest question, so it can't be answered again.
+    private func finishQuestion(_ outcome: QuizOutcome, selected: String?) {
+        guard phase == .playing, !isViewingPrevious, let current, current.outcome == nil else { return }
+        history[currentIndex].outcome = outcome
+        history[currentIndex].selected = selected
+        pulseOn = false
+        answered += 1
+
+        let correct = outcome == .correct
+        if correct {
+            score += 1
+            sessionStreak += 1
+            sessionBestStreak = max(sessionBestStreak, sessionStreak)
+            // Persistent streak: extend on correct
+            let streak = persistentStreak.recordWin()
+            bestStreak = max(bestStreak, streak.best)
+        } else {
+            // Persistent streak: reset on incorrect or timeout
+            sessionStreak = 0
+            persistentStreak.reset()
+        }
+
+        GameStats.shared.recordRound(
+            game: .quiz,
+            difficulty: difficulty.statsDifficulty,
+            correct: correct ? 1 : 0,
+            answered: 1,
+            currentBestStreak: bestStreak
+        )
+        GameStats.shared.recordQuizPerBook(bookName: current.correctBook, answered: 1, correct: correct ? 1 : 0)
+
+        #if canImport(UIKit)
+        switch outcome {
+        case .correct: UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        case .incorrect: UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+        case .timedOut: UINotificationFeedbackGenerator().notificationOccurred(.error)
+        }
+        #endif
+    }
+
     // MARK: - UI helpers
-    private func buttonBackground(for option: String) -> Color {
-        guard let selected = selectedOption else {
-            return Color.clear
-        }
-        if selected == option {
-            return option == correctBookName ? Color.green.opacity(0.3) : Color.red.opacity(0.3)
-        }
-        return Color.clear
-    }
-    
-    private func buttonForeground(for option: String) -> Color {
-        guard let _ = selectedOption else {
-            return .primary
-        }
-        return .primary
-    }
-    
-    private func labelForOption(_ option: String) -> String {
-        if showAnswerReveal && option == correctBookName {
-            return "\(correctBookName) \(currentChapterNumber):\(currentVerseNumber)"
-        }
-        return option
+
+    private func buttonBackground(for option: String, in question: QuizQuestion) -> Color {
+        guard question.outcome != nil, question.selected == option else { return .clear }
+        return option == question.correctBook ? Color.green.opacity(0.3) : Color.red.opacity(0.3)
     }
 
-    private var quizTimerIsActive: Bool {
-        started &&
-        selectedOption == nil &&
-        (quizDifficulty == "normal" || quizDifficulty == "hard")
-    }
-
-    private var quizQuestionBorderColor: Color {
-        quizTimerIsActive ? timerColor(for: remainingSeconds) : Color.primary.opacity(0.12)
-    }
-
-    private var quizQuestionBorderWidth: CGFloat {
-        quizTimerIsActive ? 2 : 1
-    }
-
-    private func timerColor(for seconds: Int) -> Color {
-        switch quizDifficulty {
-        case "normal":
-            if seconds > 10 { return .green }
-            else if seconds >= 5 { return .yellow }
-            else { return .red }
-        case "hard":
-            if seconds > 5 { return .green }
-            else if seconds >= 3 { return .yellow }
-            else { return .red }
-        default:
-            return .secondary
-        }
-    }
-
-    private func isInRedZone(_ seconds: Int) -> Bool {
-        switch quizDifficulty {
-        case "normal": return seconds < 5
-        case "hard": return seconds < 3
-        default: return false
-        }
+    /// Green, then yellow, then red as the question runs down, scaled to the time limit.
+    private var timerColor: Color {
+        guard let timeLimit = difficulty.timeLimit else { return .secondary }
+        let fraction = Double(remainingSeconds) / Double(max(1, timeLimit))
+        if fraction <= 0.3 { return .red }
+        if fraction <= 0.6 { return .yellow }
+        return .green
     }
 
     private func startTimerPulse() {
@@ -948,314 +844,241 @@ struct QuizView: View {
             self.pulseOn = false
         }
     }
+}
 
-    private func timeOutQuestion() {
-        guard selectedOption == nil else { return }
-        selectedOption = "__timeout__"
-        sessionAnswered += 1
+private enum QuizOutcome {
+    case correct
+    case incorrect
+    case timedOut
 
-        // Timeout is incorrect -> reset persistent streak
-        persistentStreak.reset()
-        currentStreak = 0
-
-        recordRound(correct: 0, answered: 1, bestStreak: bestStreak)
-        // Timeout still counts as answered for the referenced (correct) book
-        if !correctBookName.isEmpty {
-            GameStats.shared.recordQuizPerBook(bookName: correctBookName, answered: 1, correct: 0)
-        }
-        showAnswerReveal = true
-        #if canImport(UIKit)
-        UINotificationFeedbackGenerator().notificationOccurred(.error)
-        #endif
-    }
-    
-    // MARK: - Favorites
-    private func isCurrentFavorited() -> Bool {
-        favorites.contains { fav in
-            fav.bookName == correctBookName && fav.chapterNumber == currentChapterNumber && fav.verseNumber == currentVerseNumber
+    var title: LocalizedStringKey {
+        switch self {
+        case .correct: "Correct"
+        case .incorrect: "Incorrect"
+        case .timedOut: "Time’s Up"
         }
     }
 
-    private func toggleFavoriteCurrent() {
-        if let existing = favorites.first(where: { $0.bookName == correctBookName && $0.chapterNumber == currentChapterNumber && $0.verseNumber == currentVerseNumber }) {
-            modelContext.delete(existing)
-            try? modelContext.save()
-        } else {
-            let fav = Favorite(
-                bookName: correctBookName,
-                chapterNumber: currentChapterNumber,
-                verseNumber: currentVerseNumber,
-                verseText: currentVerseText
-            )
-            modelContext.insert(fav)
-            try? modelContext.save()
+    var systemImage: String {
+        switch self {
+        case .correct: "checkmark.circle.fill"
+        case .incorrect: "xmark.circle.fill"
+        case .timedOut: "hourglass.bottomhalf.filled"
         }
+    }
+
+    var tint: Color {
+        self == .correct ? .green : .red
     }
 }
 
-private struct QuizSetupCard: View {
-    let scope: String
-    let difficulty: String
-    let categories: String
+// MARK: - Setup views
 
-    private var testamentTitle: LocalizedStringResource {
-        switch scope {
-        case "old": "Old Testament"
-        case "new": "New Testament"
-        default: "New & Old Testaments"
-        }
-    }
-
-    private var difficultyTitle: LocalizedStringResource {
-        switch difficulty {
-        case "easy": "Easy"
-        case "hard": "Hard"
-        default: "Normal"
-        }
-    }
-
-    private var summary: LocalizedStringResource {
-        switch difficulty {
-        case "easy":
-            "Choose the Bible book that contains each verse. There is no time limit."
-        case "hard":
-            "Choose the Bible book that contains each verse within 8 seconds."
-        default:
-            "Choose the Bible book that contains each verse within 15 seconds."
-        }
-    }
+private struct QuizDifficultyControl: View {
+    @Binding var difficulty: QuizView.Difficulty
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Your Game", systemImage: "checklist")
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Difficulty")
                 .font(.headline)
-                .foregroundStyle(.tint)
 
-            Text(summary)
-                .font(.subheadline)
+            Picker("Difficulty", selection: $difficulty) {
+                ForEach(QuizView.Difficulty.allCases) { option in
+                    Text(option.title).tag(option)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            Text(difficulty.detail)
+                .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
-
-            Divider()
-
-            LabeledContent("Difficulty") {
-                Text(difficultyTitle)
-                    .fontWeight(.semibold)
-            }
-
-            LabeledContent("Testament") {
-                Text(testamentTitle)
-                    .fontWeight(.semibold)
-            }
-
-            LabeledContent("Biblical Categories") {
-                Text(categories)
-                    .fontWeight(.semibold)
-                    .multilineTextAlignment(.trailing)
-            }
-        }
-        .padding(16)
-        .frame(maxWidth: 620, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
-        }
-        .padding(.horizontal)
-        .accessibilityElement(children: .contain)
-    }
-}
-
-private struct QuizSetupControls: View {
-    @Binding var scope: String
-    @Binding var difficulty: String
-
-    var body: some View {
-        VStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Difficulty")
-                    .font(.headline)
-
-                Picker("Difficulty", selection: $difficulty) {
-                    Text("Easy").tag("easy")
-                    Text("Normal").tag("normal")
-                    Text("Hard").tag("hard")
-                }
-                .pickerStyle(.segmented)
-            }
-
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Testament")
-                    .font(.headline)
-
-                Picker("Testament", selection: $scope) {
-                    Text("NT/OT").tag("whole")
-                    Text("OT").tag("old")
-                    Text("NT").tag("new")
-                }
-                .pickerStyle(.segmented)
-            }
         }
         .frame(maxWidth: 620)
         .padding(.horizontal)
     }
 }
 
-private struct QuizGameDashboard: View {
-    let score: Int
-    let answered: Int
-    let streak: Int
-    let allTimeCorrect: Int
-    let allTimeAnswered: Int
-    let allTimeBestStreak: Int
-    let verseText: String
-    let options: [String]
-    let selectedOption: String?
-    let correctBookName: String
+/// One-tap shortcuts for the whole Bible or one Testament.
+private struct QuizCategoryQuickPicks: View {
+    @Binding var selection: Set<QuizView.VerseSection>
+
+    private var oldTestament: Set<QuizView.VerseSection> {
+        Set(QuizView.VerseSection.allCases.filter(\.isOldTestament))
+    }
+
+    private var newTestament: Set<QuizView.VerseSection> {
+        Set(QuizView.VerseSection.allCases.filter { !$0.isOldTestament })
+    }
+
+    var body: some View {
+        HStack(spacing: 8) {
+            pick("Whole Bible", sections: Set(QuizView.VerseSection.allCases))
+            pick("Old Testament", sections: oldTestament)
+            pick("New Testament", sections: newTestament)
+        }
+    }
+
+    private func pick(_ title: LocalizedStringKey, sections: Set<QuizView.VerseSection>) -> some View {
+        let isSelected = selection == sections
+        return Button {
+            selection = sections
+        } label: {
+            Text(title)
+                .font(.footnote.weight(.semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.capsule)
+        .tint(isSelected ? .accentColor : .secondary)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+}
+
+// MARK: - Gameplay views
+
+private struct QuizContextRow: View {
+    let contextText: String
+    let isRevealed: Bool
+    let cost: Int
+    let canReveal: Bool
+    let onReveal: () -> Void
+
+    var body: some View {
+        if isRevealed {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Previous verse")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                Text(contextText)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        } else {
+            Button(action: onReveal) {
+                Label {
+                    if cost > 0 {
+                        Text("Show previous verse (−\(cost) sec)")
+                    } else {
+                        Text("Show previous verse")
+                    }
+                } icon: {
+                    Image(systemName: "text.alignleft")
+                }
+            }
+            .font(.subheadline.weight(.semibold))
+            .buttonStyle(.borderless)
+            .disabled(!canReveal)
+            .frame(maxWidth: .infinity)
+        }
+    }
+}
+
+private struct QuizAnswerReveal: View {
+    let outcome: QuizOutcome
+    let bookName: String
     let chapterNumber: Int
     let verseNumber: Int
-    let showAnswerReveal: Bool
-    let isViewingPrevious: Bool
+    let verseText: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: outcome.systemImage)
+                .font(.title2.weight(.bold))
+                .foregroundStyle(outcome.tint)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(outcome.title)
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(outcome.tint)
+
+                Text("\(bookName) \(chapterNumber):\(verseNumber)")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(.primary)
+            }
+
+            Spacer(minLength: 8)
+
+            VerseActionMenu(
+                verse: VerseActionReference(
+                    bookName: bookName,
+                    chapterNumber: chapterNumber,
+                    verseNumber: verseNumber,
+                    verseText: verseText
+                )
+            )
+        }
+        .padding(.horizontal, 16)
+        .frame(minHeight: 64)
+        .glassEffect(.regular.tint(outcome.tint.opacity(0.35)), in: .rect(cornerRadius: AppDesignMetrics.compactControlCornerRadius))
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private struct QuizNavigationButtons: View {
     let canGoPrevious: Bool
     let canGoNext: Bool
-    let showsDebugWin: Bool
-    let availableHeight: CGFloat
-    let onSelectOption: (String) -> Void
+    let isLastQuestion: Bool
     let onPrevious: () -> Void
     let onNext: () -> Void
-    let onDebugWin: () -> Void
 
     var body: some View {
-        VStack(spacing: 18) {
-            QuizDashboardScoreboard(
-                score: score,
-                answered: answered,
-                streak: streak,
-                allTimeCorrect: allTimeCorrect,
-                allTimeAnswered: allTimeAnswered,
-                allTimeBestStreak: allTimeBestStreak
-            )
+        HStack(spacing: 12) {
+            Button("Previous", systemImage: "arrow.left", action: onPrevious)
+                .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                .disabled(!canGoPrevious)
 
-            QuizDashboardQuestion(
-                verseText: verseText,
-                options: options,
-                selectedOption: selectedOption,
-                correctBookName: correctBookName,
-                chapterNumber: chapterNumber,
-                verseNumber: verseNumber,
-                showAnswerReveal: showAnswerReveal,
-                isViewingPrevious: isViewingPrevious,
-                onSelectOption: onSelectOption
-            )
-
-            Spacer(minLength: 0)
-
-            QuizDashboardActions(
-                canGoPrevious: canGoPrevious,
-                canGoNext: canGoNext,
-                showsDebugWin: showsDebugWin,
-                onPrevious: onPrevious,
-                onNext: onNext,
-                onDebugWin: onDebugWin
-            )
-        }
-        .padding(AppDesignMetrics.cardPadding)
-        .padding(.top, 12)
-        .frame(maxWidth: .infinity, minHeight: availableHeight, alignment: .top)
-    }
-}
-
-private struct QuizDashboardScoreboard: View {
-    let score: Int
-    let answered: Int
-    let streak: Int
-    let allTimeCorrect: Int
-    let allTimeAnswered: Int
-    let allTimeBestStreak: Int
-
-    private var accuracy: Int {
-        guard answered > 0 else { return 0 }
-        return Int((Double(score) / Double(answered) * 100).rounded())
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Label("This Game", systemImage: "chart.bar.fill")
-                    .font(.headline.weight(.bold))
-
-                Spacer()
-
-                Text("All time: \(allTimeCorrect)/\(allTimeAnswered)  •  Best streak \(allTimeBestStreak)")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.secondary)
-            }
-
-            HStack(spacing: 10) {
-                QuizScoreMetric(title: "Correct", value: "\(score)", systemImage: "checkmark.circle.fill", tint: .green)
-                QuizScoreMetric(title: "Questions", value: "\(answered)", systemImage: "questionmark.circle.fill", tint: .blue)
-                QuizScoreMetric(title: "Accuracy", value: "\(accuracy)%", systemImage: "percent", tint: .purple)
-                QuizScoreMetric(title: "Streak", value: "\(streak)", systemImage: "flame.fill", tint: .orange)
+            if isLastQuestion {
+                Button("See Results", systemImage: "flag.checkered", action: onNext)
+                    .buttonStyle(GameProminentButtonStyle(tint: .blue))
+                    .disabled(!canGoNext)
+            } else {
+                Button("Next", systemImage: "arrow.right", action: onNext)
+                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                    .disabled(!canGoNext)
             }
         }
-        .padding(16)
-        .background(.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
-    }
-}
-
-private struct QuizScoreMetric: View {
-    let title: LocalizedStringKey
-    let value: String
-    let systemImage: String
-    let tint: Color
-
-    var body: some View {
-        VStack(spacing: 5) {
-            Image(systemName: systemImage)
-                .font(.headline)
-                .foregroundStyle(tint)
-
-            Text(value)
-                .font(.title2.weight(.bold))
-                .monospacedDigit()
-                .lineLimit(1)
-
-            Text(title)
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
-        .background(tint.opacity(0.09), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(title)
-        .accessibilityValue(value)
     }
 }
 
 private struct QuizDashboardQuestion: View {
+    let progressText: String
     let verseText: String
+    let contextRow: QuizContextRow?
     let options: [String]
     let selectedOption: String?
     let correctBookName: String
-    let chapterNumber: Int
-    let verseNumber: Int
-    let showAnswerReveal: Bool
+    let isAnswered: Bool
     let isViewingPrevious: Bool
     let onSelectOption: (String) -> Void
 
     var body: some View {
         VStack(spacing: 16) {
             VStack(spacing: 10) {
-                Label("Which book is this from?", systemImage: "text.book.closed.fill")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.tint)
+                HStack {
+                    Label("Which book is this from?", systemImage: "text.book.closed.fill")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.tint)
+
+                    Spacer()
+
+                    Text(progressText)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                }
 
                 Text("“\(verseText)”")
                     .italic()
                     .font(.title3)
                     .multilineTextAlignment(.center)
-                    .lineLimit(6)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                contextRow
             }
             .frame(maxWidth: .infinity)
             .padding(20)
@@ -1268,97 +1091,81 @@ private struct QuizDashboardQuestion: View {
                     } label: {
                         HStack(spacing: 8) {
                             Image(systemName: optionIcon(for: option))
-                            Text(optionLabel(for: option))
+                            Text(option)
                                 .lineLimit(2)
                         }
                         .frame(maxWidth: .infinity)
                         .frame(minHeight: 52)
                     }
                     .buttonStyle(.glass(optionGlass(for: option)))
-                    .disabled(selectedOption != nil || isViewingPrevious)
+                    .disabled(isAnswered || isViewingPrevious)
                 }
-            }
-
-            if showAnswerReveal {
-                HStack(spacing: 12) {
-                    Image(systemName: "checkmark.seal.fill")
-                        .font(.title2.weight(.bold))
-                        .foregroundStyle(.green)
-
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("Correct Answer")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.secondary)
-
-                        Text("\(correctBookName) \(chapterNumber):\(verseNumber)")
-                            .font(.title3.weight(.bold))
-                            .foregroundStyle(.primary)
-                    }
-
-                    Spacer(minLength: 8)
-
-                    VerseActionMenu(
-                        verse: VerseActionReference(
-                            bookName: correctBookName,
-                            chapterNumber: chapterNumber,
-                            verseNumber: verseNumber,
-                            verseText: verseText
-                        )
-                    )
-                }
-                .padding(.horizontal, 16)
-                .frame(minHeight: 64)
-                .glassEffect(.regular.tint(.green), in: .rect(cornerRadius: AppDesignMetrics.compactControlCornerRadius))
-                .accessibilityElement(children: .combine)
             }
         }
     }
 
-    private func optionLabel(for option: String) -> String {
-        showAnswerReveal && option == correctBookName
-            ? "\(correctBookName) \(chapterNumber):\(verseNumber)"
-            : option
-    }
-
     private func optionGlass(for option: String) -> Glass {
-        guard let selectedOption else { return .clear }
+        guard isAnswered else { return .clear }
         if option == correctBookName { return .regular.tint(.green.opacity(0.28)) }
         if option == selectedOption { return .regular.tint(.red.opacity(0.28)) }
         return .clear
     }
 
     private func optionIcon(for option: String) -> String {
-        guard let selectedOption else { return "book.closed.fill" }
+        guard isAnswered else { return "book.closed.fill" }
         if option == correctBookName { return "checkmark.circle.fill" }
         if option == selectedOption { return "xmark.circle.fill" }
         return "book.closed.fill"
     }
 }
 
-private struct QuizDashboardActions: View {
-    let canGoPrevious: Bool
-    let canGoNext: Bool
-    let showsDebugWin: Bool
-    let onPrevious: () -> Void
-    let onNext: () -> Void
-    let onDebugWin: () -> Void
+private struct QuizResultsCard: View {
+    let score: Int
+    let total: Int
+    let bestStreak: Int
+    let bestGameScore: Int
+    let isNewBest: Bool
+    let onPlayAgain: () -> Void
+    let onChangeSettings: () -> Void
+
+    private var accuracy: Int {
+        guard total > 0 else { return 0 }
+        return Int((Double(score) / Double(total) * 100).rounded())
+    }
 
     var body: some View {
-        VStack(spacing: 12) {
-            if showsDebugWin {
-                Button("Win", systemImage: "checkmark.seal.fill", action: onDebugWin)
-                    .buttonStyle(GameProminentButtonStyle(tint: .red))
+        VStack(spacing: 20) {
+            Image(systemName: isNewBest ? "trophy.fill" : "flag.checkered")
+                .font(.system(size: 52, weight: .semibold))
+                .foregroundStyle(isNewBest ? Color.yellow : Color.blue)
+
+            VStack(spacing: 6) {
+                Text(isNewBest ? "New Best Game!" : "Game Over")
+                    .font(.title.weight(.bold))
+
+                Text("\(score) of \(total) correct")
+                    .font(.title2.weight(.semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
             }
 
-            if !showsDebugWin {
-                GameRoundNavigationButtons(
-                    canGoPrevious: canGoPrevious,
-                    canGoNext: canGoNext,
-                    onPrevious: onPrevious,
-                    onNext: onNext
-                )
+            GameSplashFacts(
+                first: ("percent", "\(accuracy)%", String(localized: "Accuracy")),
+                second: ("flame.fill", "\(bestStreak)", String(localized: "Best streak")),
+                third: ("trophy", "\(bestGameScore)/\(total)", String(localized: "Best game"))
+            )
+
+            VStack(spacing: 10) {
+                Button("Play Again", systemImage: "arrow.clockwise", action: onPlayAgain)
+                    .buttonStyle(GameProminentButtonStyle(tint: .blue))
+
+                Button("Change Settings", systemImage: "slider.horizontal.3", action: onChangeSettings)
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
             }
         }
+        .padding(24)
+        .frame(maxWidth: 520)
+        .heroCardSurface()
     }
 }
 
@@ -1367,25 +1174,20 @@ private struct QuizLargeTimerView: View {
     let tint: Color
     let isPulsing: Bool
     let isTimed: Bool
-    let resultIsCorrect: Bool?
+    let outcome: QuizOutcome?
     @Binding var usesMutedStyle: Bool
     let onSwapSides: () -> Void
 
-    private var timerTextColor: Color {
-        remainingSeconds > 5 && remainingSeconds <= 10 ? .black : .white
-    }
-
     private var isActive: Bool {
-        isTimed && resultIsCorrect == nil
+        isTimed && outcome == nil
     }
 
     private var displayTint: Color {
-        guard isTimed, let resultIsCorrect else { return tint }
-        return resultIsCorrect ? .green : .red
+        outcome?.tint ?? tint
     }
 
     private var vividTextColor: Color {
-        isActive ? timerTextColor : .white
+        isActive && tint == .yellow ? .black : .white
     }
 
     var body: some View {
@@ -1401,7 +1203,7 @@ private struct QuizLargeTimerView: View {
                     .font(.largeTitle.weight(.semibold))
                     .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor.opacity(0.85))
 
-                if isActive || !isTimed {
+                if outcome == nil {
                     Text(isTimed ? "\(remainingSeconds)s" : "∞")
                         .font(.largeTitle.weight(.bold))
                         .fontDesign(.rounded)
@@ -1413,7 +1215,7 @@ private struct QuizLargeTimerView: View {
             .animation(.easeOut(duration: 0.18), value: isPulsing)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(statusTitle)
-            .accessibilityValue(isActive ? "\(remainingSeconds) seconds" : isTimed ? "" : "No time limit")
+            .accessibilityValue(isActive ? "\(remainingSeconds) seconds" : outcome == nil ? "No time limit" : "")
 
             Spacer(minLength: 0)
 
@@ -1457,15 +1259,13 @@ private struct QuizLargeTimerView: View {
     }
 
     private var statusTitle: LocalizedStringKey {
-        guard isTimed else { return "Untimed Mode" }
-        guard let resultIsCorrect else { return "Time Remaining" }
-        return resultIsCorrect ? "Correct" : "Incorrect"
+        if let outcome { return outcome.title }
+        return isTimed ? "Time Remaining" : "Untimed Mode"
     }
 
     private var statusSystemImage: String {
-        guard isTimed else { return "infinity" }
-        guard let resultIsCorrect else { return "timer" }
-        return resultIsCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"
+        if let outcome { return outcome.systemImage }
+        return isTimed ? "timer" : "infinity"
     }
 }
 

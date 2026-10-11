@@ -2,83 +2,161 @@ import Foundation
 
 /// Decides which verses make fair Bible Quiz questions.
 ///
-/// - Verses whose exact words appear in more than one book are never asked, because
-///   more than one answer would be correct ("And the LORD spake unto Moses, saying,").
-/// - Timed modes skip genealogies, name lists, and census counts, which can't be told
-///   apart in a few seconds (1 Chronicles 1–9, Numbers 1, Ezra 2, Luke 3).
-/// - Hard (8 seconds) also skips verses too long to read in time.
+/// - Verses whose words appear in more than one book are never asked, because more than
+///   one answer would be correct ("And the LORD spake unto Moses, saying,"). Punctuation
+///   is ignored, and near-copies count too, such as parallels between Matthew and Luke.
+/// - Genealogies, name lists, census counts, and verses under six words are skipped,
+///   since they can't be placed (1 Chronicles 1–9, Numbers 1, "Abram; the same Abraham.").
+/// - Hard also skips verses too long to read in its time limit.
 ///
-/// Checking every verse takes a few hundred milliseconds, so it runs once per launch,
-/// off the main thread, when the quiz opens (`prepare()`).
+/// Checking every verse takes a moment, so it runs once per launch, off the main thread,
+/// when the quiz opens (`prepare()`). The quiz waits for it before starting.
 @MainActor
 enum QuizVerseFilter {
     private static var analysis: VerseAnalysis?
     private static var preparation: Task<VerseAnalysis, Never>?
 
-    /// Analyzes the Bible in the background so starting a quiz doesn't wait for it.
+    static var isReady: Bool { analysis != nil }
+
+    /// Analyzes the Bible in the background so the quiz never does it on the main thread.
     static func prepare() async {
         if analysis != nil { return }
         if let preparation {
             _ = await preparation.value
             return
         }
-        let books = BibleData.books
-        let task = Task.detached(priority: .utility) { VerseAnalysis(books: books) }
+        let task = Task.detached(priority: .userInitiated) {
+            VerseAnalysis(books: await BibleRepository.shared.loadAllBooks())
+        }
         preparation = task
         let result = await task.value
         if analysis == nil { analysis = result }
         preparation = nil
     }
 
-    static func isQuizzable(_ text: String, difficulty: String) -> Bool {
-        let analysis = currentAnalysis()
-        let key = VerseAnalysis.normalized(text)
-        if analysis.repeatedInSeveralBooks.contains(key) { return false }
-        guard difficulty != "easy" else { return true }
-        if analysis.lists.contains(key) { return false }
-        if difficulty == "hard" && analysis.tooLongForHard.contains(key) { return false }
+    /// `chapter` and `verse` are 1-based. Before `prepare()` finishes, every verse passes.
+    static func isQuizzable(book: String, chapter: Int, verse: Int, difficulty: String) -> Bool {
+        guard let analysis else { return true }
+        let flags = analysis.flags(book: book, chapter: chapter, verse: verse)
+        if !flags.isDisjoint(with: [.repeated, .nearDuplicate, .list, .tooShort]) { return false }
+        if difficulty == "hard" && flags.contains(.tooLongForHard) { return false }
         return true
-    }
-
-    /// The quiz can start before preparation finishes; in that case analyze right away.
-    private static func currentAnalysis() -> VerseAnalysis {
-        if let analysis { return analysis }
-        let result = VerseAnalysis(books: BibleData.books)
-        analysis = result
-        return result
     }
 }
 
-/// Normalized verse texts sorted into the groups the quiz skips.
+/// Reasons each verse may be skipped, stored by book, chapter, and verse.
 private nonisolated struct VerseAnalysis: Sendable {
-    static let hardMaximumWords = 40
+    struct Flags: OptionSet, Sendable {
+        let rawValue: UInt8
 
-    var repeatedInSeveralBooks: Set<String> = []
-    var lists: Set<String> = []
-    var tooLongForHard: Set<String> = []
+        static let repeated = Flags(rawValue: 1 << 0)
+        static let nearDuplicate = Flags(rawValue: 1 << 1)
+        static let list = Flags(rawValue: 1 << 2)
+        static let tooShort = Flags(rawValue: 1 << 3)
+        static let tooLongForHard = Flags(rawValue: 1 << 4)
+    }
+
+    static let minimumWords = 6
+    static let hardMaximumWords = 35
+    /// A verse is a near-copy when this share of its four-word phrases appear in one verse of another book.
+    static let nearDuplicateShare = 0.8
+    /// Phrases found in more verses than this ("and it came to") say nothing about the source.
+    static let commonPhraseLimit = 40
+
+    private var flagsByBook: [String: [[Flags]]] = [:]
+
+    func flags(book: String, chapter: Int, verse: Int) -> Flags {
+        guard let chapters = flagsByBook[book], chapters.indices.contains(chapter - 1) else { return [] }
+        let verses = chapters[chapter - 1]
+        return verses.indices.contains(verse - 1) ? verses[verse - 1] : []
+    }
 
     init(books: [Book]) {
-        var bookByText: [String: String] = [:]
-        for book in books {
-            for chapter in book.chapters {
-                for verse in chapter.verses {
-                    let key = Self.normalized(verse.text)
-                    if let firstBook = bookByText[key] {
-                        if firstBook != book.name { repeatedInSeveralBooks.insert(key) }
-                        continue
-                    }
-                    bookByText[key] = book.name
+        var flags: [[[Flags]]] = []
+        var locations: [(book: Int, chapter: Int, verse: Int)] = []
+        var texts: [String] = []
+        var phrases: [[UInt64]] = []
+        var bookByText: [String: Int] = [:]
+        var vocabulary: [String: UInt64] = [:]
+        let multipleBooks = -1
 
+        for (bookIndex, book) in books.enumerated() {
+            var bookFlags: [[Flags]] = []
+            for (chapterIndex, chapter) in book.chapters.enumerated() {
+                var chapterFlags: [Flags] = []
+                for (verseIndex, verse) in chapter.verses.enumerated() {
+                    let lowercased = Self.lowercasedWords(in: verse.text)
+                    let text = lowercased.joined(separator: " ")
+                    if let firstBook = bookByText[text], firstBook != bookIndex {
+                        bookByText[text] = multipleBooks
+                    } else if bookByText[text] == nil {
+                        bookByText[text] = bookIndex
+                    }
+
+                    var verseFlags: Flags = []
                     let words = Self.words(in: verse.text)
-                    if Self.isList(verse.text, words: words) { lists.insert(key) }
-                    if words.count > Self.hardMaximumWords { tooLongForHard.insert(key) }
+                    if Self.isList(verse.text, words: words) { verseFlags.insert(.list) }
+                    if words.count < Self.minimumWords { verseFlags.insert(.tooShort) }
+                    if words.count > Self.hardMaximumWords { verseFlags.insert(.tooLongForHard) }
+                    chapterFlags.append(verseFlags)
+
+                    // Each four-word phrase packs four 16-bit word IDs into one number.
+                    let ids = lowercased.map { word -> UInt64 in
+                        if let id = vocabulary[word] { return id }
+                        let id = UInt64(vocabulary.count) & 0xFFFF
+                        vocabulary[word] = id
+                        return id
+                    }
+                    var versePhrases: Set<UInt64> = []
+                    if ids.count >= 4 {
+                        for start in 0...(ids.count - 4) {
+                            versePhrases.insert(ids[start] << 48 | ids[start + 1] << 32 | ids[start + 2] << 16 | ids[start + 3])
+                        }
+                    }
+
+                    locations.append((bookIndex, chapterIndex, verseIndex))
+                    texts.append(text)
+                    phrases.append(Array(versePhrases))
+                }
+                bookFlags.append(chapterFlags)
+            }
+            flags.append(bookFlags)
+        }
+
+        var versesByPhrase: [UInt64: [Int32]] = [:]
+        for (index, versePhrases) in phrases.enumerated() {
+            for phrase in versePhrases {
+                versesByPhrase[phrase, default: []].append(Int32(index))
+            }
+        }
+
+        for (index, location) in locations.enumerated() {
+            if bookByText[texts[index]] == multipleBooks {
+                flags[location.book][location.chapter][location.verse].insert(.repeated)
+                continue
+            }
+
+            let telling = phrases[index].compactMap { versesByPhrase[$0] }.filter { $0.count <= Self.commonPhraseLimit }
+            guard telling.count >= 3 else { continue }
+            var shared: [Int32: Int] = [:]
+            for verses in telling {
+                for other in verses where locations[Int(other)].book != location.book {
+                    shared[other, default: 0] += 1
                 }
             }
+            if let most = shared.values.max(), Double(most) >= Self.nearDuplicateShare * Double(telling.count) {
+                flags[location.book][location.chapter][location.verse].insert(.nearDuplicate)
+            }
+        }
+
+        for (bookIndex, book) in books.enumerated() {
+            flagsByBook[book.name] = flags[bookIndex]
         }
     }
 
-    static func normalized(_ text: String) -> String {
-        text.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: " .,;:"))
+    /// Lowercased words with punctuation removed, so "saying," and "saying:" match.
+    private static func lowercasedWords(in text: String) -> [String] {
+        text.lowercased().split { !$0.isLetter }.map(String.init)
     }
 
     // MARK: - Lists and genealogies
