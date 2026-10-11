@@ -15,12 +15,12 @@ struct WordSearchControlsBar: View {
         HStack(spacing: 12) {
             if !roundOver {
                 Button("Hint", systemImage: "lightbulb", action: onHint)
-                    .buttonStyle(ModernPillButtonStyle(tint: .yellow))
+                    .buttonStyle(ModernPillButtonStyle(tint: .orange))
                     .accessibilityHint("Briefly highlights the first letter of a word you haven't found")
 
                 if canShowWordList {
                     Button("Word List", systemImage: "list.bullet", action: onShowWordList)
-                        .buttonStyle(ModernPillButtonStyle(tint: .orange))
+                        .buttonStyle(ModernPillButtonStyle(tint: .teal))
                         .accessibilityHint("Shows the word list for the rest of this puzzle")
                 }
 

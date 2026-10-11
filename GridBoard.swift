@@ -17,7 +17,8 @@ struct GridBoard: View {
 
     private func strokeColorForCell(_ row: Int, _ col: Int) -> Color {
         let key = "\(row),\(col)"
-        if foundCells.contains(key) { return Color.green.opacity(0.9) }
+        // Found cells are filled with their word's color; a neutral outline keeps every color readable.
+        if foundCells.contains(key) { return Color.primary.opacity(0.35) }
         if let start = selectionStart, let end = selectionEnd {
             func sign(_ x: Int) -> Int { x == 0 ? 0 : (x > 0 ? 1 : -1) }
             let dRow = end.row - start.row
@@ -44,7 +45,8 @@ struct GridBoard: View {
         GeometryReader { geo in
             let isPad = horizontalSizeClass == .regular
             let spacing: CGFloat = isPad ? 6 : 4
-            let minCell: CGFloat = isPad && size < 12 ? 34 : 26
+            // Phones need small cells so a 14×14 grid fits the screen width.
+            let minCell: CGFloat = isPad ? (size < 12 ? 34 : 26) : 18
             let maxCell: CGFloat = isPad ? 58 : 36
 
             // Use the actual container width; do NOT subtract a fixed padding budget here.
@@ -67,7 +69,8 @@ struct GridBoard: View {
                         ForEach(0..<size, id: \.self) { c in
                             let ch = grid[r][c]
                             Text(String(ch))
-                                .font(.headline.weight(.bold).monospaced())
+                                // Letters scale with the cell so small grids on phones stay legible.
+                                .font(.system(size: max(11, cellSize * 0.55), weight: .bold, design: .monospaced))
                                 .frame(width: cellSize, height: cellSize)
                                 .background(
                                     RoundedRectangle(cornerRadius: 6, style: .continuous)

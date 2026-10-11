@@ -50,6 +50,9 @@ struct WordChip: View {
         Text(word)
             .font(.footnote.weight(.semibold))
             .strikethrough(state == .found)
+            // Long words like VARIABLENESS shrink slightly instead of wrapping onto two lines.
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .background(Capsule(style: .continuous).fill(fillColor))

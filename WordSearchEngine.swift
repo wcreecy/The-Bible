@@ -54,30 +54,75 @@ public struct WordSearchEngine {
 
     // MARK: - Public API
 
+    /// Common words that make poor puzzle answers (KJV function words and pronouns).
+    static let fillerWords: Set<String> = [
+        "THE", "AND", "THAT", "SHALL", "UNTO", "FOR", "HIS", "THEY", "HIM", "NOT", "THEM", "WITH",
+        "ALL", "THOU", "THY", "WAS", "WHICH", "THEE", "THEIR", "HAVE", "FROM", "HATH", "WERE", "ARE",
+        "BUT", "THIS", "WHEN", "THERE", "THEN", "UPON", "OUT", "ALSO", "BEEN", "ONE", "INTO", "SAID",
+        "HER", "SHE", "WILL", "SHALT", "BEFORE", "WHO", "EVEN", "NOW", "THESE", "OUR", "YOUR", "YOU",
+        "AGAINST", "BECAUSE", "THEREFORE", "WHAT", "ABOUT", "AFTER", "AGAIN", "AMONG", "ANY", "EVERY",
+        "HAD", "HAS", "HOW", "LET", "MAY", "MINE", "MORE", "MUCH", "NOR", "OVER", "SHOULD", "SUCH",
+        "THAN", "THOSE", "THUS", "UNDER", "UNTIL", "VERY", "WHERE", "WHEREFORE", "WHOM", "WHOSE",
+        "WOULD", "COULD", "BEING", "DID", "DOTH", "HAST", "WILT", "CAN", "ART", "SAITH", "SAYING",
+        "LIKE", "SAME", "NEITHER", "EITHER", "YET", "ITS", "OWN", "OFF", "YEA", "NAY", "THINE",
+        "WHETHER", "WHILE", "WITHIN", "WITHOUT", "WHATSOEVER", "WHOSOEVER", "HIMSELF", "THEMSELVES",
+        "THYSELF", "MYSELF", "OURSELVES", "YOURSELVES", "HERSELF", "ITSELF", "THEREOF", "THEREIN",
+        "HEREIN", "WHEREIN", "THITHER", "HITHER", "WHENCE", "THENCE", "HENCE", "LEST", "SHOULDEST",
+    ]
+
+    /// The verse's longest distinct words that fit the grid, skipping filler words.
     public func extractKeywords(from text: String, minLen: Int, countRange: ClosedRange<Int>) -> [String] {
         let letters = text.uppercased().map { $0.isLetter ? $0 : " " }
         let tokenized = String(letters).split(separator: " ").map(String.init)
         var uniq: [String] = []
         var seen = Set<String>()
-        for t in tokenized where t.count >= minLen {
+        // Filter by grid size before choosing, so an over-long word doesn't take a slot
+        // and then get dropped, leaving the puzzle short of words it could have had.
+        for t in tokenized where t.count >= minLen && t.count <= size && !Self.fillerWords.contains(t) {
             if !seen.contains(t) {
                 seen.insert(t)
                 uniq.append(t)
             }
         }
         uniq.sort { $0.count > $1.count }
-        let count = min(countRange.upperBound, max(countRange.lowerBound, uniq.count))
-        return Array(uniq.prefix(count))
+        return Array(uniq.prefix(countRange.upperBound))
     }
 
     public func generatePuzzle(from verseText: String, countRange: ClosedRange<Int>) -> (grid: [[Character]], placed: [PlacedWord], target: [String]) {
+        // Letters from crossing words and decoys can, very rarely, line up to spell an answer
+        // a second time. That copy wouldn't count when found, so build the puzzle again.
+        var puzzle = buildPuzzle(from: verseText, countRange: countRange)
+        for _ in 0..<5 where hasDuplicateAnswer(in: puzzle.grid, placed: puzzle.placed) {
+            puzzle = buildPuzzle(from: verseText, countRange: countRange)
+        }
+        return puzzle
+    }
+
+    /// True when any answer can be read in the grid anywhere other than its own cells.
+    private func hasDuplicateAnswer(in grid: [[Character]], placed: [PlacedWord]) -> Bool {
+        let directions = [(0, 1), (1, 0), (0, -1), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)]
+        for pw in placed {
+            let letters = Array(pw.word)
+            let own = cellsForPlacedWord(pw)
+            for r in 0..<size {
+                for c in 0..<size where grid[r][c] == letters[0] {
+                    for (dr, dc) in directions {
+                        let cells = letters.indices.map { (row: r + dr * $0, col: c + dc * $0) }
+                        guard cells.allSatisfy({ $0.row >= 0 && $0.row < size && $0.col >= 0 && $0.col < size }),
+                              cells.map({ grid[$0.row][$0.col] }) == letters else { continue }
+                        if !sequenceEquals(cells, own) && !sequenceEquals(cells, own.reversed()) { return true }
+                    }
+                }
+            }
+        }
+        return false
+    }
+
+    private func buildPuzzle(from verseText: String, countRange: ClosedRange<Int>) -> (grid: [[Character]], placed: [PlacedWord], target: [String]) {
         var grid = Array(repeating: Array(repeating: Character(" "), count: size), count: size)
         var placed: [PlacedWord] = []
 
-        // Extract and filter by grid fit
-        let extracted = extractKeywords(from: verseText, minLen: 3, countRange: countRange)
-        let fitting = extracted.filter { $0.count <= size }
-        let target = Array(fitting.prefix(countRange.upperBound))
+        let target = extractKeywords(from: verseText, minLen: 3, countRange: countRange)
 
         // Multi-attempt placement
         let maxAttempts = 20
@@ -114,6 +159,9 @@ public struct WordSearchEngine {
 
         grid = bestGrid
         placed = bestPlaced
+        if difficulty == .expert {
+            placeDecoys(for: placed, onto: &grid)
+        }
         fillRandom(into: &grid, avoidingAccidentalMatchesFor: placed)
 
         // Only advertise words that actually made it onto the board. This keeps
@@ -125,26 +173,10 @@ public struct WordSearchEngine {
         let cells = selectionCells(from: start, to: end)
         guard !cells.isEmpty else { return .noMatch }
 
-        let forward = String(cells.map { grid[$0.row][$0.col] })
-        let backward = String(forward.reversed())
-
+        // A word counts when the selection covers exactly its cells, dragged from either end.
         if let match = placed.first(where: { pw in
             let pwCells = cellsForPlacedWord(pw)
-            let pwForward = String(pwCells.map { grid[$0.row][$0.col] })
-            let pwBackward = String(pwForward.reversed())
-
-            switch difficulty {
-            case .easy, .medium:
-                return (forward == pwForward && sequenceEquals(cells, pwCells))
-            case .hard:
-                return (forward == pwForward && sequenceEquals(cells, pwCells))
-                    || (backward == pwForward && sequenceEquals(cells.reversed(), pwCells))
-                    || (forward == pwBackward && sequenceEquals(cells, pwCells.reversed()))
-                    || (backward == pwBackward && sequenceEquals(cells.reversed(), pwCells.reversed()))
-            case .expert:
-                return (forward == pwBackward && sequenceEquals(cells, pwCells.reversed()))
-                    || (backward == pwBackward && sequenceEquals(cells.reversed(), pwCells.reversed()))
-            }
+            return sequenceEquals(cells, pwCells) || sequenceEquals(cells, pwCells.reversed())
         }) {
             return ValidationResult(matchedWordOriginal: match.originalWord, matchedPath: cells)
         }
@@ -213,16 +245,9 @@ public struct WordSearchEngine {
     }
 
     private func placeWordScattered(_ word: String, onto grid: inout [[Character]], placed: inout [PlacedWord], dirUsage: inout [String: Int]) -> Bool {
-        let toPlace: String = {
-            switch difficulty {
-            case .expert:
-                return String(word.reversed())
-            case .hard:
-                return Bool.random() && Double.random(in: 0...1) < 0.35 ? String(word.reversed()) : word
-            default:
-                return word
-            }
-        }()
+        // Words are written as-is; Hard and Expert already include backward directions,
+        // so reversing the text first wouldn't change the puzzle.
+        let toPlace = word
 
         var candidates = enumerateCandidates(for: toPlace, on: grid, placed: placed, dirUsage: dirUsage)
         guard !candidates.isEmpty else { return false }
@@ -303,17 +328,63 @@ public struct WordSearchEngine {
     }
 
     private func canPlaceAt(word: String, row: Int, col: Int, dr: Int, dc: Int, grid: [[Character]]) -> (fits: Bool, overlap: Int) {
-        let overlap = 0
-        for i in 0..<word.count {
+        var overlap = 0
+        for (i, letter) in word.enumerated() {
             let r = row + dr * i
             let c = col + dc * i
             guard r >= 0, r < size, c >= 0, c < size else { return (false, 0) }
             let ch = grid[r][c]
-            // Target words must occupy distinct cells. Filler letters are added
-            // only after placement, so any non-space cell belongs to another word.
-            if ch != " " { return (false, 0) }
+            // Filler letters are added only after placement, so any non-space cell
+            // belongs to another word.
+            if ch == " " { continue }
+            // Expert lets words cross where they share a letter. Other levels keep
+            // every word on its own cells.
+            guard difficulty == .expert, ch == letter else { return (false, 0) }
+            overlap += 1
         }
-        return (true, overlap)
+        // One shared cell is a crossing; more would let a word hide inside another.
+        return overlap <= 1 ? (true, overlap) : (false, 0)
+    }
+
+    /// Expert only: writes look-alike fragments (a word missing its last letter) into
+    /// empty cells, so a familiar start isn't always the real word.
+    private func placeDecoys(for placed: [PlacedWord], onto grid: inout [[Character]]) {
+        let directions = baseAllowedDirections
+        let targets = placed.map(\.word)
+        // Cells just past each decoy's ends. Later decoys stay off them, so one decoy
+        // can't supply the missing letter that completes another.
+        var reserved = Set<[Int]>()
+        for pw in placed.shuffled().prefix(3) where pw.word.count >= 5 {
+            let fragment = Array(pw.word.dropLast())
+            // A fragment that spells another answer would be a second copy that doesn't count.
+            let forward = String(fragment), backward = String(fragment.reversed())
+            guard !targets.contains(where: { forward.contains($0) || backward.contains($0) }) else { continue }
+            var candidates: [(row: Int, col: Int, dr: Int, dc: Int)] = []
+            for dir in directions {
+                for r in 0..<size {
+                    for c in 0..<size {
+                        let cells = fragment.indices.map { (r + dir.dr * $0, c + dir.dc * $0) }
+                        guard cells.allSatisfy({
+                            $0.0 >= 0 && $0.0 < size && $0.1 >= 0 && $0.1 < size
+                                && grid[$0.0][$0.1] == " " && !reserved.contains([$0.0, $0.1])
+                        }) else { continue }
+                        // The cells just past each end must be empty or off the grid, so a
+                        // decoy can only be completed by a filler letter, which fillRandom
+                        // already refuses to place when it would spell a target word.
+                        let before = (r - dir.dr, c - dir.dc)
+                        let after = (r + dir.dr * fragment.count, c + dir.dc * fragment.count)
+                        let endsClear = [before, after].allSatisfy { cell in
+                            cell.0 < 0 || cell.0 >= size || cell.1 < 0 || cell.1 >= size || grid[cell.0][cell.1] == " "
+                        }
+                        if endsClear { candidates.append((r, c, dir.dr, dir.dc)) }
+                    }
+                }
+            }
+            guard let spot = candidates.randomElement() else { continue }
+            write(String(fragment), atRow: spot.row, col: spot.col, dr: spot.dr, dc: spot.dc, into: &grid)
+            reserved.insert([spot.row - spot.dr, spot.col - spot.dc])
+            reserved.insert([spot.row + spot.dr * fragment.count, spot.col + spot.dc * fragment.count])
+        }
     }
 
     private func adjacencyCountFor(word: String, row: Int, col: Int, dr: Int, dc: Int, grid: [[Character]]) -> Int {
@@ -399,57 +470,43 @@ public struct WordSearchEngine {
 
     // MARK: - Selection helpers (pure)
 
+    /// Snaps a drag to the nearest straight line (one of 8 directions) from `start`, so a
+    /// slightly crooked swipe still selects the cells the person meant. Selections are
+    /// allowed in every direction on every level, since words can be dragged from either end.
     public func constrainToAllowedLine(from start: (row: Int, col: Int), to end: (row: Int, col: Int)) -> (row: Int, col: Int) {
         let dRow = end.row - start.row
         let dCol = end.col - start.col
-        func sign(_ x: Int) -> Int { x == 0 ? 0 : (x > 0 ? 1 : -1) }
-        var dr = sign(dRow)
-        var dc = sign(dCol)
+        guard dRow != 0 || dCol != 0 else { return start }
 
-        if dr != 0 && dc != 0 {
-            // diagonal ok
-        } else {
-            // axis-aligned ok
+        // Nearest 45° direction.
+        let octant = Int((atan2(Double(dRow), Double(dCol)) / (.pi / 4)).rounded())
+        let directions = [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)]
+        let (dr, dc) = directions[((octant % 8) + 8) % 8]
+
+        // Length along that line: the drag's extent on the axis, or the average for diagonals.
+        var length: Int
+        if dr == 0 { length = abs(dCol) }
+        else if dc == 0 { length = abs(dRow) }
+        else { length = Int((Double(abs(dRow) + abs(dCol)) / 2).rounded()) }
+
+        // Keep the end on the grid.
+        while length > 0 {
+            let r = start.row + dr * length, c = start.col + dc * length
+            if r >= 0 && r < size && c >= 0 && c < size { break }
+            length -= 1
         }
-
-        let allowed = baseAllowedDirections
-        if !allowed.contains(where: { $0.dr == dr && $0.dc == dc }) {
-            if abs(dRow) >= abs(dCol) {
-                dr = dr == 0 ? 0 : (dr > 0 ? 1 : -1)
-                dc = 0
-            } else {
-                dr = 0
-                dc = dc == 0 ? 0 : (dc > 0 ? 1 : -1)
-            }
-        }
-
-        let clampedRow = (start.row + dr * abs(dRow)).clamped(to: 0...(size - 1))
-        let clampedCol = (start.col + dc * abs(dCol)).clamped(to: 0...(size - 1))
-        return (row: clampedRow, col: clampedCol)
+        return (row: start.row + dr * length, col: start.col + dc * length)
     }
 
     public func selectionCells(from start: (row: Int, col: Int), to end: (row: Int, col: Int)) -> [(row: Int, col: Int)] {
-        let dRow = end.row - start.row
-        let dCol = end.col - start.col
-        if dRow == 0 && dCol == 0 { return [start] }
-        func sign(_ x: Int) -> Int { x == 0 ? 0 : (x > 0 ? 1 : -1) }
-        var dr = sign(dRow)
-        var dc = sign(dCol)
-        if !baseAllowedDirections.contains(where: { $0.dr == dr && $0.dc == dc }) {
-            if abs(dRow) >= abs(dCol) { dr = dr == 0 ? 0 : (dr > 0 ? 1 : -1); dc = 0 }
-            else { dr = 0; dc = dc == 0 ? 0 : (dc > 0 ? 1 : -1) }
-        }
-        var cells: [(Int, Int)] = []
-        var r = start.row
-        var c = start.col
-        cells.append((r, c))
-        while r != end.row || c != end.col {
-            r += dr
-            c += dc
-            if r < 0 || r >= size || c < 0 || c >= size { break }
-            cells.append((r, c))
-        }
-        return cells
+        // Callers normally pass a snapped end; snapping again makes any end point safe.
+        let snapped = constrainToAllowedLine(from: start, to: end)
+        let dRow = snapped.row - start.row
+        let dCol = snapped.col - start.col
+        let steps = max(abs(dRow), abs(dCol))
+        guard steps > 0 else { return [start] }
+        let dr = dRow.signum(), dc = dCol.signum()
+        return (0...steps).map { (row: start.row + dr * $0, col: start.col + dc * $0) }
     }
 
     public func cellsForPlacedWord(_ pw: PlacedWord) -> [(row: Int, col: Int)] {

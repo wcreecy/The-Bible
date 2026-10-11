@@ -8,6 +8,8 @@ struct WordSearchGameView: View {
     @State private var vm: WordSearchViewModel
     @State private var didBindVM = false
     @State private var confirmReveal = false
+    /// Width available to the phone layout, used to size the grid.
+    @State private var phoneContentWidth: CGFloat = 0
 
     // Reuse a single in-memory placeholder container across instances to avoid store churn.
     private static let placeholderContainer: ModelContainer = {
@@ -27,80 +29,90 @@ struct WordSearchGameView: View {
     }
 
     private var isPad: Bool { horizontalSizeClass == .regular }
+    private static let scrollTopID = "wordSearchTop"
 
     var body: some View {
         @Bindable var vm = vm
 
-        ScrollView {
-            VStack(spacing: 16) {
-                if !vm.started {
-                    WordSearchStartScreen(
-                        difficulty: $vm.difficulty,
-                        verseSource: $vm.verseSource,
-                        isBlindMode: $vm.isBlindMode,
-                        isTimedMode: $vm.isTimedMode,
-                        wordCountRange: vm.wordCountRange,
-                        timePerWord: vm.timePerWordString(),
-                        hasFavorites: !favorites.isEmpty,
-                        onStart: { vm.start() }
-                    )
-                } else {
-                    WordSearchHeaderBox(
-                        verseRef: vm.verseRef,
-                        // The summary shows the full verse once the round ends.
-                        verseText: vm.roundOver ? "" : vm.verseText,
-                        hidesVerseText: vm.hidesWordList,
-                        isFavorited: vm.isCurrentFavorited(),
-                        onToggleFavorite: { vm.toggleFavoriteCurrent() },
-                        timerTint: vm.isTimedMode && !vm.roundOver
-                            ? vm.timerTint(for: vm.remainingSeconds)
-                            : nil
-                    )
-
-                    if vm.isTimedMode && !vm.roundOver {
-                        GameTimerCard(
-                            remainingSeconds: vm.remainingSeconds,
-                            tint: vm.timerTint(for: vm.remainingSeconds),
-                            isPulsing: vm.pulseOn,
-                            formattedTime: vm.formattedTime(vm.remainingSeconds)
-                        )
-                    }
-
-                    if isPad {
-                        SideBySideGameArea(
-                            size: vm.size,
-                            grid: vm.grid,
-                            selectionStart: vm.selectionStart,
-                            selectionEnd: vm.selectionEnd,
-                            foundCells: vm.foundCells,
-                            revealedWords: vm.revealedWords,
-                            placed: vm.placed,
-                            backgroundColorForCell: backgroundColorForCell,
-                            onTapCell: { r, c in vm.handleTap(row: r, col: c) },
-                            onDragChanged: { cell in vm.dragChanged(to: cell) },
-                            onDragEnded: { vm.dragEnded() },
-                            // iPad keeps the previous height-driven fallback (words are beside, not below)
-                            dynamicGridHeight: dynamicGridHeightForLayout(availableWidth: nil),
-
-                            words: vm.targetWords,
-                            foundWords: vm.foundWords,
-                            hidesWordList: vm.hidesWordList,
-                            colorForWord: colorForWord,
-
-                            roundOver: vm.roundOver,
-                            onHint: { vm.hint() },
-                            onReveal: { confirmReveal = true },
-                            onShowWordList: { vm.showWordList() },
-                            onNewPuzzle: { vm.newPuzzle() },
-                            onChangeSettings: { vm.changeSettings() },
-                            summary: summaryCard
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(spacing: 16) {
+                    if !vm.started {
+                        WordSearchStartScreen(
+                            difficulty: $vm.difficulty,
+                            verseSource: $vm.verseSource,
+                            isBlindMode: $vm.isBlindMode,
+                            isTimedMode: $vm.isTimedMode,
+                            wordCountRange: vm.wordCountRange,
+                            timePerWord: vm.timePerWordString(),
+                            hasFavorites: !favorites.isEmpty,
+                            onStart: { vm.start() }
                         )
                     } else {
-                        phoneLayout
+                        WordSearchHeaderBox(
+                            verseRef: vm.verseRef,
+                            // The summary shows the full verse once the round ends.
+                            verseText: vm.roundOver ? "" : vm.verseText,
+                            hidesVerseText: vm.hidesWordList,
+                            isFavorited: vm.isCurrentFavorited(),
+                            onToggleFavorite: { vm.toggleFavoriteCurrent() },
+                            timerTint: vm.isTimedMode && !vm.roundOver
+                                ? vm.timerTint(for: vm.remainingSeconds)
+                                : nil
+                        )
+
+                        if vm.isTimedMode && !vm.roundOver {
+                            GameTimerCard(
+                                remainingSeconds: vm.remainingSeconds,
+                                tint: vm.timerTint(for: vm.remainingSeconds),
+                                isPulsing: vm.pulseOn,
+                                formattedTime: vm.formattedTime(vm.remainingSeconds)
+                            )
+                        }
+
+                        if isPad {
+                            SideBySideGameArea(
+                                size: vm.size,
+                                grid: vm.grid,
+                                selectionStart: vm.selectionStart,
+                                selectionEnd: vm.selectionEnd,
+                                foundCells: vm.foundCells,
+                                revealedWords: vm.revealedWords,
+                                placed: vm.placed,
+                                backgroundColorForCell: backgroundColorForCell,
+                                onTapCell: { r, c in vm.handleTap(row: r, col: c) },
+                                onDragChanged: { cell in vm.dragChanged(to: cell) },
+                                onDragEnded: { vm.dragEnded() },
+                                // iPad keeps the previous height-driven fallback (words are beside, not below)
+                                dynamicGridHeight: dynamicGridHeightForLayout(availableWidth: nil),
+
+                                words: vm.targetWords,
+                                foundWords: vm.foundWords,
+                                hidesWordList: vm.hidesWordList,
+                                colorForWord: colorForWord,
+
+                                roundOver: vm.roundOver,
+                                onHint: { vm.hint() },
+                                onReveal: { confirmReveal = true },
+                                onShowWordList: { vm.showWordList() },
+                                onNewPuzzle: { vm.newPuzzle() },
+                                onChangeSettings: { vm.changeSettings() },
+                                summary: summaryCard
+                            )
+                        } else {
+                            phoneLayout
+                        }
                     }
                 }
+                .padding()
+                .id(Self.scrollTopID)
             }
-            .padding()
+            // Each new puzzle (and the start screen) begins at the top, rather than keeping
+            // the scroll position from the start screen or the previous round's summary.
+            .onChange(of: vm.started) { proxy.scrollTo(Self.scrollTopID, anchor: .top) }
+            .onChange(of: vm.roundOver) { _, isOver in
+                if !isOver { proxy.scrollTo(Self.scrollTopID, anchor: .top) }
+            }
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
@@ -111,9 +123,12 @@ struct WordSearchGameView: View {
                 }
             }
         }
+        // On phones the controls stay pinned above the tab bar: Hint/Reveal while playing,
+        // Settings/Next Puzzle once the round ends. A swipe that starts on the grid selects
+        // letters rather than scrolling, so controls below the grid would be hard to reach.
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if vm.started && vm.roundOver && !isPad {
-                completionActionsPhone
+            if vm.started && !isPad {
+                phoneControlsBar
             }
         }
         .confirmationDialog("Reveal all words?", isPresented: $confirmReveal, titleVisibility: .visible) {
@@ -137,33 +152,31 @@ struct WordSearchGameView: View {
     // MARK: - Phone layout
 
     private var phoneLayout: some View {
-        // Use GeometryReader to get the actual content width (after outer padding).
-        GeometryReader { geo in
-            let gridHeight = dynamicGridHeightForLayout(availableWidth: geo.size.width)
-            VStack(spacing: 6) {
-                GridBoard(
-                    size: vm.size,
-                    grid: vm.grid,
-                    selectionStart: vm.selectionStart,
-                    selectionEnd: vm.selectionEnd,
-                    foundCells: vm.foundCells,
-                    revealedWords: vm.revealedWords,
-                    placed: vm.placed,
-                    backgroundColorForCell: backgroundColorForCell,
-                    onTapCell: { r, c in vm.handleTap(row: r, col: c) },
-                    onDragChanged: { cell in vm.dragChanged(to: cell) },
-                    onDragEnded: { vm.dragEnded() },
-                    dynamicGridHeight: gridHeight
-                )
-                .frame(maxWidth: .infinity)
+        VStack(spacing: 6) {
+            GridBoard(
+                size: vm.size,
+                grid: vm.grid,
+                selectionStart: vm.selectionStart,
+                selectionEnd: vm.selectionEnd,
+                foundCells: vm.foundCells,
+                revealedWords: vm.revealedWords,
+                placed: vm.placed,
+                backgroundColorForCell: backgroundColorForCell,
+                onTapCell: { r, c in vm.handleTap(row: r, col: c) },
+                onDragChanged: { cell in vm.dragChanged(to: cell) },
+                onDragEnded: { vm.dragEnded() },
+                dynamicGridHeight: dynamicGridHeightForLayout(availableWidth: phoneContentWidth)
+            )
+            .frame(maxWidth: .infinity)
 
-                // Word list + controls sit under the grid
-                wordListAndControlsPhone
-            }
-            .frame(maxWidth: .infinity, alignment: .center)
+            // Word list, controls, and the end-of-round summary sit under the grid.
+            wordListAndControlsPhone
         }
-        // Keep the geometry container as small as needed vertically; ScrollView will handle scrolling.
-        .frame(minHeight: 0)
+        .frame(maxWidth: .infinity, alignment: .center)
+        // Measure the width without wrapping the content in a GeometryReader. Inside a
+        // ScrollView a GeometryReader doesn't report its content's height, so the summary
+        // below the grid could extend past what the ScrollView would scroll to.
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { phoneContentWidth = $0 }
     }
 
     private var wordListAndControlsPhone: some View {
@@ -192,26 +205,14 @@ struct WordSearchGameView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-
-            if !vm.roundOver {
-                controlsBar(roundOver: false)
-            }
         }
         // Small positive top padding to ensure a tiny, consistent gap (no overlap) on all difficulties.
         .padding(.top, 2)
     }
 
-    private var completionActionsPhone: some View {
-        controlsBar(roundOver: true)
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal)
-            .padding(.vertical, 10)
-            .background(.bar)
-    }
-
-    private func controlsBar(roundOver: Bool) -> some View {
+    private var phoneControlsBar: some View {
         WordSearchControlsBar(
-            roundOver: roundOver,
+            roundOver: vm.roundOver,
             canShowWordList: vm.hidesWordList,
             onHint: { vm.hint() },
             onReveal: { confirmReveal = true },
@@ -219,6 +220,10 @@ struct WordSearchGameView: View {
             onNewPuzzle: { vm.newPuzzle() },
             onChangeSettings: { vm.changeSettings() }
         )
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal)
+        .padding(.vertical, 10)
+        .background(.bar)
     }
 
     @ViewBuilder
