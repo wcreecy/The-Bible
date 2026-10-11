@@ -16,6 +16,28 @@ struct BeatTheClockGameView: View {
             case .hard: "Hard"
             }
         }
+
+        var roundTime: Int {
+            switch self {
+            case .easy: 25
+            case .normal: 15
+            case .hard: 10
+            }
+        }
+
+        /// Easy always shows each question's clue; the other levels charge time for it.
+        var showsClueAutomatically: Bool { self == .easy }
+
+        var detail: LocalizedStringResource {
+            switch self {
+            case .easy:
+                "Well-known names, with a clue shown for each one."
+            case .normal:
+                "Adds less familiar names. A clue costs \(BeatTheClockGameView.hintCost) seconds."
+            case .hard:
+                "Every name in the game. A clue costs \(BeatTheClockGameView.hintCost) seconds."
+            }
+        }
     }
 
     enum Category: String, CaseIterable, Identifiable {
@@ -34,6 +56,15 @@ struct BeatTheClockGameView: View {
         }
     }
 
+    static let questionsPerGame = 10
+    static let hintCost = 3
+
+    private enum Phase {
+        case setup
+        case playing
+        case results
+    }
+
     private struct Question: Identifiable {
         enum Subject {
             case person
@@ -43,11 +74,13 @@ struct BeatTheClockGameView: View {
         let id: String
         let subject: Subject
         let label: String
+        let clue: String
         let acceptableBooks: Set<String>
-        let referenceBookName: String?
+        /// The verse the place entry was written from, shown when the round ends.
+        let scriptureReference: String?
     }
 
-    @State private var started: Bool = false
+    @State private var phase: Phase = .setup
     @AppStorage("beatTheClockDifficulty") private var difficulty: Difficulty = .normal
     @AppStorage("beatTheClockCategory") private var category: Category = .people
 
@@ -57,41 +90,43 @@ struct BeatTheClockGameView: View {
     // Data
     @State private var loadedPeople: [BibleCharacter] = []
     @State private var loadedPlaces: [BibleLocationChallenge] = []
+    /// Every book whose text mentions each place, keyed by place ID. Nil until indexed.
+    @State private var placeBooks: [Int: Set<String>]?
     @State private var questionDeck: [Question] = []
-    @State private var bookChoices: [String] = []
 
     // Current round
-    @State private var targetLabel: String = ""
-    @State private var referenceBookName: String? = nil
-    @State private var currentEntryIsPerson: Bool = true
-
-    // Timer
+    @State private var currentQuestion: Question?
+    @State private var questionNumber: Int = 0
+    @State private var totalQuestions: Int = 0
+    @State private var roundID: Int = 0
     @State private var remainingSeconds: Int = 0
-    @State private var roundResultIsCorrect: Bool?
+    @State private var roundOutcome: BeatTheClockRoundOutcome?
+    @State private var submittedBook: String?
+    @State private var hintRevealed: Bool = false
 
     // Scoring
     @State private var score: Int = 0
     @State private var answered: Int = 0
-
-    @State private var currentStreak: Int = 0
+    @State private var sessionStreak: Int = 0
+    @State private var sessionBestStreak: Int = 0
     @State private var currentBestStreak: Int = 0
+    @State private var bestGameScore: Int = 0
+    @State private var isNewBestGame: Bool = false
 
-    // Read combined all-time stats (shared across difficulties)
-    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "beatclockAllTimeCorrect_all") }
-    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "beatclockAllTimeAnswered_all") }
-    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "beatclockAllTimeBestStreak_all") }
-
-    // Search
+    // Answer entry
     @State private var searchText: String = ""
-    @State private var selectionLocked: Bool = false
+    @State private var inputMessage: String?
     @FocusState private var searchFieldFocused: Bool
-    @State private var acceptableBooks: Set<String> = []
     @State private var showAnswers: Bool = false
     @State private var pulse: Bool = false
     @State private var timerOnLeft: Bool = false
     @State private var usesMutedTimerStyle: Bool = false
 
-    private var allBookNames: [String] { BibleData.books.map { $0.name } }
+    private var selectionLocked: Bool { roundOutcome != nil }
+
+    private var isLoadingData: Bool {
+        loadedPeople.isEmpty || loadedPlaces.isEmpty || placeBooks == nil
+    }
 
     private var peopleForSelectedDifficulty: [BibleCharacter] {
         loadedPeople.filter { matchesSelectedDifficulty($0.difficulty) }
@@ -102,17 +137,7 @@ struct BeatTheClockGameView: View {
     }
 
     private var filteredBooks: [String] {
-        let text = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty else { return [] }
-        return bookChoices.filter { $0.localizedCaseInsensitiveContains(text) }
-    }
-
-    private var roundTime: Int {
-        switch difficulty {
-        case .easy: return 25
-        case .normal: return 15
-        case .hard: return 10
-        }
+        BibleBookNameMatcher.suggestions(for: searchText, in: BibleCanon.canonicalOrder())
     }
 
     private var canSubmit: Bool {
@@ -120,218 +145,58 @@ struct BeatTheClockGameView: View {
         return !selectionLocked && !trimmed.isEmpty
     }
 
+    private var showsClue: Bool {
+        difficulty.showsClueAutomatically || hintRevealed || selectionLocked
+    }
+
+    private var canRequestHint: Bool {
+        !selectionLocked && remainingSeconds > Self.hintCost
+    }
+
+    private var sortedAcceptableBooks: [String] {
+        guard let currentQuestion else { return [] }
+        let order = Dictionary(uniqueKeysWithValues: BibleCanon.canonicalOrder().enumerated().map { ($1, $0) })
+        return currentQuestion.acceptableBooks.sorted { (order[$0] ?? Int.max) < (order[$1] ?? Int.max) }
+    }
+
+    private var isLastQuestion: Bool { questionDeck.isEmpty }
+
     // MARK: - Persistent streak (per difficulty)
-    private func persistentSuffix() -> String {
-        switch difficulty {
-        case .easy: return "easy"
-        case .normal: return "normal"
-        case .hard: return "hard"
-        }
-    }
-
     private var persistentStreak: PersistentGameStreak {
-        PersistentGameStreak(game: "beatclock", variant: persistentSuffix())
+        PersistentGameStreak(game: "beatclock", variant: difficulty.rawValue)
     }
 
-    private func seedStreakFromPersistence() {
-        currentStreak = persistentStreak.current
-        currentBestStreak = max(currentBestStreak, persistentStreak.best)
-    }
+    private var bestGameScoreKey: String { "beatclockBestGameScore_\(difficulty.rawValue)" }
 
     var body: some View {
         GeometryReader { geometry in
-            let usesSplitLayout = started && geometry.size.width >= 700
+            let usesSplitLayout = phase == .playing && geometry.size.width >= 700
 
             ZStack {
                 ScrollView {
                     VStack(spacing: 16) {
-                if !started {
-                    Spacer(minLength: 32)
-                    Text("Type a Bible book that mentions the shown person or place before the timer runs out.")
-                        .gameStartDescriptionStyle(title: "Beat the Clock", systemImage: "hourglass", tint: .indigo)
-
-                    GameLobbyPreview(kind: .beatTheClock)
-
-                    if geometry.size.width >= 700 {
-                        HStack(alignment: .top, spacing: 16) {
-                            BeatTheClockConfigurationCard(
-                                difficulty: $difficulty,
-                                category: $category,
-                                roundTime: roundTime,
-                                minimumHeight: 360
-                            )
-                            .frame(maxWidth: .infinity, alignment: .leading)
-
-                            BeatTheClockStartButton(action: startGame)
-                                .frame(maxWidth: .infinity)
-                                .frame(minHeight: 360)
-                        }
-                    } else {
-                        BeatTheClockConfigurationCard(
-                            difficulty: $difficulty,
-                            category: $category,
-                            roundTime: roundTime
-                        )
-
-                        BeatTheClockStartButton(action: startGame)
-                    }
-
-                    Spacer(minLength: 32)
-                } else {
-                    if usesSplitLayout {
-                        BeatTheClockGameDashboard(
-                            score: score,
-                            answered: answered,
-                            streak: currentStreak,
-                            allTimeCorrect: allTimeCorrect,
-                            allTimeAnswered: allTimeAnswered,
-                            allTimeBestStreak: allTimeBestStreak,
-                            targetType: currentEntryIsPerson ? "Person" : "Place",
-                            targetLabel: targetLabel,
-                            timerColor: timerColor,
-                            selectionLocked: selectionLocked,
-                            searchText: $searchText,
-                            searchFieldFocused: $searchFieldFocused,
-                            filteredBooks: Array(filteredBooks.prefix(8)),
-                            acceptableBookCount: acceptableBooks.count,
-                            canSubmit: canSubmit,
-                            showsDebugWin: debugAutoWinEnabled,
-                            availableHeight: geometry.size.height - 32,
-                            onClear: {
-                                searchText = ""
-                                searchFieldFocused = true
-                            },
-                            onSelectBook: { name in
-                                searchText = name
-                                submit(bookName: name)
-                                searchFieldFocused = false
-                            },
-                            onSubmit: submitCurrentEntry,
-                            onNext: nextRound,
-                            onShowAnswers: { showAnswers = true },
-                            onDebugWin: { endRound(correct: true) }
-                        )
-                    } else {
-                    GameScoreboardCard(
-                        currentCorrect: score,
-                        currentAnswered: answered,
-                        currentStreak: currentStreak,
-                        game: .beatclock
-                    )
-
-                    GroupBox {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(currentEntryIsPerson ? "Person" : "Place")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Text(targetLabel)
-                                .font(.title2)
-                                .fontWeight(.semibold)
-                                .lineLimit(2)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .strokeBorder(
-                                selectionLocked ? Color.primary.opacity(0.12) : timerColor,
-                                lineWidth: selectionLocked ? 1 : 2
-                            )
-                    )
-                    .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
-
-                    if !usesSplitLayout {
-                        GameTimerCard(
-                            remainingSeconds: remainingSeconds,
-                            tint: timerColor,
-                            isPulsing: pulse
-                        )
-                    }
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Type a Bible book")
-                            .font(.headline)
-                        HStack(spacing: 8) {
-                            TextField("Start typing…", text: $searchText)
-                                .textInputAutocapitalization(.words)
-                                .disableAutocorrection(true)
-                                .textFieldStyle(.roundedBorder)
-                                .onSubmit { submitCurrentEntry() }
-                                .focused($searchFieldFocused)
-                                .disabled(selectionLocked)
-
-                            Button(action: {
-                                let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-                                guard !trimmed.isEmpty else { return }
-                                searchText = ""
-                                searchFieldFocused = true
-                            }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.title3)
+                        switch phase {
+                        case .setup:
+                            setupContent(isWide: geometry.size.width >= 700)
+                        case .playing:
+                            if usesSplitLayout {
+                                dashboard(availableHeight: geometry.size.height - 32)
+                            } else {
+                                compactGameContent
                             }
-                            .buttonStyle(.plain)
-                            .foregroundStyle(searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || selectionLocked ? Color.secondary : Color.red)
-                            .disabled(searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || selectionLocked)
-                            .accessibilityLabel("Clear input")
+                        case .results:
+                            Spacer(minLength: 32)
+                            BeatTheClockResultsCard(
+                                score: score,
+                                total: totalQuestions,
+                                bestStreak: sessionBestStreak,
+                                bestGameScore: bestGameScore,
+                                isNewBest: isNewBestGame,
+                                onPlayAgain: startGame,
+                                onChangeSettings: resetGameSession
+                            )
+                            .frame(maxWidth: .infinity)
                         }
-
-                        if !filteredBooks.isEmpty {
-                            VStack(spacing: 6) {
-                                ForEach(filteredBooks.prefix(8), id: \.self) { name in
-                                    Button(action: {
-                                        searchText = name
-                                        submit(bookName: name)
-                                        searchFieldFocused = false
-                                    }) {
-                                        HStack {
-                                            Text(name)
-                                                .frame(maxWidth: .infinity, alignment: .leading)
-                                        }
-                                        .padding(.vertical, 8)
-                                        .padding(.horizontal, 12)
-                                        .contentShape(Rectangle())
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                                .fill(Color(.secondarySystemBackground))
-                                        )
-                                    }
-                                    .buttonStyle(.plain)
-                                    .disabled(selectionLocked)
-                                }
-                            }
-                        }
-                    }
-
-                    if selectionLocked {
-                        GameRoundNavigationButtons(
-                            canGoPrevious: false,
-                            canGoNext: true,
-                            onPrevious: {},
-                            onNext: nextRound
-                        )
-                    } else {
-                        Button("Submit", systemImage: "paperplane.fill") {
-                            submitCurrentEntry()
-                        }
-                        .buttonStyle(GameProminentButtonStyle(tint: .green))
-                        .disabled(!canSubmit)
-                    }
-                    if selectionLocked {
-                        Button("Show answers (\(acceptableBooks.count))") { showAnswers = true }
-                            .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                    }
-
-                    if debugAutoWinEnabled, started, !selectionLocked {
-                        Button("WIN") {
-                            endRound(correct: true)
-                        }
-                        .buttonStyle(ModernPillButtonStyle(tint: .red))
-                        .controlSize(.large)
-                        .padding(.top, 6)
-                        .accessibilityLabel("Win this round")
-                    }
-                    }
-                }
                     }
                     .padding()
                 }
@@ -346,7 +211,7 @@ struct BeatTheClockGameView: View {
                         remainingSeconds: remainingSeconds,
                         tint: timerColor,
                         isPulsing: pulse,
-                        resultIsCorrect: roundResultIsCorrect,
+                        outcome: roundOutcome,
                         usesMutedStyle: $usesMutedTimerStyle,
                         onSwapSides: {
                             withAnimation(.snappy) {
@@ -364,64 +229,45 @@ struct BeatTheClockGameView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                if started {
+                if phase != .setup {
                     GameNavigationTitle(title: "Beat the Clock", systemImage: "hourglass", tint: .indigo)
                 }
             }
         }
         .task {
-            if loadedPeople.isEmpty {
-                let people = await GameDataLoaders.loadCharactersAsync()
-                loadedPeople = people
-            }
-            if loadedPlaces.isEmpty {
-                let places = await GameDataLoaders.loadLocationChallengesAsync()
-                loadedPlaces = places
-            }
+            await loadData()
         }
         .onAppear {
-            // Seed streaks from persisted values so they survive navigation/relaunch
-            seedStreakFromPersistence()
+            currentBestStreak = persistentStreak.best
         }
         .onChange(of: difficulty) { _, _ in
-            // Switch to this difficulty’s persisted streaks
-            seedStreakFromPersistence()
+            currentBestStreak = persistentStreak.best
+        }
+        .onChange(of: searchText) { _, _ in
+            inputMessage = nil
         }
         .onDisappear {
             // Leaving after answering begins a new game session on return.
-            if started && answered > 0 {
+            if phase != .setup && answered > 0 {
                 resetGameSession()
             }
         }
-        .onEverySecond {
-            guard started, !selectionLocked else { return }
-            if remainingSeconds > 0 {
-                pulse = true
-                if remainingSeconds <= 5 {
-                    let generator = UIImpactFeedbackGenerator(style: .heavy)
-                    generator.impactOccurred()
-                }
-                Task {
-                    try? await Task.sleep(for: .milliseconds(200))
-                    pulse = false
-                }
-                remainingSeconds -= 1
-            }
-            if remainingSeconds == 0 {
-                endRound(correct: false)
+        // Restarts with each round so the first second is a full second.
+        .task(id: roundID) {
+            while !Task.isCancelled, phase == .playing, roundOutcome == nil, remainingSeconds > 0 {
+                try? await Task.sleep(for: .seconds(1))
+                guard !Task.isCancelled, phase == .playing, roundOutcome == nil else { return }
+                tick()
             }
         }
         .sheet(isPresented: $showAnswers) {
             NavigationStack {
                 VStack(alignment: .leading, spacing: 12) {
-                    if acceptableBooks.isEmpty {
+                    if sortedAcceptableBooks.isEmpty {
                         Text("No matches found in the Bible text for this entry.")
                             .foregroundStyle(.secondary)
                     } else {
-                        let canon = BibleCanon.canonicalOrder()
-                        let order = Dictionary(uniqueKeysWithValues: canon.enumerated().map { ($1, $0) })
-                        let books = Array(acceptableBooks).sorted { (lhs, rhs) in (order[lhs] ?? Int.max) < (order[rhs] ?? Int.max) }
-                        List(books, id: \.self) { name in
+                        List(sortedAcceptableBooks, id: \.self) { name in
                             Text(name)
                         }
                         .listStyle(.insetGrouped)
@@ -436,44 +282,338 @@ struct BeatTheClockGameView: View {
         }
     }
 
+    // MARK: - Setup
+
+    @ViewBuilder
+    private func setupContent(isWide: Bool) -> some View {
+        Spacer(minLength: 32)
+        Text("Type a Bible book that mentions the shown person or place before the timer runs out.")
+            .gameStartDescriptionStyle(title: "Beat the Clock", systemImage: "hourglass", tint: .indigo)
+
+        GameLobbyPreview(kind: .beatTheClock)
+
+        if isWide {
+            HStack(alignment: .top, spacing: 16) {
+                BeatTheClockConfigurationCard(
+                    difficulty: $difficulty,
+                    category: $category,
+                    minimumHeight: 300
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                BeatTheClockStartButton(isLoading: isLoadingData, action: startGame)
+                    .frame(maxWidth: .infinity)
+                    .frame(minHeight: 300)
+            }
+        } else {
+            BeatTheClockConfigurationCard(
+                difficulty: $difficulty,
+                category: $category
+            )
+
+            BeatTheClockStartButton(isLoading: isLoadingData, action: startGame)
+        }
+
+        Spacer(minLength: 32)
+    }
+
+    // MARK: - Gameplay layouts
+
+    private var progressText: String {
+        String(localized: "Question \(questionNumber) of \(totalQuestions)")
+    }
+
+    private var targetType: String {
+        currentQuestion?.subject == .place ? String(localized: "Place") : String(localized: "Person")
+    }
+
+    private var clueRow: BeatTheClockClueRow {
+        BeatTheClockClueRow(
+            clue: currentQuestion?.clue ?? "",
+            isRevealed: showsClue,
+            canRequestHint: canRequestHint,
+            onRequestHint: revealHint
+        )
+    }
+
+    @ViewBuilder
+    private var roundResult: some View {
+        if let roundOutcome, let currentQuestion {
+            BeatTheClockRoundResultCard(
+                outcome: roundOutcome,
+                subjectName: currentQuestion.label,
+                submittedBook: submittedBook,
+                acceptableBooks: sortedAcceptableBooks,
+                scriptureReference: currentQuestion.scriptureReference,
+                onShowAllAnswers: { showAnswers = true }
+            )
+        }
+    }
+
+    @ViewBuilder
+    private var compactGameContent: some View {
+        GameScoreboardCard(
+            currentCorrect: score,
+            currentAnswered: answered,
+            currentStreak: sessionStreak,
+            game: .beatclock
+        )
+
+        GroupBox {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("\(targetType) · \(progressText)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(currentQuestion?.label ?? "")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .lineLimit(2)
+                clueRow
+                    .padding(.top, 2)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .strokeBorder(
+                    selectionLocked ? Color.primary.opacity(0.12) : timerColor,
+                    lineWidth: selectionLocked ? 1 : 2
+                )
+        )
+        .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
+
+        if selectionLocked {
+            roundResult
+        } else {
+            GameTimerCard(
+                remainingSeconds: remainingSeconds,
+                tint: timerColor,
+                isPulsing: pulse
+            )
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Type a Bible book")
+                    .font(.headline)
+                HStack(spacing: 8) {
+                    TextField("Start typing…", text: $searchText)
+                        .textInputAutocapitalization(.words)
+                        .disableAutocorrection(true)
+                        .textFieldStyle(.roundedBorder)
+                        .onSubmit { submitCurrentEntry() }
+                        .focused($searchFieldFocused)
+
+                    Button(action: clearInput) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title3)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? Color.secondary : Color.red)
+                    .disabled(searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .accessibilityLabel("Clear input")
+                }
+
+                if let inputMessage {
+                    Label(inputMessage, systemImage: "exclamationmark.circle.fill")
+                        .font(.footnote)
+                        .foregroundStyle(.orange)
+                }
+
+                if !filteredBooks.isEmpty {
+                    VStack(spacing: 6) {
+                        ForEach(filteredBooks.prefix(8), id: \.self) { name in
+                            Button {
+                                submit(bookName: name)
+                            } label: {
+                                Text(name)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 12)
+                                    .contentShape(Rectangle())
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .fill(Color(.secondarySystemBackground))
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+            }
+        }
+
+        BeatTheClockActions(
+            isLocked: selectionLocked,
+            canSubmit: canSubmit,
+            isLastQuestion: isLastQuestion,
+            showsDebugWin: debugAutoWinEnabled,
+            onSubmit: submitCurrentEntry,
+            onNext: nextRound,
+            onDebugWin: { finishRound(.correct) }
+        )
+    }
+
+    private func dashboard(availableHeight: CGFloat) -> some View {
+        VStack(spacing: 18) {
+            GameScoreboardCard(
+                currentCorrect: score,
+                currentAnswered: answered,
+                currentStreak: sessionStreak,
+                game: .beatclock,
+                style: .dashboard
+            )
+
+            BeatTheClockDashboardPrompt(
+                targetType: targetType,
+                isPlace: currentQuestion?.subject == .place,
+                progressText: progressText,
+                targetLabel: currentQuestion?.label ?? "",
+                clueRow: clueRow,
+                tint: timerColor,
+                isLocked: selectionLocked
+            )
+
+            if selectionLocked {
+                roundResult
+            } else {
+                BeatTheClockDashboardAnswer(
+                    searchText: $searchText,
+                    searchFieldFocused: $searchFieldFocused,
+                    filteredBooks: Array(filteredBooks.prefix(8)),
+                    inputMessage: inputMessage,
+                    onClear: clearInput,
+                    onSubmit: submitCurrentEntry,
+                    onSelectBook: { submit(bookName: $0) }
+                )
+            }
+
+            Spacer(minLength: 0)
+
+            BeatTheClockActions(
+                isLocked: selectionLocked,
+                canSubmit: canSubmit,
+                isLastQuestion: isLastQuestion,
+                showsDebugWin: debugAutoWinEnabled,
+                onSubmit: submitCurrentEntry,
+                onNext: nextRound,
+                onDebugWin: { finishRound(.correct) }
+            )
+        }
+        .padding(.horizontal, AppDesignMetrics.cardPadding)
+        .padding(.bottom, AppDesignMetrics.cardPadding)
+        .padding(.top, AppDesignMetrics.cardPadding + 12)
+        .frame(maxWidth: .infinity, minHeight: availableHeight, alignment: .top)
+        .heroCardSurface()
+    }
+
+    /// Green, then yellow, then red as the round runs down, scaled to the round length.
     private var timerColor: Color {
-        if remainingSeconds <= 5 { return .red }
-        if remainingSeconds <= 10 { return .yellow }
+        let fraction = Double(remainingSeconds) / Double(max(1, difficulty.roundTime))
+        if fraction <= 0.3 { return .red }
+        if fraction <= 0.6 { return .yellow }
         return .green
     }
 
+    // MARK: - Data
+
+    private func loadData() async {
+        if loadedPeople.isEmpty {
+            loadedPeople = await GameDataLoaders.loadCharactersAsync()
+        }
+        if loadedPlaces.isEmpty {
+            loadedPlaces = await GameDataLoaders.loadLocationChallengesAsync()
+        }
+        if placeBooks == nil {
+            let places = loadedPlaces.map { (id: $0.id, name: $0.locationName) }
+            let books = await BibleRepository.shared.loadAllBooks()
+            placeBooks = await Task.detached(priority: .userInitiated) {
+                BeatTheClockAnswerIndex.booksMentioning(places, in: books)
+            }.value
+        }
+    }
+
+    // MARK: - Game flow
+
     private func startGame() {
+        guard !isLoadingData else { return }
+        let deck = Array(makeQuestionDeck().prefix(Self.questionsPerGame))
+        guard !deck.isEmpty else { return }
+        questionDeck = deck
+        totalQuestions = deck.count
+        questionNumber = 0
         score = 0
         answered = 0
-        questionDeck = makeQuestionDeck()
-        guard !questionDeck.isEmpty else { return }
-        started = true
-        // Do NOT reset persistent streaks here; seed from persistence
-        seedStreakFromPersistence()
+        sessionStreak = 0
+        sessionBestStreak = 0
+        isNewBestGame = false
+        currentBestStreak = persistentStreak.best
+        phase = .playing
         nextRound()
     }
 
     private func nextRound() {
-        selectionLocked = false
-        searchText = ""
-        remainingSeconds = roundTime
-        acceptableBooks = []
-        bookChoices = allBookNames.shuffled()
-        pulse = false
-        roundResultIsCorrect = nil
-
         guard let question = questionDeck.popLast() else {
-            finishGame()
+            showResults()
             return
         }
 
-        currentEntryIsPerson = question.subject == .person
-        targetLabel = question.label
-        referenceBookName = question.referenceBookName
-        acceptableBooks = question.acceptableBooks
+        currentQuestion = question
+        questionNumber += 1
+        roundOutcome = nil
+        submittedBook = nil
+        hintRevealed = false
+        searchText = ""
+        inputMessage = nil
+        remainingSeconds = difficulty.roundTime
+        pulse = false
+        roundID += 1
         DispatchQueue.main.async {
             self.searchFieldFocused = true
         }
+    }
+
+    private func showResults() {
+        let previousBest = UserDefaults.standard.integer(forKey: bestGameScoreKey)
+        isNewBestGame = score > previousBest
+        bestGameScore = max(previousBest, score)
+        if isNewBestGame {
+            UserDefaults.standard.set(score, forKey: bestGameScoreKey)
+        }
+        currentQuestion = nil
+        searchFieldFocused = false
+        phase = .results
+    }
+
+    private func resetGameSession() {
+        phase = .setup
+        roundOutcome = nil
+        currentQuestion = nil
+        remainingSeconds = 0
+        questionDeck = []
+        searchText = ""
+        inputMessage = nil
+        searchFieldFocused = false
+    }
+
+    private func tick() {
+        guard remainingSeconds > 0 else { return }
+        pulse = true
+        if remainingSeconds <= 5 {
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+        }
+        Task {
+            try? await Task.sleep(for: .milliseconds(200))
+            pulse = false
+        }
+        remainingSeconds -= 1
+        if remainingSeconds == 0 {
+            finishRound(.timedOut)
+        }
+    }
+
+    private func revealHint() {
+        guard canRequestHint else { return }
+        hintRevealed = true
+        remainingSeconds -= Self.hintCost
     }
 
     private func matchesSelectedDifficulty(_ questionDifficulty: String) -> Bool {
@@ -498,18 +638,24 @@ struct BeatTheClockGameView: View {
                 id: "person-\(entry.id)",
                 subject: .person,
                 label: entry.name,
+                clue: entry.shortDescription,
                 acceptableBooks: Set(entry.books),
-                referenceBookName: entry.books.first
+                scriptureReference: nil
             )
         }
         let places = placesForSelectedDifficulty.map { entry in
-            let referenceBookName = parseBookName(from: entry.scriptureMentioned)
+            // The reference book always counts, even when the KJV spells the name differently.
+            var books = placeBooks?[entry.id] ?? []
+            if let referenceBook = parseBookName(from: entry.scriptureMentioned) {
+                books.insert(referenceBook)
+            }
             return Question(
                 id: "place-\(entry.id)",
                 subject: .place,
                 label: entry.locationName,
-                acceptableBooks: referenceBookName.map { [$0] } ?? [],
-                referenceBookName: referenceBookName
+                clue: entry.shortDescription,
+                acceptableBooks: books,
+                scriptureReference: entry.scriptureMentioned.isEmpty ? nil : entry.scriptureMentioned
             )
         }
 
@@ -523,119 +669,70 @@ struct BeatTheClockGameView: View {
         }
     }
 
-    private func finishGame() {
-        started = false
-        selectionLocked = true
-        searchFieldFocused = false
-        questionDeck = []
-    }
+    // MARK: - Answers
 
-    private func resetGameSession() {
-        started = false
-        selectionLocked = false
-        remainingSeconds = 0
-        questionDeck = []
+    private func clearInput() {
         searchText = ""
-        acceptableBooks = []
-        bookChoices = []
-        searchFieldFocused = false
+        searchFieldFocused = true
     }
 
     private func submitCurrentEntry() {
-        let name = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !name.isEmpty else { return }
-        submit(bookName: name)
+        let text = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty, !selectionLocked else { return }
+
+        // Accept an exact name (or common variant), or the only suggestion left.
+        let suggestions = filteredBooks
+        guard let bookName = BibleBookNameMatcher.canonicalName(for: text, in: BibleCanon.canonicalOrder())
+                ?? (suggestions.count == 1 ? suggestions.first : nil) else {
+            inputMessage = String(localized: "“\(text)” isn’t a book of the Bible.")
+            UINotificationFeedbackGenerator().notificationOccurred(.warning)
+            return
+        }
+        submit(bookName: bookName)
     }
 
     private func submit(bookName: String) {
-        guard !selectionLocked else { return }
-        selectionLocked = true
-        answered += 1
-        let normalized = normalize(bookName)
-        let accepted = acceptableBooks.contains { normalize($0) == normalized }
-        if accepted {
-            score += 1
-
-            // Persistent streak: extend on correct
-            let streak = persistentStreak.recordWin()
-            currentStreak = streak.current
-            currentBestStreak = max(currentBestStreak, streak.best)
-
-            GameStats.shared.recordRound(
-                game: .beatclock,
-                difficulty: mapDifficulty(difficulty),
-                correct: 1,
-                answered: 1,
-                currentBestStreak: currentBestStreak
-            )
-
-            // NEW: Per-type stat write (People/Places)
-            let typeName = currentEntryIsPerson ? "People" : "Places"
-            GameStats.shared.recordBeatClockType(type: typeName, answered: 1, correct: 1)
-
-            let generator = UINotificationFeedbackGenerator(); generator.notificationOccurred(.success)
-        } else {
-            // Persistent streak: reset on incorrect
-            persistentStreak.reset()
-            currentStreak = 0
-
-            GameStats.shared.recordRound(
-                game: .beatclock,
-                difficulty: mapDifficulty(difficulty),
-                correct: 0,
-                answered: 1,
-                currentBestStreak: currentBestStreak
-            )
-
-            // NEW: Per-type stat write (People/Places)
-            let typeName = currentEntryIsPerson ? "People" : "Places"
-            GameStats.shared.recordBeatClockType(type: typeName, answered: 1, correct: 0)
-
-            let generator = UINotificationFeedbackGenerator(); generator.notificationOccurred(.error)
-        }
+        guard !selectionLocked, let currentQuestion else { return }
+        searchText = bookName
+        let correct = currentQuestion.acceptableBooks.contains(bookName)
+        finishRound(correct ? .correct : .incorrect, submittedBook: bookName)
     }
 
-    private func endRound(correct: Bool) {
-        guard !selectionLocked else { return }
-        selectionLocked = true
-        roundResultIsCorrect = correct
+    private func finishRound(_ outcome: BeatTheClockRoundOutcome, submittedBook: String? = nil) {
+        guard !selectionLocked, let currentQuestion else { return }
+        roundOutcome = outcome
+        self.submittedBook = submittedBook
+        searchFieldFocused = false
         answered += 1
+
+        let correct = outcome == .correct
         if correct {
             score += 1
-
+            sessionStreak += 1
+            sessionBestStreak = max(sessionBestStreak, sessionStreak)
             // Persistent streak: extend on correct
             let streak = persistentStreak.recordWin()
-            currentStreak = streak.current
             currentBestStreak = max(currentBestStreak, streak.best)
-
-            GameStats.shared.recordRound(
-                game: .beatclock,
-                difficulty: mapDifficulty(difficulty),
-                correct: 1,
-                answered: 1,
-                currentBestStreak: currentBestStreak
-            )
-
-            // NEW: Per-type stat write (People/Places)
-            let typeName = currentEntryIsPerson ? "People" : "Places"
-            GameStats.shared.recordBeatClockType(type: typeName, answered: 1, correct: 1)
         } else {
-            // Persistent streak: reset on incorrect
+            // Persistent streak: reset on incorrect or timeout
+            sessionStreak = 0
             persistentStreak.reset()
-            currentStreak = 0
-
-            GameStats.shared.recordRound(
-                game: .beatclock,
-                difficulty: mapDifficulty(difficulty),
-                correct: 0,
-                answered: 1,
-                currentBestStreak: currentBestStreak
-            )
-
-            // NEW: Per-type stat write (People/Places)
-            let typeName = currentEntryIsPerson ? "People" : "Places"
-            GameStats.shared.recordBeatClockType(type: typeName, answered: 1, correct: 0)
         }
+
+        GameStats.shared.recordRound(
+            game: .beatclock,
+            difficulty: mapDifficulty(difficulty),
+            correct: correct ? 1 : 0,
+            answered: 1,
+            currentBestStreak: currentBestStreak
+        )
+        GameStats.shared.recordBeatClockType(
+            type: currentQuestion.subject == .person ? "People" : "Places",
+            answered: 1,
+            correct: correct ? 1 : 0
+        )
+
+        UINotificationFeedbackGenerator().notificationOccurred(correct ? .success : .error)
     }
 
     private func parseBookName(from reference: String?) -> String? {
@@ -644,34 +741,6 @@ struct BeatTheClockGameView: View {
         guard parts.count >= 2 else { return nil }
         let book = parts.dropLast().joined(separator: " ")
         return book
-    }
-
-    private func normalize(_ s: String) -> String {
-        s.lowercased().replacingOccurrences(of: " ", with: "")
-    }
-
-    private func booksMentioning(_ term: String) -> Set<String> {
-        let needle = term.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !needle.isEmpty else { return [] }
-        let lowerNeedle = needle.lowercased()
-        var set: Set<String> = []
-        for book in BibleData.books {
-            outer: for chapter in book.chapters {
-                for verse in chapter.verses {
-                    if verse.text.lowercased().contains(lowerNeedle) {
-                        set.insert(book.name)
-                        break outer
-                    }
-                }
-            }
-        }
-        return set
-    }
-
-    private func percentString(correct: Int, answered: Int) -> String {
-        guard answered > 0 else { return "0%" }
-        let pct = Int(round((Double(correct) / Double(answered)) * 100.0))
-        return "\(pct)%"
     }
 
     private func mapDifficulty(_ d: Difficulty) -> GameStats.Difficulty {
@@ -683,33 +752,163 @@ struct BeatTheClockGameView: View {
     }
 }
 
+private enum BeatTheClockRoundOutcome {
+    case correct
+    case incorrect
+    case timedOut
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .correct: "Correct"
+        case .incorrect: "Incorrect"
+        case .timedOut: "Time’s Up"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .correct: "checkmark.circle.fill"
+        case .incorrect: "xmark.circle.fill"
+        case .timedOut: "hourglass.bottomhalf.filled"
+        }
+    }
+
+    var tint: Color {
+        self == .correct ? .green : .red
+    }
+}
+
+// MARK: - Answer matching
+
+/// Turns typed text into a canonical book name and ranks autocomplete suggestions.
+enum BibleBookNameMatcher {
+    private static let ordinalPrefixes: [String: String] = [
+        "i": "1", "1st": "1", "first": "1",
+        "ii": "2", "2nd": "2", "second": "2",
+        "iii": "3", "3rd": "3", "third": "3"
+    ]
+
+    /// Common alternate names, keyed and valued by normalized form.
+    private static let aliases: [String: String] = [
+        "psalm": "psalms",
+        "songofsongs": "songofsolomon",
+        "canticles": "songofsolomon",
+        "revelations": "revelation",
+        "actsoftheapostles": "acts"
+    ]
+
+    /// Lowercases, turns a leading "I", "II", "First", etc. into a digit, and drops spaces and punctuation.
+    static func normalized(_ text: String) -> String {
+        var words = text.lowercased()
+            .split { !$0.isLetter && !$0.isNumber }
+            .map(String.init)
+        if words.count > 1, let digit = ordinalPrefixes[words[0]] {
+            words[0] = digit
+        }
+        return words.joined()
+    }
+
+    static func canonicalName(for input: String, in bookNames: [String]) -> String? {
+        var key = normalized(input)
+        guard !key.isEmpty else { return nil }
+        key = aliases[key] ?? key
+        return bookNames.first { normalized($0) == key }
+    }
+
+    /// Books matching the typed text in canonical order: names that start with it,
+    /// then names with a word that starts with it, then names that contain it.
+    static func suggestions(for input: String, in bookNames: [String]) -> [String] {
+        let text = input.trimmingCharacters(in: .whitespacesAndNewlines)
+        let key = normalized(text)
+        guard !key.isEmpty else { return [] }
+        let lowercasedText = text.lowercased()
+
+        var startsWith: [String] = []
+        var wordStartsWith: [String] = []
+        var contains: [String] = []
+        for name in bookNames {
+            if normalized(name).hasPrefix(key) {
+                startsWith.append(name)
+            } else if name.lowercased().split(separator: " ").contains(where: { $0.hasPrefix(lowercasedText) }) {
+                wordStartsWith.append(name)
+            } else if name.localizedCaseInsensitiveContains(text) {
+                contains.append(name)
+            }
+        }
+        return startsWith + wordStartsWith + contains
+    }
+}
+
+/// Finds every book whose text mentions a place by name.
+nonisolated enum BeatTheClockAnswerIndex {
+    /// Drops a description in parentheses, e.g. "Jordan (river)" → "Jordan", then
+    /// splits into lowercased words. Hyphenated names also get a joined form because
+    /// the KJV usually writes them as one word ("Kadesh-barnea" → "kadeshbarnea").
+    static func searchPhrases(for name: String) -> [[String]] {
+        let base = name.components(separatedBy: " (").first ?? name
+        var phrases = [words(in: base)]
+        if base.contains("-") {
+            phrases.append(words(in: base.replacingOccurrences(of: "-", with: "")))
+        }
+        return phrases.filter { !$0.isEmpty }
+    }
+
+    static func words(in text: String) -> [String] {
+        text.lowercased().split { !$0.isLetter }.map(String.init)
+    }
+
+    static func booksMentioning(_ places: [(id: Int, name: String)], in books: [Book]) -> [Int: Set<String>] {
+        let phrasesByPlace = places.map { place in
+            (id: place.id, phrases: searchPhrases(for: place.name).map { $0.joined(separator: " ") })
+        }
+        let allPhrases = phrasesByPlace.flatMap(\.phrases)
+        let maxLength = allPhrases.map { $0.split(separator: " ").count }.max() ?? 1
+        // Only phrases that begin with one of these words can match, which keeps the index small.
+        let firstWords = Set(allPhrases.compactMap { $0.split(separator: " ").first.map(String.init) })
+
+        var result: [Int: Set<String>] = [:]
+        for book in books {
+            let bookWords = book.chapters.flatMap { chapter in
+                chapter.verses.flatMap { words(in: $0.text) }
+            }
+
+            var bookPhrases: Set<String> = []
+            for start in bookWords.indices where firstWords.contains(bookWords[start]) {
+                var phrase = bookWords[start]
+                bookPhrases.insert(phrase)
+                for offset in 1..<maxLength where start + offset < bookWords.count {
+                    phrase += " " + bookWords[start + offset]
+                    bookPhrases.insert(phrase)
+                }
+            }
+
+            for place in phrasesByPlace where place.phrases.contains(where: bookPhrases.contains) {
+                result[place.id, default: []].insert(book.name)
+            }
+        }
+        return result
+    }
+}
+
+// MARK: - Setup views
+
 private struct BeatTheClockConfigurationCard: View {
     @Binding var difficulty: BeatTheClockGameView.Difficulty
     @Binding var category: BeatTheClockGameView.Category
-    let roundTime: Int
     let minimumHeight: CGFloat?
 
     init(
         difficulty: Binding<BeatTheClockGameView.Difficulty>,
         category: Binding<BeatTheClockGameView.Category>,
-        roundTime: Int,
         minimumHeight: CGFloat? = nil
     ) {
         _difficulty = difficulty
         _category = category
-        self.roundTime = roundTime
         self.minimumHeight = minimumHeight
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            BeatTheClockSetupCard(
-                category: category,
-                roundTime: roundTime
-            )
-
-            Divider()
-
             BeatTheClockSetupControls(
                 difficulty: $difficulty,
                 category: $category
@@ -721,21 +920,23 @@ private struct BeatTheClockConfigurationCard: View {
 
             HStack(spacing: 8) {
                 BeatTheClockGameFact(
+                    icon: "number",
+                    value: Text("\(BeatTheClockGameView.questionsPerGame)"),
+                    label: "Questions"
+                )
+
+                BeatTheClockGameFact(
                     icon: "timer",
-                    value: Text("\(roundTime) sec"),
+                    value: Text("\(difficulty.roundTime) sec"),
                     label: "Per question"
                 )
 
                 BeatTheClockGameFact(
-                    icon: "person.2",
-                    value: Text(category.title),
-                    label: "Question subject"
-                )
-
-                BeatTheClockGameFact(
-                    icon: "book.closed",
-                    value: Text("Bible book"),
-                    label: "Your answer"
+                    icon: "lightbulb",
+                    value: difficulty.showsClueAutomatically
+                        ? Text("Shown")
+                        : Text("−\(BeatTheClockGameView.hintCost) sec"),
+                    label: "Clues"
                 )
             }
         }
@@ -788,37 +989,6 @@ private struct BeatTheClockGameFact: View {
     }
 }
 
-private struct BeatTheClockSetupCard: View {
-    let category: BeatTheClockGameView.Category
-    let roundTime: Int
-
-    private var summary: LocalizedStringResource {
-        switch category {
-        case .people:
-            "You’ll be shown people from the Bible and have \(roundTime) seconds to name a book that mentions each one."
-        case .places:
-            "You’ll be shown places from the Bible and have \(roundTime) seconds to name a book that mentions each one."
-        case .both:
-            "You’ll be shown people and places from the Bible and have \(roundTime) seconds to name a book that mentions each one."
-        }
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Your Game", systemImage: "checklist")
-                .font(.headline)
-                .foregroundStyle(.tint)
-
-            Text(summary)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-
-
-        }
-    }
-}
-
 private struct BeatTheClockSetupControls: View {
     @Binding var difficulty: BeatTheClockGameView.Difficulty
     @Binding var category: BeatTheClockGameView.Category
@@ -835,6 +1005,11 @@ private struct BeatTheClockSetupControls: View {
                     }
                 }
                 .pickerStyle(.segmented)
+
+                Text(difficulty.detail)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             VStack(alignment: .leading, spacing: 8) {
@@ -853,16 +1028,23 @@ private struct BeatTheClockSetupControls: View {
 }
 
 private struct BeatTheClockStartButton: View {
+    let isLoading: Bool
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             VStack(spacing: 12) {
-                Image(systemName: "play.fill")
-                    .font(.largeTitle)
+                if isLoading {
+                    ProgressView()
+                        .controlSize(.large)
+                        .tint(.white)
+                } else {
+                    Image(systemName: "play.fill")
+                        .font(.largeTitle)
+                }
                 Text("Start Game")
                     .font(.title2.weight(.semibold))
-                Text("Begin your timed challenge.")
+                Text(isLoading ? "Loading questions…" : "Begin your timed challenge.")
                     .font(.subheadline)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.white.opacity(0.82))
@@ -876,164 +1058,161 @@ private struct BeatTheClockStartButton: View {
             Color.indigo.gradient,
             in: RoundedRectangle(cornerRadius: 16, style: .continuous)
         )
+        .opacity(isLoading ? 0.7 : 1)
+        .disabled(isLoading)
         .accessibilityLabel("Start Game")
         .accessibilityHint("Begins a Beat the Clock game")
     }
 }
 
-private struct BeatTheClockGameDashboard: View {
-    let score: Int
-    let answered: Int
-    let streak: Int
-    let allTimeCorrect: Int
-    let allTimeAnswered: Int
-    let allTimeBestStreak: Int
-    let targetType: String
-    let targetLabel: String
-    let timerColor: Color
-    let selectionLocked: Bool
-    @Binding var searchText: String
-    let searchFieldFocused: FocusState<Bool>.Binding
-    let filteredBooks: [String]
-    let acceptableBookCount: Int
-    let canSubmit: Bool
-    let showsDebugWin: Bool
-    let availableHeight: CGFloat
-    let onClear: () -> Void
-    let onSelectBook: (String) -> Void
-    let onSubmit: () -> Void
-    let onNext: () -> Void
-    let onShowAnswers: () -> Void
-    let onDebugWin: () -> Void
+// MARK: - Gameplay views
+
+private struct BeatTheClockClueRow: View {
+    let clue: String
+    let isRevealed: Bool
+    let canRequestHint: Bool
+    let onRequestHint: () -> Void
 
     var body: some View {
-        VStack(spacing: 18) {
-            BeatTheClockDashboardScoreboard(
-                score: score,
-                answered: answered,
-                streak: streak,
-                allTimeCorrect: allTimeCorrect,
-                allTimeAnswered: allTimeAnswered,
-                allTimeBestStreak: allTimeBestStreak
-            )
-
-            BeatTheClockDashboardPrompt(
-                targetType: targetType,
-                targetLabel: targetLabel,
-                tint: timerColor,
-                isLocked: selectionLocked
-            )
-
-            BeatTheClockDashboardAnswer(
-                searchText: $searchText,
-                searchFieldFocused: searchFieldFocused,
-                filteredBooks: filteredBooks,
-                isLocked: selectionLocked,
-                onClear: onClear,
-                onSelectBook: onSelectBook
-            )
-
-            Spacer(minLength: 0)
-
-            BeatTheClockDashboardActions(
-                isLocked: selectionLocked,
-                canSubmit: canSubmit,
-                acceptableBookCount: acceptableBookCount,
-                showsDebugWin: showsDebugWin,
-                onSubmit: onSubmit,
-                onNext: onNext,
-                onShowAnswers: onShowAnswers,
-                onDebugWin: onDebugWin
-            )
+        if !clue.isEmpty {
+            if isRevealed {
+                Label(clue, systemImage: "lightbulb.fill")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                Button(
+                    "Show clue (−\(BeatTheClockGameView.hintCost) sec)",
+                    systemImage: "lightbulb",
+                    action: onRequestHint
+                )
+                .font(.subheadline.weight(.semibold))
+                .buttonStyle(.borderless)
+                .disabled(!canRequestHint)
+            }
         }
-        .padding(.horizontal, AppDesignMetrics.cardPadding)
-        .padding(.bottom, AppDesignMetrics.cardPadding)
-        .padding(.top, AppDesignMetrics.cardPadding + 12)
-        .frame(maxWidth: .infinity, minHeight: availableHeight, alignment: .top)
-        .heroCardSurface()
     }
 }
 
-private struct BeatTheClockDashboardScoreboard: View {
-    let score: Int
-    let answered: Int
-    let streak: Int
-    let allTimeCorrect: Int
-    let allTimeAnswered: Int
-    let allTimeBestStreak: Int
-
-    private var accuracy: Int {
-        guard answered > 0 else { return 0 }
-        return Int((Double(score) / Double(answered) * 100).rounded())
-    }
+private struct BeatTheClockRoundResultCard: View {
+    let outcome: BeatTheClockRoundOutcome
+    let subjectName: String
+    let submittedBook: String?
+    let acceptableBooks: [String]
+    let scriptureReference: String?
+    let onShowAllAnswers: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Label("This Game", systemImage: "chart.bar.fill")
-                    .font(.headline.weight(.bold))
+        VStack(alignment: .leading, spacing: 10) {
+            Label(outcome.title, systemImage: outcome.systemImage)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(outcome.tint)
 
-                Spacer()
+            if outcome == .incorrect, let submittedBook {
+                Text("\(submittedBook) doesn’t mention \(subjectName).")
+                    .font(.subheadline)
+            }
 
-                Text("All time: \(allTimeCorrect)/\(allTimeAnswered)  •  Best streak \(allTimeBestStreak)")
-                    .font(.caption.weight(.medium))
+            answerSummary
+                .font(.subheadline)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if let scriptureReference {
+                Label("See \(scriptureReference)", systemImage: "book.closed")
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
 
-            HStack(spacing: 10) {
-                BeatTheClockScoreMetric(title: "Correct", value: "\(score)", systemImage: "checkmark.circle.fill", tint: .green)
-                BeatTheClockScoreMetric(title: "Attempts", value: "\(answered)", systemImage: "scope", tint: .blue)
-                BeatTheClockScoreMetric(title: "Accuracy", value: "\(accuracy)%", systemImage: "percent", tint: .purple)
-                BeatTheClockScoreMetric(title: "Streak", value: "\(streak)", systemImage: "flame.fill", tint: .orange)
+            if acceptableBooks.count > 1 {
+                Button("Show all \(acceptableBooks.count) books", systemImage: "books.vertical.fill", action: onShowAllAnswers)
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
-        .background(.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
+        .background(
+            outcome.tint.opacity(0.1),
+            in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+        )
+        .accessibilityElement(children: .contain)
+    }
+
+    @ViewBuilder
+    private var answerSummary: some View {
+        let count = acceptableBooks.count
+        if count == 0 {
+            Text("No books are listed for this entry.")
+        } else if outcome == .correct {
+            if count == 1 {
+                Text("That’s the only book that mentions \(subjectName).")
+            } else {
+                Text("\(subjectName) appears in ^[\(count) book](inflect: true).")
+            }
+        } else if count == 1, let onlyBook = acceptableBooks.first {
+            Text("The answer was \(onlyBook).")
+        } else {
+            Text("Answers include \(Array(acceptableBooks.prefix(3)).formatted(.list(type: .and))).")
+        }
     }
 }
 
-private struct BeatTheClockScoreMetric: View {
-    let title: LocalizedStringKey
-    let value: String
-    let systemImage: String
-    let tint: Color
+private struct BeatTheClockActions: View {
+    let isLocked: Bool
+    let canSubmit: Bool
+    let isLastQuestion: Bool
+    let showsDebugWin: Bool
+    let onSubmit: () -> Void
+    let onNext: () -> Void
+    let onDebugWin: () -> Void
 
     var body: some View {
-        VStack(spacing: 5) {
-            Image(systemName: systemImage)
-                .font(.headline)
-                .foregroundStyle(tint)
+        VStack(spacing: 10) {
+            if isLocked {
+                if isLastQuestion {
+                    Button("See Results", systemImage: "flag.checkered", action: onNext)
+                        .buttonStyle(GameProminentButtonStyle(tint: .indigo))
+                } else {
+                    Button("Next Question", systemImage: "arrow.right", action: onNext)
+                        .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                }
+            } else {
+                Button("Submit", systemImage: "paperplane.fill", action: onSubmit)
+                    .buttonStyle(GameProminentButtonStyle(tint: .green))
+                    .disabled(!canSubmit)
+            }
 
-            Text(value)
-                .font(.title2.weight(.bold))
-                .monospacedDigit()
-                .lineLimit(1)
-
-            Text(title)
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
+            if showsDebugWin && !isLocked {
+                Button("Win this round", systemImage: "checkmark.seal.fill", action: onDebugWin)
+                    .buttonStyle(.glass(.regular.tint(.red)))
+            }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
-        .background(tint.opacity(0.09), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(title)
-        .accessibilityValue(value)
     }
 }
 
 private struct BeatTheClockDashboardPrompt: View {
     let targetType: String
+    let isPlace: Bool
+    let progressText: String
     let targetLabel: String
+    let clueRow: BeatTheClockClueRow
     let tint: Color
     let isLocked: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Label(targetType, systemImage: targetType == "Person" ? "person.fill" : "mappin.and.ellipse")
-                .font(.caption.weight(.bold))
-                .foregroundStyle(tint)
-                .textCase(.uppercase)
+            HStack {
+                Label(targetType, systemImage: isPlace ? "mappin.and.ellipse" : "person.fill")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(tint)
+                    .textCase(.uppercase)
+
+                Spacer()
+
+                Text(progressText)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+            }
 
             Text(targetLabel)
                 .font(.largeTitle.weight(.bold))
@@ -1043,6 +1222,8 @@ private struct BeatTheClockDashboardPrompt: View {
             Text("Name a Bible book that mentions this \(targetType.lowercased()).")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+
+            clueRow
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
@@ -1059,8 +1240,9 @@ private struct BeatTheClockDashboardAnswer: View {
     @Binding var searchText: String
     let searchFieldFocused: FocusState<Bool>.Binding
     let filteredBooks: [String]
-    let isLocked: Bool
+    let inputMessage: String?
     let onClear: () -> Void
+    let onSubmit: () -> Void
     let onSelectBook: (String) -> Void
 
     var body: some View {
@@ -1078,19 +1260,24 @@ private struct BeatTheClockDashboardAnswer: View {
                     .disableAutocorrection(true)
                     .textFieldStyle(.plain)
                     .focused(searchFieldFocused)
-                    .disabled(isLocked)
+                    .onSubmit(onSubmit)
 
                 if !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     Button("Clear answer", systemImage: "xmark.circle.fill", action: onClear)
                         .labelStyle(.iconOnly)
                         .buttonStyle(.plain)
-                        .foregroundStyle(isLocked ? Color.secondary : Color.red)
-                        .disabled(isLocked)
+                        .foregroundStyle(Color.red)
                 }
             }
             .padding(.horizontal, 16)
             .frame(minHeight: 58)
             .glassEffect(.regular, in: .rect(cornerRadius: AppDesignMetrics.compactControlCornerRadius))
+
+            if let inputMessage {
+                Label(inputMessage, systemImage: "exclamationmark.circle.fill")
+                    .font(.footnote)
+                    .foregroundStyle(.orange)
+            }
 
             if !filteredBooks.isEmpty {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
@@ -1110,7 +1297,6 @@ private struct BeatTheClockDashboardAnswer: View {
                                 )
                         }
                         .buttonStyle(.plain)
-                        .disabled(isLocked)
                     }
                 }
             }
@@ -1118,41 +1304,53 @@ private struct BeatTheClockDashboardAnswer: View {
     }
 }
 
-private struct BeatTheClockDashboardActions: View {
-    let isLocked: Bool
-    let canSubmit: Bool
-    let acceptableBookCount: Int
-    let showsDebugWin: Bool
-    let onSubmit: () -> Void
-    let onNext: () -> Void
-    let onShowAnswers: () -> Void
-    let onDebugWin: () -> Void
+private struct BeatTheClockResultsCard: View {
+    let score: Int
+    let total: Int
+    let bestStreak: Int
+    let bestGameScore: Int
+    let isNewBest: Bool
+    let onPlayAgain: () -> Void
+    let onChangeSettings: () -> Void
+
+    private var accuracy: Int {
+        guard total > 0 else { return 0 }
+        return Int((Double(score) / Double(total) * 100).rounded())
+    }
 
     var body: some View {
-        VStack(spacing: 10) {
-            if isLocked {
-                GameRoundNavigationButtons(
-                    canGoPrevious: false,
-                    canGoNext: true,
-                    onPrevious: {},
-                    onNext: onNext
-                )
-            } else {
-                Button("Submit", systemImage: "paperplane.fill", action: onSubmit)
-                    .buttonStyle(GameProminentButtonStyle(tint: .green))
-                    .disabled(!canSubmit)
+        VStack(spacing: 20) {
+            Image(systemName: isNewBest ? "trophy.fill" : "flag.checkered")
+                .font(.system(size: 52, weight: .semibold))
+                .foregroundStyle(isNewBest ? Color.yellow : Color.indigo)
+
+            VStack(spacing: 6) {
+                Text(isNewBest ? "New Best Game!" : "Game Over")
+                    .font(.title.weight(.bold))
+
+                Text("\(score) of \(total) correct")
+                    .font(.title2.weight(.semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
             }
 
-            if isLocked {
-                Button("Show \(acceptableBookCount) acceptable answers", systemImage: "books.vertical.fill", action: onShowAnswers)
-                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+            HStack(spacing: 8) {
+                BeatTheClockGameFact(icon: "percent", value: Text("\(accuracy)%"), label: "Accuracy")
+                BeatTheClockGameFact(icon: "flame.fill", value: Text("\(bestStreak)"), label: "Best streak")
+                BeatTheClockGameFact(icon: "trophy", value: Text("\(bestGameScore)/\(total)"), label: "Best game")
             }
 
-            if showsDebugWin && !isLocked {
-                Button("Win this round", systemImage: "checkmark.seal.fill", action: onDebugWin)
-                    .buttonStyle(.glass(.regular.tint(.red)))
+            VStack(spacing: 10) {
+                Button("Play Again", systemImage: "arrow.clockwise", action: onPlayAgain)
+                    .buttonStyle(GameProminentButtonStyle(tint: .indigo))
+
+                Button("Change Settings", systemImage: "slider.horizontal.3", action: onChangeSettings)
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
             }
         }
+        .padding(24)
+        .frame(maxWidth: 520)
+        .heroCardSurface()
     }
 }
 
@@ -1160,19 +1358,18 @@ private struct BeatTheClockLargeTimerView: View {
     let remainingSeconds: Int
     let tint: Color
     let isPulsing: Bool
-    let resultIsCorrect: Bool?
+    let outcome: BeatTheClockRoundOutcome?
     @Binding var usesMutedStyle: Bool
     let onSwapSides: () -> Void
 
     private var timerTextColor: Color {
-        remainingSeconds > 5 && remainingSeconds <= 10 ? .black : .white
+        tint == .yellow ? .black : .white
     }
 
-    private var isActive: Bool { resultIsCorrect == nil }
+    private var isActive: Bool { outcome == nil }
 
     private var displayTint: Color {
-        guard let resultIsCorrect else { return tint }
-        return resultIsCorrect ? .green : .red
+        outcome?.tint ?? tint
     }
 
     private var vividTextColor: Color {
@@ -1184,18 +1381,18 @@ private struct BeatTheClockLargeTimerView: View {
             Spacer(minLength: 0)
 
             VStack(spacing: 24) {
-                Image(systemName: statusSystemImage)
+                Image(systemName: outcome?.systemImage ?? "timer")
                     .font(.system(size: 72, weight: .semibold))
                     .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor.opacity(0.85))
 
-                Text(statusTitle)
+                Text(outcome?.title ?? "Time Remaining")
                     .font(.largeTitle.weight(.semibold))
                     .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor.opacity(0.85))
 
                 if isActive {
                     Text("\(remainingSeconds)s")
-                    .font(.largeTitle.weight(.bold))
-                    .fontDesign(.rounded)
+                        .font(.largeTitle.weight(.bold))
+                        .fontDesign(.rounded)
                         .monospacedDigit()
                         .foregroundStyle(usesMutedStyle ? displayTint : vividTextColor)
                 }
@@ -1203,7 +1400,7 @@ private struct BeatTheClockLargeTimerView: View {
             .scaleEffect(isPulsing ? 1.04 : 1.0)
             .animation(.easeOut(duration: 0.18), value: isPulsing)
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(statusTitle)
+            .accessibilityLabel(outcome?.title ?? "Time Remaining")
             .accessibilityValue(isActive ? "\(remainingSeconds) seconds" : "")
 
             Spacer(minLength: 0)
@@ -1237,15 +1434,5 @@ private struct BeatTheClockLargeTimerView: View {
         .heroCardSurface()
         .padding(12)
         .animation(.easeInOut(duration: 0.25), value: remainingSeconds)
-    }
-
-    private var statusTitle: LocalizedStringKey {
-        guard let resultIsCorrect else { return "Time Remaining" }
-        return resultIsCorrect ? "Correct" : "Incorrect"
-    }
-
-    private var statusSystemImage: String {
-        guard let resultIsCorrect else { return "timer" }
-        return resultIsCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"
     }
 }
