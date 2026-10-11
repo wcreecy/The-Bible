@@ -622,7 +622,7 @@ final class GameStats {
                 case .normal: return "normal"
                 case .hard: return "hard"
                 case .medium: return "normal" // FIX: treat “medium” as “normal” for Book Order
-                case .none: return "all"
+                case .none: return "expert" // Expert (every book); also mirrored into "_all"
                 }
             case .whoami:
                 switch difficulty {
@@ -687,7 +687,7 @@ final class GameStats {
 
         case .bookorder:
             guard let s = suf else { return }
-            // Write per-difficulty (or "all" if difficulty == .none)
+            // Write per-difficulty ("expert" when difficulty == .none)
             incInt("bookorderAllTimeCorrect_\(s)", by: addCorrect)
             incInt("bookorderAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("bookorderAllTimeBestStreak_\(s)", candidate: currentBestStreak)

@@ -356,7 +356,7 @@ struct BookOrderGameView: View {
         Self.formatted(elapsedSeconds)
     }
 
-    private static func formatted(_ seconds: Int) -> String {
+    nonisolated private static func formatted(_ seconds: Int) -> String {
         String(format: "%d:%02d", seconds / 60, seconds % 60)
     }
 
