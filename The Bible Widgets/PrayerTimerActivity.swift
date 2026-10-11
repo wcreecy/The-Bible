@@ -252,17 +252,9 @@ struct PrayerTimerLiveActivity: Widget {
         Date().addingTimeInterval(TimeInterval(max(0, remaining)))
     }
 
-    private func timerTintColor(_ context: ActivityViewContext<PrayerTimerAttributes>) -> Color {
-        let remaining = context.state.remaining
-        let total = context.state.total
-        guard total > 0 else { return .accentColor }
-        if remaining > 300 { // > 5 minutes
-            return .green
-        } else if remaining > 120 { // 2–5 minutes
-            return .yellow
-        } else {
-            return .red
-        }
+    /// Matches the calm, single-tone treatment used by the in-app prayer timer.
+    private func timerTintColor(_: ActivityViewContext<PrayerTimerAttributes>) -> Color {
+        .indigo
     }
 
     private struct ProgressRing: View {

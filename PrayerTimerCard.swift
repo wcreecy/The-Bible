@@ -262,11 +262,14 @@ struct PrayerTimerCard: View {
     }
 
     private func durationLabel(_ minutes: Int) -> some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 1) {
             Text("\(minutes)")
-                .font(.subheadline.weight(.bold))
+                .font(.caption.weight(.bold))
+                .monospacedDigit()
+                .lineLimit(1)
             Text("min")
                 .font(.caption2)
+                .lineLimit(1)
         }
     }
 }
