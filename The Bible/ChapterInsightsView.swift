@@ -1,3 +1,4 @@
+import Foundation
 import SwiftUI
 
 struct ChapterInsightsView: View {
@@ -29,10 +30,9 @@ struct ChapterInsightsView: View {
     private func insightsContent(_ insights: ChapterInsights) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                ChapterInsightCard(
+                ChapterSummaryCard(
                     title: insights.reference,
-                    icon: "text.book.closed",
-                    content: insights.overallSummary
+                    summary: insights.overallSummary
                 )
 
                 if !insights.keyThemes.isEmpty {
@@ -72,9 +72,17 @@ struct ChapterInsightsView: View {
                 }
 
                 ChapterInsightCard(title: "Historical Setting", icon: "calendar", content: insights.historicalSetting)
-                ChapterInsightCard(title: "What Was Happening", icon: "clock.arrow.circlepath", content: insights.whatWasHappening)
+                ChapterInsightBulletList(
+                    title: "What Was Happening",
+                    icon: "clock.arrow.circlepath",
+                    content: insights.whatWasHappening
+                )
                 ChapterInsightCard(title: "Connection to the Chapter", icon: "link", content: insights.connectionToChapter)
-                ChapterInsightCard(title: "Customs and Traditions", icon: "scroll", content: insights.customsAndTraditions)
+                ChapterInsightBulletList(
+                    title: "Customs and Traditions",
+                    icon: "scroll",
+                    content: insights.customsAndTraditions
+                )
                 ChapterInsightCard(title: "Why It Matters", icon: "heart.text.square", content: insights.whyItMatters)
             }
             .padding()
@@ -93,6 +101,44 @@ struct ChapterInsightsView: View {
     }
 }
 
+private struct ChapterSummaryCard: View {
+    let title: String
+    let summary: String
+
+    @State private var showsFullSummary = false
+
+    private var sentences: [String] {
+        summary.sentences
+    }
+
+    private var displayedSentences: [String] {
+        guard summary.count > 650, !showsFullSummary else { return sentences }
+        return Array(sentences.prefix(5))
+    }
+
+    var body: some View {
+        HeroCard(title: title, icon: "text.book.closed") {
+            if summary.count <= 650 {
+                LinkedScriptureText(summary)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                VStack(alignment: .leading, spacing: 12) {
+                    ChapterInsightBullets(items: displayedSentences)
+
+                    if !showsFullSummary, sentences.count > displayedSentences.count {
+                        Button("Show full summary") {
+                            showsFullSummary = true
+                        }
+                        .font(.subheadline.weight(.semibold))
+                    }
+                }
+            }
+        }
+    }
+}
+
 private struct ChapterInsightCard: View {
     let title: String
     let icon: String
@@ -104,6 +150,51 @@ private struct ChapterInsightCard: View {
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+private struct ChapterInsightBulletList: View {
+    let title: String
+    let icon: String
+    let content: String
+
+    private var items: [String] {
+        content.paragraphs
+    }
+
+    var body: some View {
+        HeroCard(title: title, icon: icon) {
+            if items.count > 1 {
+                ChapterInsightBullets(items: items)
+            } else {
+                LinkedScriptureText(content)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+}
+
+private struct ChapterInsightBullets: View {
+    let items: [String]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: "circle.fill")
+                        .font(.system(size: 6))
+                        .foregroundStyle(.tint)
+                        .padding(.top, 6)
+
+                    LinkedScriptureText(item)
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
         }
     }
 }
@@ -125,6 +216,28 @@ private struct ChapterInsightList<Content: View>: View {
             .padding(AppDesignMetrics.cardPadding)
             .heroCardSurface()
         }
+    }
+}
+
+private extension String {
+    var paragraphs: [String] {
+        components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+    }
+
+    var sentences: [String] {
+        var results: [String] = []
+        enumerateSubstrings(
+            in: startIndex..<endIndex,
+            options: [.bySentences, .substringNotRequired]
+        ) { _, range, _, _ in
+            let sentence = String(self[range]).trimmingCharacters(in: .whitespacesAndNewlines)
+            if !sentence.isEmpty {
+                results.append(sentence)
+            }
+        }
+        return results.isEmpty ? [self] : results
     }
 }
 

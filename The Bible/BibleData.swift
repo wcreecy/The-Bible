@@ -66,7 +66,7 @@ struct Verse: Identifiable, Hashable, Sendable {
     /// UTF-16 ranges in `text` of words the KJV translators supplied (printed in italics).
     let suppliedWordRanges: [Range<Int>]
 
-    init(number: Int, text: String) {
+    nonisolated init(number: Int, text: String) {
         self.number = number
         let cleaned = KJVTextCleaner.clean(text)
         self.text = cleaned.text
