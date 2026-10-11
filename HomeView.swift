@@ -546,7 +546,10 @@ struct HomeView: View {
             }
         } sidebar: {
             if bibleReaderVisible {
-                HomeBibleReaderCard()
+                HomeBibleReaderCard(
+                    verseOfDay: votdVM.verse,
+                    onVerseAction: handleVerseActionFeedback
+                )
             }
         }
         }

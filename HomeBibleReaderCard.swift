@@ -470,7 +470,8 @@ struct HomeBibleReaderCard: View {
 
     @MainActor
     private func show(_ passage: Passage, scrollTo verse: Int?) async {
-        if book?.name != passage.bookName {
+        let previousBookName = book?.name
+        if previousBookName != passage.bookName {
             isLoading = true
             let loaded = await BibleRepository.shared.loadBook(named: passage.bookName)
             isLoading = false
@@ -480,7 +481,7 @@ struct HomeBibleReaderCard: View {
         guard let book else { return }
 
         let number = min(max(passage.chapter, 1), book.chapters.count)
-        if number != chapterNumber || visibleVerses.isEmpty {
+        if previousBookName != book.name || number != chapterNumber {
             session.chapterChanged()
             visibleVerses = []
         }

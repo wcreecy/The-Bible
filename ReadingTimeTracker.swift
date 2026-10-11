@@ -55,6 +55,12 @@ final class ReadingTimeTracker: ObservableObject {
         changeLocation(to: bookName, chapter: chapter)
     }
 
+    /// Whether the tracker is timing this chapter. The Home reading panel checks this so it
+    /// only pauses or stops its own session, never one the Bible tab has since taken over.
+    func isTiming(bookName: String, chapter: Int) -> Bool {
+        currentBook == bookName && currentChapterNumber == chapter
+    }
+
     func stopAndFlush() {
         closeActiveSegment()
         stopTicker()

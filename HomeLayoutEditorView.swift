@@ -211,14 +211,14 @@ struct HomeLayoutEditorView: View {
                     )
 
                     Toggle(
-                        "Mini Bible Reader",
+                        "Today's Reading",
                         systemImage: "book.pages",
                         isOn: $bibleReaderVisible
                     )
                 } header: {
                     Label("iPad Card Visibility", systemImage: "eye")
                 } footer: {
-                    Text("Choose whether Verse of the Day and the mini Bible reader appear on the iPad Home dashboard.")
+                    Text("Choose whether Verse of the Day and the Today's Reading panel appear on the iPad Home dashboard. Today's Reading shows your bookmark or the Verse of the Day in its chapter.")
                 }
             }
 

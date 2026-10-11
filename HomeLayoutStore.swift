@@ -36,16 +36,18 @@ struct HomeLayoutStore {
 
     // Baseline hidden set used when no hidden config exists
     static var baselineOrder: [HomeCardID] {
+        // iPad: the day on the left (Verse of the Day across the top, then a two-column
+        // grid read row by row), with Today's Reading in the right-hand column.
         if UIDevice.current.userInterfaceIdiom == .pad {
             return [
                 .verseOfDay,
                 .today,
-                .search,
-                .resumeReading,
-                .timer,
                 .streaks,
-                .bibleStats,
-                .dailyFocus
+                .timer,
+                .dailyFocus,
+                .resumeReading,
+                .search,
+                .bibleStats
             ]
         }
 
@@ -64,7 +66,8 @@ struct HomeLayoutStore {
     }
     static var baselineHidden: Set<HomeCardID> {
         if UIDevice.current.userInterfaceIdiom == .pad {
-            return [.today, .bibleStats, .dailyFocus, .streaks]
+            // Today's Reading covers Continue Reading, and the header has a Search button.
+            return [.resumeReading, .search, .bibleStats]
         }
         // Search duplicates the header's Search button; App Activity and Daily Focus are opt-in.
         return [.search, .bibleStats, .dailyFocus]
@@ -73,7 +76,8 @@ struct HomeLayoutStore {
     static let baselineMain: Set<HomeCardID> = [.resumeReading, .verseOfDay, .today]
     // Shows the Show More button so the cards beneath it are discoverable.
     static let defaultShowMoreVisible = true
-    static let defaultBibleReaderVisible = false
+    // The iPad Today's Reading panel; iPhone does not show it.
+    static let defaultBibleReaderVisible = true
 
     init() {}
 
