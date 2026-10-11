@@ -40,27 +40,13 @@ struct BookOverviewView: View {
                     content: overview.overallTheme
                 )
 
-                KeyScriptureSection(keyScripture: overview.keyScripture)
                 OverviewHeroCard(
                     title: "Purpose",
                     icon: "target",
                     content: overview.purpose
                 )
-                OverviewHeroCard(
-                    title: "Author",
-                    icon: "person.fill",
-                    content: overview.traditionalAuthorOrAttribution
-                )
-                OverviewHeroCard(
-                    title: "Original Audience",
-                    icon: "person.2.fill",
-                    content: overview.originalAudience
-                )
-                OverviewHeroCard(
-                    title: "Historical Context",
-                    icon: "calendar",
-                    content: overview.historicalContext
-                )
+
+                KeyScriptureSection(keyScripture: overview.keyScripture)
 
                 if !overview.movements.isEmpty {
                     KeyEventsSection(bookName: bookName, movements: overview.movements)
@@ -69,6 +55,8 @@ struct BookOverviewView: View {
                 if !overview.keyFigures.isEmpty {
                     KeyFiguresSection(keyFigures: overview.keyFigures)
                 }
+
+                BackgroundSection(overview: overview)
 
                 if !overview.interpretiveNotes.isEmpty {
                     OverviewHeroCard(
@@ -143,7 +131,7 @@ private struct KeyEventsSection: View {
     var body: some View {
         HeroCard(
             title: "Key Events",
-            icon: "calendar"
+            icon: "list.number"
         ) {
             VStack(alignment: .leading, spacing: 12) {
                 ForEach(movements) { movement in
@@ -188,6 +176,55 @@ private struct KeyFiguresSection: View {
 
                     if figure.id != keyFigures.last?.id {
                         Divider()
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Combines author, original audience, and historical context into one card,
+/// since these entries are often only a sentence or two each.
+private struct BackgroundSection: View {
+    let overview: BibleBookOverview
+
+    private struct Row: Identifiable {
+        let title: String
+        let icon: String
+        let content: String
+        var id: String { title }
+    }
+
+    // Skip any entries the overview data leaves blank.
+    private var rows: [Row] {
+        [
+            Row(title: "Author", icon: "person.fill", content: overview.traditionalAuthorOrAttribution),
+            Row(title: "Original Audience", icon: "person.3.fill", content: overview.originalAudience),
+            Row(title: "Historical Context", icon: "calendar", content: overview.historicalContext)
+        ]
+        .filter { !$0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+    }
+
+    var body: some View {
+        if !rows.isEmpty {
+            HeroCard(
+                title: "Background",
+                icon: "scroll"
+            ) {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(rows) { row in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Label(row.title, systemImage: row.icon)
+                                .font(.headline)
+                            LinkedScriptureText(row.content)
+                                .font(.body)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+
+                        if row.id != rows.last?.id {
+                            Divider()
+                        }
                     }
                 }
             }
