@@ -189,6 +189,12 @@ private struct FocusControls: View {
 
             Spacer(minLength: 0)
 
+            Button(action: onShowChapterInsights) {
+                Image(systemName: "lightbulb")
+            }
+            .accessibilityLabel("Chapter Insights")
+            .accessibilityHint("Shows insights for \(location.bookName) \(location.chapterNumber)")
+
             if let verse {
                 VerseActionMenu(
                     verse: VerseActionReference(
@@ -200,12 +206,6 @@ private struct FocusControls: View {
                     presentation: .focus
                 )
             }
-
-            Button(action: onShowChapterInsights) {
-                Image(systemName: "lightbulb")
-            }
-            .accessibilityLabel("Chapter Insights")
-            .accessibilityHint("Shows insights for \(location.bookName) \(location.chapterNumber)")
 
             Button(action: onExit) {
                 Image(systemName: "xmark")

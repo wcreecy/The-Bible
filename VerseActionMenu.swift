@@ -177,13 +177,23 @@ struct VerseActionMenu: View {
                 }
                 .accessibilityLabel(isFavorite ? "Remove from Favorites" : "Add to Favorites")
 
-                Button(action: bookmark) {
-                    Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                        .foregroundStyle(isBookmarked ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.primary))
-                }
-                .accessibilityLabel(isBookmarked ? "Remove Bookmark" : "Add Bookmark")
-
                 Menu {
+                    Button(action: { isShowingNoteEditor = true }) {
+                        Label(
+                            existingNote == nil ? "Add Note or Highlight" : "Edit Note or Highlight",
+                            systemImage: "highlighter"
+                        )
+                    }
+
+                    Button(action: bookmark) {
+                        Label(
+                            isBookmarked ? "Remove Bookmark" : "Add Bookmark",
+                            systemImage: isBookmarked ? "bookmark.fill" : "bookmark"
+                        )
+                    }
+
+                    Divider()
+
                     Button(action: copy) {
                         Label("Copy", systemImage: "doc.on.doc")
                     }
