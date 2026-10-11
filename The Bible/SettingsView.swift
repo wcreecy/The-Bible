@@ -134,7 +134,8 @@ private struct SettingsPrayerLinksSection: View {
 }
 
 private struct SettingsReadingProgressSection: View {
-    @AppStorage("showReadVerseCheckmarks") private var showVerseStatusIcons = false
+    @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers = true
+    @AppStorage(ReaderDisplaySettings.showsReadProgressKey) private var showsReadProgress = false
     @AppStorage("focusReadingEnabled") private var focusReadingEnabled = false
     @AppStorage(RedLetterText.suppliedWordsInItalicsKey) private var italicizesSuppliedWords = false
 
@@ -155,16 +156,31 @@ private struct SettingsReadingProgressSection: View {
             }
             .accessibilityIdentifier("focusReadingToggle")
 
-            Toggle(isOn: $showVerseStatusIcons) {
+            Toggle(isOn: $showsVerseMarkers) {
                 Label {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Verse Status Icons")
-                        Text("Show icons for saved and read verses")
+                        Text("Verse Markers")
+                        Text("Show your bookmark, favorites, and notes beside each reference")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 } icon: {
-                    Image(systemName: "eye")
+                    Image(systemName: "bookmark")
+                        .foregroundStyle(.tint)
+                }
+            }
+            .accessibilityIdentifier("verseMarkersToggle")
+
+            Toggle(isOn: $showsReadProgress) {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Read Progress")
+                        Text("Mark verses you've read with a faint edge")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "checkmark.circle")
                         .foregroundStyle(.tint)
                 }
             }
@@ -188,8 +204,8 @@ private struct SettingsReadingProgressSection: View {
             Text("Bible Reader")
         } footer: {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Heart: favorite • Note: has a note • Bookmark: bookmarked • Checkmark: read")
-                Text("Read indicators reflect your reading progress and disappear when reading statistics are reset.")
+                Text("Bookmark, heart, and note icons appear beside the verse reference. Tap a note icon to open the note.")
+                Text("Read progress reflects your reading statistics and disappears when they are reset.")
                 Text("Printed King James Bibles set supplied words in italics, such as “ye *are* the branches.”")
             }
         }
@@ -455,7 +471,8 @@ private enum DeveloperSettingsReset {
             "didRequestNotifications": false,
             "contextualTipsEnabled": false,
             "readerFontSize": 17.0,
-            "showReadVerseCheckmarks": false,
+            ReaderDisplaySettings.showsReadProgressKey: false,
+            ReaderDisplaySettings.showsVerseMarkersKey: true,
             "focusReadingEnabled": false,
             "homeCustomizeButtonVisible": true,
             "homeBibleReaderVisible": HomeLayoutStore.defaultBibleReaderVisible,

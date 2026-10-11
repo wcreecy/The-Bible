@@ -208,8 +208,12 @@ struct DailyFocusCard: View {
             }
         }
         .toolbar {
-            ToolbarItem(placement: .keyboard) {
-                Button("Done") { focusedField = nil }
+            // Keyboard toolbars apply to every field on screen, so only show this one
+            // while a Daily Focus field is being edited (not, say, the Search card).
+            if focusedField != nil {
+                ToolbarItem(placement: .keyboard) {
+                    Button("Done") { focusedField = nil }
+                }
             }
         }
     }

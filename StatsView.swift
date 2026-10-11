@@ -11,7 +11,9 @@ private struct ReadingStatsSections<
     Testament: View,
     Genre: View,
     AverageSession: View,
-    TopBooks: View
+    TopBooks: View,
+    History: View,
+    Prayer: View
 >: View {
     let usesWideLayout: Bool
     let progress: Progress
@@ -21,16 +23,21 @@ private struct ReadingStatsSections<
     let genre: Genre
     let averageSession: AverageSession
     let topBooks: TopBooks
+    let history: History
+    let prayer: Prayer
 
     var body: some View {
         Group {
             if usesWideLayout {
+                // Reading History and Prayer sit in the columns too, so they don't
+                // stretch across the full width on iPad.
                 HStack(alignment: .top, spacing: 16) {
                     VStack(spacing: 16) {
                         progress
                         insights
                         topBooks
                         genre
+                        prayer
                     }
                     .frame(maxWidth: .infinity, alignment: .topLeading)
 
@@ -38,6 +45,7 @@ private struct ReadingStatsSections<
                         totals
                         testament
                         averageSession
+                        history
                     }
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                 }
@@ -50,6 +58,8 @@ private struct ReadingStatsSections<
                     genre
                     averageSession
                     topBooks
+                    history
+                    prayer
                 }
             }
         }
@@ -340,14 +350,10 @@ struct StatsView: View {
                 testament: otntCard,
                 genre: genreCard,
                 averageSession: avgSessionCard,
-                topBooks: topBooksThisMonthCard
+                topBooks: topBooksThisMonthCard,
+                history: ReadingHistoryCalendarCard(),
+                prayer: PrayerStatsCard()
             )
-
-            ReadingHistoryCalendarCard()
-                .padding(.horizontal, 16)
-
-            PrayerStatsCard()
-                .padding(.horizontal, 16)
         }
     }
 

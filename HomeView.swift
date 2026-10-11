@@ -245,6 +245,8 @@ struct HomeView: View {
     @State private var showMoreVisible = HomeLayoutStore.defaultShowMoreVisible
     @State private var showMoreCards: Bool = false
     @State private var hasFavoriteLayout: Bool = false
+    /// Incremented by the Search card to ask Home to scroll it into view while typing.
+    @State private var searchScrollRequest = 0
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
     @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
 
@@ -376,7 +378,7 @@ struct HomeView: View {
                 }
             )
         case .search:
-            SearchHomeCard { result in
+            SearchHomeCard(onNeedsVisibility: { searchScrollRequest += 1 }) { result in
                 NotificationCenter.default.post(
                     name: .openBibleReference,
                     object: nil,
@@ -387,6 +389,7 @@ struct HomeView: View {
                     ]
                 )
             }
+            .id(HomeCardID.search)
         case .today:
             HomeTodayCard(onStartPrayerTimer: startPrayerChallengeTimer)
         case .streaks:
@@ -688,16 +691,28 @@ struct HomeView: View {
             let horizontalPadding: CGFloat = usesDashboard ? 24 : 16
             let contentWidth = max(0, availableWidth - (horizontalPadding * 2))
 
-            ScrollView {
-                VStack(spacing: 16) {
-                    if usesDashboard {
-                        dashboardContent(width: contentWidth, availableHeight: proxy.size.height)
-                    } else {
-                        compactHomeContent
+            ScrollViewReader { scrollProxy in
+                ScrollView {
+                    VStack(spacing: 16) {
+                        if usesDashboard {
+                            dashboardContent(width: contentWidth, availableHeight: proxy.size.height)
+                        } else {
+                            compactHomeContent
+                        }
+                    }
+                    .frame(width: contentWidth, alignment: .leading)
+                    .padding(.horizontal, horizontalPadding)
+                }
+                .scrollDismissesKeyboard(.interactively)
+                .onChange(of: searchScrollRequest) { _, _ in
+                    Task {
+                        // Let the keyboard finish appearing so the visible area is final.
+                        try? await Task.sleep(for: .milliseconds(350))
+                        withAnimation(.snappy) {
+                            scrollProxy.scrollTo(HomeCardID.search, anchor: .top)
+                        }
                     }
                 }
-                .frame(width: contentWidth, alignment: .leading)
-                .padding(.horizontal, horizontalPadding)
             }
         }
         .background(AppBackgroundView(tab: .home))

@@ -25,7 +25,11 @@ struct ReadingView: View {
 
     // Reader-specific font size (independent from global app UI font)
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
-    @AppStorage("showReadVerseCheckmarks") private var showVerseStatusIcons: Bool = false
+    @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers: Bool = true
+    // Older versions used this key for every status icon; it now controls read progress only.
+    @AppStorage(ReaderDisplaySettings.showsReadProgressKey) private var showsReadProgress: Bool = false
+    /// The verse whose note is open from its note marker.
+    @State private var noteEditorVerse: Verse?
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage("focusReadingEnabled") private var focusReadingEnabled = false
     @State private var isFocusModePresented = false
@@ -204,7 +208,7 @@ struct ReadingView: View {
                     verseNumber: verseNumber
                 ))
             }
-            .onChange(of: showVerseStatusIcons) { _, isEnabled in
+            .onChange(of: showsReadProgress) { _, isEnabled in
                 if isEnabled {
                     refreshSeenVerses()
                 }
@@ -266,6 +270,20 @@ struct ReadingView: View {
                     }
                 )
             }
+            .sheet(item: $noteEditorVerse) { verse in
+                // Opened from a verse's note marker; same editor as the verse menu.
+                NavigationStack {
+                    VerseNoteEditorView(
+                        verse: VerseActionReference(
+                            bookName: viewModel.currentBook.name,
+                            chapterNumber: viewModel.currentChapter.number,
+                            verseNumber: verse.number,
+                            verseText: verse.text
+                        ),
+                        existingNote: note(for: verse.number)
+                    )
+                }
+            }
             .sheet(isPresented: $isChapterInsightsPresented) {
                 NavigationStack {
                     ChapterInsightsView(
@@ -300,7 +318,7 @@ struct ReadingView: View {
                         ContextualTipView(
                             id: "reader.statusIcons",
                             title: "Understand verse icons",
-                            message: "Heart: favorite • Note: has a note • Bookmark: bookmarked • Checkmark: read. Show or hide them in Settings › Bible Reader.",
+                            message: "Icons beside a verse's reference show your bookmark, favorites, and notes. Tap the note icon to open the note. Change this in Settings › Bible Reader.",
                             systemImage: "info.circle"
                         )
                         .padding(.bottom, 12)
@@ -327,10 +345,11 @@ struct ReadingView: View {
                             isFavorite: isFavorited(verse),
                             hasNote: hasNote(for: verse.number),
                             isPinned: isBookmarked(verse),
-                            isRead: showVerseStatusIcons &&
+                            isRead: showsReadProgress &&
                                 seenVerseLocation == verseLocationKey &&
                                 seenVerseNumbers.contains(verse.number),
-                            showsStatusIcons: showVerseStatusIcons,
+                            showsMarkers: showsVerseMarkers,
+                            showsReadProgress: showsReadProgress,
                             savedHighlightColor: highlightColor(for: verse.number),
                             readerFontSize: readerFontSize,
                             onVisibilityChange: { isVisible in
@@ -347,6 +366,9 @@ struct ReadingView: View {
                                 let generator = UIImpactFeedbackGenerator(style: .heavy)
                                 generator.impactOccurred()
                                 viewModel.handleVerseLongPress(verseNumber: number)
+                            },
+                            onOpenNote: {
+                                noteEditorVerse = verse
                             }
                         )
                         .id(viewModel.rowID(for: verse.number))
@@ -449,7 +471,7 @@ struct ReadingView: View {
     }
 
     private func refreshSeenVerses() {
-        guard showVerseStatusIcons else { return }
+        guard showsReadProgress else { return }
         let bookName = viewModel.currentBook.name
         let chapterNumber = viewModel.currentChapter.number
         seenVerseNumbers = BibleStatsStore.shared.loadSeenVerses(
@@ -466,6 +488,14 @@ struct ReadingView: View {
             $0.verseNumber == verseNumber
         }
         .flatMap { VerseHighlightColor(rawValue: $0.highlightColor)?.color }
+    }
+
+    private func note(for verseNumber: Int) -> VerseNote? {
+        verseNotes.first {
+            $0.bookName == viewModel.currentBook.name &&
+            $0.chapterNumber == viewModel.currentChapter.number &&
+            $0.verseNumber == verseNumber
+        }
     }
 
     private func hasNote(for verseNumber: Int) -> Bool {

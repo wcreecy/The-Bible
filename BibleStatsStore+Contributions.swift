@@ -4,7 +4,8 @@ import Foundation
 extension BibleStatsStore {
     typealias ReadingContributions = [String: [String: [String: Int]]]
 
-    private var installationID: String {
+    /// Identifies this install in per-device stats (reading and prayer contributions).
+    var installationID: String {
         let key = "readingStatsInstallationID"
         if let value = Defaults.provider.string(forKey: key) { return value }
         let value = UUID().uuidString

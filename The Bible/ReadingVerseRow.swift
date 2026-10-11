@@ -1,5 +1,13 @@
 import SwiftUI
 
+/// UserDefaults keys for what the reader shows on each verse.
+enum ReaderDisplaySettings {
+    /// Bookmark, favorite, and note markers. On by default.
+    static let showsVerseMarkersKey = "showVerseMarkers"
+    /// Read progress. Keeps the older all-icons key so existing choices carry over.
+    static let showsReadProgressKey = "showReadVerseCheckmarks"
+}
+
 struct ReadingVerseRow: View {
     let verse: Verse
     let bookName: String
@@ -10,7 +18,10 @@ struct ReadingVerseRow: View {
     let hasNote: Bool
     let isPinned: Bool
     let isRead: Bool
-    let showsStatusIcons: Bool
+    /// Bookmark, favorite, and note markers beside the reference.
+    let showsMarkers: Bool
+    /// A faint edge on verses already read.
+    let showsReadProgress: Bool
     let savedHighlightColor: Color?
     let readerFontSize: Double
 
@@ -21,6 +32,8 @@ struct ReadingVerseRow: View {
     let onVisibilityChange: (Bool) -> Void
     let onTap: (Verse) -> Void
     let onLongPress: (Int) -> Void
+    /// Opens the verse's note; used by the note marker.
+    let onOpenNote: () -> Void
 
     var body: some View {
         Group {
@@ -29,50 +42,30 @@ struct ReadingVerseRow: View {
                     .font(.system(size: defaultReaderFontSize + CGFloat(readerFontSize - 17)))
                     .foregroundStyle(.primary)
                     .fixedSize(horizontal: false, vertical: true)
-                Text("\(bookName) \(chapterNumber):\(verse.number)")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+
+                // Markers sit on the reference line, in caption size, so they scale with
+                // Dynamic Type and never cover the verse text.
+                HStack(spacing: 8) {
+                    Text("\(bookName) \(chapterNumber):\(verse.number)")
+                        .foregroundStyle(.secondary)
+
+                    if showsMarkers {
+                        markers
+                    }
+                }
+                .font(.caption)
             }
             .padding(.horizontal)
         }
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(rowBackground)
-        .overlay(alignment: .topLeading) {
-            if showsStatusIcons && isFavorite {
-                Image(systemName: "heart.fill")
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(Color.red)
-                    .padding(5)
-                    .accessibilityHidden(true)
-            }
-        }
-        .overlay(alignment: .bottomLeading) {
-            if showsStatusIcons && hasNote {
-                Image(systemName: "note.text")
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(Color.blue)
-                    .padding(5)
-                    .accessibilityHidden(true)
-            }
-        }
-        .overlay(alignment: .topTrailing) {
-            if showsStatusIcons && isPinned {
-                Image(systemName: "bookmark.fill")
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(Color.accentColor)
-                    .padding(5)
-                    .transition(.opacity)
-                    .opacity(0.9)
-                    .accessibilityHidden(true)
-            }
-        }
-        .overlay(alignment: .bottomTrailing) {
-            if showsStatusIcons && isRead {
-                Image(systemName: "checkmark")
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundStyle(.green)
-                    .padding(5)
+        .overlay(alignment: .leading) {
+            if showsReadProgress && isRead {
+                Capsule()
+                    .fill(Color.green.opacity(0.4))
+                    .frame(width: 3)
+                    .padding(.vertical, 6)
                     .accessibilityHidden(true)
             }
         }
@@ -83,10 +76,39 @@ struct ReadingVerseRow: View {
         .accessibilityAction(named: "Show verse actions") {
             onLongPress(verse.number)
         }
+        .accessibilityActions {
+            if hasNote {
+                Button("Open note", action: onOpenNote)
+            }
+        }
         .onScrollVisibilityChange(threshold: 0.6, onVisibilityChange)
         .onLongPressGesture(minimumDuration: 0.5) { onLongPress(verse.number) }
         .contentShape(Rectangle())
         .onTapGesture { onTap(verse) }
+    }
+
+    @ViewBuilder
+    private var markers: some View {
+        if isPinned {
+            Image(systemName: "bookmark.fill")
+                .foregroundStyle(Color.accentColor)
+                .accessibilityHidden(true)
+        }
+        if isFavorite {
+            Image(systemName: "heart.fill")
+                .foregroundStyle(.red)
+                .accessibilityHidden(true)
+        }
+        if hasNote {
+            Button(action: onOpenNote) {
+                Image(systemName: "note.text")
+                    .foregroundStyle(.blue)
+            }
+            .buttonStyle(.plain)
+            // A larger touch area than the small icon, without changing the layout.
+            .contentShape(Rectangle().inset(by: -10))
+            .accessibilityHidden(true)
+        }
     }
 
     private var rowBackground: Color {
@@ -98,10 +120,11 @@ struct ReadingVerseRow: View {
 
     private var accessibilityStatus: String {
         var statuses: [String] = []
+        // Saved markers are always announced, even when hidden on screen.
+        if isPinned { statuses.append("Bookmarked") }
         if isFavorite { statuses.append("Favorite") }
         if hasNote { statuses.append("Has note") }
-        if isPinned { statuses.append("Bookmarked") }
-        if isRead { statuses.append("Read") }
+        if showsReadProgress && isRead { statuses.append("Read") }
         return statuses.formatted(.list(type: .and))
     }
 }

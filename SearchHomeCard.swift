@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct SearchHomeCard: View {
+    /// Called when typing starts and when results arrive, so Home can scroll the card
+    /// above the keyboard and tab bar.
+    var onNeedsVisibility: () -> Void = {}
     let onSelectResult: (SearchResult) -> Void
 
     /// A book, chapter, or verse the query names directly, shown above the keyword matches.
@@ -17,6 +20,7 @@ struct SearchHomeCard: View {
     @State private var results: [SearchResult] = []
     @State private var searchTask: Task<Void, Never>?
     @State private var isSearching = false
+    @FocusState private var isFieldFocused: Bool
 
     private var searchTokens: [String] {
         query
@@ -46,6 +50,7 @@ struct SearchHomeCard: View {
                         .autocorrectionDisabled(true)
                         .textInputAutocapitalization(.never)
                         .submitLabel(.search)
+                        .focused($isFieldFocused)
                         .onSubmit(openTopResult)
 
                     if !query.isEmpty {
@@ -73,6 +78,13 @@ struct SearchHomeCard: View {
                 return
             }
             scheduleSearch()
+        }
+        .onChange(of: isFieldFocused) { _, focused in
+            if focused { onNeedsVisibility() }
+        }
+        .onChange(of: isSearching) { _, searching in
+            // Results change the card's height; keep all of it in view.
+            if !searching && isFieldFocused { onNeedsVisibility() }
         }
         .onDisappear {
             searchTask?.cancel()

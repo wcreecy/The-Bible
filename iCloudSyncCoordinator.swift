@@ -238,6 +238,9 @@ final class iCloudSyncCoordinator {
             kvs.removeObject(forKey: k)
         }
 
+        // Prayer stats are shown under Reading Stats and reset with them.
+        clearPrayerStats()
+
         // Last Read is also mirrored outside the stats store for the widget.
         for key in Self.lastReadWidgetKeys {
             kvs.removeObject(forKey: key)
@@ -274,6 +277,7 @@ final class iCloudSyncCoordinator {
         Set(
             bibleStatsKeys
             + sessionKeys
+            + prayerStatsKeys
             + settingsKeys
             + gamePlayTimeCounterKeys
             + gamePlayTimeMapKeys
@@ -480,6 +484,10 @@ final class iCloudSyncCoordinator {
             mirrorSessionsKeyToKVS(key)
             return
         }
+        if Self.prayerStatsKeys.contains(key) {
+            mirrorPrayerStatsKeyToKVS(key)
+            return
+        }
         // Unknown keys are ignored
     }
 
@@ -555,6 +563,10 @@ final class iCloudSyncCoordinator {
             mergeSessionsIncoming(forKey: key)
             return
         }
+        if Self.prayerStatsKeys.contains(key) {
+            mergePrayerStatsIncoming(forKey: key)
+            return
+        }
     }
 
     // MARK: - One-shot reconcile pass at startup/identity change
@@ -581,6 +593,7 @@ final class iCloudSyncCoordinator {
                 for key in Self.bibleStatsKeys + Self.sessionKeys {
                     kvs.removeObject(forKey: key)
                 }
+                clearPrayerStats()
                 for key in Self.lastReadWidgetKeys {
                     kvs.removeObject(forKey: key)
                 }
@@ -619,7 +632,9 @@ final class iCloudSyncCoordinator {
         for key in allKnownKeys {
             // A reset epoch is authoritative. Don't merge stale values that arrived in
             // the same KVS snapshot after the local stores were just cleared.
-            if appliedBibleReset && (Self.bibleStatsKeys.contains(key) || Self.sessionKeys.contains(key)) {
+            if appliedBibleReset && (Self.bibleStatsKeys.contains(key)
+                || Self.sessionKeys.contains(key)
+                || Self.prayerStatsKeys.contains(key)) {
                 continue
             }
             if appliedGameReset && allKnownGameDataKeys.contains(key) {

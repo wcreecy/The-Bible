@@ -192,42 +192,14 @@ struct PrayerTimerCard: View {
 
     private var idleContent: some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 12) {
-                ForEach(Self.presets, id: \.self) { minutes in
-                    Button { onStartPreset(minutes) } label: {
-                        VStack(spacing: 0) {
-                            Text("\(minutes)")
-                                .font(.subheadline.weight(.bold))
-                            Text("min")
-                                .font(.caption2)
-                        }
-                    }
-                    .buttonStyle(ModernCircleButtonStyle(tint: tint))
-                    .accessibilityLabel("Start \(minutes) minutes")
-                }
+            // Presets, your last duration (when it isn't a preset), and Custom share one row.
+            // Spacing tightens on narrow cards so the row never wraps.
+            ViewThatFits(in: .horizontal) {
+                durationRow(spacing: 12)
+                durationRow(spacing: 6)
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 4)
-
-            HStack(spacing: 10) {
-                if lastMinutes > 0 && !Self.presets.contains(lastMinutes) {
-                    Button { onStartPreset(lastMinutes) } label: {
-                        Label("\(lastMinutes) min", systemImage: "clock.arrow.circlepath")
-                            .font(.footnote.weight(.semibold))
-                    }
-                    .buttonStyle(.glass(.regular.tint(tint.opacity(0.2))))
-                    .accessibilityLabel("Start \(lastMinutes) minutes, your last duration")
-                }
-
-                Spacer(minLength: 0)
-
-                Button(action: onOpenSetup) {
-                    Label("Custom", systemImage: "slider.horizontal.3")
-                        .font(.footnote.weight(.semibold))
-                }
-                .buttonStyle(.glass)
-                .accessibilityLabel("Custom timer duration")
-            }
 
             if canUndoStop {
                 HStack {
@@ -252,6 +224,51 @@ struct PrayerTimerCard: View {
             PrayerStatsSummaryRow(tint: tint)
         }
     }
+
+    private var showsLastDuration: Bool {
+        lastMinutes > 0 && !Self.presets.contains(lastMinutes)
+    }
+
+    private func durationRow(spacing: CGFloat) -> some View {
+        HStack(spacing: spacing) {
+            ForEach(Self.presets, id: \.self) { minutes in
+                Button { onStartPreset(minutes) } label: {
+                    durationLabel(minutes)
+                }
+                .buttonStyle(ModernCircleButtonStyle(tint: tint))
+                .accessibilityLabel("Start \(minutes) minutes")
+            }
+
+            if showsLastDuration {
+                // Filled so your usual length stands out from the presets.
+                Button { onStartPreset(lastMinutes) } label: {
+                    durationLabel(lastMinutes)
+                }
+                .buttonStyle(ModernCircleButtonStyle(tint: tint, isProminent: true))
+                .accessibilityLabel("Start \(lastMinutes) minutes, your last duration")
+            }
+
+            Button(action: onOpenSetup) {
+                VStack(spacing: 1) {
+                    Image(systemName: "ellipsis")
+                        .font(.subheadline.weight(.bold))
+                    Text("more")
+                        .font(.caption2)
+                }
+            }
+            .buttonStyle(ModernCircleButtonStyle(tint: tint))
+            .accessibilityLabel("Custom timer duration")
+        }
+    }
+
+    private func durationLabel(_ minutes: Int) -> some View {
+        VStack(spacing: 0) {
+            Text("\(minutes)")
+                .font(.subheadline.weight(.bold))
+            Text("min")
+                .font(.caption2)
+        }
+    }
 }
 
 // MARK: - Stats summary
@@ -260,9 +277,21 @@ struct PrayerTimerCard: View {
 private struct PrayerStatsSummaryRow: View {
     let tint: Color
 
+    /// Bumped when prayer stats change (including from another device).
+    @State private var revision = 0
+
     var body: some View {
+        let _ = revision
         let summary = PrayerStatsStore.shared.summary()
 
+        content(summary)
+            .onReceive(NotificationCenter.default.publisher(for: .prayerStatsUpdated)) { _ in
+                revision += 1
+            }
+    }
+
+    @ViewBuilder
+    private func content(_ summary: PrayerStatsSummary) -> some View {
         if summary.hasHistory {
             HStack(spacing: 0) {
                 stat(prayerMinutesText(summary.weekSeconds), caption: "This week", systemImage: "clock.fill")

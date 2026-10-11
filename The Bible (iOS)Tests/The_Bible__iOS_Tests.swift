@@ -313,4 +313,34 @@ struct The_Bible__iOS_Tests {
         #expect(StreakMilestone.next(after: 365) == 730)
         #expect(StreakMilestone.title(for: 365) == "1-year streak")
     }
+
+    // MARK: - Prayer stats sync
+
+    @Test
+    func prayerContributionsMergeKeepsEachDevicesLargestValue() {
+        let phone: PrayerStatsStore.Contributions = ["2026-10-10": ["phone": 600, "ipad": 120]]
+        let cloud: PrayerStatsStore.Contributions = [
+            "2026-10-10": ["phone": 300, "ipad": 900],
+            "2026-10-09": ["ipad": 60]
+        ]
+
+        let merged = PrayerStatsStore.merged(phone, cloud)
+
+        #expect(merged["2026-10-10"] == ["phone": 600, "ipad": 900])
+        #expect(merged["2026-10-09"] == ["ipad": 60])
+        // Merging again changes nothing, so devices settle on the same copy.
+        #expect(PrayerStatsStore.merged(merged, cloud) == merged)
+        #expect(PrayerStatsStore.merged(cloud, phone) == merged)
+    }
+
+    @Test
+    func prayerLastSessionMergeKeepsTheMostRecent() {
+        let older = PrayerStatsStore.LastSession(seconds: 600, endedAt: Date(timeIntervalSince1970: 100))
+        let newer = PrayerStatsStore.LastSession(seconds: 300, endedAt: Date(timeIntervalSince1970: 200))
+
+        #expect(PrayerStatsStore.newer(older, newer) == newer)
+        #expect(PrayerStatsStore.newer(newer, older) == newer)
+        #expect(PrayerStatsStore.newer(nil, older) == older)
+        #expect(PrayerStatsStore.newer(nil, nil) == nil)
+    }
 }

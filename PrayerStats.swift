@@ -12,20 +12,41 @@ struct PrayerStatsSummary {
     var hasHistory: Bool { bestStreak > 0 || lastSessionSeconds > 0 }
 }
 
+extension Notification.Name {
+    /// Posted when prayer stats change, locally or from another device.
+    static let prayerStatsUpdated = Notification.Name("prayerStatsUpdated")
+}
+
 /// Time spent with the prayer timer counting down, per local day. Only active time
 /// counts: paused time is left out, like the Apple Health mindful minutes.
 ///
-/// Stored on this device only.
+/// Synced through iCloud key-value storage. Like reading time, each device records
+/// under its own ID (day → device → seconds), so merging takes the larger value per
+/// device and never double-counts. See `iCloudSyncCoordinator+Prayer`.
 @MainActor
 final class PrayerStatsStore {
     static let shared = PrayerStatsStore()
     private init() {}
 
+    /// Seconds per day per device.
+    typealias Contributions = [String: [String: Int]]
+
+    /// The most recent session on any device; the latest one wins when merging.
+    struct LastSession: Codable, Equatable {
+        var seconds: Int
+        var endedAt: Date
+    }
+
     /// A day counts toward the prayer streak once this much time is recorded.
     static let minimumStreakSeconds = 60
 
-    private let dailyKey = "prayerDailySecondsV1"
-    private let lastSessionKey = "prayerLastSessionSeconds"
+    nonisolated static let contributionsKey = "prayerContributionsV1"
+    nonisolated static let lastSessionKey = "prayerLastSessionV1"
+
+    // Written by the first, device-only version; moved into the synced keys on first load.
+    private let legacyDailyKey = "prayerDailySecondsV1"
+    private let legacyLastSessionKey = "prayerLastSessionSeconds"
+
     private var defaults: UserDefaults { .standard }
 
     private var calendar: Calendar {
@@ -35,44 +56,125 @@ final class PrayerStatsStore {
         return calendar
     }
 
-    func dailySeconds() -> [String: Int] {
-        guard let data = defaults.data(forKey: dailyKey) else { return [:] }
-        return (try? JSONDecoder().decode([String: Int].self, from: data)) ?? [:]
+    // MARK: - Storage
+
+    func loadContributions() -> Contributions {
+        migrateLegacyIfNeeded()
+        guard let data = defaults.data(forKey: Self.contributionsKey) else { return [:] }
+        return (try? JSONDecoder().decode(Contributions.self, from: data)) ?? [:]
     }
+
+    func saveContributions(_ contributions: Contributions) {
+        if let data = try? JSONEncoder().encode(contributions) {
+            defaults.set(data, forKey: Self.contributionsKey)
+        }
+    }
+
+    func loadLastSession() -> LastSession? {
+        migrateLegacyIfNeeded()
+        guard let data = defaults.data(forKey: Self.lastSessionKey) else { return nil }
+        return try? JSONDecoder().decode(LastSession.self, from: data)
+    }
+
+    func saveLastSession(_ session: LastSession) {
+        if let data = try? JSONEncoder().encode(session) {
+            defaults.set(data, forKey: Self.lastSessionKey)
+        }
+    }
+
+    /// Seconds per day, summed across devices.
+    func dailySeconds() -> [String: Int] {
+        loadContributions().mapValues { devices in devices.values.reduce(0) { $0 + max(0, $1) } }
+    }
+
+    private func migrateLegacyIfNeeded() {
+        if let data = defaults.data(forKey: legacyDailyKey) {
+            defaults.removeObject(forKey: legacyDailyKey)
+            let legacy = (try? JSONDecoder().decode([String: Int].self, from: data)) ?? [:]
+            var contributions = (defaults.data(forKey: Self.contributionsKey))
+                .flatMap { try? JSONDecoder().decode(Contributions.self, from: $0) } ?? [:]
+            let device = BibleStatsStore.shared.installationID
+            for (day, seconds) in legacy where seconds > 0 {
+                contributions[day, default: [:]][device, default: 0] += seconds
+            }
+            saveContributions(contributions)
+        }
+        if defaults.object(forKey: legacyLastSessionKey) != nil {
+            let seconds = defaults.integer(forKey: legacyLastSessionKey)
+            defaults.removeObject(forKey: legacyLastSessionKey)
+            if seconds > 0, defaults.data(forKey: Self.lastSessionKey) == nil {
+                saveLastSession(LastSession(seconds: seconds, endedAt: Date()))
+            }
+        }
+    }
+
+    // MARK: - Recording
 
     /// Adds the time between `start` and `end`, split at midnight so each day gets its share.
     func record(from start: Date, to end: Date) {
         guard end > start else { return }
-        var totals = dailySeconds()
+        var contributions = loadContributions()
+        let device = BibleStatsStore.shared.installationID
         var cursor = start
         while cursor < end {
             let nextDay = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: cursor)) ?? end
             let segmentEnd = min(end, nextDay)
             let key = BibleStatsStore.isoDateString(cursor, calendar: calendar)
-            totals[key, default: 0] += Int(segmentEnd.timeIntervalSince(cursor).rounded())
+            contributions[key, default: [:]][device, default: 0] += Int(segmentEnd.timeIntervalSince(cursor).rounded())
             cursor = segmentEnd
         }
-        if let data = try? JSONEncoder().encode(totals) {
-            defaults.set(data, forKey: dailyKey)
+        saveContributions(contributions)
+        iCloudSyncCoordinator.shared.pushKey(Self.contributionsKey)
+        NotificationCenter.default.post(name: .prayerStatsUpdated, object: nil)
+    }
+
+    func recordSessionEnded(seconds: Int, at date: Date = Date()) {
+        guard seconds > 0 else { return }
+        saveLastSession(LastSession(seconds: seconds, endedAt: date))
+        iCloudSyncCoordinator.shared.pushKey(Self.lastSessionKey)
+        NotificationCenter.default.post(name: .prayerStatsUpdated, object: nil)
+    }
+
+    /// Clears this device's copy only. Use `iCloudSyncCoordinator.resetAllBibleStatsAndSessions()`
+    /// to clear every device.
+    func clearLocal() {
+        defaults.removeObject(forKey: Self.contributionsKey)
+        defaults.removeObject(forKey: Self.lastSessionKey)
+        defaults.removeObject(forKey: legacyDailyKey)
+        defaults.removeObject(forKey: legacyLastSessionKey)
+        NotificationCenter.default.post(name: .prayerStatsUpdated, object: nil)
+    }
+
+    // MARK: - Merging
+
+    /// Combines two copies, keeping the larger value for each day and device.
+    nonisolated static func merged(_ a: Contributions, _ b: Contributions) -> Contributions {
+        var result = a
+        for (day, devices) in b {
+            for (device, seconds) in devices {
+                result[day, default: [:]][device] = max(result[day]?[device] ?? 0, max(0, seconds))
+            }
+        }
+        return result
+    }
+
+    /// The session that ended most recently.
+    nonisolated static func newer(_ a: LastSession?, _ b: LastSession?) -> LastSession? {
+        switch (a, b) {
+        case let (a?, b?): a.endedAt >= b.endedAt ? a : b
+        case let (a?, nil): a
+        case let (nil, b): b
         }
     }
 
-    func recordSessionEnded(seconds: Int) {
-        guard seconds > 0 else { return }
-        defaults.set(seconds, forKey: lastSessionKey)
-    }
-
-    func reset() {
-        defaults.removeObject(forKey: dailyKey)
-        defaults.removeObject(forKey: lastSessionKey)
-    }
+    // MARK: - Summary
 
     func summary(now: Date = Date()) -> PrayerStatsSummary {
         let totals = dailySeconds()
         let cal = calendar
         let today = cal.startOfDay(for: now)
         var summary = PrayerStatsSummary()
-        summary.lastSessionSeconds = defaults.integer(forKey: lastSessionKey)
+        summary.lastSessionSeconds = loadLastSession()?.seconds ?? 0
 
         if let interval = cal.dateInterval(of: .weekOfYear, for: now) {
             summary.week = (0..<7).compactMap { offset in
@@ -132,7 +234,11 @@ func prayerMinutesText(_ seconds: Int) -> String {
 struct PrayerStatsCard: View {
     private let weekdaySymbols = ["S", "M", "T", "W", "Th", "F", "Sa"]
 
+    /// Bumped when prayer stats change so the summary is recomputed.
+    @State private var revision = 0
+
     var body: some View {
+        let _ = revision
         let summary = PrayerStatsStore.shared.summary()
         let maxSeconds = max(60, summary.week.map(\.seconds).max() ?? 0)
 
@@ -178,6 +284,9 @@ struct PrayerStatsCard: View {
                         .foregroundStyle(.secondary)
                 }
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .prayerStatsUpdated)) { _ in
+            revision += 1
         }
     }
 
