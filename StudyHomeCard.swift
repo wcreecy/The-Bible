@@ -130,37 +130,35 @@ struct StudyHomeCard: View {
         actionButtons(secondaryTitle: "Insights", secondarySheet: .chapterInsights)
     }
 
-    /// A theme name with its verse span; opens a preview of those verses when it has one.
-    @ViewBuilder
+    /// A theme name followed by its verse span; only the span is highlighted, and it
+    /// opens a preview of those verses.
     private func themeChip(_ theme: ChapterKeyTheme) -> some View {
         let passage = theme.scriptureReferences
             .lazy
             .flatMap { PassageReferenceParser.parseList($0, book: bookName, chapter: chapterNumber) }
             .first
 
-        let label = HStack(alignment: .firstTextBaseline, spacing: 6) {
+        return HStack(alignment: .firstTextBaseline, spacing: 8) {
             Text(theme.theme)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.primary)
+
             if let passage {
-                Text(shortTitle(for: passage))
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.teal)
+                Link(destination: passage.url) {
+                    Text(shortTitle(for: passage))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.teal)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(Color.teal.opacity(0.12), in: Capsule())
+                }
+                // Keeps the label's own colors instead of the default link tint.
+                .buttonStyle(.plain)
+                .accessibilityLabel(passage.displayTitle)
+                .accessibilityHint("Shows a preview of the passage")
             }
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(Color.teal.opacity(0.12), in: Capsule())
-
-        if let passage {
-            Link(destination: passage.url) { label }
-                // Keeps the label's own colors instead of tinting the whole chip.
-                .buttonStyle(.plain)
-                .accessibilityLabel("\(theme.theme), \(passage.displayTitle)")
-                .accessibilityHint("Shows a preview of the passage")
-        } else {
-            label
-        }
+        .accessibilityElement(children: .contain)
     }
 
     /// Drops the book name the card already shows, so "John 3:3–8" reads "3:3–8".
