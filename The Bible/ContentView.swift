@@ -254,12 +254,6 @@ struct ContentView: View {
             NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
         }
 
-        // When entering Games tab, capture session baseline of all‑time Gamer Score
-        if newValue == .games {
-            let baselinePct = GameStats.shared.breakdownSnapshot().percentage
-            UserDefaults.standard.set(baselinePct, forKey: "gamesSessionBaselinePct")
-        }
-
         if newValue == .home {
             Task { @MainActor in
                 await Task.yield()

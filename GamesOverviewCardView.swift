@@ -125,47 +125,13 @@ struct GamesOverviewCardView: View {
                 }
             }()
 
-            let displayPct: Double = {
-                if selectedGame == "WORD", let scoped = wordScoped { return scoped.accPct }
-                return kpiAccuracyPct
-            }()
-            let displayTint: Color = Color.gamerScoreColor(for: displayPct)
-
             VStack(alignment: .leading, spacing: 10) {
-                let filterLayout = dynamicTypeSize.isAccessibilitySize
+                let headerLayout = dynamicTypeSize.isAccessibilitySize
                     ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
                     : AnyLayout(HStackLayout(spacing: hSizeClass == .compact ? 10 : 12))
 
-                filterLayout {
-                    if isEmpty {
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color.accentColor.opacity(0.08))
-                            .frame(width: hSizeClass == .compact ? 52 : 64,
-                                   height: hSizeClass == .compact ? 52 : 64)
-                            .overlay(
-                                Image(systemName: "gamecontroller")
-                                    .font(hSizeClass == .compact ? .title3 : .title2)
-                                    .foregroundStyle(.secondary)
-                            )
-                            .accessibilityHidden(true)
-                    } else {
-                        GamesProgressRing(
-                            progress: Double(displayPct) / 100.0,
-                            lineWidth: hSizeClass == .compact ? 6 : 7,
-                            size: hSizeClass == .compact ? 52 : 64,
-                            tint: displayTint,
-                            track: Color.primary.opacity(0.12)
-                        ) {
-                            Text("\(Int(round(displayPct)))%")
-                                .font(hSizeClass == .compact ? .caption2.weight(.semibold) : .footnote.weight(.semibold))
-                                .monospacedDigit()
-                                .foregroundStyle(displayTint)
-                        }
-                        .accessibilityLabel(Text("Gamer Score \(Int(round(displayPct))) percent"))
-                        .animation(.spring(response: 0.6, dampingFraction: 0.85), value: displayPct)
-                    }
-
-                    Text("Gamer Score")
+                headerLayout {
+                    Text("Game Statistics")
                         .font(.headline)
                         .lineLimit(1)
 
@@ -963,7 +929,7 @@ struct GamesOverviewCardView: View {
                         .padding(.top, 2)
                     }
                 } else {
-                    Text("Play any game to build your Gamer Score.")
+                    Text("Play any game to see your stats.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }

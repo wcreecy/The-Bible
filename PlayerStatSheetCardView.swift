@@ -78,7 +78,7 @@ struct PlayerStatSheetCardView: View {
                 }
 
                 if isEmpty {
-                    Text("Play any game to build your Gamer Score.")
+                    Text("Play any game to see your stats.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 } else {
