@@ -345,6 +345,9 @@ struct StatsView: View {
 
             ReadingHistoryCalendarCard()
                 .padding(.horizontal, 16)
+
+            PrayerStatsCard()
+                .padding(.horizontal, 16)
         }
     }
 

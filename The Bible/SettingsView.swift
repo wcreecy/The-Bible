@@ -489,6 +489,10 @@ private enum DeveloperSettingsReset {
             "prayerTimerEndDate": 0.0,
             "prayerTimerStartDate": 0.0,
             "prayerTimerLastActionToken": "",
+            PrayerTimerController.lastMinutesKey: 0,
+            "prayerTimerVerseSource": PrayerVerseSource.verseOfDay.rawValue,
+            "prayerSegmentStartDate": 0.0,
+            "prayerSessionSeconds": 0,
             "mindfulSessionStartDate": 0.0
         ]
 

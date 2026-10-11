@@ -73,7 +73,7 @@ final class PrayerTimerActivityController {
         guard #available(iOS 16.1, *) else { return }
         Self.endAllPrayerActivities()
 
-        let attributes = PrayerTimerAttributes(sessionName: "Prayer/Study")
+        let attributes = PrayerTimerAttributes(sessionName: "Prayer Timer")
         let state = PrayerTimerAttributes.ContentState(status: "Focus", remaining: 0, total: 0, focusTitle: title, focusBody: body)
         do {
             if #available(iOS 17.0, *) {
@@ -106,7 +106,7 @@ final class PrayerTimerActivityController {
         // If a prayer activity exists, do nothing.
         if !Activity<PrayerTimerAttributes>.activities.isEmpty { return }
         // Otherwise, start a Focus activity with provided title/body
-        let attributes = PrayerTimerAttributes(sessionName: "Prayer/Study")
+        let attributes = PrayerTimerAttributes(sessionName: "Prayer Timer")
         let state = PrayerTimerAttributes.ContentState(status: "Focus", remaining: 0, total: 0, focusTitle: title, focusBody: body)
         do {
             if #available(iOS 17.0, *) {

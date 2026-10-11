@@ -6,10 +6,11 @@ struct PrayerStudyTimerSetupView: View {
 
     @State private var selectedMinutes: Int = 15
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
+    @AppStorage(PrayerTimerController.lastMinutesKey) private var lastMinutes: Int = 0
 
     var body: some View {
         VStack(alignment: .center, spacing: 20) {
-            Text("Prayer/Study Timer")
+            Text("Prayer Timer")
                 .font(.title2)
                 .bold()
 
@@ -57,5 +58,11 @@ struct PrayerStudyTimerSetupView: View {
             Spacer()
         }
         .padding()
+        .onAppear {
+            // Start from the duration used last time.
+            if (1...120).contains(lastMinutes) {
+                selectedMinutes = lastMinutes
+            }
+        }
     }
 }

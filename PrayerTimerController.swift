@@ -16,6 +16,19 @@ final class PrayerTimerController: ObservableObject {
     @Published private(set) var remainingSeconds: Int = 0
     @Published private(set) var totalSeconds: Int = 0
     @Published var showFinishedAlert: Bool = false
+    /// Set for a few seconds after Stop, so an accidental stop can be undone.
+    @Published private(set) var undoableStop: StoppedSession?
+
+    /// Timer state captured when the timer is stopped, for Undo.
+    struct StoppedSession: Equatable {
+        let remainingSeconds: Int
+        let totalSeconds: Int
+        let wasPaused: Bool
+        let sessionSeconds: Int
+    }
+
+    /// How long Undo stays available after Stop.
+    private static let undoWindow: Duration = .seconds(6)
 
     // MARK: - Persistence (UserDefaults / AppStorage keys)
 
@@ -29,6 +42,16 @@ final class PrayerTimerController: ObservableObject {
     @AppStorage("mindfulSessionStartDate") private var mindfulStartDate: Double = 0
     @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
     @AppStorage("didRequestNotifications") private var didRequestNotifications: Bool = false
+    /// The most recent duration started, offered as a preset on the card.
+    @AppStorage(PrayerTimerController.lastMinutesKey) private var lastMinutes: Int = 0
+    /// Start of the current counting-down stretch, for prayer stats. 0 while paused or stopped.
+    @AppStorage("prayerSegmentStartDate") private var prayerSegmentStartDate: Double = 0
+    /// Active seconds so far in this session, across pauses.
+    @AppStorage("prayerSessionSeconds") private var prayerSessionSeconds: Int = 0
+
+    static let lastMinutesKey = "prayerTimerLastMinutes"
+
+    private var undoExpiryTask: Task<Void, Never>?
 
     // One-shot token to ignore stale pending actions
     @AppStorage("prayerTimerLastActionToken") private var lastActionToken: String = ""
@@ -85,6 +108,13 @@ final class PrayerTimerController: ObservableObject {
         if !storedRunning || storedPaused {
             mindfulStartDate = 0
         }
+        // Same for prayer stats: an open stretch only makes sense while counting down.
+        if !storedRunning {
+            prayerSegmentStartDate = 0
+            prayerSessionSeconds = 0
+        } else if storedPaused {
+            prayerSegmentStartDate = 0
+        }
         updateTickerSubscription()
     }
 
@@ -113,7 +143,10 @@ final class PrayerTimerController: ObservableObject {
 
     func start(minutes: Int) {
         Task { await requestNotificationsIfNeeded() }
+        clearUndo()
 
+        lastMinutes = max(1, minutes)
+        prayerSessionSeconds = 0
         let secs = max(1, minutes) * 60
         remainingSeconds = secs
         totalSeconds = secs
@@ -135,10 +168,11 @@ final class PrayerTimerController: ObservableObject {
         suppressTimerRecomputeUntil = Date().addingTimeInterval(1.75)
 
         beginMindfulSession(at: start)
+        beginPrayerSegment(at: start)
         scheduleCompletionAlert(at: end)
 
         PrayerTimerActivityController.shared.start(
-            sessionName: "Prayer/Study",
+            sessionName: Self.sessionName,
             totalSeconds: storedTotalSeconds,
             remainingSeconds: remainingSeconds,
             isPaused: false
@@ -160,8 +194,10 @@ final class PrayerTimerController: ObservableObject {
             cancelNotification()
             cancelAlarm()
             endMindfulSession(at: Date())
+            endPrayerSegment(at: Date())
         } else {
             beginMindfulSession(at: Date())
+            beginPrayerSegment(at: Date())
             let newEnd = Date().addingTimeInterval(TimeInterval(remainingSeconds))
             storedEndDate = newEnd.timeIntervalSince1970
             liveEndDate = storedEndDate
@@ -179,7 +215,6 @@ final class PrayerTimerController: ObservableObject {
 
     func addOne() { addMinutes(1) }
     func addFive() { addMinutes(5) }
-    func addTen() { addMinutes(10) }
 
     func addMinutes(_ minutes: Int) {
         guard isRunning else { return }
@@ -215,8 +250,23 @@ final class PrayerTimerController: ObservableObject {
         }
     }
 
-    func stop() {
+    /// Ends the session. With `allowsUndo`, the session can be brought back for a few seconds.
+    func stop(allowsUndo: Bool = true) {
+        let wasRunning = isRunning
+        let currentRemaining = isPaused
+            ? remainingSeconds
+            : Int(max(0, storedEndDate - Date().timeIntervalSince1970))
+
         endMindfulSession(at: Date())
+        endPrayerSegment(at: Date())
+        let stopped = StoppedSession(
+            remainingSeconds: currentRemaining,
+            totalSeconds: storedTotalSeconds,
+            wasPaused: isPaused,
+            sessionSeconds: prayerSessionSeconds
+        )
+        finishPrayerSession()
+
         resetTimerState()
         cancelNotification()
         cancelAlarm()
@@ -224,6 +274,65 @@ final class PrayerTimerController: ObservableObject {
         PrayerTimerActivityController.shared.cancel()
         showFinishedAlert = false
         updateTickerSubscription()
+
+        if allowsUndo && wasRunning && stopped.remainingSeconds > 0 {
+            offerUndo(stopped)
+        } else {
+            clearUndo()
+        }
+    }
+
+    /// Restores the session that was just stopped, paused or running as it was.
+    func undoStop() {
+        guard let stopped = undoableStop else { return }
+        clearUndo()
+
+        let now = Date()
+        remainingSeconds = stopped.remainingSeconds
+        totalSeconds = stopped.totalSeconds
+        isRunning = true
+        isPaused = stopped.wasPaused
+
+        storedRunning = true
+        storedPaused = stopped.wasPaused
+        storedTotalSeconds = stopped.totalSeconds
+        storedStartDate = now.timeIntervalSince1970
+        storedEndDate = now.addingTimeInterval(TimeInterval(stopped.remainingSeconds)).timeIntervalSince1970
+        storedRemainingWhenPaused = stopped.wasPaused ? stopped.remainingSeconds : 0
+        prayerSessionSeconds = stopped.sessionSeconds
+
+        if !stopped.wasPaused {
+            liveEndDate = storedEndDate
+            suppressTimerActivityUpdatesUntil = now.addingTimeInterval(1.0)
+            suppressTimerRecomputeUntil = now.addingTimeInterval(1.75)
+            beginMindfulSession(at: now)
+            beginPrayerSegment(at: now)
+            scheduleCompletionAlert(at: Date(timeIntervalSince1970: storedEndDate))
+        }
+
+        PrayerTimerActivityController.shared.start(
+            sessionName: Self.sessionName,
+            totalSeconds: stopped.totalSeconds,
+            remainingSeconds: stopped.remainingSeconds,
+            isPaused: stopped.wasPaused
+        )
+        updateTickerSubscription()
+    }
+
+    private func offerUndo(_ stopped: StoppedSession) {
+        undoExpiryTask?.cancel()
+        undoableStop = stopped
+        undoExpiryTask = Task { [weak self] in
+            try? await Task.sleep(for: Self.undoWindow)
+            guard !Task.isCancelled else { return }
+            self?.undoableStop = nil
+        }
+    }
+
+    private func clearUndo() {
+        undoExpiryTask?.cancel()
+        undoExpiryTask = nil
+        undoableStop = nil
     }
 
     // MARK: - Internal ticking
@@ -291,6 +400,9 @@ final class PrayerTimerController: ObservableObject {
             ? Date(timeIntervalSince1970: storedEndDate)
             : Date()
         endMindfulSession(at: min(Date(), scheduledEnd))
+        endPrayerSegment(at: min(Date(), scheduledEnd))
+        finishPrayerSession()
+        clearUndo()
 
         let completedMinutes = storedTotalSeconds / 60
         cancelNotification()
@@ -353,6 +465,28 @@ final class PrayerTimerController: ObservableObject {
         return true
     }
 
+    // MARK: - Prayer stats
+
+    // Like mindful sessions, prayer stats count only time spent counting down, but they
+    // are kept whether or not Apple Health is connected.
+    private func beginPrayerSegment(at date: Date) {
+        prayerSegmentStartDate = date.timeIntervalSince1970
+    }
+
+    private func endPrayerSegment(at endDate: Date) {
+        defer { prayerSegmentStartDate = 0 }
+        guard prayerSegmentStartDate > 0 else { return }
+        let startDate = Date(timeIntervalSince1970: prayerSegmentStartDate)
+        guard endDate > startDate else { return }
+        PrayerStatsStore.shared.record(from: startDate, to: endDate)
+        prayerSessionSeconds += Int(endDate.timeIntervalSince(startDate).rounded())
+    }
+
+    private func finishPrayerSession() {
+        PrayerStatsStore.shared.recordSessionEnded(seconds: prayerSessionSeconds)
+        prayerSessionSeconds = 0
+    }
+
     // MARK: - HealthKit mindful logging
 
     // A mindful session covers only the time the timer is actively counting down:
@@ -381,9 +515,14 @@ final class PrayerTimerController: ObservableObject {
 
     // MARK: - Notifications
 
+    /// Name shown in the Live Activity.
+    static let sessionName = "Prayer Timer"
+
     private static let notificationID = "PrayerStudyTimerFinished"
-    private static let notificationTitle = "Prayer/Study Finished"
-    private static let notificationBody = "Your prayer/study timer has completed."
+    static let finishedTitle = "Prayer Timer Finished"
+    static let finishedMessage = "Your prayer timer has finished."
+    private static let notificationTitle = finishedTitle
+    private static let notificationBody = finishedMessage
 
     private func scheduleNotification(at date: Date) {
         let center = UNUserNotificationCenter.current()

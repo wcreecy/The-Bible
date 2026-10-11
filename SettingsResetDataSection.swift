@@ -76,6 +76,8 @@ struct SettingsResetDataSection: View {
             // Clears local data and iCloud copies, then stamps a reset epoch so
             // older devices cannot restore the deleted reading history.
             iCloudSyncCoordinator.shared.resetAllBibleStatsAndSessions()
+            // Prayer stats appear under Reading Stats, so they reset with them.
+            PrayerStatsStore.shared.reset()
         }
 
         // Reading time comes from reading stats and game time from the game ledger,

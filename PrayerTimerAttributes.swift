@@ -1,7 +1,7 @@
 import Foundation
 import ActivityKit
 
-// Shared attributes for the Prayer/Study timer Live Activity
+// Shared attributes for the Prayer Timer Live Activity
 struct PrayerTimerAttributes: nonisolated ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         var status: String // e.g., "In progress", "Paused", "Finished"
@@ -10,5 +10,5 @@ struct PrayerTimerAttributes: nonisolated ActivityAttributes {
         var focusTitle: String? // optional focus title to show in Dynamic Island
         var focusBody: String? // optional focus body to show in expanded views
     }
-    var sessionName: String // e.g., "Prayer/Study"
+    var sessionName: String // e.g., "Prayer Timer"
 }

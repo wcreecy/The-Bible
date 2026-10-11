@@ -150,16 +150,6 @@ struct HomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
-    private var timerTintColor: Color {
-        if timerController.remainingSeconds > 300 {
-            return .green
-        } else if timerController.remainingSeconds > 120 {
-            return .yellow
-        } else {
-            return .red
-        }
-    }
-
     private var isEvening: Bool {
         let hour = Calendar.current.component(.hour, from: Date())
         return hour >= 18 || hour < 5
@@ -351,8 +341,10 @@ struct HomeView: View {
                 isTimerRunning: timerController.isRunning,
                 isPaused: timerController.isPaused,
                 remainingSeconds: timerController.remainingSeconds,
-                timerTintColor: timerTintColor,
+                totalSeconds: timerController.totalSeconds,
                 formattedTime: { TimeFormatters.compactClock($0) },
+                verseOfDay: votdVM.verse,
+                canUndoStop: timerController.undoableStop != nil,
                 onOpenSetup: {
                     Haptics.selection()
                     showPrayerStudySheet = true
@@ -363,8 +355,8 @@ struct HomeView: View {
                 onTogglePause: { timerController.togglePause() },
                 onAddOne: { timerController.addOne() },
                 onAddFive: { timerController.addFive() },
-                onAddTen: { timerController.addTen() },
-                onStop: { timerController.stop() }
+                onStop: { timerController.stop() },
+                onUndoStop: { timerController.undoStop() }
             )
         case .resumeReading:
             ResumeReadingCard(
@@ -762,7 +754,8 @@ struct HomeView: View {
             loadHomeLayout()
         }
         .onReceive(NotificationCenter.default.publisher(for: .resetPrayerTimer)) { _ in
-            timerController.stop()
+            // A data reset shouldn't offer to bring the timer back.
+            timerController.stop(allowsUndo: false)
         }
 
         .onChange(of: scenePhase) { _, newPhase in
@@ -793,13 +786,13 @@ struct HomeView: View {
             })
             .presentationDetents([.medium, .large])
         }
-        .alert("Prayer/Study Finished", isPresented: $timerController.showFinishedAlert) {
+        .alert(PrayerTimerController.finishedTitle, isPresented: $timerController.showFinishedAlert) {
             Button("Dismiss", role: .cancel) {
                 timerController.stopFinishAlerts()
                 timerController.showFinishedAlert = false
             }
         } message: {
-            Text("Your prayer/study timer has completed.")
+            Text(PrayerTimerController.finishedMessage)
         }
     }
 
