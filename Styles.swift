@@ -129,11 +129,13 @@ public struct ClearGlassPillButtonStyle: ButtonStyle {
 public struct ModernCircleButtonStyle: ButtonStyle {
     public var tint: Color = .accentColor
     public var isProminent: Bool = false
+    public var diameter: CGFloat = 44
     @Environment(\.isEnabled) private var isEnabled
 
-    public init(tint: Color = .accentColor, isProminent: Bool = false) {
+    public init(tint: Color = .accentColor, isProminent: Bool = false, diameter: CGFloat = 44) {
         self.tint = tint
         self.isProminent = isProminent
+        self.diameter = diameter
     }
 
     public func makeBody(configuration: Configuration) -> some View {
@@ -142,7 +144,7 @@ public struct ModernCircleButtonStyle: ButtonStyle {
         configuration.label
             .font(.subheadline.weight(.semibold))
             .foregroundStyle(isProminent ? Color.white : tint)
-            .frame(width: 44, height: 44)
+            .frame(width: diameter, height: diameter)
             .glassEffect(
                 .regular
                     .tint(tint.opacity(isProminent ? 0.9 : 0.2))

@@ -193,10 +193,11 @@ struct PrayerTimerCard: View {
     private var idleContent: some View {
         VStack(alignment: .leading, spacing: 14) {
             // Presets, your last duration (when it isn't a preset), and Custom share one row.
-            // Spacing tightens on narrow cards so the row never wraps.
+            // Circles and spacing shrink on narrow cards so the row never wraps.
             ViewThatFits(in: .horizontal) {
-                durationRow(spacing: 12)
-                durationRow(spacing: 6)
+                durationRow(spacing: 12, diameter: 56)
+                durationRow(spacing: 8, diameter: 52)
+                durationRow(spacing: 6, diameter: 46)
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 4)
@@ -229,48 +230,71 @@ struct PrayerTimerCard: View {
         lastMinutes > 0 && !Self.presets.contains(lastMinutes)
     }
 
-    private func durationRow(spacing: CGFloat) -> some View {
+    private func durationRow(spacing: CGFloat, diameter: CGFloat) -> some View {
         HStack(spacing: spacing) {
             ForEach(Self.presets, id: \.self) { minutes in
                 Button { onStartPreset(minutes) } label: {
-                    durationLabel(minutes)
+                    durationLabel(minutes, diameter: diameter)
                 }
-                .buttonStyle(ModernCircleButtonStyle(tint: tint))
+                .buttonStyle(ModernCircleButtonStyle(tint: tint, diameter: diameter))
                 .accessibilityLabel("Start \(minutes) minutes")
             }
 
             if showsLastDuration {
                 // Filled so your usual length stands out from the presets.
                 Button { onStartPreset(lastMinutes) } label: {
-                    durationLabel(lastMinutes)
+                    durationLabel(lastMinutes, diameter: diameter)
                 }
-                .buttonStyle(ModernCircleButtonStyle(tint: tint, isProminent: true))
+                .buttonStyle(ModernCircleButtonStyle(tint: tint, isProminent: true, diameter: diameter))
                 .accessibilityLabel("Start \(lastMinutes) minutes, your last duration")
             }
 
             Button(action: onOpenSetup) {
-                VStack(spacing: 1) {
+                circleLabel(diameter: diameter) {
                     Image(systemName: "ellipsis")
-                        .font(.subheadline.weight(.bold))
-                    Text("more")
-                        .font(.caption2)
+                        .font(.system(size: diameter * 0.3, weight: .bold))
+                        // Match the number's height so the caption lines up with the presets.
+                        .frame(height: diameter * 0.36)
+                } caption: {
+                    Text("More")
                 }
             }
-            .buttonStyle(ModernCircleButtonStyle(tint: tint))
+            .buttonStyle(ModernCircleButtonStyle(tint: tint, diameter: diameter))
             .accessibilityLabel("Custom timer duration")
         }
     }
 
-    private func durationLabel(_ minutes: Int) -> some View {
-        VStack(spacing: 1) {
+    private func durationLabel(_ minutes: Int, diameter: CGFloat) -> some View {
+        circleLabel(diameter: diameter) {
             Text("\(minutes)")
-                .font(.caption.weight(.bold))
+                .font(.system(size: diameter * 0.36, weight: .bold, design: .rounded))
                 .monospacedDigit()
-                .lineLimit(1)
+        } caption: {
             Text("min")
-                .font(.caption2)
-                .lineLimit(1)
         }
+    }
+
+    /// A large value over a small uppercase caption, sized to sit inside a circle
+    /// of the given diameter with even breathing room on every side.
+    private func circleLabel<Value: View, Caption: View>(
+        diameter: CGFloat,
+        @ViewBuilder value: () -> Value,
+        @ViewBuilder caption: () -> Caption
+    ) -> some View {
+        VStack(spacing: 0) {
+            value()
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            caption()
+                .font(.system(size: max(8, diameter * 0.17), weight: .semibold, design: .rounded))
+                .textCase(.uppercase)
+                .tracking(0.5)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .opacity(0.75)
+        }
+        // Keep text inside the circle's inscribed area rather than its bounding box.
+        .frame(width: diameter * 0.72)
     }
 }
 
