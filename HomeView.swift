@@ -336,6 +336,11 @@ struct HomeView: View {
                     openBibleReference(book: "Genesis", chapter: 1, verse: 1)
                 }
             )
+        case .study:
+            let target = studyTarget
+            StudyHomeCard(bookName: target.bookName, chapterNumber: target.chapterNumber) {
+                openBibleReference(book: target.bookName, chapter: target.chapterNumber, verse: target.verseNumber)
+            }
         case .search:
             SearchHomeCard(onNeedsVisibility: { searchScrollRequest += 1 }) { result in
                 openBibleReference(book: result.bookName, chapter: result.chapterNumber, verse: result.verseNumber)
@@ -355,6 +360,18 @@ struct HomeView: View {
                 }
             )
         }
+    }
+
+    /// The chapter the Study card prepares for: the bookmarked one, so it matches Continue
+    /// Reading, else the Verse of the Day's, else Genesis 1. Read opens at the bookmarked verse.
+    private var studyTarget: (bookName: String, chapterNumber: Int, verseNumber: Int) {
+        if let bookmark {
+            return (bookmark.bookName, bookmark.chapterNumber, bookmark.verseNumber)
+        }
+        if let verse = votdVM.verse {
+            return (verse.bookName, verse.chapterNumber, 1)
+        }
+        return ("Genesis", 1, 1)
     }
 
     private var dashboardCards: [HomeCardID] {

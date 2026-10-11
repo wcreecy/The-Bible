@@ -34,6 +34,7 @@ struct HomeLayoutStore {
             return [
                 .verseOfDay,
                 .today,
+                .study,
                 .streaks,
                 .timer,
                 .dailyFocus,
@@ -43,10 +44,11 @@ struct HomeLayoutStore {
             ]
         }
 
-        // iPhone: get back into the text first, then the daily verse and challenges.
+        // iPhone: get back into the text and what it's about first, then the daily verse and challenges.
         // Search, App Activity and Daily Focus are opt-in.
         return [
             .resumeReading,
+            .study,
             .verseOfDay,
             .today,
             .streaks,

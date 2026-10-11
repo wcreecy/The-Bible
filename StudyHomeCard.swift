@@ -3,7 +3,7 @@ import SwiftUI
 /// Home card that prepares the reader for the chapter they're about to read.
 ///
 /// Shows the chapter's summary, key themes (linked to their verses) and key figures,
-/// with Read and Chapter Insights actions. At chapter 1 it introduces the book instead,
+/// with Read and Insights actions. At chapter 1 it introduces the book instead,
 /// using the book overview. Only the insight fields that are written for every chapter
 /// are shown here; the full detail stays in `ChapterInsightsView`.
 struct StudyHomeCard: View {
@@ -101,7 +101,7 @@ struct StudyHomeCard: View {
             .accessibilityLabel("Key figures: \(insights.keyFigures.map(\.name).formatted(.list(type: .and)))")
         }
 
-        actionButtons(secondaryTitle: "Chapter Insights", secondarySheet: .chapterInsights)
+        actionButtons(secondaryTitle: "Insights", secondarySheet: .chapterInsights)
     }
 
     /// A theme name with its verse span; opens a preview of those verses when it has one.
@@ -128,6 +128,8 @@ struct StudyHomeCard: View {
 
         if let passage {
             Link(destination: passage.url) { label }
+                // Keeps the label's own colors instead of tinting the whole chip.
+                .buttonStyle(.plain)
                 .accessibilityLabel("\(theme.theme), \(passage.displayTitle)")
                 .accessibilityHint("Shows a preview of the passage")
         } else {
