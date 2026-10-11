@@ -222,7 +222,22 @@ struct HomeView: View {
 
     @ViewBuilder
     private var streaksCard: some View {
-        StreaksCard()
+        StreaksCard(
+            onOpenStats: openReadingStats,
+            onReadNow: openContinueReading
+        )
+    }
+
+    private func openReadingStats() {
+        UserDefaults.standard.set("Reading Stats", forKey: "statsSelectedMode")
+        NotificationCenter.default.post(name: .openStats, object: nil)
+    }
+
+    /// Whether the Reading Streak card is on screen, so the header can skip repeating it.
+    private func isStreaksCardShown(usesDashboard: Bool) -> Bool {
+        guard !hiddenCards.contains(.streaks) else { return false }
+        if usesDashboard { return !showsMinimalHome }
+        return mainCards.contains(.streaks) || !showMoreVisible || showMoreCards
     }
 
     // MARK: - Dynamic body using saved layout
@@ -414,12 +429,16 @@ struct HomeView: View {
     }
 
     @ViewBuilder
-    private var homeHeader: some View {
+    private func homeHeader(usesDashboard: Bool) -> some View {
+        let showsGoalSummary = !isStreaksCardShown(usesDashboard: usesDashboard)
+
         TitleCardView(
             isPad: isPad,
             goalMinutes: dailyGoalMinutes,
             todayReadingSeconds: bibleVM.todaySeconds,
-            streak: StreakTracker.currentStreak,
+            // Only computed when the header actually shows it.
+            streak: showsGoalSummary ? StreakTracker.currentStreak : 0,
+            showsGoalSummary: showsGoalSummary,
             onSearch: {
                 coordinator.push(.search)
             },
@@ -432,10 +451,7 @@ struct HomeView: View {
                     )
                 }
             },
-            onOpenGoal: {
-                UserDefaults.standard.set("Reading Stats", forKey: "statsSelectedMode")
-                NotificationCenter.default.post(name: .openStats, object: nil)
-            }
+            onOpenGoal: openReadingStats
         )
     }
 
@@ -455,7 +471,7 @@ struct HomeView: View {
 
     @ViewBuilder
     private var compactHomeContent: some View {
-        homeHeader
+        homeHeader(usesDashboard: false)
             .frame(maxWidth: .infinity)
         contextualHomeTip
             .frame(maxWidth: .infinity)
@@ -525,7 +541,7 @@ struct HomeView: View {
             mainWidth: mainCardsWidth,
             sidebarWidth: sidebarWidth
         ) {
-            homeHeader
+            homeHeader(usesDashboard: true)
         } tip: {
             contextualHomeTip
         } main: {

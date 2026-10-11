@@ -435,6 +435,11 @@ private enum DeveloperSettingsReset {
         let defaultValues: [String: Any] = [
             "colorSchemePreference": "system",
             "dailyGoalMinutes": 30,
+            StreakTracker.graceDaysEnabledKey: true,
+            StreakReminderScheduler.enabledKey: false,
+            StreakReminderScheduler.hourKey: StreakReminderScheduler.defaultHour,
+            StreakReminderScheduler.minuteKey: 0,
+            "streakCelebratedMilestone": 0,
             "timerSoundSelection": TimerSound.default.rawValue,
             "verseOfDayScope": "whole",
             "verseOfDaySpecificBook": "",

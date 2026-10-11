@@ -7,6 +7,8 @@ struct TitleCardView: View {
     let goalMinutes: Int
     let todayReadingSeconds: Int
     let streak: Int
+    /// Hidden while the Reading Streak card is on screen, so the same numbers aren't shown twice.
+    var showsGoalSummary: Bool = true
     let onSearch: () -> Void
     let onFavorites: () -> Void
     let onOpenGoal: () -> Void
@@ -37,7 +39,9 @@ struct TitleCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             topRow
-            goalSummary
+            if showsGoalSummary {
+                goalSummary
+            }
             if !isPad {
                 actionButtons
             }

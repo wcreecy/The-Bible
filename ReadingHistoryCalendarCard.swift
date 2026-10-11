@@ -42,6 +42,9 @@ struct ReadingHistoryCalendarCard: View {
     }
 
     var body: some View {
+        // Loaded once per render so each day cell doesn't reload history.
+        let summary = StreakTracker.summary()
+
         HeroCard(
             title: "Reading History",
             subtitle: nil,
@@ -87,7 +90,10 @@ struct ReadingHistoryCalendarCard: View {
                         HStack(spacing: 4) {
                             ForEach(0..<7, id: \.self) { column in
                                 if let date = daysGrid[row][column] {
-                                    ReadingHistoryDay(date: date, status: status(for: date))
+                                    ReadingHistoryDay(
+                                        date: date,
+                                        status: StreaksViewModel.status(for: date, summary: summary, calendar: calendar)
+                                    )
                                 } else {
                                     Color.clear
                                         .frame(maxWidth: .infinity, minHeight: 38)
@@ -102,18 +108,6 @@ struct ReadingHistoryCalendarCard: View {
 
     private func changeMonth(by value: Int) {
         monthAnchor = calendar.date(byAdding: .month, value: value, to: monthAnchor) ?? monthAnchor
-    }
-
-    private func status(for date: Date) -> ReadingWeekStatus {
-        if calendar.isDateInToday(date) {
-            return StreakTracker.isGoalMet(on: date) ? .completed : .today
-        }
-
-        if date > Date() {
-            return .future
-        }
-
-        return StreakTracker.isGoalMet(on: date) ? .completed : .missed
     }
 }
 
@@ -135,6 +129,11 @@ private struct ReadingHistoryDay: View {
                     .font(.caption2.weight(.black))
                     .foregroundStyle(.green)
                     .offset(x: 8, y: -8)
+            } else if status == .grace {
+                Image(systemName: "snowflake")
+                    .font(.caption2.weight(.black))
+                    .foregroundStyle(.cyan)
+                    .offset(x: 8, y: -8)
             } else if status == .missed {
                 Image(systemName: "xmark")
                     .font(.caption2.weight(.black))
@@ -151,6 +150,8 @@ private struct ReadingHistoryDay: View {
         switch status {
         case .completed:
             .green.opacity(0.12)
+        case .grace:
+            .cyan.opacity(0.12)
         case .missed:
             .red.opacity(0.09)
         case .today:
@@ -170,6 +171,8 @@ private struct ReadingHistoryDay: View {
         switch status {
         case .completed:
             return "\(dateLabel), daily goal completed"
+        case .grace:
+            return "\(dateLabel), grace day kept your streak"
         case .missed:
             return "\(dateLabel), daily goal missed"
         case .today:

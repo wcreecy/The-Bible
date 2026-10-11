@@ -40,6 +40,11 @@ final class BibleAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificatio
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .openVerseOfDayNotification, object: nil)
             }
+        } else if destination == StreakReminderScheduler.destination {
+            // Streak reminders open Home, where the Reading Streak card lives.
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 0])
+            }
         }
 
         completionHandler()
@@ -213,9 +218,12 @@ struct The_Bible__iOS_App: App {
                         UNUserNotificationCenter.current().setBadgeCount(0, withCompletionHandler: nil)
                         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
                         Task { await cloudKitManager.refresh() }
+                        Task { await StreakReminderScheduler.refresh() }
                     case .background:
                         // iCloudSyncCoordinator pushes its own keys when the app enters the background.
                         Task { await cloudKitManager.flushPending() }
+                        // Drops today's reminder if reading in this session met the goal.
+                        Task { await StreakReminderScheduler.refresh() }
                     default:
                         break
                     }
