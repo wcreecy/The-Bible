@@ -24,10 +24,6 @@ struct GameNavigationTitle: View {
     }
 }
 
-extension Notification.Name {
-    static let openGameStart = Notification.Name("openGameStart")
-}
-
 /// Opens a game from elsewhere in the app (for example a Today challenge).
 /// The request is held until the Games screen consumes it, because the Games tab
 /// may not have been created yet when the request is made.
@@ -38,12 +34,7 @@ enum GameLaunchRequest {
     /// Switches to the Games tab and opens the game with the given display name.
     static func open(gameName: String) {
         pendingGameName = gameName
-        NotificationCenter.default.post(
-            name: .switchToTab,
-            object: nil,
-            userInfo: ["tab": AppTab.games.rawValue]
-        )
-        NotificationCenter.default.post(name: .openGameStart, object: nil)
+        AppRouter.shared.open(.gameStart)
     }
 
     static func consume() -> String? {
@@ -206,13 +197,15 @@ struct GamesView: View {
             refreshProgress()
             openPendingGameIfNeeded()
         }
-        .onReceive(NotificationCenter.default.publisher(for: .openGameStart)) { _ in
-            openPendingGameIfNeeded()
+        .onChange(of: AppRouter.shared.latest) { _, request in
+            if request?.destination == .gameStart {
+                openPendingGameIfNeeded()
+            }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
+        .onNotification(.gameStatsExternallyUpdated) {
             refreshProgress()
         }
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+        .onNotification(UIApplication.willEnterForegroundNotification) {
             refreshProgress()
         }
     }
@@ -238,11 +231,7 @@ struct GamesView: View {
             },
             onOpenVerse: openVerse,
             onOpenFavorites: {
-                NotificationCenter.default.post(
-                    name: .switchToTab,
-                    object: nil,
-                    userInfo: ["tabName": "favorites"]
-                )
+                AppRouter.shared.open(.favorites)
             }
         )
         .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -311,14 +300,10 @@ struct GamesView: View {
     }
 
     private func openVerse(_ verse: HomeVerseRef) {
-        NotificationCenter.default.post(
-            name: .openBibleReference,
-            object: nil,
-            userInfo: [
-                "book": verse.bookName,
-                "chapter": verse.chapterNumber,
-                "verse": verse.verseNumber
-            ]
+        AppRouter.shared.openBibleReference(
+            book: verse.bookName,
+            chapter: verse.chapterNumber,
+            verse: verse.verseNumber
         )
     }
 

@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import Combine
 import Observation
 import SwiftData
 
@@ -59,7 +58,7 @@ final class WordSearchViewModel {
     // Dependencies
     private var modelContext: ModelContext
     private var favoritesFetch: () -> [Favorite]
-    private var timerSubscription: AnyCancellable?
+    @ObservationIgnored private var timerTask: Task<Void, Never>?
     private var hasRecordedCurrentRound = false
 
     private static let currentStreakKey = "wordsearchCurrentStreak"
@@ -202,14 +201,18 @@ final class WordSearchViewModel {
         pulseOn = false
         timeUp = false
         didWin = false
-        timerSubscription = Timer.publish(every: 1, on: .main, in: .common)
-            .autoconnect()
-            .sink { [weak self] _ in self?.tickTimer() }
+        timerTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(1))
+                guard !Task.isCancelled, let self else { return }
+                self.tickTimer()
+            }
+        }
     }
 
     func stopTimer() {
-        timerSubscription?.cancel()
-        timerSubscription = nil
+        timerTask?.cancel()
+        timerTask = nil
     }
 
     private func tickTimer() {

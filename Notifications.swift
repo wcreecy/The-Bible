@@ -12,32 +12,7 @@ extension Notification.Name {
     // Posted when chapter read/verse progress changes anywhere in the app.
     static let chapterProgressChanged = Notification.Name("chapterProgressChanged")
 
-    // MARK: - Navigation / tabs
-
-    // Posted to request switching to a particular tab.
-    // userInfo: ["tab": Int]
-    static let switchToTab = Notification.Name("switchToTab")
-
-    // Posted to request opening destinations now nested inside primary tabs.
-    static let openSettingsTab = Notification.Name("OpenSettingsTab")
-    static let openStats = Notification.Name("OpenStats")
-    static let openBibleSearch = Notification.Name("OpenBibleSearch")
-
-    // Posted to request resetting the Bible tab's navigation stack to the root (Books list).
-    static let resetBibleNavigation = Notification.Name("ResetBibleNavigation")
-
-    // MARK: - Deep links / routing
-
-    // Posted to request opening a specific Bible reference.
-    // userInfo: ["book": String, "chapter": Int, "verse": Int, "relayed": Bool?]
-    static let openBibleReference = Notification.Name("OpenBibleReference")
-
-    /// Relays a tapped scripture URL back to an active in-app scripture preview.
-    /// The notification object is the URL that was selected.
-    static let openScripturePreview = Notification.Name("OpenScripturePreview")
-
-    // Posted after the user opens a Verse of the Day notification.
-    static let openVerseOfDayNotification = Notification.Name("OpenVerseOfDayNotification")
+    // Navigation requests go through `AppRouter`, not notifications.
 
     // MARK: - Home layout
 

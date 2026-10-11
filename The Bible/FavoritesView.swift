@@ -116,13 +116,13 @@ struct FavoritesView: View {
         .persistenceFailureAlert(failure: $persistenceFailure)
     }
 
-    // Post a notification consumed by ContentView to switch to the Bible tab and navigate
+    // Switches to the Bible tab and opens the verse.
     private func openInBibleTab(_ fav: Favorite) {
-        NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
-            "book": fav.bookName,
-            "chapter": fav.chapterNumber,
-            "verse": fav.verseNumber
-        ])
+        AppRouter.shared.openBibleReference(
+            book: fav.bookName,
+            chapter: fav.chapterNumber,
+            verse: fav.verseNumber
+        )
     }
 
     // Delete using indices from the filtered list to ensure correct items are removed

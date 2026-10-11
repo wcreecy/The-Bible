@@ -213,7 +213,7 @@ private struct SettingsReadingProgressSection: View {
 }
 
 private struct SettingsPrivacyAndSyncLinksSection: View {
-    @EnvironmentObject private var cloudKitManager: CloudKitManager
+    @Environment(CloudKitManager.self) private var cloudKitManager
     @State private var lastSyncActivity: Date?
 
     var body: some View {
@@ -841,7 +841,7 @@ private struct SettingsDetailForm<Content: View>: View {
 
 #Preview {
     NavigationStack { SettingsView() }
-        .environmentObject(
+        .environment(
             CloudKitManager(containerIdentifier: "iCloud.creecy.bible")
         )
 }

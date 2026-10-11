@@ -191,11 +191,11 @@ enum NotesListItem: Identifiable {
 
     func openInBible() {
         guard case .scripture(let note) = self else { return }
-        NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
-            "book": note.bookName,
-            "chapter": note.chapterNumber,
-            "verse": note.verseNumber
-        ])
+        AppRouter.shared.openBibleReference(
+            book: note.bookName,
+            chapter: note.chapterNumber,
+            verse: note.verseNumber
+        )
     }
 
     func matchesSearch(_ searchText: String) -> Bool {

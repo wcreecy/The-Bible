@@ -210,14 +210,10 @@ struct SearchView: View {
             // Release the search field before replacing Home's navigation
             // hierarchy with the Bible tab.
             await Task.yield()
-            NotificationCenter.default.post(
-                name: .openBibleReference,
-                object: nil,
-                userInfo: [
-                    "book": item.bookName,
-                    "chapter": item.chapterNumber,
-                    "verse": item.verseNumber
-                ]
+            AppRouter.shared.openBibleReference(
+                book: item.bookName,
+                chapter: item.chapterNumber,
+                verse: item.verseNumber
             )
         }
     }

@@ -61,7 +61,7 @@ struct BibleStatsCard: View {
                     refreshGameTime()
                 }
             }
-            .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
+            .onNotification(.gameStatsExternallyUpdated) {
                 refreshGameTime()
             }
         }

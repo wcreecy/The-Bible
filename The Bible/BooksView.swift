@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct BooksView: View {
-    @EnvironmentObject private var coordinator: NavigationCoordinator
+    @Environment(NavigationCoordinator.self) private var coordinator
     let books: [Book]
     @State private var searchText: String = ""
     // Shared preference across devices
@@ -66,6 +66,6 @@ struct BooksView: View {
 #Preview {
     NavigationStack {
         BooksView(books: BibleData.books)
-            .environmentObject(NavigationCoordinator())
+            .environment(NavigationCoordinator())
     }
 }

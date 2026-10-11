@@ -1,12 +1,13 @@
 import Foundation
 import WidgetKit
-import Combine
+import Observation
 
 @MainActor
-final class PinnedVerseStore: ObservableObject {
-    @Published var pinnedBookName: String = ""
-    @Published var pinnedChapterNumber: Int = 0
-    @Published var pinnedVerseNumber: Int = 0
+@Observable
+final class PinnedVerseStore {
+    var pinnedBookName: String = ""
+    var pinnedChapterNumber: Int = 0
+    var pinnedVerseNumber: Int = 0
 
     private let suite = "group.bible.app"
 

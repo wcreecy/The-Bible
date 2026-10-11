@@ -4,7 +4,7 @@ import UIKit
 
 struct SettingsiCloudSection: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @EnvironmentObject private var cloudKitManager: CloudKitManager
+    @Environment(CloudKitManager.self) private var cloudKitManager
     @State private var isRefreshingCloudStatus: Bool = false
     @State private var lastSyncActivity: Date?
     @State private var statsSyncState: iCloudSyncCoordinator.SyncState = .notStarted

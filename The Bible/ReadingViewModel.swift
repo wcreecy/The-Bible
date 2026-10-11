@@ -1,45 +1,48 @@
 import Foundation
 import SwiftUI
-import Combine
+import Observation
 import SwiftData
 
 @MainActor
-final class ReadingViewModel: ObservableObject {
+@Observable
+final class ReadingViewModel {
     // Navigation/state
-    @Published var currentBook: Book
-    @Published var currentChapterIndex: Int
-    @Published var currentVerse: Int
+    var currentBook: Book
+    var currentChapterIndex: Int
+    var currentVerse: Int
 
     // Canonical book order
-    @Published var orderedBookNames: [String] = []
-    @Published var currentBookNameIndex: Int? = nil
+    var orderedBookNames: [String] = []
+    var currentBookNameIndex: Int? = nil
 
     // UI states
-    @Published var highlightedVerse: Int? = nil
-    @Published var selectedVerse: Int? = nil
-    @Published var menuVerse: Int? = nil
-    @Published var pinVerse: Int? = nil
-    @Published var topVisibleVerseID: String? = nil
+    var highlightedVerse: Int? = nil
+    var selectedVerse: Int? = nil
+    var menuVerse: Int? = nil
+    var pinVerse: Int? = nil
+    var topVisibleVerseID: String? = nil
 
     // Reading progress
-    @Published var highlightOnAppear: Bool = true
-    private lazy var verseReadingTracker = VerseReadingTracker { updates in
+    var highlightOnAppear: Bool = true
+    @ObservationIgnored private lazy var verseReadingTracker = VerseReadingTracker { updates in
         BibleStatsStore.shared.markVersesSeen(updates)
     }
     // Focus Mode shows one verse per page, so a shorter dwell is enough to count it as read.
-    private lazy var focusVerseTracker = VerseReadingTracker(dwellDuration: 3) { updates in
+    @ObservationIgnored private lazy var focusVerseTracker = VerseReadingTracker(dwellDuration: 3) { updates in
         BibleStatsStore.shared.markVersesSeen(updates)
     }
-    private(set) var isFocusModeActive = false
+    @ObservationIgnored private(set) var isFocusModeActive = false
     /// The latest Focus Mode location, applied to the reader when Focus Mode closes so
     /// the reader hidden behind it does not redraw on every page.
-    private var pendingFocusLocation: FocusVerseLocation?
+    @ObservationIgnored private var pendingFocusLocation: FocusVerseLocation?
 
     // Services
     let pinnedStore: PinnedVerseStore
     private let inactivityMonitor: InactivityMonitor
     private let inactivitySeconds: TimeInterval
 
+    // Kept free of side effects: SwiftUI may build and discard extra instances when
+    // the reader's parent redraws. Work that should happen once goes in `onAppear()`.
     init(book: Book, chapter: Chapter, startVerse: Int, pinnedStore: PinnedVerseStore, inactivitySeconds: TimeInterval = 300) {
         self.currentBook = book
         self.currentChapterIndex = max(0, chapter.number - 1)
@@ -51,9 +54,6 @@ final class ReadingViewModel: ObservableObject {
         }
 
         loadOrderedBookNames()
-        Task { @MainActor in
-            await pinnedStore.load()
-        }
     }
 
     var currentChapter: Chapter {
@@ -66,6 +66,8 @@ final class ReadingViewModel: ObservableObject {
     // MARK: - Lifecycle
 
     func onAppear() {
+        Task { await pinnedStore.load() }
+
         // Reading time
         ReadingTimeTracker.shared.start(bookName: currentBook.name, chapter: currentChapter.number)
         ReadingTimeTracker.shared.setCurrentLocation(bookName: currentBook.name, chapter: currentChapter.number)

@@ -489,14 +489,10 @@ struct ScripturePassageSheet: View {
         dismiss()
         // Navigate after the sheet starts dismissing so the reader can take over.
         DispatchQueue.main.async {
-            NotificationCenter.default.post(
-                name: .openBibleReference,
-                object: nil,
-                userInfo: [
-                    "book": destination.bookName,
-                    "chapter": destination.startChapter,
-                    "verse": destination.startVerse ?? 1
-                ]
+            AppRouter.shared.openBibleReference(
+                book: destination.bookName,
+                chapter: destination.startChapter,
+                verse: destination.startVerse ?? 1
             )
         }
     }

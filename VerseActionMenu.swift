@@ -27,6 +27,41 @@ enum VerseActionFeedback {
     case pinned
     case unpinned
     case copied
+
+    // Toast shown for each action, shared by every screen that hosts a verse menu.
+
+    var toastSymbol: String {
+        switch self {
+        case .addedFavorite: "heart.fill"
+        case .removedFavorite: "heart.slash"
+        case .bookmarked: "bookmark.fill"
+        case .removedBookmark: "bookmark"
+        case .pinned: "pin.fill"
+        case .unpinned: "pin"
+        case .copied: "doc.on.doc"
+        }
+    }
+
+    var toastText: String {
+        switch self {
+        case .addedFavorite: String(localized: "Added to Favorites")
+        case .removedFavorite: String(localized: "Removed Favorite")
+        case .bookmarked: String(localized: "Bookmarked")
+        case .removedBookmark: String(localized: "Removed Bookmark")
+        case .pinned: String(localized: "Pinned to Widget")
+        case .unpinned: String(localized: "Unpinned from Widget")
+        case .copied: String(localized: "Copied to Clipboard")
+        }
+    }
+
+    var toastTint: Color {
+        switch self {
+        case .addedFavorite: .pink
+        case .removedFavorite, .removedBookmark: .secondary
+        case .bookmarked, .copied: .accentColor
+        case .pinned, .unpinned: .red
+        }
+    }
 }
 
 @MainActor
@@ -35,7 +70,7 @@ struct VerseActionMenu: View {
     @Query private var favorites: [Favorite]
     @Query private var notes: [VerseNote]
     @Query private var bookmarks: [Bookmark]
-    @StateObject private var pinnedStore = PinnedVerseStore()
+    @State private var pinnedStore = PinnedVerseStore()
     @State private var persistenceFailure: PersistenceFailure?
     @State private var isShowingNoteEditor = false
 

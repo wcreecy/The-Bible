@@ -199,19 +199,8 @@ struct BibleSplitView: View {
                 verseNumber: location.verseNumber
             ))
         }
-        // ContentView is the single router for app-wide requests; it relays this
-        // notification after switching tabs, so only the relayed copy is handled here.
-        .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { note in
-            guard note.userInfo?["relayed"] as? Bool == true,
-                  let bookName = note.userInfo?["book"] as? String,
-                  let chapter = note.userInfo?["chapter"] as? Int,
-                  let verse = note.userInfo?["verse"] as? Int else { return }
-            selectBookForReader(named: bookName)
-            DispatchQueue.main.async {
-                detailPath = NavigationPath()
-                detailPath.append(ReadingRoute(bookName: bookName, chapterNumber: chapter, verseNumber: verse))
-            }
-        }
+        // App-wide requests to open a verse arrive through `initialReaderLocation`,
+        // which ContentView sets when it handles `AppRouter` requests.
     }
 
     @ViewBuilder

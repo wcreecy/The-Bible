@@ -6,7 +6,7 @@ struct GameScoreboardCard: View {
         case dashboard
     }
 
-    @ObservedObject private var stats = GameStats.shared
+    private var stats = GameStats.shared
 
     let currentCorrect: Int
     let currentAnswered: Int

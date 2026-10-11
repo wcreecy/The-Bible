@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import Combine
 import Observation
 
 @MainActor
@@ -80,7 +79,7 @@ final class WhoAmIGameViewModel {
 
     // Timer
     var remainingSeconds: Int = 0
-    private var timerCancellable: AnyCancellable? = nil
+    @ObservationIgnored private var timerTask: Task<Void, Never>?
     var pulseOn: Bool = false
 
     // Scoring
@@ -328,29 +327,35 @@ final class WhoAmIGameViewModel {
     private func startTimer() {
         stopTimer()
         guard remainingSeconds > 0 else { return }
-        timerCancellable = Timer.publish(every: 1, on: .main, in: .common)
-            .autoconnect()
-            .sink { [weak self] _ in
-                guard let self else { return }
-                guard !self.roundOver else { return }
-                if self.remainingSeconds > 0 {
-                    self.remainingSeconds -= 1
-                    if self.remainingSeconds <= 5 {
-                        withAnimation(.easeInOut(duration: 0.25)) { self.pulseOn.toggle() }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                            self.pulseOn = false
-                        }
-                    }
-                }
-                if self.remainingSeconds == 0 {
-                    self.skipOrTimeout()
+        timerTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(1))
+                guard !Task.isCancelled, let self else { return }
+                self.tickTimer()
+            }
+        }
+    }
+
+    private func tickTimer() {
+        guard !roundOver else { return }
+        if remainingSeconds > 0 {
+            remainingSeconds -= 1
+            if remainingSeconds <= 5 {
+                withAnimation(.easeInOut(duration: 0.25)) { pulseOn.toggle() }
+                Task { [weak self] in
+                    try? await Task.sleep(for: .milliseconds(250))
+                    self?.pulseOn = false
                 }
             }
+        }
+        if remainingSeconds == 0 {
+            skipOrTimeout()
+        }
     }
 
     private func stopTimer() {
-        timerCancellable?.cancel()
-        timerCancellable = nil
+        timerTask?.cancel()
+        timerTask = nil
         pulseOn = false
     }
 

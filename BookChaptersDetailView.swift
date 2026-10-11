@@ -137,12 +137,16 @@ struct BookChaptersDetailView: View {
             }
         }
         .onAppear {
+            // Also catches progress changes made while this screen was hidden.
+            refreshID = UUID()
             visited = BibleStatsStore.shared.loadVisitedChapters()
         }
-        .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { _ in
-            visited = BibleStatsStore.shared.loadVisitedChapters()
+        .onChange(of: AppRouter.shared.latest) { _, request in
+            if case .bibleReference = request?.destination {
+                visited = BibleStatsStore.shared.loadVisitedChapters()
+            }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .chapterProgressChanged)) { _ in
+        .onNotification(.chapterProgressChanged) {
             refreshID = UUID()
             visited = BibleStatsStore.shared.loadVisitedChapters()
         }

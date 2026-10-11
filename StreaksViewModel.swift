@@ -1,5 +1,5 @@
-import Combine
 import Foundation
+import Observation
 
 enum ReadingWeekStatus {
     case completed
@@ -35,7 +35,8 @@ enum StreakMilestone {
 }
 
 @MainActor
-final class StreaksViewModel: ObservableObject {
+@Observable
+final class StreaksViewModel {
     private var calendar: Calendar {
         var calendar = Calendar.autoupdatingCurrent
         calendar.timeZone = .autoupdatingCurrent
@@ -43,15 +44,13 @@ final class StreaksViewModel: ObservableObject {
         return calendar
     }
 
-    private var cancellable: AnyCancellable?
+    /// Bumped when reading stats change; the card reads it so it redraws.
+    private(set) var revision = 0
 
     init() {
-        cancellable = NotificationCenter.default
-            .publisher(for: .bibleStatsExternallyUpdated)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
+        NotificationCenter.observe(.bibleStatsExternallyUpdated, for: self) { model in
+            model.revision &+= 1
+        }
     }
 
     func currentWeekDates(relativeTo date: Date = Date()) -> [Date] {

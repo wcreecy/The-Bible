@@ -5,7 +5,6 @@
 //  Shows the Books list on launch.
 //
 
-import Combine
 import CoreData
 import SwiftData
 import SwiftUI
@@ -16,9 +15,9 @@ struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.modelContext) private var modelContext
     // Separate coordinators per tab to avoid path leakage/corruption
-    @StateObject private var homeCoordinator = NavigationCoordinator()
-    @StateObject private var bibleCoordinator = NavigationCoordinator()
-    @StateObject private var bibleStore = BibleStore.shared
+    @State private var homeCoordinator = NavigationCoordinator()
+    @State private var bibleCoordinator = NavigationCoordinator()
+    private var bibleStore = BibleStore.shared
     @State private var notesPath = NavigationPath()
     @State private var gamesPath = NavigationPath()
     @State private var morePath: [MoreDestination] = []
@@ -49,6 +48,11 @@ struct ContentView: View {
     @State private var previousTab: AppTab = .home
     @State private var didOpenLaunchBible = false
 
+    private let router = AppRouter.shared
+    /// The last router request performed, so none is handled twice.
+    @State private var handledRequestID: UUID?
+    @State private var deduplicationTask: Task<Void, Never>?
+
     init() {
         let launchTab = LaunchTabPreference.currentDeviceSelection()
         _selectedTab = State(initialValue: launchTab)
@@ -61,7 +65,7 @@ struct ContentView: View {
                 HomeView()
                     .appDestinations(coordinator: homeCoordinator)
             }
-            .environmentObject(homeCoordinator)
+            .environment(homeCoordinator)
             .tabItem { Label("Home", systemImage: "house") }
             .tag(AppTab.home)
 
@@ -77,7 +81,7 @@ struct ContentView: View {
                     BooksView(books: bibleStore.books)
                         .appDestinations(coordinator: bibleCoordinator)
                 }
-                .environmentObject(bibleCoordinator)
+                .environment(bibleCoordinator)
                 .tabItem { Label("Bible", systemImage: "book") }
                 .tag(AppTab.bible)
             }
@@ -123,36 +127,9 @@ struct ContentView: View {
             handleSelectedTabChange(from: oldValue, to: newValue)
         }
         .onOpenURL { url in handleOpenURL(url) }
-        .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { note in
-            handleOpenBibleReference(note)
-        }
-        .onReceive(
-            NotificationCenter.default.publisher(for: .switchToTab)
-                .merge(with: NotificationCenter.default.publisher(for: .openVerseOfDayNotification))
-        ) { note in
-            handleTabNotification(note)
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .openSettingsTab)) { _ in
-            selectedTab = .more
-            DispatchQueue.main.async {
-                morePath = [.settings]
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .openStats)) { _ in
-            selectedTab = .more
-            DispatchQueue.main.async {
-                morePath = [.stats]
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .openBibleSearch)) { note in
-            handleOpenBibleSearch(note)
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .resetBibleNavigation)) { _ in
-            // Ensure Bible tab is visible, then reset the Bible nav stack to Books list
-            selectedTab = .bible
-            DispatchQueue.main.async {
-                bibleCoordinator.reset()
-            }
+        // Every app-wide navigation request is performed here.
+        .onChange(of: router.latest) { _, request in
+            if let request { handle(request) }
         }
         .onChange(of: scenePhase) { _, newValue in
             handleScenePhaseChange(newValue)
@@ -162,10 +139,17 @@ struct ContentView: View {
         }
         // CloudKit imports can deliver a favorite or note for a verse that already has
         // one from this device; resolve those duplicates after each import settles.
-        .onReceive(
-            NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)
-                .debounce(for: .seconds(2), scheduler: RunLoop.main)
-        ) { _ in
+        .onNotification(.NSPersistentStoreRemoteChange) {
+            scheduleDeduplication()
+        }
+    }
+
+    /// Runs the deduplicator 2 seconds after the last remote change in a burst.
+    private func scheduleDeduplication() {
+        deduplicationTask?.cancel()
+        deduplicationTask = Task {
+            try? await Task.sleep(for: .seconds(2))
+            guard !Task.isCancelled else { return }
             SwiftDataDeduplicator.run(in: modelContext)
         }
     }
@@ -213,6 +197,50 @@ struct ContentView: View {
         // Initialize previousTab at launch
         previousTab = selectedTab
         handlePendingVerseOfDayNotification()
+
+        // A request made before this view existed (for example a notification tapped
+        // at launch) is still waiting in the router.
+        if let pending = router.latest {
+            handle(pending)
+        }
+    }
+
+    // MARK: - Routing
+
+    private func handle(_ request: AppRouter.Request) {
+        guard request.id != handledRequestID else { return }
+        handledRequestID = request.id
+
+        switch request.destination {
+        case .tab(let tab):
+            selectedTab = tab
+        case .favorites:
+            showMore(.favorites)
+        case .settings:
+            showMore(.settings)
+        case .stats(let page):
+            UserDefaults.standard.set(page.rawValue, forKey: "statsSelectedMode")
+            showMore(.stats)
+        case .bibleReference(let location):
+            openBibleReference(location)
+        case .bibleSearch:
+            openBibleSearch()
+        case .verseOfDayNotification:
+            handlePendingVerseOfDayNotification()
+        case .gameStart:
+            // GamesView opens the requested game once it sees this request.
+            selectedTab = .games
+        case .scripturePreview:
+            // Shown by the open note editor.
+            break
+        }
+    }
+
+    private func showMore(_ destination: MoreDestination) {
+        selectedTab = .more
+        DispatchQueue.main.async {
+            morePath = [destination]
+        }
     }
 
     private func handleSelectedTabChange(from oldValue: AppTab, to newValue: AppTab) {
@@ -264,25 +292,13 @@ struct ContentView: View {
             let verseStr = params["verse"], let verse = Int(verseStr)
         else { return }
 
-        // Forward to existing in-app router via notification
-        NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
-            "book": book,
-            "chapter": chapter,
-            "verse": verse
-        ])
+        router.openBibleReference(book: book, chapter: chapter, verse: verse)
     }
 
-    private func handleOpenBibleReference(_ note: Notification) {
-        // Avoid handling the relayed copy we post for iPad; let BibleSplitView consume that
-        if let relayed = note.userInfo?["relayed"] as? Bool, relayed {
-            return
-        }
-
-        guard
-            let bookName = note.userInfo?["book"] as? String,
-            let chapterNum = note.userInfo?["chapter"] as? Int,
-            let verseNum = note.userInfo?["verse"] as? Int
-        else { return }
+    private func openBibleReference(_ location: BibleReaderLocation) {
+        let bookName = location.bookName
+        let chapterNum = location.chapterNumber
+        let verseNum = location.verseNumber
 
         if usesWideLayout {
             // Store the route in ContentView so a newly created split view
@@ -349,29 +365,6 @@ struct ContentView: View {
         gamesPath = NavigationPath()
     }
 
-    private func handleTabNotification(_ notification: Notification) {
-        if notification.name == .openVerseOfDayNotification {
-            handlePendingVerseOfDayNotification()
-            return
-        }
-
-        if let tabIndex = notification.userInfo?["tab"] as? Int,
-           let tab = AppTab(rawValue: tabIndex) {
-            selectedTab = tab
-            return
-        }
-
-        guard let name = notification.userInfo?["tabName"] as? String,
-              let tab = AppTab.from(name: name) else { return }
-
-        selectedTab = tab
-        if name.lowercased() == "favorites" {
-            DispatchQueue.main.async {
-                morePath = [.favorites]
-            }
-        }
-    }
-
     private func openBibleReaderAtLaunchIfNeeded() {
         guard selectedTab == .bible, !didOpenLaunchBible else { return }
         didOpenLaunchBible = true
@@ -425,11 +418,7 @@ struct ContentView: View {
         }
     }
 
-    private func handleOpenBibleSearch(_ notification: Notification) {
-        if let relayed = notification.userInfo?["relayed"] as? Bool, relayed {
-            return
-        }
-
+    private func openBibleSearch() {
         selectedTab = .bible
         if usesWideLayout {
             bibleSearchRequestID &+= 1
@@ -462,13 +451,7 @@ struct ContentView: View {
             return
         }
 
-        DispatchQueue.main.async {
-            NotificationCenter.default.post(
-                name: .openBibleReference,
-                object: nil,
-                userInfo: ["book": book, "chapter": chapter, "verse": verse]
-            )
-        }
+        openBibleReference(BibleReaderLocation(bookName: book, chapterNumber: chapter, verseNumber: verse))
     }
 
     // MARK: - Game time

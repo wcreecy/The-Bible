@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import Combine
 import UserNotifications
 import AudioToolbox
 import UIKit
@@ -128,7 +127,7 @@ private struct HomeDashboardColumns<Header: View, Tip: View, Main: View, Sidebar
 struct HomeView: View {
     @State private var showPrayerStudySheet: Bool = false
 
-    @StateObject private var timerController = PrayerTimerController()
+    private var timerController = PrayerTimerController.shared
 
     @AppStorage("verseOfDayScope") private var verseScopeRaw: String = "whole"
     @AppStorage("verseOfDaySpecificBook") private var verseSpecificBook: String = ""
@@ -139,7 +138,7 @@ struct HomeView: View {
     // Finish alert presented by the controller
     @State private var finishHapticTimer: Timer? = nil
 
-    @EnvironmentObject private var coordinator: NavigationCoordinator
+    @Environment(NavigationCoordinator.self) private var coordinator
 
     @State private var showCopyToast: Bool = false
     @State private var verseActionToastSymbol: String = "doc.on.doc"
@@ -176,7 +175,7 @@ struct HomeView: View {
     @AppStorage("votdRefresh2Minute") private var votdRefresh2Minute: Int = 0
 
     // Bible store for async/on-demand loading
-    @StateObject private var bibleStore = BibleStore.shared
+    private var bibleStore = BibleStore.shared
 
     private func handleOpenPendingVerse() {
         guard let shared = sharedDefaults else { return }
@@ -194,15 +193,11 @@ struct HomeView: View {
     }
 
     private func openInBibleTab(_ verse: HomeVerseRef) {
-        NotificationCenter.default.post(
-            name: .openBibleReference,
-            object: nil,
-            userInfo: [
-                "book": verse.bookName,
-                "chapter": verse.chapterNumber,
-                "verse": verse.verseNumber
-            ]
-        )
+        openBibleReference(book: verse.bookName, chapter: verse.chapterNumber, verse: verse.verseNumber)
+    }
+
+    private func openBibleReference(book: String, chapter: Int, verse: Int) {
+        AppRouter.shared.openBibleReference(book: book, chapter: chapter, verse: verse)
     }
 
     // MARK: - Split cards to reduce type-checking complexity
@@ -219,8 +214,7 @@ struct HomeView: View {
     }
 
     private func openReadingStats() {
-        UserDefaults.standard.set("Reading Stats", forKey: "statsSelectedMode")
-        NotificationCenter.default.post(name: .openStats, object: nil)
+        AppRouter.shared.open(.stats(.reading))
     }
 
     /// Whether the Reading Streak card is on screen, so the header can skip repeating it.
@@ -292,16 +286,8 @@ struct HomeView: View {
         loadHomeLayout()
     }
 
-    // Helper to switch tabs via enum (with backward-compatible Int payload)
     private func switchTo(_ tab: AppTab) {
-        NotificationCenter.default.post(
-            name: .switchToTab,
-            object: nil,
-            userInfo: [
-                "tab": tab.rawValue,    // legacy Int listeners
-                "tabName": tab.name     // new enum-aware listeners
-            ]
-        )
+        AppRouter.shared.open(.tab(tab))
     }
 
     @ViewBuilder
@@ -335,7 +321,7 @@ struct HomeView: View {
                 focus: focusVM,
                 liveActivitiesEnabled: liveActivitiesEnabled,
                 onEnableLiveActivities: {
-                    NotificationCenter.default.post(name: .openSettingsTab, object: nil)
+                    AppRouter.shared.open(.settings)
                 }
             )
         case .timer:
@@ -366,28 +352,12 @@ struct HomeView: View {
                 usesCompactLayout: !isPad,
                 onOpenReference: { _ in openContinueReading() },
                 onStartReading: {
-                    NotificationCenter.default.post(
-                        name: .openBibleReference,
-                        object: nil,
-                        userInfo: [
-                            "book": "Genesis",
-                            "chapter": 1,
-                            "verse": 1
-                        ]
-                    )
+                    openBibleReference(book: "Genesis", chapter: 1, verse: 1)
                 }
             )
         case .search:
             SearchHomeCard(onNeedsVisibility: { searchScrollRequest += 1 }) { result in
-                NotificationCenter.default.post(
-                    name: .openBibleReference,
-                    object: nil,
-                    userInfo: [
-                        "book": result.bookName,
-                        "chapter": result.chapterNumber,
-                        "verse": result.verseNumber
-                    ]
-                )
+                openBibleReference(book: result.bookName, chapter: result.chapterNumber, verse: result.verseNumber)
             }
             .id(HomeCardID.search)
         case .today:
@@ -398,13 +368,9 @@ struct HomeView: View {
             BibleStatsCard(
                 bibleVM: bibleVM,
                 scenePhase: scenePhase,
-                onOpenReadingStats: {
-                    UserDefaults.standard.set("Reading Stats", forKey: "statsSelectedMode")
-                    NotificationCenter.default.post(name: .openStats, object: nil)
-                },
+                onOpenReadingStats: openReadingStats,
                 onOpenGameStats: {
-                    UserDefaults.standard.set("Game Stats", forKey: "statsSelectedMode")
-                    NotificationCenter.default.post(name: .openStats, object: nil)
+                    AppRouter.shared.open(.stats(.games))
                 }
             )
         }
@@ -438,13 +404,7 @@ struct HomeView: View {
                 coordinator.push(.search)
             },
             onFavorites: {
-                DispatchQueue.main.async {
-                    NotificationCenter.default.post(
-                        name: .switchToTab,
-                        object: nil,
-                        userInfo: ["tabName": "favorites"]
-                    )
-                }
+                AppRouter.shared.open(.favorites)
             },
             onOpenGoal: openReadingStats
         )
@@ -641,25 +601,9 @@ struct HomeView: View {
 
     private func openContinueReading() {
         if let bookmark {
-            NotificationCenter.default.post(
-                name: .openBibleReference,
-                object: nil,
-                userInfo: [
-                    "book": bookmark.bookName,
-                    "chapter": bookmark.chapterNumber,
-                    "verse": bookmark.verseNumber
-                ]
-            )
+            openBibleReference(book: bookmark.bookName, chapter: bookmark.chapterNumber, verse: bookmark.verseNumber)
         } else {
-            NotificationCenter.default.post(
-                name: .openBibleReference,
-                object: nil,
-                userInfo: [
-                    "book": "Genesis",
-                    "chapter": 1,
-                    "verse": 1
-                ]
-            )
+            openBibleReference(book: "Genesis", chapter: 1, verse: 1)
         }
     }
 
@@ -765,12 +709,8 @@ struct HomeView: View {
             bibleVM.refresh()
 
         }
-        .onReceive(NotificationCenter.default.publisher(for: .homeLayoutChanged)) { _ in
+        .onNotification(.homeLayoutChanged) {
             loadHomeLayout()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .resetPrayerTimer)) { _ in
-            // A data reset shouldn't offer to bring the timer back.
-            timerController.stop(allowsUndo: false)
         }
 
         .onChange(of: scenePhase) { _, newPhase in
@@ -801,7 +741,7 @@ struct HomeView: View {
             })
             .presentationDetents([.medium, .large])
         }
-        .alert(PrayerTimerController.finishedTitle, isPresented: $timerController.showFinishedAlert) {
+        .alert(PrayerTimerController.finishedTitle, isPresented: Bindable(timerController).showFinishedAlert) {
             Button("Dismiss", role: .cancel) {
                 timerController.stopFinishAlerts()
                 timerController.showFinishedAlert = false
@@ -835,36 +775,9 @@ struct HomeView: View {
     }
 
     private func handleVerseActionFeedback(_ feedback: VerseActionFeedback) {
-        switch feedback {
-        case .addedFavorite:
-            verseActionToastSymbol = "heart.fill"
-            verseActionToastText = "Added to Favorites"
-            verseActionToastTint = .pink
-        case .removedFavorite:
-            verseActionToastSymbol = "heart.slash"
-            verseActionToastText = "Removed Favorite"
-            verseActionToastTint = .secondary
-        case .bookmarked:
-            verseActionToastSymbol = "bookmark.fill"
-            verseActionToastText = "Bookmarked"
-            verseActionToastTint = .accentColor
-        case .removedBookmark:
-            verseActionToastSymbol = "bookmark"
-            verseActionToastText = "Removed Bookmark"
-            verseActionToastTint = .secondary
-        case .pinned:
-            verseActionToastSymbol = "pin.fill"
-            verseActionToastText = "Pinned to Widget"
-            verseActionToastTint = .red
-        case .unpinned:
-            verseActionToastSymbol = "pin"
-            verseActionToastText = "Unpinned from Widget"
-            verseActionToastTint = .red
-        case .copied:
-            verseActionToastSymbol = "doc.on.doc"
-            verseActionToastText = "Copied to Clipboard"
-            verseActionToastTint = .accentColor
-        }
+        verseActionToastSymbol = feedback.toastSymbol
+        verseActionToastText = feedback.toastText
+        verseActionToastTint = feedback.toastTint
 
         withAnimation(.spring()) {
             showCopyToast = true

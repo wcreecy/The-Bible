@@ -244,6 +244,6 @@ struct HomeLayoutStore {
     // MARK: - Notification
 
     private func notifyChanged() {
-        NotificationCenter.default.post(name: .init("homeLayoutChanged"), object: nil)
+        NotificationCenter.default.post(name: .homeLayoutChanged, object: nil)
     }
 }

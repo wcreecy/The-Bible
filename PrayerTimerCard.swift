@@ -285,7 +285,9 @@ private struct PrayerStatsSummaryRow: View {
         let summary = PrayerStatsStore.shared.summary()
 
         content(summary)
-            .onReceive(NotificationCenter.default.publisher(for: .prayerStatsUpdated)) { _ in
+            // Refresh on appear too, in case stats changed while Home was hidden.
+            .onAppear { revision += 1 }
+            .onNotification(.prayerStatsUpdated) {
                 revision += 1
             }
     }

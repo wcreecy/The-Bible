@@ -31,6 +31,17 @@ final class AppRouter {
         case scripturePreview(URL)
         /// Starts the game stored in `GameLaunchRequest`.
         case gameStart
+
+        /// The tab this destination lives in, or nil when it doesn't change tabs.
+        var targetTab: AppTab? {
+            switch self {
+            case .tab(let tab): tab
+            case .favorites, .settings, .stats: .more
+            case .bibleReference, .bibleSearch: .bible
+            case .gameStart: .games
+            case .verseOfDayNotification, .scripturePreview: nil
+            }
+        }
     }
 
     /// One request. Each has its own ID, so asking for the same destination twice

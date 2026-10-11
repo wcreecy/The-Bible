@@ -5,7 +5,7 @@ import UIKit
 struct VersesView: View {
     let book: Book
     let chapter: Chapter
-    @EnvironmentObject private var coordinator: NavigationCoordinator
+    @Environment(NavigationCoordinator.self) private var coordinator
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage(RedLetterText.suppliedWordsInItalicsKey) private var italicizesSuppliedWords = false
 
@@ -117,36 +117,9 @@ struct VersesView: View {
     }
 
     private func handleVerseActionFeedback(_ feedback: VerseActionFeedback) {
-        switch feedback {
-        case .addedFavorite:
-            toastSymbol = "heart.fill"
-            toastTint = .pink
-            toastText = "Added to Favorites"
-        case .removedFavorite:
-            toastSymbol = "heart.slash"
-            toastTint = .secondary
-            toastText = "Removed Favorite"
-        case .bookmarked:
-            toastSymbol = "bookmark.fill"
-            toastTint = .accentColor
-            toastText = "Bookmarked"
-        case .removedBookmark:
-            toastSymbol = "bookmark"
-            toastTint = .secondary
-            toastText = "Removed Bookmark"
-        case .pinned:
-            toastSymbol = "pin.fill"
-            toastTint = .red
-            toastText = "Pinned to Widget"
-        case .unpinned:
-            toastSymbol = "pin"
-            toastTint = .red
-            toastText = "Unpinned from Widget"
-        case .copied:
-            toastSymbol = "doc.on.doc"
-            toastTint = .accentColor
-            toastText = "Copied to Clipboard"
-        }
+        toastSymbol = feedback.toastSymbol
+        toastTint = feedback.toastTint
+        toastText = feedback.toastText
         withAnimation(.spring()) { showToast = true }
     }
 
@@ -155,6 +128,6 @@ struct VersesView: View {
 #Preview {
     NavigationStack {
         VersesView(book: BibleData.books.first!, chapter: BibleData.books.first!.chapters.first!)
-            .environmentObject(NavigationCoordinator())
+            .environment(NavigationCoordinator())
     }
 }

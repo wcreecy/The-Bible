@@ -56,15 +56,15 @@ struct VersesChecklistView: View {
             refreshSeen()
         }
         // Refresh when returning from Bible tab via deep link/open event
-        .onReceive(NotificationCenter.default.publisher(for: .openBibleReference)) { _ in
-            refreshSeen()
+        .onChange(of: AppRouter.shared.latest) { _, request in
+            if case .bibleReference = request?.destination { refreshSeen() }
         }
         // Also refresh when app returns to foreground (user may have read while this view was not visible)
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+        .onNotification(UIApplication.willEnterForegroundNotification) {
             refreshSeen()
         }
         // Refresh when stats merge from iCloud on another device
-        .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
+        .onNotification(.bibleStatsExternallyUpdated) {
             refreshSeen()
         }
     }

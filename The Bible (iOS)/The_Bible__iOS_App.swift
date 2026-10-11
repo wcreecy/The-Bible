@@ -10,7 +10,6 @@ import SwiftData
 import UIKit
 import UserNotifications
 import CloudKit
-import Combine
 
 final class BibleAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     static let pendingVerseOfDayNotificationKey = "pendingVerseOfDayNotification"
@@ -37,13 +36,13 @@ final class BibleAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificatio
 
         if isVerseOfDay {
             UserDefaults.standard.set(true, forKey: Self.pendingVerseOfDayNotificationKey)
-            DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .openVerseOfDayNotification, object: nil)
+            Task { @MainActor in
+                AppRouter.shared.open(.verseOfDayNotification)
             }
         } else if destination == StreakReminderScheduler.destination {
             // Streak reminders open Home, where the Reading Streak card lives.
-            DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 0])
+            Task { @MainActor in
+                AppRouter.shared.open(.tab(.home))
             }
         }
 
@@ -197,12 +196,12 @@ struct The_Bible__iOS_App: App {
     }()
 
     // MARK: - CloudKit
-    @StateObject private var cloudKitManager = CloudKitManager(containerIdentifier: "iCloud.creecy.bible")
+    @State private var cloudKitManager = CloudKitManager(containerIdentifier: "iCloud.creecy.bible")
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(cloudKitManager)
+                .environment(cloudKitManager)
                 .task {
                     await cloudKitManager.prepare()
                     // iCloud key-value sync is started by ContentView.
@@ -234,17 +233,13 @@ struct The_Bible__iOS_App: App {
                 // Handle widget deep links here too, and broadcast a tab switch.
                 .onOpenURL { url in
                     if BibleReferenceLinker.parse(url: url) != nil {
-                        NotificationCenter.default.post(
-                            name: .openScripturePreview,
-                            object: url
-                        )
+                        AppRouter.shared.open(.scripturePreview(url))
                         return
                     }
                     guard url.scheme?.lowercased() == "thebible" else { return }
                     let host = url.host?.lowercased() ?? ""
                     if host == "home" {
-                        // Tell ContentView to switch to Home (tag 0)
-                        NotificationCenter.default.post(name: .switchToTab, object: nil, userInfo: ["tab": 0])
+                        AppRouter.shared.open(.tab(.home))
                         return
                     }
                     // Let ContentView handle other deep links (like thebible://open?...).

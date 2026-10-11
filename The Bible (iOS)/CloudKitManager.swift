@@ -1,10 +1,11 @@
 import Foundation
-import Combine
+import Observation
 import CloudKit
 
 // MARK: - Simple CloudKit manager for availability and basic access
 @MainActor
-public final class CloudKitManager: ObservableObject {
+@Observable
+public final class CloudKitManager {
     public enum AccountState: CustomStringConvertible {
         case unknown
         case available
@@ -23,8 +24,8 @@ public final class CloudKitManager: ObservableObject {
         }
     }
 
-    @Published public private(set) var accountState: AccountState = .unknown
-    @Published public private(set) var userRecordID: CKRecord.ID?
+    public private(set) var accountState: AccountState = .unknown
+    public private(set) var userRecordID: CKRecord.ID?
 
     private let container: CKContainer
     private let privateDB: CKDatabase
@@ -32,10 +33,10 @@ public final class CloudKitManager: ObservableObject {
     private let publicDB: CKDatabase
 
     // Throttling/coalescing
-    private var lastRefreshAt: Date?
+    @ObservationIgnored private var lastRefreshAt: Date?
     private let minRefreshInterval: TimeInterval = 60 // seconds
-    private var refreshTask: Task<Void, Never>?
-    private var accountChangedObserver: NSObjectProtocol?
+    @ObservationIgnored private var refreshTask: Task<Void, Never>?
+    @ObservationIgnored private var accountChangedObserver: NSObjectProtocol?
 
     public init(containerIdentifier: String) {
         self.container = CKContainer(identifier: containerIdentifier)

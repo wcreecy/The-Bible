@@ -4,7 +4,7 @@ import Charts
 // MARK: - Split cards (Overview + Player Stat Sheet)
 
 struct GamesOverviewCardView: View {
-    @ObservedObject private var stats = GameStats.shared
+    private var stats = GameStats.shared
     @State private var version: Int = 0
 
     @Environment(\.horizontalSizeClass) private var hSizeClass
@@ -978,7 +978,7 @@ struct GamesOverviewCardView: View {
                 selectedGame = "All Games"
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .gameStatsExternallyUpdated)) { _ in
+        .onNotification(.gameStatsExternallyUpdated) {
             version &+= 1
         }
         .sheet(isPresented: $showGenreDrill) {

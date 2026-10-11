@@ -1,5 +1,4 @@
 import Foundation
-import Combine
 import Observation
 
 @MainActor
@@ -61,15 +60,11 @@ final class HomeBibleStatsViewModel {
     var topBooksScopeLabel: String { snapshot.topBooksScopeLabel }
     var lastSessionSeconds: Int { snapshot.lastSessionSeconds }
 
-    private var externalUpdateCancellable: AnyCancellable?
-
     init() {
         // Refresh on incoming iCloud merges or local writes
-        externalUpdateCancellable = NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.refresh()
-            }
+        NotificationCenter.observe(.bibleStatsExternallyUpdated, for: self) { model in
+            model.refresh()
+        }
     }
 
     func refresh(now: Date = Date()) {

@@ -2,7 +2,7 @@ import SwiftUI
 import Charts
 
 struct AllGamesComparisonCardView: View {
-    @ObservedObject private var stats = GameStats.shared
+    private var stats = GameStats.shared
 
     // Sort options for the comparison
     fileprivate enum Sort: String, CaseIterable, Identifiable {

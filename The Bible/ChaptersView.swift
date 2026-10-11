@@ -80,7 +80,7 @@ struct ChaptersView: View {
         .navigationTitle(book.name == "Genesis" ? "" : book.name)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: refreshCompletedChapters)
-        .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
+        .onNotification(.bibleStatsExternallyUpdated) {
             refreshCompletedChapters()
         }
     }

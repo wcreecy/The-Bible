@@ -563,27 +563,7 @@ struct HomeBibleReaderCard: View {
         let bookName = book.name
         let chapterNumber = chapterNumber
         Haptics.selection()
-        NotificationCenter.default.post(
-            name: .switchToTab,
-            object: nil,
-            userInfo: [
-                "tab": AppTab.bible.rawValue,
-                "tabName": AppTab.bible.name
-            ]
-        )
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            NotificationCenter.default.post(
-                name: .openBibleReference,
-                object: nil,
-                userInfo: [
-                    "book": bookName,
-                    "chapter": chapterNumber,
-                    "verse": verseNumber,
-                    "relayed": true
-                ]
-            )
-        }
+        AppRouter.shared.openBibleReference(book: bookName, chapter: chapterNumber, verse: verseNumber)
     }
 
     // MARK: - Sizing

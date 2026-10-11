@@ -6,13 +6,15 @@ struct StreaksCard: View {
     /// Opens the reader at the bookmarked verse.
     var onReadNow: () -> Void = {}
 
-    @StateObject private var vm = StreaksViewModel()
+    @State private var vm = StreaksViewModel()
     @State private var isDailyGoalEditorPresented = false
     @State private var celebratingMilestone: Int?
     /// The highest milestone already celebrated for the current streak.
     @AppStorage("streakCelebratedMilestone") private var celebratedMilestone = 0
 
     var body: some View {
+        // Reading this redraws the card when reading stats change.
+        let _ = vm.revision
         // One pass over reading history per render; everything below reads from it.
         let summary = StreakTracker.summary()
         let weekDates = vm.currentWeekDates()

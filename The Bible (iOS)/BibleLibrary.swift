@@ -1,14 +1,15 @@
-import Combine
 import Foundation
+import Observation
 
 @MainActor
-final class BibleStore: ObservableObject {
+@Observable
+final class BibleStore {
     static let shared = BibleStore()
 
-    @Published private(set) var books: [Book] = []
-    @Published private(set) var isReady = false
+    private(set) var books: [Book] = []
+    private(set) var isReady = false
 
-    private var loadTask: Task<Void, Never>?
+    @ObservationIgnored private var loadTask: Task<Void, Never>?
 
     private init() {}
 

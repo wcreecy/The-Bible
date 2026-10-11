@@ -391,8 +391,8 @@ private struct RichNoteEditing: ViewModifier {
             .onDisappear {
                 referenceLinkTask?.cancel()
             }
-            .onReceive(NotificationCenter.default.publisher(for: .openScripturePreview)) { notification in
-                guard let url = notification.object as? URL,
+            .onChange(of: AppRouter.shared.latest) { _, request in
+                guard case .scripturePreview(let url) = request?.destination,
                       let reference = BibleReferenceLinker.parse(url: url) else { return }
                 selectedScriptureReference = reference
             }

@@ -1,23 +1,27 @@
 import Foundation
-import Combine
+import Observation
 import UserNotifications
 import ActivityKit
 import AudioToolbox
 import SwiftUI
 import HealthKit
 
+/// The app's single prayer timer. Shared because restoring a timer has side effects
+/// (resuming the ticker, finishing an expired session), which must happen only once.
 @MainActor
-final class PrayerTimerController: ObservableObject {
+@Observable
+final class PrayerTimerController {
+    static let shared = PrayerTimerController()
 
-    // MARK: - Published UI State
+    // MARK: - UI State
 
-    @Published private(set) var isRunning: Bool = false
-    @Published private(set) var isPaused: Bool = false
-    @Published private(set) var remainingSeconds: Int = 0
-    @Published private(set) var totalSeconds: Int = 0
-    @Published var showFinishedAlert: Bool = false
+    private(set) var isRunning: Bool = false
+    private(set) var isPaused: Bool = false
+    private(set) var remainingSeconds: Int = 0
+    private(set) var totalSeconds: Int = 0
+    var showFinishedAlert: Bool = false
     /// Set for a few seconds after Stop, so an accidental stop can be undone.
-    @Published private(set) var undoableStop: StoppedSession?
+    private(set) var undoableStop: StoppedSession?
 
     /// Timer state captured when the timer is stopped, for Undo.
     struct StoppedSession: Equatable {
@@ -30,31 +34,32 @@ final class PrayerTimerController: ObservableObject {
     /// How long Undo stays available after Stop.
     private static let undoWindow: Duration = .seconds(6)
 
-    // MARK: - Persistence (UserDefaults / AppStorage keys)
+    // MARK: - Persistence (UserDefaults keys)
 
-    // Keep the same keys HomeView used so behavior remains compatible across launches
-    @AppStorage("prayerTimerEndDate") private var storedEndDate: Double = 0
-    @AppStorage("prayerTimerRunning") private var storedRunning: Bool = false
-    @AppStorage("prayerTimerPaused") private var storedPaused: Bool = false
-    @AppStorage("prayerTimerRemainingWhenPaused") private var storedRemainingWhenPaused: Int = 0
-    @AppStorage("prayerTimerTotalSeconds") private var storedTotalSeconds: Int = 0
-    @AppStorage("prayerTimerStartDate") private var storedStartDate: Double = 0
-    @AppStorage("mindfulSessionStartDate") private var mindfulStartDate: Double = 0
-    @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
-    @AppStorage("didRequestNotifications") private var didRequestNotifications: Bool = false
+    // Persistence only; the UI reads the properties above. Keep the same keys HomeView
+    // used so behavior remains compatible across launches.
+    @ObservationIgnored @AppStorage("prayerTimerEndDate") private var storedEndDate: Double = 0
+    @ObservationIgnored @AppStorage("prayerTimerRunning") private var storedRunning: Bool = false
+    @ObservationIgnored @AppStorage("prayerTimerPaused") private var storedPaused: Bool = false
+    @ObservationIgnored @AppStorage("prayerTimerRemainingWhenPaused") private var storedRemainingWhenPaused: Int = 0
+    @ObservationIgnored @AppStorage("prayerTimerTotalSeconds") private var storedTotalSeconds: Int = 0
+    @ObservationIgnored @AppStorage("prayerTimerStartDate") private var storedStartDate: Double = 0
+    @ObservationIgnored @AppStorage("mindfulSessionStartDate") private var mindfulStartDate: Double = 0
+    @ObservationIgnored @AppStorage("timerSoundSelection") private var timerSoundSelection: String = TimerSound.default.rawValue
+    @ObservationIgnored @AppStorage("didRequestNotifications") private var didRequestNotifications: Bool = false
     /// The most recent duration started, offered as a preset on the card.
-    @AppStorage(PrayerTimerController.lastMinutesKey) private var lastMinutes: Int = 0
+    @ObservationIgnored @AppStorage(PrayerTimerController.lastMinutesKey) private var lastMinutes: Int = 0
     /// Start of the current counting-down stretch, for prayer stats. 0 while paused or stopped.
-    @AppStorage("prayerSegmentStartDate") private var prayerSegmentStartDate: Double = 0
+    @ObservationIgnored @AppStorage("prayerSegmentStartDate") private var prayerSegmentStartDate: Double = 0
     /// Active seconds so far in this session, across pauses.
-    @AppStorage("prayerSessionSeconds") private var prayerSessionSeconds: Int = 0
+    @ObservationIgnored @AppStorage("prayerSessionSeconds") private var prayerSessionSeconds: Int = 0
 
     static let lastMinutesKey = "prayerTimerLastMinutes"
 
-    private var undoExpiryTask: Task<Void, Never>?
+    @ObservationIgnored private var undoExpiryTask: Task<Void, Never>?
 
     // One-shot token to ignore stale pending actions
-    @AppStorage("prayerTimerLastActionToken") private var lastActionToken: String = ""
+    @ObservationIgnored @AppStorage("prayerTimerLastActionToken") private var lastActionToken: String = ""
 
     // MARK: - External collaborators
 
@@ -62,20 +67,20 @@ final class PrayerTimerController: ObservableObject {
 
     // MARK: - Internal ticking
 
-    private var tickerCancellable: AnyCancellable?
+    @ObservationIgnored private var tickerTask: Task<Void, Never>?
 
     // Suppression windows to avoid recompute churn right after adjustments
-    private var suppressTimerActivityUpdatesUntil: Date = .distantPast
-    private var suppressTimerRecomputeUntil: Date = .distantPast
+    @ObservationIgnored private var suppressTimerActivityUpdatesUntil: Date = .distantPast
+    @ObservationIgnored private var suppressTimerRecomputeUntil: Date = .distantPast
 
     // Authoritative in-memory end date used briefly after adjustments to avoid @AppStorage staleness
-    private var liveEndDate: TimeInterval = 0
+    @ObservationIgnored private var liveEndDate: TimeInterval = 0
 
     // Finish sound/haptic loop
-    private var finishHapticTimer: Timer?
+    @ObservationIgnored private var finishHapticTimer: Timer?
 
     // Invalidates older asynchronous AlarmKit scheduling attempts after timer changes.
-    private var completionSchedulingToken = UUID()
+    @ObservationIgnored private var completionSchedulingToken = UUID()
 
     // MARK: - Derived
 
@@ -85,7 +90,13 @@ final class PrayerTimerController: ObservableObject {
 
     // MARK: - Public lifecycle
 
-    init() {
+    private init() {
+        // The developer data reset stops the timer even while Home isn't on screen.
+        NotificationCenter.observe(.resetPrayerTimer, for: self) { controller in
+            // A data reset shouldn't offer to bring the timer back.
+            controller.stop(allowsUndo: false)
+        }
+
         // Restore persisted state
         isRunning = storedRunning
         isPaused = storedPaused
@@ -340,17 +351,19 @@ final class PrayerTimerController: ObservableObject {
     private func updateTickerSubscription() {
         let shouldRun = isRunning
         if shouldRun {
-            if tickerCancellable == nil {
-                tickerCancellable = Timer.publish(every: 1, on: .main, in: .common)
-                    .autoconnect()
-                    .sink { [weak self] _ in
-                        guard let self else { return }
+            if tickerTask == nil {
+                // Once a second; `tick()` recomputes from the end date, so sleep drift doesn't add up.
+                tickerTask = Task { [weak self] in
+                    while !Task.isCancelled {
+                        try? await Task.sleep(for: .seconds(1))
+                        guard !Task.isCancelled, let self else { return }
                         self.tick()
                     }
+                }
             }
         } else {
-            tickerCancellable?.cancel()
-            tickerCancellable = nil
+            tickerTask?.cancel()
+            tickerTask = nil
         }
     }
 

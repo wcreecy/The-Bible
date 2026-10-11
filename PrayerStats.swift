@@ -285,7 +285,9 @@ struct PrayerStatsCard: View {
                 }
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .prayerStatsUpdated)) { _ in
+        // Refresh on appear too, in case stats changed while Stats was hidden.
+        .onAppear { revision += 1 }
+        .onNotification(.prayerStatsUpdated) {
             revision += 1
         }
     }

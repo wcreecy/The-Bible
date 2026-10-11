@@ -2,7 +2,7 @@ import SwiftUI
 
 struct BookSelectionLink: View {
     @Binding var selectedBookName: String?
-    @StateObject private var bibleStore = BibleStore.shared
+    private var bibleStore = BibleStore.shared
     @State private var bookNames: [String] = []
 
     var body: some View {

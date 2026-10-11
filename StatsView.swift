@@ -1,7 +1,6 @@
 // the entire code of the file with your changes goes here.
 // Do not skip over anything.
 import SwiftUI
-import Combine
 import Charts
 
 private struct ReadingStatsSections<
@@ -303,7 +302,9 @@ struct StatsView: View {
                 }
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .switchToTab)) { _ in
+        // Close the chapter sheet when the app navigates somewhere else.
+        .onChange(of: AppRouter.shared.latest) { _, request in
+            if let request, case .stats = request.destination { return }
             selectedBookForChapters = nil
         }
         // Independent scope changes per card
@@ -566,11 +567,7 @@ struct StatsView: View {
     // MARK: - Glance helpers
 
     private func openReader(bookName: String, chapter: Int, verse: Int = 1) {
-        NotificationCenter.default.post(name: .openBibleReference, object: nil, userInfo: [
-            "book": bookName,
-            "chapter": chapter,
-            "verse": verse
-        ])
+        AppRouter.shared.openBibleReference(book: bookName, chapter: chapter, verse: verse)
     }
 
     private func nextUnreadGlobal() -> (book: String, chapter: Int)? {

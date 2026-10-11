@@ -1,11 +1,12 @@
-import Combine
 import Foundation
 
+/// Counts reading time. Nothing observes it directly; views refresh from
+/// `bibleStatsExternallyUpdated` instead.
 @MainActor
-final class ReadingTimeTracker: ObservableObject {
+final class ReadingTimeTracker {
     static let shared = ReadingTimeTracker()
 
-    @Published private(set) var lastTotalsVersion: Int = 0
+    private(set) var lastTotalsVersion: Int = 0
 
     private let clock = ContinuousClock()
     private let persistInterval: TimeInterval = 15

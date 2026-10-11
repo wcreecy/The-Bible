@@ -1,6 +1,5 @@
 import SwiftUI
 import UIKit
-import Combine
 
 struct BeatTheClockGameView: View {
     enum Difficulty: String, CaseIterable, Identifiable {
@@ -69,7 +68,6 @@ struct BeatTheClockGameView: View {
     // Timer
     @State private var remainingSeconds: Int = 0
     @State private var roundResultIsCorrect: Bool?
-    @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     // Scoring
     @State private var score: Int = 0
@@ -395,7 +393,7 @@ struct BeatTheClockGameView: View {
                 resetGameSession()
             }
         }
-        .onReceive(timer) { _ in
+        .onEverySecond {
             guard started, !selectionLocked else { return }
             if remainingSeconds > 0 {
                 pulse = true
@@ -403,7 +401,8 @@ struct BeatTheClockGameView: View {
                     let generator = UIImpactFeedbackGenerator(style: .heavy)
                     generator.impactOccurred()
                 }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                Task {
+                    try? await Task.sleep(for: .milliseconds(200))
                     pulse = false
                 }
                 remainingSeconds -= 1

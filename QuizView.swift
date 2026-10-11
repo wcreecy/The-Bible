@@ -1,5 +1,4 @@
 import SwiftUI
-import Combine
 import SwiftData
 
 #if canImport(UIKit)
@@ -209,7 +208,6 @@ struct QuizView: View {
     @State private var pulseOn: Bool = false
     @State private var timerOnLeft: Bool = false
     @State private var usesMutedTimerStyle: Bool = false
-    private let quizTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     // History / navigation
     @State private var history: [QuizQuestion] = []
@@ -467,7 +465,7 @@ struct QuizView: View {
             }
         }
         .background(AppBackgroundView(tab: .games))
-        .onReceive(quizTimer) { _ in
+        .onEverySecond {
             guard started else { return }
             guard selectedOption == nil else { return }
             guard quizDifficulty == "normal" || quizDifficulty == "hard" else { return }

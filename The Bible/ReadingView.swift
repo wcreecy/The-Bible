@@ -20,8 +20,8 @@ struct ReadingView: View {
     let onBookSelected: ((Book) -> Void)?
 
     // View model and stores
-    @StateObject private var pinnedStore: PinnedVerseStore
-    @StateObject private var viewModel: ReadingViewModel
+    @State private var pinnedStore: PinnedVerseStore
+    @State private var viewModel: ReadingViewModel
 
     // Reader-specific font size (independent from global app UI font)
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
@@ -67,8 +67,8 @@ struct ReadingView: View {
 
         // Create a single pinned store instance and share it with the view model
         let pinned = PinnedVerseStore()
-        _pinnedStore = StateObject(wrappedValue: pinned)
-        _viewModel = StateObject(wrappedValue: ReadingViewModel(
+        _pinnedStore = State(initialValue: pinned)
+        _viewModel = State(initialValue: ReadingViewModel(
             book: book,
             chapter: chapter,
             startVerse: startVerse,
@@ -102,7 +102,7 @@ struct ReadingView: View {
                         if let onSearch {
                             onSearch()
                         } else {
-                            NotificationCenter.default.post(name: .openBibleSearch, object: nil)
+                            AppRouter.shared.open(.bibleSearch)
                         }
                     } label: {
                         Image(systemName: "magnifyingglass")
@@ -213,7 +213,7 @@ struct ReadingView: View {
                     refreshSeenVerses()
                 }
             }
-            .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
+            .onNotification(.bibleStatsExternallyUpdated) {
                 refreshSeenVerses()
             }
             .onChange(of: scenePhase) { _, newPhase in
@@ -231,9 +231,10 @@ struct ReadingView: View {
                     DebouncedWidgetReloader.shared.reload(kind: "LastReadWidget")
                 }
             }
-            .onReceive(NotificationCenter.default.publisher(for: .init("switchToTab"))) { (note: Notification) in
-                if let tab = note.userInfo?["tab"] as? Int {
-                    viewModel.onTabChanged(tab)
+            // Pause reading tracking when the app is sent to another tab.
+            .onChange(of: AppRouter.shared.latest) { _, request in
+                if let tab = request?.destination.targetTab {
+                    viewModel.onTabChanged(tab.rawValue)
                 }
             }
             .appToast(
@@ -583,36 +584,9 @@ struct ReadingView: View {
     }
 
     private func handleVerseActionFeedback(_ feedback: VerseActionFeedback) {
-        switch feedback {
-        case .addedFavorite:
-            favoriteToastSymbol = "heart.fill"
-            favoriteToastTint = .pink
-            favoriteToastText = "Added to Favorites"
-        case .removedFavorite:
-            favoriteToastSymbol = "heart.slash"
-            favoriteToastTint = .gray
-            favoriteToastText = "Removed Favorite"
-        case .bookmarked:
-            favoriteToastSymbol = "bookmark.fill"
-            favoriteToastTint = .accentColor
-            favoriteToastText = "Bookmarked"
-        case .removedBookmark:
-            favoriteToastSymbol = "bookmark"
-            favoriteToastTint = .secondary
-            favoriteToastText = "Removed Bookmark"
-        case .pinned:
-            favoriteToastSymbol = "pin.fill"
-            favoriteToastTint = .red
-            favoriteToastText = "Pinned to Widget"
-        case .unpinned:
-            favoriteToastSymbol = "pin"
-            favoriteToastTint = .red
-            favoriteToastText = "Unpinned from Widget"
-        case .copied:
-            favoriteToastSymbol = "doc.on.doc"
-            favoriteToastTint = .accentColor
-            favoriteToastText = "Copied to Clipboard"
-        }
+        favoriteToastSymbol = feedback.toastSymbol
+        favoriteToastTint = feedback.toastTint
+        favoriteToastText = feedback.toastText
 
         withAnimation(.spring()) {
             showFavoriteToast = true

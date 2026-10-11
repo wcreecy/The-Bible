@@ -1,9 +1,10 @@
 import SwiftUI
-import Combine
+import Observation
 
 @MainActor
-final class NavigationCoordinator: ObservableObject {
-    @Published var path: [Route] = []
+@Observable
+final class NavigationCoordinator {
+    var path: [Route] = []
 
     func push(_ route: Route) {
         path.append(route)

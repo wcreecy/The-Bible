@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import Combine
 
 struct WordSearchGameView: View {
     @Environment(\.modelContext) private var modelContext

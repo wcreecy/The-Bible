@@ -1,6 +1,6 @@
 import SwiftUI
 import Foundation
-import Combine
+import Observation
 
 enum TodayChallengeKind: String, Codable {
     case readChapter
@@ -76,16 +76,17 @@ private struct TodayChallengeCatalog: Decodable {
 }
 
 @MainActor
-final class TodayChallengeStore: ObservableObject {
+@Observable
+final class TodayChallengeStore {
     static let shared = TodayChallengeStore()
 
-    @Published private(set) var challenges: [TodayChallenge] = []
+    private(set) var challenges: [TodayChallenge] = []
 
     private let storageKey = "todayChallengesSnapshotV1"
     private let cloudStorageKey = "todayChallengesSnapshotV2"
     private let catalog = TodayChallengeCatalog.load()
     private let cloudStore = NSUbiquitousKeyValueStore.default
-    private var corpusWaitTask: Task<Void, Never>?
+    @ObservationIgnored private var corpusWaitTask: Task<Void, Never>?
 
     private init() {
         cloudStore.synchronize()
@@ -432,7 +433,7 @@ final class TodayChallengeStore: ObservableObject {
 }
 
 struct HomeTodayCard: View {
-    @ObservedObject private var store = TodayChallengeStore.shared
+    private var store = TodayChallengeStore.shared
 
     /// Starts the Home prayer timer for the given number of minutes.
     let onStartPrayerTimer: (Int) -> Void
@@ -470,13 +471,11 @@ struct HomeTodayCard: View {
         .onAppear {
             store.refresh()
         }
-        .onReceive(NotificationCenter.default.publisher(for: .bibleStatsExternallyUpdated)) { _ in
+        .onNotification(.bibleStatsExternallyUpdated) {
             store.refresh()
         }
-        .onReceive(NotificationCenter.default.publisher(
-            for: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
-            object: NSUbiquitousKeyValueStore.default
-        )) { _ in
+        // Only the default key-value store posts this, so no object filter is needed.
+        .onNotification(NSUbiquitousKeyValueStore.didChangeExternallyNotification) {
             store.refresh()
         }
     }
@@ -487,11 +486,7 @@ struct HomeTodayCard: View {
         case .readChapter:
             guard let bookName = challenge.bookName, let chapter = challenge.chapterNumber else { return }
             Haptics.selection()
-            NotificationCenter.default.post(
-                name: .openBibleReference,
-                object: nil,
-                userInfo: ["book": bookName, "chapter": chapter, "verse": 1]
-            )
+            AppRouter.shared.openBibleReference(book: bookName, chapter: chapter, verse: 1)
         case .playGame:
             guard let gameName = challenge.gameName else { return }
             Haptics.selection()

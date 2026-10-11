@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct GameInsightsCardView: View {
-    @ObservedObject private var stats = GameStats.shared
+    private var stats = GameStats.shared
 
     private var entries: [GameStats.GameBreakdown.Entry] {
         stats.breakdownSnapshot().entries

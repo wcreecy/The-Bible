@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct PlayerStatSheetCardView: View {
-    @ObservedObject private var stats = GameStats.shared
+    private var stats = GameStats.shared
     @State private var version: Int = 0
 
     private enum Sort: String, CaseIterable, Identifiable {

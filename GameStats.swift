@@ -1,13 +1,15 @@
 import Foundation
-import Combine
+import Observation
 
 @MainActor
-final class GameStats: ObservableObject {
+@Observable
+final class GameStats {
     static let shared = GameStats()
 
-    @Published private(set) var version: Int = 0
+    /// Bumped whenever game stats change, so views reading it refresh.
+    private(set) var version: Int = 0
 
-    private var observer: Any?
+    @ObservationIgnored private var observer: Any?
 
     enum GameID {
         case quiz
