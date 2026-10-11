@@ -3,8 +3,39 @@ import Observation
 import SwiftUI
 
 enum BookOrderDifficulty: String, CaseIterable, Identifiable {
-    case easy, normal, hard, all
+    case easy, normal, hard
+    /// Expert: every book in the chosen part. Stored as "all" in existing settings and streaks.
+    case all
+
     var id: String { rawValue }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .easy: "Easy"
+        case .normal: "Normal"
+        case .hard: "Hard"
+        case .all: "Expert"
+        }
+    }
+
+    /// Books in a row per puzzle, or nil for every book in the chosen part.
+    var runLength: Int? {
+        switch self {
+        case .easy: 5
+        case .normal: 10
+        case .hard: 15
+        case .all: nil
+        }
+    }
+
+    var statsDifficulty: GameStats.Difficulty {
+        switch self {
+        case .easy: .easy
+        case .normal: .normal
+        case .hard: .hard
+        case .all: .none // recorded under "expert" by GameStats
+        }
+    }
 }
 
 enum BookSourceScope: String, CaseIterable, Identifiable {
@@ -16,7 +47,7 @@ enum BookSourceScope: String, CaseIterable, Identifiable {
 
     var title: LocalizedStringResource {
         return switch self {
-        case .both: "New & Old Testaments"
+        case .both: "Whole Bible"
         case .ot: "Old Testament"
         case .nt: "New Testament"
         case .law: "Law"
@@ -36,7 +67,8 @@ enum BookSourceScope: String, CaseIterable, Identifiable {
         }
     }
 
-    var categoryBookNames: [String]? {
+    /// The books in this part of the Bible, in canonical order.
+    var bookNames: [String] {
         let canon = BibleCanon.canonicalOrder()
 
         func books(from first: String, through last: String) -> [String] {
@@ -47,7 +79,9 @@ enum BookSourceScope: String, CaseIterable, Identifiable {
         }
 
         return switch self {
-        case .both, .ot, .nt: nil
+        case .both: canon
+        case .ot: books(from: "Genesis", through: "Malachi")
+        case .nt: books(from: "Matthew", through: "Revelation")
         case .law: books(from: "Genesis", through: "Deuteronomy")
         case .history: books(from: "Joshua", through: "Esther")
         case .poetry: books(from: "Job", through: "Song of Solomon")
@@ -59,20 +93,7 @@ enum BookSourceScope: String, CaseIterable, Identifiable {
     }
 
     var previewBookNames: [String] {
-        if let categoryBookNames {
-            return Array(categoryBookNames.prefix(3))
-        }
-
-        let canon = BibleCanon.canonicalOrder()
-        switch self {
-        case .nt:
-            guard let matthewIndex = canon.firstIndex(of: "Matthew") else { return [] }
-            return Array(canon[matthewIndex...].prefix(3))
-        case .both, .ot:
-            return Array(canon.prefix(3))
-        default:
-            return []
-        }
+        Array(bookNames.prefix(3))
     }
 }
 
@@ -93,7 +114,7 @@ struct BibleCanon {
         "1 Peter", "2 Peter", "1 John", "2 John", "3 John",
         "Jude", "Revelation"
     ]
-    
+
     static func canonicalOrder() -> [String] {
         if !BibleData.books.isEmpty {
             return BibleData.books.map { $0.name }
@@ -105,351 +126,168 @@ struct BibleCanon {
 @MainActor
 @Observable
 final class BookOrderGameViewModel {
+    private static let difficultyKey = "bookOrderDifficulty"
+    private static let sourceKey = "bookOrderSource"
+
     var started: Bool = false
     var currentItems: [String] = []
     var correctOrder: [String] = []
     var score: Int = 0
     var answered: Int = 0
-    var currentStreak: Int = 0
-
-    private var keySuffix: String {
-        if source.isCategory {
-            return "category_\(source.rawValue)"
-        }
-        switch difficulty {
-        case .easy: return "easy"
-        case .normal: return "normal"
-        case .hard: return "hard"
-        case .all: return "all"
-        }
-    }
+    /// Correct puzzles in a row during this visit.
+    var sessionStreak: Int = 0
     var currentBestStreak: Int = 0
     var showResult: Bool = false
     var wasCorrect: Bool = false
-    var showingCorrectOrder: Bool = false
-    var lastSubmittedOrder: [String]? = nil
-    
-    var difficulty: BookOrderDifficulty = .normal {
-        didSet { seedStreakFromPersistence() }
-    }
-    var source: BookSourceScope = .both
-    
-    private var sliceFirst: String? = nil
-    private var sliceLast: String? = nil
-    
-    // NEW: Aggregate getters for the in-game scoreboard that avoid double-counting.
-    private func readInt(_ key: String) -> Int { max(0, UserDefaults.standard.integer(forKey: key)) }
-    private var diffsNoAll: [String] { ["easy", "normal", "hard"] }
 
-    // Prefer combined "_all" when present; otherwise sum easy/normal/hard only.
-    private func combinedOrSum(_ base: String) -> Int {
-        let combined = readInt("\(base)_all")
-        if combined > 0 {
-            return combined
-        } else {
-            return diffsNoAll.reduce(0) { acc, suf in acc + readInt("\(base)_\(suf)") }
+    // Result of the last check
+    var booksInPlace: Int = 0
+    var lastTimeSeconds: Int = 0
+    var bestTimeSeconds: Int?
+    var isNewBestTime: Bool = false
+
+    var difficulty: BookOrderDifficulty = BookOrderDifficulty(
+        rawValue: UserDefaults.standard.string(forKey: BookOrderGameViewModel.difficultyKey) ?? ""
+    ) ?? .normal {
+        didSet {
+            UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey)
+            seedStreakFromPersistence()
         }
     }
 
-    // Prefer combined best streak when present; otherwise max across easy/normal/hard.
-    private func combinedOrMax(_ base: String) -> Int {
-        let combined = readInt("\(base)_all")
-        if combined > 0 {
-            return combined
-        } else {
-            return diffsNoAll.map { readInt("\(base)_\($0)") }.max() ?? 0
-        }
+    var source: BookSourceScope = BookSourceScope(
+        rawValue: UserDefaults.standard.string(forKey: BookOrderGameViewModel.sourceKey) ?? ""
+    ) ?? .both {
+        didSet { UserDefaults.standard.set(source.rawValue, forKey: Self.sourceKey) }
     }
 
-    // Displayed on the scoreboard “All-time” row (aggregate without double-counting)
-    var allTimeCorrect: Int {
-        combinedOrSum("bookorderAllTimeCorrect")
-    }
-    
-    var allTimeAnswered: Int {
-        combinedOrSum("bookorderAllTimeAnswered")
-    }
-    
-    var allTimeBestStreak: Int {
-        combinedOrMax("bookorderAllTimeBestStreak")
+    /// Books in each puzzle for the current settings.
+    var roundBookCount: Int {
+        let available = source.bookNames.count
+        return min(difficulty.runLength ?? available, available)
     }
 
-    // MARK: - Persistent streak (per difficulty)
+    // MARK: - Persistent streak and best time (per difficulty)
+
     private var persistentStreak: PersistentGameStreak {
-        PersistentGameStreak(game: "bookorder", variant: keySuffix)
+        PersistentGameStreak(game: "bookorder", variant: difficulty.rawValue)
+    }
+
+    var persistentBestStreak: Int { persistentStreak.best }
+
+    private var bestTimeKey: String { "bookorderBestTime_\(source.rawValue)_\(difficulty.rawValue)" }
+
+    /// Fastest fully correct puzzle for the current settings.
+    var savedBestTime: Int? {
+        let value = UserDefaults.standard.integer(forKey: bestTimeKey)
+        return value > 0 ? value : nil
     }
 
     private func seedStreakFromPersistence() {
-        currentStreak = persistentStreak.current
         currentBestStreak = max(currentBestStreak, persistentStreak.best)
     }
-    
+
+    // MARK: - Game flow
+
     func startGame() {
         score = 0
         answered = 0
+        sessionStreak = 0
         // Do NOT reset persistent streaks here; seed from persistence
         seedStreakFromPersistence()
-        showResult = false
-        wasCorrect = false
-        showingCorrectOrder = false
-        lastSubmittedOrder = nil
         started = true
         nextRound()
     }
-    
-    private func workingCanon() -> [String] {
-        let canon = BibleCanon.canonicalOrder()
-        switch source {
-        case .both:
-            return canon
-        case .ot:
-            let fallback = BibleCanon.fallbackCanon
-            let otSet = Set(fallback.prefix(39))
-            return canon.filter { otSet.contains($0) }
-        case .nt:
-            let fallback = BibleCanon.fallbackCanon
-            let ntSet = Set(fallback.suffix(27))
-            return canon.filter { ntSet.contains($0) }
-        default:
-            let categoryNames = Set(source.categoryBookNames ?? [])
-            return canon.filter { categoryNames.contains($0) }
-        }
+
+    func endGame() {
+        started = false
+        showResult = false
     }
-    
+
+    /// Picks a run of books in a row from the chosen part and shuffles it.
     func nextRound() {
-        let canon = source.isCategory
-            ? workingCanon()
-            : difficulty == .all ? BibleCanon.canonicalOrder() : workingCanon()
-        guard !canon.isEmpty else {
-            currentItems = []
-            correctOrder = []
-            sliceFirst = nil
-            sliceLast = nil
-            lastSubmittedOrder = nil
-            return
-        }
-        
-        let length: Int
-        if source.isCategory {
-            length = canon.count
-        } else {
-            switch difficulty {
-            case .easy:   length = 5
-            case .normal: length = 10
-            case .hard:   length = 15
-            case .all:    length = canon.count
-            }
-        }
-        
-        // Helper: OT/NT split based on full canonical list (uses "Matthew" boundary)
-        let full = BibleCanon.canonicalOrder()
-        let indexMap = Dictionary(uniqueKeysWithValues: full.enumerated().map { ($1, $0) })
-        let matthewIdx = indexMap["Matthew"] ?? Int.max
-        func isOT(_ name: String) -> Bool { (indexMap[name] ?? Int.max) < matthewIdx }
-        func isNT(_ name: String) -> Bool { (indexMap[name] ?? Int.max) >= matthewIdx }
-        
-        // For Source .both and difficulty != .all, switch to non‑contiguous uniform sampling across the whole canon.
-        if source == .both && difficulty != .all {
-            var picks = Array(Set(canon)).shuffled()
-            if picks.count > length { picks = Array(picks.prefix(length)) }
-            
-            // Ensure at least one OT and one NT for variety (if possible)
-            let hasOT = picks.contains(where: isOT)
-            let hasNT = picks.contains(where: isNT)
-            if !(hasOT && hasNT) {
-                // Try to fix by swapping one item if both testaments exist in the full canon
-                let otPool = canon.filter(isOT)
-                let ntPool = canon.filter(isNT)
-                if !otPool.isEmpty, !ntPool.isEmpty, picks.count >= 1 {
-                    if !hasOT, let replacement = otPool.randomElement() {
-                        // Replace a random NT pick
-                        if let idx = picks.firstIndex(where: isNT) { picks[idx] = replacement }
-                    } else if !hasNT, let replacement = ntPool.randomElement() {
-                        // Replace a random OT pick
-                        if let idx = picks.firstIndex(where: isOT) { picks[idx] = replacement }
-                    }
-                }
-            }
-            
-            // Correct order is canonical; UI shows shuffled
-            let orderPos = Dictionary(uniqueKeysWithValues: full.enumerated().map { ($1, $0) })
-            let ordered = picks.sorted { (orderPos[$0] ?? .max) < (orderPos[$1] ?? .max) }
-            correctOrder = ordered
-            currentItems = ordered.shuffled()
-            sliceFirst = ordered.first
-            sliceLast = ordered.last
-            
-            showResult = false
-            wasCorrect = false
-            showingCorrectOrder = false
-            lastSubmittedOrder = nil
-            return
-        }
-        
-        // Existing contiguous-slice behavior for OT/NT scopes, and for "All Books" in any scope.
-        let maxStart = max(0, canon.count - length)
-        
-        func isMixedSlice(_ slice: [String]) -> Bool {
-            // If Matthew not found (edge case), treat as mixed to avoid infinite rerolls.
-            guard matthewIdx != Int.max else { return true }
-            var hasOT = false
-            var hasNT = false
-            for name in slice {
-                let idx = indexMap[name] ?? Int.max
-                if idx < matthewIdx { hasOT = true } else { hasNT = true }
-                if hasOT && hasNT { return true }
-            }
-            return false
-        }
-        
-        var chosenSlice: [String] = []
-        var attempts = 0
-        let maxAttempts = 12
-        
-        repeat {
-            attempts += 1
-            let start = (maxStart > 0) ? Int.random(in: 0...maxStart) : 0
-            let candidate = Array(canon[start..<(start + min(length, canon.count - start))])
-            if source == .both {
-                if isMixedSlice(candidate) || length >= canon.count {
-                    chosenSlice = candidate
-                    break
-                } else {
-                    continue
-                }
-            } else {
-                chosenSlice = candidate
-                break
-            }
-        } while attempts < maxAttempts
-        
-        if chosenSlice.isEmpty {
-            let start = (maxStart > 0) ? Int.random(in: 0...maxStart) : 0
-            chosenSlice = Array(canon[start..<(start + min(length, canon.count - start))])
-        }
-        
-        correctOrder = chosenSlice
-        sliceFirst = chosenSlice.first
-        sliceLast = chosenSlice.last
-        
-        var shuffled = chosenSlice.shuffled()
-        if shuffled == chosenSlice && shuffled.count > 1 {
-            shuffled.swapAt(0, 1)
-        }
-        currentItems = shuffled
-        
         showResult = false
         wasCorrect = false
-        showingCorrectOrder = false
-        lastSubmittedOrder = nil
-    }
-    
-    var prompt: String {
-        let base = "Arrange these books in canonical order"
-        let scope: String
-        if difficulty == .all {
-            scope = "(Whole Bible)"
-        } else {
-            switch source {
-            case .both: scope = "(Whole Bible)"
-            case .ot:   scope = "(Old Testament)"
-            case .nt:   scope = "(New Testament)"
-            default:    scope = "(\(String(localized: source.title)))"
-            }
-        }
-        if let a = sliceFirst, let b = sliceLast, difficulty != .all {
-            return "\(base) \(scope) — \(a) to \(b)"
-        } else {
-            return "\(base) \(scope)"
-        }
-    }
-    
-    var shouldShowComparison: Bool {
-        showingCorrectOrder && lastSubmittedOrder != nil && !correctOrder.isEmpty
-    }
-    
-    var comparisonRows: [(your: String, correct: String, isMatch: Bool)] {
-        guard let submitted = lastSubmittedOrder else { return [] }
-        let count = min(submitted.count, correctOrder.count)
-        return (0..<count).map { idx in
-            let your = submitted[idx]
-            let correct = correctOrder[idx]
-            return (your, correct, your == correct)
-        }
-    }
-    
-    func checkOrder() {
-        guard !currentItems.isEmpty, !correctOrder.isEmpty else {
-            wasCorrect = false
-            showResult = true
+        booksInPlace = 0
+        isNewBestTime = false
+
+        let books = source.bookNames
+        guard !books.isEmpty else {
+            currentItems = []
+            correctOrder = []
             return
         }
-        
-        lastSubmittedOrder = currentItems
-        
-        if currentItems == correctOrder {
-            wasCorrect = true
+
+        let length = roundBookCount
+        let start = Int.random(in: 0...(books.count - length))
+        let run = Array(books[start..<(start + length)])
+        correctOrder = run
+
+        var shuffled = run.shuffled()
+        while shuffled == run && run.count > 1 {
+            shuffled.shuffle()
+        }
+        currentItems = shuffled
+    }
+
+    /// The book that belongs at each position, used to mark wrong rows after a check.
+    func correctBook(at index: Int) -> String? {
+        correctOrder.indices.contains(index) ? correctOrder[index] : nil
+    }
+
+    func checkOrder(elapsedSeconds: Int) {
+        guard !showResult, !currentItems.isEmpty, !correctOrder.isEmpty else { return }
+
+        booksInPlace = zip(currentItems, correctOrder).filter { $0 == $1 }.count
+        wasCorrect = currentItems == correctOrder
+        lastTimeSeconds = elapsedSeconds
+        answered += 1
+
+        if wasCorrect {
             score += 1
+            sessionStreak += 1
 
             // Persistent streak: extend on correct
             let streak = persistentStreak.recordWin()
-            currentStreak = streak.current
             currentBestStreak = max(currentBestStreak, streak.best)
-        } else {
-            wasCorrect = false
 
-            // Persistent streak: reset on incorrect
-            persistentStreak.reset()
-            currentStreak = 0
-
-            showingCorrectOrder = true
-        }
-        
-        answered += 1
-        
-        updateAllTime(correct: wasCorrect ? 1 : 0, answered: 1, streak: currentBestStreak)
-        
-        showResult = true
-    }
-    
-    // Single source of truth: delegate all writes to GameStats to avoid double-counting.
-    private func updateAllTime(correct: Int, answered: Int, streak: Int) {
-        // Map BookOrderDifficulty to GameStats.Difficulty
-        let statsDifficulty: GameStats.Difficulty = {
-            switch difficulty {
-            case .easy: return .easy
-            case .normal: return .normal
-            case .hard: return .hard
-            case .all: return .none // treated as "all" by GameStats suffix mapping
+            let previousBest = savedBestTime
+            isNewBestTime = previousBest.map { elapsedSeconds < $0 } ?? true
+            if isNewBestTime {
+                UserDefaults.standard.set(max(1, elapsedSeconds), forKey: bestTimeKey)
             }
-        }()
+        } else {
+            // Persistent streak: reset on incorrect
+            sessionStreak = 0
+            persistentStreak.reset()
+        }
+        bestTimeSeconds = savedBestTime
+
         GameStats.shared.recordRound(
             game: .bookorder,
-            difficulty: statsDifficulty,
-            correct: correct,
-            answered: answered,
-            currentBestStreak: streak
+            difficulty: difficulty.statsDifficulty,
+            correct: wasCorrect ? 1 : 0,
+            answered: 1,
+            currentBestStreak: currentBestStreak
         )
+
+        showResult = true
     }
-    
+
     func move(from source: IndexSet, to destination: Int) {
+        guard !showResult else { return }
         currentItems.move(fromOffsets: source, toOffset: destination)
     }
 }
 
 #if DEBUG
-import SwiftUI
 extension BookOrderGameViewModel {
     static func preview() -> BookOrderGameViewModel {
         let vm = BookOrderGameViewModel()
         let canon = BibleCanon.canonicalOrder()
-        let sliceLength = 6
-        let startIndex = 0
-        let slice = Array(canon[startIndex..<(startIndex+sliceLength)])
+        let slice = Array(canon.prefix(6))
         vm.correctOrder = slice
         vm.currentItems = slice.shuffled()
-        vm.sliceFirst = slice.first
-        vm.sliceLast = slice.last
         vm.started = true
         return vm
     }
