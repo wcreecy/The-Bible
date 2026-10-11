@@ -17,10 +17,13 @@ enum SwiftDataDeduplicator {
         // Runs whenever synced records may arrive, so text saved by older versions is
         // cleaned here too.
         let cleanedText = StoredVerseTextCleaner.cleanModels(in: context)
+        // Before deduplicating, so a record moved to its correct verse merges with any
+        // copy already saved there.
+        let renumbered = SavedVerseRenumberRepair.run(in: context)
         let removedFavorites = dedupeFavorites(in: context)
         let removedBookmarks = dedupeBookmarks(in: context)
         let removedNotes = dedupeVerseNotes(in: context)
-        guard cleanedText || removedFavorites || removedBookmarks || removedNotes else { return }
+        guard cleanedText || renumbered || removedFavorites || removedBookmarks || removedNotes else { return }
         try? context.save()
     }
 

@@ -137,6 +137,7 @@ struct WordSearchGameView: View {
         } message: {
             Text("This shows every word and counts the puzzle as unfinished.")
         }
+        .persistenceFailureAlert(failure: $vm.favoriteSaveFailure)
         // The clock pauses while the game is off screen and picks up where it left off.
         .onAppear { vm.resumeTimer() }
         .onDisappear { vm.stopTimer() }

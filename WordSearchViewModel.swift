@@ -66,6 +66,9 @@ final class WordSearchViewModel {
     private(set) var hintsUsed: Int = 0
     @ObservationIgnored private var hintClearTask: Task<Void, Never>?
 
+    /// Set when adding or removing a favorite couldn't be saved.
+    var favoriteSaveFailure: PersistenceFailure?
+
     // Favorites resolution context
     var favBookName: String = ""
     var favChapterNumber: Int = 0
@@ -497,14 +500,24 @@ final class WordSearchViewModel {
 
     func toggleFavoriteCurrent() {
         guard !favBookName.isEmpty, favChapterNumber > 0, favVerseNumber > 0 else { return }
-        if let existing = favoritesFetch().first(where: { $0.bookName == favBookName && $0.chapterNumber == favChapterNumber && $0.verseNumber == favVerseNumber }) {
-            modelContext.delete(existing)
-            try? modelContext.save()
-        } else {
-            let fav = Favorite(bookName: favBookName, chapterNumber: favChapterNumber, verseNumber: favVerseNumber, verseText: verseText)
-            modelContext.insert(fav)
-            try? modelContext.save()
-        }
+        let context = modelContext
+        let (book, chapter, verse, text) = (favBookName, favChapterNumber, favVerseNumber, verseText)
+        let favorites = favoritesFetch()
+        ModelContextPersistence.perform(
+            in: context,
+            operation: {
+                try FavoriteVerses.toggle(
+                    bookName: book,
+                    chapterNumber: chapter,
+                    verseNumber: verse,
+                    verseText: text,
+                    favorites: favorites,
+                    in: context
+                )
+            },
+            onSuccess: {},
+            onFailure: { [weak self] in self?.favoriteSaveFailure = $0 }
+        )
     }
 
     private func resolveFavorite(_ fav: Favorite) -> (Book, Chapter, Verse)? {

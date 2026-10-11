@@ -179,6 +179,11 @@ struct ContentView: View {
         ReadingPositionStore.shared.migrateIfNeeded(modelContext: modelContext)
         openBibleReaderAtLaunchIfNeeded()
         SwiftDataDeduplicator.run(in: modelContext)
+        // Repairing saved verse numbers needs the Bible text, which may still be loading.
+        Task { @MainActor in
+            _ = await BibleRepository.shared.loadAllBooks()
+            SwiftDataDeduplicator.run(in: modelContext)
+        }
 
         Task.detached {
             _ = await BibleReferenceLinker.linkify("")

@@ -251,48 +251,30 @@ struct VerseActionMenu: View {
     }
 
     private func toggleFavorite() {
-        // Synced devices can briefly hold duplicates; removing one would leave the verse favorited.
-        let existing = favorites.filter {
-            $0.bookName == verse.bookName &&
-            $0.chapterNumber == verse.chapterNumber &&
-            $0.verseNumber == verse.verseNumber
-        }
-        if !existing.isEmpty {
-            ModelContextPersistence.perform(
-                in: modelContext,
-                operation: {
-                    for favorite in existing {
-                        modelContext.delete(favorite)
-                    }
-                    try modelContext.save()
-                },
-                onSuccess: {
-                    Haptics.selection()
-                    onFeedback(.removedFavorite)
-                },
-                onFailure: { persistenceFailure = $0 }
-            )
-        } else {
-            ModelContextPersistence.perform(
-                in: modelContext,
-                operation: {
-                    modelContext.insert(
-                        Favorite(
-                            bookName: verse.bookName,
-                            chapterNumber: verse.chapterNumber,
-                            verseNumber: verse.verseNumber,
-                            verseText: verse.verseText
-                        )
-                    )
-                    try modelContext.save()
-                },
-                onSuccess: {
+        var added = false
+        ModelContextPersistence.perform(
+            in: modelContext,
+            operation: {
+                added = try FavoriteVerses.toggle(
+                    bookName: verse.bookName,
+                    chapterNumber: verse.chapterNumber,
+                    verseNumber: verse.verseNumber,
+                    verseText: verse.verseText,
+                    favorites: favorites,
+                    in: modelContext
+                )
+            },
+            onSuccess: {
+                if added {
                     Haptics.success()
                     onFeedback(.addedFavorite)
-                },
-                onFailure: { persistenceFailure = $0 }
-            )
-        }
+                } else {
+                    Haptics.selection()
+                    onFeedback(.removedFavorite)
+                }
+            },
+            onFailure: { persistenceFailure = $0 }
+        )
     }
 
     private func bookmark() {

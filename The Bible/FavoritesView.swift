@@ -67,92 +67,102 @@ struct FavoritesView: View {
                     description: Text("Try a reference like “John 3” or words from the verse.")
                 )
             } else {
-                List {
-                    if contextualTipsEnabled {
-                        ContextualTipView(
-                            id: "favorites.management",
-                            title: "Open and manage favorites",
-                            message: "Tap a favorite to open its verse. Long-press for Copy and Share, or swipe to share or remove it, with an option to undo.",
-                            systemImage: "heart.text.clipboard"
-                        )
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-                    }
-
-                    if !isSearching {
-                        Section {
-                            NavigationLink {
-                                FavoritesFlashcardsView()
-                            } label: {
-                                Label {
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text("Practice as Flashcards")
-                                            .font(.headline)
-                                        Text("Memorize your \(countSubtitle)")
-                                            .font(.subheadline)
-                                            .foregroundStyle(.secondary)
-                                    }
-                                } icon: {
-                                    Image(systemName: "rectangle.on.rectangle.angled")
-                                        .foregroundStyle(.tint)
-                                }
-                            }
-                        }
-                        .listRowBackground(HeroCardListRowBackground())
-                    }
-
-                    ForEach(sections) { section in
-                        Section {
-                            ForEach(section.favorites) { favorite in
-                                row(for: favorite)
-                            }
-                            .onDelete { offsets in
-                                remove(offsets.map { section.favorites[$0] })
-                            }
-                            .listRowBackground(HeroCardListRowBackground())
-                        } header: {
-                            if let title = section.title {
-                                Text(title)
-                            }
-                        }
-                    }
-                }
-                .scrollContentBackground(.hidden)
+                favoritesList(sections: sections)
             }
         }
         .background(AppBackgroundView(tab: .more))
         .navigationTitle("Favorites")
         .navigationSubtitle(favorites.isEmpty ? "" : countSubtitle)
         .navigationBarTitleDisplayMode(.large)
-        .toolbar {
-            if !favorites.isEmpty {
-                ToolbarItem(placement: .primaryAction) {
-                    Menu {
-                        Picker("Sort By", selection: $sortOrder) {
-                            ForEach(SortOrder.allCases) { order in
-                                Text(order.title).tag(order)
-                            }
-                        }
-                    } label: {
-                        Label("Sort", systemImage: "arrow.up.arrow.down")
-                    }
-                }
-                ToolbarItem(placement: .primaryAction) { EditButton() }
-            }
-        }
+        .toolbar { toolbarContent }
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search favorites")
         .appToast(
-            isPresented: Binding(
-                get: { toastMessage != nil },
-                set: { if !$0 { toastMessage = nil } }
-            ),
+            isPresented: isShowingToast,
             symbol: toastMessage == .copied ? "doc.on.doc" : "heart.slash",
             text: toastText,
             tint: .secondary,
-            actionTitle: isShowingRemovalToast ? "Undo" : nil,
-            action: isShowingRemovalToast ? undoFavoriteRemoval : nil
+            actionTitle: isShowingRemovalToast ? String(localized: "Undo") : nil,
+            action: toastAction
         )
         .persistenceFailureAlert(failure: $persistenceFailure)
+    }
+
+    // MARK: - List
+
+    private func favoritesList(sections: [FavoriteSection]) -> some View {
+        List {
+            if contextualTipsEnabled {
+                ContextualTipView(
+                    id: "favorites.management",
+                    title: "Open and manage favorites",
+                    message: "Tap a favorite to open its verse. Long-press for Copy and Share, or swipe to share or remove it, with an option to undo.",
+                    systemImage: "heart.text.clipboard"
+                )
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
+            }
+
+            if !isSearching {
+                flashcardsRow
+            }
+
+            ForEach(sections) { section in
+                Section {
+                    ForEach(section.favorites) { favorite in
+                        row(for: favorite)
+                    }
+                    .onDelete { offsets in
+                        remove(offsets.map { section.favorites[$0] })
+                    }
+                    .listRowBackground(HeroCardListRowBackground())
+                } header: {
+                    if let title = section.title {
+                        Text(title)
+                    }
+                }
+            }
+        }
+        .scrollContentBackground(.hidden)
+    }
+
+    private var flashcardsRow: some View {
+        Section {
+            NavigationLink {
+                FavoritesFlashcardsView()
+            } label: {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Practice as Flashcards")
+                            .font(.headline)
+                        Text("Memorize your \(countSubtitle)")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "rectangle.on.rectangle.angled")
+                        .foregroundStyle(.tint)
+                }
+            }
+        }
+        .listRowBackground(HeroCardListRowBackground())
+    }
+
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        if !favorites.isEmpty {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Picker("Sort By", selection: $sortOrder) {
+                        ForEach(SortOrder.allCases) { order in
+                            Text(order.title).tag(order)
+                        }
+                    }
+                } label: {
+                    Label("Sort", systemImage: "arrow.up.arrow.down")
+                }
+            }
+            ToolbarItem(placement: .primaryAction) { EditButton() }
+        }
     }
 
     // MARK: - Row
@@ -272,6 +282,18 @@ struct FavoritesView: View {
         )
     }
 
+    private var isShowingToast: Binding<Bool> {
+        Binding(
+            get: { toastMessage != nil },
+            set: { if !$0 { toastMessage = nil } }
+        )
+    }
+
+    private var toastAction: (() -> Void)? {
+        guard isShowingRemovalToast else { return nil }
+        return { undoFavoriteRemoval() }
+    }
+
     private var isShowingRemovalToast: Bool {
         if case .removed = toastMessage { return true }
         return false
@@ -383,8 +405,16 @@ private struct RemovedFavorite {
 }
 
 #Preview {
-    NavigationStack {
-        FavoritesView()
-            .modelContainer(for: [Favorite.self], inMemory: true)
+    let container = try! ModelContainer(for: Favorite.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+    for (book, chapter, verse, text) in [
+        ("John", 3, 16, "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life."),
+        ("Psalms", 23, 1, "The LORD is my shepherd; I shall not want."),
+        ("Philippians", 4, 13, "I can do all things through Christ which strengtheneth me."),
+    ] {
+        container.mainContext.insert(Favorite(bookName: book, chapterNumber: chapter, verseNumber: verse, verseText: text))
     }
+    return NavigationStack {
+        FavoritesView()
+    }
+    .modelContainer(container)
 }

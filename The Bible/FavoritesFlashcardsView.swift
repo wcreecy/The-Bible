@@ -169,18 +169,31 @@ struct FavoritesFlashcardsView: View {
     /// Hides about every third longer word. Which words are hidden depends only on the
     /// text, so a card shows the same blanks each time.
     static func blanked(_ text: String) -> String {
+        var pieces = text.split(separator: " ", omittingEmptySubsequences: false).map(String.init)
+
+        // A simple, stable mix of each longer word and its position decides which words go.
+        var hidden: [Int] = []
         var wordIndex = 0
-        return text.split(separator: " ", omittingEmptySubsequences: false).map { piece -> String in
+        for (index, piece) in pieces.enumerated() {
             let letters = piece.filter(\.isLetter)
-            guard letters.count >= 4 else { return String(piece) }
-            defer { wordIndex += 1 }
-            // A simple, stable mix of the word and its position decides which words go.
+            guard letters.count >= 4 else { continue }
             let seed = letters.unicodeScalars.reduce(wordIndex) { ($0 &* 31 &+ Int($1.value)) & 0xFFFF }
-            guard seed % 3 == 0 else { return String(piece) }
+            if seed % 3 == 0 { hidden.append(index) }
+            wordIndex += 1
+        }
+        // Always hide at least one word: the longest.
+        if hidden.isEmpty,
+           let longest = pieces.indices.max(by: { pieces[$0].filter(\.isLetter).count < pieces[$1].filter(\.isLetter).count }),
+           !pieces[longest].filter(\.isLetter).isEmpty {
+            hidden = [longest]
+        }
+
+        for index in hidden {
             // Keep surrounding punctuation so the sentence still reads naturally.
-            return piece.map { $0.isLetter ? "_" : String($0) }.joined()
+            pieces[index] = pieces[index].map { $0.isLetter ? "_" : String($0) }.joined()
                 .replacingOccurrences(of: #"_+"#, with: "_____", options: .regularExpression)
-        }.joined(separator: " ")
+        }
+        return pieces.joined(separator: " ")
     }
 
     // MARK: - Deck
@@ -292,8 +305,11 @@ private struct FlashcardView: View {
 }
 
 #Preview {
-    NavigationStack {
+    let container = try! ModelContainer(for: Favorite.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+    container.mainContext.insert(Favorite(bookName: "Psalms", chapterNumber: 23, verseNumber: 1, verseText: "The LORD is my shepherd; I shall not want."))
+    container.mainContext.insert(Favorite(bookName: "John", chapterNumber: 3, verseNumber: 16, verseText: "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life."))
+    return NavigationStack {
         FavoritesFlashcardsView()
     }
-    .modelContainer(for: Favorite.self, inMemory: true)
+    .modelContainer(container)
 }
