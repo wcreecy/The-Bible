@@ -7,19 +7,6 @@ struct WhoAmIGameView: View {
     @State private var timerOnLeading = false
     @State private var usesMutedTimerStyle = false
 
-    // Sheet state for reference preview
-    @State private var refSheetRequest: ReferenceSheetRequest?
-    @State private var refChoices: [ScriptureRef] = []
-    @State private var selectedRef: ScriptureRef? = nil
-    @State private var loadedPreview: (title: String, verses: [Verse])? = nil
-    @State private var currentRefIndex: Int = 0
-    @State private var selectionNonce: UUID = UUID()
-
-    private struct ReferenceSheetRequest: Identifiable {
-        let id = UUID()
-        let references: [ScriptureRef]
-    }
-
     // Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
@@ -30,177 +17,29 @@ struct WhoAmIGameView: View {
         }
     }
 
+    private var promptIsName: Bool { vm.mode == .nameToClue }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
                 if !vm.started {
-                    Spacer(minLength: 24)
-                    Text("Match Bible names and descriptions.")
-                        .gameStartDescriptionStyle(title: "Who am I?", systemImage: "person.text.rectangle", tint: .brown)
-
-                    GameSplashLaunchLayout(tint: .brown, startAction: vm.startGame) {
-                        GameLobbyPreview(kind: .whoAmI)
-                    } configuration: {
-                        WhoAmISetupCard(difficulty: vm.difficulty)
-
-                        WhoAmISetupControls(difficulty: $vm.difficulty)
-                    } facts: {
-                        GameSplashFacts(
-                            first: ("person.text.rectangle", "Bible names", "Question"),
-                            second: ("list.bullet", "Match", "Your task"),
-                            third: ("checkmark.circle", "Choose", "Your answer")
-                        )
-                    }
-                    Spacer(minLength: 24)
-                } else if horizontalSizeClass == .regular {
-                    WhoAmIIPadGameBoard(
+                    setupContent
+                } else if vm.isComplete {
+                    Spacer(minLength: 32)
+                    WhoAmIResultsCard(
                         score: vm.score,
-                        answered: vm.answered,
-                        streak: vm.currentStreak,
-                        promptTitle: vm.promptTitle,
-                        promptIsName: vm.mode == .names,
-                        choices: vm.choices,
-                        roundOver: vm.roundOver,
-                        isGameComplete: vm.isGameComplete,
-                        correctChoice: vm.correctChoice,
-                        selectedChoice: vm.selectedChoice,
-                        isTimed: vm.difficulty.timeLimit > 0,
-                        remainingSeconds: vm.remainingSeconds,
-                        timerTint: timerTint(vm.remainingSeconds),
-                        timerIsActive: whoAmITimerIsActive,
-                        timerIsPulsing: vm.pulseOn,
-                        timerOnLeading: $timerOnLeading,
-                        usesMutedTimerStyle: $usesMutedTimerStyle,
-                        showsDebugWin: debugAutoWinEnabled && vm.selectedChoice == nil,
-                        onChoose: { choice in
-                            if vm.roundOver {
-                                presentReferences(for: choice)
-                            } else {
-                                vm.select(choice)
-                            }
-                        },
-                        onSkip: { vm.skipOrTimeout() },
-                        onNext: { vm.nextRound() },
-                        onRestart: { vm.startGame() },
-                        onDebugWin: { vm.select(vm.correctChoice) }
+                        total: vm.totalQuestions,
+                        bestStreak: vm.sessionBestStreak,
+                        bestGameScore: vm.bestGameScore,
+                        isNewBest: vm.isNewBestGame,
+                        onPlayAgain: vm.startGame,
+                        onChangeSettings: vm.returnToSetup
                     )
+                    .frame(maxWidth: .infinity)
+                } else if horizontalSizeClass == .regular {
+                    iPadBoard
                 } else {
-                    GameScoreboardCard(
-                        currentCorrect: vm.score,
-                        currentAnswered: vm.answered,
-                        currentStreak: vm.currentStreak,
-                        game: .whoami
-                    )
-
-                    GroupBox {
-                        VStack(alignment: .leading, spacing: 6) {
-                            HStack {
-                                Text(vm.mode == .names ? "Name" : "Description")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                Spacer()
-                            }
-                            Text(vm.promptTitle)
-                                .font(vm.mode == .names ? .title2.weight(.semibold) : .body)
-                                .lineLimit(6)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .strokeBorder(whoAmIQuestionBorderColor, lineWidth: whoAmIQuestionBorderWidth)
-                    )
-                    .animation(.easeInOut(duration: 0.25), value: vm.remainingSeconds)
-
-                    if whoAmITimerIsActive {
-                        GameTimerCard(
-                            remainingSeconds: vm.remainingSeconds,
-                            tint: timerTint(vm.remainingSeconds),
-                            isPulsing: vm.pulseOn
-                        )
-                    }
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Choose one:")
-                            .font(.headline)
-                        LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
-                            ForEach(vm.choices, id: \.self) { choice in
-                                Button {
-                                    if vm.roundOver {
-                                        presentReferences(for: choice)
-                                    } else {
-                                        vm.select(choice)
-                                    }
-                                } label: {
-                                    Text(choice)
-                                        .font(vm.mode == .reverse ? .body.weight(.semibold) : .footnote)
-                                        .multilineTextAlignment(vm.mode == .reverse ? .center : .leading)
-                                        .lineLimit(vm.mode == .reverse ? 2 : 6)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                        .frame(
-                                            maxWidth: .infinity,
-                                            minHeight: vm.mode == .reverse ? 40 : max(maxChoiceHeight, 96),
-                                            maxHeight: vm.mode == .reverse ? 40 : max(maxChoiceHeight, 96),
-                                            alignment: vm.mode == .reverse ? .center : .leading
-                                        )
-                                        .padding(vm.mode == .reverse ? 10 : 16)
-                                        .foregroundStyle(.primary)
-                                        .contentShape(Rectangle())
-                                        .background(
-                                            GeometryReader { geo in
-                                                Color.clear
-                                                    .preference(key: ChoiceHeightKey.self, value: geo.size.height)
-                                            }
-                                        )
-                                }
-                                .buttonStyle(.plain)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                        .fill(backgroundColor(for: choice))
-                                )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                        .strokeBorder(
-                                            borderColor(for: choice),
-                                            lineWidth: vm.roundOver && choice == vm.correctChoice ? 2 : 1
-                                        )
-                                )
-                            }
-                        }
-                        .onPreferenceChange(ChoiceHeightKey.self) { value in
-                            maxChoiceHeight = value
-                        }
-                    }
-
-                    if vm.roundOver {
-                        GameRoundNavigationButtons(
-                            canGoPrevious: false,
-                            canGoNext: !vm.isGameComplete,
-                            onPrevious: {},
-                            onNext: { vm.nextRound() }
-                        )
-                        if vm.isGameComplete {
-                            Text("You answered every available question.")
-                                .font(.headline)
-                                .foregroundStyle(.green)
-
-                            Button("Start New Game", action: vm.startGame)
-                                .buttonStyle(ModernPillButtonStyle(tint: .brown))
-                        }
-                    } else {
-                        Button("Skip") { vm.skipOrTimeout() }
-                            .buttonStyle(ModernPillButtonStyle(tint: .orange))
-                    }
-
-                    if debugAutoWinEnabled, vm.started, !vm.roundOver, vm.selectedChoice == nil {
-                        Button("WIN") {
-                            vm.select(vm.correctChoice)
-                        }
-                        .buttonStyle(ModernPillButtonStyle(tint: .red))
-                        .controlSize(.large)
-                        .padding(.top, 6)
-                        .accessibilityLabel("Win this round")
-                    }
+                    compactBoard
                 }
             }
             .padding()
@@ -219,334 +58,172 @@ struct WhoAmIGameView: View {
         .onChange(of: vm.choices) { _, _ in
             maxChoiceHeight = 0
         }
-        .sheet(item: $refSheetRequest, onDismiss: {
-            selectedRef = nil
-            loadedPreview = nil
-            refChoices = []
-            currentRefIndex = 0
-        }) { request in
-            let displayedRefs = request.references
-            let content = NavigationStack {
-                VStack(alignment: .leading, spacing: 12) {
-                    if displayedRefs.isEmpty {
-                        ContentUnavailableView("No reference available", systemImage: "book")
-                    } else {
-                        HStack(spacing: 12) {
-                            Button { moveRefIndex(-1) } label: { Image(systemName: "chevron.left") }
-                                .buttonStyle(.plain)
-                                .disabled(displayedRefs.count <= 1)
+    }
 
-                            Text("\(currentRefIndex + 1) of \(displayedRefs.count)")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
+    // MARK: - Setup
 
-                            Button { moveRefIndex(+1) } label: { Image(systemName: "chevron.right") }
-                                .buttonStyle(.plain)
-                                .disabled(displayedRefs.count <= 1)
+    @ViewBuilder
+    private var setupContent: some View {
+        Spacer(minLength: 24)
+        Text("Name the Bible person from a clue, or the clue from a name.")
+            .gameStartDescriptionStyle(title: "Who am I?", systemImage: "person.text.rectangle", tint: .brown)
 
-                            Spacer()
-                        }
+        GameSplashLaunchLayout(tint: .brown, isStartEnabled: vm.isReady, startAction: vm.startGame) {
+            GameLobbyPreview(kind: .whoAmI)
+        } configuration: {
+            WhoAmISetupControls(mode: $vm.mode, difficulty: $vm.difficulty)
+        } facts: {
+            GameSplashFacts(
+                first: ("number", "\(WhoAmIGameViewModel.questionsPerGame)", String(localized: "Questions")),
+                second: (
+                    "timer",
+                    vm.difficulty.timeLimit > 0 ? String(localized: "\(vm.difficulty.timeLimit) sec") : String(localized: "No limit"),
+                    String(localized: "Per question")
+                ),
+                third: ("square.stack.3d.up", "4", String(localized: "Choices"))
+            )
+        }
+        Spacer(minLength: 24)
+    }
 
-                        ScriptureLinksList(refs: displayedRefs, onTap: { ref in
-                            if let idx = refChoices.firstIndex(where: { $0 == ref }) {
-                                setCurrentRefIndex(idx)
-                            } else {
-                                selectedRef = ref
-                                selectionNonce = UUID()
-                            }
-                        }, onCopy: { ref in
-                            let s: String
-                            if let end = ref.endVerse, end != ref.startVerse {
-                                s = "\(ref.bookName) \(ref.chapter):\(ref.startVerse)-\(end)"
-                            } else {
-                                s = "\(ref.bookName) \(ref.chapter):\(ref.startVerse)"
-                            }
-                            UIPasteboard.general.string = s
-                        })
-                        .padding(.bottom, 4)
+    // MARK: - Gameplay
 
-                        if let preview = loadedPreview {
-                            ScripturePreviewCard(
-                                content: preview,
-                                refContext: selectedRef,
-                                onCopy: {
-                                    let text = preview.verses.map { $0.text }.joined(separator: " ")
-                                    UIPasteboard.general.string = "\(preview.title) — \(text)"
-                                },
-                                onClose: {
-                                    selectedRef = nil
-                                    loadedPreview = nil
+    private var progressText: String {
+        String(localized: "Question \(vm.questionNumber) of \(vm.totalQuestions)")
+    }
+
+    @ViewBuilder
+    private var reveal: some View {
+        if vm.roundOver, let person = vm.current {
+            WhoAmIRevealCard(
+                wasCorrect: vm.selectedChoice == vm.correctChoice,
+                wasTimedOut: vm.wasTimedOut,
+                person: person
+            )
+        }
+    }
+
+    @ViewBuilder
+    private var roundActions: some View {
+        if vm.roundOver {
+            if vm.isLastQuestion {
+                Button("See Results", systemImage: "flag.checkered", action: vm.nextRound)
+                    .buttonStyle(GameProminentButtonStyle(tint: .brown))
+            } else {
+                Button("Next Question", systemImage: "arrow.right", action: vm.nextRound)
+                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+            }
+        } else if debugAutoWinEnabled {
+            Button("WIN") {
+                vm.select(vm.correctChoice)
+            }
+            .buttonStyle(ModernPillButtonStyle(tint: .red))
+            .controlSize(.large)
+            .padding(.top, 6)
+            .accessibilityLabel("Win this round")
+        }
+    }
+
+    @ViewBuilder
+    private var compactBoard: some View {
+        GameScoreboardCard(
+            currentCorrect: vm.score,
+            currentAnswered: vm.answered,
+            currentStreak: vm.sessionStreak,
+            game: .whoami
+        )
+
+        GroupBox {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    Text(promptIsName ? "Name" : "Clue")
+                    Spacer()
+                    Text(progressText)
+                        .monospacedDigit()
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+                Text(vm.promptTitle)
+                    .font(promptIsName ? .title2.weight(.semibold) : .body)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .strokeBorder(questionBorderColor, lineWidth: timerIsActive ? 2 : 1)
+        )
+        .animation(.easeInOut(duration: 0.25), value: vm.remainingSeconds)
+
+        if timerIsActive {
+            GameTimerCard(
+                remainingSeconds: vm.remainingSeconds,
+                tint: timerTint,
+                isPulsing: vm.pulseOn
+            )
+        }
+
+        VStack(alignment: .leading, spacing: 8) {
+            Text(promptIsName ? "Which clue describes them?" : "Who am I?")
+                .font(.headline)
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
+                ForEach(vm.choices, id: \.self) { choice in
+                    Button {
+                        vm.select(choice)
+                    } label: {
+                        Text(choice)
+                            .font(promptIsName ? .footnote : .body.weight(.semibold))
+                            .multilineTextAlignment(promptIsName ? .leading : .center)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(
+                                maxWidth: .infinity,
+                                minHeight: promptIsName ? max(maxChoiceHeight, 96) : 40,
+                                maxHeight: promptIsName ? max(maxChoiceHeight, 96) : 40,
+                                alignment: promptIsName ? .leading : .center
+                            )
+                            .padding(promptIsName ? 16 : 10)
+                            .foregroundStyle(.primary)
+                            .contentShape(Rectangle())
+                            .background(
+                                GeometryReader { geo in
+                                    Color.clear
+                                        .preference(key: ChoiceHeightKey.self, value: geo.size.height)
                                 }
                             )
-                        } else {
-                            Text("Tap a reference to preview verses.")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
                     }
-                }
-                .padding()
-                .navigationTitle("Reference")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Close") { refSheetRequest = nil }
-                    }
-                }
-                .presentationDetents([.medium, .large])
-                .onAppear {
-                    if !displayedRefs.isEmpty, selectedRef == nil {
-                        currentRefIndex = max(0, min(currentRefIndex, displayedRefs.count - 1))
-                        selectedRef = displayedRefs[currentRefIndex]
-                        selectionNonce = UUID()
-                    }
-                    if let sr = selectedRef, loadedPreview == nil {
-                        loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
-                    }
+                    .buttonStyle(.plain)
+                    .disabled(vm.roundOver)
+                    .accessibilityValue(accessibilityState(for: choice))
+                    .background(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(backgroundColor(for: choice))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .strokeBorder(
+                                borderColor(for: choice),
+                                lineWidth: vm.roundOver && choice == vm.correctChoice ? 2 : 1
+                            )
+                    )
                 }
             }
-
-            content
-                .task(id: selectionNonce) {
-                    if let sr = selectedRef {
-                        loadedPreview = BibleReferenceLinker.loadVerses(for: sr)
-                    } else {
-                        loadedPreview = nil
-                    }
-                }
-        }
-    }
-
-    private func backgroundColor(for choice: String) -> Color {
-        guard vm.roundOver else { return Color(.secondarySystemBackground) }
-        if choice == vm.correctChoice { return .green.opacity(0.25) }
-        if let sel = vm.selectedChoice, sel == choice, choice != vm.correctChoice { return .red.opacity(0.25) }
-        return Color(.secondarySystemBackground)
-    }
-
-    private func borderColor(for choice: String) -> Color {
-        guard vm.roundOver else { return Color.primary.opacity(0.15) }
-        if choice == vm.correctChoice { return .green }
-        if let sel = vm.selectedChoice, sel == choice, choice != vm.correctChoice { return .red }
-        return Color.primary.opacity(0.15)
-    }
-
-    private var whoAmITimerIsActive: Bool {
-        vm.difficulty.timeLimit > 0 && !vm.roundOver && vm.selectedChoice == nil
-    }
-
-    private var whoAmIQuestionBorderColor: Color {
-        whoAmITimerIsActive ? timerTint(vm.remainingSeconds) : Color.primary.opacity(0.12)
-    }
-
-    private var whoAmIQuestionBorderWidth: CGFloat {
-        whoAmITimerIsActive ? 2 : 1
-    }
-
-    private func timerTint(_ secs: Int) -> Color {
-        if secs <= 5 { return .red }
-        if secs <= 10 { return .yellow }
-        return .green
-    }
-
-    // MARK: - Reference presentation
-
-    private func hasReference(for choice: String) -> Bool {
-        if let s = vm.referenceString(for: choice) {
-            return !s.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        }
-        return false
-    }
-
-    private func presentReferences(for choice: String) {
-        guard var refStr = vm.referenceString(for: choice),
-              !refStr.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            refChoices = []
-            selectedRef = nil
-            loadedPreview = nil
-            currentRefIndex = 0
-            refSheetRequest = ReferenceSheetRequest(references: [])
-            return
-        }
-
-        let nbspChars: [Character] = ["\u{00A0}", "\u{202F}", "\u{2007}"]
-        for ch in nbspChars {
-            refStr = refStr.replacingOccurrences(of: String(ch), with: " ")
-        }
-
-        let separators = CharacterSet(charactersIn: ",;")
-        let parts = refStr.components(separatedBy: separators)
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
-
-        var all: [ScriptureRef] = []
-        for part in parts {
-            let attributed = BibleReferenceLinker.linkify(part)
-            let refs = ScriptureRefExtractor.refs(in: attributed)
-            for r in refs {
-                if !all.contains(where: { $0 == r }) {
-                    all.append(r)
-                }
+            .onPreferenceChange(ChoiceHeightKey.self) { value in
+                maxChoiceHeight = value
             }
         }
 
-        if all.isEmpty {
-            let attributed = BibleReferenceLinker.linkify(refStr)
-            let refs = ScriptureRefExtractor.refs(in: attributed)
-            for r in refs {
-                if !all.contains(where: { $0 == r }) {
-                    all.append(r)
-                }
-            }
-        }
+        reveal
 
-        refChoices = all
-        currentRefIndex = 0
-
-        selectedRef = all.first
-        selectionNonce = UUID()
-        loadedPreview = nil
-        refSheetRequest = ReferenceSheetRequest(references: all)
+        roundActions
     }
 
-    private func setCurrentRefIndex(_ idx: Int) {
-        guard !refChoices.isEmpty else {
-            selectedRef = nil
-            loadedPreview = nil
-            return
-        }
-        let clamped = max(0, min(idx, refChoices.count - 1))
-        currentRefIndex = clamped
-        let ref = refChoices[clamped]
-        selectedRef = ref
-        selectionNonce = UUID()
-        loadedPreview = nil
-    }
-
-    private func moveRefIndex(_ delta: Int) {
-        guard !refChoices.isEmpty else { return }
-        let n = refChoices.count
-        let newIndex = (currentRefIndex + delta % n + n) % n
-        setCurrentRefIndex(newIndex)
-    }
-}
-
-private struct WhoAmISetupCard: View {
-    let difficulty: WhoAmIGameViewModel.Difficulty
-
-    private var difficultyTitle: LocalizedStringResource {
-        switch difficulty {
-        case .easy: "Easy"
-        case .normal: "Normal"
-        case .hard: "Hard"
-        }
-    }
-
-    private var timeLimitTitle: LocalizedStringResource {
-        switch difficulty {
-        case .easy: "No timer"
-        case .normal: "30 seconds per question"
-        case .hard: "15 seconds per question"
-        }
-    }
-
-    private var summary: LocalizedStringResource {
-        switch difficulty {
-        case .easy:
-            "You’ll see one clue and choose the correct Bible name from four options. Easy has no time limit."
-        case .normal:
-            "You’ll see one clue and choose the correct Bible name from four options within 30 seconds."
-        case .hard:
-            "You’ll see one clue and choose the correct Bible name from four options within 15 seconds."
-        }
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Your Game", systemImage: "checklist")
-                .font(.headline)
-                .foregroundStyle(.tint)
-
-            Text(summary)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Divider()
-
-            LabeledContent("Difficulty") {
-                Text(difficultyTitle)
-                    .fontWeight(.semibold)
-            }
-
-            LabeledContent("Time Limit") {
-                Text(timeLimitTitle)
-                    .fontWeight(.semibold)
-            }
-        }
-        .padding(16)
-        .frame(maxWidth: 620, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
-        }
-        .padding(.horizontal)
-        .accessibilityElement(children: .contain)
-    }
-}
-
-private struct WhoAmISetupControls: View {
-    @Binding var difficulty: WhoAmIGameViewModel.Difficulty
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Difficulty")
-                .font(.headline)
-
-            Picker("Difficulty", selection: $difficulty) {
-                Text("Easy").tag(WhoAmIGameViewModel.Difficulty.easy)
-                Text("Normal").tag(WhoAmIGameViewModel.Difficulty.normal)
-                Text("Hard").tag(WhoAmIGameViewModel.Difficulty.hard)
-            }
-            .pickerStyle(.segmented)
-        }
-        .frame(maxWidth: 620)
-        .padding(.horizontal)
-    }
-}
-
-private struct WhoAmIIPadGameBoard: View {
-    let score: Int
-    let answered: Int
-    let streak: Int
-    let promptTitle: String
-    let promptIsName: Bool
-    let choices: [String]
-    let roundOver: Bool
-    let isGameComplete: Bool
-    let correctChoice: String
-    let selectedChoice: String?
-    let isTimed: Bool
-    let remainingSeconds: Int
-    let timerTint: Color
-    let timerIsActive: Bool
-    let timerIsPulsing: Bool
-    @Binding var timerOnLeading: Bool
-    @Binding var usesMutedTimerStyle: Bool
-    let showsDebugWin: Bool
-    let onChoose: (String) -> Void
-    let onSkip: () -> Void
-    let onNext: () -> Void
-    let onRestart: () -> Void
-    let onDebugWin: () -> Void
-
-    var body: some View {
+    private var iPadBoard: some View {
         VStack(spacing: 20) {
             GameScoreboardCard(
-                currentCorrect: score,
-                currentAnswered: answered,
-                currentStreak: streak,
+                currentCorrect: vm.score,
+                currentAnswered: vm.answered,
+                currentStreak: vm.sessionStreak,
                 game: .whoami,
                 style: .dashboard
             )
@@ -566,64 +243,20 @@ private struct WhoAmIIPadGameBoard: View {
     }
 
     private var playCard: some View {
-        WhoAmIPlayCard(
-            promptTitle: promptTitle,
-            promptIsName: promptIsName,
-            choices: choices,
-            roundOver: roundOver,
-            isGameComplete: isGameComplete,
-            correctChoice: correctChoice,
-            selectedChoice: selectedChoice,
-            showsDebugWin: showsDebugWin,
-            onChoose: onChoose,
-            onSkip: onSkip,
-            onNext: onNext,
-            onRestart: onRestart,
-            onDebugWin: onDebugWin
-        )
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    private var timerCard: some View {
-        WhoAmITimerCard(
-            isTimed: isTimed,
-            remainingSeconds: remainingSeconds,
-            tint: timerTint,
-            isActive: timerIsActive,
-            isPulsing: timerIsPulsing,
-            resultIsCorrect: roundOver ? selectedChoice == correctChoice : nil,
-            usesMutedStyle: $usesMutedTimerStyle,
-            onSwapSides: { timerOnLeading.toggle() }
-        )
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
-
-private struct WhoAmIPlayCard: View {
-    let promptTitle: String
-    let promptIsName: Bool
-    let choices: [String]
-    let roundOver: Bool
-    let isGameComplete: Bool
-    let correctChoice: String
-    let selectedChoice: String?
-    let showsDebugWin: Bool
-    let onChoose: (String) -> Void
-    let onSkip: () -> Void
-    let onNext: () -> Void
-    let onRestart: () -> Void
-    let onDebugWin: () -> Void
-
-    var body: some View {
         VStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 6) {
-                Text(promptIsName ? "Name" : "Description")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                HStack {
+                    Text(promptIsName ? "Name" : "Clue")
+                    Spacer()
+                    Text(progressText)
+                        .monospacedDigit()
+                }
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
 
-                Text(promptTitle)
+                Text(vm.promptTitle)
                     .font(promptIsName ? .title.weight(.semibold) : .title3.weight(.medium))
-                    .lineLimit(7)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -634,14 +267,13 @@ private struct WhoAmIPlayCard: View {
                 ],
                 spacing: 12
             ) {
-                ForEach(choices, id: \.self) { choice in
+                ForEach(vm.choices, id: \.self) { choice in
                     Button {
-                        onChoose(choice)
+                        vm.select(choice)
                     } label: {
                         Text(choice)
                             .font(promptIsName ? .subheadline : .body.weight(.semibold))
                             .multilineTextAlignment(promptIsName ? .leading : .center)
-                            .lineLimit(promptIsName ? 6 : 2)
                             .fixedSize(horizontal: false, vertical: true)
                             .frame(
                                 maxWidth: .infinity,
@@ -653,6 +285,8 @@ private struct WhoAmIPlayCard: View {
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                    .disabled(vm.roundOver)
+                    .accessibilityValue(accessibilityState(for: choice))
                     .background(
                         backgroundColor(for: choice),
                         in: RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -661,68 +295,227 @@ private struct WhoAmIPlayCard: View {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .strokeBorder(
                                 borderColor(for: choice),
-                                lineWidth: roundOver && choice == correctChoice ? 2 : 1
+                                lineWidth: vm.roundOver && choice == vm.correctChoice ? 2 : 1
                             )
                     }
                 }
             }
 
+            reveal
+
             Spacer(minLength: 0)
 
-            if roundOver {
-                GameRoundNavigationButtons(
-                    canGoPrevious: false,
-                    canGoNext: !isGameComplete,
-                    onPrevious: {},
-                    onNext: onNext
-                )
-                if isGameComplete {
-                    Text("You answered every available question.")
-                        .font(.headline)
-                        .foregroundStyle(.green)
-
-                    Button("Start New Game", action: onRestart)
-                        .buttonStyle(ModernPillButtonStyle(tint: .brown))
-                }
-            } else {
-                Button("Skip", action: onSkip)
-                    .buttonStyle(ModernPillButtonStyle(tint: .orange))
-            }
-
-            if showsDebugWin && !roundOver {
-                Button("WIN", action: onDebugWin)
-                    .buttonStyle(ModernPillButtonStyle(tint: .red))
-                    .accessibilityLabel("Win this round")
-            }
+            roundActions
         }
         .padding(AppDesignMetrics.cardPadding)
         .heroCardSurface()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var timerCard: some View {
+        WhoAmITimerCard(
+            isTimed: vm.difficulty.timeLimit > 0,
+            remainingSeconds: vm.remainingSeconds,
+            tint: timerTint,
+            isActive: timerIsActive,
+            isPulsing: vm.pulseOn,
+            resultIsCorrect: vm.roundOver ? vm.selectedChoice == vm.correctChoice : nil,
+            usesMutedStyle: $usesMutedTimerStyle,
+            onSwapSides: { timerOnLeading.toggle() }
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    // MARK: - Helpers
+
+    private func accessibilityState(for choice: String) -> String {
+        guard vm.roundOver else { return "" }
+        if choice == vm.correctChoice { return String(localized: "Correct answer") }
+        if choice == vm.selectedChoice { return String(localized: "Your answer, incorrect") }
+        return ""
     }
 
     private func backgroundColor(for choice: String) -> Color {
-        guard roundOver else {
-            return Color(.secondarySystemBackground)
-        }
-        if choice == correctChoice {
-            return .green.opacity(0.25)
-        }
-        if choice == selectedChoice, choice != correctChoice {
-            return .red.opacity(0.25)
-        }
+        guard vm.roundOver else { return Color(.secondarySystemBackground) }
+        if choice == vm.correctChoice { return .green.opacity(0.25) }
+        if let sel = vm.selectedChoice, sel == choice, choice != vm.correctChoice { return .red.opacity(0.25) }
         return Color(.secondarySystemBackground)
     }
 
     private func borderColor(for choice: String) -> Color {
-        guard roundOver else {
-            return Color.primary.opacity(0.15)
-        }
-        if choice == correctChoice {
-            return .green
-        }
-        if choice == selectedChoice, choice != correctChoice {
-            return .red
-        }
+        guard vm.roundOver else { return Color.primary.opacity(0.15) }
+        if choice == vm.correctChoice { return .green }
+        if let sel = vm.selectedChoice, sel == choice, choice != vm.correctChoice { return .red }
         return Color.primary.opacity(0.15)
+    }
+
+    private var timerIsActive: Bool {
+        vm.difficulty.timeLimit > 0 && !vm.roundOver
+    }
+
+    private var questionBorderColor: Color {
+        timerIsActive ? timerTint : Color.primary.opacity(0.12)
+    }
+
+    /// Green, then yellow, then red as the question runs down, scaled to the time limit.
+    private var timerTint: Color {
+        let fraction = Double(vm.remainingSeconds) / Double(max(1, vm.difficulty.timeLimit))
+        if fraction <= 0.3 { return .red }
+        if fraction <= 0.6 { return .yellow }
+        return .green
+    }
+}
+
+private struct WhoAmISetupControls: View {
+    @Binding var mode: WhoAmIGameViewModel.Mode
+    @Binding var difficulty: WhoAmIGameViewModel.Difficulty
+
+    var body: some View {
+        VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Play")
+                    .font(.headline)
+
+                Picker("Play", selection: $mode) {
+                    ForEach(WhoAmIGameViewModel.Mode.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                Text(mode.detail)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Difficulty")
+                    .font(.headline)
+
+                Picker("Difficulty", selection: $difficulty) {
+                    ForEach(WhoAmIGameViewModel.Difficulty.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                Text(difficulty.detail)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .frame(maxWidth: 620)
+        .padding(.horizontal)
+    }
+}
+
+/// Who the answer was, and where they appear in the Bible.
+private struct WhoAmIRevealCard: View {
+    let wasCorrect: Bool
+    let wasTimedOut: Bool
+    let person: WhoAmIGameViewModel.Entry
+
+    private static let shownBookCount = 6
+
+    private var booksText: String {
+        let shown = person.books.prefix(Self.shownBookCount).joined(separator: ", ")
+        let remaining = person.books.count - Self.shownBookCount
+        return remaining > 0 ? String(localized: "\(shown), and \(remaining) more") : shown
+    }
+
+    private var title: LocalizedStringKey {
+        if wasCorrect { return "Correct!" }
+        return wasTimedOut ? "Time’s up" : "Not quite"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label(title, systemImage: wasCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
+                .font(.headline)
+                .foregroundStyle(wasCorrect ? Color.green : Color.red)
+
+            if let qualifier = person.qualifier {
+                Text("\(person.name) (\(qualifier))")
+                    .font(.title3.weight(.bold))
+            } else {
+                Text(person.name)
+                    .font(.title3.weight(.bold))
+            }
+
+            Text(person.clue)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if !person.books.isEmpty {
+                Label {
+                    Text("Appears in \(booksText)")
+                        .fixedSize(horizontal: false, vertical: true)
+                } icon: {
+                    Image(systemName: "books.vertical")
+                }
+                .font(.subheadline)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(
+            (wasCorrect ? Color.green : Color.red).opacity(0.1),
+            in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+        )
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private struct WhoAmIResultsCard: View {
+    let score: Int
+    let total: Int
+    let bestStreak: Int
+    let bestGameScore: Int
+    let isNewBest: Bool
+    let onPlayAgain: () -> Void
+    let onChangeSettings: () -> Void
+
+    private var accuracy: Int {
+        guard total > 0 else { return 0 }
+        return Int((Double(score) / Double(total) * 100).rounded())
+    }
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Image(systemName: isNewBest ? "trophy.fill" : "flag.checkered")
+                .font(.system(size: 52, weight: .semibold))
+                .foregroundStyle(isNewBest ? Color.yellow : Color.brown)
+
+            VStack(spacing: 6) {
+                Text(isNewBest ? "New Best Game!" : "Game Over")
+                    .font(.title.weight(.bold))
+
+                Text("\(score) of \(total) correct")
+                    .font(.title2.weight(.semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
+            }
+
+            GameSplashFacts(
+                first: ("percent", "\(accuracy)%", String(localized: "Accuracy")),
+                second: ("flame.fill", "\(bestStreak)", String(localized: "Best streak")),
+                third: ("trophy", "\(bestGameScore)/\(total)", String(localized: "Best game"))
+            )
+
+            VStack(spacing: 10) {
+                Button("Play Again", systemImage: "arrow.clockwise", action: onPlayAgain)
+                    .buttonStyle(GameProminentButtonStyle(tint: .brown))
+
+                Button("Change Settings", systemImage: "slider.horizontal.3", action: onChangeSettings)
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+            }
+        }
+        .padding(24)
+        .frame(maxWidth: 520)
+        .heroCardSurface()
     }
 }
 
@@ -741,7 +534,7 @@ private struct WhoAmITimerCard: View {
     }
 
     private var timerTextColor: Color {
-        remainingSeconds > 5 && remainingSeconds <= 10 ? .black : .white
+        tint == .yellow ? .black : .white
     }
 
     private var displayTint: Color {
@@ -825,28 +618,26 @@ private struct WhoAmITimerCard: View {
         .heroCardSurface()
     }
 
+    /// Untimed games still show the result once the question is answered.
     private var statusTitle: LocalizedStringKey {
-        if !isTimed {
-            return "Untimed"
+        if let resultIsCorrect, !isActive {
+            return resultIsCorrect ? "Correct" : "Incorrect"
         }
-        guard !isActive, let resultIsCorrect else { return "Time Remaining" }
-        return resultIsCorrect ? "Correct" : "Incorrect"
+        return isTimed ? "Time Remaining" : "Untimed"
     }
 
     private var statusSystemImage: String {
-        if !isTimed {
-            return "infinity"
+        if let resultIsCorrect, !isActive {
+            return resultIsCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"
         }
-        guard !isActive, let resultIsCorrect else { return "timer" }
-        return resultIsCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"
+        return isTimed ? "timer" : "infinity"
     }
 
     private var statusTint: Color {
-        if !isTimed {
-            return .secondary
+        if let resultIsCorrect, !isActive {
+            return resultIsCorrect ? .green : .red
         }
-        guard !isActive, let resultIsCorrect else { return tint }
-        return resultIsCorrect ? .green : .red
+        return isTimed ? tint : .secondary
     }
 }
 

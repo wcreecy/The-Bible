@@ -6,21 +6,51 @@ import Observation
 @Observable
 final class WhoAmIGameViewModel {
     enum Mode: String, CaseIterable, Identifiable {
-        case names = "Names"     // prompt: name -> choices: descriptions
-        case reverse = "Bible Names"   // prompt: clue -> choices: names
+        case clueToName     // prompt: clue -> choices: names
+        case nameToClue     // prompt: name -> choices: clues
 
         var id: String { rawValue }
+
+        var title: LocalizedStringResource {
+            switch self {
+            case .clueToName: "Clue → Name"
+            case .nameToClue: "Name → Clue"
+            }
+        }
+
+        var detail: LocalizedStringResource {
+            switch self {
+            case .clueToName: "Read a clue and pick the person it describes."
+            case .nameToClue: "See a name and pick the clue that describes them."
+            }
+        }
     }
 
     enum Difficulty: String, CaseIterable, Identifiable {
         case easy, normal, hard
         var id: String { rawValue }
 
+        var title: LocalizedStringResource {
+            switch self {
+            case .easy: "Easy"
+            case .normal: "Normal"
+            case .hard: "Hard"
+            }
+        }
+
         var timeLimit: Int {
             switch self {
             case .easy: return 0
             case .normal: return 30
             case .hard: return 15
+            }
+        }
+
+        var detail: LocalizedStringResource {
+            switch self {
+            case .easy: "Well-known people, no timer, and wrong choices from anywhere."
+            case .normal: "Adds less familiar people. 30 seconds, with wrong choices from the same testament."
+            case .hard: "Everyone in the game. 15 seconds, with wrong choices from the same books."
             }
         }
 
@@ -35,32 +65,47 @@ final class WhoAmIGameViewModel {
 
     struct Entry: Hashable {
         let id: Int
+        /// The name without the description in parentheses, e.g. "Joseph".
         let name: String
-        let description: String
-        let firstReference: String?
-        // NEW: full comma-separated references line (preferred for Who Am I reference sheet)
-        let referencesLine: String?
+        /// The description in parentheses in the data, e.g. "son of Jacob". Shown only in the reveal.
+        let qualifier: String?
+        let clue: String
+        let books: [String]
         let difficulty: String
 
+        /// True when most of the person's books are in the Old Testament.
+        var isOldTestament: Bool {
+            let canon = BibleCanon.fallbackCanon
+            let oldCount = books.filter { (canon.firstIndex(of: $0) ?? 0) < 39 }.count
+            return oldCount * 2 >= books.count
+        }
+
+        var nameKey: String { name.lowercased() }
+
         func matchesDifficulty(_ selectedDifficulty: Difficulty) -> Bool {
-            switch selectedDifficulty {
-            case .easy:
-                return difficulty.caseInsensitiveCompare("Easy") == .orderedSame
-            case .normal:
-                return difficulty.caseInsensitiveCompare("Easy") == .orderedSame
-                    || difficulty.caseInsensitiveCompare("Medium") == .orderedSame
-                    || difficulty.caseInsensitiveCompare("Normal") == .orderedSame
-            case .hard:
-                return true
+            switch difficulty.lowercased() {
+            case "easy": true
+            case "medium", "normal": selectedDifficulty != .easy
+            default: selectedDifficulty == .hard
             }
         }
     }
 
+    static let questionsPerGame = 10
+    private static let modeKey = "whoamiMode"
+    private static let difficultyKey = "whoamiDifficulty"
+
     // Start screen state
     var started: Bool = false
-    var mode: Mode = .reverse
-    var difficulty: Difficulty = .normal {
-        didSet { seedStreakFromPersistence() }
+    var isComplete: Bool = false
+    var mode: Mode = Mode(rawValue: UserDefaults.standard.string(forKey: WhoAmIGameViewModel.modeKey) ?? "") ?? .clueToName {
+        didSet { UserDefaults.standard.set(mode.rawValue, forKey: Self.modeKey) }
+    }
+    var difficulty: Difficulty = Difficulty(rawValue: UserDefaults.standard.string(forKey: WhoAmIGameViewModel.difficultyKey) ?? "") ?? .normal {
+        didSet {
+            UserDefaults.standard.set(difficulty.rawValue, forKey: Self.difficultyKey)
+            currentBestStreak = max(currentBestStreak, persistentStreak.best)
+        }
     }
 
     // Data
@@ -71,11 +116,30 @@ final class WhoAmIGameViewModel {
         entries.filter { $0.matchesDifficulty(difficulty) }
     }
 
+    var isReady: Bool { eligibleEntries.count >= 4 }
+
     // Current round
-    var promptTitle: String = ""
-    var choices: [String] = []
-    var correctChoice: String = ""
+    private(set) var current: Entry?
+    private(set) var choiceEntries: [Entry] = []
     var selectedChoice: String? = nil
+    private(set) var questionNumber: Int = 0
+    private(set) var totalQuestions: Int = 0
+
+    var promptTitle: String {
+        guard let current else { return "" }
+        return mode == .clueToName ? current.clue : current.name
+    }
+
+    var choices: [String] {
+        choiceEntries.map { mode == .clueToName ? $0.name : $0.clue }
+    }
+
+    var correctChoice: String {
+        guard let current else { return "" }
+        return mode == .clueToName ? current.name : current.clue
+    }
+
+    var isLastQuestion: Bool { questionQueue.isEmpty }
 
     // Timer
     var remainingSeconds: Int = 0
@@ -85,55 +149,41 @@ final class WhoAmIGameViewModel {
     // Scoring
     var score: Int = 0
     var answered: Int = 0
-    var currentStreak: Int = 0
+    /// Correct answers in a row during this game.
+    var sessionStreak: Int = 0
+    var sessionBestStreak: Int = 0
     var currentBestStreak: Int = 0
+    var bestGameScore: Int = 0
+    var isNewBestGame: Bool = false
 
-    // All-time (combined across difficulties)
-    private var allTimeCorrectKey: String { "whoamiAllTimeCorrect_all" }
-    private var allTimeAnsweredKey: String { "whoamiAllTimeAnswered_all" }
-    private var allTimeBestStreakKey: String { "whoamiAllTimeBestStreak_all" }
-
-    var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: allTimeCorrectKey) }
-    var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: allTimeAnsweredKey) }
-    var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: allTimeBestStreakKey) }
-
-    // UI flags
     var roundOver: Bool = false
-    var showReveal: Bool = false
-    var isGameComplete: Bool = false
-
-    // NEW: Jesus bonus alert flag (bound in view)
-    var showJesusBonusAlert: Bool = false
+    var wasTimedOut: Bool = false
 
     // MARK: - Persistent streak (per difficulty)
     private var persistentStreak: PersistentGameStreak {
         PersistentGameStreak(game: "whoami", variant: difficulty.rawValue)
     }
 
-    private func seedStreakFromPersistence() {
-        currentStreak = persistentStreak.current
-        currentBestStreak = max(currentBestStreak, persistentStreak.best)
-    }
+    private var bestGameScoreKey: String { "whoamiBestGameScore_\(difficulty.rawValue)" }
 
     // Load data
     func onAppear() {
-        // Seed streaks from persisted values so they survive navigation/relaunch
-        seedStreakFromPersistence()
+        currentBestStreak = max(currentBestStreak, persistentStreak.best)
 
         Task {
             if entries.isEmpty {
                 let characters = await GameDataLoaders.loadCharactersAsync()
                 self.entries = characters.compactMap { character in
-                    let name = character.name.trimmingCharacters(in: .whitespacesAndNewlines)
-                    let description = character.shortDescription.trimmingCharacters(in: .whitespacesAndNewlines)
-                    guard !name.isEmpty, !description.isEmpty else { return nil }
+                    let parts = Self.split(character.name)
+                    let clue = character.shortDescription.trimmingCharacters(in: .whitespacesAndNewlines)
+                    guard !parts.name.isEmpty, !clue.isEmpty else { return nil }
 
                     return Entry(
                         id: character.id,
-                        name: name,
-                        description: description,
-                        firstReference: nil,
-                        referencesLine: nil,
+                        name: parts.name,
+                        qualifier: parts.qualifier,
+                        clue: clue,
+                        books: character.books,
                         difficulty: character.difficulty
                     )
                 }
@@ -141,65 +191,51 @@ final class WhoAmIGameViewModel {
         }
     }
 
+    /// Removes a trailing description in parentheses: "Joseph (son of Jacob)" → ("Joseph", "son of Jacob").
+    private static func split(_ name: String) -> (name: String, qualifier: String?) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let open = trimmed.firstIndex(of: "("), trimmed.hasSuffix(")") else { return (trimmed, nil) }
+        let base = trimmed[..<open].trimmingCharacters(in: .whitespaces)
+        let qualifier = trimmed[trimmed.index(after: open)..<trimmed.index(before: trimmed.endIndex)]
+            .trimmingCharacters(in: .whitespaces)
+        return (base.isEmpty ? trimmed : base, qualifier.isEmpty ? nil : qualifier)
+    }
+
+    // MARK: - Game flow
+
     func startGame() {
+        guard isReady else { return }
         score = 0
         answered = 0
-        // Do NOT reset persistent streaks here; seed from persistence
-        seedStreakFromPersistence()
-        roundOver = false
-        showReveal = false
-        selectedChoice = nil
-        questionQueue = eligibleEntries.shuffled()
-        isGameComplete = false
+        sessionStreak = 0
+        sessionBestStreak = 0
+        isNewBestGame = false
+        currentBestStreak = max(currentBestStreak, persistentStreak.best)
+        questionQueue = Array(eligibleEntries.shuffled().prefix(Self.questionsPerGame))
+        totalQuestions = questionQueue.count
+        questionNumber = 0
+        isComplete = false
         started = true
         nextRound()
     }
 
+    /// Moves to the next question, or to the results once all are answered.
     func nextRound() {
         stopTimer()
-        guard !isGameComplete else { return }
-        let questionEntries = eligibleEntries
-        guard questionEntries.count >= 4 else {
-            promptTitle = "Not enough data"
-            choices = []
-            correctChoice = ""
-            selectedChoice = nil
-            roundOver = true
-            showReveal = true
+        guard !questionQueue.isEmpty else {
+            finishGame()
             return
         }
+
+        let target = questionQueue.removeFirst()
+        let wrong = wrongChoices(for: target)
+        current = target
+        choiceEntries = (wrong + [target]).shuffled()
+        questionNumber += 1
         selectedChoice = nil
         roundOver = false
-        showReveal = false
+        wasTimedOut = false
 
-        guard !questionQueue.isEmpty else {
-            isGameComplete = true
-            return
-        }
-
-        // Generate a question (optionally force Jesus for testing)
-        let forceJesus = UserDefaults.standard.bool(forKey: "forceJesusTestEnabled")
-        let correct: Entry
-        if forceJesus, let jesusIndex = questionQueue.firstIndex(where: { isJesusName($0.name) }) {
-            correct = questionQueue.remove(at: jesusIndex)
-        } else {
-            correct = questionQueue.removeFirst()
-        }
-
-        switch mode {
-        case .names:
-            // Prompt is the exact name; choices are descriptions (1 correct + 3 random wrong)
-            promptTitle = correct.name
-            correctChoice = correct.description
-            choices = fourRandomDescriptions(for: correct, from: questionEntries)
-        case .reverse:
-            // Prompt is the exact description; choices are names (1 correct + 3 random wrong)
-            promptTitle = correct.description
-            correctChoice = correct.name
-            choices = fourRandomNames(for: correct, from: questionEntries)
-        }
-
-        // Reset timer per difficulty
         remainingSeconds = difficulty.timeLimit
         if remainingSeconds > 0 {
             startTimer()
@@ -209,117 +245,103 @@ final class WhoAmIGameViewModel {
     func select(_ choice: String) {
         guard !roundOver else { return }
         selectedChoice = choice
-        stopTimer()
-        answered += 1
-        let isCorrect = (choice == correctChoice)
-        if isCorrect {
-            score += 1
-
-            // Persistent streak: extend on correct
-            let streak = persistentStreak.recordWin()
-            currentStreak = streak.current
-            currentBestStreak = max(currentBestStreak, streak.best)
-
-            GameStats.shared.recordRound(
-                game: .whoami,
-                difficulty: difficulty.statsDifficulty,
-                correct: 1,
-                answered: 1,
-                currentBestStreak: currentBestStreak
-            )
-
-            // Jesus bonus popup trigger:
-            if (mode == .names && isJesusName(promptTitle)) || (mode == .reverse && isJesusName(correctChoice)) {
-                showJesusBonusAlert = true
-            }
-        } else {
-            // Persistent streak: reset on incorrect
-            persistentStreak.reset()
-            currentStreak = 0
-
-            GameStats.shared.recordRound(
-                game: .whoami,
-                difficulty: difficulty.statsDifficulty,
-                correct: 0,
-                answered: 1,
-                currentBestStreak: currentBestStreak
-            )
-        }
-        roundOver = true
-        showReveal = true
-        finishGameIfNeeded()
+        finishRound(correct: choice == correctChoice)
     }
 
-    func skipOrTimeout() {
+    private func timeOut() {
         guard !roundOver else { return }
+        wasTimedOut = true
+        finishRound(correct: false)
+    }
+
+    private func finishRound(correct: Bool) {
         stopTimer()
+        roundOver = true
         answered += 1
-        persistentStreak.reset()
-        currentStreak = 0
+
+        if correct {
+            score += 1
+            sessionStreak += 1
+            sessionBestStreak = max(sessionBestStreak, sessionStreak)
+            // Persistent streak: extend on correct
+            let streak = persistentStreak.recordWin()
+            currentBestStreak = max(currentBestStreak, streak.best)
+        } else {
+            // Persistent streak: reset on incorrect or timeout
+            sessionStreak = 0
+            persistentStreak.reset()
+        }
+
         GameStats.shared.recordRound(
             game: .whoami,
             difficulty: difficulty.statsDifficulty,
-            correct: 0,
+            correct: correct ? 1 : 0,
             answered: 1,
             currentBestStreak: currentBestStreak
         )
-        roundOver = true
-        showReveal = true
-        finishGameIfNeeded()
     }
 
-    private func finishGameIfNeeded() {
-        isGameComplete = questionQueue.isEmpty
+    private func finishGame() {
+        let previousBest = UserDefaults.standard.integer(forKey: bestGameScoreKey)
+        isNewBestGame = score > previousBest
+        bestGameScore = max(previousBest, score)
+        if isNewBestGame {
+            UserDefaults.standard.set(score, forKey: bestGameScoreKey)
+        }
+        current = nil
+        isComplete = true
+    }
+
+    /// Back to the start screen, e.g. from the results or when leaving mid-game.
+    func returnToSetup() {
+        stopTimer()
+        questionQueue = []
+        current = nil
+        choiceEntries = []
+        selectedChoice = nil
+        remainingSeconds = 0
+        roundOver = false
+        isComplete = false
+        started = false
     }
 
     func endRoundWhenLeavingScreen() {
         guard started, answered > 0 else { return }
-
-        stopTimer()
-        questionQueue = []
-        promptTitle = ""
-        choices = []
-        correctChoice = ""
-        selectedChoice = nil
-        remainingSeconds = 0
-        roundOver = false
-        showReveal = false
-        isGameComplete = false
-        started = false
+        returnToSetup()
     }
 
-    // MARK: - References lookup for sheet
+    // MARK: - Choices
 
-    // Prefer the full comma-separated references line when available; fall back to firstReference.
-    func referenceString(for choice: String) -> String? {
-        switch mode {
-        case .names:
-            // choice is a description
-            guard let entry = entries.first(where: { $0.description == choice }) else { return nil }
-            return entry.referencesLine ?? entry.firstReference
-        case .reverse:
-            // choice is a name
-            guard let entry = entries.first(where: { $0.name == choice }) else { return nil }
-            return entry.referencesLine ?? entry.firstReference
+    /// Three wrong people. Easy draws from anyone, Normal prefers the same testament, and
+    /// Hard prefers people who appear in the same books. Choices never share a name or a
+    /// clue, so there is only ever one right answer.
+    private func wrongChoices(for target: Entry) -> [Entry] {
+        let pool = eligibleEntries.filter { $0.id != target.id }
+        let targetBooks = Set(target.books)
+        let sameTestament = pool.filter { $0.isOldTestament == target.isOldTestament }
+
+        let tiers: [[Entry]]
+        switch difficulty {
+        case .easy:
+            tiers = [pool]
+        case .normal:
+            tiers = [sameTestament, pool]
+        case .hard:
+            tiers = [pool.filter { !targetBooks.isDisjoint(with: $0.books) }, sameTestament, pool]
         }
-    }
 
-    // MARK: - Choice builders (global random wrong answers)
-
-    private func fourRandomDescriptions(for correct: Entry, from entries: [Entry]) -> [String] {
-        // Unique descriptions from the selected difficulty, excluding the correct one
-        var universe = Array(Set(entries.map { $0.description })).filter { $0 != correct.description }
-        universe.shuffle()
-        let wrong = Array(universe.prefix(3))
-        return (wrong + [correct.description]).shuffled()
-    }
-
-    private func fourRandomNames(for correct: Entry, from entries: [Entry]) -> [String] {
-        // Unique names from the selected difficulty, excluding the correct one
-        var universe = Array(Set(entries.map { $0.name })).filter { $0 != correct.name }
-        universe.shuffle()
-        let wrong = Array(universe.prefix(3))
-        return (wrong + [correct.name]).shuffled()
+        var picks: [Entry] = []
+        var usedNames: Set<String> = [target.nameKey]
+        var usedClues: Set<String> = [target.clue]
+        for tier in tiers {
+            for entry in tier.shuffled() where picks.count < 3 {
+                guard !usedNames.contains(entry.nameKey), !usedClues.contains(entry.clue) else { continue }
+                usedNames.insert(entry.nameKey)
+                usedClues.insert(entry.clue)
+                picks.append(entry)
+            }
+        }
+        return picks
     }
 
     // MARK: - Timer
@@ -349,7 +371,7 @@ final class WhoAmIGameViewModel {
             }
         }
         if remainingSeconds == 0 {
-            skipOrTimeout()
+            timeOut()
         }
     }
 
@@ -357,12 +379,5 @@ final class WhoAmIGameViewModel {
         timerTask?.cancel()
         timerTask = nil
         pulseOn = false
-    }
-
-    // MARK: - Jesus detection helper
-    private func isJesusName(_ s: String) -> Bool {
-        let trimmed = s.trimmingCharacters(in: .whitespacesAndNewlines)
-        let lower = trimmed.lowercased()
-        return lower == "jesus" || lower == "jesus christ"
     }
 }
