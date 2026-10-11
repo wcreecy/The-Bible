@@ -6,76 +6,134 @@ struct HangmanGameView: View {
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
 
     enum Theme: String, CaseIterable, Identifiable {
+        // Raw values are stored in settings and per-category stats.
         case all = "All"
         case people = "People"
         case places = "Places"
         case books = "Books"
         var id: String { rawValue }
+
+        var title: LocalizedStringResource {
+            switch self {
+            case .all: "Mixed"
+            case .people: "People"
+            case .places: "Places"
+            case .books: "Books"
+            }
+        }
+
+        var systemImage: String {
+            switch self {
+            case .people: "person.fill"
+            case .places: "mappin.and.ellipse"
+            case .books: "book.fill"
+            case .all: "square.grid.2x2.fill"
+            }
+        }
     }
+
     enum Difficulty: String, CaseIterable, Identifiable {
         case easy = "Easy"
         case normal = "Normal"   // was Medium
         case hard = "Hard"
         var id: String { rawValue }
+
+        var title: LocalizedStringResource {
+            switch self {
+            case .easy: "Easy"
+            case .normal: "Normal"
+            case .hard: "Hard"
+            }
         }
 
-    @State private var started = false
+        var maxWrong: Int {
+            switch self {
+            case .easy: 8
+            case .normal: 6
+            case .hard: 5
+            }
+        }
+
+        var detail: LocalizedStringResource {
+            switch self {
+            case .easy: "Well-known names, 8 mistakes, and a clue for every word."
+            case .normal: "Adds less familiar names and allows 6 mistakes. A clue costs one mistake."
+            case .hard: "Every name in the game, 5 mistakes, and no clues."
+            }
+        }
+
+        var clueSummary: String {
+            switch self {
+            case .easy: String(localized: "Shown")
+            case .normal: String(localized: "−1 mistake")
+            case .hard: String(localized: "None")
+            }
+        }
+
+        var statsDifficulty: GameStats.Difficulty {
+            switch self {
+            case .easy: .easy
+            case .normal: .medium
+            case .hard: .hard
+            }
+        }
+
+        /// Easy uses easy entries, Normal adds medium ones, and Hard uses everything.
+        func includes(_ entryDifficulty: String) -> Bool {
+            switch entryDifficulty.lowercased() {
+            case "easy": true
+            case "medium", "normal": self != .easy
+            default: self == .hard
+            }
+        }
+    }
+
+    static let wordsPerGame = 10
+
+    private enum Phase {
+        case setup
+        case playing
+        case results
+    }
+
+    /// One puzzle: the name to guess plus what's revealed about it.
+    private struct HangmanWord {
+        let answer: String
+        let category: Theme
+        let clue: String
+        /// The description in parentheses in the data, e.g. "son of Jacob". Not part of the puzzle.
+        let qualifier: String?
+        let reference: String?
+    }
 
     @AppStorage("hangmanTheme") private var theme: Theme = .all
     @AppStorage("hangmanDifficulty") private var difficulty: Difficulty = .normal
 
-    @State private var targetWord: String = ""
-    @State private var displayWord: String = ""
-
-    @State private var guessedLetters: Set<Character> = []
-    @State private var correctLetters: Set<Character> = []
-    @State private var wrongLetters: Set<Character> = []
-
-    @State private var wrongGuesses: Int = 0
-    @State private var maxWrong: Int = 7
-
-    @State private var score: Int = 0
-    @State private var answered: Int = 0
-    @State private var roundOver: Bool = false
-    @State private var didWin: Bool = false
-
-    @State private var currentStreak: Int = 0
-    @State private var currentBestStreak: Int = 0
-
-    // Always show aggregated all-time across difficulties
-    private var allTimeCorrect: Int {
-        UserDefaults.standard.integer(forKey: "hangmanAllTimeCorrect_all")
-    }
-    private var allTimeAnswered: Int {
-        UserDefaults.standard.integer(forKey: "hangmanAllTimeAnswered_all")
-    }
-    private var allTimeBestStreak: Int {
-        UserDefaults.standard.integer(forKey: "hangmanAllTimeBestStreak_all")
-    }
-
+    @State private var phase: Phase = .setup
     @State private var loadedPeople: [BibleCharacter] = []
     @State private var loadedPlaces: [BibleLocationChallenge] = []
 
-    @State private var navigateToReader: Bool = false
-    @State private var navBook: Book? = nil
-    @State private var navChapter: Chapter? = nil
-    @State private var navStartVerse: Int = 1
+    // Game
+    @State private var deck: [HangmanWord] = []
+    @State private var current: HangmanWord?
+    @State private var wordNumber: Int = 0
+    @State private var totalWords: Int = 0
 
-    // Current round metadata used by UI and snapshot
-    @State private var currentRoundCategory: Theme = .all
-    @State private var currentTargetReference: String? = nil
+    // Round
+    @State private var guessedLetters: Set<Character> = []
+    @State private var wrongGuesses: Int = 0
+    @State private var clueRevealed: Bool = false
+    @State private var roundOver: Bool = false
+    @State private var didWin: Bool = false
 
-    private struct HangmanSnapshot: Identifiable {
-        let id = UUID()
-        let category: Theme
-        let targetWord: String
-        let didWin: Bool
-        let wrongGuesses: Int
-        let maxWrong: Int
-        let reference: String?
-    }
-    @State private var history: [HangmanSnapshot] = []
-    @State private var showPreviousSheet: Bool = false
+    // Scoring
+    @State private var score: Int = 0
+    @State private var answered: Int = 0
+    @State private var sessionStreak: Int = 0
+    @State private var sessionBestStreak: Int = 0
+    @State private var currentBestStreak: Int = 0
+    @State private var bestGameScore: Int = 0
+    @State private var isNewBestGame: Bool = false
 
     // Smart link style preview state (mirror Wordle)
     @State private var showRefSheet: Bool = false
@@ -87,25 +145,42 @@ struct HangmanGameView: View {
     @State private var showsOnScreenKeyboard: Bool = true
     @State private var showsHangmanCardFirst: Bool = false
 
-    // MARK: - Persistent streak (per difficulty)
-    private var persistentStreak: PersistentGameStreak {
-        PersistentGameStreak(game: "hangman", variant: difficultyKeySuffix())
+    private var maxWrong: Int { difficulty.maxWrong }
+
+    private var answerLetters: Set<Character> {
+        Set((current?.answer ?? "").uppercased().filter(\.isLetter))
     }
 
-    private func seedStreakFromPersistence() {
-        currentStreak = persistentStreak.current
-        currentBestStreak = max(currentBestStreak, persistentStreak.best)
+    private var correctLetters: Set<Character> { guessedLetters.intersection(answerLetters) }
+    private var wrongLetters: Set<Character> { guessedLetters.subtracting(answerLetters) }
+
+    private var isLastWord: Bool { deck.isEmpty }
+
+    private var canRevealClue: Bool {
+        difficulty == .normal && !clueRevealed && !roundOver && wrongGuesses < maxWrong - 1
     }
+
+    private var showsClue: Bool {
+        difficulty == .easy || clueRevealed || roundOver
+    }
+
+    // MARK: - Persistent streak (per difficulty)
+    private var persistentStreak: PersistentGameStreak {
+        PersistentGameStreak(game: "hangman", variant: difficulty.rawValue.lowercased())
+    }
+
+    private var bestGameScoreKey: String { "hangmanBestGameScore_\(difficulty.rawValue.lowercased())" }
 
     var body: some View {
         GeometryReader { geometry in
-            let usesWideLayout = started && geometry.size.width >= 900
+            let usesWideLayout = phase == .playing && geometry.size.width >= 900
 
             ScrollView {
                 VStack(spacing: 12) {
-                    if !started {
+                    switch phase {
+                    case .setup:
                         startSection
-                    } else {
+                    case .playing:
                         #if canImport(UIKit)
                         KeyCaptureRepresentable(
                             onKey: { ch in
@@ -116,7 +191,7 @@ struct HangmanGameView: View {
                             onBackspace: {},
                             onEnter: {
                                 if roundOver {
-                                    nextRound()
+                                    nextWord()
                                 }
                             }
                         )
@@ -129,8 +204,9 @@ struct HangmanGameView: View {
                             availableHeight: geometry.size.height - 24
                         )
 
-                        if debugAutoWinEnabled, started, !roundOver {
+                        if debugAutoWinEnabled, !roundOver {
                             Button("WIN") {
+                                guessedLetters.formUnion(answerLetters)
                                 endRound(win: true)
                             }
                             .buttonStyle(ModernPillButtonStyle(tint: .red))
@@ -138,6 +214,18 @@ struct HangmanGameView: View {
                             .padding(.top, 6)
                             .accessibilityLabel("Win this round")
                         }
+                    case .results:
+                        Spacer(minLength: 32)
+                        HangmanResultsCard(
+                            score: score,
+                            total: totalWords,
+                            bestStreak: sessionBestStreak,
+                            bestGameScore: bestGameScore,
+                            isNewBest: isNewBestGame,
+                            onPlayAgain: startGame,
+                            onChangeSettings: { phase = .setup }
+                        )
+                        .frame(maxWidth: .infinity)
                     }
                 }
                 .padding(.horizontal)
@@ -149,33 +237,26 @@ struct HangmanGameView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                if started {
+                if phase != .setup {
                     GameNavigationTitle(title: "Hangman", systemImage: "text.word.spacing", tint: .teal)
                 }
             }
         }
+        .task {
+            if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadCharactersAsync() }
+            if loadedPlaces.isEmpty { loadedPlaces = await GameDataLoaders.loadLocationChallengesAsync() }
+        }
         .onAppear {
-            Task {
-                if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadCharactersAsync() }
-                if loadedPlaces.isEmpty { loadedPlaces = await GameDataLoaders.loadLocationChallengesAsync() }
+            currentBestStreak = persistentStreak.best
+        }
+        .onChange(of: difficulty) { _, _ in
+            currentBestStreak = persistentStreak.best
+        }
+        .onDisappear {
+            // Leaving after answering begins a new game on return.
+            if phase != .setup && answered > 0 {
+                phase = .setup
             }
-            // Seed streaks from persisted values (survive app relaunch/navigation)
-            seedStreakFromPersistence()
-        }
-        .onChange(of: difficulty) { _, newValue in
-            applyMaxWrong(for: newValue)
-            // When difficulty changes, switch to that difficulty’s persisted streaks
-            seedStreakFromPersistence()
-        }
-        .navigationDestination(isPresented: $navigateToReader) {
-            if let book = navBook, let chapter = navChapter {
-                ReadingView(book: book, chapter: chapter, startVerse: navStartVerse)
-                    .id("\(book.name)-\(chapter.number)-\(navStartVerse)")
-            }
-        }
-        .toolbar { }
-        .sheet(isPresented: $showPreviousSheet) {
-            previousRoundSheet()
         }
         .sheet(isPresented: $showRefSheet, onDismiss: {
             selectedRef = nil
@@ -222,23 +303,22 @@ struct HangmanGameView: View {
         Text("Guess the person, place or book from the Bible")
             .gameStartDescriptionStyle(title: "Hangman", systemImage: "text.word.spacing", tint: .teal)
 
-        GameSplashLaunchLayout(tint: .teal, startAction: startGame) {
+        GameSplashLaunchLayout(
+            tint: .teal,
+            isStartEnabled: !loadedPeople.isEmpty && !loadedPlaces.isEmpty,
+            startAction: startGame
+        ) {
             GameLobbyPreview(kind: .hangman)
         } configuration: {
-            HangmanSetupCard(
-                theme: theme,
-                difficulty: difficulty
-            )
-
             HangmanSetupControls(
                 theme: $theme,
                 difficulty: $difficulty
             )
         } facts: {
             GameSplashFacts(
-                first: ("text.word.spacing", theme.rawValue, "Word theme"),
-                second: ("chart.bar", difficulty.rawValue, "Difficulty"),
-                third: ("character.cursor.ibeam", "Guess", "Your task")
+                first: ("number", "\(Self.wordsPerGame)", String(localized: "Words")),
+                second: ("xmark.octagon", "\(difficulty.maxWrong)", String(localized: "Mistakes allowed")),
+                third: ("lightbulb", difficulty.clueSummary, String(localized: "Clue"))
             )
         }
         Spacer(minLength: 24)
@@ -257,19 +337,27 @@ struct HangmanGameView: View {
                 .padding(.horizontal, 4)
         } word: {
             VStack(spacing: 12) {
-                Text(spacedDisplayWord())
+                Text(spacedDisplayWord)
                     .font(.title.weight(.semibold).monospaced())
                     .multilineTextAlignment(.center)
                     .accessibilityLabel("Word to guess")
+                    .accessibilityValue(spokenDisplayWord)
 
                 Text("Mistakes: \(wrongGuesses)/\(maxWrong)")
                     .font(.subheadline)
                     .foregroundStyle(wrongGuesses >= maxWrong - 1 ? .red : .secondary)
 
-                if roundOver {
-                    Text(didWin ? "You got it!" : "Out of guesses: \(targetWord.uppercased())")
-                        .font(.headline)
-                        .foregroundStyle(didWin ? .green : .red)
+                if roundOver, let current {
+                    HangmanRevealCard(
+                        didWin: didWin,
+                        answer: current.answer,
+                        qualifier: current.qualifier,
+                        clue: current.clue,
+                        reference: current.reference,
+                        onShowReference: presentReferencePreview
+                    )
+                } else {
+                    clueRow
                 }
             }
         } drawing: {
@@ -295,24 +383,45 @@ struct HangmanGameView: View {
             GameScoreboardCard(
                 currentCorrect: score,
                 currentAnswered: answered,
-                currentStreak: currentStreak,
+                currentStreak: sessionStreak,
                 game: .hangman,
                 style: usesWideLayout ? .dashboard : .compact
             )
         } keyboard: {
             if roundOver {
-                GameRoundNavigationButtons(
-                    canGoPrevious: history.count > 1,
-                    canGoNext: true,
-                    onPrevious: { showPreviousSheet = true },
-                    onNext: { nextRound() }
-                )
+                Group {
+                    if isLastWord {
+                        Button("See Results", systemImage: "flag.checkered", action: nextWord)
+                            .buttonStyle(GameProminentButtonStyle(tint: .teal))
+                    } else {
+                        Button("Next Word", systemImage: "arrow.right", action: nextWord)
+                            .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
+                    }
+                }
                 .padding(.horizontal, 6)
                 .padding(.top, 8)
             } else {
                 keyboardView(keyHeight: usesWideLayout ? 60 : 42)
                     .padding(.horizontal, 6)
                     .padding(.top, 8)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var clueRow: some View {
+        if let current, !current.clue.isEmpty {
+            if showsClue {
+                Label(current.clue, systemImage: "lightbulb.fill")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else if difficulty == .normal {
+                Button("Show clue (costs 1 mistake)", systemImage: "lightbulb", action: revealClue)
+                    .font(.subheadline.weight(.semibold))
+                    .buttonStyle(.borderless)
+                    .disabled(!canRevealClue)
             }
         }
     }
@@ -358,114 +467,31 @@ struct HangmanGameView: View {
 
     @ViewBuilder
     private var roundHeader: some View {
+        let category = current?.category ?? .all
         HStack(spacing: 8) {
-            HStack(spacing: 6) {
-                Image(systemName: iconName(for: currentRoundCategory))
-                Text(currentRoundCategory.rawValue.uppercased())
+            Label {
+                Text(category.title)
+                    .textCase(.uppercase)
                     .font(.subheadline.weight(.semibold))
                     .lineLimit(1)
+            } icon: {
+                Image(systemName: category.systemImage)
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .background(
-                categoryTint(for: currentRoundCategory).opacity(0.18),
-                in: Capsule(style: .continuous)
-            )
+            .background(Color.orange.opacity(0.18), in: Capsule(style: .continuous))
             .overlay(
                 Capsule(style: .continuous)
-                    .strokeBorder(categoryTint(for: currentRoundCategory).opacity(0.45), lineWidth: 1)
+                    .strokeBorder(Color.orange.opacity(0.45), lineWidth: 1)
             )
-            .foregroundStyle(categoryTint(for: currentRoundCategory))
+            .foregroundStyle(.orange)
 
             Spacer(minLength: 6)
 
-            if let ref = firstReferenceForCurrentTarget(), shouldShowReference() {
-                Button {
-                    presentReferencePreview(from: ref)
-                } label: {
-                    Text(ref)
-                        .lineLimit(1)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                }
-                .buttonStyle(.plain)
-                .disabled(!roundOver)
-                .accessibilityHint(
-                    roundOver
-                        ? "Shows the scripture passage"
-                        : "Available after the round ends"
-                )
-                .foregroundStyle(Color.accentColor)
-                .background(
-                    Color.accentColor.opacity(0.14),
-                    in: RoundedRectangle(
-                        cornerRadius: AppDesignMetrics.compactControlCornerRadius,
-                        style: .continuous
-                    )
-                )
-                .heroCardSurface(cornerRadius: AppDesignMetrics.compactControlCornerRadius)
-                .controlSize(.small)
-            }
-
-        }
-    }
-
-    @ViewBuilder
-    private func previousRoundSheet() -> some View {
-        if let last = history.dropLast().last {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Previous Round")
-                    .font(.title3)
-                    .bold()
-                HStack(spacing: 8) {
-                    Text("Category:")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    Text(last.category.rawValue)
-                        .font(.subheadline)
-                }
-                HStack(spacing: 8) {
-                    Text("Result:")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    Text(last.didWin ? "Correct" : "Out of guesses")
-                        .font(.subheadline)
-                        .foregroundStyle(last.didWin ? .green : .red)
-                }
-                HStack(spacing: 8) {
-                    Text("Answer:")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    Text(last.targetWord)
-                        .font(.headline)
-                }
-                HStack(spacing: 8) {
-                    Text("Mistakes:")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    Text("\(last.wrongGuesses)/\(last.maxWrong)")
-                        .font(.subheadline)
-                }
-                if let ref = last.reference {
-                    Divider()
-                    Button {
-                        presentReferencePreview(from: ref)
-                        showPreviousSheet = false
-                    } label: {
-                        Text(ref)
-                            .lineLimit(1)
-                    }
-                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
-                    .controlSize(.small)
-                }
-                Spacer()
-                HStack { Spacer(); Button("Close") { showPreviousSheet = false } }
-            }
-            .padding()
-            .presentationDetents([.medium])
-        } else {
-            Text("No previous rounds")
-                .padding()
+            Text("Word \(wordNumber) of \(totalWords)")
+                .font(.subheadline.weight(.semibold))
+                .monospacedDigit()
+                .foregroundStyle(.secondary)
         }
     }
 
@@ -474,105 +500,155 @@ struct HangmanGameView: View {
         UIDevice.current.userInterfaceIdiom == .pad ? 130 : 100
     }
 
-    private func applyMaxWrong(for d: Difficulty) {
-        switch d {
-        case .easy: maxWrong = 10
-        case .normal: maxWrong = 7
-        case .hard: maxWrong = 6
-        }
-        if wrongGuesses >= maxWrong && started && !roundOver {
-            endRound(win: false)
+    // MARK: - Words
+
+    /// Removes a trailing description in parentheses: "Jordan (river)" → ("Jordan", "river").
+    private static func split(_ name: String) -> (answer: String, qualifier: String?) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let open = trimmed.firstIndex(of: "("), trimmed.hasSuffix(")") else { return (trimmed, nil) }
+        let answer = trimmed[..<open].trimmingCharacters(in: .whitespaces)
+        let qualifier = trimmed[trimmed.index(after: open)..<trimmed.index(before: trimmed.endIndex)]
+            .trimmingCharacters(in: .whitespaces)
+        return (answer.isEmpty ? trimmed : answer, qualifier.isEmpty ? nil : qualifier)
+    }
+
+    private func peopleWords() -> [HangmanWord] {
+        loadedPeople
+            .filter { difficulty.includes($0.difficulty) }
+            .map { entry in
+                let parts = Self.split(entry.name)
+                return HangmanWord(answer: parts.answer, category: .people, clue: entry.shortDescription,
+                                   qualifier: parts.qualifier, reference: nil)
+            }
+    }
+
+    private func placeWords() -> [HangmanWord] {
+        loadedPlaces
+            .filter { difficulty.includes($0.difficulty) }
+            .map { entry in
+                let parts = Self.split(entry.locationName)
+                return HangmanWord(answer: parts.answer, category: .places, clue: entry.shortDescription,
+                                   qualifier: parts.qualifier,
+                                   reference: entry.scriptureMentioned.isEmpty ? nil : entry.scriptureMentioned)
+            }
+    }
+
+    private func bookWords() -> [HangmanWord] {
+        BibleCanon.canonicalOrder().map { name in
+            let section = QuizView.VerseSection.containing(name)
+            let testament = section?.isOldTestament == false
+                ? String(localized: "New Testament")
+                : String(localized: "Old Testament")
+            let clue = section.map { "\(testament) · \(String(localized: $0.title))" } ?? testament
+            return HangmanWord(answer: name, category: .books, clue: clue, qualifier: nil, reference: nil)
         }
     }
 
-    private func iconName(for theme: Theme) -> String {
-        switch theme {
-        case .places: return "house.fill"
-        case .people: return "person.fill"
-        case .books: return "book.fill"
-        case .all: return "tag.fill"
+    /// Draws the game's words without repeats. Mixed picks a category for each word.
+    private func makeDeck() -> [HangmanWord] {
+        var pools: [Theme: [HangmanWord]] = [:]
+        let themes: [Theme] = theme == .all ? [.people, .places, .books] : [theme]
+        for item in themes {
+            switch item {
+            case .people: pools[item] = peopleWords().shuffled()
+            case .places: pools[item] = placeWords().shuffled()
+            case .books: pools[item] = bookWords().shuffled()
+            case .all: break
+            }
         }
+
+        var words: [HangmanWord] = []
+        var usedAnswers: Set<String> = []
+        while words.count < Self.wordsPerGame {
+            let available = themes.filter { !(pools[$0]?.isEmpty ?? true) }
+            guard let pick = available.randomElement(), let word = pools[pick]?.popLast() else { break }
+            // Same-named people or places ("Joseph", "Bethlehem") would look like repeats.
+            guard usedAnswers.insert(word.answer.uppercased()).inserted else { continue }
+            words.append(word)
+        }
+        return words
     }
 
-    private func categoryTint(for theme: Theme) -> Color {
-        switch theme {
-        case .people: return .orange
-        case .places: return .orange
-        case .books: return .orange
-        case .all: return .orange
-        }
-    }
+    // MARK: - Game flow
 
     private func startGame() {
-        if loadedPeople.isEmpty || loadedPlaces.isEmpty {
-            Task {
-                if loadedPeople.isEmpty { loadedPeople = await GameDataLoaders.loadCharactersAsync() }
-                if loadedPlaces.isEmpty { loadedPlaces = await GameDataLoaders.loadLocationChallengesAsync() }
-                score = 0
-                answered = 0
-                correctLetters.removeAll()
-                wrongLetters.removeAll()
-                // Do NOT reset streaks here; they persist across sessions
-                started = true
-                applyMaxWrong(for: difficulty)
-                // Ensure we seed from persistence right as we start
-                seedStreakFromPersistence()
-                nextRound()
-            }
-            return
-        }
+        deck = makeDeck()
+        guard !deck.isEmpty else { return }
+        totalWords = deck.count
+        wordNumber = 0
         score = 0
         answered = 0
-        correctLetters.removeAll()
-        wrongLetters.removeAll()
-        // Do NOT reset streaks here; they persist across sessions
-        started = true
-        applyMaxWrong(for: difficulty)
-        seedStreakFromPersistence()
-        nextRound()
+        sessionStreak = 0
+        sessionBestStreak = 0
+        isNewBestGame = false
+        currentBestStreak = persistentStreak.best
+        phase = .playing
+        nextWord()
     }
 
-    private func nextRound(resetScore: Bool = false) {
+    private func nextWord() {
+        guard let word = deck.popLast() else {
+            showResults()
+            return
+        }
+        current = word
+        wordNumber += 1
         guessedLetters = []
         wrongGuesses = 0
-        correctLetters.removeAll()
-        wrongLetters.removeAll()
+        clueRevealed = false
         roundOver = false
         didWin = false
-        applyMaxWrong(for: difficulty)
-        generateRound()
     }
 
-    private func spacedDisplayWord() -> String {
+    private func showResults() {
+        let previousBest = UserDefaults.standard.integer(forKey: bestGameScoreKey)
+        isNewBestGame = score > previousBest
+        bestGameScore = max(previousBest, score)
+        if isNewBestGame {
+            UserDefaults.standard.set(score, forKey: bestGameScoreKey)
+        }
+        current = nil
+        phase = .results
+    }
+
+    private func revealClue() {
+        guard canRevealClue else { return }
+        clueRevealed = true
+        wrongGuesses += 1
+    }
+
+    /// Letters found so far, with blanks for the rest; spaces and punctuation always show.
+    private var displayWord: String {
+        String((current?.answer ?? "").map { ch in
+            guard ch.isLetter else { return ch }
+            let upper = Character(String(ch).uppercased())
+            return roundOver || guessedLetters.contains(upper) ? upper : "_"
+        })
+    }
+
+    private var spacedDisplayWord: String {
         displayWord.map { String($0) }.joined(separator: " ")
+    }
+
+    /// What VoiceOver reads for the word, e.g. "J, blank, S, blank".
+    private var spokenDisplayWord: String {
+        let blank = String(localized: "blank")
+        return displayWord.map { $0 == "_" ? blank : String($0) }.joined(separator: ", ")
     }
 
     private func guess(_ ch: Character) {
         guard !roundOver else { return }
         let upper = Character(String(ch).uppercased())
-        guard upper.isLetter else { return }
-        guard !guessedLetters.contains(upper) else { return }
+        guard upper.isLetter, !guessedLetters.contains(upper) else { return }
         guessedLetters.insert(upper)
 
-        let light = UIImpactFeedbackGenerator(style: .light)
-        let heavy = UIImpactFeedbackGenerator(style: .heavy)
-
-        let upperTarget = targetWord.uppercased()
-        if upperTarget.contains(upper) {
-            var chars = Array(displayWord)
-            for (i, t) in upperTarget.enumerated() {
-                if t == upper {
-                    let originalChar = targetWord[targetWord.index(targetWord.startIndex, offsetBy: i)]
-                    chars[i] = Character(String(originalChar).uppercased())
-                }
+        if answerLetters.contains(upper) {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            if answerLetters.isSubset(of: guessedLetters) {
+                endRound(win: true)
             }
-            displayWord = String(chars)
-            correctLetters.insert(upper)
-            light.impactOccurred()
-            checkWin()
         } else {
-            wrongLetters.insert(upper)
-            heavy.impactOccurred()
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
             wrongGuesses += 1
             if wrongGuesses >= maxWrong {
                 endRound(win: false)
@@ -580,154 +656,44 @@ struct HangmanGameView: View {
         }
     }
 
-    private func checkWin() {
-        if !displayWord.contains("_") {
-            endRound(win: true)
-        }
-    }
-
     private func endRound(win: Bool) {
+        guard !roundOver, let current else { return }
         roundOver = true
         didWin = win
         showsOnScreenKeyboard = true
-
-        let snapshot = HangmanSnapshot(
-            category: currentRoundCategory,
-            targetWord: targetWord,
-            didWin: win,
-            wrongGuesses: wrongGuesses,
-            maxWrong: maxWrong,
-            reference: firstReferenceForCurrentTarget()
-        )
-        history.append(snapshot)
-
         answered += 1
-        if win { score += 1 }
 
-        // Persistent streak updates
         if win {
+            score += 1
+            sessionStreak += 1
+            sessionBestStreak = max(sessionBestStreak, sessionStreak)
             // Persistent streak: extend on correct
             let streak = persistentStreak.recordWin()
-            currentStreak = streak.current
             currentBestStreak = max(currentBestStreak, streak.best)
-
-            let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(.success)
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
         } else {
             // Persistent streak: reset on loss
+            sessionStreak = 0
             persistentStreak.reset()
-            currentStreak = 0
+            UINotificationFeedbackGenerator().notificationOccurred(.error)
         }
 
-        // Record all-time round
         GameStats.shared.recordRound(
             game: .hangman,
-            difficulty: mapDifficulty(difficulty),
+            difficulty: difficulty.statsDifficulty,
             correct: win ? 1 : 0,
             answered: 1,
             currentBestStreak: currentBestStreak
         )
-
-        // NEW: Record per-category (People/Places/Books) accuracy
-        if currentRoundCategory != .all {
-            GameStats.shared.recordHangmanCategory(
-                category: currentRoundCategory.rawValue,
-                answered: 1,
-                correct: win ? 1 : 0
-            )
-        }
-
-        // Keep rest of end-of-round flow (reference, etc.) unchanged
+        // Per-category (People/Places/Books) accuracy
+        GameStats.shared.recordHangmanCategory(
+            category: current.category.rawValue,
+            answered: 1,
+            correct: win ? 1 : 0
+        )
     }
 
-    private func difficultyKeySuffix() -> String {
-        switch difficulty {
-        case .easy: return "easy"
-        case .normal: return "normal"
-        case .hard: return "hard"
-        }
-    }
-
-    private func mapDifficulty(_ d: Difficulty) -> GameStats.Difficulty {
-        switch d {
-        case .easy: return .easy
-        case .normal: return .medium
-        case .hard: return .hard
-        }
-    }
-
-    private func generateRound() {
-        let actualCategory: Theme
-        if theme == .all {
-            actualCategory = [Theme.people, Theme.places, Theme.books].randomElement()!
-        } else {
-            actualCategory = theme
-        }
-        currentRoundCategory = actualCategory
-
-        switch actualCategory {
-        case .books:
-            guard let book = BibleData.books.randomElement() else { return }
-            targetWord = book.name
-            displayWord = masked(from: targetWord)
-            if displayWord.isEmpty {
-                displayWord = masked(from: targetWord)
-            }
-            currentTargetReference = nil
-        case .people:
-            if loadedPeople.isEmpty { loadedPeople = GameDataLoaders.loadCharacters() }
-            let people = loadedPeople.filter { $0.matchesDifficulty(difficulty.rawValue) }
-            guard let entry = people.randomElement() else { return }
-            let name = entry.name.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !name.isEmpty else { return }
-            targetWord = name
-            displayWord = masked(from: targetWord)
-            if displayWord.isEmpty {
-                displayWord = masked(from: targetWord)
-            }
-            currentTargetReference = nil
-        case .places:
-            if loadedPlaces.isEmpty { loadedPlaces = GameDataLoaders.loadLocationChallenges() }
-            guard let entry = loadedPlaces.randomElement() else { return }
-            let location = entry.locationName.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !location.isEmpty else { return }
-            targetWord = location
-            displayWord = masked(from: targetWord)
-            if displayWord.isEmpty {
-                displayWord = masked(from: targetWord)
-            }
-            currentTargetReference = entry.scriptureMentioned
-        case .all:
-            break
-        }
-    }
-
-    private func masked(from word: String) -> String {
-        String(word.map { ch in
-            ch.isLetter ? "_" : String(ch)
-        }.joined())
-    }
-
-    private func percentString(correct: Int, answered: Int) -> String {
-        guard answered > 0 else { return "0%" }
-        let pct = Int(round((Double(correct) / Double(answered)) * 100.0))
-        return "\(pct)%"
-    }
-
-    private func shouldShowReference() -> Bool {
-        switch difficulty {
-        case .easy:
-            return started && !targetWord.isEmpty && !displayWord.isEmpty
-        case .normal:
-            return roundOver || wrongGuesses >= 3
-        case .hard:
-            return roundOver
-        }
-    }
-
-    private func firstReferenceForCurrentTarget() -> String? {
-        return currentTargetReference
-    }
+    // MARK: - References
 
     private func presentReferencePreview(from refString: String) {
         selectedRef = parseScriptureRef(from: refString)
@@ -792,101 +758,6 @@ struct HangmanGameView: View {
             onGuess: guess
         )
     }
-
-    @ViewBuilder
-    private func layoutToggleButton(title: String, keyHeight: CGFloat) -> some View {
-        Button(action: { useAlphabeticalLayout.toggle() }) {
-            Text(title)
-                .font(.subheadline.weight(.semibold))
-                .frame(maxWidth: .infinity, minHeight: keyHeight)
-                .accessibilityLabel("Toggle keyboard layout")
-        }
-        .buttonStyle(GameKeyButtonStyle(tint: .accentColor))
-        .disabled(roundOver)
-        .opacity(roundOver ? 0.6 : 1.0)
-    }
-}
-
-private struct HangmanSetupCard: View {
-    let theme: HangmanGameView.Theme
-    let difficulty: HangmanGameView.Difficulty
-
-    private var subjectTitle: LocalizedStringResource {
-        switch theme {
-        case .all: "All"
-        case .books: "Books"
-        case .people: "People"
-        case .places: "Places"
-        }
-    }
-
-    private var difficultyTitle: LocalizedStringResource {
-        switch difficulty {
-        case .easy: "Easy"
-        case .normal: "Normal"
-        case .hard: "Hard"
-        }
-    }
-
-    private var summary: LocalizedStringResource {
-        switch difficulty {
-        case .easy:
-            switch theme {
-            case .all: "Guess Bible books, people, or places. You can make up to 10 mistakes, and a scripture reference is shown immediately."
-            case .books: "Guess books of the Bible. You can make up to 10 mistakes, and a scripture reference is shown immediately."
-            case .people: "Guess people from the Bible. You can make up to 10 mistakes, and a scripture reference is shown immediately."
-            case .places: "Guess places from the Bible. You can make up to 10 mistakes, and a scripture reference is shown immediately."
-            }
-        case .normal:
-            switch theme {
-            case .all: "Guess Bible books, people, or places. You can make up to 7 mistakes, and the scripture reference appears after 3 wrong guesses."
-            case .books: "Guess books of the Bible. You can make up to 7 mistakes, and the scripture reference appears after 3 wrong guesses."
-            case .people: "Guess people from the Bible. You can make up to 7 mistakes, and the scripture reference appears after 3 wrong guesses."
-            case .places: "Guess places from the Bible. You can make up to 7 mistakes, and the scripture reference appears after 3 wrong guesses."
-            }
-        case .hard:
-            switch theme {
-            case .all: "Guess Bible books, people, or places. You can make up to 6 mistakes, and the scripture reference appears only after the round ends."
-            case .books: "Guess books of the Bible. You can make up to 6 mistakes, and the scripture reference appears only after the round ends."
-            case .people: "Guess people from the Bible. You can make up to 6 mistakes, and the scripture reference appears only after the round ends."
-            case .places: "Guess places from the Bible. You can make up to 6 mistakes, and the scripture reference appears only after the round ends."
-            }
-        }
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Your Game", systemImage: "checklist")
-                .font(.headline)
-                .foregroundStyle(.tint)
-
-            Text(summary)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Divider()
-
-            LabeledContent("Difficulty") {
-                Text(difficultyTitle)
-                    .fontWeight(.semibold)
-            }
-
-            LabeledContent("Question Subject") {
-                Text(subjectTitle)
-                    .fontWeight(.semibold)
-            }
-        }
-        .padding(16)
-        .frame(maxWidth: 620, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
-        }
-        .padding(.horizontal)
-        .accessibilityElement(children: .contain)
-    }
 }
 
 private struct HangmanSetupControls: View {
@@ -900,28 +771,134 @@ private struct HangmanSetupControls: View {
                     .font(.headline)
 
                 Picker("Difficulty", selection: $difficulty) {
-                    Text("Easy").tag(HangmanGameView.Difficulty.easy)
-                    Text("Normal").tag(HangmanGameView.Difficulty.normal)
-                    Text("Hard").tag(HangmanGameView.Difficulty.hard)
+                    ForEach(HangmanGameView.Difficulty.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
                 }
                 .pickerStyle(.segmented)
+
+                Text(difficulty.detail)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("Question Subject")
+                Text("Word Type")
                     .font(.headline)
 
-                Picker("Question Subject", selection: $theme) {
-                    Text("All").tag(HangmanGameView.Theme.all)
-                    Text("Books").tag(HangmanGameView.Theme.books)
-                    Text("People").tag(HangmanGameView.Theme.people)
-                    Text("Places").tag(HangmanGameView.Theme.places)
+                Picker("Word Type", selection: $theme) {
+                    ForEach(HangmanGameView.Theme.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
                 }
                 .pickerStyle(.segmented)
             }
         }
         .frame(maxWidth: 620)
         .padding(.horizontal)
+    }
+}
+
+private struct HangmanRevealCard: View {
+    let didWin: Bool
+    let answer: String
+    let qualifier: String?
+    let clue: String
+    let reference: String?
+    let onShowReference: (String) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label(
+                didWin ? "You got it!" : "Out of guesses",
+                systemImage: didWin ? "checkmark.circle.fill" : "xmark.circle.fill"
+            )
+            .font(.headline)
+            .foregroundStyle(didWin ? Color.green : Color.red)
+
+            if let qualifier {
+                Text("\(answer) (\(qualifier))")
+                    .font(.title3.weight(.bold))
+            } else {
+                Text(answer)
+                    .font(.title3.weight(.bold))
+            }
+
+            if !clue.isEmpty {
+                Text(clue)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            if let reference {
+                Button {
+                    onShowReference(reference)
+                } label: {
+                    Label(reference, systemImage: "book.closed")
+                }
+                .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+                .accessibilityHint("Shows the scripture passage")
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(
+            (didWin ? Color.green : Color.red).opacity(0.1),
+            in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+        )
+        .accessibilityElement(children: .contain)
+    }
+}
+
+private struct HangmanResultsCard: View {
+    let score: Int
+    let total: Int
+    let bestStreak: Int
+    let bestGameScore: Int
+    let isNewBest: Bool
+    let onPlayAgain: () -> Void
+    let onChangeSettings: () -> Void
+
+    private var accuracy: Int {
+        guard total > 0 else { return 0 }
+        return Int((Double(score) / Double(total) * 100).rounded())
+    }
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Image(systemName: isNewBest ? "trophy.fill" : "flag.checkered")
+                .font(.system(size: 52, weight: .semibold))
+                .foregroundStyle(isNewBest ? Color.yellow : Color.teal)
+
+            VStack(spacing: 6) {
+                Text(isNewBest ? "New Best Game!" : "Game Over")
+                    .font(.title.weight(.bold))
+
+                Text("\(score) of \(total) words solved")
+                    .font(.title2.weight(.semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
+            }
+
+            GameSplashFacts(
+                first: ("percent", "\(accuracy)%", String(localized: "Accuracy")),
+                second: ("flame.fill", "\(bestStreak)", String(localized: "Best streak")),
+                third: ("trophy", "\(bestGameScore)/\(total)", String(localized: "Best game"))
+            )
+
+            VStack(spacing: 10) {
+                Button("Play Again", systemImage: "arrow.clockwise", action: onPlayAgain)
+                    .buttonStyle(GameProminentButtonStyle(tint: .teal))
+
+                Button("Change Settings", systemImage: "slider.horizontal.3", action: onChangeSettings)
+                    .buttonStyle(ModernPillButtonStyle(tint: .accentColor))
+            }
+        }
+        .padding(24)
+        .frame(maxWidth: 520)
+        .heroCardSurface()
     }
 }
 
@@ -956,8 +933,10 @@ private struct HangmanKeyboardView: View {
                                 .accessibilityLabel("Letter \(String(character))")
                         }
                         .buttonStyle(GameKeyButtonStyle(tint: tint(for: upper)))
+                        // Not .disabled: that would grey out the green and red played keys.
                         .allowsHitTesting(!guessedLetters.contains(upper) && !isRoundOver)
                         .opacity(isRoundOver ? 0.6 : 1)
+                        .accessibilityValue(keyState(for: upper))
 
                         if !usesAlphabeticalLayout,
                            rowIndex == rows.count - 1,
@@ -972,6 +951,12 @@ private struct HangmanKeyboardView: View {
                 }
             }
         }
+    }
+
+    private func keyState(for character: Character) -> String {
+        if correctLetters.contains(character) { return String(localized: "In the word") }
+        if wrongLetters.contains(character) { return String(localized: "Not in the word") }
+        return ""
     }
 
     private func tint(for character: Character) -> Color {
@@ -1198,6 +1183,14 @@ private struct KeyCaptureRepresentable: UIViewRepresentable {
 
         override var canBecomeFirstResponder: Bool { true }
 
+        // Claim hardware-keyboard focus once, when the view appears on screen.
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            if window != nil {
+                DispatchQueue.main.async { self.becomeFirstResponder() }
+            }
+        }
+
         override var keyCommands: [UIKeyCommand]? {
             var cmds: [UIKeyCommand] = []
             let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -1226,7 +1219,6 @@ private struct KeyCaptureRepresentable: UIViewRepresentable {
         v.onKey = onKey
         v.onBackspace = onBackspace
         v.onEnter = onEnter
-        DispatchQueue.main.async { v.becomeFirstResponder() }
         return v
     }
 
@@ -1234,7 +1226,6 @@ private struct KeyCaptureRepresentable: UIViewRepresentable {
         uiView.onKey = onKey
         uiView.onBackspace = onBackspace
         uiView.onEnter = onEnter
-        DispatchQueue.main.async { uiView.becomeFirstResponder() }
     }
 }
 #endif
