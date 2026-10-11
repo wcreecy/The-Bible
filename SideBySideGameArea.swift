@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SideBySideGameArea: View {
+struct SideBySideGameArea<Summary: View>: View {
     let size: Int
     let grid: [[Character]]
     let selectionStart: (row: Int, col: Int)?
@@ -16,16 +16,18 @@ struct SideBySideGameArea: View {
 
     let words: [String]
     let foundWords: Set<String>
+    /// Blind round whose word list is still hidden.
+    let hidesWordList: Bool
+    let colorForWord: (String) -> Color
 
-    let gameMode: WordSearchViewModel.GameMode
-    let showBlindWordList: Bool
-
-    let onNewPuzzle: () -> Void
-    let onReveal: () -> Void
-    let onChangeDifficultyOrMode: () -> Void
-    let onToggleHealed: () -> Void
-    let healedOn: Bool
     let roundOver: Bool
+    let onHint: () -> Void
+    let onReveal: () -> Void
+    let onShowWordList: () -> Void
+    let onNewPuzzle: () -> Void
+    let onChangeSettings: () -> Void
+    /// Shown above the word list once the round ends.
+    let summary: Summary
 
     var body: some View {
         HStack(alignment: .top, spacing: 20) {
@@ -66,16 +68,28 @@ struct SideBySideGameArea: View {
 
     private var dashboardPanel: some View {
         VStack(alignment: .leading, spacing: 18) {
-            progressHeader
+            if roundOver {
+                summary
+            } else {
+                progressHeader
+            }
 
-            if gameMode == .blind && !showBlindWordList {
+            if hidesWordList {
                 SideBlindCountColumn(count: words.count, foundCount: foundCount)
             } else {
-                SideWordsColumn(words: words, found: foundWords, revealed: revealedWords)
+                SideWordsColumn(words: words, found: foundWords, revealed: revealedWords, colorForWord: colorForWord)
             }
 
             Spacer(minLength: 12)
-            controls
+            WordSearchControlsBar(
+                roundOver: roundOver,
+                canShowWordList: hidesWordList,
+                onHint: onHint,
+                onReveal: onReveal,
+                onShowWordList: onShowWordList,
+                onNewPuzzle: onNewPuzzle,
+                onChangeSettings: onChangeSettings
+            )
         }
         .padding(AppDesignMetrics.cardPadding)
         .frame(minHeight: min(dynamicGridHeight, 620) + 57, alignment: .top)
@@ -106,27 +120,6 @@ struct SideBySideGameArea: View {
         .padding(16)
         .background(.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous))
     }
-
-    private var controls: some View {
-        HStack(spacing: 12) {
-            if roundOver {
-                GameRoundNavigationButtons(
-                    canGoPrevious: false,
-                    canGoNext: true,
-                    onPrevious: {},
-                    onNext: onNewPuzzle
-                )
-            } else {
-                Button("Reveal", systemImage: "eye.fill", action: onReveal)
-                    .buttonStyle(GameProminentButtonStyle(tint: .accentColor))
-
-                if gameMode == .blind {
-                    Button(healedOn ? "Hide List" : "Word List", systemImage: healedOn ? "eye.slash.fill" : "list.bullet", action: onToggleHealed)
-                        .buttonStyle(GameProminentButtonStyle(tint: healedOn ? .green : .red))
-                }
-            }
-        }
-    }
 }
 
 private struct SideBlindCountColumn: View {
@@ -139,7 +132,7 @@ private struct SideBlindCountColumn: View {
                 Spacer(minLength: 8)
                 Text("Found: \(foundCount)").font(.headline).foregroundStyle(.secondary)
             }
-            Text("Tap Healed to show the list.").font(.footnote).foregroundStyle(.secondary)
+            Text("Tap Word List to show the words.").font(.footnote).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -149,6 +142,7 @@ private struct SideWordsColumn: View {
     let words: [String]
     let found: Set<String>
     let revealed: Set<String>
+    let colorForWord: (String) -> Color
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -159,7 +153,7 @@ private struct SideWordsColumn: View {
                 let columns = [GridItem(.adaptive(minimum: 120), spacing: 8)]
                 LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
                     ForEach(words, id: \.self) { w in
-                        WordChip(word: w, state: state(for: w))
+                        WordChip(word: w, state: state(for: w), foundColor: colorForWord(w))
                     }
                 }
             }

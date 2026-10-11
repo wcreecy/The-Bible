@@ -9,22 +9,24 @@ final class WordSearchViewModel {
     // Public UI state
     var started: Bool = false
     var difficulty: WordSearchEngine.Difficulty = .medium
-    enum GameMode: String, CaseIterable, Identifiable {
-        case normal
-        case blind
+
+    /// Where the puzzle's verse comes from.
+    enum VerseSource: String, CaseIterable, Identifiable {
+        case popular
+        case random
         case favorites
 
         var id: String { rawValue }
-
-        var displayName: String {
-            switch self {
-            case .normal: return "Standard"
-            case .blind: return "Blind"
-            case .favorites: return "Favorites"
-            }
-        }
     }
-    var gameMode: GameMode = .normal
+    var verseSource: VerseSource = .popular
+
+    /// Blind hides the word list and the verse text until the round ends.
+    var isBlindMode: Bool = false
+
+    /// How a finished round ended.
+    enum RoundResult {
+        case won, timeUp, revealed
+    }
 
     // Timer
     var isTimedMode: Bool = false
@@ -33,6 +35,9 @@ final class WordSearchViewModel {
     var didWin: Bool = false
     var pulseOn: Bool = false
     var roundOver: Bool = false
+    var roundResult: RoundResult?
+    /// Seconds spent playing this round; pauses while the game is off screen.
+    var elapsedSeconds: Int = 0
 
     // Grid
     var grid: [[Character]] = Array(repeating: Array(repeating: " ", count: 10), count: 10)
@@ -47,8 +52,19 @@ final class WordSearchViewModel {
     var foundCells: Set<String> = []
     var foundWords: Set<String> = []
     var revealedWords: Set<String> = []
+    /// In Blind mode, true once the person chose to show the word list (it stays shown).
     var showBlindWordList: Bool = false
     var tapStart: (row: Int, col: Int)? = nil
+
+    // Colors: each word gets its own color, and found cells take their word's color.
+    private(set) var colorIndexForWord: [String: Int] = [:]
+    private(set) var colorIndexForCell: [String: Int] = [:]
+
+    // Hints
+    /// The cell currently flashing as a hint (the first letter of an unfound word).
+    private(set) var hintCell: (row: Int, col: Int)?
+    private(set) var hintsUsed: Int = 0
+    @ObservationIgnored private var hintClearTask: Task<Void, Never>?
 
     // Favorites resolution context
     var favBookName: String = ""
@@ -58,7 +74,7 @@ final class WordSearchViewModel {
     // Dependencies
     private var modelContext: ModelContext
     private var favoritesFetch: () -> [Favorite]
-    @ObservationIgnored private var timerTask: Task<Void, Never>?
+    @ObservationIgnored private var clockTask: Task<Void, Never>?
     private var hasRecordedCurrentRound = false
 
     private static let currentStreakKey = "wordsearchCurrentStreak"
@@ -89,27 +105,30 @@ final class WordSearchViewModel {
         }
     }
 
+    /// How many words a puzzle at this difficulty asks for.
+    var wordCountRange: ClosedRange<Int> {
+        switch difficulty {
+        case .easy: return 3...6
+        case .medium: return 4...7
+        case .hard: return 5...8
+        case .expert: return 6...10
+        }
+    }
+
+    /// True while the word list (and verse text) should stay hidden.
+    var hidesWordList: Bool { isBlindMode && !showBlindWordList && !roundOver }
+
     // MARK: - Intents
 
     func start() {
         started = true
-        timeUp = false
-        didWin = false
-        roundOver = false
-        showBlindWordList = false
-        hasRecordedCurrentRound = false
-        generatePuzzle()
-        startTimerIfNeeded()
+        newPuzzle()
     }
 
     func newPuzzle() {
         hasRecordedCurrentRound = false
         generatePuzzle()
-        timeUp = false
-        didWin = false
-        roundOver = false
-        showBlindWordList = false
-        startTimerIfNeeded()
+        startClock()
     }
 
     func changeSettings() {
@@ -120,14 +139,33 @@ final class WordSearchViewModel {
     }
 
     func reveal() {
+        guard !roundOver else { return }
         revealOverlay()
-        stopTimer()
-        roundOver = true
-        recordCompletedRound(won: false)
+        finishRound(.revealed)
+    }
+
+    /// Shows the word list for the rest of a Blind round.
+    func showWordList() {
+        showBlindWordList = true
+    }
+
+    /// Briefly highlights the first letter of a word that hasn't been found yet.
+    func hint() {
+        guard !roundOver,
+              let word = placed.filter({ !foundWords.contains($0.originalWord) }).randomElement(),
+              let first = engine.cellsForPlacedWord(word).first else { return }
+        hintsUsed += 1
+        hintCell = first
+        hintClearTask?.cancel()
+        hintClearTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(2.5))
+            guard !Task.isCancelled else { return }
+            self?.hintCell = nil
+        }
     }
 
     func handleTap(row: Int, col: Int) {
-        guard !timeUp && !didWin && !roundOver else { return }
+        guard !roundOver else { return }
         if tapStart == nil {
             tapStart = (row, col)
             selectionStart = tapStart
@@ -146,7 +184,7 @@ final class WordSearchViewModel {
     }
 
     func dragChanged(to cell: (row: Int, col: Int)) {
-        guard !timeUp && !didWin && !roundOver else { return }
+        guard !roundOver else { return }
         if selectionStart == nil {
             selectionStart = cell
             selectionEnd = cell
@@ -156,7 +194,7 @@ final class WordSearchViewModel {
     }
 
     func dragEnded() {
-        guard !timeUp && !didWin && !roundOver else { return }
+        guard !roundOver else { return }
         validateSelection()
         selectionStart = nil
         selectionEnd = nil
@@ -165,27 +203,26 @@ final class WordSearchViewModel {
 
     // MARK: - Timer
 
-    private func timeLimitSeconds() -> Int {
-        guard isTimedMode else { return 0 }
-        if gameMode == .blind {
-            switch difficulty {
-            case .easy: return 120
-            case .medium: return 150
-            case .hard: return 240
-            case .expert: return 270
-            }
-        } else {
-            switch difficulty {
-            case .easy: return 60
-            case .medium: return 90
-            case .hard: return 120
-            case .expert: return 150
-            }
+    /// Seconds allowed per word in Timed mode. Blind gets half again as long.
+    private var secondsPerWord: Int {
+        let base: Int
+        switch difficulty {
+        case .easy: base = 15
+        case .medium: base = 20
+        case .hard: base = 25
+        case .expert: base = 30
         }
+        return isBlindMode ? base * 3 / 2 : base
     }
 
-    func timeLimitString() -> String {
-        formattedTime(timeLimitSeconds())
+    /// Time allowed for a puzzle with `wordCount` words (at least 45 seconds).
+    private func timeLimitSeconds(wordCount: Int) -> Int {
+        max(45, secondsPerWord * wordCount)
+    }
+
+    /// Shown on the start screen before a puzzle exists, e.g. "20 sec per word".
+    func timePerWordString() -> String {
+        "\(secondsPerWord) sec per word"
     }
 
     func formattedTime(_ secs: Int) -> String {
@@ -194,14 +231,19 @@ final class WordSearchViewModel {
         return String(format: "%d:%02d", m, s)
     }
 
-    private func startTimerIfNeeded() {
-        stopTimer()
-        guard isTimedMode else { return }
-        remainingSeconds = timeLimitSeconds()
+    /// Starts a fresh clock for a new round.
+    private func startClock() {
+        elapsedSeconds = 0
         pulseOn = false
-        timeUp = false
-        didWin = false
-        timerTask = Task { [weak self] in
+        remainingSeconds = isTimedMode ? timeLimitSeconds(wordCount: targetWords.count) : 0
+        resumeTimer()
+    }
+
+    /// Restarts the clock where it left off, e.g. when returning to the game.
+    func resumeTimer() {
+        stopTimer()
+        guard started, !roundOver else { return }
+        clockTask = Task { [weak self] in
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(1))
                 guard !Task.isCancelled, let self else { return }
@@ -211,20 +253,19 @@ final class WordSearchViewModel {
     }
 
     func stopTimer() {
-        timerTask?.cancel()
-        timerTask = nil
+        clockTask?.cancel()
+        clockTask = nil
     }
 
     private func tickTimer() {
-        guard isTimedMode, !timeUp, !didWin, !roundOver, remainingSeconds > 0 else { return }
+        guard !roundOver else { return }
+        elapsedSeconds += 1
+        guard isTimedMode, remainingSeconds > 0 else { return }
         remainingSeconds -= 1
         if remainingSeconds == 0 {
             handleTimeUp()
-        } else {
-            let threshold = 10
-            if remainingSeconds == threshold {
-                startPulse()
-            }
+        } else if remainingSeconds == 10 {
+            startPulse()
         }
     }
 
@@ -244,14 +285,8 @@ final class WordSearchViewModel {
     }
 
     private func handleTimeUp() {
-        timeUp = true
-        stopTimer()
         revealOverlay()
-        selectionStart = nil
-        selectionEnd = nil
-        tapStart = nil
-        roundOver = true
-        recordCompletedRound(won: false)
+        finishRound(.timeUp)
         #if canImport(UIKit)
         let gen = UINotificationFeedbackGenerator()
         gen.notificationOccurred(.warning)
@@ -264,6 +299,22 @@ final class WordSearchViewModel {
         else { return .red }
     }
 
+    // MARK: - Round end
+
+    private func finishRound(_ result: RoundResult) {
+        stopTimer()
+        roundResult = result
+        timeUp = result == .timeUp
+        didWin = result == .won
+        roundOver = true
+        selectionStart = nil
+        selectionEnd = nil
+        tapStart = nil
+        hintClearTask?.cancel()
+        hintCell = nil
+        recordCompletedRound(won: result == .won)
+    }
+
     // MARK: - Puzzle generation
 
     private func resetState() {
@@ -273,46 +324,101 @@ final class WordSearchViewModel {
         foundCells.removeAll()
         foundWords.removeAll()
         revealedWords.removeAll()
+        colorIndexForWord.removeAll()
+        colorIndexForCell.removeAll()
         selectionStart = nil
         selectionEnd = nil
         tapStart = nil
         showBlindWordList = false
+        hintClearTask?.cancel()
+        hintCell = nil
+        hintsUsed = 0
         timeUp = false
         didWin = false
         roundOver = false
+        roundResult = nil
+    }
+
+    private struct VerseChoice {
+        let book: String
+        let chapter: Int
+        let verse: Int
+        let text: String
     }
 
     private func generatePuzzle() {
         resetState()
 
-        // Resolve verse
-        if gameMode == .favorites, let fav = favoritesFetch().randomElement(), let resolved = resolveFavorite(fav) {
-            let (book, chapter, verse) = resolved
-            verseRef = "\(book.name) \(chapter.number):\(verse.number)"
-            verseText = verse.text
-            favBookName = book.name; favChapterNumber = chapter.number; favVerseNumber = verse.number
-        } else {
-            guard let book = BibleData.books.randomElement(),
-                  let chapter = book.chapters.randomElement(),
-                  let verse = chapter.verses.randomElement()
-            else { return }
-            verseRef = "\(book.name) \(chapter.number):\(verse.number)"
-            verseText = verse.text
-            favBookName = book.name; favChapterNumber = chapter.number; favVerseNumber = verse.number
-        }
-
-        let countRange: ClosedRange<Int> = {
-            switch difficulty {
-            case .easy: return 3...6
-            case .medium: return 4...7
-            case .hard, .expert: return 5...8
+        // Short verses can yield only a word or two, so try a few verses and keep the
+        // first that gives a full puzzle (or the best one found).
+        var best: (choice: VerseChoice, puzzle: (grid: [[Character]], placed: [WordSearchEngine.PlacedWord], target: [String]))?
+        for _ in 0..<12 {
+            guard let choice = nextVerse() else { break }
+            let puzzle = engine.generatePuzzle(from: choice.text, countRange: wordCountRange)
+            if best == nil || puzzle.target.count > best!.puzzle.target.count {
+                best = (choice, puzzle)
             }
-        }()
+            if puzzle.target.count >= wordCountRange.lowerBound { break }
+        }
+        guard let best else { return }
 
-        let result = engine.generatePuzzle(from: verseText, countRange: countRange)
-        grid = result.grid
-        placed = result.placed
-        targetWords = result.target
+        verseRef = "\(best.choice.book) \(best.choice.chapter):\(best.choice.verse)"
+        verseText = best.choice.text
+        favBookName = best.choice.book
+        favChapterNumber = best.choice.chapter
+        favVerseNumber = best.choice.verse
+        grid = best.puzzle.grid
+        placed = best.puzzle.placed
+        targetWords = best.puzzle.target
+        for (index, word) in targetWords.enumerated() {
+            colorIndexForWord[word] = index
+        }
+    }
+
+    private func nextVerse() -> VerseChoice? {
+        switch verseSource {
+        case .favorites:
+            if let fav = favoritesFetch().randomElement(), let (book, chapter, verse) = resolveFavorite(fav) {
+                return VerseChoice(book: book.name, chapter: chapter.number, verse: verse.number, text: verse.text)
+            }
+            return randomVerse()
+        case .popular:
+            return Self.popularVerses.randomElement().map(resolvePopular) ?? randomVerse()
+        case .random:
+            return randomVerse()
+        }
+    }
+
+    private func randomVerse() -> VerseChoice? {
+        guard let book = BibleData.books.randomElement(),
+              let chapter = book.chapters.randomElement(),
+              let verse = chapter.verses.randomElement() else { return nil }
+        return VerseChoice(book: book.name, chapter: chapter.number, verse: verse.number, text: verse.text)
+    }
+
+    // MARK: - Popular verses
+
+    /// Well-known verses shared with the lock-screen widget (`LockScreenVerses.json`).
+    private struct PopularVerse: Decodable {
+        let book: String
+        let chapter: Int
+        let verse: Int
+        let text: String
+    }
+
+    private static let popularVerses: [PopularVerse] = {
+        guard let url = Bundle.main.url(forResource: "LockScreenVerses", withExtension: "json"),
+              let data = try? Data(contentsOf: url) else { return [] }
+        return (try? JSONDecoder().decode([PopularVerse].self, from: data)) ?? []
+    }()
+
+    /// Prefers the app's own text for the verse so it matches the reader exactly.
+    private func resolvePopular(_ entry: PopularVerse) -> VerseChoice {
+        let text = BibleData.books.first { $0.name == entry.book }?
+            .chapters.first { $0.number == entry.chapter }?
+            .verses.first { $0.number == entry.verse }?
+            .text ?? entry.text
+        return VerseChoice(book: entry.book, chapter: entry.chapter, verse: entry.verse, text: text)
     }
 
     // MARK: - Validation
@@ -322,19 +428,19 @@ final class WordSearchViewModel {
     private func validateSelection() {
         guard let start = selectionStart, let end = selectionEnd else { return }
         let result = engine.validateSelection(grid: grid, placed: placed, start: start, end: end)
-        guard let originalWord = result.matchedWordOriginal, !result.matchedPath.isEmpty else { return }
+        guard let originalWord = result.matchedWordOriginal, !result.matchedPath.isEmpty,
+              !foundWords.contains(originalWord) else { return }
 
         for cell in result.matchedPath {
-            foundCells.insert(keyFor(row: cell.row, col: cell.col))
+            let key = keyFor(row: cell.row, col: cell.col)
+            foundCells.insert(key)
+            colorIndexForCell[key] = colorIndexForWord[originalWord]
         }
         foundWords.insert(originalWord)
         revealedWords.remove(originalWord)
 
         if foundWords.count == targetWords.count {
-            stopTimer()
-            didWin = true
-            roundOver = true
-            recordCompletedRound(won: true)
+            finishRound(.won)
         }
     }
 

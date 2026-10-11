@@ -3,6 +3,8 @@ import SwiftUI
 struct WordSearchHeaderBox: View {
     let verseRef: String
     let verseText: String
+    /// Blind rounds show only the reference, since the verse would give away the words.
+    let hidesVerseText: Bool
     let isFavorited: Bool
     let onToggleFavorite: () -> Void
     let timerTint: Color?
@@ -10,13 +12,9 @@ struct WordSearchHeaderBox: View {
     var body: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 6) {
-                HStack {
-                    Text("Word Search").font(.headline)
-                    Spacer()
-                }
                 if !verseRef.isEmpty {
                     HStack(spacing: 8) {
-                        Text(verseRef).font(.subheadline).foregroundStyle(.secondary).lineLimit(1)
+                        Text(verseRef).font(.headline).lineLimit(1)
                         Spacer()
                         Button(action: { onToggleFavorite() }) {
                             Image(systemName: isFavorited ? "heart.fill" : "heart").foregroundStyle(.red)
@@ -25,7 +23,11 @@ struct WordSearchHeaderBox: View {
                         .accessibilityLabel(isFavorited ? "Remove Favorite" : "Add to Favorites")
                     }
                 }
-                if !verseText.isEmpty {
+                if hidesVerseText {
+                    Label("The verse appears when you finish.", systemImage: "eye.slash")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                } else if !verseText.isEmpty {
                     Text("“\(verseText)”")
                         .font(.footnote)
                         .foregroundStyle(.secondary)

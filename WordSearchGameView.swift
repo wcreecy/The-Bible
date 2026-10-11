@@ -7,6 +7,7 @@ struct WordSearchGameView: View {
     @Query private var favorites: [Favorite]
     @State private var vm: WordSearchViewModel
     @State private var didBindVM = false
+    @State private var confirmReveal = false
 
     // Reuse a single in-memory placeholder container across instances to avoid store churn.
     private static let placeholderContainer: ModelContainer = {
@@ -30,90 +31,100 @@ struct WordSearchGameView: View {
     var body: some View {
         @Bindable var vm = vm
 
-        ScrollViewReader { _ in
-            ScrollView {
-                VStack(spacing: 16) {
-                    if !vm.started {
-                        WordSearchStartScreen(
-                            difficulty: $vm.difficulty,
-                            gameMode: $vm.gameMode,
-                            isTimedMode: $vm.isTimedMode,
-                            timeLimitString: vm.timeLimitString(),
-                            onStart: { vm.start() }
+        ScrollView {
+            VStack(spacing: 16) {
+                if !vm.started {
+                    WordSearchStartScreen(
+                        difficulty: $vm.difficulty,
+                        verseSource: $vm.verseSource,
+                        isBlindMode: $vm.isBlindMode,
+                        isTimedMode: $vm.isTimedMode,
+                        wordCountRange: vm.wordCountRange,
+                        timePerWord: vm.timePerWordString(),
+                        hasFavorites: !favorites.isEmpty,
+                        onStart: { vm.start() }
+                    )
+                } else {
+                    WordSearchHeaderBox(
+                        verseRef: vm.verseRef,
+                        // The summary shows the full verse once the round ends.
+                        verseText: vm.roundOver ? "" : vm.verseText,
+                        hidesVerseText: vm.hidesWordList,
+                        isFavorited: vm.isCurrentFavorited(),
+                        onToggleFavorite: { vm.toggleFavoriteCurrent() },
+                        timerTint: vm.isTimedMode && !vm.roundOver
+                            ? vm.timerTint(for: vm.remainingSeconds)
+                            : nil
+                    )
+
+                    if vm.isTimedMode && !vm.roundOver {
+                        GameTimerCard(
+                            remainingSeconds: vm.remainingSeconds,
+                            tint: vm.timerTint(for: vm.remainingSeconds),
+                            isPulsing: vm.pulseOn,
+                            formattedTime: vm.formattedTime(vm.remainingSeconds)
+                        )
+                    }
+
+                    if isPad {
+                        SideBySideGameArea(
+                            size: vm.size,
+                            grid: vm.grid,
+                            selectionStart: vm.selectionStart,
+                            selectionEnd: vm.selectionEnd,
+                            foundCells: vm.foundCells,
+                            revealedWords: vm.revealedWords,
+                            placed: vm.placed,
+                            backgroundColorForCell: backgroundColorForCell,
+                            onTapCell: { r, c in vm.handleTap(row: r, col: c) },
+                            onDragChanged: { cell in vm.dragChanged(to: cell) },
+                            onDragEnded: { vm.dragEnded() },
+                            // iPad keeps the previous height-driven fallback (words are beside, not below)
+                            dynamicGridHeight: dynamicGridHeightForLayout(availableWidth: nil),
+
+                            words: vm.targetWords,
+                            foundWords: vm.foundWords,
+                            hidesWordList: vm.hidesWordList,
+                            colorForWord: colorForWord,
+
+                            roundOver: vm.roundOver,
+                            onHint: { vm.hint() },
+                            onReveal: { confirmReveal = true },
+                            onShowWordList: { vm.showWordList() },
+                            onNewPuzzle: { vm.newPuzzle() },
+                            onChangeSettings: { vm.changeSettings() },
+                            summary: summaryCard
                         )
                     } else {
-                        WordSearchHeaderBox(
-                            verseRef: vm.verseRef,
-                            verseText: vm.verseText,
-                            isFavorited: vm.isCurrentFavorited(),
-                            onToggleFavorite: { vm.toggleFavoriteCurrent() },
-                            timerTint: vm.isTimedMode && !vm.roundOver
-                                ? vm.timerTint(for: vm.remainingSeconds)
-                                : nil
-                        )
-
-                        if vm.isTimedMode && !vm.roundOver {
-                            GameTimerCard(
-                                remainingSeconds: vm.remainingSeconds,
-                                tint: vm.timerTint(for: vm.remainingSeconds),
-                                isPulsing: vm.pulseOn,
-                                formattedTime: formattedTime(vm.remainingSeconds)
-                            )
-                        }
-
-                        WordSearchStatusBanner(timeUp: vm.timeUp, didWin: vm.didWin)
-
-                        if isPad {
-                            SideBySideGameArea(
-                                size: vm.size,
-                                grid: vm.grid,
-                                selectionStart: vm.selectionStart,
-                                selectionEnd: vm.selectionEnd,
-                                foundCells: vm.foundCells,
-                                revealedWords: vm.revealedWords,
-                                placed: vm.placed,
-                                backgroundColorForCell: backgroundColorForCell,
-                                onTapCell: { r, c in vm.handleTap(row: r, col: c) },
-                                onDragChanged: { cell in vm.dragChanged(to: cell) },
-                                onDragEnded: { vm.dragEnded() },
-                                // iPad keeps the previous height-driven fallback (words are beside, not below)
-                                dynamicGridHeight: dynamicGridHeightForLayout(availableWidth: nil),
-
-                                words: vm.targetWords,
-                                foundWords: vm.foundWords,
-                                gameMode: vm.gameMode,
-                                showBlindWordList: vm.showBlindWordList,
-
-                                onNewPuzzle: { vm.newPuzzle() },
-                                onReveal: { vm.reveal() },
-                                onChangeDifficultyOrMode: { vm.changeSettings() },
-                                onToggleHealed: { vm.showBlindWordList.toggle() },
-                                healedOn: vm.showBlindWordList,
-                                roundOver: vm.roundOver
-                            )
-                        } else {
-                            ZstackPhoneLayout
-                        }
-                    }
-                }
-                .padding()
-            }
-            .navigationTitle("")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    if vm.started {
-                        GameNavigationTitle(title: "Word Search", systemImage: "square.grid.3x3.topleft.filled", tint: .green)
+                        phoneLayout
                     }
                 }
             }
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                if vm.started && vm.roundOver && !isPad {
-                    completionActionsPhone
-                }
-            }
-            .onDisappear { vm.stopTimer() }
+            .padding()
         }
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                if vm.started {
+                    GameNavigationTitle(title: "Word Search", systemImage: "square.grid.3x3.topleft.filled", tint: .green)
+                }
+            }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if vm.started && vm.roundOver && !isPad {
+                completionActionsPhone
+            }
+        }
+        .confirmationDialog("Reveal all words?", isPresented: $confirmReveal, titleVisibility: .visible) {
+            Button("Reveal", role: .destructive) { vm.reveal() }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("This shows every word and counts the puzzle as unfinished.")
+        }
+        // The clock pauses while the game is off screen and picks up where it left off.
+        .onAppear { vm.resumeTimer() }
+        .onDisappear { vm.stopTimer() }
         // Rebind the VM to the real environment context/fetcher once the view is active.
         .task {
             if !didBindVM {
@@ -123,18 +134,13 @@ struct WordSearchGameView: View {
         }
     }
 
-    // MARK: - Extracted phone layout block to keep body smaller
+    // MARK: - Phone layout
 
-    // Consistent small spacing between the grid and word list on all difficulties (matches the "easy" feel).
-    private var phoneInterSectionSpacing: CGFloat {
-        6
-    }
-
-    private var ZstackPhoneLayout: some View {
+    private var phoneLayout: some View {
         // Use GeometryReader to get the actual content width (after outer padding).
         GeometryReader { geo in
             let gridHeight = dynamicGridHeightForLayout(availableWidth: geo.size.width)
-            VStack(spacing: phoneInterSectionSpacing) {
+            VStack(spacing: 6) {
                 GridBoard(
                     size: vm.size,
                     grid: vm.grid,
@@ -150,7 +156,6 @@ struct WordSearchGameView: View {
                     dynamicGridHeight: gridHeight
                 )
                 .frame(maxWidth: .infinity)
-                .padding(.top, vm.difficulty == .easy ? 2 : 0)
 
                 // Word list + controls sit under the grid
                 wordListAndControlsPhone
@@ -162,38 +167,34 @@ struct WordSearchGameView: View {
     }
 
     private var wordListAndControlsPhone: some View {
-        VStack(spacing: vm.difficulty == .easy ? 8 : 6) {
-            if !vm.roundOver {
-                GroupBox {
-                    VStack(alignment: .leading, spacing: 6) {
-                        if vm.gameMode == .blind && !vm.showBlindWordList {
-                            let foundCount = vm.targetWords.filter { vm.foundWords.contains($0) }.count
-                            HStack {
-                                Text("Words to find: \(vm.targetWords.count)").font(.headline)
-                                Spacer(minLength: 8)
-                                Text("Found: \(foundCount)").font(.headline).foregroundStyle(.secondary)
-                            }
+        VStack(spacing: 8) {
+            if vm.roundOver {
+                summaryCard
+            }
+
+            GroupBox {
+                VStack(alignment: .leading, spacing: 6) {
+                    if vm.hidesWordList {
+                        let foundCount = vm.targetWords.filter { vm.foundWords.contains($0) }.count
+                        HStack {
+                            Text("Words to find: \(vm.targetWords.count)").font(.headline)
+                            Spacer(minLength: 8)
+                            Text("Found: \(foundCount)").font(.headline).foregroundStyle(.secondary)
+                        }
+                    } else {
+                        Text(vm.roundOver ? "Words" : "Find these words:").font(.headline)
+                        if vm.targetWords.isEmpty {
+                            Text("No words").foregroundStyle(.secondary)
                         } else {
-                            Text("Find these words:").font(.headline)
-                            if vm.targetWords.isEmpty {
-                                Text("No words").foregroundStyle(.secondary)
-                            } else {
-                                WrapWordsView(words: vm.targetWords, found: vm.foundWords, revealed: vm.revealedWords)
-                            }
+                            WrapWordsView(words: vm.targetWords, found: vm.foundWords, revealed: vm.revealedWords, colorForWord: colorForWord)
                         }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
 
-                WordSearchControlsBar(
-                    onNewPuzzle: { vm.newPuzzle() },
-                    onReveal: { vm.reveal() },
-                    onChangeDifficultyOrMode: { vm.changeSettings() },
-                    gameMode: vm.gameMode,
-                    onToggleHealed: { vm.showBlindWordList.toggle() },
-                    healedOn: vm.showBlindWordList,
-                    roundOver: false
-                )
+            if !vm.roundOver {
+                controlsBar(roundOver: false)
             }
         }
         // Small positive top padding to ensure a tiny, consistent gap (no overlap) on all difficulties.
@@ -201,35 +202,57 @@ struct WordSearchGameView: View {
     }
 
     private var completionActionsPhone: some View {
+        controlsBar(roundOver: true)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal)
+            .padding(.vertical, 10)
+            .background(.bar)
+    }
+
+    private func controlsBar(roundOver: Bool) -> some View {
         WordSearchControlsBar(
+            roundOver: roundOver,
+            canShowWordList: vm.hidesWordList,
+            onHint: { vm.hint() },
+            onReveal: { confirmReveal = true },
+            onShowWordList: { vm.showWordList() },
             onNewPuzzle: { vm.newPuzzle() },
-            onReveal: { vm.reveal() },
-            onChangeDifficultyOrMode: { vm.changeSettings() },
-            gameMode: vm.gameMode,
-            onToggleHealed: { vm.showBlindWordList.toggle() },
-            healedOn: vm.showBlindWordList,
-            roundOver: true
+            onChangeSettings: { vm.changeSettings() }
         )
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal)
-        .padding(.vertical, 10)
-        .background(.bar)
+    }
+
+    @ViewBuilder
+    private var summaryCard: some View {
+        if let result = vm.roundResult {
+            WordSearchSummaryCard(
+                result: result,
+                foundCount: vm.foundWords.count,
+                totalCount: vm.targetWords.count,
+                elapsed: vm.formattedTime(vm.elapsedSeconds),
+                hintsUsed: vm.hintsUsed,
+                usedWordList: vm.isBlindMode ? vm.showBlindWordList : nil,
+                verseRef: vm.verseRef,
+                verseText: vm.verseText,
+                onReadInContext: {
+                    AppRouter.shared.openBibleReference(
+                        book: vm.favBookName,
+                        chapter: vm.favChapterNumber,
+                        verse: vm.favVerseNumber
+                    )
+                }
+            )
+        }
     }
 
     // MARK: - Helpers
-
-    private func formattedTime(_ seconds: Int) -> String {
-        let minutes = seconds / 60
-        let remainingSeconds = seconds % 60
-        return String(format: "%d:%02d", minutes, remainingSeconds)
-    }
 
     // Height that matches the grid’s actual size for the given container width (phone).
     // If availableWidth is nil (iPad side layout), we fall back to the previous “target cell” approach.
     private func dynamicGridHeightForLayout(availableWidth: CGFloat?) -> CGFloat {
         let isPad = UIDevice.current.userInterfaceIdiom == .pad
         let spacing: CGFloat = isPad ? 6 : 4
-        let minCell: CGFloat = isPad ? 36 : 26
+        // Matches GridBoard: phones allow small cells so a 14×14 grid fits the screen width.
+        let minCell: CGFloat = isPad ? 36 : 18
         let maxCell: CGFloat = isPad ? 58 : 36
 
         if let w = availableWidth {
@@ -244,17 +267,27 @@ struct WordSearchGameView: View {
         }
     }
 
+    private func colorForWord(_ word: String) -> Color {
+        WordSearchPalette.color(for: vm.colorIndexForWord[word])
+    }
+
     private func backgroundColorForCell(row: Int, col: Int) -> Color {
         let key = "\(row),\(col)"
-        if vm.foundCells.contains(key) { return Color.green.opacity(0.45) }
+        if let hint = vm.hintCell, hint.row == row, hint.col == col {
+            return Color.yellow.opacity(0.75)
+        }
+        if vm.foundCells.contains(key) {
+            return WordSearchPalette.color(for: vm.colorIndexForCell[key]).opacity(0.45)
+        }
         // Revealed cells (red)
+        let engine = WordSearchEngine(size: vm.size, difficulty: vm.difficulty)
         if vm.placed.contains(where: { pw in
-            return vm.revealedWords.contains(pw.originalWord) && WordSearchEngine(size: vm.size, difficulty: vm.difficulty).cellsForPlacedWord(pw).contains(where: { $0.row == row && $0.col == col })
+            vm.revealedWords.contains(pw.originalWord) && engine.cellsForPlacedWord(pw).contains(where: { $0.row == row && $0.col == col })
         }) {
             return Color.red.opacity(0.35)
         }
         if let start = vm.selectionStart, let end = vm.selectionEnd {
-            let path = WordSearchEngine(size: vm.size, difficulty: vm.difficulty).selectionCells(from: start, to: end)
+            let path = engine.selectionCells(from: start, to: end)
             if path.contains(where: { $0.row == row && $0.col == col }) {
                 return Color.blue.opacity(0.35)
             }
@@ -264,5 +297,5 @@ struct WordSearchGameView: View {
 }
 
 #Preview {
-    NavigationStack { VerseMatchGameView() }
+    NavigationStack { WordSearchGameView() }
 }
