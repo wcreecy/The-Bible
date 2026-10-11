@@ -1,0 +1,4067 @@
+{
+  "wordCount": 406,
+  "wordGameCatalog": [
+    {
+      "word": "FIRST",
+      "ref": "Matthew 6:33"
+    },
+    {
+      "word": "PULSE",
+      "ref": "Daniel 1:12"
+    },
+    {
+      "word": "ALONE",
+      "ref": "Matthew 4:4"
+    },
+    {
+      "word": "SWEEP",
+      "ref": "Luke 15:8"
+    },
+    {
+      "word": "CLOTH",
+      "ref": "Matthew 9:16"
+    },
+    {
+      "word": "DREGS",
+      "ref": "Psalms 75:8"
+    },
+    {
+      "word": "TITHE",
+      "ref": "Leviticus 27:30"
+    },
+    {
+      "word": "AMBER",
+      "ref": "Ezekiel 1:4"
+    },
+    {
+      "word": "INNER",
+      "ref": "Ephesians 3:16"
+    },
+    {
+      "word": "WHALE",
+      "ref": "Matthew 12:40"
+    },
+    {
+      "word": "EBONY",
+      "ref": "Ezekiel 27:15"
+    },
+    {
+      "word": "STAFF",
+      "ref": "Psalms 23:4"
+    },
+    {
+      "word": "SNAIL",
+      "ref": "Psalms 58:8"
+    },
+    {
+      "word": "SERVE",
+      "ref": "Joshua 24:15"
+    },
+    {
+      "word": "OMEGA",
+      "ref": "Revelation 22:13"
+    },
+    {
+      "word": "TRUST",
+      "ref": "Proverbs 3:5"
+    },
+    {
+      "word": "EARLY",
+      "ref": "Psalms 63:1"
+    },
+    {
+      "word": "TORCH",
+      "ref": "Zechariah 12:6"
+    },
+    {
+      "word": "OUTER",
+      "ref": "Matthew 8:12"
+    },
+    {
+      "word": "DRINK",
+      "ref": "John 7:37"
+    },
+    {
+      "word": "CHEEK",
+      "ref": "Matthew 5:39"
+    },
+    {
+      "word": "CUBIT",
+      "ref": "Matthew 6:27"
+    },
+    {
+      "word": "MERRY",
+      "ref": "Proverbs 17:22"
+    },
+    {
+      "word": "QUICK",
+      "ref": "2 Timothy 4:1"
+    },
+    {
+      "word": "CRUSE",
+      "ref": "1 Kings 17:12"
+    },
+    {
+      "word": "THIGH",
+      "ref": "Genesis 32:25"
+    },
+    {
+      "word": "FAULT",
+      "ref": "Exodus 5:16"
+    },
+    {
+      "word": "WOVEN",
+      "ref": "John 19:23"
+    },
+    {
+      "word": "DAILY",
+      "ref": "Matthew 6:11"
+    },
+    {
+      "word": "WATCH",
+      "ref": "Mark 13:37"
+    },
+    {
+      "word": "BROTH",
+      "ref": "Judges 6:19"
+    },
+    {
+      "word": "KNIFE",
+      "ref": "Genesis 22:10"
+    },
+    {
+      "word": "LAVER",
+      "ref": "Exodus 30:18"
+    },
+    {
+      "word": "PLANT",
+      "ref": "Ecclesiastes 3:2"
+    },
+    {
+      "word": "RENEW",
+      "ref": "Isaiah 40:31"
+    },
+    {
+      "word": "SWEET",
+      "ref": "Psalms 119:103"
+    },
+    {
+      "word": "QUAKE",
+      "ref": "Joel 2:10"
+    },
+    {
+      "word": "GUILE",
+      "ref": "John 1:47"
+    },
+    {
+      "word": "WATER",
+      "ref": "John 4:14"
+    },
+    {
+      "word": "ELECT",
+      "ref": "Colossians 3:12"
+    },
+    {
+      "word": "MIRTH",
+      "ref": "Genesis 31:27"
+    },
+    {
+      "word": "SELAH",
+      "ref": "Psalms 3:2"
+    },
+    {
+      "word": "RABBI",
+      "ref": "John 3:2"
+    },
+    {
+      "word": "SHARP",
+      "ref": "Revelation 1:16"
+    },
+    {
+      "word": "ORGAN",
+      "ref": "Genesis 4:21"
+    },
+    {
+      "word": "CHIDE",
+      "ref": "Psalms 103:9"
+    },
+    {
+      "word": "YEARN",
+      "ref": "Genesis 43:30"
+    },
+    {
+      "word": "PITCH",
+      "ref": "Genesis 6:14"
+    },
+    {
+      "word": "EPHOD",
+      "ref": "Exodus 28:6"
+    },
+    {
+      "word": "AVOID",
+      "ref": "Proverbs 4:15"
+    },
+    {
+      "word": "UTTER",
+      "ref": "Matthew 13:35"
+    },
+    {
+      "word": "GREEN",
+      "ref": "Psalms 23:2"
+    },
+    {
+      "word": "RAISE",
+      "ref": "John 6:40"
+    },
+    {
+      "word": "REALM",
+      "ref": "2 Chronicles 20:30"
+    },
+    {
+      "word": "SEVEN",
+      "ref": "Matthew 18:22"
+    },
+    {
+      "word": "EARTH",
+      "ref": "Genesis 1:1"
+    },
+    {
+      "word": "GRAPE",
+      "ref": "Leviticus 19:10"
+    },
+    {
+      "word": "AGATE",
+      "ref": "Exodus 28:19"
+    },
+    {
+      "word": "WRATH",
+      "ref": "Proverbs 15:1"
+    },
+    {
+      "word": "ELDER",
+      "ref": "Luke 15:25"
+    },
+    {
+      "word": "GODLY",
+      "ref": "2 Timothy 3:12"
+    },
+    {
+      "word": "LEARN",
+      "ref": "Matthew 11:29"
+    },
+    {
+      "word": "PURGE",
+      "ref": "Psalms 51:7"
+    },
+    {
+      "word": "WHEEL",
+      "ref": "Ezekiel 1:16"
+    },
+    {
+      "word": "DOWRY",
+      "ref": "Genesis 30:20"
+    },
+    {
+      "word": "BEAST",
+      "ref": "Revelation 13:18"
+    },
+    {
+      "word": "JEWEL",
+      "ref": "Proverbs 11:22"
+    },
+    {
+      "word": "BRIER",
+      "ref": "Isaiah 55:13"
+    },
+    {
+      "word": "SLAIN",
+      "ref": "Revelation 5:12"
+    },
+    {
+      "word": "UPPER",
+      "ref": "Mark 14:15"
+    },
+    {
+      "word": "JUDGE",
+      "ref": "Matthew 7:1"
+    },
+    {
+      "word": "CROSS",
+      "ref": "Luke 9:23"
+    },
+    {
+      "word": "ERROR",
+      "ref": "2 Samuel 6:7"
+    },
+    {
+      "word": "AMEND",
+      "ref": "2 Chronicles 34:10"
+    },
+    {
+      "word": "SWEAT",
+      "ref": "Genesis 3:19"
+    },
+    {
+      "word": "SKULL",
+      "ref": "John 19:17"
+    },
+    {
+      "word": "DEFER",
+      "ref": "Ecclesiastes 5:4"
+    },
+    {
+      "word": "CLEAN",
+      "ref": "Psalms 51:10"
+    },
+    {
+      "word": "STILL",
+      "ref": "Psalms 46:10"
+    },
+    {
+      "word": "WORLD",
+      "ref": "John 3:16"
+    },
+    {
+      "word": "ARROW",
+      "ref": "Psalms 91:5"
+    },
+    {
+      "word": "RISEN",
+      "ref": "Matthew 28:6"
+    },
+    {
+      "word": "GIANT",
+      "ref": "2 Samuel 21:16"
+    },
+    {
+      "word": "BOSOM",
+      "ref": "Luke 16:22"
+    },
+    {
+      "word": "TRUMP",
+      "ref": "1 Corinthians 15:52"
+    },
+    {
+      "word": "STORM",
+      "ref": "Mark 4:37"
+    },
+    {
+      "word": "WOUND",
+      "ref": "Exodus 21:25"
+    },
+    {
+      "word": "DEVIL",
+      "ref": "James 4:7"
+    },
+    {
+      "word": "SMITH",
+      "ref": "1 Samuel 13:19"
+    },
+    {
+      "word": "FLINT",
+      "ref": "Deuteronomy 8:15"
+    },
+    {
+      "word": "FEAST",
+      "ref": "Luke 2:41"
+    },
+    {
+      "word": "MERCY",
+      "ref": "Micah 6:8"
+    },
+    {
+      "word": "TOKEN",
+      "ref": "Genesis 9:12"
+    },
+    {
+      "word": "APPLY",
+      "ref": "Psalms 90:12"
+    },
+    {
+      "word": "FLOOR",
+      "ref": "Genesis 50:11"
+    },
+    {
+      "word": "FAITH",
+      "ref": "Hebrews 11:1"
+    },
+    {
+      "word": "CATCH",
+      "ref": "Luke 5:10"
+    },
+    {
+      "word": "VOICE",
+      "ref": "1 Kings 19:12"
+    },
+    {
+      "word": "TOOTH",
+      "ref": "Matthew 5:38"
+    },
+    {
+      "word": "SLACK",
+      "ref": "2 Peter 3:9"
+    },
+    {
+      "word": "FEIGN",
+      "ref": "2 Samuel 14:2"
+    },
+    {
+      "word": "SAVED",
+      "ref": "Acts 16:31"
+    },
+    {
+      "word": "FOLLY",
+      "ref": "Proverbs 26:11"
+    },
+    {
+      "word": "LUCRE",
+      "ref": "1 Timothy 3:3"
+    },
+    {
+      "word": "SWEAR",
+      "ref": "Matthew 5:34"
+    },
+    {
+      "word": "VIPER",
+      "ref": "Acts 28:3"
+    },
+    {
+      "word": "GNASH",
+      "ref": "Psalms 112:10"
+    },
+    {
+      "word": "PROUD",
+      "ref": "James 4:6"
+    },
+    {
+      "word": "VENOM",
+      "ref": "Deuteronomy 32:33"
+    },
+    {
+      "word": "TEACH",
+      "ref": "Psalms 25:4"
+    },
+    {
+      "word": "HOARY",
+      "ref": "Proverbs 16:31"
+    },
+    {
+      "word": "MOUNT",
+      "ref": "Matthew 24:3"
+    },
+    {
+      "word": "FIERY",
+      "ref": "Daniel 3:6"
+    },
+    {
+      "word": "OFFER",
+      "ref": "Genesis 22:2"
+    },
+    {
+      "word": "SKILL",
+      "ref": "1 Kings 5:6"
+    },
+    {
+      "word": "TRIBE",
+      "ref": "Exodus 31:2"
+    },
+    {
+      "word": "SEIZE",
+      "ref": "Joshua 8:7"
+    },
+    {
+      "word": "HAPPY",
+      "ref": "Psalms 144:15"
+    },
+    {
+      "word": "CHILD",
+      "ref": "Proverbs 22:6"
+    },
+    {
+      "word": "ALIVE",
+      "ref": "1 Corinthians 15:22"
+    },
+    {
+      "word": "JUICE",
+      "ref": "Song of Solomon 8:2"
+    },
+    {
+      "word": "DITCH",
+      "ref": "Matthew 15:14"
+    },
+    {
+      "word": "ABIDE",
+      "ref": "John 15:4"
+    },
+    {
+      "word": "KNOCK",
+      "ref": "Matthew 7:7"
+    },
+    {
+      "word": "STONE",
+      "ref": "John 8:7"
+    },
+    {
+      "word": "THANK",
+      "ref": "Philippians 1:3"
+    },
+    {
+      "word": "EQUAL",
+      "ref": "Philippians 2:6"
+    },
+    {
+      "word": "EMPTY",
+      "ref": "Luke 1:53"
+    },
+    {
+      "word": "THIEF",
+      "ref": "1 Thessalonians 5:2"
+    },
+    {
+      "word": "MOUTH",
+      "ref": "Psalms 19:14"
+    },
+    {
+      "word": "BLOOD",
+      "ref": "Hebrews 9:22"
+    },
+    {
+      "word": "PRICE",
+      "ref": "1 Corinthians 6:20"
+    },
+    {
+      "word": "BLESS",
+      "ref": "Numbers 6:24"
+    },
+    {
+      "word": "DROWN",
+      "ref": "Song of Solomon 8:7"
+    },
+    {
+      "word": "SLING",
+      "ref": "1 Samuel 17:50"
+    },
+    {
+      "word": "TABLE",
+      "ref": "Psalms 23:5"
+    },
+    {
+      "word": "WISER",
+      "ref": "1 Kings 4:31"
+    },
+    {
+      "word": "FRAIL",
+      "ref": "Psalms 39:4"
+    },
+    {
+      "word": "ROYAL",
+      "ref": "1 Peter 2:9"
+    },
+    {
+      "word": "SLEEP",
+      "ref": "Psalms 4:8"
+    },
+    {
+      "word": "SHADE",
+      "ref": "Psalms 121:5"
+    },
+    {
+      "word": "ASHES",
+      "ref": "Job 42:6"
+    },
+    {
+      "word": "ANGRY",
+      "ref": "Ephesians 4:26"
+    },
+    {
+      "word": "HEDGE",
+      "ref": "Job 1:10"
+    },
+    {
+      "word": "SINEW",
+      "ref": "Genesis 32:32"
+    },
+    {
+      "word": "SENSE",
+      "ref": "Nehemiah 8:8"
+    },
+    {
+      "word": "HERON",
+      "ref": "Leviticus 11:19"
+    },
+    {
+      "word": "QUEEN",
+      "ref": "Esther 2:17"
+    },
+    {
+      "word": "KNEAD",
+      "ref": "Genesis 18:6"
+    },
+    {
+      "word": "SWIFT",
+      "ref": "Ecclesiastes 9:11"
+    },
+    {
+      "word": "AGREE",
+      "ref": "Matthew 18:19"
+    },
+    {
+      "word": "TOWEL",
+      "ref": "John 13:4"
+    },
+    {
+      "word": "YIELD",
+      "ref": "Genesis 4:12"
+    },
+    {
+      "word": "LAUGH",
+      "ref": "Ecclesiastes 3:4"
+    },
+    {
+      "word": "NOISE",
+      "ref": "Psalms 100:1"
+    },
+    {
+      "word": "RIDER",
+      "ref": "Genesis 49:17"
+    },
+    {
+      "word": "ENTER",
+      "ref": "Matthew 7:13"
+    },
+    {
+      "word": "HAVEN",
+      "ref": "Psalms 107:30"
+    },
+    {
+      "word": "KNEEL",
+      "ref": "Psalms 95:6"
+    },
+    {
+      "word": "HOUSE",
+      "ref": "Joshua 24:15"
+    },
+    {
+      "word": "STIFF",
+      "ref": "Deuteronomy 31:27"
+    },
+    {
+      "word": "BEARD",
+      "ref": "Psalms 133:2"
+    },
+    {
+      "word": "WEARY",
+      "ref": "Galatians 6:9"
+    },
+    {
+      "word": "UNITY",
+      "ref": "Psalms 133:1"
+    },
+    {
+      "word": "PRIDE",
+      "ref": "Proverbs 16:18"
+    },
+    {
+      "word": "NOBLE",
+      "ref": "Acts 17:11"
+    },
+    {
+      "word": "STEAL",
+      "ref": "Exodus 20:15"
+    },
+    {
+      "word": "WHOLE",
+      "ref": "Ecclesiastes 12:13"
+    },
+    {
+      "word": "STING",
+      "ref": "1 Corinthians 15:55"
+    },
+    {
+      "word": "DEPTH",
+      "ref": "Romans 8:39"
+    },
+    {
+      "word": "EDIFY",
+      "ref": "Romans 14:19"
+    },
+    {
+      "word": "ARISE",
+      "ref": "Isaiah 60:1"
+    },
+    {
+      "word": "GREAT",
+      "ref": "Psalms 145:3"
+    },
+    {
+      "word": "CEDAR",
+      "ref": "Psalms 92:12"
+    },
+    {
+      "word": "CHEER",
+      "ref": "John 16:33"
+    },
+    {
+      "word": "FROST",
+      "ref": "Genesis 31:40"
+    },
+    {
+      "word": "PERIL",
+      "ref": "Romans 8:35"
+    },
+    {
+      "word": "TROOP",
+      "ref": "Genesis 30:11"
+    },
+    {
+      "word": "RAZOR",
+      "ref": "Judges 13:5"
+    },
+    {
+      "word": "IMAGE",
+      "ref": "Genesis 1:27"
+    },
+    {
+      "word": "VISIT",
+      "ref": "James 1:27"
+    },
+    {
+      "word": "FLUTE",
+      "ref": "Daniel 3:5"
+    },
+    {
+      "word": "APPLE",
+      "ref": "Psalms 17:8"
+    },
+    {
+      "word": "WAFER",
+      "ref": "Exodus 29:23"
+    },
+    {
+      "word": "SHOUT",
+      "ref": "Joshua 6:5"
+    },
+    {
+      "word": "BOOTH",
+      "ref": "Jonah 4:5"
+    },
+    {
+      "word": "STUDY",
+      "ref": "2 Timothy 2:15"
+    },
+    {
+      "word": "ALLOW",
+      "ref": "Luke 11:48"
+    },
+    {
+      "word": "REBEL",
+      "ref": "Numbers 14:9"
+    },
+    {
+      "word": "GRASS",
+      "ref": "Isaiah 40:8"
+    },
+    {
+      "word": "CURSE",
+      "ref": "Genesis 12:3"
+    },
+    {
+      "word": "WITCH",
+      "ref": "Exodus 22:18"
+    },
+    {
+      "word": "BRING",
+      "ref": "Genesis 1:11"
+    },
+    {
+      "word": "EXCEL",
+      "ref": "Genesis 49:4"
+    },
+    {
+      "word": "WHELP",
+      "ref": "Genesis 49:9"
+    },
+    {
+      "word": "GOURD",
+      "ref": "Jonah 4:6"
+    },
+    {
+      "word": "WHITE",
+      "ref": "Isaiah 1:18"
+    },
+    {
+      "word": "GROAN",
+      "ref": "Job 24:12"
+    },
+    {
+      "word": "HONEY",
+      "ref": "Exodus 3:8"
+    },
+    {
+      "word": "SHINE",
+      "ref": "Matthew 5:16"
+    },
+    {
+      "word": "LEAST",
+      "ref": "Matthew 25:40"
+    },
+    {
+      "word": "BLADE",
+      "ref": "Mark 4:28"
+    },
+    {
+      "word": "MOUSE",
+      "ref": "Leviticus 11:29"
+    },
+    {
+      "word": "PLUCK",
+      "ref": "John 10:28"
+    },
+    {
+      "word": "PURSE",
+      "ref": "Proverbs 1:14"
+    },
+    {
+      "word": "ROUGH",
+      "ref": "Isaiah 40:4"
+    },
+    {
+      "word": "PENNY",
+      "ref": "Matthew 20:2"
+    },
+    {
+      "word": "BERYL",
+      "ref": "Exodus 28:20"
+    },
+    {
+      "word": "TASTE",
+      "ref": "Psalms 34:8"
+    },
+    {
+      "word": "TRIAL",
+      "ref": "1 Peter 4:12"
+    },
+    {
+      "word": "THREE",
+      "ref": "1 Corinthians 13:13"
+    },
+    {
+      "word": "CROWN",
+      "ref": "James 1:12"
+    },
+    {
+      "word": "GRAVE",
+      "ref": "1 Corinthians 15:55"
+    },
+    {
+      "word": "CLIMB",
+      "ref": "Jeremiah 4:29"
+    },
+    {
+      "word": "SNARE",
+      "ref": "Psalms 91:3"
+    },
+    {
+      "word": "DEBTS",
+      "ref": "Matthew 6:12"
+    },
+    {
+      "word": "FIGHT",
+      "ref": "1 Timothy 6:12"
+    },
+    {
+      "word": "CRUEL",
+      "ref": "Genesis 49:7"
+    },
+    {
+      "word": "ABHOR",
+      "ref": "Romans 12:9"
+    },
+    {
+      "word": "RIVER",
+      "ref": "Revelation 22:1"
+    },
+    {
+      "word": "GUILT",
+      "ref": "Deuteronomy 19:13"
+    },
+    {
+      "word": "PIETY",
+      "ref": "1 Timothy 5:4"
+    },
+    {
+      "word": "GLORY",
+      "ref": "Luke 2:14"
+    },
+    {
+      "word": "PAPER",
+      "ref": "2 John 1:12"
+    },
+    {
+      "word": "WAGES",
+      "ref": "Romans 6:23"
+    },
+    {
+      "word": "DREAM",
+      "ref": "Genesis 37:5"
+    },
+    {
+      "word": "CARRY",
+      "ref": "Isaiah 40:11"
+    },
+    {
+      "word": "COUCH",
+      "ref": "Luke 5:19"
+    },
+    {
+      "word": "NEEDY",
+      "ref": "Deuteronomy 15:11"
+    },
+    {
+      "word": "GHOST",
+      "ref": "Acts 2:4"
+    },
+    {
+      "word": "EXTOL",
+      "ref": "Psalms 30:1"
+    },
+    {
+      "word": "SMOKE",
+      "ref": "Exodus 19:18"
+    },
+    {
+      "word": "GRANT",
+      "ref": "Revelation 3:21"
+    },
+    {
+      "word": "MIGHT",
+      "ref": "Zechariah 4:6"
+    },
+    {
+      "word": "CHIEF",
+      "ref": "Ephesians 2:20"
+    },
+    {
+      "word": "HEAVY",
+      "ref": "Matthew 11:28"
+    },
+    {
+      "word": "ADDER",
+      "ref": "Psalms 91:13"
+    },
+    {
+      "word": "MONEY",
+      "ref": "1 Timothy 6:10"
+    },
+    {
+      "word": "SIEVE",
+      "ref": "Amos 9:9"
+    },
+    {
+      "word": "REPAY",
+      "ref": "Romans 12:19"
+    },
+    {
+      "word": "GUIDE",
+      "ref": "Psalms 32:8"
+    },
+    {
+      "word": "ALPHA",
+      "ref": "Revelation 1:8"
+    },
+    {
+      "word": "ALARM",
+      "ref": "Numbers 10:5"
+    },
+    {
+      "word": "SPARE",
+      "ref": "Genesis 18:24"
+    },
+    {
+      "word": "GROVE",
+      "ref": "Genesis 21:33"
+    },
+    {
+      "word": "BUILD",
+      "ref": "Matthew 16:18"
+    },
+    {
+      "word": "HASTY",
+      "ref": "Proverbs 14:29"
+    },
+    {
+      "word": "CAMEL",
+      "ref": "Matthew 19:24"
+    },
+    {
+      "word": "CHAIN",
+      "ref": "Genesis 41:42"
+    },
+    {
+      "word": "DREAD",
+      "ref": "Genesis 9:2"
+    },
+    {
+      "word": "STORK",
+      "ref": "Jeremiah 8:7"
+    },
+    {
+      "word": "DANCE",
+      "ref": "Ecclesiastes 3:4"
+    },
+    {
+      "word": "BIRTH",
+      "ref": "Matthew 1:18"
+    },
+    {
+      "word": "SHEAF",
+      "ref": "Genesis 37:7"
+    },
+    {
+      "word": "MAKER",
+      "ref": "Psalms 95:6"
+    },
+    {
+      "word": "SCORN",
+      "ref": "2 Kings 19:21"
+    },
+    {
+      "word": "MYRRH",
+      "ref": "Matthew 2:11"
+    },
+    {
+      "word": "EXALT",
+      "ref": "Psalms 34:3"
+    },
+    {
+      "word": "TOWER",
+      "ref": "Genesis 11:4"
+    },
+    {
+      "word": "FLOCK",
+      "ref": "Luke 2:8"
+    },
+    {
+      "word": "STAND",
+      "ref": "Ephesians 6:11"
+    },
+    {
+      "word": "LEPER",
+      "ref": "Matthew 8:2"
+    },
+    {
+      "word": "ANVIL",
+      "ref": "Isaiah 41:7"
+    },
+    {
+      "word": "BLIND",
+      "ref": "John 9:25"
+    },
+    {
+      "word": "DEATH",
+      "ref": "John 5:24"
+    },
+    {
+      "word": "GREEK",
+      "ref": "Galatians 3:28"
+    },
+    {
+      "word": "CEASE",
+      "ref": "Genesis 8:22"
+    },
+    {
+      "word": "DWELL",
+      "ref": "Psalms 23:6"
+    },
+    {
+      "word": "COVET",
+      "ref": "Exodus 20:17"
+    },
+    {
+      "word": "GLEAN",
+      "ref": "Ruth 2:2"
+    },
+    {
+      "word": "BOUGH",
+      "ref": "Genesis 49:22"
+    },
+    {
+      "word": "LOWLY",
+      "ref": "Matthew 11:29"
+    },
+    {
+      "word": "BROAD",
+      "ref": "Matthew 7:13"
+    },
+    {
+      "word": "DOUGH",
+      "ref": "Exodus 12:34"
+    },
+    {
+      "word": "YOUNG",
+      "ref": "Psalms 37:25"
+    },
+    {
+      "word": "PEARL",
+      "ref": "Matthew 13:46"
+    },
+    {
+      "word": "BRASS",
+      "ref": "Genesis 4:22"
+    },
+    {
+      "word": "FLOUR",
+      "ref": "Exodus 29:2"
+    },
+    {
+      "word": "GIVER",
+      "ref": "2 Corinthians 9:7"
+    },
+    {
+      "word": "FRESH",
+      "ref": "Numbers 11:8"
+    },
+    {
+      "word": "COURT",
+      "ref": "Exodus 27:9"
+    },
+    {
+      "word": "SIGHT",
+      "ref": "2 Corinthians 5:7"
+    },
+    {
+      "word": "FEVER",
+      "ref": "Matthew 8:15"
+    },
+    {
+      "word": "GUEST",
+      "ref": "Luke 19:7"
+    },
+    {
+      "word": "READY",
+      "ref": "1 Peter 3:15"
+    },
+    {
+      "word": "WORTH",
+      "ref": "Genesis 23:9"
+    },
+    {
+      "word": "POWER",
+      "ref": "Acts 1:8"
+    },
+    {
+      "word": "BRICK",
+      "ref": "Genesis 11:3"
+    },
+    {
+      "word": "STORE",
+      "ref": "Genesis 26:14"
+    },
+    {
+      "word": "AMISS",
+      "ref": "James 4:3"
+    },
+    {
+      "word": "ENJOY",
+      "ref": "1 Timothy 6:17"
+    },
+    {
+      "word": "CLOUD",
+      "ref": "Exodus 13:21"
+    },
+    {
+      "word": "FRUIT",
+      "ref": "Galatians 5:22"
+    },
+    {
+      "word": "CORAL",
+      "ref": "Job 28:18"
+    },
+    {
+      "word": "LOFTY",
+      "ref": "Psalms 131:1"
+    },
+    {
+      "word": "SOWER",
+      "ref": "Mark 4:14"
+    },
+    {
+      "word": "TRUTH",
+      "ref": "John 8:32"
+    },
+    {
+      "word": "SOBER",
+      "ref": "1 Peter 5:8"
+    },
+    {
+      "word": "EXILE",
+      "ref": "2 Samuel 15:19"
+    },
+    {
+      "word": "SPEAR",
+      "ref": "1 Samuel 17:45"
+    },
+    {
+      "word": "FLOOD",
+      "ref": "Genesis 7:17"
+    },
+    {
+      "word": "TENTH",
+      "ref": "Genesis 8:5"
+    },
+    {
+      "word": "MITRE",
+      "ref": "Exodus 28:4"
+    },
+    {
+      "word": "PEACE",
+      "ref": "John 14:27"
+    },
+    {
+      "word": "ISSUE",
+      "ref": "Mark 5:25"
+    },
+    {
+      "word": "BELLY",
+      "ref": "Jonah 2:1"
+    },
+    {
+      "word": "PROVE",
+      "ref": "Malachi 3:10"
+    },
+    {
+      "word": "FORTY",
+      "ref": "Matthew 4:2"
+    },
+    {
+      "word": "FRAME",
+      "ref": "Psalms 103:14"
+    },
+    {
+      "word": "THORN",
+      "ref": "2 Corinthians 12:7"
+    },
+    {
+      "word": "CHEST",
+      "ref": "2 Kings 12:9"
+    },
+    {
+      "word": "AGONY",
+      "ref": "Luke 22:44"
+    },
+    {
+      "word": "FRAUD",
+      "ref": "Psalms 10:7"
+    },
+    {
+      "word": "GRAIN",
+      "ref": "Matthew 17:20"
+    },
+    {
+      "word": "TOUCH",
+      "ref": "Mark 5:28"
+    },
+    {
+      "word": "STRAW",
+      "ref": "Exodus 5:7"
+    },
+    {
+      "word": "WEAVE",
+      "ref": "Isaiah 19:9"
+    },
+    {
+      "word": "REACH",
+      "ref": "John 20:27"
+    },
+    {
+      "word": "BOOTY",
+      "ref": "Numbers 31:32"
+    },
+    {
+      "word": "RULER",
+      "ref": "John 3:1"
+    },
+    {
+      "word": "YOUTH",
+      "ref": "Ecclesiastes 12:1"
+    },
+    {
+      "word": "LINEN",
+      "ref": "Revelation 19:8"
+    },
+    {
+      "word": "ALIEN",
+      "ref": "Exodus 18:3"
+    },
+    {
+      "word": "SHAME",
+      "ref": "Hebrews 12:2"
+    },
+    {
+      "word": "SPARK",
+      "ref": "Job 18:5"
+    },
+    {
+      "word": "THIRD",
+      "ref": "1 Corinthians 15:4"
+    },
+    {
+      "word": "BREAK",
+      "ref": "Isaiah 42:3"
+    },
+    {
+      "word": "ANGER",
+      "ref": "Psalms 103:8"
+    },
+    {
+      "word": "PRIZE",
+      "ref": "Philippians 3:14"
+    },
+    {
+      "word": "BOAST",
+      "ref": "Ephesians 2:9"
+    },
+    {
+      "word": "GLASS",
+      "ref": "1 Corinthians 13:12"
+    },
+    {
+      "word": "SPICE",
+      "ref": "Exodus 35:28"
+    },
+    {
+      "word": "PALSY",
+      "ref": "Mark 2:3"
+    },
+    {
+      "word": "DOUBT",
+      "ref": "Matthew 21:21"
+    },
+    {
+      "word": "RAVEN",
+      "ref": "Genesis 8:7"
+    },
+    {
+      "word": "SCENT",
+      "ref": "Job 14:9"
+    },
+    {
+      "word": "WHEAT",
+      "ref": "John 12:24"
+    },
+    {
+      "word": "SHORE",
+      "ref": "Genesis 22:17"
+    },
+    {
+      "word": "BREAD",
+      "ref": "John 6:35"
+    },
+    {
+      "word": "FIELD",
+      "ref": "Matthew 6:28"
+    },
+    {
+      "word": "SWINE",
+      "ref": "Matthew 7:6"
+    },
+    {
+      "word": "TARES",
+      "ref": "Matthew 13:25"
+    },
+    {
+      "word": "PURIM",
+      "ref": "Esther 9:26"
+    },
+    {
+      "word": "RIGHT",
+      "ref": "Psalms 16:11"
+    },
+    {
+      "word": "PROOF",
+      "ref": "2 Corinthians 2:9"
+    },
+    {
+      "word": "LIGHT",
+      "ref": "Genesis 1:3"
+    },
+    {
+      "word": "RUDDY",
+      "ref": "1 Samuel 16:12"
+    },
+    {
+      "word": "GRIEF",
+      "ref": "Isaiah 53:3"
+    },
+    {
+      "word": "SAINT",
+      "ref": "Philippians 4:21"
+    },
+    {
+      "word": "MARRY",
+      "ref": "Mark 12:25"
+    },
+    {
+      "word": "ADORN",
+      "ref": "1 Timothy 2:9"
+    },
+    {
+      "word": "TRULY",
+      "ref": "Psalms 62:1"
+    },
+    {
+      "word": "CRANE",
+      "ref": "Isaiah 38:14"
+    },
+    {
+      "word": "WIDOW",
+      "ref": "Mark 12:42"
+    },
+    {
+      "word": "WOMAN",
+      "ref": "Proverbs 31:10"
+    },
+    {
+      "word": "IVORY",
+      "ref": "1 Kings 10:18"
+    },
+    {
+      "word": "OLIVE",
+      "ref": "Genesis 8:11"
+    },
+    {
+      "word": "BROOK",
+      "ref": "1 Samuel 17:40"
+    },
+    {
+      "word": "SHEET",
+      "ref": "Acts 10:11"
+    },
+    {
+      "word": "REIGN",
+      "ref": "Revelation 11:15"
+    },
+    {
+      "word": "CREEK",
+      "ref": "Acts 27:39"
+    },
+    {
+      "word": "FALSE",
+      "ref": "Exodus 20:16"
+    },
+    {
+      "word": "STEEP",
+      "ref": "Matthew 8:32"
+    },
+    {
+      "word": "TITLE",
+      "ref": "John 19:19"
+    },
+    {
+      "word": "ENEMY",
+      "ref": "Romans 12:20"
+    },
+    {
+      "word": "CHAFF",
+      "ref": "Psalms 1:4"
+    },
+    {
+      "word": "NAKED",
+      "ref": "Job 1:21"
+    },
+    {
+      "word": "NIGHT",
+      "ref": "Psalms 30:5"
+    },
+    {
+      "word": "GREET",
+      "ref": "1 Peter 5:14"
+    },
+    {
+      "word": "ABASE",
+      "ref": "Job 40:11"
+    },
+    {
+      "word": "EAGLE",
+      "ref": "Deuteronomy 32:11"
+    },
+    {
+      "word": "MOURN",
+      "ref": "Matthew 5:4"
+    },
+    {
+      "word": "TOPAZ",
+      "ref": "Exodus 28:17"
+    },
+    {
+      "word": "ROMAN",
+      "ref": "Acts 22:25"
+    },
+    {
+      "word": "ANGEL",
+      "ref": "Luke 2:10"
+    },
+    {
+      "word": "SHEEP",
+      "ref": "John 10:11"
+    },
+    {
+      "word": "CRAFT",
+      "ref": "Daniel 8:25"
+    },
+    {
+      "word": "BRIBE",
+      "ref": "1 Samuel 12:3"
+    },
+    {
+      "word": "LODGE",
+      "ref": "Ruth 1:16"
+    },
+    {
+      "word": "UNITE",
+      "ref": "Psalms 86:11"
+    },
+    {
+      "word": "SIEGE",
+      "ref": "Deuteronomy 20:19"
+    },
+    {
+      "word": "STONY",
+      "ref": "Matthew 13:5"
+    },
+    {
+      "word": "GRACE",
+      "ref": "Ephesians 2:8"
+    },
+    {
+      "word": "FLESH",
+      "ref": "John 1:14"
+    },
+    {
+      "word": "SHAPE",
+      "ref": "Luke 3:22"
+    },
+    {
+      "word": "FAINT",
+      "ref": "Isaiah 40:31"
+    },
+    {
+      "word": "GUARD",
+      "ref": "Genesis 37:36"
+    },
+    {
+      "word": "DROSS",
+      "ref": "Psalms 119:119"
+    },
+    {
+      "word": "SPEAK",
+      "ref": "1 Samuel 3:9"
+    },
+    {
+      "word": "PORCH",
+      "ref": "John 10:23"
+    },
+    {
+      "word": "WRITE",
+      "ref": "Habakkuk 2:2"
+    },
+    {
+      "word": "WEIGH",
+      "ref": "1 Chronicles 20:2"
+    },
+    {
+      "word": "QUIET",
+      "ref": "1 Thessalonians 4:11"
+    },
+    {
+      "word": "FETCH",
+      "ref": "Genesis 18:5"
+    },
+    {
+      "word": "HEART",
+      "ref": "Psalms 119:11"
+    },
+    {
+      "word": "TARRY",
+      "ref": "Luke 24:49"
+    },
+    {
+      "word": "ALTAR",
+      "ref": "Genesis 8:20"
+    },
+    {
+      "word": "CLIFF",
+      "ref": "2 Chronicles 20:16"
+    },
+    {
+      "word": "BRIDE",
+      "ref": "Revelation 21:2"
+    },
+    {
+      "word": "PSALM",
+      "ref": "Psalms 98:5"
+    },
+    {
+      "word": "MANNA",
+      "ref": "Exodus 16:31"
+    },
+    {
+      "word": "SWORD",
+      "ref": "Hebrews 4:12"
+    },
+    {
+      "word": "HORSE",
+      "ref": "Revelation 6:2"
+    },
+    {
+      "word": "MIDST",
+      "ref": "Matthew 18:20"
+    },
+    {
+      "word": "FLAME",
+      "ref": "Exodus 3:2"
+    },
+    {
+      "word": "SLAVE",
+      "ref": "Jeremiah 2:14"
+    }
+  ],
+  "curatedWordList": [
+    {
+      "word": "ABASE",
+      "reference": "Job 40:11",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Cast abroad the rage of thy wrath: and behold every one that is proud, and abase him."
+    },
+    {
+      "word": "ABHOR",
+      "reference": "Romans 12:9",
+      "verseSource": "hand-picked",
+      "verseText": "Let love be without dissimulation. Abhor that which is evil; cleave to that which is good."
+    },
+    {
+      "word": "ABIDE",
+      "reference": "John 15:4",
+      "verseSource": "hand-picked",
+      "verseText": "Abide in me, and I in you. As the branch cannot bear fruit of itself, except it abide in the vine; no more can ye, except ye abide in me."
+    },
+    {
+      "word": "ADDER",
+      "reference": "Psalms 91:13",
+      "verseSource": "hand-picked",
+      "verseText": "Thou shalt tread upon the lion and adder: the young lion and the dragon shalt thou trample under feet."
+    },
+    {
+      "word": "ADORN",
+      "reference": "1 Timothy 2:9",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "In like manner also, that women adorn themselves in modest apparel, with shamefacedness and sobriety; not with broided hair, or gold, or pearls, or costly array;"
+    },
+    {
+      "word": "AGATE",
+      "reference": "Exodus 28:19",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And the third row a ligure, an agate, and an amethyst."
+    },
+    {
+      "word": "AGONY",
+      "reference": "Luke 22:44",
+      "verseSource": "hand-picked",
+      "verseText": "And being in an agony he prayed more earnestly: and his sweat was as it were great drops of blood falling down to the ground."
+    },
+    {
+      "word": "AGREE",
+      "reference": "Matthew 18:19",
+      "verseSource": "hand-picked",
+      "verseText": "Again I say unto you, That if two of you shall agree on earth as touching any thing that they shall ask, it shall be done for them of my Father which is in heaven."
+    },
+    {
+      "word": "ALARM",
+      "reference": "Numbers 10:5",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "When ye blow an alarm, then the camps that lie on the east parts shall go forward."
+    },
+    {
+      "word": "ALIEN",
+      "reference": "Exodus 18:3",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And her two sons; of which the name of the one was Gershom; for he said, I have been an alien in a strange land:"
+    },
+    {
+      "word": "ALIVE",
+      "reference": "1 Corinthians 15:22",
+      "verseSource": "hand-picked",
+      "verseText": "For as in Adam all die, even so in Christ shall all be made alive."
+    },
+    {
+      "word": "ALLOW",
+      "reference": "Luke 11:48",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Truly ye bear witness that ye allow the deeds of your fathers: for they indeed killed them, and ye build their sepulchres."
+    },
+    {
+      "word": "ALONE",
+      "reference": "Matthew 4:4",
+      "verseSource": "hand-picked",
+      "verseText": "But he answered and said, It is written, Man shall not live by bread alone, but by every word that proceedeth out of the mouth of God."
+    },
+    {
+      "word": "ALPHA",
+      "reference": "Revelation 1:8",
+      "verseSource": "hand-picked",
+      "verseText": "I am Alpha and Omega, the beginning and the ending, saith the Lord, which is, and which was, and which is to come, the Almighty."
+    },
+    {
+      "word": "ALTAR",
+      "reference": "Genesis 8:20",
+      "verseSource": "hand-picked",
+      "verseText": "And Noah builded an altar unto the LORD; and took of every clean beast, and of every clean fowl, and offered burnt offerings on the altar."
+    },
+    {
+      "word": "AMBER",
+      "reference": "Ezekiel 1:4",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And I looked, and, behold, a whirlwind came out of the north, a great cloud, and a fire infolding itself, and a brightness was about it, and out of the midst thereof as the colour of amber, out of the midst of the fire."
+    },
+    {
+      "word": "AMEND",
+      "reference": "2 Chronicles 34:10",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And they put it in the hand of the workmen that had the oversight of the house of the LORD, and they gave it to the workmen that wrought in the house of the LORD, to repair and amend the house:"
+    },
+    {
+      "word": "AMISS",
+      "reference": "James 4:3",
+      "verseSource": "hand-picked",
+      "verseText": "Ye ask, and receive not, because ye ask amiss, that ye may consume it upon your lusts."
+    },
+    {
+      "word": "ANGEL",
+      "reference": "Luke 2:10",
+      "verseSource": "hand-picked",
+      "verseText": "And the angel said unto them, Fear not: for, behold, I bring you good tidings of great joy, which shall be to all people."
+    },
+    {
+      "word": "ANGER",
+      "reference": "Psalms 103:8",
+      "verseSource": "hand-picked",
+      "verseText": "The LORD is merciful and gracious, slow to anger, and plenteous in mercy."
+    },
+    {
+      "word": "ANGRY",
+      "reference": "Ephesians 4:26",
+      "verseSource": "hand-picked",
+      "verseText": "Be ye angry, and sin not: let not the sun go down upon your wrath:"
+    },
+    {
+      "word": "ANVIL",
+      "reference": "Isaiah 41:7",
+      "verseSource": "hand-picked",
+      "verseText": "So the carpenter encouraged the goldsmith, and he that smootheth with the hammer him that smote the anvil, saying, It is ready for the sodering: and he fastened it with nails, that it should not be moved."
+    },
+    {
+      "word": "APPLE",
+      "reference": "Psalms 17:8",
+      "verseSource": "hand-picked",
+      "verseText": "Keep me as the apple of the eye, hide me under the shadow of thy wings,"
+    },
+    {
+      "word": "APPLY",
+      "reference": "Psalms 90:12",
+      "verseSource": "hand-picked",
+      "verseText": "So teach us to number our days, that we may apply our hearts unto wisdom."
+    },
+    {
+      "word": "ARISE",
+      "reference": "Isaiah 60:1",
+      "verseSource": "hand-picked",
+      "verseText": "Arise, shine; for thy light is come, and the glory of the LORD is risen upon thee."
+    },
+    {
+      "word": "ARROW",
+      "reference": "Psalms 91:5",
+      "verseSource": "hand-picked",
+      "verseText": "Thou shalt not be afraid for the terror by night; nor for the arrow that flieth by day;"
+    },
+    {
+      "word": "ASHES",
+      "reference": "Job 42:6",
+      "verseSource": "hand-picked",
+      "verseText": "Wherefore I abhor myself, and repent in dust and ashes."
+    },
+    {
+      "word": "AVOID",
+      "reference": "Proverbs 4:15",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Avoid it, pass not by it, turn from it, and pass away."
+    },
+    {
+      "word": "BEARD",
+      "reference": "Psalms 133:2",
+      "verseSource": "hand-picked",
+      "verseText": "It is like the precious ointment upon the head, that ran down upon the beard, even Aaron's beard: that went down to the skirts of his garments;"
+    },
+    {
+      "word": "BEAST",
+      "reference": "Revelation 13:18",
+      "verseSource": "hand-picked",
+      "verseText": "Here is wisdom. Let him that hath understanding count the number of the beast: for it is the number of a man; and his number is Six hundred threescore and six."
+    },
+    {
+      "word": "BELLY",
+      "reference": "Jonah 2:1",
+      "verseSource": "hand-picked",
+      "verseText": "Then Jonah prayed unto the LORD his God out of the fish's belly,"
+    },
+    {
+      "word": "BERYL",
+      "reference": "Exodus 28:20",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And the fourth row a beryl, and an onyx, and a jasper: they shall be set in gold in their inclosings."
+    },
+    {
+      "word": "BIRTH",
+      "reference": "Matthew 1:18",
+      "verseSource": "hand-picked",
+      "verseText": "Now the birth of Jesus Christ was on this wise: When as his mother Mary was espoused to Joseph, before they came together, she was found with child of the Holy Ghost."
+    },
+    {
+      "word": "BLADE",
+      "reference": "Mark 4:28",
+      "verseSource": "hand-picked",
+      "verseText": "For the earth bringeth forth fruit of herself; first the blade, then the ear, after that the full corn in the ear."
+    },
+    {
+      "word": "BLESS",
+      "reference": "Numbers 6:24",
+      "verseSource": "hand-picked",
+      "verseText": "The LORD bless thee, and keep thee:"
+    },
+    {
+      "word": "BLIND",
+      "reference": "John 9:25",
+      "verseSource": "hand-picked",
+      "verseText": "He answered and said, Whether he be a sinner or no, I know not: one thing I know, that, whereas I was blind, now I see."
+    },
+    {
+      "word": "BLOOD",
+      "reference": "Hebrews 9:22",
+      "verseSource": "hand-picked",
+      "verseText": "And almost all things are by the law purged with blood; and without shedding of blood is no remission."
+    },
+    {
+      "word": "BOAST",
+      "reference": "Ephesians 2:9",
+      "verseSource": "hand-picked",
+      "verseText": "Not of works, lest any man should boast."
+    },
+    {
+      "word": "BOOTH",
+      "reference": "Jonah 4:5",
+      "verseSource": "hand-picked",
+      "verseText": "So Jonah went out of the city, and sat on the east side of the city, and there made him a booth, and sat under it in the shadow, till he might see what would become of the city."
+    },
+    {
+      "word": "BOOTY",
+      "reference": "Numbers 31:32",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And the booty, being the rest of the prey which the men of war had caught, was six hundred thousand and seventy thousand and five thousand sheep,"
+    },
+    {
+      "word": "BOSOM",
+      "reference": "Luke 16:22",
+      "verseSource": "hand-picked",
+      "verseText": "And it came to pass, that the beggar died, and was carried by the angels into Abraham's bosom: the rich man also died, and was buried;"
+    },
+    {
+      "word": "BOUGH",
+      "reference": "Genesis 49:22",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Joseph is a fruitful bough, even a fruitful bough by a well; whose branches run over the wall:"
+    },
+    {
+      "word": "BRASS",
+      "reference": "Genesis 4:22",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And Zillah, she also bare Tubalcain, an instructer of every artificer in brass and iron: and the sister of Tubalcain was Naamah."
+    },
+    {
+      "word": "BREAD",
+      "reference": "John 6:35",
+      "verseSource": "hand-picked",
+      "verseText": "And Jesus said unto them, I am the bread of life: he that cometh to me shall never hunger; and he that believeth on me shall never thirst."
+    },
+    {
+      "word": "BREAK",
+      "reference": "Isaiah 42:3",
+      "verseSource": "hand-picked",
+      "verseText": "A bruised reed shall he not break, and the smoking flax shall he not quench: he shall bring forth judgment unto truth."
+    },
+    {
+      "word": "BRIBE",
+      "reference": "1 Samuel 12:3",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Behold, here I am: witness against me before the LORD, and before his anointed: whose ox have I taken? or whose ass have I taken? or whom have I defrauded? whom have I oppressed? or of whose hand have I received any bribe to blind mine eyes therewith? and I will restore it you."
+    },
+    {
+      "word": "BRICK",
+      "reference": "Genesis 11:3",
+      "verseSource": "hand-picked",
+      "verseText": "And they said one to another, Go to, let us make brick, and burn them throughly. And they had brick for stone, and slime had they for morter."
+    },
+    {
+      "word": "BRIDE",
+      "reference": "Revelation 21:2",
+      "verseSource": "hand-picked",
+      "verseText": "And I John saw the holy city, new Jerusalem, coming down from God out of heaven, prepared as a bride adorned for her husband."
+    },
+    {
+      "word": "BRIER",
+      "reference": "Isaiah 55:13",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Instead of the thorn shall come up the fir tree, and instead of the brier shall come up the myrtle tree: and it shall be to the LORD for a name, for an everlasting sign that shall not be cut off."
+    },
+    {
+      "word": "BRING",
+      "reference": "Genesis 1:11",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And God said, Let the earth bring forth grass, the herb yielding seed, and the fruit tree yielding fruit after his kind, whose seed is in itself, upon the earth: and it was so."
+    },
+    {
+      "word": "BROAD",
+      "reference": "Matthew 7:13",
+      "verseSource": "hand-picked",
+      "verseText": "Enter ye in at the strait gate: for wide is the gate, and broad is the way, that leadeth to destruction, and many there be which go in thereat:"
+    },
+    {
+      "word": "BROOK",
+      "reference": "1 Samuel 17:40",
+      "verseSource": "hand-picked",
+      "verseText": "And he took his staff in his hand, and chose him five smooth stones out of the brook, and put them in a shepherd's bag which he had, even in a scrip; and his sling was in his hand: and he drew near to the Philistine."
+    },
+    {
+      "word": "BROTH",
+      "reference": "Judges 6:19",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And Gideon went in, and made ready a kid, and unleavened cakes of an ephah of flour: the flesh he put in a basket, and he put the broth in a pot, and brought it out unto him under the oak, and presented it."
+    },
+    {
+      "word": "BUILD",
+      "reference": "Matthew 16:18",
+      "verseSource": "hand-picked",
+      "verseText": "And I say also unto thee, That thou art Peter, and upon this rock I will build my church; and the gates of hell shall not prevail against it."
+    },
+    {
+      "word": "CAMEL",
+      "reference": "Matthew 19:24",
+      "verseSource": "hand-picked",
+      "verseText": "And again I say unto you, It is easier for a camel to go through the eye of a needle, than for a rich man to enter into the kingdom of God."
+    },
+    {
+      "word": "CARRY",
+      "reference": "Isaiah 40:11",
+      "verseSource": "hand-picked",
+      "verseText": "He shall feed his flock like a shepherd: he shall gather the lambs with his arm, and carry them in his bosom, and shall gently lead those that are with young."
+    },
+    {
+      "word": "CATCH",
+      "reference": "Luke 5:10",
+      "verseSource": "hand-picked",
+      "verseText": "And so was also James, and John, the sons of Zebedee, which were partners with Simon. And Jesus said unto Simon, Fear not; from henceforth thou shalt catch men."
+    },
+    {
+      "word": "CEASE",
+      "reference": "Genesis 8:22",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "While the earth remaineth, seedtime and harvest, and cold and heat, and summer and winter, and day and night shall not cease."
+    },
+    {
+      "word": "CEDAR",
+      "reference": "Psalms 92:12",
+      "verseSource": "hand-picked",
+      "verseText": "The righteous shall flourish like the palm tree: he shall grow like a cedar in Lebanon."
+    },
+    {
+      "word": "CHAFF",
+      "reference": "Psalms 1:4",
+      "verseSource": "hand-picked",
+      "verseText": "The ungodly are not so: but are like the chaff which the wind driveth away."
+    },
+    {
+      "word": "CHAIN",
+      "reference": "Genesis 41:42",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And Pharaoh took off his ring from his hand, and put it upon Joseph's hand, and arrayed him in vestures of fine linen, and put a gold chain about his neck;"
+    },
+    {
+      "word": "CHEEK",
+      "reference": "Matthew 5:39",
+      "verseSource": "hand-picked",
+      "verseText": "But I say unto you, That ye resist not evil: but whosoever shall smite thee on thy right cheek, turn to him the other also."
+    },
+    {
+      "word": "CHEER",
+      "reference": "John 16:33",
+      "verseSource": "hand-picked",
+      "verseText": "These things I have spoken unto you, that in me ye might have peace. In the world ye shall have tribulation: but be of good cheer; I have overcome the world."
+    },
+    {
+      "word": "CHEST",
+      "reference": "2 Kings 12:9",
+      "verseSource": "hand-picked",
+      "verseText": "But Jehoiada the priest took a chest, and bored a hole in the lid of it, and set it beside the altar, on the right side as one cometh into the house of the LORD: and the priests that kept the door put therein all the money that was brought into the house of the LORD."
+    },
+    {
+      "word": "CHIDE",
+      "reference": "Psalms 103:9",
+      "verseSource": "hand-picked",
+      "verseText": "He will not always chide: neither will he keep his anger for ever."
+    },
+    {
+      "word": "CHIEF",
+      "reference": "Ephesians 2:20",
+      "verseSource": "hand-picked",
+      "verseText": "And are built upon the foundation of the apostles and prophets, Jesus Christ himself being the chief corner stone;"
+    },
+    {
+      "word": "CHILD",
+      "reference": "Proverbs 22:6",
+      "verseSource": "hand-picked",
+      "verseText": "Train up a child in the way he should go: and when he is old, he will not depart from it."
+    },
+    {
+      "word": "CLEAN",
+      "reference": "Psalms 51:10",
+      "verseSource": "hand-picked",
+      "verseText": "Create in me a clean heart, O God; and renew a right spirit within me."
+    },
+    {
+      "word": "CLIFF",
+      "reference": "2 Chronicles 20:16",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "To morrow go ye down against them: behold, they come up by the cliff of Ziz; and ye shall find them at the end of the brook, before the wilderness of Jeruel."
+    },
+    {
+      "word": "CLIMB",
+      "reference": "Jeremiah 4:29",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "The whole city shall flee for the noise of the horsemen and bowmen; they shall go into thickets, and climb up upon the rocks: every city shall be forsaken, and not a man dwell therein."
+    },
+    {
+      "word": "CLOTH",
+      "reference": "Matthew 9:16",
+      "verseSource": "hand-picked",
+      "verseText": "No man putteth a piece of new cloth unto an old garment, for that which is put in to fill it up taketh from the garment, and the rent is made worse."
+    },
+    {
+      "word": "CLOUD",
+      "reference": "Exodus 13:21",
+      "verseSource": "hand-picked",
+      "verseText": "And the LORD went before them by day in a pillar of a cloud, to lead them the way; and by night in a pillar of fire, to give them light; to go by day and night:"
+    },
+    {
+      "word": "CORAL",
+      "reference": "Job 28:18",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "No mention shall be made of coral, or of pearls: for the price of wisdom is above rubies."
+    },
+    {
+      "word": "COUCH",
+      "reference": "Luke 5:19",
+      "verseSource": "hand-picked",
+      "verseText": "And when they could not find by what way they might bring him in because of the multitude, they went upon the housetop, and let him down through the tiling with his couch into the midst before Jesus."
+    },
+    {
+      "word": "COURT",
+      "reference": "Exodus 27:9",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And thou shalt make the court of the tabernacle: for the south side southward there shall be hangings for the court of fine twined linen of an hundred cubits long for one side:"
+    },
+    {
+      "word": "COVET",
+      "reference": "Exodus 20:17",
+      "verseSource": "hand-picked",
+      "verseText": "Thou shalt not covet thy neighbour's house, thou shalt not covet thy neighbour's wife, nor his manservant, nor his maidservant, nor his ox, nor his ass, nor any thing that is thy neighbour's."
+    },
+    {
+      "word": "CRAFT",
+      "reference": "Daniel 8:25",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And through his policy also he shall cause craft to prosper in his hand; and he shall magnify himself in his heart, and by peace shall destroy many: he shall also stand up against the Prince of princes; but he shall be broken without hand."
+    },
+    {
+      "word": "CRANE",
+      "reference": "Isaiah 38:14",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Like a crane or a swallow, so did I chatter: I did mourn as a dove: mine eyes fail with looking upward: O LORD, I am oppressed; undertake for me."
+    },
+    {
+      "word": "CREEK",
+      "reference": "Acts 27:39",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And when it was day, they knew not the land: but they discovered a certain creek with a shore, into the which they were minded, if it were possible, to thrust in the ship."
+    },
+    {
+      "word": "CROSS",
+      "reference": "Luke 9:23",
+      "verseSource": "hand-picked",
+      "verseText": "And he said to them all, If any man will come after me, let him deny himself, and take up his cross daily, and follow me."
+    },
+    {
+      "word": "CROWN",
+      "reference": "James 1:12",
+      "verseSource": "hand-picked",
+      "verseText": "Blessed is the man that endureth temptation: for when he is tried, he shall receive the crown of life, which the Lord hath promised to them that love him."
+    },
+    {
+      "word": "CRUEL",
+      "reference": "Genesis 49:7",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Cursed be their anger, for it was fierce; and their wrath, for it was cruel: I will divide them in Jacob, and scatter them in Israel."
+    },
+    {
+      "word": "CRUSE",
+      "reference": "1 Kings 17:12",
+      "verseSource": "hand-picked",
+      "verseText": "And she said, As the LORD thy God liveth, I have not a cake, but an handful of meal in a barrel, and a little oil in a cruse: and, behold, I am gathering two sticks, that I may go in and dress it for me and my son, that we may eat it, and die."
+    },
+    {
+      "word": "CUBIT",
+      "reference": "Matthew 6:27",
+      "verseSource": "hand-picked",
+      "verseText": "Which of you by taking thought can add one cubit unto his stature?"
+    },
+    {
+      "word": "CURSE",
+      "reference": "Genesis 12:3",
+      "verseSource": "hand-picked",
+      "verseText": "And I will bless them that bless thee, and curse him that curseth thee: and in thee shall all families of the earth be blessed."
+    },
+    {
+      "word": "DAILY",
+      "reference": "Matthew 6:11",
+      "verseSource": "hand-picked",
+      "verseText": "Give us this day our daily bread."
+    },
+    {
+      "word": "DANCE",
+      "reference": "Ecclesiastes 3:4",
+      "verseSource": "hand-picked",
+      "verseText": "A time to weep, and a time to laugh; a time to mourn, and a time to dance;"
+    },
+    {
+      "word": "DEATH",
+      "reference": "John 5:24",
+      "verseSource": "hand-picked",
+      "verseText": "Verily, verily, I say unto you, He that heareth my word, and believeth on him that sent me, hath everlasting life, and shall not come into condemnation; but is passed from death unto life."
+    },
+    {
+      "word": "DEBTS",
+      "reference": "Matthew 6:12",
+      "verseSource": "hand-picked",
+      "verseText": "And forgive us our debts, as we forgive our debtors."
+    },
+    {
+      "word": "DEFER",
+      "reference": "Ecclesiastes 5:4",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "When thou vowest a vow unto God, defer not to pay it; for he hath no pleasure in fools: pay that which thou hast vowed."
+    },
+    {
+      "word": "DEPTH",
+      "reference": "Romans 8:39",
+      "verseSource": "hand-picked",
+      "verseText": "Nor height, nor depth, nor any other creature, shall be able to separate us from the love of God, which is in Christ Jesus our Lord."
+    },
+    {
+      "word": "DEVIL",
+      "reference": "James 4:7",
+      "verseSource": "hand-picked",
+      "verseText": "Submit yourselves therefore to God. Resist the devil, and he will flee from you."
+    },
+    {
+      "word": "DITCH",
+      "reference": "Matthew 15:14",
+      "verseSource": "hand-picked",
+      "verseText": "Let them alone: they be blind leaders of the blind. And if the blind lead the blind, both shall fall into the ditch."
+    },
+    {
+      "word": "DOUBT",
+      "reference": "Matthew 21:21",
+      "verseSource": "hand-picked",
+      "verseText": "Jesus answered and said unto them, Verily I say unto you, If ye have faith, and doubt not, ye shall not only do this which is done to the fig tree, but also if ye shall say unto this mountain, Be thou removed, and be thou cast into the sea; it shall be done."
+    },
+    {
+      "word": "DOUGH",
+      "reference": "Exodus 12:34",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And the people took their dough before it was leavened, their kneadingtroughs being bound up in their clothes upon their shoulders."
+    },
+    {
+      "word": "DOWRY",
+      "reference": "Genesis 30:20",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And Leah said, God hath endued me with a good dowry; now will my husband dwell with me, because I have born him six sons: and she called his name Zebulun."
+    },
+    {
+      "word": "DREAD",
+      "reference": "Genesis 9:2",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And the fear of you and the dread of you shall be upon every beast of the earth, and upon every fowl of the air, upon all that moveth upon the earth, and upon all the fishes of the sea; into your hand are they delivered."
+    },
+    {
+      "word": "DREAM",
+      "reference": "Genesis 37:5",
+      "verseSource": "hand-picked",
+      "verseText": "And Joseph dreamed a dream, and he told it his brethren: and they hated him yet the more."
+    },
+    {
+      "word": "DREGS",
+      "reference": "Psalms 75:8",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "For in the hand of the LORD there is a cup, and the wine is red; it is full of mixture; and he poureth out of the same: but the dregs thereof, all the wicked of the earth shall wring them out, and drink them."
+    },
+    {
+      "word": "DRINK",
+      "reference": "John 7:37",
+      "verseSource": "hand-picked",
+      "verseText": "In the last day, that great day of the feast, Jesus stood and cried, saying, If any man thirst, let him come unto me, and drink."
+    },
+    {
+      "word": "DROSS",
+      "reference": "Psalms 119:119",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Thou puttest away all the wicked of the earth like dross: therefore I love thy testimonies."
+    },
+    {
+      "word": "DROWN",
+      "reference": "Song of Solomon 8:7",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Many waters cannot quench love, neither can the floods drown it: if a man would give all the substance of his house for love, it would utterly be contemned."
+    },
+    {
+      "word": "DWELL",
+      "reference": "Psalms 23:6",
+      "verseSource": "hand-picked",
+      "verseText": "Surely goodness and mercy shall follow me all the days of my life: and I will dwell in the house of the LORD for ever."
+    },
+    {
+      "word": "EAGLE",
+      "reference": "Deuteronomy 32:11",
+      "verseSource": "hand-picked",
+      "verseText": "As an eagle stirreth up her nest, fluttereth over her young, spreadeth abroad her wings, taketh them, beareth them on her wings:"
+    },
+    {
+      "word": "EARLY",
+      "reference": "Psalms 63:1",
+      "verseSource": "hand-picked",
+      "verseText": "[A Psalm of David, when he was in the wilderness of Judah.] O God, thou art my God; early will I seek thee: my soul thirsteth for thee, my flesh longeth for thee in a dry and thirsty land, where no water is;"
+    },
+    {
+      "word": "EARTH",
+      "reference": "Genesis 1:1",
+      "verseSource": "hand-picked",
+      "verseText": "In the beginning God created the heaven and the earth."
+    },
+    {
+      "word": "EBONY",
+      "reference": "Ezekiel 27:15",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "The men of Dedan were thy merchants; many isles were the merchandise of thine hand: they brought thee for a present horns of ivory and ebony."
+    },
+    {
+      "word": "EDIFY",
+      "reference": "Romans 14:19",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Let us therefore follow after the things which make for peace, and things wherewith one may edify another."
+    },
+    {
+      "word": "ELDER",
+      "reference": "Luke 15:25",
+      "verseSource": "hand-picked",
+      "verseText": "Now his elder son was in the field: and as he came and drew nigh to the house, he heard musick and dancing."
+    },
+    {
+      "word": "ELECT",
+      "reference": "Colossians 3:12",
+      "verseSource": "hand-picked",
+      "verseText": "Put on therefore, as the elect of God, holy and beloved, bowels of mercies, kindness, humbleness of mind, meekness, longsuffering;"
+    },
+    {
+      "word": "EMPTY",
+      "reference": "Luke 1:53",
+      "verseSource": "hand-picked",
+      "verseText": "He hath filled the hungry with good things; and the rich he hath sent empty away."
+    },
+    {
+      "word": "ENEMY",
+      "reference": "Romans 12:20",
+      "verseSource": "hand-picked",
+      "verseText": "Therefore if thine enemy hunger, feed him; if he thirst, give him drink: for in so doing thou shalt heap coals of fire on his head."
+    },
+    {
+      "word": "ENJOY",
+      "reference": "1 Timothy 6:17",
+      "verseSource": "hand-picked",
+      "verseText": "Charge them that are rich in this world, that they be not highminded, nor trust in uncertain riches, but in the living God, who giveth us richly all things to enjoy;"
+    },
+    {
+      "word": "ENTER",
+      "reference": "Matthew 7:13",
+      "verseSource": "hand-picked",
+      "verseText": "Enter ye in at the strait gate: for wide is the gate, and broad is the way, that leadeth to destruction, and many there be which go in thereat:"
+    },
+    {
+      "word": "EPHOD",
+      "reference": "Exodus 28:6",
+      "verseSource": "hand-picked",
+      "verseText": "And they shall make the ephod of gold, of blue, and of purple, of scarlet, and fine twined linen, with cunning work."
+    },
+    {
+      "word": "EQUAL",
+      "reference": "Philippians 2:6",
+      "verseSource": "hand-picked",
+      "verseText": "Who, being in the form of God, thought it not robbery to be equal with God:"
+    },
+    {
+      "word": "ERROR",
+      "reference": "2 Samuel 6:7",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And the anger of the LORD was kindled against Uzzah; and God smote him there for his error; and there he died by the ark of God."
+    },
+    {
+      "word": "EXALT",
+      "reference": "Psalms 34:3",
+      "verseSource": "hand-picked",
+      "verseText": "O magnify the LORD with me, and let us exalt his name together."
+    },
+    {
+      "word": "EXCEL",
+      "reference": "Genesis 49:4",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Unstable as water, thou shalt not excel; because thou wentest up to thy father's bed; then defiledst thou it: he went up to my couch."
+    },
+    {
+      "word": "EXILE",
+      "reference": "2 Samuel 15:19",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Then said the king to Ittai the Gittite, Wherefore goest thou also with us? return to thy place, and abide with the king: for thou art a stranger, and also an exile."
+    },
+    {
+      "word": "EXTOL",
+      "reference": "Psalms 30:1",
+      "verseSource": "hand-picked",
+      "verseText": "[A Psalm and Song at the dedication of the house of David.] I will extol thee, O LORD; for thou hast lifted me up, and hast not made my foes to rejoice over me."
+    },
+    {
+      "word": "FAINT",
+      "reference": "Isaiah 40:31",
+      "verseSource": "hand-picked",
+      "verseText": "But they that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary; and they shall walk, and not faint."
+    },
+    {
+      "word": "FAITH",
+      "reference": "Hebrews 11:1",
+      "verseSource": "hand-picked",
+      "verseText": "Now faith is the substance of things hoped for, the evidence of things not seen."
+    },
+    {
+      "word": "FALSE",
+      "reference": "Exodus 20:16",
+      "verseSource": "hand-picked",
+      "verseText": "Thou shalt not bear false witness against thy neighbour."
+    },
+    {
+      "word": "FAULT",
+      "reference": "Exodus 5:16",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "There is no straw given unto thy servants, and they say to us, Make brick: and, behold, thy servants are beaten; but the fault is in thine own people."
+    },
+    {
+      "word": "FEAST",
+      "reference": "Luke 2:41",
+      "verseSource": "hand-picked",
+      "verseText": "Now his parents went to Jerusalem every year at the feast of the passover."
+    },
+    {
+      "word": "FEIGN",
+      "reference": "2 Samuel 14:2",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And Joab sent to Tekoah, and fetched thence a wise woman, and said unto her, I pray thee, feign thyself to be a mourner, and put on now mourning apparel, and anoint not thyself with oil, but be as a woman that had a long time mourned for the dead:"
+    },
+    {
+      "word": "FETCH",
+      "reference": "Genesis 18:5",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And I will fetch a morsel of bread, and comfort ye your hearts; after that ye shall pass on: for therefore are ye come to your servant. And they said, So do, as thou hast said."
+    },
+    {
+      "word": "FEVER",
+      "reference": "Matthew 8:15",
+      "verseSource": "hand-picked",
+      "verseText": "And he touched her hand, and the fever left her: and she arose, and ministered unto them."
+    },
+    {
+      "word": "FIELD",
+      "reference": "Matthew 6:28",
+      "verseSource": "hand-picked",
+      "verseText": "And why take ye thought for raiment? Consider the lilies of the field, how they grow; they toil not, neither do they spin:"
+    },
+    {
+      "word": "FIERY",
+      "reference": "Daniel 3:6",
+      "verseSource": "hand-picked",
+      "verseText": "And whoso falleth not down and worshippeth shall the same hour be cast into the midst of a burning fiery furnace."
+    },
+    {
+      "word": "FIGHT",
+      "reference": "1 Timothy 6:12",
+      "verseSource": "hand-picked",
+      "verseText": "Fight the good fight of faith, lay hold on eternal life, whereunto thou art also called, and hast professed a good profession before many witnesses."
+    },
+    {
+      "word": "FIRST",
+      "reference": "Matthew 6:33",
+      "verseSource": "hand-picked",
+      "verseText": "But seek ye first the kingdom of God, and his righteousness; and all these things shall be added unto you."
+    },
+    {
+      "word": "FLAME",
+      "reference": "Exodus 3:2",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And the angel of the LORD appeared unto him in a flame of fire out of the midst of a bush: and he looked, and, behold, the bush burned with fire, and the bush was not consumed."
+    },
+    {
+      "word": "FLESH",
+      "reference": "John 1:14",
+      "verseSource": "hand-picked",
+      "verseText": "And the Word was made flesh, and dwelt among us, (and we beheld his glory, the glory as of the only begotten of the Father,) full of grace and truth."
+    },
+    {
+      "word": "FLINT",
+      "reference": "Deuteronomy 8:15",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Who led thee through that great and terrible wilderness, wherein were fiery serpents, and scorpions, and drought, where there was no water; who brought thee forth water out of the rock of flint;"
+    },
+    {
+      "word": "FLOCK",
+      "reference": "Luke 2:8",
+      "verseSource": "hand-picked",
+      "verseText": "And there were in the same country shepherds abiding in the field, keeping watch over their flock by night."
+    },
+    {
+      "word": "FLOOD",
+      "reference": "Genesis 7:17",
+      "verseSource": "hand-picked",
+      "verseText": "And the flood was forty days upon the earth; and the waters increased, and bare up the ark, and it was lift up above the earth."
+    },
+    {
+      "word": "FLOOR",
+      "reference": "Genesis 50:11",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And when the inhabitants of the land, the Canaanites, saw the mourning in the floor of Atad, they said, This is a grievous mourning to the Egyptians: wherefore the name of it was called Abelmizraim, which is beyond Jordan."
+    },
+    {
+      "word": "FLOUR",
+      "reference": "Exodus 29:2",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And unleavened bread, and cakes unleavened tempered with oil, and wafers unleavened anointed with oil: of wheaten flour shalt thou make them."
+    },
+    {
+      "word": "FLUTE",
+      "reference": "Daniel 3:5",
+      "verseSource": "hand-picked",
+      "verseText": "That at what time ye hear the sound of the cornet, flute, harp, sackbut, psaltery, dulcimer, and all kinds of musick, ye fall down and worship the golden image that Nebuchadnezzar the king hath set up:"
+    },
+    {
+      "word": "FOLLY",
+      "reference": "Proverbs 26:11",
+      "verseSource": "hand-picked",
+      "verseText": "As a dog returneth to his vomit, so a fool returneth to his folly."
+    },
+    {
+      "word": "FORTY",
+      "reference": "Matthew 4:2",
+      "verseSource": "hand-picked",
+      "verseText": "And when he had fasted forty days and forty nights, he was afterward an hungred."
+    },
+    {
+      "word": "FRAIL",
+      "reference": "Psalms 39:4",
+      "verseSource": "hand-picked",
+      "verseText": "LORD, make me to know mine end, and the measure of my days, what it is; that I may know how frail I am."
+    },
+    {
+      "word": "FRAME",
+      "reference": "Psalms 103:14",
+      "verseSource": "hand-picked",
+      "verseText": "For he knoweth our frame; he remembereth that we are dust."
+    },
+    {
+      "word": "FRAUD",
+      "reference": "Psalms 10:7",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "His mouth is full of cursing and deceit and fraud: under his tongue is mischief and vanity."
+    },
+    {
+      "word": "FRESH",
+      "reference": "Numbers 11:8",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And the people went about, and gathered it, and ground it in mills, or beat it in a mortar, and baked it in pans, and made cakes of it: and the taste of it was as the taste of fresh oil."
+    },
+    {
+      "word": "FROST",
+      "reference": "Genesis 31:40",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Thus I was; in the day the drought consumed me, and the frost by night; and my sleep departed from mine eyes."
+    },
+    {
+      "word": "FRUIT",
+      "reference": "Galatians 5:22",
+      "verseSource": "hand-picked",
+      "verseText": "But the fruit of the Spirit is love, joy, peace, longsuffering, gentleness, goodness, faith,"
+    },
+    {
+      "word": "GHOST",
+      "reference": "Acts 2:4",
+      "verseSource": "hand-picked",
+      "verseText": "And they were all filled with the Holy Ghost, and began to speak with other tongues, as the Spirit gave them utterance."
+    },
+    {
+      "word": "GIANT",
+      "reference": "2 Samuel 21:16",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And Ishbibenob, which was of the sons of the giant, the weight of whose spear weighed three hundred shekels of brass in weight, he being girded with a new sword, thought to have slain David."
+    },
+    {
+      "word": "GIVER",
+      "reference": "2 Corinthians 9:7",
+      "verseSource": "hand-picked",
+      "verseText": "Every man according as he purposeth in his heart, so let him give; not grudgingly, or of necessity: for God loveth a cheerful giver."
+    },
+    {
+      "word": "GLASS",
+      "reference": "1 Corinthians 13:12",
+      "verseSource": "hand-picked",
+      "verseText": "For now we see through a glass, darkly; but then face to face: now I know in part; but then shall I know even as also I am known."
+    },
+    {
+      "word": "GLEAN",
+      "reference": "Ruth 2:2",
+      "verseSource": "hand-picked",
+      "verseText": "And Ruth the Moabitess said unto Naomi, Let me now go to the field, and glean ears of corn after him in whose sight I shall find grace. And she said unto her, Go, my daughter."
+    },
+    {
+      "word": "GLORY",
+      "reference": "Luke 2:14",
+      "verseSource": "hand-picked",
+      "verseText": "Glory to God in the highest, and on earth peace, good will toward men."
+    },
+    {
+      "word": "GNASH",
+      "reference": "Psalms 112:10",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "The wicked shall see it, and be grieved; he shall gnash with his teeth, and melt away: the desire of the wicked shall perish."
+    },
+    {
+      "word": "GODLY",
+      "reference": "2 Timothy 3:12",
+      "verseSource": "hand-picked",
+      "verseText": "Yea, and all that will live godly in Christ Jesus shall suffer persecution."
+    },
+    {
+      "word": "GOURD",
+      "reference": "Jonah 4:6",
+      "verseSource": "hand-picked",
+      "verseText": "And the LORD God prepared a gourd, and made it to come up over Jonah, that it might be a shadow over his head, to deliver him from his grief. So Jonah was exceeding glad of the gourd."
+    },
+    {
+      "word": "GRACE",
+      "reference": "Ephesians 2:8",
+      "verseSource": "hand-picked",
+      "verseText": "For by grace are ye saved through faith; and that not of yourselves: it is the gift of God:"
+    },
+    {
+      "word": "GRAIN",
+      "reference": "Matthew 17:20",
+      "verseSource": "hand-picked",
+      "verseText": "And Jesus said unto them, Because of your unbelief: for verily I say unto you, If ye have faith as a grain of mustard seed, ye shall say unto this mountain, Remove hence to yonder place; and it shall remove; and nothing shall be impossible unto you."
+    },
+    {
+      "word": "GRANT",
+      "reference": "Revelation 3:21",
+      "verseSource": "hand-picked",
+      "verseText": "To him that overcometh will I grant to sit with me in my throne, even as I also overcame, and am set down with my Father in his throne."
+    },
+    {
+      "word": "GRAPE",
+      "reference": "Leviticus 19:10",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And thou shalt not glean thy vineyard, neither shalt thou gather every grape of thy vineyard; thou shalt leave them for the poor and stranger: I am the LORD your God."
+    },
+    {
+      "word": "GRASS",
+      "reference": "Isaiah 40:8",
+      "verseSource": "hand-picked",
+      "verseText": "The grass withereth, the flower fadeth: but the word of our God shall stand for ever."
+    },
+    {
+      "word": "GRAVE",
+      "reference": "1 Corinthians 15:55",
+      "verseSource": "hand-picked",
+      "verseText": "O death, where is thy sting? O grave, where is thy victory?"
+    },
+    {
+      "word": "GREAT",
+      "reference": "Psalms 145:3",
+      "verseSource": "hand-picked",
+      "verseText": "Great is the LORD, and greatly to be praised; and his greatness is unsearchable."
+    },
+    {
+      "word": "GREEK",
+      "reference": "Galatians 3:28",
+      "verseSource": "hand-picked",
+      "verseText": "There is neither Jew nor Greek, there is neither bond nor free, there is neither male nor female: for ye are all one in Christ Jesus."
+    },
+    {
+      "word": "GREEN",
+      "reference": "Psalms 23:2",
+      "verseSource": "hand-picked",
+      "verseText": "He maketh me to lie down in green pastures: he leadeth me beside the still waters."
+    },
+    {
+      "word": "GREET",
+      "reference": "1 Peter 5:14",
+      "verseSource": "hand-picked",
+      "verseText": "Greet ye one another with a kiss of charity. Peace be with you all that are in Christ Jesus. Amen."
+    },
+    {
+      "word": "GRIEF",
+      "reference": "Isaiah 53:3",
+      "verseSource": "hand-picked",
+      "verseText": "He is despised and rejected of men; a man of sorrows, and acquainted with grief: and we hid as it were our faces from him; he was despised, and we esteemed him not."
+    },
+    {
+      "word": "GROAN",
+      "reference": "Job 24:12",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Men groan from out of the city, and the soul of the wounded crieth out: yet God layeth not folly to them."
+    },
+    {
+      "word": "GROVE",
+      "reference": "Genesis 21:33",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And Abraham planted a grove in Beersheba, and called there on the name of the LORD, the everlasting God."
+    },
+    {
+      "word": "GUARD",
+      "reference": "Genesis 37:36",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And the Midianites sold him into Egypt unto Potiphar, an officer of Pharaoh's, and captain of the guard."
+    },
+    {
+      "word": "GUEST",
+      "reference": "Luke 19:7",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And when they saw it, they all murmured, saying, That he was gone to be guest with a man that is a sinner."
+    },
+    {
+      "word": "GUIDE",
+      "reference": "Psalms 32:8",
+      "verseSource": "hand-picked",
+      "verseText": "I will instruct thee and teach thee in the way which thou shalt go: I will guide thee with mine eye."
+    },
+    {
+      "word": "GUILE",
+      "reference": "John 1:47",
+      "verseSource": "hand-picked",
+      "verseText": "Jesus saw Nathanael coming to him, and saith of him, Behold an Israelite indeed, in whom is no guile!"
+    },
+    {
+      "word": "GUILT",
+      "reference": "Deuteronomy 19:13",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Thine eye shall not pity him, but thou shalt put away the guilt of innocent blood from Israel, that it may go well with thee."
+    },
+    {
+      "word": "HAPPY",
+      "reference": "Psalms 144:15",
+      "verseSource": "hand-picked",
+      "verseText": "Happy is that people, that is in such a case: yea, happy is that people, whose God is the LORD."
+    },
+    {
+      "word": "HASTY",
+      "reference": "Proverbs 14:29",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "He that is slow to wrath is of great understanding: but he that is hasty of spirit exalteth folly."
+    },
+    {
+      "word": "HAVEN",
+      "reference": "Psalms 107:30",
+      "verseSource": "hand-picked",
+      "verseText": "Then are they glad because they be quiet; so he bringeth them unto their desired haven."
+    },
+    {
+      "word": "HEART",
+      "reference": "Psalms 119:11",
+      "verseSource": "hand-picked",
+      "verseText": "Thy word have I hid in mine heart, that I might not sin against thee."
+    },
+    {
+      "word": "HEAVY",
+      "reference": "Matthew 11:28",
+      "verseSource": "hand-picked",
+      "verseText": "Come unto me, all ye that labour and are heavy laden, and I will give you rest."
+    },
+    {
+      "word": "HEDGE",
+      "reference": "Job 1:10",
+      "verseSource": "hand-picked",
+      "verseText": "Hast not thou made an hedge about him, and about his house, and about all that he hath on every side? thou hast blessed the work of his hands, and his substance is increased in the land."
+    },
+    {
+      "word": "HERON",
+      "reference": "Leviticus 11:19",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And the stork, the heron after her kind, and the lapwing, and the bat."
+    },
+    {
+      "word": "HOARY",
+      "reference": "Proverbs 16:31",
+      "verseSource": "hand-picked",
+      "verseText": "The hoary head is a crown of glory, if it be found in the way of righteousness."
+    },
+    {
+      "word": "HONEY",
+      "reference": "Exodus 3:8",
+      "verseSource": "hand-picked",
+      "verseText": "And I am come down to deliver them out of the hand of the Egyptians, and to bring them up out of that land unto a good land and a large, unto a land flowing with milk and honey; unto the place of the Canaanites, and the Hittites, and the Amorites, and the Perizzites, and the Hivites, and the Jebusites."
+    },
+    {
+      "word": "HORSE",
+      "reference": "Revelation 6:2",
+      "verseSource": "hand-picked",
+      "verseText": "And I saw, and behold a white horse: and he that sat on him had a bow; and a crown was given unto him: and he went forth conquering, and to conquer."
+    },
+    {
+      "word": "HOUSE",
+      "reference": "Joshua 24:15",
+      "verseSource": "hand-picked",
+      "verseText": "And if it seem evil unto you to serve the LORD, choose you this day whom ye will serve; whether the gods which your fathers served that were on the other side of the flood, or the gods of the Amorites, in whose land ye dwell: but as for me and my house, we will serve the LORD."
+    },
+    {
+      "word": "IMAGE",
+      "reference": "Genesis 1:27",
+      "verseSource": "hand-picked",
+      "verseText": "So God created man in his own image, in the image of God created he him; male and female created he them."
+    },
+    {
+      "word": "INNER",
+      "reference": "Ephesians 3:16",
+      "verseSource": "hand-picked",
+      "verseText": "That he would grant you, according to the riches of his glory, to be strengthened with might by his Spirit in the inner man;"
+    },
+    {
+      "word": "ISSUE",
+      "reference": "Mark 5:25",
+      "verseSource": "hand-picked",
+      "verseText": "And a certain woman, which had an issue of blood twelve years,"
+    },
+    {
+      "word": "IVORY",
+      "reference": "1 Kings 10:18",
+      "verseSource": "hand-picked",
+      "verseText": "Moreover the king made a great throne of ivory, and overlaid it with the best gold."
+    },
+    {
+      "word": "JEWEL",
+      "reference": "Proverbs 11:22",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "As a jewel of gold in a swine's snout, so is a fair woman which is without discretion."
+    },
+    {
+      "word": "JUDGE",
+      "reference": "Matthew 7:1",
+      "verseSource": "hand-picked",
+      "verseText": "Judge not, that ye be not judged."
+    },
+    {
+      "word": "JUICE",
+      "reference": "Song of Solomon 8:2",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "I would lead thee, and bring thee into my mother's house, who would instruct me: I would cause thee to drink of spiced wine of the juice of my pomegranate."
+    },
+    {
+      "word": "KNEAD",
+      "reference": "Genesis 18:6",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And Abraham hastened into the tent unto Sarah, and said, Make ready quickly three measures of fine meal, knead it, and make cakes upon the hearth."
+    },
+    {
+      "word": "KNEEL",
+      "reference": "Psalms 95:6",
+      "verseSource": "hand-picked",
+      "verseText": "O come, let us worship and bow down: let us kneel before the LORD our maker."
+    },
+    {
+      "word": "KNIFE",
+      "reference": "Genesis 22:10",
+      "verseSource": "hand-picked",
+      "verseText": "And Abraham stretched forth his hand, and took the knife to slay his son."
+    },
+    {
+      "word": "KNOCK",
+      "reference": "Matthew 7:7",
+      "verseSource": "hand-picked",
+      "verseText": "Ask, and it shall be given you; seek, and ye shall find; knock, and it shall be opened unto you:"
+    },
+    {
+      "word": "LAUGH",
+      "reference": "Ecclesiastes 3:4",
+      "verseSource": "hand-picked",
+      "verseText": "A time to weep, and a time to laugh; a time to mourn, and a time to dance;"
+    },
+    {
+      "word": "LAVER",
+      "reference": "Exodus 30:18",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Thou shalt also make a laver of brass, and his foot also of brass, to wash withal: and thou shalt put it between the tabernacle of the congregation and the altar, and thou shalt put water therein."
+    },
+    {
+      "word": "LEARN",
+      "reference": "Matthew 11:29",
+      "verseSource": "hand-picked",
+      "verseText": "Take my yoke upon you, and learn of me; for I am meek and lowly in heart: and ye shall find rest unto your souls."
+    },
+    {
+      "word": "LEAST",
+      "reference": "Matthew 25:40",
+      "verseSource": "hand-picked",
+      "verseText": "And the King shall answer and say unto them, Verily I say unto you, Inasmuch as ye have done it unto one of the least of these my brethren, ye have done it unto me."
+    },
+    {
+      "word": "LEPER",
+      "reference": "Matthew 8:2",
+      "verseSource": "hand-picked",
+      "verseText": "And, behold, there came a leper and worshipped him, saying, Lord, if thou wilt, thou canst make me clean."
+    },
+    {
+      "word": "LIGHT",
+      "reference": "Genesis 1:3",
+      "verseSource": "hand-picked",
+      "verseText": "And God said, Let there be light: and there was light."
+    },
+    {
+      "word": "LINEN",
+      "reference": "Revelation 19:8",
+      "verseSource": "hand-picked",
+      "verseText": "And to her was granted that she should be arrayed in fine linen, clean and white: for the fine linen is the righteousness of saints."
+    },
+    {
+      "word": "LODGE",
+      "reference": "Ruth 1:16",
+      "verseSource": "hand-picked",
+      "verseText": "And Ruth said, Intreat me not to leave thee, or to return from following after thee: for whither thou goest, I will go; and where thou lodgest, I will lodge: thy people shall be my people, and thy God my God:"
+    },
+    {
+      "word": "LOFTY",
+      "reference": "Psalms 131:1",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "[A Song of degrees of David.] LORD, my heart is not haughty, nor mine eyes lofty: neither do I exercise myself in great matters, or in things too high for me."
+    },
+    {
+      "word": "LOWLY",
+      "reference": "Matthew 11:29",
+      "verseSource": "hand-picked",
+      "verseText": "Take my yoke upon you, and learn of me; for I am meek and lowly in heart: and ye shall find rest unto your souls."
+    },
+    {
+      "word": "LUCRE",
+      "reference": "1 Timothy 3:3",
+      "verseSource": "hand-picked",
+      "verseText": "Not given to wine, no striker, not greedy of filthy lucre; but patient, not a brawler, not covetous;"
+    },
+    {
+      "word": "MAKER",
+      "reference": "Psalms 95:6",
+      "verseSource": "hand-picked",
+      "verseText": "O come, let us worship and bow down: let us kneel before the LORD our maker."
+    },
+    {
+      "word": "MANNA",
+      "reference": "Exodus 16:31",
+      "verseSource": "hand-picked",
+      "verseText": "And the house of Israel called the name thereof Manna: and it was like coriander seed, white; and the taste of it was like wafers made with honey."
+    },
+    {
+      "word": "MARRY",
+      "reference": "Mark 12:25",
+      "verseSource": "hand-picked",
+      "verseText": "For when they shall rise from the dead, they neither marry, nor are given in marriage; but are as the angels which are in heaven."
+    },
+    {
+      "word": "MERCY",
+      "reference": "Micah 6:8",
+      "verseSource": "hand-picked",
+      "verseText": "He hath shewed thee, O man, what is good; and what doth the LORD require of thee, but to do justly, and to love mercy, and to walk humbly with thy God?"
+    },
+    {
+      "word": "MERRY",
+      "reference": "Proverbs 17:22",
+      "verseSource": "hand-picked",
+      "verseText": "A merry heart doeth good like a medicine: but a broken spirit drieth the bones."
+    },
+    {
+      "word": "MIDST",
+      "reference": "Matthew 18:20",
+      "verseSource": "hand-picked",
+      "verseText": "For where two or three are gathered together in my name, there am I in the midst of them."
+    },
+    {
+      "word": "MIGHT",
+      "reference": "Zechariah 4:6",
+      "verseSource": "hand-picked",
+      "verseText": "Then he answered and spake unto me, saying, This is the word of the LORD unto Zerubbabel, saying, Not by might, nor by power, but by my spirit, saith the LORD of hosts."
+    },
+    {
+      "word": "MIRTH",
+      "reference": "Genesis 31:27",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Wherefore didst thou flee away secretly, and steal away from me; and didst not tell me, that I might have sent thee away with mirth, and with songs, with tabret, and with harp?"
+    },
+    {
+      "word": "MITRE",
+      "reference": "Exodus 28:4",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And these are the garments which they shall make; a breastplate, and an ephod, and a robe, and a broidered coat, a mitre, and a girdle: and they shall make holy garments for Aaron thy brother, and his sons, that he may minister unto me in the priest's office."
+    },
+    {
+      "word": "MONEY",
+      "reference": "1 Timothy 6:10",
+      "verseSource": "hand-picked",
+      "verseText": "For the love of money is the root of all evil: which while some coveted after, they have erred from the faith, and pierced themselves through with many sorrows."
+    },
+    {
+      "word": "MOUNT",
+      "reference": "Matthew 24:3",
+      "verseSource": "hand-picked",
+      "verseText": "And as he sat upon the mount of Olives, the disciples came unto him privately, saying, Tell us, when shall these things be? and what shall be the sign of thy coming, and of the end of the world?"
+    },
+    {
+      "word": "MOURN",
+      "reference": "Matthew 5:4",
+      "verseSource": "hand-picked",
+      "verseText": "Blessed are they that mourn: for they shall be comforted."
+    },
+    {
+      "word": "MOUSE",
+      "reference": "Leviticus 11:29",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "These also shall be unclean unto you among the creeping things that creep upon the earth; the weasel, and the mouse, and the tortoise after his kind,"
+    },
+    {
+      "word": "MOUTH",
+      "reference": "Psalms 19:14",
+      "verseSource": "hand-picked",
+      "verseText": "Let the words of my mouth, and the meditation of my heart, be acceptable in thy sight, O LORD, my strength, and my redeemer."
+    },
+    {
+      "word": "MYRRH",
+      "reference": "Matthew 2:11",
+      "verseSource": "hand-picked",
+      "verseText": "And when they were come into the house, they saw the young child with Mary his mother, and fell down, and worshipped him: and when they had opened their treasures, they presented unto him gifts; gold, and frankincense, and myrrh."
+    },
+    {
+      "word": "NAKED",
+      "reference": "Job 1:21",
+      "verseSource": "hand-picked",
+      "verseText": "And said, Naked came I out of my mother's womb, and naked shall I return thither: the LORD gave, and the LORD hath taken away; blessed be the name of the LORD."
+    },
+    {
+      "word": "NEEDY",
+      "reference": "Deuteronomy 15:11",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "For the poor shall never cease out of the land: therefore I command thee, saying, Thou shalt open thine hand wide unto thy brother, to thy poor, and to thy needy, in thy land."
+    },
+    {
+      "word": "NIGHT",
+      "reference": "Psalms 30:5",
+      "verseSource": "hand-picked",
+      "verseText": "For his anger endureth but a moment; in his favour is life: weeping may endure for a night, but joy cometh in the morning."
+    },
+    {
+      "word": "NOBLE",
+      "reference": "Acts 17:11",
+      "verseSource": "hand-picked",
+      "verseText": "These were more noble than those in Thessalonica, in that they received the word with all readiness of mind, and searched the scriptures daily, whether those things were so."
+    },
+    {
+      "word": "NOISE",
+      "reference": "Psalms 100:1",
+      "verseSource": "hand-picked",
+      "verseText": "[A Psalm of praise.] Make a joyful noise unto the LORD, all ye lands."
+    },
+    {
+      "word": "OFFER",
+      "reference": "Genesis 22:2",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And he said, Take now thy son, thine only son Isaac, whom thou lovest, and get thee into the land of Moriah; and offer him there for a burnt offering upon one of the mountains which I will tell thee of."
+    },
+    {
+      "word": "OLIVE",
+      "reference": "Genesis 8:11",
+      "verseSource": "hand-picked",
+      "verseText": "And the dove came in to him in the evening; and, lo, in her mouth was an olive leaf pluckt off: so Noah knew that the waters were abated from off the earth."
+    },
+    {
+      "word": "OMEGA",
+      "reference": "Revelation 22:13",
+      "verseSource": "hand-picked",
+      "verseText": "I am Alpha and Omega, the beginning and the end, the first and the last."
+    },
+    {
+      "word": "ORGAN",
+      "reference": "Genesis 4:21",
+      "verseSource": "hand-picked",
+      "verseText": "And his brother's name was Jubal: he was the father of all such as handle the harp and organ."
+    },
+    {
+      "word": "OUTER",
+      "reference": "Matthew 8:12",
+      "verseSource": "hand-picked",
+      "verseText": "But the children of the kingdom shall be cast out into outer darkness: there shall be weeping and gnashing of teeth."
+    },
+    {
+      "word": "PALSY",
+      "reference": "Mark 2:3",
+      "verseSource": "hand-picked",
+      "verseText": "And they come unto him, bringing one sick of the palsy, which was borne of four."
+    },
+    {
+      "word": "PAPER",
+      "reference": "2 John 1:12",
+      "verseSource": "hand-picked",
+      "verseText": "Having many things to write unto you, I would not write with paper and ink: but I trust to come unto you, and speak face to face, that our joy may be full."
+    },
+    {
+      "word": "PEACE",
+      "reference": "John 14:27",
+      "verseSource": "hand-picked",
+      "verseText": "Peace I leave with you, my peace I give unto you: not as the world giveth, give I unto you. Let not your heart be troubled, neither let it be afraid."
+    },
+    {
+      "word": "PEARL",
+      "reference": "Matthew 13:46",
+      "verseSource": "hand-picked",
+      "verseText": "Who, when he had found one pearl of great price, went and sold all that he had, and bought it."
+    },
+    {
+      "word": "PENNY",
+      "reference": "Matthew 20:2",
+      "verseSource": "hand-picked",
+      "verseText": "And when he had agreed with the labourers for a penny a day, he sent them into his vineyard."
+    },
+    {
+      "word": "PERIL",
+      "reference": "Romans 8:35",
+      "verseSource": "hand-picked",
+      "verseText": "Who shall separate us from the love of Christ? shall tribulation, or distress, or persecution, or famine, or nakedness, or peril, or sword?"
+    },
+    {
+      "word": "PIETY",
+      "reference": "1 Timothy 5:4",
+      "verseSource": "hand-picked",
+      "verseText": "But if any widow have children or nephews, let them learn first to shew piety at home, and to requite their parents: for that is good and acceptable before God."
+    },
+    {
+      "word": "PITCH",
+      "reference": "Genesis 6:14",
+      "verseSource": "hand-picked",
+      "verseText": "Make thee an ark of gopher wood; rooms shalt thou make in the ark, and shalt pitch it within and without with pitch."
+    },
+    {
+      "word": "PLANT",
+      "reference": "Ecclesiastes 3:2",
+      "verseSource": "hand-picked",
+      "verseText": "A time to be born, and a time to die; a time to plant, and a time to pluck up that which is planted;"
+    },
+    {
+      "word": "PLUCK",
+      "reference": "John 10:28",
+      "verseSource": "hand-picked",
+      "verseText": "And I give unto them eternal life; and they shall never perish, neither shall any man pluck them out of my hand."
+    },
+    {
+      "word": "PORCH",
+      "reference": "John 10:23",
+      "verseSource": "hand-picked",
+      "verseText": "And Jesus walked in the temple in Solomon's porch."
+    },
+    {
+      "word": "POWER",
+      "reference": "Acts 1:8",
+      "verseSource": "hand-picked",
+      "verseText": "But ye shall receive power, after that the Holy Ghost is come upon you: and ye shall be witnesses unto me both in Jerusalem, and in all Judaea, and in Samaria, and unto the uttermost part of the earth."
+    },
+    {
+      "word": "PRICE",
+      "reference": "1 Corinthians 6:20",
+      "verseSource": "hand-picked",
+      "verseText": "For ye are bought with a price: therefore glorify God in your body, and in your spirit, which are God's."
+    },
+    {
+      "word": "PRIDE",
+      "reference": "Proverbs 16:18",
+      "verseSource": "hand-picked",
+      "verseText": "Pride goeth before destruction, and an haughty spirit before a fall."
+    },
+    {
+      "word": "PRIZE",
+      "reference": "Philippians 3:14",
+      "verseSource": "hand-picked",
+      "verseText": "I press toward the mark for the prize of the high calling of God in Christ Jesus."
+    },
+    {
+      "word": "PROOF",
+      "reference": "2 Corinthians 2:9",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "For to this end also did I write, that I might know the proof of you, whether ye be obedient in all things."
+    },
+    {
+      "word": "PROUD",
+      "reference": "James 4:6",
+      "verseSource": "hand-picked",
+      "verseText": "But he giveth more grace. Wherefore he saith, God resisteth the proud, but giveth grace unto the humble."
+    },
+    {
+      "word": "PROVE",
+      "reference": "Malachi 3:10",
+      "verseSource": "hand-picked",
+      "verseText": "Bring ye all the tithes into the storehouse, that there may be meat in mine house, and prove me now herewith, saith the LORD of hosts, if I will not open you the windows of heaven, and pour you out a blessing, that there shall not be room enough to receive it."
+    },
+    {
+      "word": "PSALM",
+      "reference": "Psalms 98:5",
+      "verseSource": "hand-picked",
+      "verseText": "Sing unto the LORD with the harp; with the harp, and the voice of a psalm."
+    },
+    {
+      "word": "PULSE",
+      "reference": "Daniel 1:12",
+      "verseSource": "hand-picked",
+      "verseText": "Prove thy servants, I beseech thee, ten days; and let them give us pulse to eat, and water to drink."
+    },
+    {
+      "word": "PURGE",
+      "reference": "Psalms 51:7",
+      "verseSource": "hand-picked",
+      "verseText": "Purge me with hyssop, and I shall be clean: wash me, and I shall be whiter than snow."
+    },
+    {
+      "word": "PURIM",
+      "reference": "Esther 9:26",
+      "verseSource": "hand-picked",
+      "verseText": "Wherefore they called these days Purim after the name of Pur. Therefore for all the words of this letter, and of that which they had seen concerning this matter, and which had come unto them,"
+    },
+    {
+      "word": "PURSE",
+      "reference": "Proverbs 1:14",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Cast in thy lot among us; let us all have one purse:"
+    },
+    {
+      "word": "QUAKE",
+      "reference": "Joel 2:10",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "The earth shall quake before them; the heavens shall tremble: the sun and the moon shall be dark, and the stars shall withdraw their shining:"
+    },
+    {
+      "word": "QUEEN",
+      "reference": "Esther 2:17",
+      "verseSource": "hand-picked",
+      "verseText": "And the king loved Esther above all the women, and she obtained grace and favour in his sight more than all the virgins; so that he set the royal crown upon her head, and made her queen instead of Vashti."
+    },
+    {
+      "word": "QUICK",
+      "reference": "2 Timothy 4:1",
+      "verseSource": "hand-picked",
+      "verseText": "I charge thee therefore before God, and the Lord Jesus Christ, who shall judge the quick and the dead at his appearing and his kingdom;"
+    },
+    {
+      "word": "QUIET",
+      "reference": "1 Thessalonians 4:11",
+      "verseSource": "hand-picked",
+      "verseText": "And that ye study to be quiet, and to do your own business, and to work with your own hands, as we commanded you;"
+    },
+    {
+      "word": "RABBI",
+      "reference": "John 3:2",
+      "verseSource": "hand-picked",
+      "verseText": "The same came to Jesus by night, and said unto him, Rabbi, we know that thou art a teacher come from God: for no man can do these miracles that thou doest, except God be with him."
+    },
+    {
+      "word": "RAISE",
+      "reference": "John 6:40",
+      "verseSource": "hand-picked",
+      "verseText": "And this is the will of him that sent me, that every one which seeth the Son, and believeth on him, may have everlasting life: and I will raise him up at the last day."
+    },
+    {
+      "word": "RAVEN",
+      "reference": "Genesis 8:7",
+      "verseSource": "hand-picked",
+      "verseText": "And he sent forth a raven, which went forth to and fro, until the waters were dried up from off the earth."
+    },
+    {
+      "word": "RAZOR",
+      "reference": "Judges 13:5",
+      "verseSource": "hand-picked",
+      "verseText": "For, lo, thou shalt conceive, and bear a son; and no razor shall come on his head: for the child shall be a Nazarite unto God from the womb: and he shall begin to deliver Israel out of the hand of the Philistines."
+    },
+    {
+      "word": "REACH",
+      "reference": "John 20:27",
+      "verseSource": "hand-picked",
+      "verseText": "Then saith he to Thomas, Reach hither thy finger, and behold my hands; and reach hither thy hand, and thrust it into my side: and be not faithless, but believing."
+    },
+    {
+      "word": "READY",
+      "reference": "1 Peter 3:15",
+      "verseSource": "hand-picked",
+      "verseText": "But sanctify the Lord God in your hearts: and be ready always to give an answer to every man that asketh you a reason of the hope that is in you with meekness and fear:"
+    },
+    {
+      "word": "REALM",
+      "reference": "2 Chronicles 20:30",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "So the realm of Jehoshaphat was quiet: for his God gave him rest round about."
+    },
+    {
+      "word": "REBEL",
+      "reference": "Numbers 14:9",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Only rebel not ye against the LORD, neither fear ye the people of the land; for they are bread for us: their defence is departed from them, and the LORD is with us: fear them not."
+    },
+    {
+      "word": "REIGN",
+      "reference": "Revelation 11:15",
+      "verseSource": "hand-picked",
+      "verseText": "And the seventh angel sounded; and there were great voices in heaven, saying, The kingdoms of this world are become the kingdoms of our Lord, and of his Christ; and he shall reign for ever and ever."
+    },
+    {
+      "word": "RENEW",
+      "reference": "Isaiah 40:31",
+      "verseSource": "hand-picked",
+      "verseText": "But they that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary; and they shall walk, and not faint."
+    },
+    {
+      "word": "REPAY",
+      "reference": "Romans 12:19",
+      "verseSource": "hand-picked",
+      "verseText": "Dearly beloved, avenge not yourselves, but rather give place unto wrath: for it is written, Vengeance is mine; I will repay, saith the Lord."
+    },
+    {
+      "word": "RIDER",
+      "reference": "Genesis 49:17",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Dan shall be a serpent by the way, an adder in the path, that biteth the horse heels, so that his rider shall fall backward."
+    },
+    {
+      "word": "RIGHT",
+      "reference": "Psalms 16:11",
+      "verseSource": "hand-picked",
+      "verseText": "Thou wilt shew me the path of life: in thy presence is fulness of joy; at thy right hand there are pleasures for evermore."
+    },
+    {
+      "word": "RISEN",
+      "reference": "Matthew 28:6",
+      "verseSource": "hand-picked",
+      "verseText": "He is not here: for he is risen, as he said. Come, see the place where the Lord lay."
+    },
+    {
+      "word": "RIVER",
+      "reference": "Revelation 22:1",
+      "verseSource": "hand-picked",
+      "verseText": "And he shewed me a pure river of water of life, clear as crystal, proceeding out of the throne of God and of the Lamb."
+    },
+    {
+      "word": "ROMAN",
+      "reference": "Acts 22:25",
+      "verseSource": "hand-picked",
+      "verseText": "And as they bound him with thongs, Paul said unto the centurion that stood by, Is it lawful for you to scourge a man that is a Roman, and uncondemned?"
+    },
+    {
+      "word": "ROUGH",
+      "reference": "Isaiah 40:4",
+      "verseSource": "hand-picked",
+      "verseText": "Every valley shall be exalted, and every mountain and hill shall be made low: and the crooked shall be made straight, and the rough places plain:"
+    },
+    {
+      "word": "ROYAL",
+      "reference": "1 Peter 2:9",
+      "verseSource": "hand-picked",
+      "verseText": "But ye are a chosen generation, a royal priesthood, an holy nation, a peculiar people; that ye should shew forth the praises of him who hath called you out of darkness into his marvellous light:"
+    },
+    {
+      "word": "RUDDY",
+      "reference": "1 Samuel 16:12",
+      "verseSource": "hand-picked",
+      "verseText": "And he sent, and brought him in. Now he was ruddy, and withal of a beautiful countenance, and goodly to look to. And the LORD said, Arise, anoint him: for this is he."
+    },
+    {
+      "word": "RULER",
+      "reference": "John 3:1",
+      "verseSource": "hand-picked",
+      "verseText": "There was a man of the Pharisees, named Nicodemus, a ruler of the Jews:"
+    },
+    {
+      "word": "SAINT",
+      "reference": "Philippians 4:21",
+      "verseSource": "hand-picked",
+      "verseText": "Salute every saint in Christ Jesus. The brethren which are with me greet you."
+    },
+    {
+      "word": "SAVED",
+      "reference": "Acts 16:31",
+      "verseSource": "hand-picked",
+      "verseText": "And they said, Believe on the Lord Jesus Christ, and thou shalt be saved, and thy house."
+    },
+    {
+      "word": "SCENT",
+      "reference": "Job 14:9",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Yet through the scent of water it will bud, and bring forth boughs like a plant."
+    },
+    {
+      "word": "SCORN",
+      "reference": "2 Kings 19:21",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "This is the word that the LORD hath spoken concerning him; The virgin the daughter of Zion hath despised thee, and laughed thee to scorn; the daughter of Jerusalem hath shaken her head at thee."
+    },
+    {
+      "word": "SEIZE",
+      "reference": "Joshua 8:7",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Then ye shall rise up from the ambush, and seize upon the city: for the LORD your God will deliver it into your hand."
+    },
+    {
+      "word": "SELAH",
+      "reference": "Psalms 3:2",
+      "verseSource": "hand-picked",
+      "verseText": "Many there be which say of my soul, There is no help for him in God. Selah."
+    },
+    {
+      "word": "SENSE",
+      "reference": "Nehemiah 8:8",
+      "verseSource": "hand-picked",
+      "verseText": "So they read in the book in the law of God distinctly, and gave the sense, and caused them to understand the reading."
+    },
+    {
+      "word": "SERVE",
+      "reference": "Joshua 24:15",
+      "verseSource": "hand-picked",
+      "verseText": "And if it seem evil unto you to serve the LORD, choose you this day whom ye will serve; whether the gods which your fathers served that were on the other side of the flood, or the gods of the Amorites, in whose land ye dwell: but as for me and my house, we will serve the LORD."
+    },
+    {
+      "word": "SEVEN",
+      "reference": "Matthew 18:22",
+      "verseSource": "hand-picked",
+      "verseText": "Jesus saith unto him, I say not unto thee, Until seven times: but, Until seventy times seven."
+    },
+    {
+      "word": "SHADE",
+      "reference": "Psalms 121:5",
+      "verseSource": "hand-picked",
+      "verseText": "The LORD is thy keeper: the LORD is thy shade upon thy right hand."
+    },
+    {
+      "word": "SHAME",
+      "reference": "Hebrews 12:2",
+      "verseSource": "hand-picked",
+      "verseText": "Looking unto Jesus the author and finisher of our faith; who for the joy that was set before him endured the cross, despising the shame, and is set down at the right hand of the throne of God."
+    },
+    {
+      "word": "SHAPE",
+      "reference": "Luke 3:22",
+      "verseSource": "hand-picked",
+      "verseText": "And the Holy Ghost descended in a bodily shape like a dove upon him, and a voice came from heaven, which said, Thou art my beloved Son; in thee I am well pleased."
+    },
+    {
+      "word": "SHARP",
+      "reference": "Revelation 1:16",
+      "verseSource": "hand-picked",
+      "verseText": "And he had in his right hand seven stars: and out of his mouth went a sharp twoedged sword: and his countenance was as the sun shineth in his strength."
+    },
+    {
+      "word": "SHEAF",
+      "reference": "Genesis 37:7",
+      "verseSource": "hand-picked",
+      "verseText": "For, behold, we were binding sheaves in the field, and, lo, my sheaf arose, and also stood upright; and, behold, your sheaves stood round about, and made obeisance to my sheaf."
+    },
+    {
+      "word": "SHEEP",
+      "reference": "John 10:11",
+      "verseSource": "hand-picked",
+      "verseText": "I am the good shepherd: the good shepherd giveth his life for the sheep."
+    },
+    {
+      "word": "SHEET",
+      "reference": "Acts 10:11",
+      "verseSource": "hand-picked",
+      "verseText": "And saw heaven opened, and a certain vessel descending unto him, as it had been a great sheet knit at the four corners, and let down to the earth:"
+    },
+    {
+      "word": "SHINE",
+      "reference": "Matthew 5:16",
+      "verseSource": "hand-picked",
+      "verseText": "Let your light so shine before men, that they may see your good works, and glorify your Father which is in heaven."
+    },
+    {
+      "word": "SHORE",
+      "reference": "Genesis 22:17",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "That in blessing I will bless thee, and in multiplying I will multiply thy seed as the stars of the heaven, and as the sand which is upon the sea shore; and thy seed shall possess the gate of his enemies;"
+    },
+    {
+      "word": "SHOUT",
+      "reference": "Joshua 6:5",
+      "verseSource": "hand-picked",
+      "verseText": "And it shall come to pass, that when they make a long blast with the ram's horn, and when ye hear the sound of the trumpet, all the people shall shout with a great shout; and the wall of the city shall fall down flat, and the people shall ascend up every man straight before him."
+    },
+    {
+      "word": "SIEGE",
+      "reference": "Deuteronomy 20:19",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "When thou shalt besiege a city a long time, in making war against it to take it, thou shalt not destroy the trees thereof by forcing an axe against them: for thou mayest eat of them, and thou shalt not cut them down (for the tree of the field is man's life) to employ them in the siege:"
+    },
+    {
+      "word": "SIEVE",
+      "reference": "Amos 9:9",
+      "verseSource": "hand-picked",
+      "verseText": "For, lo, I will command, and I will sift the house of Israel among all nations, like as corn is sifted in a sieve, yet shall not the least grain fall upon the earth."
+    },
+    {
+      "word": "SIGHT",
+      "reference": "2 Corinthians 5:7",
+      "verseSource": "hand-picked",
+      "verseText": "(For we walk by faith, not by sight:)"
+    },
+    {
+      "word": "SINEW",
+      "reference": "Genesis 32:32",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Therefore the children of Israel eat not of the sinew which shrank, which is upon the hollow of the thigh, unto this day: because he touched the hollow of Jacob's thigh in the sinew that shrank."
+    },
+    {
+      "word": "SKILL",
+      "reference": "1 Kings 5:6",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Now therefore command thou that they hew me cedar trees out of Lebanon; and my servants shall be with thy servants: and unto thee will I give hire for thy servants according to all that thou shalt appoint: for thou knowest that there is not among us any that can skill to hew timber like unto the Sidonians."
+    },
+    {
+      "word": "SKULL",
+      "reference": "John 19:17",
+      "verseSource": "hand-picked",
+      "verseText": "And he bearing his cross went forth into a place called the place of a skull, which is called in the Hebrew Golgotha:"
+    },
+    {
+      "word": "SLACK",
+      "reference": "2 Peter 3:9",
+      "verseSource": "hand-picked",
+      "verseText": "The Lord is not slack concerning his promise, as some men count slackness; but is longsuffering to us-ward, not willing that any should perish, but that all should come to repentance."
+    },
+    {
+      "word": "SLAIN",
+      "reference": "Revelation 5:12",
+      "verseSource": "hand-picked",
+      "verseText": "Saying with a loud voice, Worthy is the Lamb that was slain to receive power, and riches, and wisdom, and strength, and honour, and glory, and blessing."
+    },
+    {
+      "word": "SLAVE",
+      "reference": "Jeremiah 2:14",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Is Israel a servant? is he a homeborn slave? why is he spoiled?"
+    },
+    {
+      "word": "SLEEP",
+      "reference": "Psalms 4:8",
+      "verseSource": "hand-picked",
+      "verseText": "I will both lay me down in peace, and sleep: for thou, LORD, only makest me dwell in safety."
+    },
+    {
+      "word": "SLING",
+      "reference": "1 Samuel 17:50",
+      "verseSource": "hand-picked",
+      "verseText": "So David prevailed over the Philistine with a sling and with a stone, and smote the Philistine, and slew him; but there was no sword in the hand of David."
+    },
+    {
+      "word": "SMITH",
+      "reference": "1 Samuel 13:19",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Now there was no smith found throughout all the land of Israel: for the Philistines said, Lest the Hebrews make them swords or spears:"
+    },
+    {
+      "word": "SMOKE",
+      "reference": "Exodus 19:18",
+      "verseSource": "hand-picked",
+      "verseText": "And mount Sinai was altogether on a smoke, because the LORD descended upon it in fire: and the smoke thereof ascended as the smoke of a furnace, and the whole mount quaked greatly."
+    },
+    {
+      "word": "SNAIL",
+      "reference": "Psalms 58:8",
+      "verseSource": "hand-picked",
+      "verseText": "As a snail which melteth, let every one of them pass away: like the untimely birth of a woman, that they may not see the sun."
+    },
+    {
+      "word": "SNARE",
+      "reference": "Psalms 91:3",
+      "verseSource": "hand-picked",
+      "verseText": "Surely he shall deliver thee from the snare of the fowler, and from the noisome pestilence."
+    },
+    {
+      "word": "SOBER",
+      "reference": "1 Peter 5:8",
+      "verseSource": "hand-picked",
+      "verseText": "Be sober, be vigilant; because your adversary the devil, as a roaring lion, walketh about, seeking whom he may devour:"
+    },
+    {
+      "word": "SOWER",
+      "reference": "Mark 4:14",
+      "verseSource": "hand-picked",
+      "verseText": "The sower soweth the word."
+    },
+    {
+      "word": "SPARE",
+      "reference": "Genesis 18:24",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Peradventure there be fifty righteous within the city: wilt thou also destroy and not spare the place for the fifty righteous that are therein?"
+    },
+    {
+      "word": "SPARK",
+      "reference": "Job 18:5",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Yea, the light of the wicked shall be put out, and the spark of his fire shall not shine."
+    },
+    {
+      "word": "SPEAK",
+      "reference": "1 Samuel 3:9",
+      "verseSource": "hand-picked",
+      "verseText": "Therefore Eli said unto Samuel, Go, lie down: and it shall be, if he call thee, that thou shalt say, Speak, LORD; for thy servant heareth. So Samuel went and lay down in his place."
+    },
+    {
+      "word": "SPEAR",
+      "reference": "1 Samuel 17:45",
+      "verseSource": "hand-picked",
+      "verseText": "Then said David to the Philistine, Thou comest to me with a sword, and with a spear, and with a shield: but I come to thee in the name of the LORD of hosts, the God of the armies of Israel, whom thou hast defied."
+    },
+    {
+      "word": "SPICE",
+      "reference": "Exodus 35:28",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And spice, and oil for the light, and for the anointing oil, and for the sweet incense."
+    },
+    {
+      "word": "STAFF",
+      "reference": "Psalms 23:4",
+      "verseSource": "hand-picked",
+      "verseText": "Yea, though I walk through the valley of the shadow of death, I will fear no evil: for thou art with me; thy rod and thy staff they comfort me."
+    },
+    {
+      "word": "STAND",
+      "reference": "Ephesians 6:11",
+      "verseSource": "hand-picked",
+      "verseText": "Put on the whole armour of God, that ye may be able to stand against the wiles of the devil."
+    },
+    {
+      "word": "STEAL",
+      "reference": "Exodus 20:15",
+      "verseSource": "hand-picked",
+      "verseText": "Thou shalt not steal."
+    },
+    {
+      "word": "STEEP",
+      "reference": "Matthew 8:32",
+      "verseSource": "hand-picked",
+      "verseText": "And he said unto them, Go. And when they were come out, they went into the herd of swine: and, behold, the whole herd of swine ran violently down a steep place into the sea, and perished in the waters."
+    },
+    {
+      "word": "STIFF",
+      "reference": "Deuteronomy 31:27",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "For I know thy rebellion, and thy stiff neck: behold, while I am yet alive with you this day, ye have been rebellious against the LORD; and how much more after my death?"
+    },
+    {
+      "word": "STILL",
+      "reference": "Psalms 46:10",
+      "verseSource": "hand-picked",
+      "verseText": "Be still, and know that I am God: I will be exalted among the heathen, I will be exalted in the earth."
+    },
+    {
+      "word": "STING",
+      "reference": "1 Corinthians 15:55",
+      "verseSource": "hand-picked",
+      "verseText": "O death, where is thy sting? O grave, where is thy victory?"
+    },
+    {
+      "word": "STONE",
+      "reference": "John 8:7",
+      "verseSource": "hand-picked",
+      "verseText": "So when they continued asking him, he lifted up himself, and said unto them, He that is without sin among you, let him first cast a stone at her."
+    },
+    {
+      "word": "STONY",
+      "reference": "Matthew 13:5",
+      "verseSource": "hand-picked",
+      "verseText": "Some fell upon stony places, where they had not much earth: and forthwith they sprung up, because they had no deepness of earth:"
+    },
+    {
+      "word": "STORE",
+      "reference": "Genesis 26:14",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "For he had possession of flocks, and possession of herds, and great store of servants: and the Philistines envied him."
+    },
+    {
+      "word": "STORK",
+      "reference": "Jeremiah 8:7",
+      "verseSource": "hand-picked",
+      "verseText": "Yea, the stork in the heaven knoweth her appointed times; and the turtle and the crane and the swallow observe the time of their coming; but my people know not the judgment of the LORD."
+    },
+    {
+      "word": "STORM",
+      "reference": "Mark 4:37",
+      "verseSource": "hand-picked",
+      "verseText": "And there arose a great storm of wind, and the waves beat into the ship, so that it was now full."
+    },
+    {
+      "word": "STRAW",
+      "reference": "Exodus 5:7",
+      "verseSource": "hand-picked",
+      "verseText": "Ye shall no more give the people straw to make brick, as heretofore: let them go and gather straw for themselves."
+    },
+    {
+      "word": "STUDY",
+      "reference": "2 Timothy 2:15",
+      "verseSource": "hand-picked",
+      "verseText": "Study to shew thyself approved unto God, a workman that needeth not to be ashamed, rightly dividing the word of truth."
+    },
+    {
+      "word": "SWEAR",
+      "reference": "Matthew 5:34",
+      "verseSource": "hand-picked",
+      "verseText": "But I say unto you, Swear not at all; neither by heaven; for it is God's throne:"
+    },
+    {
+      "word": "SWEAT",
+      "reference": "Genesis 3:19",
+      "verseSource": "hand-picked",
+      "verseText": "In the sweat of thy face shalt thou eat bread, till thou return unto the ground; for out of it wast thou taken: for dust thou art, and unto dust shalt thou return."
+    },
+    {
+      "word": "SWEEP",
+      "reference": "Luke 15:8",
+      "verseSource": "hand-picked",
+      "verseText": "Either what woman having ten pieces of silver, if she lose one piece, doth not light a candle, and sweep the house, and seek diligently till she find it?"
+    },
+    {
+      "word": "SWEET",
+      "reference": "Psalms 119:103",
+      "verseSource": "hand-picked",
+      "verseText": "How sweet are thy words unto my taste! yea, sweeter than honey to my mouth!"
+    },
+    {
+      "word": "SWIFT",
+      "reference": "Ecclesiastes 9:11",
+      "verseSource": "hand-picked",
+      "verseText": "I returned, and saw under the sun, that the race is not to the swift, nor the battle to the strong, neither yet bread to the wise, nor yet riches to men of understanding, nor yet favour to men of skill; but time and chance happeneth to them all."
+    },
+    {
+      "word": "SWINE",
+      "reference": "Matthew 7:6",
+      "verseSource": "hand-picked",
+      "verseText": "Give not that which is holy unto the dogs, neither cast ye your pearls before swine, lest they trample them under their feet, and turn again and rend you."
+    },
+    {
+      "word": "SWORD",
+      "reference": "Hebrews 4:12",
+      "verseSource": "hand-picked",
+      "verseText": "For the word of God is quick, and powerful, and sharper than any twoedged sword, piercing even to the dividing asunder of soul and spirit, and of the joints and marrow, and is a discerner of the thoughts and intents of the heart."
+    },
+    {
+      "word": "TABLE",
+      "reference": "Psalms 23:5",
+      "verseSource": "hand-picked",
+      "verseText": "Thou preparest a table before me in the presence of mine enemies: thou anointest my head with oil; my cup runneth over."
+    },
+    {
+      "word": "TARES",
+      "reference": "Matthew 13:25",
+      "verseSource": "hand-picked",
+      "verseText": "But while men slept, his enemy came and sowed tares among the wheat, and went his way."
+    },
+    {
+      "word": "TARRY",
+      "reference": "Luke 24:49",
+      "verseSource": "hand-picked",
+      "verseText": "And, behold, I send the promise of my Father upon you: but tarry ye in the city of Jerusalem, until ye be endued with power from on high."
+    },
+    {
+      "word": "TASTE",
+      "reference": "Psalms 34:8",
+      "verseSource": "hand-picked",
+      "verseText": "O taste and see that the LORD is good: blessed is the man that trusteth in him."
+    },
+    {
+      "word": "TEACH",
+      "reference": "Psalms 25:4",
+      "verseSource": "hand-picked",
+      "verseText": "Shew me thy ways, O LORD; teach me thy paths."
+    },
+    {
+      "word": "TENTH",
+      "reference": "Genesis 8:5",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And the waters decreased continually until the tenth month: in the tenth month, on the first day of the month, were the tops of the mountains seen."
+    },
+    {
+      "word": "THANK",
+      "reference": "Philippians 1:3",
+      "verseSource": "hand-picked",
+      "verseText": "I thank my God upon every remembrance of you,"
+    },
+    {
+      "word": "THIEF",
+      "reference": "1 Thessalonians 5:2",
+      "verseSource": "hand-picked",
+      "verseText": "For yourselves know perfectly that the day of the Lord so cometh as a thief in the night."
+    },
+    {
+      "word": "THIGH",
+      "reference": "Genesis 32:25",
+      "verseSource": "hand-picked",
+      "verseText": "And when he saw that he prevailed not against him, he touched the hollow of his thigh; and the hollow of Jacob's thigh was out of joint, as he wrestled with him."
+    },
+    {
+      "word": "THIRD",
+      "reference": "1 Corinthians 15:4",
+      "verseSource": "hand-picked",
+      "verseText": "And that he was buried, and that he rose again the third day according to the scriptures:"
+    },
+    {
+      "word": "THORN",
+      "reference": "2 Corinthians 12:7",
+      "verseSource": "hand-picked",
+      "verseText": "And lest I should be exalted above measure through the abundance of the revelations, there was given to me a thorn in the flesh, the messenger of Satan to buffet me, lest I should be exalted above measure."
+    },
+    {
+      "word": "THREE",
+      "reference": "1 Corinthians 13:13",
+      "verseSource": "hand-picked",
+      "verseText": "And now abideth faith, hope, charity, these three; but the greatest of these is charity."
+    },
+    {
+      "word": "TITHE",
+      "reference": "Leviticus 27:30",
+      "verseSource": "hand-picked",
+      "verseText": "And all the tithe of the land, whether of the seed of the land, or of the fruit of the tree, is the LORD'S: it is holy unto the LORD."
+    },
+    {
+      "word": "TITLE",
+      "reference": "John 19:19",
+      "verseSource": "hand-picked",
+      "verseText": "And Pilate wrote a title, and put it on the cross. And the writing was, JESUS OF NAZARETH THE KING OF THE JEWS."
+    },
+    {
+      "word": "TOKEN",
+      "reference": "Genesis 9:12",
+      "verseSource": "hand-picked",
+      "verseText": "And God said, This is the token of the covenant which I make between me and you and every living creature that is with you, for perpetual generations:"
+    },
+    {
+      "word": "TOOTH",
+      "reference": "Matthew 5:38",
+      "verseSource": "hand-picked",
+      "verseText": "Ye have heard that it hath been said, An eye for an eye, and a tooth for a tooth:"
+    },
+    {
+      "word": "TOPAZ",
+      "reference": "Exodus 28:17",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And thou shalt set in it settings of stones, even four rows of stones: the first row shall be a sardius, a topaz, and a carbuncle: this shall be the first row."
+    },
+    {
+      "word": "TORCH",
+      "reference": "Zechariah 12:6",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "In that day will I make the governors of Judah like an hearth of fire among the wood, and like a torch of fire in a sheaf; and they shall devour all the people round about, on the right hand and on the left: and Jerusalem shall be inhabited again in her own place, even in Jerusalem."
+    },
+    {
+      "word": "TOUCH",
+      "reference": "Mark 5:28",
+      "verseSource": "hand-picked",
+      "verseText": "For she said, If I may touch but his clothes, I shall be whole."
+    },
+    {
+      "word": "TOWEL",
+      "reference": "John 13:4",
+      "verseSource": "hand-picked",
+      "verseText": "He riseth from supper, and laid aside his garments; and took a towel, and girded himself."
+    },
+    {
+      "word": "TOWER",
+      "reference": "Genesis 11:4",
+      "verseSource": "hand-picked",
+      "verseText": "And they said, Go to, let us build us a city and a tower, whose top may reach unto heaven; and let us make us a name, lest we be scattered abroad upon the face of the whole earth."
+    },
+    {
+      "word": "TRIAL",
+      "reference": "1 Peter 4:12",
+      "verseSource": "hand-picked",
+      "verseText": "Beloved, think it not strange concerning the fiery trial which is to try you, as though some strange thing happened unto you:"
+    },
+    {
+      "word": "TRIBE",
+      "reference": "Exodus 31:2",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "See, I have called by name Bezaleel the son of Uri, the son of Hur, of the tribe of Judah:"
+    },
+    {
+      "word": "TROOP",
+      "reference": "Genesis 30:11",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And Leah said, A troop cometh: and she called his name Gad."
+    },
+    {
+      "word": "TRULY",
+      "reference": "Psalms 62:1",
+      "verseSource": "hand-picked",
+      "verseText": "[To the chief Musician, to Jeduthun, A Psalm of David.] Truly my soul waiteth upon God: from him cometh my salvation."
+    },
+    {
+      "word": "TRUMP",
+      "reference": "1 Corinthians 15:52",
+      "verseSource": "hand-picked",
+      "verseText": "In a moment, in the twinkling of an eye, at the last trump: for the trumpet shall sound, and the dead shall be raised incorruptible, and we shall be changed."
+    },
+    {
+      "word": "TRUST",
+      "reference": "Proverbs 3:5",
+      "verseSource": "hand-picked",
+      "verseText": "Trust in the LORD with all thine heart; and lean not unto thine own understanding."
+    },
+    {
+      "word": "TRUTH",
+      "reference": "John 8:32",
+      "verseSource": "hand-picked",
+      "verseText": "And ye shall know the truth, and the truth shall make you free."
+    },
+    {
+      "word": "UNITE",
+      "reference": "Psalms 86:11",
+      "verseSource": "hand-picked",
+      "verseText": "Teach me thy way, O LORD; I will walk in thy truth: unite my heart to fear thy name."
+    },
+    {
+      "word": "UNITY",
+      "reference": "Psalms 133:1",
+      "verseSource": "hand-picked",
+      "verseText": "[A Song of degrees of David.] Behold, how good and how pleasant it is for brethren to dwell together in unity!"
+    },
+    {
+      "word": "UPPER",
+      "reference": "Mark 14:15",
+      "verseSource": "hand-picked",
+      "verseText": "And he will shew you a large upper room furnished and prepared: there make ready for us."
+    },
+    {
+      "word": "UTTER",
+      "reference": "Matthew 13:35",
+      "verseSource": "hand-picked",
+      "verseText": "That it might be fulfilled which was spoken by the prophet, saying, I will open my mouth in parables; I will utter things which have been kept secret from the foundation of the world."
+    },
+    {
+      "word": "VENOM",
+      "reference": "Deuteronomy 32:33",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Their wine is the poison of dragons, and the cruel venom of asps."
+    },
+    {
+      "word": "VIPER",
+      "reference": "Acts 28:3",
+      "verseSource": "hand-picked",
+      "verseText": "And when Paul had gathered a bundle of sticks, and laid them on the fire, there came a viper out of the heat, and fastened on his hand."
+    },
+    {
+      "word": "VISIT",
+      "reference": "James 1:27",
+      "verseSource": "hand-picked",
+      "verseText": "Pure religion and undefiled before God and the Father is this, To visit the fatherless and widows in their affliction, and to keep himself unspotted from the world."
+    },
+    {
+      "word": "VOICE",
+      "reference": "1 Kings 19:12",
+      "verseSource": "hand-picked",
+      "verseText": "And after the earthquake a fire; but the LORD was not in the fire: and after the fire a still small voice."
+    },
+    {
+      "word": "WAFER",
+      "reference": "Exodus 29:23",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And one loaf of bread, and one cake of oiled bread, and one wafer out of the basket of the unleavened bread that is before the LORD:"
+    },
+    {
+      "word": "WAGES",
+      "reference": "Romans 6:23",
+      "verseSource": "hand-picked",
+      "verseText": "For the wages of sin is death; but the gift of God is eternal life through Jesus Christ our Lord."
+    },
+    {
+      "word": "WATCH",
+      "reference": "Mark 13:37",
+      "verseSource": "hand-picked",
+      "verseText": "And what I say unto you I say unto all, Watch."
+    },
+    {
+      "word": "WATER",
+      "reference": "John 4:14",
+      "verseSource": "hand-picked",
+      "verseText": "But whosoever drinketh of the water that I shall give him shall never thirst; but the water that I shall give him shall be in him a well of water springing up into everlasting life."
+    },
+    {
+      "word": "WEARY",
+      "reference": "Galatians 6:9",
+      "verseSource": "hand-picked",
+      "verseText": "And let us not be weary in well doing: for in due season we shall reap, if we faint not."
+    },
+    {
+      "word": "WEAVE",
+      "reference": "Isaiah 19:9",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Moreover they that work in fine flax, and they that weave networks, shall be confounded."
+    },
+    {
+      "word": "WEIGH",
+      "reference": "1 Chronicles 20:2",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And David took the crown of their king from off his head, and found it to weigh a talent of gold, and there were precious stones in it; and it was set upon David's head: and he brought also exceeding much spoil out of the city."
+    },
+    {
+      "word": "WHALE",
+      "reference": "Matthew 12:40",
+      "verseSource": "hand-picked",
+      "verseText": "For as Jonas was three days and three nights in the whale's belly; so shall the Son of man be three days and three nights in the heart of the earth."
+    },
+    {
+      "word": "WHEAT",
+      "reference": "John 12:24",
+      "verseSource": "hand-picked",
+      "verseText": "Verily, verily, I say unto you, Except a corn of wheat fall into the ground and die, it abideth alone: but if it die, it bringeth forth much fruit."
+    },
+    {
+      "word": "WHEEL",
+      "reference": "Ezekiel 1:16",
+      "verseSource": "hand-picked",
+      "verseText": "The appearance of the wheels and their work was like unto the colour of a beryl: and they four had one likeness: and their appearance and their work was as it were a wheel in the middle of a wheel."
+    },
+    {
+      "word": "WHELP",
+      "reference": "Genesis 49:9",
+      "verseSource": "hand-picked",
+      "verseText": "Judah is a lion's whelp: from the prey, my son, thou art gone up: he stooped down, he couched as a lion, and as an old lion; who shall rouse him up?"
+    },
+    {
+      "word": "WHITE",
+      "reference": "Isaiah 1:18",
+      "verseSource": "hand-picked",
+      "verseText": "Come now, and let us reason together, saith the LORD: though your sins be as scarlet, they shall be as white as snow; though they be red like crimson, they shall be as wool."
+    },
+    {
+      "word": "WHOLE",
+      "reference": "Ecclesiastes 12:13",
+      "verseSource": "hand-picked",
+      "verseText": "Let us hear the conclusion of the whole matter: Fear God, and keep his commandments: for this is the whole duty of man."
+    },
+    {
+      "word": "WIDOW",
+      "reference": "Mark 12:42",
+      "verseSource": "hand-picked",
+      "verseText": "And there came a certain poor widow, and she threw in two mites, which make a farthing."
+    },
+    {
+      "word": "WISER",
+      "reference": "1 Kings 4:31",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "For he was wiser than all men; than Ethan the Ezrahite, and Heman, and Chalcol, and Darda, the sons of Mahol: and his fame was in all nations round about."
+    },
+    {
+      "word": "WITCH",
+      "reference": "Exodus 22:18",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Thou shalt not suffer a witch to live."
+    },
+    {
+      "word": "WOMAN",
+      "reference": "Proverbs 31:10",
+      "verseSource": "hand-picked",
+      "verseText": "Who can find a virtuous woman? for her price is far above rubies."
+    },
+    {
+      "word": "WORLD",
+      "reference": "John 3:16",
+      "verseSource": "hand-picked",
+      "verseText": "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life."
+    },
+    {
+      "word": "WORTH",
+      "reference": "Genesis 23:9",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "That he may give me the cave of Machpelah, which he hath, which is in the end of his field; for as much money as it is worth he shall give it me for a possession of a buryingplace amongst you."
+    },
+    {
+      "word": "WOUND",
+      "reference": "Exodus 21:25",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "Burning for burning, wound for wound, stripe for stripe."
+    },
+    {
+      "word": "WOVEN",
+      "reference": "John 19:23",
+      "verseSource": "hand-picked",
+      "verseText": "Then the soldiers, when they had crucified Jesus, took his garments, and made four parts, to every soldier a part; and also his coat: now the coat was without seam, woven from the top throughout."
+    },
+    {
+      "word": "WRATH",
+      "reference": "Proverbs 15:1",
+      "verseSource": "hand-picked",
+      "verseText": "A soft answer turneth away wrath: but grievous words stir up anger."
+    },
+    {
+      "word": "WRITE",
+      "reference": "Habakkuk 2:2",
+      "verseSource": "hand-picked",
+      "verseText": "And the LORD answered me, and said, Write the vision, and make it plain upon tables, that he may run that readeth it."
+    },
+    {
+      "word": "YEARN",
+      "reference": "Genesis 43:30",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "And Joseph made haste; for his bowels did yearn upon his brother: and he sought where to weep; and he entered into his chamber, and wept there."
+    },
+    {
+      "word": "YIELD",
+      "reference": "Genesis 4:12",
+      "verseSource": "auto (first occurrence)",
+      "verseText": "When thou tillest the ground, it shall not henceforth yield unto thee her strength; a fugitive and a vagabond shalt thou be in the earth."
+    },
+    {
+      "word": "YOUNG",
+      "reference": "Psalms 37:25",
+      "verseSource": "hand-picked",
+      "verseText": "I have been young, and now am old; yet have I not seen the righteous forsaken, nor his seed begging bread."
+    },
+    {
+      "word": "YOUTH",
+      "reference": "Ecclesiastes 12:1",
+      "verseSource": "hand-picked",
+      "verseText": "Remember now thy Creator in the days of thy youth, while the evil days come not, nor the years draw nigh, when thou shalt say, I have no pleasure in them;"
+    }
+  ]
+}

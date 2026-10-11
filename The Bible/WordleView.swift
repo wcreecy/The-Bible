@@ -215,18 +215,63 @@ struct WordleView: View {
         return map
     }
 
-    // The answer pool (5-letter KJV words recognized by the English dictionary) and
-    // a verse reference for each word.
+    // The answer pool and a verse reference for each word.
     private struct AnswerBank {
         let words: [String]
         let verseIndex: [String: VerseRefInfo]
     }
+
+    // MARK: - Curated answers (WORDCuratedWordList.json)
+
+    /// One entry in the bundled curated list; `verse_source` is editorial metadata and is ignored.
+    private struct CuratedWord: Decodable {
+        let word: String
+        let reference: String
+        let verse: String
+    }
+
+    /// Hand-curated answers, each with a verse that contains the word. Nil when the file
+    /// is missing or yields no usable entries, in which case answers come from the KJV.
+    private static let curatedAnswerBank: AnswerBank? = {
+        guard let url = Bundle.main.url(forResource: "WORDCuratedWordList", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let entries = try? JSONDecoder().decode([CuratedWord].self, from: data) else {
+            print("⚠️ WORDCuratedWordList.json could not be loaded or decoded.")
+            return nil
+        }
+
+        var index: [String: VerseRefInfo] = [:]
+        for entry in entries {
+            let word = entry.word.uppercased()
+            guard word.count == 5, word.allSatisfy({ alphabet.contains($0) }),
+                  let ref = parseReference(entry.reference, text: entry.verse) else {
+                print("⚠️ WORD: skipping curated entry \(entry.word) (\(entry.reference))")
+                continue
+            }
+            index[word] = ref
+        }
+        guard !index.isEmpty else { return nil }
+        return AnswerBank(words: index.keys.sorted(), verseIndex: index)
+    }()
+
+    /// Parses "Book C:V" (e.g. "1 Timothy 2:9", "Song of Solomon 8:7").
+    private static func parseReference(_ reference: String, text: String) -> VerseRefInfo? {
+        guard let space = reference.lastIndex(of: " ") else { return nil }
+        let bookName = String(reference[..<space])
+        let parts = reference[reference.index(after: space)...].split(separator: ":")
+        guard !bookName.isEmpty, parts.count == 2,
+              let chapter = Int(parts[0]), let verse = Int(parts[1]) else { return nil }
+        return VerseRefInfo(bookName: bookName, chapter: chapter, verse: verse, text: text)
+    }
+
+    // MARK: - KJV-derived answers (fallback)
 
     // Built on first use and cached only once the full corpus has loaded, so an early
     // access during launch cannot pin the small fallback corpus for the whole session.
     private static var cachedAnswerBank: AnswerBank?
 
     private static var answerBank: AnswerBank {
+        if let curatedAnswerBank { return curatedAnswerBank }
         if let cachedAnswerBank { return cachedAnswerBank }
 
         let books = BibleData.books
@@ -1181,9 +1226,9 @@ struct WordleView: View {
     }
 
     private func startNewRound(practice: Bool) {
-        // Answers come from the corpus; wait for it rather than drawing from the
-        // launch-time fallback, which would give a different Daily word.
-        guard !BibleData.books.isEmpty else {
+        // Without the curated list, answers come from the corpus; wait for it rather than
+        // drawing from the launch-time fallback, which would give a different Daily word.
+        guard Self.curatedAnswerBank != nil || !BibleData.books.isEmpty else {
             Task {
                 _ = await BibleRepository.shared.loadAllBooks()
                 startNewRound(practice: practice)
@@ -1364,10 +1409,12 @@ struct WordleView: View {
         let pool = Self.filteredAnswerWords
         guard !pool.isEmpty else { return "JESUS" }
 
+        // Today's word stays put even if it's no longer in the pool (e.g. it was assigned
+        // before the answer list changed), so an in-progress Daily isn't swapped out.
         if let data = defaults.data(forKey: dailyWordAssignmentKey),
            let assignment = try? JSONDecoder().decode(DailyWordAssignment.self, from: data),
            assignment.dayKey == todayKey,
-           pool.contains(assignment.word) {
+           assignment.word.count == 5 {
             return assignment.word
         }
 
