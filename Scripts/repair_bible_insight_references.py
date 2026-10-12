@@ -98,6 +98,10 @@ def validate(database: sqlite3.Connection) -> None:
                     errors.append(f"{table} row {rowid}: invalid chapter in {match.group()}")
                     continue
                 limit = len(books[book][chapter - 1])
+                # A short cross-chapter form such as "Mark 8:27–10" omits the
+                # ending verse. Its final number is a chapter, not a verse.
+                if match["end"] and end < verse and end <= len(books[book]):
+                    continue
                 if not 1 <= verse <= end <= limit:
                     errors.append(f"{table} row {rowid}: invalid verse in {match.group()}")
 
