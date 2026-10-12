@@ -299,6 +299,7 @@ struct ReadingView: View {
                         }
                     }
                 }
+                .environment(\.closeStudySheet) { isChapterInsightsPresented = false }
             }
     }
 

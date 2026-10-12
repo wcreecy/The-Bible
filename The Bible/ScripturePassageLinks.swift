@@ -184,15 +184,118 @@ enum PassageReferenceParser {
         }
     }
 
-    /// The text with every reference turned into a link to its preview.
-    static func linkified(_ text: String) -> AttributedString {
-        var attributed = AttributedString(text)
-        for match in matches(in: text) {
-            guard let lower = AttributedString.Index(match.range.lowerBound, within: attributed),
-                  let upper = AttributedString.Index(match.range.upperBound, within: attributed) else { continue }
-            attributed[lower..<upper].link = match.reference.url
+    /// The text with every reference turned into a link to its preview. With a `contextBook`,
+    /// references that leave out the book name, such as "(3:9)", link into that book.
+    static func linkified(_ text: String, contextBook: String? = nil) -> AttributedString {
+        var attributed = AttributedString()
+        var cursor = text.startIndex
+        for match in allMatches(in: text, contextBook: contextBook) {
+            attributed += AttributedString(text[cursor..<match.range.lowerBound])
+            // Keep each reference on one line instead of breaking it at a space or dash.
+            var link = AttributedString(
+                text[match.range]
+                    .replacingOccurrences(of: " ", with: "\u{00A0}")
+                    .replacingOccurrences(of: "–", with: "–\u{2060}")
+                    .replacingOccurrences(of: "-", with: "\u{2011}")
+            )
+            link.link = match.reference.url
+            attributed += link
+            cursor = match.range.upperBound
         }
+        attributed += AttributedString(text[cursor...])
         return attributed
+    }
+
+    private static let continuationRegex = try? NSRegularExpression(
+        pattern: #"^\s*[,;]\s*(\d{1,3})(?::(\d{1,3}))?(?:\s*[-–—]\s*(\d{1,3}))?(?![0-9:])"#
+    )
+    private static let bareChapterVerseRegex = try? NSRegularExpression(
+        pattern: #"(?<![\w:.\-–—])(\d{1,3}):(\d{1,3})(?:\s*[-–—]\s*(\d{1,3}))?(?![0-9:])"#
+    )
+
+    /// Full references plus the short forms around them, sorted by position: entries that
+    /// continue a list ("Ruth 1:1; 3:2, 7") and, with a `contextBook`, bare "3:9" references.
+    private static func allMatches(
+        in text: String,
+        contextBook: String?
+    ) -> [(range: Range<String.Index>, reference: PassageReference)] {
+        let named = matches(in: text)
+        let namedRanges = named.map(\.range)
+        var found = named + named.flatMap { continuations(after: $0, in: text, avoiding: namedRanges) }
+
+        if let contextBook, let bareChapterVerseRegex {
+            let nsRange = NSRange(text.startIndex..., in: text)
+            for match in bareChapterVerseRegex.matches(in: text, range: nsRange) {
+                guard let range = Range(match.range, in: text),
+                      !found.contains(where: { $0.range.overlaps(range) }),
+                      let chapter = number(at: 1, of: match, in: text),
+                      let verse = number(at: 2, of: match, in: text) else { continue }
+                let reference = PassageReference(
+                    bookName: contextBook,
+                    startChapter: chapter,
+                    startVerse: verse,
+                    endChapter: chapter,
+                    endVerse: max(verse, number(at: 3, of: match, in: text) ?? verse)
+                )
+                guard isValid(reference) else { continue }
+                found.append((range, reference))
+                found += continuations(after: (range, reference), in: text, avoiding: namedRanges)
+            }
+        }
+        return found.sorted { $0.range.lowerBound < $1.range.lowerBound }
+    }
+
+    /// The list entries that follow a reference: "; 3:2" names a new chapter and verse in the
+    /// same book, while ", 7" is another verse in the same chapter (or another chapter).
+    private static func continuations(
+        after match: (range: Range<String.Index>, reference: PassageReference),
+        in text: String,
+        avoiding namedRanges: [Range<String.Index>]
+    ) -> [(range: Range<String.Index>, reference: PassageReference)] {
+        guard let continuationRegex else { return [] }
+        var results: [(range: Range<String.Index>, reference: PassageReference)] = []
+        var previous = match.reference
+        var cursor = match.range.upperBound
+        while cursor < text.endIndex {
+            let nsRange = NSRange(cursor..., in: text)
+            guard let next = continuationRegex.firstMatch(in: text, range: nsRange),
+                  let first = number(at: 1, of: next, in: text),
+                  let numberRange = Range(next.range(at: 1), in: text),
+                  let fullRange = Range(next.range, in: text),
+                  // In "Genesis 12–50, 1 Samuel 3" the "1" starts the next reference.
+                  !namedRanges.contains(where: { $0.overlaps(fullRange) }) else { break }
+            let second = number(at: 2, of: next, in: text)
+            let rangeEnd = number(at: 3, of: next, in: text)
+
+            let reference: PassageReference
+            if let verse = second {
+                reference = PassageReference(
+                    bookName: previous.bookName, startChapter: first, startVerse: verse,
+                    endChapter: first, endVerse: max(verse, rangeEnd ?? verse)
+                )
+            } else if previous.endVerse != nil {
+                reference = PassageReference(
+                    bookName: previous.bookName, startChapter: previous.endChapter, startVerse: first,
+                    endChapter: previous.endChapter, endVerse: max(first, rangeEnd ?? first)
+                )
+            } else {
+                reference = PassageReference(
+                    bookName: previous.bookName, startChapter: first, startVerse: nil,
+                    endChapter: max(first, rangeEnd ?? first), endVerse: nil
+                )
+            }
+            guard isValid(reference) else { break }
+            // Link only the numbers, not the separator before them.
+            results.append((numberRange.lowerBound..<fullRange.upperBound, reference))
+            previous = reference
+            cursor = fullRange.upperBound
+        }
+        return results
+    }
+
+    private static func number(at index: Int, of match: NSTextCheckingResult, in text: String) -> Int? {
+        guard let range = Range(match.range(at: index), in: text) else { return nil }
+        return Int(text[range])
     }
 
     private static func reference(from match: NSTextCheckingResult, in text: String) -> PassageReference? {
@@ -258,12 +361,44 @@ enum PassageReferenceParser {
 struct LinkedScriptureText: View {
     let text: String
 
+    @Environment(\.scriptureContextBook) private var contextBook
+
     init(_ text: String) {
         self.text = text
     }
 
     var body: some View {
-        Text(PassageReferenceParser.linkified(text))
+        Text(PassageReferenceParser.linkified(text, contextBook: contextBook))
+    }
+}
+
+extension EnvironmentValues {
+    /// The book that study text is about, so references such as "(3:9)" can link into it.
+    @Entry var scriptureContextBook: String?
+
+    /// Closes the study sheet that contains this view, so pages pushed inside it can
+    /// offer the same Done button as the sheet's first page.
+    @Entry var closeStudySheet: (() -> Void)?
+}
+
+extension View {
+    /// Adds a Done button that closes the enclosing study sheet, when there is one.
+    func studySheetDoneButton() -> some View {
+        modifier(StudySheetDoneButtonModifier())
+    }
+}
+
+private struct StudySheetDoneButtonModifier: ViewModifier {
+    @Environment(\.closeStudySheet) private var closeStudySheet
+
+    func body(content: Content) -> some View {
+        content.toolbar {
+            if let closeStudySheet {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done", action: closeStudySheet)
+                }
+            }
+        }
     }
 }
 

@@ -146,6 +146,7 @@ struct FocusReadingView: View {
                     }
                 }
             }
+            .environment(\.closeStudySheet) { isChapterInsightsPresented = false }
         }
         .task(id: showsControls) {
             guard showsControls else { return }

@@ -7,6 +7,8 @@ struct ChapterInsightsView: View {
 
     @State private var insights: ChapterInsights?
     @State private var isLoading = true
+    /// The chapter `insights` was loaded for; returning from a pushed page shouldn't reload.
+    @State private var loadedChapterKey: String?
 
     var body: some View {
         Group {
@@ -41,9 +43,11 @@ struct ChapterInsightsView: View {
                             VStack(alignment: .leading, spacing: 6) {
                                 Text(theme.theme)
                                     .font(.headline)
-                                LinkedScriptureText(theme.explanation)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
+                                if !theme.explanation.isEmpty {
+                                    LinkedScriptureText(theme.explanation)
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                }
 
                                 if !theme.scriptureReferences.isEmpty {
                                     PassageReferenceChips(
@@ -94,6 +98,7 @@ struct ChapterInsightsView: View {
             .padding()
         }
         .background(AppBackgroundView(tab: .bible))
+        .environment(\.scriptureContextBook, bookName)
         .scripturePassagePreviews()
     }
 
@@ -105,11 +110,14 @@ struct ChapterInsightsView: View {
     }
 
     private func loadInsights() async {
+        let key = "\(bookName)-\(chapterNumber)"
+        guard loadedChapterKey != key else { return }
         isLoading = true
         insights = await ChapterInsightsRepository.shared.insights(
             forBookNamed: bookName,
             chapterNumber: chapterNumber
         )
+        loadedChapterKey = key
         isLoading = false
     }
 }
@@ -213,6 +221,7 @@ private struct AboutBookLink: View {
     var body: some View {
         NavigationLink {
             BookOverviewView(bookName: bookName)
+                .studySheetDoneButton()
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: "book.closed")
@@ -269,16 +278,11 @@ private struct ChapterInsightList<Content: View>: View {
     @ViewBuilder let content: Content
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label(title, systemImage: icon)
-                .font(.title3.weight(.semibold))
-
+        HeroCard(title: title, icon: icon) {
             VStack(alignment: .leading, spacing: 16) {
                 content
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(AppDesignMetrics.cardPadding)
-            .heroCardSurface()
         }
     }
 }

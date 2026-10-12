@@ -59,6 +59,7 @@ struct BookOverviewView: View {
             .padding()
         }
         .background(AppBackgroundView(tab: .bible))
+        .environment(\.scriptureContextBook, bookName)
         .scripturePassagePreviews()
     }
 
@@ -76,6 +77,8 @@ struct BookOverviewView: View {
     }
 
     private func loadOverview() async {
+        // Returning from the story page shouldn't reload and lose the scroll position.
+        guard overview?.name != bookName else { return }
         isLoading = true
         overview = await BibleBookOverviewRepository.shared.overview(forBookNamed: bookName)
         isLoading = false
@@ -120,6 +123,7 @@ private struct StoryPreviewSection: View {
 
                 NavigationLink {
                     BookStoryView(bookName: bookName, story: story)
+                        .studySheetDoneButton()
                 } label: {
                     Label("Read the Story", systemImage: "arrow.right.circle.fill")
                         .font(.subheadline.weight(.semibold))

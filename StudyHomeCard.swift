@@ -95,6 +95,7 @@ struct StudyHomeCard: View {
                     }
                 }
             }
+            .environment(\.closeStudySheet) { presentedSheet = nil }
         }
     }
 
