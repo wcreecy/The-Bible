@@ -6,23 +6,19 @@ token in the KJV (see word_game_candidates.py): biblically meaningful, mostly ba
 forms, no archaic verb forms (SAITH, SPAKE, BEGAT...). A hand-picked reference is
 verified to contain the word; otherwise the word's first occurrence is used.
 
-Outputs:
-  The Bible/word_game_words.json      – answer list; its order is the Daily schedule
+Output:
   Scripts/word_game_words_review.md   – alphabetical review sheet with verse text
 
-Re-running regenerates both files. To add words after release, append them to the
-end of word_game_words.json rather than re-running, so the Daily schedule doesn't shift.
+This was the first draft of the list. The game now reads the reviewed list in
+The Bible/WORDCuratedWordList.json; edit that file to change the game's words.
 """
 import json
-import random
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 KJV = ROOT / "The Bible" / "kjv.json"
-OUT_JSON = ROOT / "The Bible" / "word_game_words.json"
 OUT_REVIEW = ROOT / "Scripts" / "word_game_words_review.md"
-SHUFFLE_SEED = 20261011
 
 # Mirrors BookNames in BibleData.swift.
 BOOK_NAMES = {
@@ -594,14 +590,6 @@ def main() -> None:
         if not ref:
             ref, source = first_occurrence[word], "auto (first occurrence)"
         entries.append({"word": word, "ref": ref, "source": source})
-
-    # The JSON order is the Daily schedule, so mix categories with a fixed seed.
-    scheduled = entries[:]
-    random.Random(SHUFFLE_SEED).shuffle(scheduled)
-    OUT_JSON.write_text(
-        json.dumps([{"word": e["word"], "ref": e["ref"]} for e in scheduled], indent=2) + "\n",
-        encoding="utf-8",
-    )
 
     hand = sum(e["source"] == "hand-picked" for e in entries)
     lines = [

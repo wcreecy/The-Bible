@@ -73,12 +73,6 @@ struct WordleView: View {
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
-    // Daily and Practice results remain separate in both the in-game scoreboard and game statistics.
-    private var statsTypeSuffix: String { mode == .daily ? "daily" : "free" }
-    private var allTimeCorrect: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeCorrect_\(statsTypeSuffix)") }
-    private var allTimeAnswered: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeAnswered_\(statsTypeSuffix)") }
-    private var allTimeBestStreak: Int { UserDefaults.standard.integer(forKey: "wordleAllTimeBestStreak_\(statsTypeSuffix)") }
-
     // Daily
     private var todayKey: String { Self.localDayKey(for: Date()) }
     private var dailyCompletedToday: Bool {
@@ -90,6 +84,9 @@ struct WordleView: View {
     @State private var showsOnScreenKeyboard: Bool = true
     @State private var showsBoardCardSecond: Bool = false
     @State private var hardwareKeyboardConnected: Bool = false
+    /// Height of the tip banner above the game (0 once dismissed), so the iPad layout
+    /// leaves room for it.
+    @State private var tipHeight: CGFloat = 0
 
     // NEW: timing for each round
     @State private var roundStartAt: Date? = nil
@@ -108,32 +105,7 @@ struct WordleView: View {
     private let recentDailyWordLimit = 365
     private let dailyProgressKey = "wordleDailyProgress"
 
-    // MARK: - Helpers for tokenization
-    private static func sanitizeLetters(_ s: String) -> String {
-        // Keep only A–Z letters; replace everything else with spaces
-        String(s.map { ch -> Character in
-            if let u = ch.unicodeScalars.first, ch.unicodeScalars.count == 1, u.value >= 65 && u.value <= 90 {
-                return ch
-            } else {
-                return " "
-            }
-        })
-    }
-
-    private static func tokens5(from uppercasedVerse: String) -> [String] {
-        let sanitized = sanitizeLetters(uppercasedVerse)
-        return sanitized.split(separator: " ").compactMap { tok in
-            tok.count == 5 ? String(tok) : nil
-        }
-    }
-
-    private static func verseContainsWord(_ verseText: String, word: String) -> Bool {
-        let upper = word.uppercased()
-        let toks = tokens5(from: verseText.uppercased())
-        return toks.contains(upper)
-    }
-
-    // MARK: - Answer pool from KJV (5-letter A–Z words, filtered by spell checker when available)
+    // MARK: - Spell-check language for guess validation
     #if canImport(UIKit)
     private static var spellCheckLanguage: String {
         let languages = UITextChecker.availableLanguages
@@ -147,72 +119,13 @@ struct WordleView: View {
     }
     #endif
 
-    private static func kjvAnswerWords(from books: [Book]) -> [String] {
-        var set = Set<String>() // uppercase tokens
-        for book in books {
-            for chapter in book.chapters {
-                for verse in chapter.verses {
-                    let upper = verse.text.uppercased()
-                    for token in tokens5(from: upper) {
-                        set.insert(token)
-                    }
-                }
-            }
-        }
-
-        #if canImport(UIKit)
-        let lang = spellCheckLanguage
-        let checker = UITextChecker()
-        func passesSpellCheck(_ upper: String) -> Bool {
-            let lower = upper.lowercased()
-            let range = NSRange(location: 0, length: lower.utf16.count)
-            let miss = checker.rangeOfMisspelledWord(in: lower, range: range, startingAt: 0, wrap: false, language: lang)
-            return miss.location == NSNotFound
-        }
-        let filtered = set.filter { passesSpellCheck($0) }
-        let sortedFiltered = filtered.sorted()
-        if !sortedFiltered.isEmpty {
-            return sortedFiltered
-        } else {
-            let fallback = ["JESUS","GRACE","FAITH","ANGEL","CROSS","ABRAM","SARAH","JONAH","MOSES","DAVID","SALEM","TITUS","JAMES","PETER","JUDAH"]
-            let fbFiltered = fallback.filter { passesSpellCheck($0) }
-            return fbFiltered.isEmpty ? fallback : fbFiltered
-        }
-        #else
-        let sorted = set.sorted()
-        return sorted.isEmpty ? ["JESUS","GRACE","FAITH","ANGEL","CROSS","ABRAM","SARAH","JONAH","MOSES","DAVID","SALEM","TITUS","JAMES","PETER","JUDAH"] : sorted
-        #endif
-    }
-
-    // MARK: - Verse index (random occurrence for each 5-letter word) — exact tokens only
+    // MARK: - Answer verse
     private struct VerseRefInfo {
         let bookName: String
         let chapter: Int
         let verse: Int
         let text: String
         var display: String { "\(bookName) \(chapter):\(verse)" }
-    }
-
-    private static func makeVerseIndex(for words: [String], in books: [Book]) -> [String: VerseRefInfo] {
-        var map: [String: VerseRefInfo] = [:]
-        var counts: [String: Int] = [:]
-        let allowed = Set(words)
-        for book in books {
-            for chapter in book.chapters {
-                for verse in chapter.verses {
-                    let upper = verse.text.uppercased()
-                    for token in tokens5(from: upper) {
-                        guard allowed.contains(token) else { continue }
-                        counts[token, default: 0] += 1
-                        let k = counts[token]!
-                        if Int.random(in: 1...k) == 1 {
-                            map[token] = VerseRefInfo(bookName: book.name, chapter: chapter.number, verse: verse.number, text: verse.text)
-                        }
-                    }
-                }
-            }
-        }
-        return map
     }
 
     // The answer pool and a verse reference for each word.
@@ -231,7 +144,7 @@ struct WordleView: View {
     }
 
     /// Hand-curated answers, each with a verse that contains the word. Nil when the file
-    /// is missing or yields no usable entries, in which case answers come from the KJV.
+    /// is missing or yields no usable entries.
     private static let curatedAnswerBank: AnswerBank? = {
         guard let url = Bundle.main.url(forResource: "WORDCuratedWordList", withExtension: "json"),
               let data = try? Data(contentsOf: url),
@@ -264,44 +177,19 @@ struct WordleView: View {
         return VerseRefInfo(bookName: bookName, chapter: chapter, verse: verse, text: text)
     }
 
-    // MARK: - KJV-derived answers (fallback)
+    /// Used only if the curated list is missing or unreadable. These words have no verse,
+    /// so the end-of-round Reference button stays disabled.
+    private static let fallbackAnswerBank = AnswerBank(
+        words: ["JESUS", "GRACE", "FAITH", "ANGEL", "CROSS", "MOSES", "DAVID", "PEACE", "MERCY", "GLORY"],
+        verseIndex: [:]
+    )
 
-    // Built on first use and cached only once the full corpus has loaded, so an early
-    // access during launch cannot pin the small fallback corpus for the whole session.
-    private static var cachedAnswerBank: AnswerBank?
-
-    private static var answerBank: AnswerBank {
-        if let curatedAnswerBank { return curatedAnswerBank }
-        if let cachedAnswerBank { return cachedAnswerBank }
-
-        let books = BibleData.books
-        let pool = kjvAnswerWords(from: books)
-        let index = makeVerseIndex(for: pool, in: books)
-        let filtered = pool.filter { index[$0] != nil }
-        let words = filtered.isEmpty ? pool : filtered
-        let bank = AnswerBank(words: words, verseIndex: index)
-        if !books.isEmpty {
-            cachedAnswerBank = bank
-        }
-        return bank
-    }
-
+    private static var answerBank: AnswerBank { curatedAnswerBank ?? fallbackAnswerBank }
     private static var filteredAnswerWords: [String] { answerBank.words }
     private static var verseIndex: [String: VerseRefInfo] { answerBank.verseIndex }
-
-    private static func findExactOccurrence(for word: String) -> VerseRefInfo? {
-        let target = word.uppercased()
-        for book in BibleData.books {
-            for chapter in book.chapters {
-                for verse in chapter.verses {
-                    if tokens5(from: verse.text.uppercased()).contains(target) {
-                        return VerseRefInfo(bookName: book.name, chapter: chapter.number, verse: verse.number, text: verse.text)
-                    }
-                }
-            }
-        }
-        return nil
-    }
+    /// Every curated answer is accepted as a guess, so names like MOSES aren't rejected
+    /// by the spell checker.
+    private static let curatedWordSet = Set(answerBank.words)
 
     // State for showing reference button and navigating
     @State private var roundRef: VerseRefInfo? = nil
@@ -330,6 +218,7 @@ struct WordleView: View {
               systemImage: "hand.tap"
             )
             .padding(.horizontal)
+            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { tipHeight = $0 }
           }
 
           if !started {
@@ -351,7 +240,10 @@ struct WordleView: View {
 
             WordGameResponsiveLayout(
               usesWideLayout: usesWideLayout,
-              availableHeight: geometry.size.height - 24,
+              // Height left for the game: minus the scroll padding (24), the gap after the
+              // hidden key-capture view (12), and the tip banner with its gap when shown.
+              availableHeight: geometry.size.height - 24 - 12
+                - (contextualTipsEnabled && tipHeight > 0 ? tipHeight + 12 : 0),
               showsKeyboardCard: roundOver || showsOnScreenKeyboard,
               showsBoardCardSecond: showsBoardCardSecond,
               toggleKeyboardCard: {
@@ -411,13 +303,13 @@ struct WordleView: View {
                 lettersInWord: lettersInWord,
                 otherTriedLetters: otherTriedLetters
               )
-            } inputControls: {
+            } inputControls: { wideKeyHeight in
               VStack(spacing: usesCompactPhoneLayout ? 6 : 10) {
                 if roundOver {
                   endOfRoundActionArea()
                 } else {
                   keyboardView(
-                    keyHeight: usesWideLayout ? 64 : (usesCompactPhoneLayout ? 40 : 52)
+                    keyHeight: wideKeyHeight ?? (usesCompactPhoneLayout ? 40 : 52)
                   )
 
                   if debugAutoWinEnabled {
@@ -470,24 +362,28 @@ struct WordleView: View {
       }
     ) {
             NavigationStack {
-                VStack(alignment: .leading, spacing: 12) {
-                    if let preview = loadedPreview {
-                        ScripturePreviewCard(
-                            content: preview,
-                            refContext: selectedRef,
-                            onCopy: {
-                                let verseLines = preview.verses.map { $0.text }.joined(separator: " ")
-                                UIPasteboard.general.string = "\(preview.title) — \(verseLines)"
-                            },
-                            onClose: {
-                                showRefSheet = false
-                            }
-                        )
-                    } else {
-                        ContentUnavailableView("No reference available", systemImage: "book")
+                // A ScrollView keeps the verse directly under the title (instead of centered
+                // in the sheet with a blank gap above it) and lets long passages scroll.
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 12) {
+                        if let preview = loadedPreview {
+                            ScripturePreviewCard(
+                                content: preview,
+                                refContext: selectedRef,
+                                onCopy: {
+                                    let verseLines = preview.verses.map { $0.text }.joined(separator: " ")
+                                    UIPasteboard.general.string = "\(preview.title) — \(verseLines)"
+                                },
+                                onClose: {
+                                    showRefSheet = false
+                                }
+                            )
+                        } else {
+                            ContentUnavailableView("No reference available", systemImage: "book")
+                        }
                     }
+                    .padding()
                 }
-                .padding()
                 .navigationTitle("Reference")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -787,7 +683,7 @@ struct WordleView: View {
             keyStates: keyboardStates,
             isRoundOver: roundOver,
             isCurrentRowFull: isCurrentRowFull(),
-            canDelete: !currentInput.isEmpty || hasAnyTypedInCurrentRow(),
+            canDelete: !currentInput.isEmpty,
             keyHeight: keyHeight,
             onLetter: tapLetter,
             onDelete: deleteLetter,
@@ -911,50 +807,6 @@ struct WordleView: View {
         }
     }
 
-    private func hasAnyTypedInCurrentRow() -> Bool {
-        // True if any non-pinned slot is filled by typed letters (currentInput not empty after considering pins)
-        return !currentInput.isEmpty
-    }
-
-    @ViewBuilder
-    private func keyButton(for ch: Character, minimumHeight: CGFloat) -> some View {
-        let state = keyboardStates[ch] ?? .unknown
-
-        switch state {
-            case .unknown:
-                Button(action: { tapLetter(ch) }) {
-                    Text(String(ch))
-                        .font(.headline.weight(.semibold))
-                        .frame(maxWidth: .infinity, minHeight: minimumHeight)
-                }
-                .buttonStyle(GameKeyButtonStyle(tint: state.tint))
-
-            case .absent:
-                Button(action: { tapLetter(ch) }) {
-                    Text(String(ch))
-                        .font(.headline.weight(.semibold))
-                        .frame(maxWidth: .infinity, minHeight: minimumHeight)
-                }
-                .buttonStyle(FilledGameKeyButtonStyle(fill: .gray, foreground: .white))
-
-            case .present:
-                Button(action: { tapLetter(ch) }) {
-                    Text(String(ch))
-                        .font(.headline.weight(.semibold))
-                        .frame(maxWidth: .infinity, minHeight: minimumHeight)
-                }
-                .buttonStyle(FilledGameKeyButtonStyle(fill: .yellow, foreground: .black))
-
-            case .correct:
-                Button(action: { tapLetter(ch) }) {
-                    Text(String(ch))
-                        .font(.headline.weight(.semibold))
-                        .frame(maxWidth: .infinity, minHeight: minimumHeight)
-                }
-                .buttonStyle(FilledGameKeyButtonStyle(fill: .green, foreground: .white))
-        }
-    }
-
     // MARK: - Input helpers
 
     private func tapLetter(_ ch: Character) {
@@ -998,8 +850,8 @@ struct WordleView: View {
         guard row.count == 5, row.allSatisfy({ $0 != nil }) else { return }
         let guess = String(row.compactMap { $0 }).uppercased()
 
-        // Accept the target or any correctly spelled 5-letter English word
-        guard guess == target || isValidWord(guess) else {
+        // Accept the target, any curated answer, or any correctly spelled 5-letter English word
+        guard guess == target || Self.curatedWordSet.contains(guess) || isValidWord(guess) else {
             message = "Not in word list"
             return
         }
@@ -1226,16 +1078,6 @@ struct WordleView: View {
     }
 
     private func startNewRound(practice: Bool) {
-        // Without the curated list, answers come from the corpus; wait for it rather than
-        // drawing from the launch-time fallback, which would give a different Daily word.
-        guard Self.curatedAnswerBank != nil || !BibleData.books.isEmpty else {
-            Task {
-                _ = await BibleRepository.shared.loadAllBooks()
-                startNewRound(practice: practice)
-            }
-            return
-        }
-
         roundHardMode = hardModeEnabled
 
         guesses = Array(repeating: "", count: 6)
@@ -1347,14 +1189,7 @@ struct WordleView: View {
             )
         }
 
-        if let ref = Self.verseIndex[target], Self.verseContainsWord(ref.text, word: target) {
-            roundRef = ref
-        } else {
-            roundRef = Self.findExactOccurrence(for: target)
-            if roundRef == nil {
-                print("WORD: No exact verse reference found for \(target)")
-            }
-        }
+        roundRef = Self.verseIndex[target]
 
         if mode == .daily {
             UserDefaults.standard.set(todayKey, forKey: "wordleDailyCompletedDay")
@@ -1714,7 +1549,13 @@ private struct WordGameResponsiveLayout<
   let board: Board
   let feedback: Feedback
   let letterTray: LetterTray
-  let inputControls: InputControls
+  /// Builds the keyboard (or end-of-round controls) for a given key height. The wide
+  /// layout passes a height that fits the space left under the cards; the stacked
+  /// layout passes nil and the caller uses its own size.
+  let inputControls: (_ wideKeyHeight: CGFloat?) -> InputControls
+
+  /// Measured height of the board and letter-tray row, which can grow past its minimum.
+  @State private var mainRowHeight: CGFloat = 0
 
   init(
     usesWideLayout: Bool,
@@ -1728,7 +1569,7 @@ private struct WordGameResponsiveLayout<
     @ViewBuilder board: () -> Board,
     @ViewBuilder feedback: () -> Feedback,
     @ViewBuilder letterTray: () -> LetterTray,
-    @ViewBuilder inputControls: () -> InputControls
+    @ViewBuilder inputControls: @escaping (_ wideKeyHeight: CGFloat?) -> InputControls
   ) {
     self.usesWideLayout = usesWideLayout
     self.availableHeight = availableHeight
@@ -1741,7 +1582,17 @@ private struct WordGameResponsiveLayout<
     self.board = board()
     self.feedback = feedback()
     self.letterTray = letterTray()
-    self.inputControls = inputControls()
+    self.inputControls = inputControls
+  }
+
+  /// Key height that lets all four keyboard rows, including Enter, fit below the cards.
+  /// Subtracts the space between the row and the keyboard card (18), the card's padding
+  /// (32), the keyboard's top padding (6), and the gaps between rows (3 × 8); each key
+  /// also adds 16 of vertical padding.
+  private func wideKeyHeight(mainCardHeight: CGFloat) -> CGFloat {
+    let rowHeight = max(mainRowHeight, mainCardHeight)
+    let keyboardSpace = availableHeight - rowHeight - 18 - 32 - 6 - 24
+    return min(64, max(40, keyboardSpace / 4 - 16))
   }
 
   var body: some View {
@@ -1760,13 +1611,16 @@ private struct WordGameResponsiveLayout<
             letterTrayCard(height: mainCardHeight)
           }
         }
+        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { mainRowHeight = $0 }
 
         if showsKeyboardCard {
           VStack(spacing: 14) {
-            inputControls
+            inputControls(wideKeyHeight(mainCardHeight: mainCardHeight))
           }
           .padding(AppDesignMetrics.cardPadding)
-          .frame(maxWidth: .infinity, minHeight: max(250, availableHeight * 0.32), alignment: .top)
+          // Sized to its content: the keyboard while playing, and just the two rows of
+          // end-of-round buttons afterward (a fixed minimum left the lower half blank).
+          .frame(maxWidth: .infinity, alignment: .top)
           .heroCardSurface()
         }
       }
@@ -1778,7 +1632,7 @@ private struct WordGameResponsiveLayout<
         scoreboard
         board
         feedback
-        inputControls
+        inputControls(nil)
       }
       .frame(maxWidth: 680)
       .frame(maxWidth: .infinity)
