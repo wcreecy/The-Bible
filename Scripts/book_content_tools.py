@@ -94,8 +94,30 @@ def check_quotes(books):
     return problems
 
 
+def check_passages(books):
+    """Each label must name its own book and chapters/verses that exist in the KJV."""
+    kjv = json.loads(KJV.read_text(encoding="utf-8-sig"))
+    problems = 0
+    for (name, book), source in zip(books.items(), kjv):
+        chapters = source["chapters"]
+        for passage, _ in book["story"]:
+            if not passage:
+                continue
+            match = re.fullmatch(rf"{re.escape(name)} (\d+)(?::(\d+))?(?:-(\d+))?", passage)
+            first, verse, last = (int(value) if value else None for value in match.groups()) if match else (None,) * 3
+            valid = bool(match) and 1 <= first <= len(chapters)
+            if valid and verse is not None:
+                valid = 1 <= verse <= (last or verse) <= len(chapters[first - 1])
+            elif valid and last is not None:
+                valid = first < last <= len(chapters)
+            if not valid:
+                problems += 1
+                print(f"{name}: bad passage label: {passage}")
+    return problems
+
+
 if __name__ == "__main__":
     books = load_books()
     words = sum(len(text.split()) for book in books.values() for _, text in book["story"])
     print(f"{len(books)} books, {words} story words")
-    sys.exit(1 if check_quotes(books) else 0)
+    sys.exit(1 if check_quotes(books) + check_passages(books) else 0)

@@ -40,7 +40,7 @@ The world at the time: The Assyrian Empire rose to dominate the region and destr
 
 # 1 Chronicles
 When it happened: Through genealogies it reaches from Adam to the return from exile, but its story covers the death of Saul and the reign of David, ending about 970 BC.
-When it was written: The author, often called "the Chronicler," is unnamed; Jewish tradition credits Ezra. 1 and 2 Chronicles were originally one book, and the genealogies run past the exile (1 Chronicles 3:17–24; 9:1–3), so it was written after the return—likely in the 400s BC.
+When it was written: The author, often called the Chronicler, is unnamed; Jewish tradition credits Ezra. 1 and 2 Chronicles were originally one book, and the genealogies run past the exile (1 Chronicles 3:17–24; 9:1–3), so it was written after the return—likely in the 400s BC.
 Where: Centered on Jerusalem, with Hebron and the tribal lands of Israel.
 The world at the time: When Chronicles was written, Judah was a small province of the Persian Empire, with a rebuilt temple but no king. Retelling David's story reminded the community of God's promises to David's house and the importance of the temple.
 

@@ -14,6 +14,23 @@ struct BibleBookOverview: Equatable, Sendable {
     let keyScripture: BibleKeyScripture
     let movements: [BibleBookMovement]
     let keyFigures: [BibleBookKeyFigure]
+    let whenAndWhere: BibleBookWhenAndWhere?
+    let story: [BibleBookStorySection]
+}
+
+/// The historical setting of a book: when it happened, when it was written, where, and the wider world.
+struct BibleBookWhenAndWhere: Equatable, Sendable {
+    let whenItHappened: String
+    let whenItWasWritten: String
+    let location: String
+    let worldAtTheTime: String
+}
+
+/// One part of a book's story, labeled with the passage it retells (e.g. "Genesis 1-3").
+struct BibleBookStorySection: Identifiable, Equatable, Sendable {
+    let id: Int
+    let passage: String
+    let text: String
 }
 
 struct BibleKeyScripture: Equatable, Sendable {
@@ -79,7 +96,9 @@ actor BibleBookOverviewRepository {
                     text: Self.columnText(statement, at: 11)
                 ),
                 movements: loadMovements(forBookNamed: bookName, database: database),
-                keyFigures: loadKeyFigures(forBookNamed: bookName, database: database)
+                keyFigures: loadKeyFigures(forBookNamed: bookName, database: database),
+                whenAndWhere: loadWhenAndWhere(forBookNamed: bookName, database: database),
+                story: loadStory(forBookNamed: bookName, database: database)
             )
         }
     }
@@ -162,6 +181,60 @@ actor BibleBookOverviewRepository {
             )
         }
         return figures
+    }
+
+    private func loadWhenAndWhere(forBookNamed bookName: String, database: OpaquePointer) -> BibleBookWhenAndWhere? {
+        let query = """
+        SELECT when_it_happened, when_it_was_written, location, world_at_the_time
+        FROM book_history
+        WHERE book_name = ?
+        LIMIT 1;
+        """
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return nil
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_text(statement, 1, bookName, -1, Self.sqliteTransientDestructor())
+
+        guard sqlite3_step(statement) == SQLITE_ROW else { return nil }
+        return BibleBookWhenAndWhere(
+            whenItHappened: Self.columnText(statement, at: 0),
+            whenItWasWritten: Self.columnText(statement, at: 1),
+            location: Self.columnText(statement, at: 2),
+            worldAtTheTime: Self.columnText(statement, at: 3)
+        )
+    }
+
+    private func loadStory(forBookNamed bookName: String, database: OpaquePointer) -> [BibleBookStorySection] {
+        let query = """
+        SELECT id, passage, text
+        FROM book_story_sections
+        WHERE book_name = ?
+        ORDER BY sequence;
+        """
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return []
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_text(statement, 1, bookName, -1, Self.sqliteTransientDestructor())
+
+        var sections: [BibleBookStorySection] = []
+        while sqlite3_step(statement) == SQLITE_ROW {
+            sections.append(
+                BibleBookStorySection(
+                    id: Int(sqlite3_column_int(statement, 0)),
+                    passage: Self.columnText(statement, at: 1),
+                    text: Self.columnText(statement, at: 2)
+                )
+            )
+        }
+        return sections
     }
 
     private static func columnText(_ statement: OpaquePointer, at index: Int32) -> String {

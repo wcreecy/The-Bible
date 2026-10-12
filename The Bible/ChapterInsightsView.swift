@@ -87,19 +87,9 @@ struct ChapterInsightsView: View {
                     }
                 }
 
-                ChapterInsightCard(title: "Historical Setting", icon: "calendar", content: insights.historicalSetting)
-                ChapterInsightBulletList(
-                    title: "What Was Happening",
-                    icon: "clock.arrow.circlepath",
-                    content: insights.whatWasHappening
-                )
-                ChapterInsightCard(title: "Connection to the Chapter", icon: "link", content: insights.connectionToChapter)
-                ChapterInsightBulletList(
-                    title: "Customs and Traditions",
-                    icon: "scroll",
-                    content: insights.customsAndTraditions
-                )
-                ChapterInsightCard(title: "Why It Matters", icon: "heart.text.square", content: insights.whyItMatters)
+                ChapterBackgroundSection(insights: insights)
+
+                AboutBookLink(bookName: bookName)
             }
             .padding()
         }
@@ -162,41 +152,92 @@ private struct ChapterSummaryCard: View {
     }
 }
 
-private struct ChapterInsightCard: View {
-    let title: String
-    let icon: String
-    let content: String
+/// The chapter's own historical background in one card. Background that applies to the
+/// whole book lives on the book overview instead, so many chapters show only a few entries.
+private struct ChapterBackgroundSection: View {
+    let insights: ChapterInsights
+
+    private struct Row: Identifiable {
+        let title: String
+        let icon: String
+        let content: String
+        /// Multi-paragraph content reads better as a bulleted list.
+        var isBulleted = false
+        var id: String { title }
+    }
+
+    private var rows: [Row] {
+        [
+            Row(title: "Setting", icon: "calendar", content: insights.historicalSetting),
+            Row(title: "What Was Happening", icon: "clock.arrow.circlepath", content: insights.whatWasHappening, isBulleted: true),
+            Row(title: "Connection to the Chapter", icon: "link", content: insights.connectionToChapter),
+            Row(title: "Customs and Traditions", icon: "scroll", content: insights.customsAndTraditions, isBulleted: true),
+            Row(title: "Why It Matters", icon: "heart.text.square", content: insights.whyItMatters)
+        ]
+        .filter { !$0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+    }
 
     var body: some View {
-        HeroCard(title: title, icon: icon) {
-            LinkedScriptureText(content)
-                .font(.body)
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        if !rows.isEmpty {
+            HeroCard(title: "Background", icon: "building.columns") {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(rows) { row in
+                        VStack(alignment: .leading, spacing: 6) {
+                            Label(row.title, systemImage: row.icon)
+                                .font(.headline)
+
+                            if row.isBulleted, row.content.paragraphs.count > 1 {
+                                ChapterInsightBullets(items: row.content.paragraphs)
+                            } else {
+                                LinkedScriptureText(row.content)
+                                    .font(.body)
+                                    .foregroundStyle(.secondary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                        }
+
+                        if row.id != rows.last?.id {
+                            Divider()
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
-private struct ChapterInsightBulletList: View {
-    let title: String
-    let icon: String
-    let content: String
-
-    private var items: [String] {
-        content.paragraphs
-    }
+/// Opens the book overview, where the book's history and full story are kept.
+private struct AboutBookLink: View {
+    let bookName: String
 
     var body: some View {
-        HeroCard(title: title, icon: icon) {
-            if items.count > 1 {
-                ChapterInsightBullets(items: items)
-            } else {
-                LinkedScriptureText(content)
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+        NavigationLink {
+            BookOverviewView(bookName: bookName)
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "book.closed")
+                    .font(.title2)
+                    .foregroundStyle(.tint)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("About \(bookName)")
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    Text("Who wrote it, when and where, and the story of the whole book")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer(minLength: 0)
+
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(.tertiary)
             }
+            .padding(AppDesignMetrics.cardPadding)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .heroCardSurface()
         }
+        .buttonStyle(.plain)
     }
 }
 

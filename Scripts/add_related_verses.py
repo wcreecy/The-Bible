@@ -153,6 +153,7 @@ def export_json(database, output):
     book_overviews = []
     for book in rows("SELECT * FROM book_overviews ORDER BY canonical_order"):
         name = book["name"]
+        history = rows("SELECT * FROM book_history WHERE book_name = ?", name)
         book_overviews.append({
             "name": name,
             "testament": book["testament"],
@@ -168,6 +169,18 @@ def export_json(database, output):
                 "reference": book["key_scripture_reference"],
                 "text": book["key_scripture_text"],
             },
+            "whenAndWhere": {
+                "whenItHappened": history[0]["when_it_happened"],
+                "whenItWasWritten": history[0]["when_it_was_written"],
+                "location": history[0]["location"],
+                "worldAtTheTime": history[0]["world_at_the_time"],
+            } if history else None,
+            "story": [
+                {"sequence": section["sequence"], "passage": section["passage"], "text": section["text"]}
+                for section in rows(
+                    "SELECT * FROM book_story_sections WHERE book_name = ? ORDER BY sequence", name
+                )
+            ],
             "movements": [
                 {
                     "sequence": movement["sequence"],

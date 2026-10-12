@@ -28,25 +28,23 @@ struct BookOverviewView: View {
     private func overviewContent(_ overview: BibleBookOverview) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                OverviewHeroCard(
-                    title: "Book Summary",
-                    icon: "book.closed",
-                    content: overview.plainEnglishSummary
-                )
+                SummarySection(overview: overview)
 
-                OverviewHeroCard(
-                    title: "Theme",
-                    icon: "sparkles",
-                    content: overview.overallTheme
-                )
+                if !overview.story.isEmpty {
+                    StoryPreviewSection(bookName: bookName, story: overview.story)
+                }
 
-                OverviewHeroCard(
-                    title: "Purpose",
-                    icon: "target",
-                    content: overview.purpose
-                )
+                LabeledRowsSection(title: "Who", icon: "person.2.fill", rows: [
+                    .init(title: "Author", icon: "pencil.line", content: overview.traditionalAuthorOrAttribution),
+                    .init(title: "Original Audience", icon: "person.3.fill", content: overview.originalAudience)
+                ])
 
-                KeyScriptureSection(keyScripture: overview.keyScripture)
+                LabeledRowsSection(title: "When & Where", icon: "map", rows: whenAndWhereRows(overview))
+
+                LabeledRowsSection(title: "Why It Was Written", icon: "target", rows: [
+                    .init(title: "Purpose", icon: "scope", content: overview.purpose),
+                    .init(title: "Reading Notes", icon: "text.book.closed", content: overview.interpretiveNotes)
+                ])
 
                 if !overview.movements.isEmpty {
                     KeyEventsSection(bookName: bookName, movements: overview.movements)
@@ -56,20 +54,25 @@ struct BookOverviewView: View {
                     KeyFiguresSection(keyFigures: overview.keyFigures)
                 }
 
-                BackgroundSection(overview: overview)
-
-                if !overview.interpretiveNotes.isEmpty {
-                    OverviewHeroCard(
-                        title: "Interpretive Notes",
-                        icon: "text.book.closed",
-                        content: overview.interpretiveNotes
-                    )
-                }
+                KeyScriptureSection(keyScripture: overview.keyScripture)
             }
             .padding()
         }
         .background(AppBackgroundView(tab: .bible))
         .scripturePassagePreviews()
+    }
+
+    /// Falls back to the short historical-context note for any book without a When & Where section.
+    private func whenAndWhereRows(_ overview: BibleBookOverview) -> [LabeledRowsSection.Row] {
+        guard let whenAndWhere = overview.whenAndWhere else {
+            return [.init(title: "Historical Context", icon: "calendar", content: overview.historicalContext)]
+        }
+        return [
+            .init(title: "When It Happened", icon: "calendar", content: whenAndWhere.whenItHappened),
+            .init(title: "When It Was Written", icon: "scroll", content: whenAndWhere.whenItWasWritten),
+            .init(title: "Where", icon: "mappin.and.ellipse", content: whenAndWhere.location),
+            .init(title: "The World at the Time", icon: "globe.europe.africa", content: whenAndWhere.worldAtTheTime)
+        ]
     }
 
     private func loadOverview() async {
@@ -79,20 +82,49 @@ struct BookOverviewView: View {
     }
 }
 
-private struct OverviewHeroCard: View {
-    let title: String
-    let icon: String
-    let content: String
+/// The book summary, headed by its one-line theme.
+private struct SummarySection: View {
+    let overview: BibleBookOverview
 
     var body: some View {
-        HeroCard(
-            title: title,
-            icon: icon
-        ) {
-            LinkedScriptureText(content)
-                .font(.body)
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        HeroCard(title: "Summary", icon: "book.closed") {
+            VStack(alignment: .leading, spacing: 8) {
+                if !overview.overallTheme.isEmpty {
+                    LinkedScriptureText(overview.overallTheme)
+                        .font(.headline)
+                }
+                LinkedScriptureText(overview.plainEnglishSummary)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+/// The opening of the book's story, with a link to read all of it.
+private struct StoryPreviewSection: View {
+    let bookName: String
+    let story: [BibleBookStorySection]
+
+    var body: some View {
+        HeroCard(title: "The Story of \(bookName)", icon: "book.pages") {
+            VStack(alignment: .leading, spacing: 12) {
+                if let opening = story.first {
+                    Text(opening.text)
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(4)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                NavigationLink {
+                    BookStoryView(bookName: bookName, story: story)
+                } label: {
+                    Label("Read the Story", systemImage: "arrow.right.circle.fill")
+                        .font(.subheadline.weight(.semibold))
+                }
+            }
         }
     }
 }
@@ -183,12 +215,13 @@ private struct KeyFiguresSection: View {
     }
 }
 
-/// Combines author, original audience, and historical context into one card,
-/// since these entries are often only a sentence or two each.
-private struct BackgroundSection: View {
-    let overview: BibleBookOverview
+/// A card of short labeled entries, such as the author and audience of a book.
+private struct LabeledRowsSection: View {
+    let title: String
+    let icon: String
+    let rows: [Row]
 
-    private struct Row: Identifiable {
+    struct Row: Identifiable {
         let title: String
         let icon: String
         let content: String
@@ -196,23 +229,15 @@ private struct BackgroundSection: View {
     }
 
     // Skip any entries the overview data leaves blank.
-    private var rows: [Row] {
-        [
-            Row(title: "Author", icon: "person.fill", content: overview.traditionalAuthorOrAttribution),
-            Row(title: "Original Audience", icon: "person.3.fill", content: overview.originalAudience),
-            Row(title: "Historical Context", icon: "calendar", content: overview.historicalContext)
-        ]
-        .filter { !$0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+    private var visibleRows: [Row] {
+        rows.filter { !$0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
     }
 
     var body: some View {
-        if !rows.isEmpty {
-            HeroCard(
-                title: "Background",
-                icon: "scroll"
-            ) {
+        if !visibleRows.isEmpty {
+            HeroCard(title: title, icon: icon) {
                 VStack(alignment: .leading, spacing: 12) {
-                    ForEach(rows) { row in
+                    ForEach(visibleRows) { row in
                         VStack(alignment: .leading, spacing: 4) {
                             Label(row.title, systemImage: row.icon)
                                 .font(.headline)
@@ -222,7 +247,7 @@ private struct BackgroundSection: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
 
-                        if row.id != rows.last?.id {
+                        if row.id != visibleRows.last?.id {
                             Divider()
                         }
                     }
