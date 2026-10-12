@@ -3,7 +3,7 @@ import SwiftUI
 /// Home card for the reader's focus for the day.
 ///
 /// With nothing saved it is a single prompt field. Once saved it shows the focus as content,
-/// with Edit and a ⋯ menu for Clear; editing works on a draft until Save.
+/// with Edit and Clear controls; editing works on a draft until Save.
 struct DailyFocusCard: View {
     let focus: FocusViewModel
     let liveActivitiesEnabled: Bool
@@ -75,17 +75,13 @@ struct DailyFocusCard: View {
                     .tint(.purple)
                     .accessibilityLabel("Edit Focus")
 
-                Menu {
-                    Button(role: .destructive) {
-                        isConfirmingClear = true
-                    } label: {
-                        Label("Clear Focus", systemImage: "xmark.circle")
-                    }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                        .font(.title3)
+                Button("Clear", role: .destructive) {
+                    isConfirmingClear = true
                 }
-                .accessibilityLabel("More Focus Options")
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .tint(.red)
+                .accessibilityLabel("Clear Focus")
             }
         }
     }
