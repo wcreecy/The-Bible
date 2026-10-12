@@ -11,6 +11,7 @@ struct ChapterInsights: Equatable, Sendable {
     let whyItMatters: String
     let keyFigures: [ChapterKeyFigure]
     let keyThemes: [ChapterKeyTheme]
+    let relatedVerses: [ChapterRelatedVerse]
 }
 
 struct ChapterKeyFigure: Identifiable, Equatable, Sendable {
@@ -24,6 +25,13 @@ struct ChapterKeyTheme: Identifiable, Equatable, Sendable {
     let theme: String
     let explanation: String
     let scriptureReferences: [String]
+}
+
+/// A cross-reference from a verse in the chapter to a related passage elsewhere in Scripture.
+struct ChapterRelatedVerse: Identifiable, Equatable, Sendable {
+    let id: Int
+    let sourceVerse: Int
+    let relatedReference: String
 }
 
 actor ChapterInsightsRepository {
@@ -67,6 +75,11 @@ actor ChapterInsightsRepository {
                     database: database
                 ),
                 keyThemes: loadKeyThemes(
+                    forBookNamed: bookName,
+                    chapterNumber: chapterNumber,
+                    database: database
+                ),
+                relatedVerses: loadRelatedVerses(
                     forBookNamed: bookName,
                     chapterNumber: chapterNumber,
                     database: database
@@ -158,6 +171,40 @@ actor ChapterInsightsRepository {
             )
         }
         return themes
+    }
+
+    private func loadRelatedVerses(
+        forBookNamed bookName: String,
+        chapterNumber: Int,
+        database: OpaquePointer
+    ) -> [ChapterRelatedVerse] {
+        let query = """
+        SELECT id, source_verse, related_reference
+        FROM chapter_related_verses
+        WHERE book_name = ? AND chapter_number = ?
+        ORDER BY sequence;
+        """
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return []
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_text(statement, 1, bookName, -1, Self.sqliteTransientDestructor())
+        sqlite3_bind_int(statement, 2, Int32(chapterNumber))
+
+        var relatedVerses: [ChapterRelatedVerse] = []
+        while sqlite3_step(statement) == SQLITE_ROW {
+            relatedVerses.append(
+                ChapterRelatedVerse(
+                    id: Int(sqlite3_column_int(statement, 0)),
+                    sourceVerse: Int(sqlite3_column_int(statement, 1)),
+                    relatedReference: Self.columnText(statement, at: 2)
+                )
+            )
+        }
+        return relatedVerses
     }
 
     /// Most rows store a JSON array of references, but some store a single JSON string.

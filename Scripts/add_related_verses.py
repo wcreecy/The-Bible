@@ -88,6 +88,11 @@ def load_related_verses(cross_references_path, book_order, verse_counts):
                 continue
             if not verse_exists(verse_counts, target_book, end_chapter, end_verse):
                 target = (target_book, target_chapter, target_verse, target_chapter, target_verse)
+            elif end_chapter != target_chapter:
+                # The app's passage links only handle ranges within one chapter, so
+                # clamp "4:25-5:32" to the end of its first chapter ("4:25-26").
+                last_verse = verse_counts[target_book][target_chapter - 1]
+                target = (target_book, target_chapter, target_verse, target_chapter, last_verse)
             candidates[(book, chapter)].append((votes, verse, format_target(*target)))
 
     related = {}

@@ -30,18 +30,42 @@ def source_book_name(path):
     return name.replace("_", " ")
 
 
+# Every key name the legacy sources use for each historical-context field.
+CONTEXT_KEYS = {
+    "historical_setting": ["historical_setting", "Historical Setting"],
+    "what_was_happening": ["what_was_happening", "What Was Happening"],
+    "connection_to_chapter": [
+        "connection_to_chapter", "connection_to_the_chapter",
+        "historical_connection", "Connection to the Chapter",
+    ],
+    "customs_and_traditions": ["customs_and_traditions", "Customs and Traditions"],
+    "why_it_matters": ["why_it_matters", "Why It Matters"],
+}
+
+
 def decode_context(encoded):
     source = json.loads(encoded)
-    return {
-        "historical_setting": source.get("historical_setting", source.get("Historical Setting", "")),
-        "what_was_happening": source.get("what_was_happening", source.get("What Was Happening", "")),
-        "connection_to_chapter": source.get(
-            "connection_to_chapter",
-            source.get("historical_connection", source.get("Connection to the Chapter", "")),
-        ),
-        "customs_and_traditions": source.get("customs_and_traditions", source.get("Customs and Traditions", "")),
-        "why_it_matters": source.get("why_it_matters", source.get("Why It Matters", "")),
-    }
+    context = {}
+    for field, keys in CONTEXT_KEYS.items():
+        found = [key for key in keys if key in source]
+        if not found:
+            # Fail loudly instead of silently importing a blank section.
+            raise RuntimeError(f"No {field} key in historical context; keys present: {sorted(source)}")
+        context[field] = text(source[found[0]])
+    return context
+
+
+def verify_no_blank_sections(destination):
+    """Every chapter must have text in every section the Chapter Insights page shows."""
+    for column in [
+        "overall_summary", *CONTEXT_KEYS,
+    ]:
+        blanks = destination.execute(
+            f"SELECT book_name, chapter_number FROM chapter_insights WHERE trim({column}) = '' ORDER BY book_name, chapter_number"
+        ).fetchall()
+        if blanks:
+            sample = ", ".join(f"{book} {chapter}" for book, chapter in blanks[:5])
+            raise RuntimeError(f"{len(blanks)} chapters have a blank {column} (e.g. {sample})")
 
 
 def decode_figures(encoded):
@@ -304,6 +328,7 @@ def main():
             raise RuntimeError(f"Unrecognized schema: {path.name}")
         source.close()
     destination.commit()
+    verify_no_blank_sections(destination)
     destination.execute("VACUUM")
     destination.close()
 

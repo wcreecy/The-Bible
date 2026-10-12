@@ -57,6 +57,22 @@ struct ChapterInsightsView: View {
                     }
                 }
 
+                if !insights.relatedVerses.isEmpty {
+                    ChapterInsightList(title: "Related Verses", icon: "arrow.triangle.branch") {
+                        ForEach(relatedVerseGroups(insights.relatedVerses), id: \.verse) { group in
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("\(bookName) \(chapterNumber):\(group.verse)")
+                                    .font(.headline)
+                                PassageReferenceChips(
+                                    references: group.references,
+                                    book: bookName,
+                                    chapter: chapterNumber
+                                )
+                            }
+                        }
+                    }
+                }
+
                 if !insights.keyFigures.isEmpty {
                     ChapterInsightList(title: "Key Figures", icon: "person.2.fill") {
                         ForEach(insights.keyFigures) { figure in
@@ -89,6 +105,13 @@ struct ChapterInsightsView: View {
         }
         .background(AppBackgroundView(tab: .bible))
         .scripturePassagePreviews()
+    }
+
+    /// Groups related references under the chapter verse they relate to, in verse order.
+    private func relatedVerseGroups(_ relatedVerses: [ChapterRelatedVerse]) -> [(verse: Int, references: [String])] {
+        Dictionary(grouping: relatedVerses, by: \.sourceVerse)
+            .sorted { $0.key < $1.key }
+            .map { (verse: $0.key, references: $0.value.map(\.relatedReference)) }
     }
 
     private func loadInsights() async {
