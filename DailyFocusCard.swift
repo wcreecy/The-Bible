@@ -203,15 +203,8 @@ struct DailyFocusCard: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .toolbar {
-            // Keyboard toolbars apply to every field on screen, so only show this one
-            // while a Daily Focus field is being edited (not, say, the Search card).
-            if focusedField != nil {
-                ToolbarItem(placement: .keyboard) {
-                    Button("Done") { focusedField = nil }
-                }
-            }
-        }
+        // No keyboard toolbar: the title's return key submits, and Home's scroll view
+        // dismisses the keyboard interactively (which covers the multi-line notes).
     }
 
     // MARK: - Actions
