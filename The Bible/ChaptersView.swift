@@ -5,7 +5,19 @@ struct ChaptersView: View {
     let book: Book
     /// Opens the chosen chapter; the host decides how (iPhone stack or iPad detail).
     let onSelectChapter: (Chapter) -> Void
+    /// Lets an iPad host keep an overview open while the selected book changes.
+    let onSelectOverview: (() -> Void)?
     @State private var completedChapters: Set<String> = []
+
+    init(
+        book: Book,
+        onSelectChapter: @escaping (Chapter) -> Void,
+        onSelectOverview: (() -> Void)? = nil
+    ) {
+        self.book = book
+        self.onSelectChapter = onSelectChapter
+        self.onSelectOverview = onSelectOverview
+    }
 
     // Cells grow with Dynamic Type so numbers stay readable at large sizes.
     @ScaledMetric(relativeTo: .body) private var cellMinimumWidth: CGFloat = 56
@@ -23,35 +35,7 @@ struct ChaptersView: View {
                     ThemedBookChaptersHeader(title: book.name, theme: theme)
                 }
 
-                NavigationLink {
-                    BookOverviewView(bookName: book.name)
-                } label: {
-                    HStack(spacing: 14) {
-                        Image(systemName: "book.closed.fill")
-                            .font(.title3)
-                            .foregroundStyle(.tint)
-
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text("About \(book.name)")
-                                .font(.headline)
-                            Text("Background, themes, and key passages")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-
-                        Spacer()
-
-                        Image(systemName: "chevron.right")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.tertiary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(AppDesignMetrics.cardPadding)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.primary)
-                .heroCardSurface()
+                overviewLink
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text("\(book.chapters.count) chapters")
@@ -83,6 +67,50 @@ struct ChaptersView: View {
         .onNotification(.bibleStatsExternallyUpdated) {
             refreshCompletedChapters()
         }
+    }
+
+    @ViewBuilder
+    private var overviewLink: some View {
+        if let onSelectOverview {
+            Button(action: onSelectOverview) {
+                overviewLabel
+            }
+            .buttonStyle(.plain)
+        } else {
+            NavigationLink {
+                BookOverviewView(bookName: book.name)
+            } label: {
+                overviewLabel
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var overviewLabel: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "book.closed.fill")
+                .font(.title3)
+                .foregroundStyle(.tint)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text("About \(book.name)")
+                    .font(.headline)
+                Text("Background, themes, and key passages")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.tertiary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppDesignMetrics.cardPadding)
+        .contentShape(Rectangle())
+        .foregroundStyle(.primary)
+        .heroCardSurface()
     }
 
     private func refreshCompletedChapters() {

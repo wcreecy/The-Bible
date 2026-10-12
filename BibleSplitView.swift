@@ -11,6 +11,7 @@ struct BibleSplitView: View {
     @State private var selectedBook: Book?
     @State private var sidebarSearch: String = ""
     @State private var detailPath = NavigationPath()
+    @State private var isShowingBookOverview = false
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State private var searchModel = BibleSearchModel()
 
@@ -24,6 +25,10 @@ struct BibleSplitView: View {
     }
 
     private struct SearchRoute: Hashable {}
+
+    private struct OverviewRoute: Hashable {
+        let bookName: String
+    }
 
     private var books: [Book] { BibleData.books }
 
@@ -136,9 +141,15 @@ struct BibleSplitView: View {
             .navigationTitle(searchModel.statusText)
             .navigationBarTitleDisplayMode(.inline)
         } else if let book = selectedBook {
-            ChaptersView(book: book) { chapter in
-                detailPath.append(ReadingRoute(bookName: book.name, chapterNumber: chapter.number, verseNumber: 1))
-            }
+            ChaptersView(
+                book: book,
+                onSelectChapter: { chapter in
+                    detailPath.append(ReadingRoute(bookName: book.name, chapterNumber: chapter.number, verseNumber: 1))
+                },
+                onSelectOverview: {
+                    detailPath.append(OverviewRoute(bookName: book.name))
+                }
+            )
         } else {
             ContentUnavailableView("Select a Book", systemImage: "book")
         }
@@ -149,6 +160,17 @@ struct BibleSplitView: View {
             detailRoot
                 .navigationDestination(for: SearchRoute.self) { _ in
                     SearchView()
+                }
+                .navigationDestination(for: OverviewRoute.self) { route in
+                    BookOverviewView(bookName: route.bookName)
+                        .onAppear {
+                            isShowingBookOverview = true
+                        }
+                        .onDisappear {
+                            if selectedBook?.name == route.bookName {
+                                isShowingBookOverview = false
+                            }
+                        }
                 }
                 .navigationDestination(for: ReadingRoute.self) { route in
                     readingDestination(for: route)
@@ -233,9 +255,18 @@ struct BibleSplitView: View {
     // MARK: - Actions
 
     private func select(_ book: Book) {
+        let shouldKeepOverviewOpen = isShowingBookOverview
         selectedBook = book
         searchModel.query = ""
         detailPath = NavigationPath()
+
+        guard shouldKeepOverviewOpen else { return }
+        Task { @MainActor in
+            // The selected book changes the detail stack's identity. Install the new
+            // overview route after the replacement stack is ready.
+            await Task.yield()
+            detailPath.append(OverviewRoute(bookName: book.name))
+        }
     }
 
     private func selectBookForReader(named bookName: String) {

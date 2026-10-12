@@ -16,7 +16,7 @@ struct BookStoryView: View {
                     VStack(alignment: .leading, spacing: 6) {
                         // Continuation paragraphs have no label of their own.
                         if !section.passage.isEmpty {
-                            PassageLabel(passage: section.passage)
+                            StorySectionHeader(passage: section.passage)
                         }
 
                         Text(section.text)
@@ -40,6 +40,34 @@ struct BookStoryView: View {
         .navigationTitle(bookName)
         .navigationBarTitleDisplayMode(.inline)
         .scripturePassagePreviews()
+    }
+}
+
+/// Displays a bold section title and a separate tappable reference when both are stored together.
+private struct StorySectionHeader: View {
+    let passage: String
+
+    var body: some View {
+        if let heading = heading {
+            Text(heading.title)
+                .font(.headline.bold())
+
+            PassageLabel(passage: heading.reference)
+        } else {
+            PassageLabel(passage: passage)
+        }
+    }
+
+    private var heading: (title: String, reference: String)? {
+        guard passage.hasSuffix(")"),
+              let separator = passage.range(of: " (", options: .backwards) else {
+            return nil
+        }
+
+        let title = String(passage[..<separator.lowerBound])
+        let reference = String(passage[separator.upperBound...].dropLast())
+        guard !title.isEmpty, !reference.isEmpty else { return nil }
+        return (title, reference)
     }
 }
 
