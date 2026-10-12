@@ -313,26 +313,79 @@ enum NoteFormattedContent {
     }
 }
 
+extension EnvironmentValues {
+    /// Handles hardware Tab (+1) and Shift-Tab (-1) in the note body editor.
+    @Entry var noteTabKeyAction: ((Int) -> Void)? = nil
+}
+
 /// The note body editor, sized by the editor's text size setting.
 struct NoteBodyTextEditor: View {
     @AppStorage(NoteEditorTextSize.storageKey) private var textSizeStep = NoteEditorTextSize.defaultStep
+    @Environment(\.noteTabKeyAction) private var tabKeyAction
+    @Environment(\.self) private var environment
 
     @Binding var text: AttributedString
     @Binding var selection: AttributedTextSelection
 
     var body: some View {
-        TextEditor(text: $text, selection: $selection)
-            .font(.body)
-            .dynamicTypeSize(NoteEditorTextSize.dynamicTypeSize(for: textSizeStep))
-            .scrollContentBackground(.hidden)
-            .padding(10)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .strokeBorder(Color.primary.opacity(0.1))
+        NoteEditorKeyCommandHost(
+            onTab: { tabKeyAction?($0) },
+            content: AnyView(
+                TextEditor(text: $text, selection: $selection)
+                    .font(.body)
+                    .dynamicTypeSize(NoteEditorTextSize.dynamicTypeSize(for: textSizeStep))
+                    .scrollContentBackground(.hidden)
+                    .accessibilityLabel("Note")
+                    // A hosted view doesn't inherit SwiftUI's environment (e.g. the
+                    // Scripture-link openURL handler), so pass it through.
+                    .environment(\.self, environment)
+            )
+        )
+        .padding(10)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.1))
+        }
+    }
+}
+
+/// Hosts the note text view in a UIKit controller so Tab and Shift-Tab key commands sit in
+/// the text view's responder chain. SwiftUI's `onKeyPress` never sees Tab in a `TextEditor`;
+/// the text system claims it first, so these commands ask for priority over system behavior.
+private struct NoteEditorKeyCommandHost: UIViewControllerRepresentable {
+    let onTab: (Int) -> Void
+    let content: AnyView
+
+    func makeUIViewController(context: Context) -> Controller {
+        let controller = Controller(rootView: content)
+        controller.view.backgroundColor = .clear
+        // The surrounding SwiftUI layout already handles safe areas and the keyboard.
+        controller.safeAreaRegions = []
+        controller.onTab = onTab
+        return controller
+    }
+
+    func updateUIViewController(_ controller: Controller, context: Context) {
+        controller.rootView = content
+        controller.onTab = onTab
+    }
+
+    final class Controller: UIHostingController<AnyView> {
+        var onTab: ((Int) -> Void)?
+
+        override var keyCommands: [UIKeyCommand]? {
+            let indent = UIKeyCommand(input: "\t", modifierFlags: [], action: #selector(indentLine))
+            let outdent = UIKeyCommand(input: "\t", modifierFlags: .shift, action: #selector(outdentLine))
+            for command in [indent, outdent] {
+                command.wantsPriorityOverSystemBehavior = true
             }
-            .accessibilityLabel("Note")
+            return (super.keyCommands ?? []) + [indent, outdent]
+        }
+
+        @objc private func indentLine() { onTab?(1) }
+        @objc private func outdentLine() { onTab?(-1) }
     }
 }
 
@@ -385,9 +438,12 @@ private struct RichNoteEditing: ViewModifier {
                 )
             }
             .onAppear(perform: linkScriptureReferences)
-            .onChange(of: String(text.characters)) { _, _ in
+            .onChange(of: String(text.characters)) { oldValue, newValue in
+                handleListTyping(previousCount: oldValue.count, newCount: newValue.count)
                 scheduleReferenceLinking()
             }
+            // Hardware Tab / Shift-Tab, delivered by the editor's key commands.
+            .environment(\.noteTabKeyAction, handleTabKey)
             .onDisappear {
                 referenceLinkTask?.cancel()
             }
@@ -452,29 +508,244 @@ private struct RichNoteEditing: ViewModifier {
     }
 
     private func increaseIndent() {
-        guard case .insertionPoint = selection.indices(in: text) else { return }
-        text.replaceSelection(&selection, withCharacters: "    ")
+        shiftLine(by: 1, listItemsOnly: false)
     }
 
-    /// Removes up to four leading spaces from the line containing the caret.
     private func decreaseIndent() {
-        guard case let .insertionPoint(caret) = selection.indices(in: text),
+        shiftLine(by: -1, listItemsOnly: false)
+    }
+
+    // MARK: - Lists
+
+    /// Reacts to a single typed character: Return continues (or ends) a list, and a Tab
+    /// that reached the text as a character indents a list item instead.
+    private func handleListTyping(previousCount: Int, newCount: Int) {
+        guard newCount == previousCount + 1,
+              case let .insertionPoint(caret) = selection.indices(in: text),
               caret > text.startIndex else { return }
 
-        let characters = text.characters
-        var lineStart = caret
-        while lineStart > text.startIndex {
-            let previous = characters.index(before: lineStart)
-            if characters[previous] == "\n" { break }
-            lineStart = previous
+        let typed = text.characters.index(before: caret)
+        switch text.characters[typed] {
+        case "\n":
+            continueList(afterNewlineAt: typed, caret: caret)
+        case "\t":
+            let lineStart = startOfLine(containing: typed)
+            let line = String(text.characters[lineStart..<endOfLine(containing: typed)])
+            guard NoteListMarker.parse(line) != nil else { return }
+            let typedOffset = offset(of: typed)
+            text.replaceSubrange(typed..<caret, with: AttributedString())
+            selection = AttributedTextSelection(insertionPoint: index(atOffset: typedOffset))
+            shiftLine(by: 1, listItemsOnly: true)
+        default:
+            break
+        }
+    }
+
+    /// After Return on a list item, starts the next item with the same marker (numbers count
+    /// up). Return on an empty item removes it and ends the list, as in Notes.
+    private func continueList(afterNewlineAt newline: AttributedString.Index, caret: AttributedString.Index) {
+        let lineStart = startOfLine(containing: newline)
+        guard let item = NoteListMarker.parse(String(text.characters[lineStart..<newline])) else { return }
+
+        let restOfNewLine = text.characters[caret..<endOfLine(containing: caret)]
+        let itemIsEmpty = item.content.allSatisfy(\.isWhitespace) && restOfNewLine.allSatisfy(\.isWhitespace)
+
+        if itemIsEmpty {
+            let lineStartOffset = offset(of: lineStart)
+            text.replaceSubrange(lineStart..<caret, with: AttributedString())
+            selection = AttributedTextSelection(insertionPoint: index(atOffset: lineStartOffset))
+        } else {
+            text.replaceSelection(&selection, withCharacters: item.indent + item.marker.next.text + " ")
+        }
+    }
+
+    /// Tab indents a list item, or types an indent elsewhere; Shift-Tab outdents the line.
+    private func handleTabKey(_ direction: Int) {
+        guard case .insertionPoint = selection.indices(in: text) else { return }
+        if shiftLine(by: direction, listItemsOnly: true) { return }
+        if direction > 0 {
+            text.replaceSelection(&selection, withCharacters: NoteListMarker.indentUnit)
+        } else {
+            shiftLine(by: -1, listItemsOnly: false)
+        }
+    }
+
+    /// Indents (`direction` > 0) or outdents the line holding the caret by one level, keeping
+    /// the caret on the same character. List items also take their new level's marker, as in
+    /// Notes: bullets change symbol, numbers continue that level's count or restart at 1.
+    /// Returns whether the line was eligible.
+    @discardableResult
+    private func shiftLine(by direction: Int, listItemsOnly: Bool) -> Bool {
+        guard case let .insertionPoint(caret) = selection.indices(in: text) else { return false }
+
+        let lineStart = startOfLine(containing: caret)
+        let lineEnd = endOfLine(containing: caret)
+        let line = String(text.characters[lineStart..<lineEnd])
+        let item = NoteListMarker.parse(line)
+        if listItemsOnly, item == nil { return false }
+
+        let oldIndent = item?.indent ?? String(line.prefix { $0 == " " || $0 == "\t" })
+        let newIndent: String
+        if direction > 0 {
+            newIndent = NoteListMarker.indentUnit + oldIndent
+        } else {
+            let removable = NoteListMarker.outdentLength(of: line)
+            // Nothing to outdent; still consume Shift-Tab so it doesn't move focus.
+            guard removable > 0 else { return true }
+            newIndent = String(oldIndent.dropFirst(removable))
         }
 
-        var indentEnd = lineStart
-        for _ in 0..<4 where indentEnd < text.endIndex && characters[indentEnd] == " " {
-            indentEnd = characters.index(after: indentEnd)
+        let oldPrefixLength: Int
+        let newPrefix: String
+        if let item {
+            let precedingText = String(text.characters[text.characters.startIndex..<lineStart])
+            let marker = item.marker.adjusted(
+                toIndent: newIndent,
+                after: precedingText.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
+            )
+            oldPrefixLength = item.prefixLength
+            newPrefix = newIndent + marker.text + " "
+        } else {
+            oldPrefixLength = oldIndent.count
+            newPrefix = newIndent
         }
-        guard indentEnd > lineStart else { return }
-        text.replaceSubrange(lineStart..<indentEnd, with: AttributedString())
-        selection = AttributedTextSelection(insertionPoint: lineStart)
+
+        let lineStartOffset = offset(of: lineStart)
+        let caretOffset = offset(of: caret)
+        text.replaceSubrange(
+            lineStart..<index(atOffset: lineStartOffset + oldPrefixLength),
+            with: AttributedString(newPrefix)
+        )
+
+        // Keep the caret on the same character; a caret inside the old prefix lands after the new one.
+        let caretInContent = max(0, caretOffset - lineStartOffset - oldPrefixLength)
+        selection = AttributedTextSelection(
+            insertionPoint: index(atOffset: lineStartOffset + newPrefix.count + caretInContent)
+        )
+        return true
+    }
+
+    private func startOfLine(containing index: AttributedString.Index) -> AttributedString.Index {
+        let characters = text.characters
+        var start = index
+        while start > characters.startIndex {
+            let previous = characters.index(before: start)
+            if characters[previous] == "\n" { break }
+            start = previous
+        }
+        return start
+    }
+
+    private func endOfLine(containing index: AttributedString.Index) -> AttributedString.Index {
+        let characters = text.characters
+        return characters[index...].firstIndex(of: "\n") ?? characters.endIndex
+    }
+
+    private func offset(of index: AttributedString.Index) -> Int {
+        text.characters.distance(from: text.characters.startIndex, to: index)
+    }
+
+    private func index(atOffset offset: Int) -> AttributedString.Index {
+        text.characters.index(text.characters.startIndex, offsetBy: offset)
+    }
+}
+
+/// A plain-text list item in a note: optional indent, a marker, one space, then the content.
+/// Bullets ("•", "-", "*", …) repeat as-is; numbers ("1.", "2)") count up.
+struct NoteListMarker: Equatable {
+    enum Kind: Equatable {
+        case bullet(Character)
+        case number(Int, punctuation: Character)
+    }
+
+    static let indentUnit = "    "
+    private static let bulletSymbols: Set<Character> = ["•", "◦", "▪", "‣", "–", "-", "*"]
+    /// Bullets by nesting level, as in Notes; deeper levels repeat the cycle.
+    private static let nestedBullets: [Character] = ["•", "◦", "▪"]
+
+    let kind: Kind
+
+    var text: String {
+        switch kind {
+        case .bullet(let symbol): String(symbol)
+        case .number(let number, let punctuation): "\(number)\(punctuation)"
+        }
+    }
+
+    /// The marker for the item after this one.
+    var next: NoteListMarker {
+        guard case .number(let number, let punctuation) = kind else { return self }
+        return NoteListMarker(kind: .number(number + 1, punctuation: punctuation))
+    }
+
+    /// This marker for an item moved to `indent`, given the lines above it.
+    /// "•", "◦" and "▪" bullets take the new level's symbol (other bullets, like "-", stay put).
+    /// Numbers continue the nearest item above at the new level, or restart at 1 when there
+    /// isn't one before the list breaks or a shallower item starts it.
+    func adjusted(toIndent indent: String, after precedingLines: [String]) -> NoteListMarker {
+        let level = Self.level(of: indent)
+        switch kind {
+        case .bullet(let symbol):
+            guard Self.nestedBullets.contains(symbol) else { return self }
+            return NoteListMarker(kind: .bullet(Self.nestedBullets[level % Self.nestedBullets.count]))
+
+        case .number(_, let punctuation):
+            for line in precedingLines.reversed() {
+                guard let previous = Self.parse(line) else { break }
+                let previousLevel = Self.level(of: previous.indent)
+                if previousLevel < level { break }
+                if previousLevel == level, case .number(let number, let previousPunctuation) = previous.marker.kind,
+                   previousPunctuation == punctuation {
+                    return NoteListMarker(kind: .number(number + 1, punctuation: punctuation))
+                }
+            }
+            return NoteListMarker(kind: .number(1, punctuation: punctuation))
+        }
+    }
+
+    /// Nesting depth: one level per tab or per indent unit of spaces.
+    static func level(of indent: String) -> Int {
+        let tabs = indent.filter { $0 == "\t" }.count
+        let spaces = indent.filter { $0 == " " }.count
+        return tabs + spaces / indentUnit.count
+    }
+
+    struct Item: Equatable {
+        let indent: String
+        let marker: NoteListMarker
+        let content: String
+
+        /// Characters before the content: indent, marker and its space.
+        var prefixLength: Int { indent.count + marker.text.count + 1 }
+    }
+
+    /// Parses one line (without its newline); nil when it isn't a list item.
+    static func parse(_ line: String) -> Item? {
+        let indentEnd = line.firstIndex { $0 != " " && $0 != "\t" } ?? line.endIndex
+        let rest = line[indentEnd...]
+        guard let space = rest.firstIndex(of: " ") else { return nil }
+
+        let token = rest[..<space]
+        let content = String(rest[rest.index(after: space)...])
+        let indent = String(line[..<indentEnd])
+
+        if token.count == 1, let symbol = token.first, bulletSymbols.contains(symbol) {
+            return Item(indent: indent, marker: NoteListMarker(kind: .bullet(symbol)), content: content)
+        }
+
+        // Up to three digits, so a line like "2024. was a year" isn't taken for a list.
+        let digits = token.dropLast()
+        if let punctuation = token.last, punctuation == "." || punctuation == ")",
+           (1...3).contains(digits.count), digits.allSatisfy(\.isASCII), digits.allSatisfy(\.isNumber),
+           let number = Int(digits) {
+            return Item(indent: indent, marker: NoteListMarker(kind: .number(number, punctuation: punctuation)), content: content)
+        }
+        return nil
+    }
+
+    /// How many leading characters one outdent removes: a tab, or up to one indent unit of spaces.
+    static func outdentLength(of line: String) -> Int {
+        if line.first == "\t" { return 1 }
+        return line.prefix(indentUnit.count).prefix { $0 == " " }.count
     }
 }
