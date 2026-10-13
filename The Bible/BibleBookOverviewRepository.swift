@@ -43,18 +43,31 @@ struct BibleBookStorySection: Identifiable, Equatable, Sendable {
     }
 
     private var openingPreviewAndStory: (preview: String, story: String) {
-        for index in text.indices where ".!?".contains(text[index]) {
-            let nextIndex = text.index(after: index)
-            guard nextIndex == text.endIndex || text[nextIndex].isWhitespace else {
-                continue
-            }
+        if let paragraphBreak = text.range(of: "\n\n") {
+            let openingParagraph = String(text[..<paragraphBreak.lowerBound])
+            let story = String(text[paragraphBreak.upperBound...])
+                .trimmingCharacters(in: .whitespacesAndNewlines)
 
-            let preview = String(text[...index])
-            let story = String(text[nextIndex...]).trimmingCharacters(in: .whitespacesAndNewlines)
-            return story.isEmpty ? (text, text) : (preview, story)
+            if !story.isEmpty {
+                return (openingSentence(in: openingParagraph), story)
+            }
         }
 
-        return (text, text)
+        let preview = openingSentence(in: text)
+        let story = String(text.dropFirst(preview.count))
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return story.isEmpty ? (text, text) : (preview, story)
+    }
+
+    private func openingSentence(in text: String) -> String {
+        for index in text.indices where ".!?".contains(text[index]) {
+            let nextIndex = text.index(after: index)
+            if nextIndex == text.endIndex || text[nextIndex].isWhitespace {
+                return String(text[...index])
+            }
+        }
+
+        return text
     }
 }
 
