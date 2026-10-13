@@ -38,7 +38,8 @@ struct The_Bible__iOS_Tests {
 
         tracker.setActive(true)
         tracker.visibilityChanged(firstVerse, isVisible: true)
-        try await Task.sleep(nanoseconds: 40_000_000)
+        // Allow the dwell task and its subsequent batching task to run independently.
+        try await Task.sleep(nanoseconds: 100_000_000)
 
         #expect(commits == [[firstVerse]])
     }
