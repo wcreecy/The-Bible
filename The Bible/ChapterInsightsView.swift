@@ -9,6 +9,8 @@ struct ChapterInsightsView: View {
     @State private var isLoading = true
     /// The chapter `insights` was loaded for; returning from a pushed page shouldn't reload.
     @State private var loadedChapterKey: String?
+    @AppStorage("lastStudiedBook") private var lastStudiedBook = ""
+    @AppStorage("lastStudiedChapter") private var lastStudiedChapter = 0
 
     var body: some View {
         Group {
@@ -27,6 +29,10 @@ struct ChapterInsightsView: View {
         .navigationTitle("Chapter Insights")
         .navigationBarTitleDisplayMode(.inline)
         .task(id: "\(bookName)-\(chapterNumber)", loadInsights)
+        .onAppear {
+            lastStudiedBook = bookName
+            lastStudiedChapter = chapterNumber
+        }
     }
 
     private func insightsContent(_ insights: ChapterInsights) -> some View {
@@ -99,6 +105,12 @@ struct ChapterInsightsView: View {
 
                 ChapterBackgroundSection(insights: insights)
 
+                ChapterReflectionSection(
+                    bookName: bookName,
+                    chapterNumber: chapterNumber,
+                    whyItMatters: insights.whyItMatters
+                )
+
                 AboutBookLink(bookName: bookName)
             }
             .padding()
@@ -163,6 +175,61 @@ private struct ChapterSummaryCard: View {
                 }
             }
         }
+    }
+}
+
+private struct ChapterReflectionSection: View {
+    private let whyItMatters: String
+    private let responseKey: String
+    @AppStorage private var response: String
+    @State private var showsSavedConfirmation = false
+
+    init(bookName: String, chapterNumber: Int, whyItMatters: String) {
+        self.whyItMatters = whyItMatters
+        responseKey = "chapterReflection.\(bookName).\(chapterNumber)"
+        _response = AppStorage(wrappedValue: "", responseKey)
+    }
+
+    var body: some View {
+        HeroCard(title: "Reflect & Respond", icon: "square.and.pencil") {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(prompt)
+                    .font(.body)
+
+                TextEditor(text: $response)
+                    .frame(minHeight: 110)
+                    .padding(8)
+                    .background(Color.accentColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+                    .accessibilityLabel("Personal reflection")
+
+                HStack(spacing: 12) {
+                    Button {
+                        UserDefaults.standard.set(response, forKey: responseKey)
+                        showsSavedConfirmation = true
+                    } label: {
+                        Label("Save Reflection", systemImage: "square.and.arrow.down")
+                    }
+                    .buttonStyle(.borderedProminent)
+
+                    if showsSavedConfirmation {
+                        Label("Saved", systemImage: "checkmark.circle.fill")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.green)
+                            .accessibilityLabel("Reflection saved")
+                    }
+                }
+            }
+        }
+        .onChange(of: response) { _, _ in
+            showsSavedConfirmation = false
+        }
+    }
+
+    private var prompt: String {
+        if !whyItMatters.isEmpty {
+            return "What stands out to you in light of why this chapter matters?"
+        }
+        return "What does this chapter show you about God, people, or faithful living?"
     }
 }
 
