@@ -61,7 +61,7 @@ struct ChapterInsightsView: View {
                     }
                 }
 
-                if bookName == "Genesis", chapterNumber == 1, !insights.relatedVerses.isEmpty {
+                if !insights.relatedVerses.isEmpty {
                     ChapterCrossReferencesPreview(
                         bookName: bookName,
                         chapterNumber: chapterNumber,
