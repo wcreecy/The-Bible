@@ -100,6 +100,8 @@ private struct ActivityTimeGraph: View {
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
             }
 
             GeometryReader { proxy in
@@ -133,7 +135,7 @@ private struct ActivityTimeGraph: View {
                 "\(title). Reading \(formattedUsage(reading)). Games \(formattedUsage(games))."
             )
 
-            HStack(spacing: 16) {
+            HStack(spacing: 8) {
                 ActivityTimeLegend(
                     title: "Reading",
                     seconds: reading,
@@ -190,18 +192,25 @@ private struct ActivityTimeLegend: View {
             Text(title)
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
 
             Text(formattedUsage)
                 .font(.caption.weight(.semibold))
                 .monospacedDigit()
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
 
             if showsPercentage {
                 Text("\(Int(round(fraction * 100)))%")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
             }
         }
+        .lineLimit(1)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
@@ -213,6 +222,6 @@ private struct ActivityTimeLegend: View {
 
         let hours = safeSeconds / 3_600
         let minutes = (safeSeconds % 3_600) / 60
-        return hours > 0 ? "\(hours)h \(minutes)m" : "\(minutes)m"
+        return hours > 0 ? "\(hours)h\u{00A0}\(minutes)m" : "\(minutes)m"
     }
 }
