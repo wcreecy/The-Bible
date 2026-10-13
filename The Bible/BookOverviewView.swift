@@ -114,7 +114,7 @@ private struct StoryPreviewSection: View {
         HeroCard(title: "The Story of \(bookName)", icon: "book.pages") {
             VStack(alignment: .leading, spacing: 12) {
                 if let opening = story.first {
-                    Text(opening.text)
+                    Text(opening.previewText)
                         .font(.body)
                         .foregroundStyle(.secondary)
                         .lineLimit(4)

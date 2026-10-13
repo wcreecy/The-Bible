@@ -31,6 +31,31 @@ struct BibleBookStorySection: Identifiable, Equatable, Sendable {
     let id: Int
     let passage: String
     let text: String
+
+    /// The one-sentence preview shown on a book's About page.
+    var previewText: String {
+        openingPreviewAndStory.preview
+    }
+
+    /// The story text after its About-page preview has been removed.
+    var storyText: String {
+        openingPreviewAndStory.story
+    }
+
+    private var openingPreviewAndStory: (preview: String, story: String) {
+        for index in text.indices where ".!?".contains(text[index]) {
+            let nextIndex = text.index(after: index)
+            guard nextIndex == text.endIndex || text[nextIndex].isWhitespace else {
+                continue
+            }
+
+            let preview = String(text[...index])
+            let story = String(text[nextIndex...]).trimmingCharacters(in: .whitespacesAndNewlines)
+            return story.isEmpty ? (text, text) : (preview, story)
+        }
+
+        return (text, text)
+    }
 }
 
 struct BibleKeyScripture: Equatable, Sendable {

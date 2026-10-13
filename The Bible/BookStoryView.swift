@@ -19,7 +19,7 @@ struct BookStoryView: View {
                             StorySectionHeader(passage: section.passage)
                         }
 
-                        Text(section.text)
+                        Text(section.id == story.first?.id ? section.storyText : section.text)
                             .font(.body)
                             .lineSpacing(5)
                             .frame(maxWidth: .infinity, alignment: .leading)
