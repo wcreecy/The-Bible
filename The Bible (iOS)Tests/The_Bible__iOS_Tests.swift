@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import Testing
 @testable import Bible
 
@@ -233,11 +234,12 @@ struct The_Bible__iOS_Tests {
 
     @Test
     func cloudSessionPayloadIsBoundedAndKeepsRecentHistory() throws {
+        let firstStart = Date().addingTimeInterval(-TimeInterval(3_000 * 60))
         let sessions = (0..<3_000).map { index in
-            let start = Date(timeIntervalSince1970: TimeInterval(index * 60))
+            let start = firstStart.addingTimeInterval(TimeInterval(index * 60))
             return ReadingSessionsStore.Session(
                 start: start,
-                end: start.addingTimeInterval(30),
+                end: start.addingTimeInterval(60),
                 book: "John",
                 chapter: 1
             )
@@ -343,5 +345,145 @@ struct The_Bible__iOS_Tests {
         #expect(PrayerStatsStore.newer(newer, older) == newer)
         #expect(PrayerStatsStore.newer(nil, older) == older)
         #expect(PrayerStatsStore.newer(nil, nil) == nil)
+    }
+
+    // MARK: - Scripture data and references
+
+    @Test
+    func kjvTextCleanerPreservesMarkedWordRangesAndDropsFootnotes() {
+        let cleaned = KJVTextCleaner.clean("Before \u{E000}said\u{E001} {word} {or: a note}")
+
+        #expect(cleaned.text == "Before said word")
+        #expect(cleaned.redLetterRanges == [7..<11])
+        #expect(cleaned.suppliedWordRanges == [12..<16])
+    }
+
+    @Test
+    func bibleDataDecodingExpandsNamesNumbersAndCleansVerses() throws {
+        let data = try #require(
+            """
+            [{"abbrev":"joh","chapters":[["In the beginning", "{And} \u{E000}said\u{E001}"]]}]
+            """.data(using: .utf8)
+        )
+
+        let books = try BibleData.decodeBooks(from: data)
+
+        #expect(books.map(\.name) == ["John"])
+        #expect(books.first?.chapters.first?.number == 1)
+        #expect(books.first?.chapters.first?.verses.map(\.number) == [1, 2])
+        #expect(books.first?.chapters.first?.verses[1].text == "And said")
+    }
+
+    @Test
+    func bibleReferenceParserResolvesAliasesAndReturnsChapterOrVerseResults() {
+        let books = [
+            Book(
+                name: "John",
+                chapters: [Chapter(number: 3, verses: [Verse(number: 16, text: "For God so loved"), Verse(number: 17, text: "For God sent")])]
+            ),
+            Book(
+                name: "1 Corinthians",
+                chapters: [Chapter(number: 13, verses: [Verse(number: 1, text: "Though I speak")])]
+            )
+        ]
+
+        let verseReference = BibleReferenceParser.reference(for: " Jn. 3:16 ", in: books)
+        let chapterResults = BibleReferenceParser.results(for: "John 3", in: books)
+        let numberedReference = BibleReferenceParser.reference(for: "1 Cor 13:1", in: books)
+
+        #expect(verseReference?.title == "John 3:16")
+        #expect(verseReference?.verse?.text == "For God so loved")
+        #expect(chapterResults?.map(\.verseNumber) == [16, 17])
+        #expect(numberedReference?.title == "1 Corinthians 13:1")
+    }
+
+    @Test
+    func bibleReferenceParserSeparatesInvalidReferencesFromOrdinarySearches() {
+        let books = [Book(name: "John", chapters: [Chapter(number: 3, verses: [Verse(number: 16, text: "Text")])])]
+
+        #expect(!BibleReferenceParser.isReferenceShaped("love one another"))
+        #expect(BibleReferenceParser.isReferenceShaped("John 3:99"))
+        #expect(BibleReferenceParser.results(for: "John 3:99", in: books) == [])
+        #expect(BibleReferenceParser.results(for: "love one another", in: books) == nil)
+    }
+
+    // MARK: - History and game configuration
+
+    @Test
+    func readingHistoryArchiveTotalsIgnoreNegativeDeviceValues() {
+        let archive = ReadingHistoryArchive(
+            cutoff: "2025-01-01",
+            books: [
+                "John": ["phone": 120, "tablet": -30],
+                "Acts": ["phone": 60]
+            ]
+        )
+
+        #expect(!archive.isEmpty)
+        #expect(archive.bookTotals == ["John": 120, "Acts": 60])
+    }
+
+    @Test
+    func readingHistoryArchiveMergeKeepsTheMostCompleteCopy() {
+        var contributions: ReadingHistoryArchive.Contributions = [:]
+        let local = ReadingHistoryArchive(
+            cutoff: "2025-01-01",
+            books: ["John": ["phone": 100]],
+            years: ["2024": 100],
+            streakRunAtCutoff: 4,
+            bestStreak: 8
+        )
+        let remote = ReadingHistoryArchive(
+            cutoff: "2025-02-01",
+            books: ["John": ["phone": 80, "tablet": 70]],
+            years: ["2024": 150],
+            streakRunAtCutoff: 5,
+            bestStreak: 7
+        )
+
+        let merged = ReadingHistoryArchive.merged(
+            local: local,
+            remote: remote,
+            localContributions: &contributions
+        )
+
+        #expect(merged.cutoff == "2025-02-01")
+        #expect(merged.books == ["John": ["phone": 100, "tablet": 70]])
+        #expect(merged.years == ["2024": 150])
+        #expect(merged.streakRunAtCutoff == 5)
+        #expect(merged.bestStreak == 8)
+    }
+
+    @Test
+    func historyDayKeysParseAndCompareInCalendarOrder() throws {
+        let date = try #require(StatsHistoryRetention.date(fromDayKey: "2026-02-03"))
+        let components = Calendar.autoupdatingCurrent.dateComponents([.year, .month, .day], from: date)
+
+        #expect(components.year == 2026)
+        #expect(components.month == 2)
+        #expect(components.day == 3)
+        #expect(StatsHistoryRetention.isBeforeCutoff("2025-12-31", cutoff: "2026-01-01"))
+        #expect(!StatsHistoryRetention.isBeforeCutoff("2026-01-01", cutoff: "2026-01-01"))
+        #expect(StatsHistoryRetention.date(fromDayKey: "not-a-day") == nil)
+    }
+
+    @Test
+    func bookOrderScopesUseCanonicalBoundariesAndRequestedRoundLengths() {
+        #expect(BookOrderDifficulty.easy.runLength == 5)
+        #expect(BookOrderDifficulty.normal.runLength == 10)
+        #expect(BookOrderDifficulty.hard.runLength == 15)
+        #expect(BookOrderDifficulty.all.runLength == nil)
+        #expect(BookSourceScope.ot.bookNames.count == 39)
+        #expect(BookSourceScope.nt.bookNames.count == 27)
+        #expect(BookSourceScope.gospels.bookNames == ["Matthew", "Mark", "Luke", "John"])
+        #expect(BookSourceScope.epistles.previewBookNames == ["Romans", "1 Corinthians", "2 Corinthians"])
+    }
+
+    @Test
+    func colorSchemePreferencesExposeExpectedOverrides() {
+        #expect(ColorSchemePreference.system.colorScheme == nil)
+        #expect(ColorSchemePreference.light.colorScheme == .light)
+        #expect(ColorSchemePreference.dark.colorScheme == .dark)
+        #expect(ColorSchemePreference.allCases.map(\.id) == ["system", "light", "dark"])
     }
 }
