@@ -17,6 +17,7 @@ struct HomeLayoutEditorView: View {
     @State private var highlightedCards: Set<HomeCardID> = []
     @State private var reorderConfirmation: String?
     @State private var reorderFeedbackTask: Task<Void, Never>?
+    @State private var isShowingReplaceSavedLayoutConfirmation = false
 
     /// The cards listed for reordering, in Home order.
     private var listedCards: [HomeCardID] {
@@ -47,6 +48,12 @@ struct HomeLayoutEditorView: View {
     private func showAll() {
         hiddenSet.removeAll()
         bibleReaderVisible = true
+        onDone()
+    }
+
+    private func hideAllCards() {
+        hiddenSet = Set(HomeCardID.allCases)
+        bibleReaderVisible = false
         onDone()
     }
 
@@ -230,9 +237,25 @@ struct HomeLayoutEditorView: View {
                 Text("Shown cards appear on Home. Use the arrows to choose their order.")
             }
 
-            if usesDashboard {
-                Section {
-                    VStack(alignment: .leading, spacing: 10) {
+            Section {
+                VStack(alignment: .leading, spacing: 10) {
+                    footerButton(title: "Show All Cards", systemImage: "eye") {
+                        showAll()
+                    }
+                    footerButton(title: "Hide All Cards", systemImage: "eye.slash", disabled: isMinimalHome) {
+                        hideAllCards()
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            } header: {
+                Label("Card Visibility", systemImage: "eye")
+            } footer: {
+                Text("Show or hide every Home card at once. You can still adjust individual cards above.")
+            }
+
+            Section {
+                VStack(alignment: .leading, spacing: 10) {
+                    if usesDashboard {
                         footerButton(
                             title: "Use Minimal Home",
                             systemImage: "rectangle.3.group",
@@ -240,47 +263,52 @@ struct HomeLayoutEditorView: View {
                         ) {
                             useMinimalHome()
                         }
-                        footerButton(
-                            title: "Restore Default Home",
-                            systemImage: "arrow.counterclockwise",
-                            disabled: !isMinimalHome
-                        ) {
-                            resetToDefault()
-                        }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                } header: {
-                    Label("Home Style", systemImage: "rectangle.3.group")
-                } footer: {
-                    Text("Minimal Home replaces dashboard cards with Read, Continue Reading, and Search actions.")
+                    footerButton(title: "Restore Default Layout", systemImage: "arrow.counterclockwise") {
+                        resetToDefault()
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            } header: {
+                Label("Layout Presets", systemImage: "rectangle.3.group")
+            } footer: {
+                Text(usesDashboard ? "Minimal Home replaces dashboard cards with Read, Continue Reading, and Search actions." : "Restore the original Home card arrangement and visibility.")
             }
 
             Section {
                 VStack(alignment: .leading, spacing: 10) {
-                    footerButton(title: "Reset Layout", systemImage: "arrow.counterclockwise") {
-                        resetToDefault()
+                    footerButton(
+                        title: "Save Layout",
+                        systemImage: hasFavorite ? "arrow.triangle.2.circlepath" : "square.and.arrow.down"
+                    ) {
+                        if hasFavorite {
+                            isShowingReplaceSavedLayoutConfirmation = true
+                        } else {
+                            onSaveFavorite()
+                        }
                     }
-                    footerButton(title: "Show All Cards", systemImage: "eye") {
-                        showAll()
-                    }
-                    footerButton(title: "Apply Favorite", systemImage: "star", disabled: !hasFavorite) {
+                    footerButton(title: "Apply Saved Layout", systemImage: "arrow.clockwise", disabled: !hasFavorite) {
                         onResetToFavorite()
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
+            } header: {
+                Label("Saved Layout", systemImage: "bookmark")
+            } footer: {
+                Text("Save this arrangement to restore it later.")
             }
 
-            HomeBackgroundSection()
         }
         .navigationTitle("Home Layout")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Save as Favorite") {
-                    onSaveFavorite()
-                }
-            }
+        .confirmationDialog(
+            "Replace Saved Layout?",
+            isPresented: $isShowingReplaceSavedLayoutConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Replace Saved Layout", role: .destructive, action: onSaveFavorite)
+        } message: {
+            Text("Your previous saved layout will be replaced with the current arrangement.")
         }
     }
 }
@@ -310,17 +338,5 @@ private struct StatusColorToggleStyle: ToggleStyle {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
-    }
-}
-
-private struct HomeBackgroundSection: View {
-    var body: some View {
-        Section {
-            BackgroundEditor(tab: .home, showsApplyToAllPages: false)
-        } header: {
-            Label("Home Background", systemImage: "photo.on.rectangle")
-        } footer: {
-            Text("Choose the default background, a photo, or a custom color for Home.")
-        }
     }
 }
