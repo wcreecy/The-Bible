@@ -30,6 +30,8 @@ struct BibleSplitView: View {
         let bookName: String
     }
 
+    private struct StudyRoute: Hashable {}
+
     private var books: [Book] { BibleData.books }
 
     private var sidebarReference: (reference: ScriptureRef, book: Book, chapter: Chapter)? {
@@ -72,6 +74,13 @@ struct BibleSplitView: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 16) {
                     sidebarSearchField
+
+                    Button {
+                        detailPath.append(StudyRoute())
+                    } label: {
+                        StudyBibleSidebarCard()
+                    }
+                    .buttonStyle(.plain)
 
                     if let match = sidebarReference {
                         BibleReferenceJumpRow(reference: match.reference, action: openSidebarReference)
@@ -171,6 +180,9 @@ struct BibleSplitView: View {
                                 isShowingBookOverview = false
                             }
                         }
+                }
+                .navigationDestination(for: StudyRoute.self) { _ in
+                    StudyBibleView(books: books)
                 }
                 .navigationDestination(for: ReadingRoute.self) { route in
                     readingDestination(for: route)
@@ -298,6 +310,33 @@ struct BibleSplitView: View {
             detailPath = NavigationPath()
             detailPath.append(ReadingRoute(bookName: bookName, chapterNumber: chapter, verseNumber: verse))
         }
+    }
+}
+
+private struct StudyBibleSidebarCard: View {
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "graduationcap.fill")
+                .foregroundStyle(.tint)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Study the Bible")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                Text("Overviews and insights")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 0)
+
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.tertiary)
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .heroCardSurface()
     }
 }
 
