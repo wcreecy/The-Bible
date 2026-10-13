@@ -83,14 +83,14 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
 
     var subtitle: LocalizedStringResource {
         switch self {
-        case .quiz: "Test your Bible knowledge"
-        case .hangman: "Guess a person, place, or book"
-        case .beatTheClock: "Name a book before time runs out"
-        case .verseMatch: "Match each verse to its reference"
-        case .bookOrder: "Put Bible books in order"
-        case .wordSearch: "Find hidden words from a verse"
-        case .whoAmI: "Match names and descriptions"
-        case .wordle: "Solve today's five-letter word"
+        case .quiz: "Build recall of Bible facts and passages"
+        case .hangman: "Strengthen recognition of people, places, and books"
+        case .beatTheClock: "Practice quick recall of Bible books"
+        case .verseMatch: "Connect Scripture passages with their references"
+        case .bookOrder: "Learn the sequence of the Bible’s books"
+        case .wordSearch: "Notice key words in Scripture"
+        case .whoAmI: "Learn people and their roles in the Bible story"
+        case .wordle: "Return each day for a short Scripture word challenge"
         }
     }
 
@@ -121,6 +121,38 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
     }
 }
 
+private enum GameLearningGroup: CaseIterable, Identifiable {
+    case daily
+    case learn
+    case memorize
+
+    var id: Self { self }
+
+    var title: LocalizedStringResource {
+        switch self {
+        case .daily: "Daily"
+        case .learn: "Learn"
+        case .memorize: "Memorize"
+        }
+    }
+
+    var detail: LocalizedStringResource {
+        switch self {
+        case .daily: "Short practices to return to each day."
+        case .learn: "Build familiarity with people, places, and Bible knowledge."
+        case .memorize: "Strengthen book order, verses, and Scripture vocabulary."
+        }
+    }
+
+    var routes: [GameRoute] {
+        switch self {
+        case .daily: [.wordle]
+        case .learn: [.quiz, .hangman, .whoAmI, .wordSearch]
+        case .memorize: [.verseMatch, .bookOrder, .beatTheClock]
+        }
+    }
+}
+
 private struct DailyWordResult: Codable {
     let won: Bool
     let guesses: Int
@@ -140,11 +172,7 @@ struct GamesView: View {
     @State private var progressByRoute: [GameRoute: String] = [:]
     @State private var verseToRememberOffset = 0
 
-    private var allRoutes: [GameRoute] {
-        GameRoute.allCases.sorted {
-            $0.displayName.localizedStandardCompare($1.displayName) == .orderedAscending
-        }
-    }
+    private var todayChallengeStore: TodayChallengeStore { .shared }
 
     private var verseToRemember: HomeVerseRef? {
         guard !favorites.isEmpty else { return nil }
@@ -164,6 +192,67 @@ struct GamesView: View {
             verseNumber: favorite.verseNumber,
             verseText: favorite.verseText
         )
+    }
+
+    private var recommendation: GameRecommendation {
+        if let challenge = todayChallengeStore.challenges.first(where: {
+            $0.kind == .playGame && !$0.isCompleted && $0.gameName != nil
+        }), let route = GameRoute.allCases.first(where: { $0.displayName == challenge.gameName }) {
+            return GameRecommendation(
+                title: "Continue today’s challenge",
+                detail: challenge.title,
+                systemImage: "checklist",
+                route: route
+            )
+        }
+
+        if !favorites.isEmpty {
+            return GameRecommendation(
+                title: "Review saved verses",
+                detail: "Practice matching verses you’ve saved with their references.",
+                systemImage: "bookmark.fill",
+                route: .verseMatch
+            )
+        }
+
+        if weakestBookName != nil {
+            return GameRecommendation(
+                title: "Practice books you miss most",
+                detail: "Use Bible Quiz to revisit the areas that need more practice.",
+                systemImage: "arrow.triangle.2.circlepath",
+                route: .quiz
+            )
+        }
+
+        return GameRecommendation(
+            title: "Start with Bible Quiz",
+            detail: "Build a baseline and get a personalized recommendation as you play.",
+            systemImage: "questionmark.circle.fill",
+            route: .quiz
+        )
+    }
+
+    private var weakestBookName: String? {
+        let defaults = UserDefaults.standard
+        let answeredKeys = ["quizPerBookAnsweredMap", "versematchPerBookAnsweredMap"]
+        let correctKeys = ["quizPerBookCorrectMap", "versematchPerBookCorrectMap"]
+        var totals: [String: (answered: Int, correct: Int)] = [:]
+
+        for (answeredKey, correctKey) in zip(answeredKeys, correctKeys) {
+            let answered = (try? JSONDecoder().decode([String: Int].self, from: defaults.data(forKey: answeredKey) ?? Data())) ?? [:]
+            let correct = (try? JSONDecoder().decode([String: Int].self, from: defaults.data(forKey: correctKey) ?? Data())) ?? [:]
+            for (book, count) in answered {
+                totals[book, default: (0, 0)].answered += count
+                totals[book, default: (0, 0)].correct += correct[book] ?? 0
+            }
+        }
+
+        return totals
+            .filter { $0.value.answered >= 3 }
+            .min { lhs, rhs in
+                Double(lhs.value.correct) / Double(lhs.value.answered) < Double(rhs.value.correct) / Double(rhs.value.answered)
+            }?
+            .key
     }
 
     var body: some View {
@@ -195,6 +284,7 @@ struct GamesView: View {
         }
         .onAppear {
             refreshProgress()
+            todayChallengeStore.refresh()
             openPendingGameIfNeeded()
         }
         .onChange(of: AppRouter.shared.latest) { _, request in
@@ -212,10 +302,10 @@ struct GamesView: View {
 
     private var gameCollectionCard: some View {
         GameCollectionCard(
-            title: "All Games",
-            routes: allRoutes,
+            groups: GameLearningGroup.allCases,
             usesExpandedLayout: horizontalSizeClass == .regular,
             progress: { progressByRoute[$0] ?? "Not played" },
+            recommendation: recommendation,
             onSelect: present
         )
         .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -317,40 +407,105 @@ struct GamesView: View {
 }
 
 private struct GameCollectionCard: View {
-    let title: LocalizedStringResource
-    let routes: [GameRoute]
+    let groups: [GameLearningGroup]
     let usesExpandedLayout: Bool
     let progress: (GameRoute) -> String
+    let recommendation: GameRecommendation
     let onSelect: (GameRoute) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(title)
+            Text("Games")
                 .font(usesExpandedLayout ? .title3.weight(.bold) : .headline)
                 .padding(.bottom, usesExpandedLayout ? 12 : 8)
 
-            ForEach(routes) { route in
-                VStack(spacing: 0) {
-                    GameNavigationRow(
-                        route: route,
-                        progress: progress(route),
-                        usesExpandedLayout: usesExpandedLayout,
-                        onSelect: { onSelect(route) }
-                    )
+            GameRecommendationRow(recommendation: recommendation) {
+                onSelect(recommendation.route)
+            }
+            .padding(.bottom, 10)
 
-                    if route.id != routes.last?.id {
-                        Divider()
+            ForEach(groups) { group in
+                VStack(alignment: .leading, spacing: 0) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(group.title)
+                            .font(.subheadline.weight(.bold))
+                        Text(group.detail)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.top, 10)
+                    .padding(.bottom, 6)
+
+                    ForEach(group.routes) { route in
+                        VStack(spacing: 0) {
+                            GameNavigationRow(
+                                route: route,
+                                progress: progress(route),
+                                usesExpandedLayout: usesExpandedLayout,
+                                onSelect: { onSelect(route) }
+                            )
+
+                            if route.id != group.routes.last?.id {
+                                Divider()
+                            }
+                        }
                     }
                 }
             }
         }
         .frame(
             maxWidth: .infinity,
-            minHeight: usesExpandedLayout ? 560 : nil,
             alignment: .topLeading
         )
         .padding(AppDesignMetrics.cardPadding)
         .heroCardSurface()
+    }
+}
+
+private struct GameRecommendation {
+    let title: String
+    let detail: String
+    let systemImage: String
+    let route: GameRoute
+}
+
+private struct GameRecommendationRow: View {
+    let recommendation: GameRecommendation
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(alignment: .center, spacing: 10) {
+                Image(systemName: recommendation.systemImage)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(.tint)
+                    .frame(width: 32, height: 32)
+                    .background(Color.accentColor.opacity(0.12), in: Circle())
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Recommended for you")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    Text(recommendation.title)
+                        .font(.subheadline.weight(.bold))
+                    Text(recommendation.detail)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
+            }
+            .padding(10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.accentColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Opens \(recommendation.route.displayName)")
     }
 }
 
