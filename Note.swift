@@ -5,6 +5,7 @@ enum NoteCategory: String, CaseIterable, Identifiable {
     case sermon
     case personal
     case scripture
+    case chapterInsights
 
     var id: String { rawValue }
 
@@ -13,6 +14,7 @@ enum NoteCategory: String, CaseIterable, Identifiable {
         case .sermon: "Sermon Notes"
         case .personal: "Personal Notes"
         case .scripture: "Scripture Notes"
+        case .chapterInsights: "Chapter Insights"
         }
     }
 }
@@ -65,6 +67,9 @@ final class UserNote {
     /// Encoded `AttributedString` data. `content` remains the searchable plain-text copy.
     var formattedContent: Data?
     var categoryRawValue: String = NoteCategory.personal.rawValue
+    /// The chapter this reflection came from. Empty/zero means a regular personal note.
+    var sourceBookName: String = ""
+    var sourceChapterNumber: Int = 0
     var isFavorite: Bool = false
     // Optionals keep the model compatible with the app's CloudKit-backed store.
     var createdAt: Date?

@@ -1,4 +1,5 @@
 import Foundation
+import SwiftData
 import SwiftUI
 
 struct ChapterInsightsView: View {
@@ -179,15 +180,20 @@ private struct ChapterSummaryCard: View {
 }
 
 private struct ChapterReflectionSection: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query private var userNotes: [UserNote]
+
+    let bookName: String
+    let chapterNumber: Int
     private let whyItMatters: String
-    private let responseKey: String
-    @AppStorage private var response: String
+    @State private var response = ""
+    @State private var hasLoadedResponse = false
     @State private var showsSavedConfirmation = false
 
     init(bookName: String, chapterNumber: Int, whyItMatters: String) {
+        self.bookName = bookName
+        self.chapterNumber = chapterNumber
         self.whyItMatters = whyItMatters
-        responseKey = "chapterReflection.\(bookName).\(chapterNumber)"
-        _response = AppStorage(wrappedValue: "", responseKey)
     }
 
     var body: some View {
@@ -204,8 +210,7 @@ private struct ChapterReflectionSection: View {
 
                 HStack(spacing: 12) {
                     Button {
-                        UserDefaults.standard.set(response, forKey: responseKey)
-                        showsSavedConfirmation = true
+                        saveReflection()
                     } label: {
                         Label("Save Reflection", systemImage: "square.and.arrow.down")
                     }
@@ -221,6 +226,64 @@ private struct ChapterReflectionSection: View {
             }
         }
         .onChange(of: response) { _, _ in
+            showsSavedConfirmation = false
+        }
+        .task(id: "\(bookName)-\(chapterNumber)") {
+            loadOrMigrateResponse()
+        }
+    }
+
+    private var chapterNote: UserNote? {
+        userNotes.first {
+            $0.categoryRawValue == NoteCategory.chapterInsights.rawValue &&
+                $0.sourceBookName == bookName &&
+                $0.sourceChapterNumber == chapterNumber
+        }
+    }
+
+    private var legacyResponseKey: String {
+        "chapterReflection.\(bookName).\(chapterNumber)"
+    }
+
+    private func loadOrMigrateResponse() {
+        guard !hasLoadedResponse else { return }
+        if let chapterNote {
+            response = chapterNote.content
+        } else if let legacyResponse = UserDefaults.standard.string(forKey: legacyResponseKey),
+                  !legacyResponse.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let note = UserNote()
+            note.title = "\(bookName) \(chapterNumber)"
+            note.content = legacyResponse
+            note.categoryRawValue = NoteCategory.chapterInsights.rawValue
+            note.sourceBookName = bookName
+            note.sourceChapterNumber = chapterNumber
+            modelContext.insert(note)
+            try? modelContext.save()
+            UserDefaults.standard.removeObject(forKey: legacyResponseKey)
+            response = legacyResponse
+        }
+        hasLoadedResponse = true
+    }
+
+    private func saveReflection() {
+        let trimmedResponse = response.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedResponse.isEmpty else { return }
+
+        let note = chapterNote ?? UserNote()
+        note.title = "\(bookName) \(chapterNumber)"
+        note.content = trimmedResponse
+        note.categoryRawValue = NoteCategory.chapterInsights.rawValue
+        note.sourceBookName = bookName
+        note.sourceChapterNumber = chapterNumber
+        note.updatedAt = Date()
+        if chapterNote == nil {
+            modelContext.insert(note)
+        }
+        do {
+            try modelContext.save()
+            showsSavedConfirmation = true
+            Haptics.success()
+        } catch {
             showsSavedConfirmation = false
         }
     }

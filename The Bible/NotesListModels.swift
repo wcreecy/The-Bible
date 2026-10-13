@@ -52,6 +52,7 @@ enum NotesFilter: String, CaseIterable, Identifiable {
     case sermon
     case personal
     case scripture
+    case chapterInsights
 
     var id: String { rawValue }
 
@@ -61,6 +62,7 @@ enum NotesFilter: String, CaseIterable, Identifiable {
         case .sermon: "Sermon"
         case .personal: "Personal"
         case .scripture: "Scripture"
+        case .chapterInsights: "Chapter Insights"
         }
     }
 
@@ -70,6 +72,7 @@ enum NotesFilter: String, CaseIterable, Identifiable {
         case .sermon: "Sermon Notes (\(noteCount))"
         case .personal: "Personal Notes (\(noteCount))"
         case .scripture: "Scripture Notes (\(noteCount))"
+        case .chapterInsights: "Chapter Insights (\(noteCount))"
         }
     }
 }
@@ -249,6 +252,7 @@ extension NotesFilter {
         case .sermon: "person.wave.2"
         case .personal: "person.crop.circle"
         case .scripture: "book.closed"
+        case .chapterInsights: "text.book.closed"
         }
     }
 }
@@ -260,6 +264,7 @@ extension NotesFilter {
         case .sermon: .sermon
         case .personal: .personal
         case .scripture: .scripture
+        case .chapterInsights: .chapterInsights
         }
     }
 }
