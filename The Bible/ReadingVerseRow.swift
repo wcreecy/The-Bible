@@ -17,6 +17,7 @@ struct ReadingVerseRow: View {
     let isFavorite: Bool
     let hasNote: Bool
     let isPinned: Bool
+    let hasCrossReferences: Bool
     let isRead: Bool
     /// Bookmark, favorite, and note markers beside the reference.
     let showsMarkers: Bool
@@ -34,6 +35,8 @@ struct ReadingVerseRow: View {
     let onLongPress: (Int) -> Void
     /// Opens the verse's note; used by the note marker.
     let onOpenNote: () -> Void
+    /// Opens the Scripture connections associated with this verse.
+    let onOpenCrossReferences: () -> Void
 
     var body: some View {
         Group {
@@ -80,6 +83,9 @@ struct ReadingVerseRow: View {
             if hasNote {
                 Button("Open note", action: onOpenNote)
             }
+            if hasCrossReferences {
+                Button("Show cross references", action: onOpenCrossReferences)
+            }
         }
         .onScrollVisibilityChange(threshold: 0.6, onVisibilityChange)
         .onLongPressGesture(minimumDuration: 0.5) { onLongPress(verse.number) }
@@ -107,6 +113,15 @@ struct ReadingVerseRow: View {
             .buttonStyle(.plain)
             // A larger touch area than the small icon, without changing the layout.
             .contentShape(Rectangle().inset(by: -10))
+                .accessibilityHidden(true)
+        }
+        if hasCrossReferences {
+            Button(action: onOpenCrossReferences) {
+                Image(systemName: "arrow.triangle.branch")
+                    .foregroundStyle(.tint)
+            }
+            .buttonStyle(.plain)
+            .contentShape(Rectangle().inset(by: -10))
             .accessibilityHidden(true)
         }
     }
@@ -124,6 +139,7 @@ struct ReadingVerseRow: View {
         if isPinned { statuses.append("Bookmarked") }
         if isFavorite { statuses.append("Favorite") }
         if hasNote { statuses.append("Has note") }
+        if hasCrossReferences { statuses.append("Has cross references") }
         if showsReadProgress && isRead { statuses.append("Read") }
         return statuses.formatted(.list(type: .and))
     }

@@ -37,6 +37,8 @@ struct ReadingView: View {
     // reader reappears (for example after Focus Mode is dismissed).
     @State private var didAutoPresentFocusMode = false
     @State private var isChapterInsightsPresented = false
+    @State private var chapterRelatedVerses: [ChapterRelatedVerse] = []
+    @State private var crossReferenceVerse: Verse?
     @State private var seenVerseNumbers: Set<Int> = []
     @State private var seenVerseLocation: String = ""
 
@@ -301,6 +303,41 @@ struct ReadingView: View {
                 }
                 .environment(\.closeStudySheet) { isChapterInsightsPresented = false }
             }
+            .sheet(item: $crossReferenceVerse) { verse in
+                NavigationStack {
+                    ChapterCrossReferencesView(
+                        bookName: viewModel.currentBook.name,
+                        chapterNumber: viewModel.currentChapter.number,
+                        relatedVerses: chapterRelatedVerses.filter { $0.sourceVerse == verse.number }
+                    )
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Done") {
+                                crossReferenceVerse = nil
+                            }
+                        }
+
+                        ToolbarItem(placement: .primaryAction) {
+                            NavigationLink("All") {
+                                ChapterCrossReferencesView(
+                                    bookName: viewModel.currentBook.name,
+                                    chapterNumber: viewModel.currentChapter.number,
+                                    relatedVerses: chapterRelatedVerses
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            .task(id: "\(viewModel.currentBook.name)-\(viewModel.currentChapter.number)") {
+                chapterRelatedVerses = []
+                let insights = await ChapterInsightsRepository.shared.insights(
+                    forBookNamed: viewModel.currentBook.name,
+                    chapterNumber: viewModel.currentChapter.number
+                )
+                guard !Task.isCancelled else { return }
+                chapterRelatedVerses = insights?.relatedVerses ?? []
+            }
     }
 
     @ViewBuilder
@@ -347,6 +384,7 @@ struct ReadingView: View {
                             isFavorite: isFavorited(verse),
                             hasNote: hasNote(for: verse.number),
                             isPinned: isBookmarked(verse),
+                            hasCrossReferences: chapterRelatedVerses.contains { $0.sourceVerse == verse.number },
                             isRead: showsReadProgress &&
                                 seenVerseLocation == verseLocationKey &&
                                 seenVerseNumbers.contains(verse.number),
@@ -371,6 +409,9 @@ struct ReadingView: View {
                             },
                             onOpenNote: {
                                 noteEditorVerse = verse
+                            },
+                            onOpenCrossReferences: {
+                                crossReferenceVerse = verse
                             }
                         )
                         .id(viewModel.rowID(for: verse.number))
