@@ -113,6 +113,11 @@ struct StudyBibleView: View {
     @State private var searchText = ""
     @State private var testamentFilter: StudyTestamentFilter = .all
 
+    private let bookColumns = Array(
+        repeating: GridItem(.flexible(), spacing: 10),
+        count: 3
+    )
+
     private var displayedBooks: [Book] {
         books.filter { book in
             let matchesSearch = searchText.isEmpty || book.name.localizedCaseInsensitiveContains(searchText)
@@ -137,8 +142,10 @@ struct StudyBibleView: View {
                     ContinueStudyingCard(book: book, chapterNumber: chapterNumber)
                 }
 
-                ForEach(displayedBooks) { book in
-                    StudyBookRow(book: book)
+                LazyVGrid(columns: bookColumns, alignment: .leading, spacing: 10) {
+                    ForEach(displayedBooks) { book in
+                        StudyBookTile(book: book)
+                    }
                 }
             }
             .padding()
@@ -272,37 +279,55 @@ private struct StudyBibleHeader: View {
     }
 }
 
-private struct StudyBookRow: View {
+private struct StudyBookTile: View {
     let book: Book
+
+    private var verseCount: Int {
+        book.chapters.reduce(into: 0) { count, chapter in
+            count += chapter.verses.count
+        }
+    }
+
+    private var chapterCountLabel: String {
+        "\(book.chapters.count) \(book.chapters.count == 1 ? "chapter" : "chapters")"
+    }
 
     var body: some View {
         NavigationLink {
             StudyBookView(book: book)
         } label: {
-            HStack(spacing: 12) {
-                Image(systemName: "book.closed")
-                    .foregroundStyle(.tint)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(book.name)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-                    Text("\(book.chapters.count) chapters")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 8) {
+                if let theme = BookChapterTheme.themes[book.name] {
+                    BookChapterEmblem(theme: theme, size: 32)
                 }
+
+                Text(book.name)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(2, reservesSpace: true)
+                    .minimumScaleFactor(0.75)
+                    .multilineTextAlignment(.leading)
 
                 Spacer(minLength: 0)
 
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.tertiary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(chapterCountLabel)
+                    Text("\(verseCount) verses")
+                }
+                .font(.caption2)
+                .foregroundStyle(.secondary)
             }
-            .padding(AppDesignMetrics.cardPadding)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(
+                maxWidth: .infinity,
+                minHeight: 154,
+                maxHeight: 154,
+                alignment: .topLeading
+            )
+            .padding(12)
             .heroCardSurface()
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("\(book.name), \(chapterCountLabel), \(verseCount) verses")
     }
 }
 

@@ -101,8 +101,9 @@ struct ThemedBookChaptersHeader: View {
     }
 }
 
-private struct BookChapterEmblem: View {
+struct BookChapterEmblem: View {
     let theme: BookChapterTheme
+    var size: CGFloat = 72
 
     var body: some View {
         ZStack {
@@ -116,18 +117,18 @@ private struct BookChapterEmblem: View {
                 )
 
             Image(systemName: theme.primarySymbol)
-                .font(.system(size: 32, weight: .bold))
+                .font(.system(size: size * 4 / 9, weight: .bold))
                 .foregroundStyle(.white)
-                .offset(y: theme.accentSymbol == nil ? 0 : -8)
+                .offset(y: theme.accentSymbol == nil ? 0 : -size / 9)
 
             if let accentSymbol = theme.accentSymbol {
                 Image(systemName: accentSymbol)
-                    .font(.system(size: 22, weight: .bold))
+                    .font(.system(size: size * 11 / 36, weight: .bold))
                     .foregroundStyle(.white.opacity(0.94))
-                    .offset(x: 12, y: 12)
+                    .offset(x: size / 6, y: size / 6)
             }
         }
-        .frame(width: 72, height: 72)
+        .frame(width: size, height: size)
         .accessibilityHidden(true)
     }
 }
