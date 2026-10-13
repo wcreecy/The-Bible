@@ -14,6 +14,9 @@ struct HomeLayoutEditorView: View {
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
     @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
+    @State private var highlightedCards: Set<HomeCardID> = []
+    @State private var reorderConfirmation: String?
+    @State private var reorderFeedbackTask: Task<Void, Never>?
 
     /// The cards listed for reordering, in Home order.
     private var listedCards: [HomeCardID] {
@@ -62,10 +65,17 @@ struct HomeLayoutEditorView: View {
         guard let index = cards.firstIndex(of: id) else { return }
         let destination = index + offset
         guard cards.indices.contains(destination) else { return }
+        let swappedCard = cards[destination]
         cards.swapAt(index, destination)
         // The dashboard keeps Verse of the Day first; it is not part of the reorderable list there.
-        order = usesDashboard ? [.verseOfDay] + cards : cards
+        withAnimation(.snappy) {
+            order = usesDashboard ? [.verseOfDay] + cards : cards
+            highlightedCards = [id, swappedCard]
+            reorderConfirmation = "\(id.title) moved to position \(destination + 1)"
+        }
         onDone()
+        Haptics.selection()
+        scheduleReorderFeedbackReset()
     }
 
     private func canMoveUp(_ id: HomeCardID) -> Bool {
@@ -76,8 +86,26 @@ struct HomeLayoutEditorView: View {
         listedCards.firstIndex(of: id).map { $0 < listedCards.count - 1 } == true
     }
 
-    private func layoutRow(for id: HomeCardID) -> some View {
+    private func scheduleReorderFeedbackReset() {
+        reorderFeedbackTask?.cancel()
+        reorderFeedbackTask = Task {
+            try? await Task.sleep(for: .seconds(1.4))
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: 0.2)) {
+                highlightedCards.removeAll()
+                reorderConfirmation = nil
+            }
+        }
+    }
+
+    private func layoutRow(for id: HomeCardID, position: Int) -> some View {
         HStack {
+            Text(position, format: .number)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.tint)
+                .frame(width: 24, height: 24)
+                .background(Color.accentColor.opacity(0.12), in: Circle())
+
             Image(systemName: id.systemImage)
                 .foregroundStyle(.secondary)
                 .frame(width: 24)
@@ -121,6 +149,12 @@ struct HomeLayoutEditorView: View {
             }
             .buttonStyle(.plain)
         }
+        .padding(.vertical, 4)
+        .background(
+            highlightedCards.contains(id) ? Color.accentColor.opacity(0.14) : Color.clear,
+            in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+        )
+        .accessibilityValue("Position \(position) of \(listedCards.count)")
     }
 
     @ViewBuilder
@@ -172,8 +206,15 @@ struct HomeLayoutEditorView: View {
             }
 
             Section {
-                ForEach(listedCards) { id in
-                    layoutRow(for: id)
+                if let reorderConfirmation {
+                    Label(reorderConfirmation, systemImage: "checkmark.circle.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.green)
+                        .padding(.vertical, 4)
+                }
+
+                ForEach(Array(listedCards.enumerated()), id: \.element) { index, id in
+                    layoutRow(for: id, position: index + 1)
                 }
 
                 // iPad keeps Customize Home in the toolbar; iPhone shows it below the cards.
