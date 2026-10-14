@@ -17,8 +17,12 @@ struct HomeLayoutStore {
     private static let keyFavoriteTodayVisibilityMigrated = "homeFavoriteTodayVisibilityMigratedV1"
     static let keyColumns = "homeDashboardColumns"
     static let keyFavColumns = "homeCardFavoriteDashboardColumns"
-    static let keyBibleReaderOnLeft = "homeBibleReaderOnLeft"
-    static let keyFavBibleReaderOnLeft = "homeCardFavoriteBibleReaderOnLeft"
+    static let keyBibleReaderColumn = "homeBibleReaderColumn"
+    static let keyFavBibleReaderColumn = "homeCardFavoriteBibleReaderColumn"
+    // Replaced by the column keys above; read once to carry over a left-side choice.
+    static let legacyKeyBibleReaderOnLeft = "homeBibleReaderOnLeft"
+    static let legacyKeyFavBibleReaderOnLeft = "homeCardFavoriteBibleReaderOnLeft"
+    static let defaultBibleReaderColumn: HomeColumn = .right
 
     // Underlying storage
     @AppStorage(Self.keyOrder) private var orderRaw: String = ""
@@ -31,13 +35,13 @@ struct HomeLayoutStore {
     @AppStorage(Self.keyFavoriteTodayVisibilityMigrated) private var favoriteTodayVisibilityMigrated = false
     @AppStorage(Self.keyColumns) private var columnsRaw: String = ""
     @AppStorage(Self.keyFavColumns) private var favColumnsRaw: String = ""
-    @AppStorage(Self.keyBibleReaderOnLeft) private var bibleReaderOnLeft: Bool = false
-    @AppStorage(Self.keyFavBibleReaderOnLeft) private var favBibleReaderOnLeft: Bool = false
+    @AppStorage(Self.keyBibleReaderColumn) private var bibleReaderColumn: HomeColumn = Self.defaultBibleReaderColumn
+    @AppStorage(Self.keyFavBibleReaderColumn) private var favBibleReaderColumn: HomeColumn = Self.defaultBibleReaderColumn
 
     // Baseline hidden set used when no hidden config exists
     static var baselineOrder: [HomeCardID] {
-        // iPad: read row by row into the two dashboard columns (see `baselineColumns`),
-        // with Today's Reading in its own panel beside them.
+        // iPad: read row by row into the dashboard's left and middle columns (see
+        // `baselineColumns`), with the Today's Reading panel in the right column.
         if UIDevice.current.userInterfaceIdiom == .pad {
             return [
                 .verseOfDay,
@@ -84,7 +88,31 @@ struct HomeLayoutStore {
     }
 
     static var baselineColumns: HomeColumnLayout {
-        HomeColumnLayout.seeded(from: baselineOrder, hidden: baselineHidden)
+        HomeColumnLayout.seeded(
+            from: baselineOrder,
+            hidden: baselineHidden,
+            readerColumn: defaultBibleReaderVisible ? defaultBibleReaderColumn : nil
+        )
+    }
+
+    /// The column the Today's Reading panel occupies, or nil when it's hidden.
+    private var visibleReaderColumn: HomeColumn? {
+        bibleReaderVisible ? bibleReaderColumn : nil
+    }
+
+    /// Carries a Left/Right reader choice saved before the panel could use any column.
+    private func migrateReaderSideIfNeeded() {
+        let defaults = UserDefaults.standard
+        for (legacyKey, newKey) in [
+            (Self.legacyKeyBibleReaderOnLeft, Self.keyBibleReaderColumn),
+            (Self.legacyKeyFavBibleReaderOnLeft, Self.keyFavBibleReaderColumn)
+        ] where defaults.object(forKey: legacyKey) != nil {
+            if defaults.object(forKey: newKey) == nil {
+                let column: HomeColumn = defaults.bool(forKey: legacyKey) ? .left : .right
+                defaults.set(column.rawValue, forKey: newKey)
+            }
+            defaults.removeObject(forKey: legacyKey)
+        }
     }
 
     init() {}
@@ -92,6 +120,8 @@ struct HomeLayoutStore {
     // MARK: - Core load/save
 
     func load() -> (order: [HomeCardID], hidden: Set<HomeCardID>, columns: HomeColumnLayout) {
+        migrateReaderSideIfNeeded()
+
         // Decode order
         let order: [HomeCardID] = {
             if let data = orderRaw.data(using: .utf8),
@@ -121,8 +151,8 @@ struct HomeLayoutStore {
         }()
 
         // First launch with columns: build them from the order so nothing moves.
-        let columns = (Self.storesColumns ? HomeColumnLayout(storageString: columnsRaw) : nil)
-            ?? HomeColumnLayout.seeded(from: order, hidden: hidden)
+        let columns = (Self.storesColumns ? HomeColumnLayout(storageString: columnsRaw, readerColumn: visibleReaderColumn) : nil)
+            ?? HomeColumnLayout.seeded(from: order, hidden: hidden, readerColumn: visibleReaderColumn)
 
         return (order, hidden, columns)
     }
@@ -191,7 +221,7 @@ struct HomeLayoutStore {
         favoriteTodayVisibilityMigrated = true
         if Self.storesColumns {
             favColumnsRaw = columns.storageString
-            favBibleReaderOnLeft = bibleReaderOnLeft
+            favBibleReaderColumn = bibleReaderColumn
         }
     }
 
@@ -200,7 +230,7 @@ struct HomeLayoutStore {
         hidden: Set<HomeCardID>,
         columns: HomeColumnLayout,
         bibleReaderVisible: Bool,
-        bibleReaderOnLeft: Bool
+        bibleReaderColumn: HomeColumn
     )? {
         guard let orderData = favOrderRaw.data(using: .utf8),
               let orderIDs = try? JSONDecoder().decode([String].self, from: orderData) else {
@@ -224,16 +254,18 @@ struct HomeLayoutStore {
             favoriteTodayVisibilityMigrated = true
         }
         // Layouts saved before columns existed are arranged from their order.
-        let columns = (Self.storesColumns ? HomeColumnLayout(storageString: favColumnsRaw) : nil)
-            ?? HomeColumnLayout.seeded(from: order, hidden: hidden)
-        return (order, hidden, columns, favBibleReaderVisible, favBibleReaderOnLeft)
+        migrateReaderSideIfNeeded()
+        let favReaderColumn = favBibleReaderVisible ? favBibleReaderColumn : nil
+        let columns = (Self.storesColumns ? HomeColumnLayout(storageString: favColumnsRaw, readerColumn: favReaderColumn) : nil)
+            ?? HomeColumnLayout.seeded(from: order, hidden: hidden, readerColumn: favReaderColumn)
+        return (order, hidden, columns, favBibleReaderVisible, favBibleReaderColumn)
     }
 
     // Applies favorite to current layout and notifies listeners
     func applyFavoriteIfAvailable() {
         guard let fav = loadFavorite() else { return }
         bibleReaderVisible = fav.bibleReaderVisible
-        bibleReaderOnLeft = fav.bibleReaderOnLeft
+        bibleReaderColumn = fav.bibleReaderColumn
         save(order: fav.order, hidden: fav.hidden, columns: fav.columns)
     }
 

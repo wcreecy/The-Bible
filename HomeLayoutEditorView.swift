@@ -3,9 +3,9 @@ import SwiftUI
 struct HomeLayoutEditorView: View {
     @Binding var order: [HomeCardID]
     @Binding var hiddenSet: Set<HomeCardID>
-    /// The iPad dashboard's two card columns; edited instead of `order` when `usesDashboard`.
+    /// The iPad dashboard's three columns; edited instead of `order` when `usesDashboard`.
     @Binding var columns: HomeColumnLayout
-    /// iPad arranges cards in two columns beside the Today's Reading panel.
+    /// iPad arranges cards in three columns, with the Today's Reading panel atop one of them.
     let usesDashboard: Bool
     var onDone: () -> Void
 
@@ -16,7 +16,7 @@ struct HomeLayoutEditorView: View {
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
     @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
-    @AppStorage(HomeLayoutStore.keyBibleReaderOnLeft) private var bibleReaderOnLeft = false
+    @AppStorage(HomeLayoutStore.keyBibleReaderColumn) private var bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
     @State private var highlightedCards: Set<HomeCardID> = []
     @State private var reorderConfirmation: String?
     @State private var reorderFeedbackTask: Task<Void, Never>?
@@ -44,7 +44,7 @@ struct HomeLayoutEditorView: View {
         columns = HomeLayoutStore.baselineColumns
         customizeButtonVisible = true
         bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
-        bibleReaderOnLeft = false
+        bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
         onDone()
     }
 
@@ -117,10 +117,11 @@ struct HomeLayoutEditorView: View {
         scheduleReorderFeedbackReset()
     }
 
-    private func moveToOtherColumn(_ id: HomeCardID) {
-        guard let column = columns.column(of: id) else { return }
-        changeColumns(highlighting: [id], confirmation: "\(id.title) moved to the \(column.other.title.lowercased())") {
-            $0.moveToOtherColumn(id)
+    /// Moves a card to the neighboring column: -1 is left, +1 is right.
+    private func moveAcross(_ id: HomeCardID, by offset: Int) {
+        guard let destination = columns.column(of: id)?.neighbor(by: offset) else { return }
+        changeColumns(highlighting: [id], confirmation: "\(id.title) moved to the \(destination.title.lowercased())") {
+            $0.moveAcross(id, by: offset)
         }
     }
 
@@ -142,7 +143,8 @@ struct HomeLayoutEditorView: View {
     }
 
     private func columnRow(for id: HomeCardID, in column: HomeColumn, position: Int) -> some View {
-        let otherColumn = column.other
+        let leftColumn = column.neighbor(by: -1)
+        let rightColumn = column.neighbor(by: 1)
         return HStack {
             Image(systemName: id.systemImage)
                 .foregroundStyle(.secondary)
@@ -167,27 +169,50 @@ struct HomeLayoutEditorView: View {
             .accessibilityLabel("\(isVisible(id) ? "Hide" : "Show") \(id.title)")
             .accessibilityHint("Changes whether this card is available on Home")
 
-            Button {
-                moveToOtherColumn(id)
-            } label: {
-                Image(systemName: otherColumn == .right ? "arrow.right.circle" : "arrow.left.circle")
-                    .font(.title3)
-                    .frame(width: 32, height: 32)
+            HStack(spacing: 2) {
+                Button {
+                    moveAcross(id, by: -1)
+                } label: {
+                    Image(systemName: "arrow.left.circle")
+                        .font(.title3)
+                        .frame(width: 32, height: 32)
+                }
+                .disabled(leftColumn == nil)
+                .accessibilityLabel("Move \(id.title) left")
+
+                Button {
+                    moveAcross(id, by: 1)
+                } label: {
+                    Image(systemName: "arrow.right.circle")
+                        .font(.title3)
+                        .frame(width: 32, height: 32)
+                }
+                .disabled(rightColumn == nil)
+                .accessibilityLabel("Move \(id.title) right")
             }
             .buttonStyle(.plain)
             .foregroundStyle(.tint)
-            .accessibilityLabel("Move \(id.title) to the \(otherColumn.title.lowercased())")
         }
         .padding(.vertical, 4)
         .background(
             highlightedCards.contains(id) ? Color.accentColor.opacity(0.14) : Color.clear,
             in: RoundedRectangle(cornerRadius: 10, style: .continuous)
         )
-        .swipeActions(edge: otherColumn == .right ? .trailing : .leading) {
-            Button("Move to \(otherColumn.title)", systemImage: otherColumn == .right ? "arrow.right" : "arrow.left") {
-                moveToOtherColumn(id)
+        .swipeActions(edge: .leading) {
+            if let leftColumn {
+                Button("Move to \(leftColumn.title)", systemImage: "arrow.left") {
+                    moveAcross(id, by: -1)
+                }
+                .tint(.accentColor)
             }
-            .tint(.accentColor)
+        }
+        .swipeActions(edge: .trailing) {
+            if let rightColumn {
+                Button("Move to \(rightColumn.title)", systemImage: "arrow.right") {
+                    moveAcross(id, by: 1)
+                }
+                .tint(.accentColor)
+            }
         }
         .accessibilityElement(children: .combine)
         .accessibilityValue("\(column.title), position \(position) of \(columns[column].count), \(isVisible(id) ? "shown" : "hidden")")
@@ -198,8 +223,21 @@ struct HomeLayoutEditorView: View {
             if columns.canMove(id, by: 1) {
                 Button("Move down") { moveInColumn(id, by: 1) }
             }
-            Button("Move to \(otherColumn.title)") { moveToOtherColumn(id) }
+            if let leftColumn {
+                Button("Move to \(leftColumn.title)") { moveAcross(id, by: -1) }
+            }
+            if let rightColumn {
+                Button("Move to \(rightColumn.title)") { moveAcross(id, by: 1) }
+            }
             Button(isVisible(id) ? "Hide" : "Show") { toggleVisibility(id) }
+        }
+    }
+
+    private func columnSymbol(_ column: HomeColumn) -> String {
+        switch column {
+        case .left: return "rectangle.leadingthird.inset.filled"
+        case .middle: return "rectangle.center.inset.filled"
+        case .right: return "rectangle.trailingthird.inset.filled"
         }
     }
 
@@ -212,21 +250,28 @@ struct HomeLayoutEditorView: View {
                 isOn: $bibleReaderVisible
             )
 
-            Picker("Side", selection: $bibleReaderOnLeft) {
-                Text("Left").tag(true)
-                Text("Right").tag(false)
+            Picker("Column", selection: $bibleReaderColumn) {
+                ForEach(HomeColumn.allCases, id: \.self) { column in
+                    Text(column.shortTitle).tag(column)
+                }
             }
             .pickerStyle(.segmented)
             .disabled(!bibleReaderVisible)
-            .accessibilityLabel("Today's Reading side")
+            .accessibilityLabel("Today's Reading column")
         } header: {
             Label("Today's Reading Panel", systemImage: "book.pages")
         } footer: {
-            Text("A full-height reading panel beside your cards. It shows your bookmark, or the Verse of the Day in its chapter.")
+            Text("A full-height reading panel at the top of its column; any cards in that column appear below it. It shows your bookmark, or the Verse of the Day in its chapter.")
         }
 
         ForEach(HomeColumn.allCases, id: \.self) { column in
             Section {
+                if bibleReaderVisible && bibleReaderColumn == column {
+                    Label("Today's Reading panel", systemImage: "book.pages")
+                        .foregroundStyle(.secondary)
+                        .accessibilityHint("Choose its column in Today's Reading Panel above")
+                }
+
                 ForEach(Array(columns[column].enumerated()), id: \.element) { index, id in
                     columnRow(for: id, in: column, position: index + 1)
                 }
@@ -235,15 +280,15 @@ struct HomeLayoutEditorView: View {
                 }
 
                 if columns[column].isEmpty {
-                    Text("No cards. Use the arrow on a card to move it here.")
+                    Text("No cards. Use the arrows on a card to move it here.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
             } header: {
-                Label(column.title, systemImage: column == .left ? "rectangle.lefthalf.filled" : "rectangle.righthalf.filled")
+                Label(column.title, systemImage: columnSymbol(column))
             } footer: {
-                if column == .right {
-                    Text("Drag cards to reorder them within a column, and use the arrows to move a card to the other column. You can also tap Edit Home on the Home screen to arrange cards in place.")
+                if column == HomeColumn.allCases.last {
+                    Text("Drag cards to reorder them within a column, and use the arrows to move a card to the next column. You can also tap Edit Home on the Home screen to arrange cards in place.")
                 }
             }
         }
@@ -340,7 +385,7 @@ struct HomeLayoutEditorView: View {
                     id: "home.layoutEditor",
                     title: "Make Home yours",
                     message: usesDashboard
-                        ? "Use the eye buttons to show or hide cards, drag to reorder, and the arrows to move cards between columns."
+                        ? "Use the eye buttons to show or hide cards, drag to reorder, and the arrows to move cards between the three columns."
                         : "Use the eye buttons to show or hide cards, and the arrows to reorder them.",
                     systemImage: "rectangle.grid.1x2"
                 )

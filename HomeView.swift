@@ -21,55 +21,6 @@ import WidgetKit
 //     var id: String { rawValue }
 // }
 
-private struct HomeDashboardColumns<Header: View, Tip: View, Main: View, Sidebar: View>: View {
-    let columnSpacing: CGFloat
-    let mainWidth: CGFloat
-    let sidebarWidth: CGFloat
-    let sidebarOnLeading: Bool
-    let header: Header
-    let tip: Tip
-    let main: Main
-    let sidebar: Sidebar
-
-    init(
-        columnSpacing: CGFloat,
-        mainWidth: CGFloat,
-        sidebarWidth: CGFloat,
-        sidebarOnLeading: Bool,
-        @ViewBuilder header: () -> Header,
-        @ViewBuilder tip: () -> Tip,
-        @ViewBuilder main: () -> Main,
-        @ViewBuilder sidebar: () -> Sidebar
-    ) {
-        self.columnSpacing = columnSpacing
-        self.mainWidth = mainWidth
-        self.sidebarWidth = sidebarWidth
-        self.sidebarOnLeading = sidebarOnLeading
-        self.header = header()
-        self.tip = tip()
-        self.main = main()
-        self.sidebar = sidebar()
-    }
-
-    var body: some View {
-        header
-        tip
-
-        HStack(alignment: .top, spacing: columnSpacing) {
-            if sidebarOnLeading {
-                sidebar
-                    .frame(width: sidebarWidth)
-            }
-            main
-                .frame(width: mainWidth)
-            if !sidebarOnLeading {
-                sidebar
-                    .frame(width: sidebarWidth)
-            }
-        }
-    }
-}
-
 struct HomeView: View {
     @State private var showPrayerStudySheet: Bool = false
 
@@ -190,7 +141,7 @@ struct HomeView: View {
     @State private var searchScrollRequest = 0
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
     @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
-    @AppStorage(HomeLayoutStore.keyBibleReaderOnLeft) private var bibleReaderOnLeft = false
+    @AppStorage(HomeLayoutStore.keyBibleReaderColumn) private var bibleReaderColumn = HomeLayoutStore.defaultBibleReaderColumn
 
     private func loadHomeLayout() {
         let store = HomeLayoutStore()
@@ -384,7 +335,7 @@ struct HomeView: View {
                 id: "home.customization",
                 title: "Make Home your own",
                 message: isPad
-                    ? "Tap Edit Home to arrange cards in two columns, or choose them from Customize Home."
+                    ? "Tap Edit Home to arrange cards in any of the three columns, or choose them from Customize Home."
                     : "Choose which cards appear here and reorder them from Customize Home.",
                 systemImage: "sparkles"
             )
@@ -415,54 +366,41 @@ struct HomeView: View {
             minimalHomeQuickActions
                 .frame(minHeight: max(0, availableHeight - 96), alignment: .center)
         } else {
-            let standardColumnSpacing: CGFloat = 16
-            let columnWidth = (width - (standardColumnSpacing * 2)) / 3
-            let mainCardsWidth = bibleReaderVisible ? (columnWidth * 2) + standardColumnSpacing : width
-            let sidebarWidth = bibleReaderVisible ? columnWidth : 0
-            let columnSpacing = bibleReaderVisible ? standardColumnSpacing : 0
+            homeHeader(usesDashboard: true)
 
-            HomeDashboardColumns(
-                columnSpacing: columnSpacing,
-                mainWidth: mainCardsWidth,
-                sidebarWidth: sidebarWidth,
-                sidebarOnLeading: bibleReaderOnLeft
-            ) {
-                homeHeader(usesDashboard: true)
-            } tip: {
-                if isEditingLayout {
-                    editHomeHint
-                } else {
-                    contextualHomeTip
-                }
-            } main: {
-                HomeCardColumnsView(
-                    columns: columns,
-                    hiddenCards: hiddenCards,
-                    isEditing: isEditingLayout,
-                    width: mainCardsWidth,
-                    spacing: 10,
-                    onMoveToOtherColumn: { id in
-                        updateColumns { $0.moveToOtherColumn(id) }
-                    },
-                    onMoveWithinColumn: { id, offset in
-                        updateColumns { $0.move(id, by: offset) }
-                    },
-                    onToggleHidden: toggleCardHidden
-                ) { cardID in
-                    card(for: cardID)
-                }
-            } sidebar: {
-                if bibleReaderVisible {
-                    // While editing, the panel moves down so its controls sit above its title.
-                    HomeBibleReaderCard(
-                        verseOfDay: votdVM.verse,
-                        onVerseAction: handleVerseActionFeedback
-                    )
-                    .padding(.top, isEditingLayout ? HomeCardEditChrome.barHeight : 0)
-                    .overlay(alignment: .top) {
-                        if isEditingLayout {
-                            bibleReaderEditControls
-                        }
+            if isEditingLayout {
+                editHomeHint
+            } else {
+                contextualHomeTip
+            }
+
+            HomeCardColumnsView(
+                columns: columns,
+                hiddenCards: hiddenCards,
+                readerColumn: bibleReaderVisible ? bibleReaderColumn : nil,
+                isEditing: isEditingLayout,
+                width: width,
+                columnSpacing: 16,
+                cardSpacing: 10,
+                onMoveAcross: { id, offset in
+                    updateColumns { $0.moveAcross(id, by: offset) }
+                },
+                onMoveWithinColumn: { id, offset in
+                    updateColumns { $0.move(id, by: offset) }
+                },
+                onToggleHidden: toggleCardHidden
+            ) { cardID in
+                card(for: cardID)
+            } reader: {
+                // While editing, the panel moves down so its controls sit above its title.
+                HomeBibleReaderCard(
+                    verseOfDay: votdVM.verse,
+                    onVerseAction: handleVerseActionFeedback
+                )
+                .padding(.top, isEditingLayout ? HomeCardEditChrome.barHeight : 0)
+                .overlay(alignment: .top) {
+                    if isEditingLayout {
+                        bibleReaderEditControls
                     }
                 }
             }
@@ -471,9 +409,9 @@ struct HomeView: View {
 
     private var editHomeHint: some View {
         Label {
-            Text("Use the arrows to move cards up, down, or to the other column. Tap – to hide a card. Tap Done when you're finished.")
+            Text("Use the arrows to move cards up, down, left, or right. Tap – to hide a card. Tap Done when you're finished.")
         } icon: {
-            Image(systemName: "arrow.up.arrow.down")
+            Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
         }
         .font(.subheadline)
         .foregroundStyle(.secondary)
@@ -481,31 +419,43 @@ struct HomeView: View {
         .padding(.horizontal, 4)
     }
 
-    /// Edit Home controls for the Today's Reading panel: swap its side or hide it.
+    /// Edit Home controls for the Today's Reading panel: move it to another column or hide it.
     private var bibleReaderEditControls: some View {
         HStack(spacing: 8) {
-            Button {
-                withAnimation(.snappy) { bibleReaderOnLeft.toggle() }
-                Haptics.selection()
-            } label: {
-                Label(
-                    bibleReaderOnLeft ? "Move Right" : "Move Left",
-                    systemImage: bibleReaderOnLeft ? "arrow.right" : "arrow.left"
-                )
+            HomeEditControlButton(
+                systemImage: "arrow.left",
+                label: "Move Today's Reading left",
+                disabled: bibleReaderColumn.neighbor(by: -1) == nil
+            ) {
+                moveBibleReader(by: -1)
             }
-            .accessibilityLabel(bibleReaderOnLeft ? "Move Today's Reading to the right" : "Move Today's Reading to the left")
 
             Button {
                 withAnimation(.snappy) { bibleReaderVisible = false }
                 Haptics.selection()
             } label: {
                 Label("Hide", systemImage: "eye.slash")
+                    .font(.subheadline.weight(.semibold))
             }
+            .buttonStyle(.glass)
             .accessibilityLabel("Hide Today's Reading")
+
+            HomeEditControlButton(
+                systemImage: "arrow.right",
+                label: "Move Today's Reading right",
+                disabled: bibleReaderColumn.neighbor(by: 1) == nil
+            ) {
+                moveBibleReader(by: 1)
+            }
         }
-        .font(.subheadline.weight(.semibold))
-        .buttonStyle(.glass)
         .frame(height: HomeCardEditChrome.barHeight)
+    }
+
+    /// Moves the Today's Reading panel to the neighboring column; cards there stay below it.
+    private func moveBibleReader(by offset: Int) {
+        guard let destination = bibleReaderColumn.neighbor(by: offset) else { return }
+        withAnimation(.snappy) { bibleReaderColumn = destination }
+        Haptics.selection()
     }
 
     private var minimalHomeQuickActions: some View {
