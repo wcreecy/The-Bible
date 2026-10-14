@@ -313,9 +313,18 @@ enum NoteFormattedContent {
     }
 }
 
-extension EnvironmentValues {
+@MainActor
+private final class NoteTabKeyAction {
+    var handler: ((Int) -> Void)?
+
+    func perform(_ direction: Int) {
+        handler?(direction)
+    }
+}
+
+fileprivate extension EnvironmentValues {
     /// Handles hardware Tab (+1) and Shift-Tab (-1) in the note body editor.
-    @Entry var noteTabKeyAction: ((Int) -> Void)? = nil
+    @Entry var noteTabKeyAction: NoteTabKeyAction?
 }
 
 /// The note body editor, sized by the editor's text size setting.
@@ -329,7 +338,7 @@ struct NoteBodyTextEditor: View {
 
     var body: some View {
         NoteEditorKeyCommandHost(
-            onTab: { tabKeyAction?($0) },
+            onTab: { tabKeyAction?.perform($0) },
             content: AnyView(
                 TextEditor(text: $text, selection: $selection)
                     .font(.body)
@@ -406,6 +415,7 @@ private struct RichNoteEditing: ViewModifier {
     @AppStorage(NoteEditorTextSize.storageKey) private var textSizeStep = NoteEditorTextSize.defaultStep
     @State private var selectedScriptureReference: ScriptureRef?
     @State private var referenceLinkTask: Task<Void, Never>?
+    @State private var tabKeyAction = NoteTabKeyAction()
 
     @Binding var text: AttributedString
     @Binding var selection: AttributedTextSelection
@@ -437,13 +447,16 @@ private struct RichNoteEditing: ViewModifier {
                     horizontalPadding: formattingBarPadding
                 )
             }
-            .onAppear(perform: linkScriptureReferences)
+            .onAppear {
+                tabKeyAction.handler = handleTabKey
+                linkScriptureReferences()
+            }
             .onChange(of: String(text.characters)) { oldValue, newValue in
                 handleListTyping(previousCount: oldValue.count, newCount: newValue.count)
                 scheduleReferenceLinking()
             }
             // Hardware Tab / Shift-Tab, delivered by the editor's key commands.
-            .environment(\.noteTabKeyAction, handleTabKey)
+            .environment(\.noteTabKeyAction, tabKeyAction)
             .onDisappear {
                 referenceLinkTask?.cancel()
             }

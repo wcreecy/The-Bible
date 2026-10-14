@@ -17,7 +17,7 @@ struct StudyHomeCard: View {
 
         var label: String {
             switch self {
-            case .bookmark: "Your bookmark"
+            case .bookmark: "From your bookmark"
             case .verseOfDay(let title): "From \(title)"
             case .startingPoint: "Start here"
             }
@@ -57,8 +57,8 @@ struct StudyHomeCard: View {
 
     var body: some View {
         HeroCard(
-            title: "Study",
-            subtitle: "\(overview != nil ? "Starting \(bookName)" : reference) · \(source.label)",
+            title: "Study \(reference)",
+            subtitle: source.label,
             icon: "text.book.closed",
             tint: .teal,
             trailingAccessory: {
@@ -119,50 +119,40 @@ struct StudyHomeCard: View {
 
     @ViewBuilder
     private func chapterStudy(_ insights: ChapterInsights) -> some View {
-        ChapterStudySummary(summary: insights.overallSummary)
+        VStack(alignment: .leading, spacing: 8) {
+            sectionLabel("IN BRIEF")
+            ChapterStudySummary(summary: insights.overallSummary)
+        }
+
+        if let figure = insights.keyFigures.first {
+            KeyFigurePreview(figure: figure)
+        }
 
         let themes = insights.keyThemes.prefix(Self.maximumThemes)
         if !themes.isEmpty {
             VStack(alignment: .leading, spacing: 8) {
-                sectionLabel("Themes")
+                sectionLabel("THEMES")
                 ForEach(themes) { theme in
                     themeChip(theme)
                 }
             }
         }
 
-        actionButtons(secondaryTitle: "Insights", secondarySheet: .chapterInsights)
+        actionButtons(secondaryTitle: "Chapter Insights", secondarySheet: .chapterInsights)
     }
 
-    /// A theme name followed by its verse span; only the span is highlighted, and it
-    /// opens a preview of those verses.
+    /// A full-width theme row that opens a preview of its first linked passage.
     private func themeChip(_ theme: ChapterKeyTheme) -> some View {
         let passage = theme.scriptureReferences
             .lazy
             .flatMap { PassageReferenceParser.parseList($0, book: bookName, chapter: chapterNumber) }
             .first
 
-        return HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Text(theme.theme)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.primary)
-
-            if let passage {
-                Link(destination: passage.url) {
-                    Text(shortTitle(for: passage))
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.teal)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(Color.teal.opacity(0.12), in: Capsule())
-                }
-                // Keeps the label's own colors instead of the default link tint.
-                .buttonStyle(.plain)
-                .accessibilityLabel(passage.displayTitle)
-                .accessibilityHint("Shows a preview of the passage")
-            }
-        }
-        .accessibilityElement(children: .contain)
+        return StudyThemeRow(
+            title: theme.theme,
+            passage: passage,
+            passageTitle: passage.map(shortTitle(for:))
+        )
     }
 
     /// Drops the book name the card already shows, so "John 3:3–8" reads "3:3–8".
@@ -176,7 +166,10 @@ struct StudyHomeCard: View {
 
     @ViewBuilder
     private func bookIntroduction(_ overview: BibleBookOverview) -> some View {
-        expandableText(overview.overallTheme)
+        VStack(alignment: .leading, spacing: 8) {
+            sectionLabel("IN BRIEF")
+            expandableText(overview.overallTheme)
+        }
 
         if !overview.traditionalAuthorOrAttribution.isEmpty {
             Label {
@@ -276,13 +269,8 @@ struct StudyHomeCard: View {
             }
     }
 
-    private func sectionLabel(_ title: String) -> some View {
-        Text(title)
-            // Primary and bold so it reads as a header against the gray summary above.
-            .font(.footnote.weight(.bold))
-            .foregroundStyle(.primary)
-            .textCase(.uppercase)
-            .accessibilityAddTraits(.isHeader)
+    private func sectionLabel(_ title: LocalizedStringKey) -> some View {
+        StudyCardSectionLabel(title: title)
     }
 
     private func actionButtons(secondaryTitle: String?, secondarySheet: Sheet?) -> some View {
@@ -344,6 +332,81 @@ struct StudyHomeCard: View {
             )
         }
         isLoading = false
+    }
+}
+
+private struct KeyFigurePreview: View {
+    let figure: ChapterKeyFigure
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            StudyCardSectionLabel(title: "KEY FIGURE")
+            Label(figure.name, systemImage: "person.fill")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.primary)
+            Text(figure.roleAndSignificance)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private struct StudyThemeRow: View {
+    let title: String
+    let passage: PassageReference?
+    let passageTitle: String?
+
+    var body: some View {
+        if let passage, let passageTitle {
+            Link(destination: passage.url) {
+                rowContent(passageTitle: passageTitle)
+            }
+            .buttonStyle(.plain)
+            .contentShape(Rectangle())
+            .accessibilityLabel("\(title), \(passage.displayTitle)")
+            .accessibilityHint("Shows a preview of the passage")
+        } else {
+            rowContent(passageTitle: nil)
+        }
+    }
+
+    private func rowContent(passageTitle: String?) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Text("•")
+                .font(.subheadline)
+                .foregroundStyle(.teal)
+
+            Text(title)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            Spacer(minLength: 0)
+
+            if let passageTitle {
+                Text(passageTitle)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.teal)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color.teal.opacity(0.12), in: Capsule())
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
+    }
+}
+
+private struct StudyCardSectionLabel: View {
+    let title: LocalizedStringKey
+
+    var body: some View {
+        Text(title)
+            .font(.footnote.weight(.bold))
+            .foregroundStyle(.primary)
+            .textCase(.uppercase)
+            .accessibilityAddTraits(.isHeader)
     }
 }
 
