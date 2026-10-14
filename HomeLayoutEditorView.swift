@@ -3,7 +3,9 @@ import SwiftUI
 struct HomeLayoutEditorView: View {
     @Binding var order: [HomeCardID]
     @Binding var hiddenSet: Set<HomeCardID>
-    /// The iPad dashboard pins Verse of the Day above the card grid, so it is toggled separately.
+    /// The iPad dashboard's two card columns; edited instead of `order` when `usesDashboard`.
+    @Binding var columns: HomeColumnLayout
+    /// iPad arranges cards in two columns beside the Today's Reading panel.
     let usesDashboard: Bool
     var onDone: () -> Void
 
@@ -14,15 +16,14 @@ struct HomeLayoutEditorView: View {
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
     @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
+    @AppStorage(HomeLayoutStore.keyBibleReaderOnLeft) private var bibleReaderOnLeft = false
     @State private var highlightedCards: Set<HomeCardID> = []
     @State private var reorderConfirmation: String?
     @State private var reorderFeedbackTask: Task<Void, Never>?
     @State private var isShowingReplaceSavedLayoutConfirmation = false
 
-    /// The cards listed for reordering, in Home order.
-    private var listedCards: [HomeCardID] {
-        usesDashboard ? order.filter { $0 != .verseOfDay } : order
-    }
+    /// The cards listed for reordering on iPhone, in Home order.
+    private var listedCards: [HomeCardID] { order }
 
     private func isVisible(_ id: HomeCardID) -> Bool {
         !hiddenSet.contains(id)
@@ -40,8 +41,10 @@ struct HomeLayoutEditorView: View {
     private func resetToDefault() {
         order = HomeLayoutStore.baselineOrder
         hiddenSet = HomeLayoutStore.baselineHidden
+        columns = HomeLayoutStore.baselineColumns
         customizeButtonVisible = true
         bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
+        bibleReaderOnLeft = false
         onDone()
     }
 
@@ -74,9 +77,8 @@ struct HomeLayoutEditorView: View {
         guard cards.indices.contains(destination) else { return }
         let swappedCard = cards[destination]
         cards.swapAt(index, destination)
-        // The dashboard keeps Verse of the Day first; it is not part of the reorderable list there.
         withAnimation(.snappy) {
-            order = usesDashboard ? [.verseOfDay] + cards : cards
+            order = cards
             highlightedCards = [id, swappedCard]
             reorderConfirmation = "\(id.title) moved to position \(destination + 1)"
         }
@@ -91,6 +93,160 @@ struct HomeLayoutEditorView: View {
 
     private func canMoveDown(_ id: HomeCardID) -> Bool {
         listedCards.firstIndex(of: id).map { $0 < listedCards.count - 1 } == true
+    }
+
+    // MARK: - iPad columns
+
+    /// Applies a column change, keeps the narrow-width order in step, and confirms it.
+    /// Drag moves pass no confirmation: showing it adds a section while the List is still
+    /// finishing the row move, which the List can't reconcile.
+    private func changeColumns(highlighting ids: Set<HomeCardID>, confirmation: String?, _ change: (inout HomeColumnLayout) -> Void) {
+        withAnimation(.snappy) {
+            change(&columns)
+            order = columns.flatOrder
+            highlightedCards = ids
+            if let confirmation {
+                reorderConfirmation = confirmation
+            }
+        }
+        if let confirmation {
+            AccessibilityNotification.Announcement(confirmation).post()
+        }
+        onDone()
+        Haptics.selection()
+        scheduleReorderFeedbackReset()
+    }
+
+    private func moveToOtherColumn(_ id: HomeCardID) {
+        guard let column = columns.column(of: id) else { return }
+        changeColumns(highlighting: [id], confirmation: "\(id.title) moved to the \(column.other.title.lowercased())") {
+            $0.moveToOtherColumn(id)
+        }
+    }
+
+    private func moveInColumn(_ id: HomeCardID, by offset: Int) {
+        guard let column = columns.column(of: id),
+              let row = columns[column].firstIndex(of: id),
+              columns[column].indices.contains(row + offset) else { return }
+        let swappedCard = columns[column][row + offset]
+        changeColumns(highlighting: [id, swappedCard], confirmation: "\(id.title) moved to position \(row + offset + 1)") {
+            $0.move(id, by: offset)
+        }
+    }
+
+    private func moveInColumn(_ column: HomeColumn, fromOffsets source: IndexSet, toOffset destination: Int) {
+        let moved = source.map { columns[column][$0] }
+        changeColumns(highlighting: Set(moved), confirmation: nil) {
+            $0[column].move(fromOffsets: source, toOffset: destination)
+        }
+    }
+
+    private func columnRow(for id: HomeCardID, in column: HomeColumn, position: Int) -> some View {
+        let otherColumn = column.other
+        return HStack {
+            Image(systemName: id.systemImage)
+                .foregroundStyle(.secondary)
+                .frame(width: 24)
+
+            Text(id.title)
+                .foregroundStyle(isVisible(id) ? .primary : .secondary)
+
+            Spacer()
+
+            Button {
+                toggleVisibility(id)
+            } label: {
+                Label(
+                    isVisible(id) ? "Shown" : "Hidden",
+                    systemImage: isVisible(id) ? "eye" : "eye.slash"
+                )
+                .font(.subheadline)
+                .foregroundStyle(isVisible(id) ? Color.accentColor : .secondary)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(isVisible(id) ? "Hide" : "Show") \(id.title)")
+            .accessibilityHint("Changes whether this card is available on Home")
+
+            Button {
+                moveToOtherColumn(id)
+            } label: {
+                Image(systemName: otherColumn == .right ? "arrow.right.circle" : "arrow.left.circle")
+                    .font(.title3)
+                    .frame(width: 32, height: 32)
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(.tint)
+            .accessibilityLabel("Move \(id.title) to the \(otherColumn.title.lowercased())")
+        }
+        .padding(.vertical, 4)
+        .background(
+            highlightedCards.contains(id) ? Color.accentColor.opacity(0.14) : Color.clear,
+            in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+        )
+        .swipeActions(edge: otherColumn == .right ? .trailing : .leading) {
+            Button("Move to \(otherColumn.title)", systemImage: otherColumn == .right ? "arrow.right" : "arrow.left") {
+                moveToOtherColumn(id)
+            }
+            .tint(.accentColor)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityValue("\(column.title), position \(position) of \(columns[column].count), \(isVisible(id) ? "shown" : "hidden")")
+        .accessibilityActions {
+            if columns.canMove(id, by: -1) {
+                Button("Move up") { moveInColumn(id, by: -1) }
+            }
+            if columns.canMove(id, by: 1) {
+                Button("Move down") { moveInColumn(id, by: 1) }
+            }
+            Button("Move to \(otherColumn.title)") { moveToOtherColumn(id) }
+            Button(isVisible(id) ? "Hide" : "Show") { toggleVisibility(id) }
+        }
+    }
+
+    @ViewBuilder
+    private var dashboardSections: some View {
+        Section {
+            Toggle(
+                "Today's Reading",
+                systemImage: "book.pages",
+                isOn: $bibleReaderVisible
+            )
+
+            Picker("Side", selection: $bibleReaderOnLeft) {
+                Text("Left").tag(true)
+                Text("Right").tag(false)
+            }
+            .pickerStyle(.segmented)
+            .disabled(!bibleReaderVisible)
+            .accessibilityLabel("Today's Reading side")
+        } header: {
+            Label("Today's Reading Panel", systemImage: "book.pages")
+        } footer: {
+            Text("A full-height reading panel beside your cards. It shows your bookmark, or the Verse of the Day in its chapter.")
+        }
+
+        ForEach(HomeColumn.allCases, id: \.self) { column in
+            Section {
+                ForEach(Array(columns[column].enumerated()), id: \.element) { index, id in
+                    columnRow(for: id, in: column, position: index + 1)
+                }
+                .onMove { source, destination in
+                    moveInColumn(column, fromOffsets: source, toOffset: destination)
+                }
+
+                if columns[column].isEmpty {
+                    Text("No cards. Use the arrow on a card to move it here.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            } header: {
+                Label(column.title, systemImage: column == .left ? "rectangle.lefthalf.filled" : "rectangle.righthalf.filled")
+            } footer: {
+                if column == .right {
+                    Text("Drag cards to reorder them within a column, and use the arrows to move a card to the other column. You can also tap Edit Home on the Home screen to arrange cards in place.")
+                }
+            }
+        }
     }
 
     private func scheduleReorderFeedbackReset() {
@@ -183,58 +339,39 @@ struct HomeLayoutEditorView: View {
                 ContextualTipView(
                     id: "home.layoutEditor",
                     title: "Make Home yours",
-                    message: "Use the eye buttons to show or hide cards, and the arrows to reorder them.",
+                    message: usesDashboard
+                        ? "Use the eye buttons to show or hide cards, drag to reorder, and the arrows to move cards between columns."
+                        : "Use the eye buttons to show or hide cards, and the arrows to reorder them.",
                     systemImage: "rectangle.grid.1x2"
                 )
                 .listRowSeparator(.hidden)
             }
 
             if usesDashboard {
+                dashboardSections
+            } else {
                 Section {
-                    Toggle(
-                        "Verse of the Day",
-                        systemImage: "sun.max",
-                        isOn: Binding(
-                            get: { isVisible(.verseOfDay) },
-                            set: { _ in toggleVisibility(.verseOfDay) }
-                        )
-                    )
+                    if let reorderConfirmation {
+                        Label(reorderConfirmation, systemImage: "checkmark.circle.fill")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.green)
+                            .padding(.vertical, 4)
+                    }
 
-                    Toggle(
-                        "Today's Reading",
-                        systemImage: "book.pages",
-                        isOn: $bibleReaderVisible
-                    )
-                } header: {
-                    Label("iPad Card Visibility", systemImage: "eye")
-                } footer: {
-                    Text("Choose whether Verse of the Day and the Today's Reading panel appear on the iPad Home dashboard. Today's Reading shows your bookmark or the Verse of the Day in its chapter.")
-                }
-            }
+                    ForEach(Array(listedCards.enumerated()), id: \.element) { index, id in
+                        layoutRow(for: id, position: index + 1)
+                    }
 
-            Section {
-                if let reorderConfirmation {
-                    Label(reorderConfirmation, systemImage: "checkmark.circle.fill")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.green)
-                        .padding(.vertical, 4)
-                }
-
-                ForEach(Array(listedCards.enumerated()), id: \.element) { index, id in
-                    layoutRow(for: id, position: index + 1)
-                }
-
-                // iPad keeps Customize Home in the toolbar; iPhone shows it below the cards.
-                if !usesDashboard {
+                    // iPad keeps Customize Home in the toolbar; iPhone shows it below the cards.
                     Toggle(isOn: $customizeButtonVisible) {
                         Label("Show ‘Customize Home’ on Home", systemImage: customizeButtonVisible ? "eye" : "eye.slash")
                     }
                     .toggleStyle(StatusColorToggleStyle())
+                } header: {
+                    Label("Home Cards", systemImage: "house")
+                } footer: {
+                    Text("Shown cards appear on Home. Use the arrows to choose their order.")
                 }
-            } header: {
-                Label("Home Cards", systemImage: "house")
-            } footer: {
-                Text("Shown cards appear on Home. Use the arrows to choose their order.")
             }
 
             Section {
@@ -298,6 +435,21 @@ struct HomeLayoutEditorView: View {
                 Text("Save this arrangement to restore it later.")
             }
 
+        }
+        // On iPad the confirmation floats over the list so rows don't shift under the next tap.
+        .overlay(alignment: .bottom) {
+            if usesDashboard, let reorderConfirmation {
+                Label(reorderConfirmation, systemImage: "checkmark.circle.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.green)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .glassEffect(.regular, in: .capsule)
+                    .padding(.bottom, 20)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+            }
         }
         .navigationTitle("Home Layout")
         .navigationBarTitleDisplayMode(.inline)

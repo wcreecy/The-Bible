@@ -2,27 +2,37 @@ import SwiftUI
 
 /// The iPad Home dashboard's two card columns.
 ///
-/// In Edit Home mode, cards stop responding to taps and show controls to hide them or move
-/// them to the other column; hidden cards appear as compact tiles so they can be shown again.
-/// On iOS 27 and later, cards can also be dragged within and between columns.
+/// In Edit Home mode, cards stop responding to taps and show controls to hide them, move them
+/// up or down, or move them to the other column; hidden cards appear as compact tiles so they
+/// can be shown again.
+///
+/// System drag-to-reorder (`reorderable(collectionID:)`) isn't used: on iOS 27.0 it crashed
+/// at lift ("Unexpected identifier type") once items had real card content.
 struct HomeCardColumnsView<Card: View>: View {
     let columns: HomeColumnLayout
     let hiddenCards: Set<HomeCardID>
     let isEditing: Bool
+    /// The width of both columns together; each column gets exactly half so wide card
+    /// content can't push the columns past the page margins.
+    let width: CGFloat
     let spacing: CGFloat
-    /// Moves cards into a column before a card, or to the end when that card is nil.
-    let onReorder: (_ ids: [HomeCardID], _ column: HomeColumn, _ before: HomeCardID?) -> Void
     let onMoveToOtherColumn: (HomeCardID) -> Void
     let onMoveWithinColumn: (_ id: HomeCardID, _ offset: Int) -> Void
     let onToggleHidden: (HomeCardID) -> Void
     @ViewBuilder let card: (HomeCardID) -> Card
 
+    private var columnWidth: CGFloat {
+        max(0, (width - spacing) / 2)
+    }
+
     var body: some View {
         HStack(alignment: .top, spacing: spacing) {
             columnStack(.left)
+                .frame(width: columnWidth)
             columnStack(.right)
+                .frame(width: columnWidth)
         }
-        .modifier(HomeCardReorderContainer(isEnabled: isEditing, onReorder: onReorder))
+        .frame(width: width, alignment: .top)
     }
 
     /// Hidden cards are listed only while editing.
@@ -33,22 +43,14 @@ struct HomeCardColumnsView<Card: View>: View {
     private func columnStack(_ column: HomeColumn) -> some View {
         let ids = cards(in: column)
         return VStack(spacing: spacing) {
-            if #available(iOS 27.0, *) {
-                ForEach(ids) { id in
-                    item(for: id, in: column)
-                }
-                .reorderable(collectionID: column)
-            } else {
-                ForEach(ids) { id in
-                    item(for: id, in: column)
-                }
+            ForEach(ids, id: \.self) { id in
+                item(for: id, in: column)
             }
 
             if isEditing && ids.isEmpty {
                 emptyColumnPlaceholder
             }
         }
-        .frame(maxWidth: .infinity, alignment: .top)
     }
 
     @ViewBuilder
@@ -58,10 +60,14 @@ struct HomeCardColumnsView<Card: View>: View {
             if isEditing && isHidden {
                 HiddenHomeCardTile(id: id) { onToggleHidden(id) }
             } else {
-                // The same view in and out of editing, so cards keep their state.
+                // The same view in and out of editing, so cards keep their state. While
+                // editing, the card moves down to make room for the edit bar above it, and its
+                // own controls are set aside for VoiceOver in favor of the edit controls.
                 card(id)
                     .frame(maxWidth: .infinity)
                     .allowsHitTesting(!isEditing)
+                    .accessibilityHidden(isEditing)
+                    .padding(.top, isEditing ? HomeCardEditChrome.barHeight : 0)
                     .overlay {
                         if isEditing {
                             HomeCardEditChrome(
@@ -105,33 +111,11 @@ struct HomeCardColumnsView<Card: View>: View {
     }
 }
 
-/// Enables system drag-to-reorder across both columns on iOS 27 and later.
-private struct HomeCardReorderContainer: ViewModifier {
-    let isEnabled: Bool
-    let onReorder: (_ ids: [HomeCardID], _ column: HomeColumn, _ before: HomeCardID?) -> Void
+/// Edit Home controls: a bar above the card (which is padded down to make room) and a
+/// dashed outline around both. The fill blocks the card's own buttons while editing.
+struct HomeCardEditChrome: View {
+    static let barHeight: CGFloat = 48
 
-    func body(content: Content) -> some View {
-        if #available(iOS 27.0, *) {
-            content.reorderContainer(for: HomeCardID.self, in: HomeColumn.self, isEnabled: isEnabled) { difference in
-                let ids = difference.sources.compactMap(HomeCardID.init(rawValue:))
-                let before: HomeCardID?
-                switch difference.destination.position {
-                case .before(let id):
-                    before = HomeCardID(rawValue: id)
-                case .end:
-                    before = nil
-                }
-                onReorder(ids, difference.destination.collectionID, before)
-            }
-        } else {
-            content
-        }
-    }
-}
-
-/// Controls drawn over a card in Edit Home mode. The clear fill also blocks the card's own
-/// buttons, so a press starts a drag instead of an action.
-private struct HomeCardEditChrome: View {
     let id: HomeCardID
     let column: HomeColumn
     let canMoveUp: Bool
@@ -140,62 +124,58 @@ private struct HomeCardEditChrome: View {
     let onMoveToOtherColumn: () -> Void
     let onMoveWithinColumn: (Int) -> Void
 
-    /// Without system drag, up and down buttons are the way to reorder within a column.
-    private var showsVerticalMoves: Bool {
-        if #available(iOS 27.0, *) { return false }
-        return true
-    }
-
     var body: some View {
         RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
             .fill(Color.accentColor.opacity(0.06))
             .strokeBorder(Color.accentColor.opacity(0.7), style: StrokeStyle(lineWidth: 2, dash: [8, 5]))
             .contentShape(.rect(cornerRadius: AppDesignMetrics.cardCornerRadius))
-            .overlay(alignment: .topLeading) {
-                Button(action: onHide) {
-                    Image(systemName: "minus.circle.fill")
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(.white, .red)
-                        .font(.title2)
-                }
-                .buttonStyle(.plain)
-                .padding(8)
-                .accessibilityLabel("Hide \(id.title)")
-            }
-            .overlay(alignment: .topTrailing) {
-                HStack(spacing: 4) {
-                    if showsVerticalMoves {
-                        controlButton("chevron.up", label: "Move \(id.title) up", disabled: !canMoveUp) {
-                            onMoveWithinColumn(-1)
-                        }
-                        controlButton("chevron.down", label: "Move \(id.title) down", disabled: !canMoveDown) {
-                            onMoveWithinColumn(1)
-                        }
-                    }
-                    controlButton(
-                        column.other == .right ? "arrow.right" : "arrow.left",
-                        label: "Move \(id.title) to the \(column.other.title.lowercased())",
-                        action: onMoveToOtherColumn
-                    )
-                }
-                .padding(4)
-                .glassEffect(.regular.interactive(), in: .capsule)
-                .padding(8)
-            }
             .accessibilityHidden(true)
+            .overlay(alignment: .top) {
+                bar
+            }
+    }
+
+    private var bar: some View {
+        HStack(spacing: 6) {
+            Button(action: onHide) {
+                Image(systemName: "minus.circle.fill")
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(.white, .red)
+                    .font(.title2)
+                    .frame(width: 36, height: 36)
+                    .contentShape(.circle)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Hide \(id.title)")
+
+            Spacer(minLength: 0)
+
+            controlButton("chevron.up", label: "Move \(id.title) up", disabled: !canMoveUp) {
+                onMoveWithinColumn(-1)
+            }
+            controlButton("chevron.down", label: "Move \(id.title) down", disabled: !canMoveDown) {
+                onMoveWithinColumn(1)
+            }
+            controlButton(
+                column.other == .right ? "arrow.right" : "arrow.left",
+                label: "Move \(id.title) to the \(column.other.title.lowercased())",
+                action: onMoveToOtherColumn
+            )
+        }
+        .padding(.horizontal, 6)
+        .frame(height: Self.barHeight)
     }
 
     private func controlButton(_ systemImage: String, label: String, disabled: Bool = false, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: systemImage)
                 .font(.subheadline.weight(.semibold))
-                .frame(width: 32, height: 32)
+                .frame(width: 36, height: 36)
                 .contentShape(.circle)
         }
-        .buttonStyle(.plain)
-        .foregroundStyle(.tint)
+        .buttonStyle(.glass)
+        .buttonBorderShape(.circle)
         .disabled(disabled)
-        .opacity(disabled ? 0.35 : 1)
         .accessibilityLabel(label)
     }
 }
@@ -238,3 +218,4 @@ private struct HiddenHomeCardTile: View {
         .accessibilityElement(children: .combine)
     }
 }
+

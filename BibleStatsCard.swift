@@ -11,6 +11,27 @@ struct BibleStatsCard: View {
     @State private var todayGameSeconds = 0
     @State private var allTimeGameSeconds = 0
 
+    @ViewBuilder
+    private var statsButtons: some View {
+        Button(action: onOpenReadingStats) {
+            Label("Reading Stats", systemImage: "book.pages")
+                .font(.subheadline.weight(.semibold))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .heroCardSurface()
+        }
+        .buttonStyle(.plain)
+
+        Button(action: onOpenGameStats) {
+            Label("Game Stats", systemImage: "gamecontroller")
+                .font(.subheadline.weight(.semibold))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .heroCardSurface()
+        }
+        .buttonStyle(.plain)
+    }
+
     var body: some View {
         HeroCard(
             title: "App Activity",
@@ -31,24 +52,10 @@ struct BibleStatsCard: View {
                     gameSeconds: allTimeGameSeconds
                 )
 
-                HStack(spacing: 10) {
-                    Button(action: onOpenReadingStats) {
-                        Label("Reading Stats", systemImage: "book.pages")
-                            .font(.subheadline.weight(.semibold))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .heroCardSurface()
-                    }
-                    .buttonStyle(.plain)
-
-                    Button(action: onOpenGameStats) {
-                        Label("Game Stats", systemImage: "gamecontroller")
-                            .font(.subheadline.weight(.semibold))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .heroCardSurface()
-                    }
-                    .buttonStyle(.plain)
+                // Side by side when there's room; stacked in a narrow dashboard column.
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 10) { statsButtons }
+                    VStack(spacing: 10) { statsButtons }
                 }
             }
             .onAppear {
@@ -135,22 +142,10 @@ private struct ActivityTimeGraph: View {
                 "\(title). Reading \(formattedUsage(reading)). Games \(formattedUsage(games))."
             )
 
-            HStack(spacing: 8) {
-                ActivityTimeLegend(
-                    title: "Reading",
-                    seconds: reading,
-                    fraction: readingFraction,
-                    showsPercentage: total > 0,
-                    tint: .blue
-                )
-
-                ActivityTimeLegend(
-                    title: "Games",
-                    seconds: games,
-                    fraction: gameFraction,
-                    showsPercentage: total > 0,
-                    tint: .indigo
-                )
+            // Side by side when there's room; stacked in a narrow dashboard column.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 8) { legends }
+                VStack(alignment: .leading, spacing: 4) { legends }
             }
         }
         .padding(12)
@@ -161,6 +156,25 @@ private struct ActivityTimeGraph: View {
         .overlay(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .stroke(Color.teal.opacity(0.2), lineWidth: 1)
+        )
+    }
+
+    @ViewBuilder
+    private var legends: some View {
+        ActivityTimeLegend(
+            title: "Reading",
+            seconds: reading,
+            fraction: readingFraction,
+            showsPercentage: total > 0,
+            tint: .blue
+        )
+
+        ActivityTimeLegend(
+            title: "Games",
+            seconds: games,
+            fraction: gameFraction,
+            showsPercentage: total > 0,
+            tint: .indigo
         )
     }
 

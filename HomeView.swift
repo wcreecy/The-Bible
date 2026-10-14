@@ -21,73 +21,11 @@ import WidgetKit
 //     var id: String { rawValue }
 // }
 
-private struct HomeMasonryGrid: Layout {
-    let columnCount: Int
-    let spacing: CGFloat
-
-    func sizeThatFits(
-        proposal: ProposedViewSize,
-        subviews: Subviews,
-        cache: inout ()
-    ) -> CGSize {
-        let width = proposal.width ?? 0
-        let result = layoutResult(width: width, subviews: subviews)
-        return CGSize(width: width, height: result.height)
-    }
-
-    func placeSubviews(
-        in bounds: CGRect,
-        proposal: ProposedViewSize,
-        subviews: Subviews,
-        cache: inout ()
-    ) {
-        let result = layoutResult(width: bounds.width, subviews: subviews)
-
-        for (index, subview) in subviews.enumerated() {
-            let frame = result.frames[index]
-            subview.place(
-                at: CGPoint(x: bounds.minX + frame.minX, y: bounds.minY + frame.minY),
-                anchor: .topLeading,
-                proposal: ProposedViewSize(width: frame.width, height: frame.height)
-            )
-        }
-    }
-
-    private func layoutResult(width: CGFloat, subviews: Subviews) -> (frames: [CGRect], height: CGFloat) {
-        guard columnCount > 0, width > 0, !subviews.isEmpty else {
-            return ([], 0)
-        }
-
-        let totalSpacing = spacing * CGFloat(columnCount - 1)
-        let columnWidth = max(0, (width - totalSpacing) / CGFloat(columnCount))
-        let itemProposal = ProposedViewSize(width: columnWidth, height: nil)
-        var columnHeights = Array(repeating: CGFloat.zero, count: columnCount)
-        var frames: [CGRect] = []
-        frames.reserveCapacity(subviews.count)
-
-        for subview in subviews {
-            let column = columnHeights.indices.min {
-                columnHeights[$0] < columnHeights[$1]
-            } ?? 0
-            let top = columnHeights[column] == 0 ? 0 : columnHeights[column] + spacing
-            let size = subview.sizeThatFits(itemProposal)
-            let origin = CGPoint(
-                x: CGFloat(column) * (columnWidth + spacing),
-                y: top
-            )
-
-            frames.append(CGRect(origin: origin, size: CGSize(width: columnWidth, height: size.height)))
-            columnHeights[column] = top + size.height
-        }
-
-        return (frames, columnHeights.max() ?? 0)
-    }
-}
-
 private struct HomeDashboardColumns<Header: View, Tip: View, Main: View, Sidebar: View>: View {
     let columnSpacing: CGFloat
     let mainWidth: CGFloat
     let sidebarWidth: CGFloat
+    let sidebarOnLeading: Bool
     let header: Header
     let tip: Tip
     let main: Main
@@ -97,6 +35,7 @@ private struct HomeDashboardColumns<Header: View, Tip: View, Main: View, Sidebar
         columnSpacing: CGFloat,
         mainWidth: CGFloat,
         sidebarWidth: CGFloat,
+        sidebarOnLeading: Bool,
         @ViewBuilder header: () -> Header,
         @ViewBuilder tip: () -> Tip,
         @ViewBuilder main: () -> Main,
@@ -105,6 +44,7 @@ private struct HomeDashboardColumns<Header: View, Tip: View, Main: View, Sidebar
         self.columnSpacing = columnSpacing
         self.mainWidth = mainWidth
         self.sidebarWidth = sidebarWidth
+        self.sidebarOnLeading = sidebarOnLeading
         self.header = header()
         self.tip = tip()
         self.main = main()
@@ -116,10 +56,16 @@ private struct HomeDashboardColumns<Header: View, Tip: View, Main: View, Sidebar
         tip
 
         HStack(alignment: .top, spacing: columnSpacing) {
+            if sidebarOnLeading {
+                sidebar
+                    .frame(width: sidebarWidth)
+            }
             main
                 .frame(width: mainWidth)
-            sidebar
-                .frame(width: sidebarWidth)
+            if !sidebarOnLeading {
+                sidebar
+                    .frame(width: sidebarWidth)
+            }
         }
     }
 }
@@ -234,28 +180,58 @@ struct HomeView: View {
 
     @State private var layoutOrder: [HomeCardID] = HomeLayoutStore.baselineOrder
     @State private var hiddenCards: Set<HomeCardID> = HomeLayoutStore.baselineHidden
+    @State private var columns: HomeColumnLayout = HomeLayoutStore.baselineColumns
     @State private var hasFavoriteLayout: Bool = false
+    /// Edit Home mode on the iPad dashboard: cards are arranged in place.
+    @State private var isEditingLayout = false
+    /// Whether the two-column dashboard (rather than the single column) is on screen.
+    @State private var isShowingDashboard = false
     /// Incremented by the Search card to ask Home to scroll it into view while typing.
     @State private var searchScrollRequest = 0
     @AppStorage("homeCustomizeButtonVisible") private var customizeButtonVisible = true
     @AppStorage("homeBibleReaderVisible") private var bibleReaderVisible = HomeLayoutStore.defaultBibleReaderVisible
+    @AppStorage(HomeLayoutStore.keyBibleReaderOnLeft) private var bibleReaderOnLeft = false
 
     private func loadHomeLayout() {
         let store = HomeLayoutStore()
         let loaded = store.load()
         layoutOrder = loaded.order
         hiddenCards = loaded.hidden
+        columns = loaded.columns
         hasFavoriteLayout = store.hasFavorite
     }
 
     private func saveHomeLayout() {
-        HomeLayoutStore().save(order: layoutOrder, hidden: hiddenCards)
+        HomeLayoutStore().save(order: layoutOrder, hidden: hiddenCards, columns: columns)
+    }
+
+    /// Applies a column change from Edit Home and keeps the narrow-width order in step.
+    private func updateColumns(_ change: (inout HomeColumnLayout) -> Void) {
+        withAnimation(.snappy) {
+            change(&columns)
+            layoutOrder = columns.flatOrder
+        }
+        saveHomeLayout()
+        Haptics.selection()
+    }
+
+    private func toggleCardHidden(_ id: HomeCardID) {
+        withAnimation(.snappy) {
+            if hiddenCards.contains(id) {
+                hiddenCards.remove(id)
+            } else {
+                hiddenCards.insert(id)
+            }
+        }
+        saveHomeLayout()
+        Haptics.selection()
     }
 
     private func saveFavoriteLayout() {
         HomeLayoutStore().saveFavorite(
             order: layoutOrder,
             hidden: hiddenCards,
+            columns: columns,
             bibleReaderVisible: bibleReaderVisible
         )
         hasFavoriteLayout = true
@@ -374,16 +350,9 @@ struct HomeView: View {
         return ("Genesis", 1, 1, .startingPoint)
     }
 
-    private var dashboardCards: [HomeCardID] {
-        layoutOrder.filter {
-            $0 != .verseOfDay && !hiddenCards.contains($0)
-        }
-    }
-
     private var showsMinimalHome: Bool {
         isPad
-            && hiddenCards.contains(.verseOfDay)
-            && dashboardCards.isEmpty
+            && hiddenCards.isSuperset(of: HomeCardID.allCases)
             && !bibleReaderVisible
     }
 
@@ -415,7 +384,7 @@ struct HomeView: View {
                 id: "home.customization",
                 title: "Make Home your own",
                 message: isPad
-                    ? "Your visible cards fill this dashboard automatically. Choose and reorder them from Customize Home."
+                    ? "Tap Edit Home to arrange cards in two columns, or choose them from Customize Home."
                     : "Choose which cards appear here and reorder them from Customize Home.",
                 systemImage: "sparkles"
             )
@@ -441,49 +410,102 @@ struct HomeView: View {
 
     @ViewBuilder
     private func dashboardContent(width: CGFloat, availableHeight: CGFloat) -> some View {
-        if showsMinimalHome {
+        // While editing, the columns stay up even if every card is hidden, so cards can be shown again.
+        if showsMinimalHome && !isEditingLayout {
             minimalHomeQuickActions
                 .frame(minHeight: max(0, availableHeight - 96), alignment: .center)
         } else {
-        let standardColumnSpacing: CGFloat = 16
-        let columnWidth = (width - (standardColumnSpacing * 2)) / 3
-        let mainCardsWidth = bibleReaderVisible ? (columnWidth * 2) + standardColumnSpacing : width
-        let sidebarWidth = bibleReaderVisible ? columnWidth : 0
-        let columnSpacing = bibleReaderVisible ? standardColumnSpacing : 0
+            let standardColumnSpacing: CGFloat = 16
+            let columnWidth = (width - (standardColumnSpacing * 2)) / 3
+            let mainCardsWidth = bibleReaderVisible ? (columnWidth * 2) + standardColumnSpacing : width
+            let sidebarWidth = bibleReaderVisible ? columnWidth : 0
+            let columnSpacing = bibleReaderVisible ? standardColumnSpacing : 0
 
-        HomeDashboardColumns(
-            columnSpacing: columnSpacing,
-            mainWidth: mainCardsWidth,
-            sidebarWidth: sidebarWidth
-        ) {
-            homeHeader(usesDashboard: true)
-        } tip: {
-            contextualHomeTip
-        } main: {
-            VStack(spacing: 10) {
-                if !hiddenCards.contains(.verseOfDay) {
-                    card(for: .verseOfDay)
+            HomeDashboardColumns(
+                columnSpacing: columnSpacing,
+                mainWidth: mainCardsWidth,
+                sidebarWidth: sidebarWidth,
+                sidebarOnLeading: bibleReaderOnLeft
+            ) {
+                homeHeader(usesDashboard: true)
+            } tip: {
+                if isEditingLayout {
+                    editHomeHint
+                } else {
+                    contextualHomeTip
                 }
-
-                if !dashboardCards.isEmpty {
-                    HomeMasonryGrid(columnCount: 2, spacing: 10) {
-                        ForEach(dashboardCards) { cardID in
-                            card(for: cardID)
-                                .frame(maxWidth: .infinity)
+            } main: {
+                HomeCardColumnsView(
+                    columns: columns,
+                    hiddenCards: hiddenCards,
+                    isEditing: isEditingLayout,
+                    width: mainCardsWidth,
+                    spacing: 10,
+                    onMoveToOtherColumn: { id in
+                        updateColumns { $0.moveToOtherColumn(id) }
+                    },
+                    onMoveWithinColumn: { id, offset in
+                        updateColumns { $0.move(id, by: offset) }
+                    },
+                    onToggleHidden: toggleCardHidden
+                ) { cardID in
+                    card(for: cardID)
+                }
+            } sidebar: {
+                if bibleReaderVisible {
+                    // While editing, the panel moves down so its controls sit above its title.
+                    HomeBibleReaderCard(
+                        verseOfDay: votdVM.verse,
+                        onVerseAction: handleVerseActionFeedback
+                    )
+                    .padding(.top, isEditingLayout ? HomeCardEditChrome.barHeight : 0)
+                    .overlay(alignment: .top) {
+                        if isEditingLayout {
+                            bibleReaderEditControls
                         }
                     }
-                    .animation(.snappy, value: dashboardCards)
                 }
             }
-        } sidebar: {
-            if bibleReaderVisible {
-                HomeBibleReaderCard(
-                    verseOfDay: votdVM.verse,
-                    onVerseAction: handleVerseActionFeedback
+        }
+    }
+
+    private var editHomeHint: some View {
+        Label {
+            Text("Use the arrows to move cards up, down, or to the other column. Tap – to hide a card. Tap Done when you're finished.")
+        } icon: {
+            Image(systemName: "arrow.up.arrow.down")
+        }
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 4)
+    }
+
+    /// Edit Home controls for the Today's Reading panel: swap its side or hide it.
+    private var bibleReaderEditControls: some View {
+        HStack(spacing: 8) {
+            Button {
+                withAnimation(.snappy) { bibleReaderOnLeft.toggle() }
+                Haptics.selection()
+            } label: {
+                Label(
+                    bibleReaderOnLeft ? "Move Right" : "Move Left",
+                    systemImage: bibleReaderOnLeft ? "arrow.right" : "arrow.left"
                 )
             }
+            .accessibilityLabel(bibleReaderOnLeft ? "Move Today's Reading to the right" : "Move Today's Reading to the left")
+
+            Button {
+                withAnimation(.snappy) { bibleReaderVisible = false }
+                Haptics.selection()
+            } label: {
+                Label("Hide", systemImage: "eye.slash")
+            }
+            .accessibilityLabel("Hide Today's Reading")
         }
-        }
+        .font(.subheadline.weight(.semibold))
+        .buttonStyle(.glass)
+        .frame(height: HomeCardEditChrome.barHeight)
     }
 
     private var minimalHomeQuickActions: some View {
@@ -572,6 +594,7 @@ struct HomeView: View {
             HomeLayoutEditorView(
                 order: $layoutOrder,
                 hiddenSet: $hiddenCards,
+                columns: $columns,
                 usesDashboard: isPad,
                 onDone: saveHomeLayout,
                 onSaveFavorite: saveFavoriteLayout,
@@ -617,16 +640,39 @@ struct HomeView: View {
                 }
             }
         }
+        .onGeometryChange(for: Bool.self) { proxy in
+            proxy.size.width >= 700
+        } action: { showsDashboard in
+            isShowingDashboard = showsDashboard
+            // Edit Home arranges the dashboard; leave it if the dashboard goes away.
+            if !showsDashboard { isEditingLayout = false }
+        }
         .background(AppBackgroundView(tab: .home))
         .accessibilityIdentifier("homeView")
         .navigationTitle("")
         .toolbar {
-            if isPad {
+            if isPad && isShowingDashboard {
+                ToolbarItem(placement: .topBarTrailing) {
+                    if isEditingLayout {
+                        Button("Done", systemImage: "checkmark", role: .confirm) {
+                            withAnimation(.snappy) { isEditingLayout = false }
+                        }
+                        .accessibilityIdentifier("homeEditDoneButton")
+                    } else {
+                        Button("Edit Home", systemImage: "square.grid.2x2") {
+                            withAnimation(.snappy) { isEditingLayout = true }
+                        }
+                        .accessibilityIdentifier("homeEditButton")
+                    }
+                }
+            }
+            if isPad && !isEditingLayout {
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink {
                         HomeLayoutEditorView(
                             order: $layoutOrder,
                             hiddenSet: $hiddenCards,
+                            columns: $columns,
                             usesDashboard: true,
                             onDone: saveHomeLayout,
                             onSaveFavorite: saveFavoriteLayout,
@@ -668,6 +714,9 @@ struct HomeView: View {
         }
         .onNotification(.homeLayoutChanged) {
             loadHomeLayout()
+        }
+        .onDisappear {
+            isEditingLayout = false
         }
 
         .onChange(of: scenePhase) { _, newPhase in

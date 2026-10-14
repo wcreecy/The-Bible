@@ -1,7 +1,7 @@
 import Foundation
 
 /// One of the two card columns on the iPad Home dashboard.
-nonisolated enum HomeColumn: String, CaseIterable, Hashable, Sendable {
+enum HomeColumn: String, CaseIterable, Hashable {
     case left, right
 
     var title: String {
@@ -94,21 +94,6 @@ struct HomeColumnLayout: Equatable {
     }
 
     // MARK: - Moving cards
-
-    /// Moves cards into `column`, placing them before `target`, or at the end when `target` is nil.
-    mutating func move(_ ids: [HomeCardID], to column: HomeColumn, before target: HomeCardID?) {
-        let moving = ids.filter { self.column(of: $0) != nil }
-        guard !moving.isEmpty else { return }
-        if let target, moving.contains(target) { return }
-
-        left.removeAll { moving.contains($0) }
-        right.removeAll { moving.contains($0) }
-
-        var destination = self[column]
-        let index = target.flatMap { destination.firstIndex(of: $0) } ?? destination.endIndex
-        destination.insert(contentsOf: moving, at: index)
-        self[column] = destination
-    }
 
     /// Moves a card to the other column at the same row, so it slides straight across.
     mutating func moveToOtherColumn(_ id: HomeCardID) {

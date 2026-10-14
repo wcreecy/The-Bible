@@ -476,6 +476,7 @@ private enum DeveloperSettingsReset {
             "focusReadingEnabled": false,
             "homeCustomizeButtonVisible": true,
             "homeBibleReaderVisible": HomeLayoutStore.defaultBibleReaderVisible,
+            HomeLayoutStore.keyBibleReaderOnLeft: false,
             "noteEditorTextSizeStep": 0,
             "notesTabSortField": "modified",
             "notesTabSortAscending": false,
@@ -525,7 +526,10 @@ private enum DeveloperSettingsReset {
             "homeCardFavoriteOrder",
             "homeCardFavoriteHidden",
             "homeCardFavoriteMain",
-            "homeCardFavoriteShowMoreVisible"
+            "homeCardFavoriteShowMoreVisible",
+            HomeLayoutStore.keyColumns,
+            HomeLayoutStore.keyFavColumns,
+            HomeLayoutStore.keyFavBibleReaderOnLeft
         ]
         homeLayoutKeys.forEach(defaults.removeObject(forKey:))
 

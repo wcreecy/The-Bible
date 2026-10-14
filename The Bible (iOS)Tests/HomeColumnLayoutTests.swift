@@ -34,22 +34,21 @@ struct HomeColumnLayoutTests {
     func movingCardsBetweenAndWithinColumns() {
         var layout = HomeColumnLayout(left: [.verseOfDay, .today, .streaks], right: [.study, .timer]).normalized()
 
-        // Dragging Streak before Study in the right column.
-        layout.move([.streaks], to: .right, before: .study)
-        #expect(layout.left.prefix(2) == [.verseOfDay, .today])
-        #expect(layout.right.prefix(3) == [.streaks, .study, .timer])
-
         // Slides straight across at the same row.
+        layout.moveToOtherColumn(.streaks)
+        #expect(layout.left.prefix(2) == [.verseOfDay, .today])
+        #expect(layout.right.prefix(3) == [.study, .timer, .streaks])
+
         layout.moveToOtherColumn(.study)
-        #expect(layout.left.prefix(3) == [.verseOfDay, .study, .today])
+        #expect(layout.left.prefix(3) == [.study, .verseOfDay, .today])
 
-        layout.move(.study, by: -1)
-        #expect(layout.left.prefix(2) == [.study, .verseOfDay])
-        #expect(!layout.canMove(.study, by: -1))
+        layout.move(.verseOfDay, by: -1)
+        #expect(layout.left.prefix(2) == [.verseOfDay, .study])
+        #expect(!layout.canMove(.verseOfDay, by: -1))
 
-        // Dropping a card before itself changes nothing.
+        // A move past either end changes nothing.
         let before = layout
-        layout.move([.study], to: .left, before: .study)
+        layout.move(.verseOfDay, by: -1)
         #expect(layout == before)
     }
 
