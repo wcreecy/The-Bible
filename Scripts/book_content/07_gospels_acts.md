@@ -1,6 +1,6 @@
 # Matthew
 When it happened: From Jesus' birth "in the days of Herod the king" (Matthew 2:1)—before Herod's death in 4 BC—through his ministry, death, and resurrection, around AD 27–30.
-When it was written: The author is not named in the book. Early church tradition credits Matthew, the tax collector who became one of the twelve apostles (Matthew 9:9). Most scholars date it between the AD 50s and 80s.
+When it was written: Most scholars date it between the AD 50s and 80s. It was written for readers steeped in the Jewish Scriptures, often noting that events happened "that it might be fulfilled" (Matthew 1:22).
 Where: Bethlehem, Egypt, Nazareth, Galilee (especially Capernaum and the Sea of Galilee), Judea, and Jerusalem.
 The world at the time: Judea was under Roman rule, governed by Herod the Great and later his sons and Roman governors such as Pontius Pilate. Many Jews longed for the promised Messiah, and the Pharisees and Sadducees were leading religious groups.
 
@@ -22,7 +22,7 @@ The world at the time: Judea was under Roman rule, governed by Herod the Great a
 
 # Mark
 When it happened: Jesus' public ministry, from his baptism by John to his resurrection, around AD 27–30.
-When it was written: The author is not named in the book. Early church tradition credits John Mark (Acts 12:12), who is said to have recorded the preaching of Peter. Many scholars consider it the earliest Gospel, written in the AD 50s or 60s.
+When it was written: Early church tradition says Mark recorded the preaching of Peter. Many scholars consider it the earliest Gospel, written in the AD 50s or 60s.
 Where: Galilee, especially Capernaum and the Sea of Galilee; the surrounding regions of the Decapolis, Tyre and Sidon, and Caesarea Philippi; Judea; and Jerusalem.
 The world at the time: Galilee was ruled by Herod Antipas under Rome, and Judea by a Roman governor. Mark explains Jewish customs for his readers (Mark 7:3–4), suggesting many of them were not Jewish.
 
@@ -44,7 +44,7 @@ The world at the time: Galilee was ruled by Herod Antipas under Rome, and Judea 
 
 # Luke
 When it happened: From the announcement of John the Baptist's birth "in the days of Herod, the king of Judaea" (Luke 1:5) to Jesus' ascension. John's ministry began in the fifteenth year of Tiberius Caesar (Luke 3:1), around AD 28.
-When it was written: The book is addressed to Theophilus (Luke 1:3). Early church tradition credits Luke, "the beloved physician" (Colossians 4:14) and Paul's travelling companion; Luke and Acts are two volumes by the same writer (Acts 1:1). It is usually dated to the AD 60s–80s.
+When it was written: The book is addressed to Theophilus, and its writer explains that he carefully followed the accounts of eyewitnesses (Luke 1:1–4). Luke and Acts are two volumes by the same writer (Acts 1:1). It is usually dated to the AD 60s–80s.
 Where: The temple in Jerusalem, Nazareth, Bethlehem, Galilee, the long journey toward Jerusalem, Emmaus, and Bethany.
 The world at the time: Luke ties his account to Roman history—the census of Caesar Augustus (Luke 2:1), the reign of Tiberius, the governor Pontius Pilate, and Herod Antipas, tetrarch of Galilee.
 
@@ -64,7 +64,7 @@ The world at the time: Luke ties his account to Roman history—the census of Ca
 
 # John
 When it happened: Jesus' ministry, which John's Gospel spans across at least three Passovers (John 2:13; 6:4; 11:55), around AD 27–30.
-When it was written: The book was written by "the disciple whom Jesus loved" (John 21:20–24), traditionally identified as John the son of Zebedee. It is usually dated to around AD 85–95, and early tradition places John in Ephesus.
+When it was written: It is usually dated to around AD 85–95, likely the last of the four Gospels, and early tradition places its writing in Ephesus. It states its own purpose: "that ye might believe that Jesus is the Christ" (John 20:31).
 Where: Judea, Galilee (including Cana), Samaria (at Sychar), Jerusalem—where Jesus attended the feasts at the temple—and Bethany.
 The world at the time: As in the other Gospels, Judea was under Roman rule. John pays special attention to the Jewish feasts—Passover, tabernacles, and dedication—and to the conflict between Jesus and the religious leaders in Jerusalem.
 
@@ -84,7 +84,7 @@ The world at the time: As in the other Gospels, Judea was under Roman rule. John
 
 # Acts
 When it happened: From Jesus' ascension (around AD 30) to the end of Paul's two years under house arrest in Rome (Acts 28:30), around AD 60–62.
-When it was written: Acts is the second volume written to Theophilus (Acts 1:1), by the same author as Luke. Several passages say "we," suggesting the writer travelled with Paul (for example Acts 16:10). It is usually dated to the AD 60s–80s.
+When it was written: Acts is the second volume written to Theophilus (Acts 1:1). Several passages say "we," suggesting the writer travelled with Paul (for example Acts 16:10). It is usually dated to the AD 60s–80s.
 Where: Jerusalem, Judea, Samaria, Damascus, Antioch in Syria, Cyprus, the cities of Asia Minor (including Galatia and Ephesus), Macedonia (Philippi and Thessalonica), Greece (Athens and Corinth), Caesarea, the island of Melita, and Rome.
 The world at the time: The Roman Empire's roads, sea routes, and relative peace made travel possible, and Jewish synagogues were found in cities across the empire. Roman officials such as the governors Felix and Festus, and King Agrippa, appear in the story.
 

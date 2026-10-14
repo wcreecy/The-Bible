@@ -1,6 +1,6 @@
 # Genesis
 When it happened: From creation to the death of Joseph. Genesis gives no calendar dates; the lives of Abraham, Isaac, and Jacob are often placed in the early second millennium BC (roughly 2000–1700 BC), though dates are uncertain.
-When it was written: Jewish and Christian tradition credits Moses as the author of Genesis and the rest of the Pentateuch. Many scholars think the book reached its final form over a long period, possibly as late as the time of the exile.
+When it was written: Many scholars think the book reached its final form over a long period, possibly as late as the time of the exile.
 Where: Mesopotamia (Ur of the Chaldees and Haran), the land of Canaan (Shechem, Bethel, Hebron, Beer-sheba), and Egypt.
 The world at the time: Powerful cities rose in Mesopotamia and Egypt was ruled by pharaohs. Abraham's family lived as herdsmen moving among the Canaanite towns, owning no land except a burial cave they bought at Hebron (Genesis 23).
 
@@ -20,7 +20,7 @@ The world at the time: Powerful cities rose in Mesopotamia and Egypt was ruled b
 
 # Exodus
 When it happened: Israel's slavery in Egypt, the exodus, and the first year in the wilderness. 1 Kings 6:1 places the exodus 480 years before Solomon began the temple, pointing to the mid-1400s BC; many scholars prefer a date in the 1200s BC.
-When it was written: Traditionally written by Moses, and the book itself records Moses writing down the LORD's words (Exodus 17:14; 24:4; 34:27). Many scholars see a longer process of composition and editing.
+When it was written: The book itself records Moses writing down the LORD's words (Exodus 17:14; 24:4; 34:27). Many scholars see a longer process of composition and editing.
 Where: Egypt (the land of Goshen and the store cities of Pithom and Raamses), Midian, the wilderness, and Mount Sinai, also called Horeb.
 The world at the time: Egypt was the great power of the region, and its king, who "knew not Joseph," had enslaved the Hebrews. Exodus never names the pharaoh, so the event cannot be tied to a specific Egyptian reign with certainty.
 
@@ -46,7 +46,7 @@ The world at the time: Egypt was the great power of the region, and its king, wh
 
 # Leviticus
 When it happened: While Israel was camped at Mount Sinai, in the weeks after the tabernacle was set up on the first day of the second year (Exodus 40:17; Numbers 1:1).
-When it was written: The book is almost entirely speeches introduced with "the LORD spake unto Moses," and tradition credits Moses as its author. Many scholars connect its present form to Israel's priests over a longer period.
+When it was written: The book is almost entirely speeches introduced with "the LORD spake unto Moses." Many scholars connect its present form to Israel's priests over a longer period.
 Where: At the tabernacle, the tent of meeting, in the camp at the foot of Mount Sinai.
 The world at the time: Israel was a newly freed people between Egypt and Canaan. God told them, "After the doings of the land of Egypt, wherein ye dwelt, shall ye not do: and after the doings of the land of Canaan... shall ye not do" (Leviticus 18:3).
 
@@ -66,7 +66,7 @@ The world at the time: Israel was a newly freed people between Egypt and Canaan.
 
 # Numbers
 When it happened: From the second month of the second year after the exodus (Numbers 1:1) to the fortieth year (Numbers 33:38)—the nearly forty years Israel spent in the wilderness.
-When it was written: Traditionally written by Moses; the book records that "Moses wrote their goings out according to their journeys" (Numbers 33:2). Many scholars see later editing.
+When it was written: The book records that "Moses wrote their goings out according to their journeys" (Numbers 33:2). Many scholars see later editing.
 Where: The wilderness of Sinai, the wilderness of Paran, Kadesh, the borders of Edom, and finally the plains of Moab by the Jordan, across from Jericho.
 The world at the time: Canaan was full of walled cities. East of the Jordan lay Edom, Moab, and Ammon, the Amorite kingdoms of Sihon and Og, and the Midianites, several of whom opposed Israel's passage.
 
@@ -86,7 +86,7 @@ The world at the time: Canaan was full of walled cities. East of the Jordan lay 
 
 # Deuteronomy
 When it happened: In the last weeks of Moses' life, beginning on the first day of the eleventh month of the fortieth year after the exodus (Deuteronomy 1:3).
-When it was written: The book presents Moses' farewell speeches and says that "Moses wrote this law" (Deuteronomy 31:9); the account of his death in chapter 34 was added by another hand. Many scholars connect the book's final form with the scroll found in the temple in King Josiah's day in the 600s BC (2 Kings 22).
+When it was written: The book presents Moses' farewell speeches and says that "Moses wrote this law" (Deuteronomy 31:9). Many scholars connect the book's final form with the scroll found in the temple in King Josiah's day in the 600s BC (2 Kings 22).
 Where: The plains of Moab, east of the Jordan River across from Jericho, ending on Mount Nebo.
 The world at the time: A new generation, born in the wilderness, was about to cross the Jordan into a land held by the Hittites, Girgashites, Amorites, Canaanites, Perizzites, Hivites, and Jebusites (Deuteronomy 7:1).
 

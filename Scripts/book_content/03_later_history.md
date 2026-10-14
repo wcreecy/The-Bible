@@ -1,6 +1,6 @@
 # 1 Kings
 When it happened: From the last days of King David (about 970 BC) through Solomon's reign and the division of the kingdom, to the reigns of Ahaziah in Israel and Jehoshaphat in Judah (about 850 BC).
-When it was written: The author is unnamed; 1 and 2 Kings were originally one book, and Jewish tradition credits Jeremiah. The writer cites earlier sources such as "the book of the acts of Solomon" (1 Kings 11:41). Because 2 Kings ends in the Babylonian exile, the finished work dates to about 560 BC or later.
+When it was written: 1 and 2 Kings were originally one book, and Jewish tradition credits Jeremiah. The writer cites earlier sources such as "the book of the acts of Solomon" (1 Kings 11:41). Because 2 Kings ends in the Babylonian exile, the finished work dates to about 560 BC or later.
 Where: Jerusalem, Samaria, the shrines at Bethel and Dan, Mount Carmel, Mount Horeb, Jezreel, and the Phoenician cities of Tyre, Sidon, and Zarephath.
 The world at the time: Solomon traded with Hiram king of Tyre and married Pharaoh's daughter. After the kingdom split, Egypt's Shishak invaded Judah (1 Kings 14:25), Syria rose at Damascus, and Baal worship spread from Sidon through Ahab's wife Jezebel.
 
@@ -40,7 +40,7 @@ The world at the time: The Assyrian Empire rose to dominate the region and destr
 
 # 1 Chronicles
 When it happened: Through genealogies it reaches from Adam to the return from exile, but its story covers the death of Saul and the reign of David, ending about 970 BC.
-When it was written: The author, often called the Chronicler, is unnamed; Jewish tradition credits Ezra. 1 and 2 Chronicles were originally one book, and the genealogies run past the exile (1 Chronicles 3:17–24; 9:1–3), so it was written after the return—likely in the 400s BC.
+When it was written: 1 and 2 Chronicles were originally one book, and its writer is often called the Chronicler. The genealogies run past the exile (1 Chronicles 3:17–24; 9:1–3), so it was written after the return—likely in the 400s BC.
 Where: Centered on Jerusalem, with Hebron and the tribal lands of Israel.
 The world at the time: When Chronicles was written, Judah was a small province of the Persian Empire, with a rebuilt temple but no king. Retelling David's story reminded the community of God's promises to David's house and the importance of the temple.
 
@@ -56,7 +56,7 @@ The world at the time: When Chronicles was written, Judah was a small province o
 
 # 2 Chronicles
 When it happened: From the beginning of Solomon's reign (about 970 BC) to the destruction of Jerusalem (586 BC), closing with the decree of Cyrus in 538 BC.
-When it was written: The continuation of 1 Chronicles, written after the return from exile, likely in the 400s BC. Jewish tradition credits Ezra.
+When it was written: The continuation of 1 Chronicles, written after the return from exile, likely in the 400s BC.
 Where: Jerusalem and the kingdom of Judah.
 The world at the time: Chronicles follows only the kings of Judah, while Egypt, Assyria, and then Babylon threatened from outside. Written in the Persian period, it ends with a Persian king inviting the exiles home.
 
@@ -76,7 +76,7 @@ The world at the time: Chronicles follows only the kings of Judah, while Egypt, 
 
 # Ezra
 When it happened: From the first year of Cyrus king of Persia (538 BC) to Ezra's arrival in Jerusalem in the seventh year of Artaxerxes (about 458 BC). The temple was finished in 515 BC, and about fifty-seven years pass between chapters 6 and 7.
-When it was written: Jewish tradition credits Ezra, and chapters 7–9 are partly written in his own voice. Some official letters are preserved in Aramaic, the language of the Persian government (Ezra 4:8–6:18; 7:12–26). Ezra and Nehemiah were originally one book.
+When it was written: Chapters 7–9 are partly written in Ezra's own voice. Some official letters are preserved in Aramaic, the language of the Persian government (Ezra 4:8–6:18; 7:12–26). Ezra and Nehemiah were originally one book.
 Where: Babylon in the Persian Empire, and Jerusalem and the towns of Judah.
 The world at the time: Persia had conquered Babylon and allowed exiled peoples to return home. Judah was a small, poor province surrounded by neighbors who opposed the rebuilding.
 
@@ -104,7 +104,7 @@ The world at the time: Nearly a century after the first exiles returned, Jerusal
 
 # Esther
 When it happened: During the reign of King Ahasuerus of Persia, usually identified with Xerxes I (486–465 BC), from his third year (Esther 1:3) to his twelfth year and after.
-When it was written: The author is unnamed. The book notes that "Mordecai wrote these things" in letters to the Jews (Esther 9:20); it was likely written in the Persian period not long after the events.
+When it was written: The book notes that "Mordecai wrote these things" in letters to the Jews (Esther 9:20); it was likely written in the Persian period not long after the events.
 Where: Shushan (Susa), the royal city of the Persian Empire.
 The world at the time: Persia ruled 127 provinces "from India even unto Ethiopia" (Esther 1:1). Many Jews still lived scattered throughout the empire after the exile, and a royal law, once sealed, could not be reversed.
 

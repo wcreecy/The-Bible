@@ -1,6 +1,6 @@
 # Hebrews
 When it happened: Most likely written before the temple in Jerusalem was destroyed in AD 70, since it speaks of the priests' sacrifices as still being offered (Hebrews 8:4; 10:1–2)—probably in the AD 60s.
-When it was written: The author is not named. He knows "our brother Timothy" (Hebrews 13:23). Suggested authors include Paul, Barnabas, and Apollos; the KJV's traditional title credits Paul.
+When it was written: The writer knows "our brother Timothy" (Hebrews 13:23). Suggested authors include Paul, Barnabas, and Apollos; the KJV's traditional title credits Paul. The writer calls it "the word of exhortation" (Hebrews 13:22), and it reads more like a sermon than a letter.
 Where: Written to Jewish believers whose location is not stated; the writer sends greetings from "They of Italy" (Hebrews 13:24).
 The world at the time: The readers had already endured persecution and the loss of their possessions (Hebrews 10:32–34). Under continuing pressure, some were in danger of drifting away and turning back to the old covenant's sacrifices.
 
@@ -18,7 +18,7 @@ The world at the time: The readers had already endured persecution and the loss 
 
 # James
 When it happened: Possibly one of the earliest New Testament writings, from the AD 40s to early 60s. According to the Jewish historian Josephus, James was put to death around AD 62.
-When it was written: By "James, a servant of God and of the Lord Jesus Christ" (James 1:1), traditionally James the brother of the Lord (Galatians 1:19), who led the church in Jerusalem (Acts 15).
+When it was written: James writes to "the twelve tribes which are scattered abroad" (James 1:1), likely Jewish believers living outside the land of Israel.
 Where: Sent "to the twelve tribes which are scattered abroad" (James 1:1)—Jewish believers living outside the land of Israel.
 The world at the time: The readers were facing trials, and the rich were oppressing the poor, even dragging them into court (James 2:6; 5:1–6). Some assemblies were showing favoritism to wealthy visitors.
 
@@ -32,7 +32,7 @@ The world at the time: The readers were facing trials, and the rich were oppress
 
 # 1 Peter
 When it happened: Likely written in the early AD 60s, before Peter's death in Rome under the emperor Nero, traditionally around AD 64–68.
-When it was written: By "Peter, an apostle of Jesus Christ" (1 Peter 1:1), with the help of Silvanus (1 Peter 5:12). He sends greetings from "Babylon" (1 Peter 5:13), probably a name for Rome. Some scholars think it was written later in Peter's name.
+When it was written: Silvanus helped write it (1 Peter 5:12). Peter sends greetings from "Babylon" (1 Peter 5:13), probably a name for Rome.
 Where: Sent "to the strangers scattered throughout Pontus, Galatia, Cappadocia, Asia, and Bithynia" (1 Peter 1:1)—across what is now northern and western Turkey.
 The world at the time: Believers were being slandered and mistreated by their neighbors because of their faith in Christ (1 Peter 4:12–16), and lived as outsiders in their own communities.
 
@@ -44,7 +44,7 @@ The world at the time: Believers were being slandered and mistreated by their ne
 
 # 2 Peter
 When it happened: Written shortly before Peter's death, which he knew was near (2 Peter 1:14)—traditionally in the mid-AD 60s.
-When it was written: By "Simon Peter, a servant and an apostle of Jesus Christ" (2 Peter 1:1), who calls it his second letter to the same readers (2 Peter 3:1). Many scholars think it was written later in Peter's name.
+When it was written: Peter calls it his second letter to the same readers (2 Peter 3:1), and it speaks of Paul's letters as already known (2 Peter 3:15–16).
 Where: Sent to those who "have obtained like precious faith" (2 Peter 1:1), likely the same believers in Asia Minor as 1 Peter.
 The world at the time: False teachers were exploiting the churches, and scoffers were mocking the promise of Christ's return because time had passed and nothing seemed to change (2 Peter 3:3–4).
 
@@ -56,7 +56,7 @@ The world at the time: False teachers were exploiting the churches, and scoffers
 
 # 1 John
 When it happened: Likely written around AD 85–95.
-When it was written: The author is not named but writes as an eyewitness of Jesus (1 John 1:1–3). Tradition credits the apostle John, the writer of John's Gospel.
+When it was written: The writer speaks as an eyewitness of Jesus (1 John 1:1–3). Its style and themes closely match John's Gospel.
 Where: Probably sent to churches in and around Ephesus.
 The world at the time: A group had left the fellowship (1 John 2:19) and was teaching that Jesus Christ had not truly come in the flesh (1 John 4:2–3). John wrote to reassure the believers who remained.
 
@@ -68,7 +68,7 @@ The world at the time: A group had left the fellowship (1 John 2:19) and was tea
 
 # 2 John
 When it happened: Written in the same period as 1 John, around AD 85–95.
-When it was written: By "The elder" (2 John 1:1), traditionally identified as the apostle John.
+When it was written: A short letter from "The elder" to "the elect lady and her children" (2 John 1:1), probably a church and its members.
 Where: Sent "unto the elect lady and her children" (2 John 1:1)—either a particular woman and her family or, as many think, a local church and its members.
 The world at the time: Travelling teachers depended on believers' hospitality, and some of them were deceivers who denied that Jesus Christ had come in the flesh.
 
@@ -78,7 +78,7 @@ The world at the time: Travelling teachers depended on believers' hospitality, a
 
 # 3 John
 When it happened: Written in the same period as 1 and 2 John, around AD 85–95.
-When it was written: By "The elder," traditionally the apostle John, to his friend Gaius (3 John 1:1).
+When it was written: A personal letter from "The elder" to his friend Gaius (3 John 1:1) about welcoming travelling teachers.
 Where: A local church where Gaius was a member and where Diotrephes had taken control.
 The world at the time: Missionaries travelling from church to church relied on believers to house and support them, and welcoming them was a way of sharing in their work.
 
@@ -88,7 +88,7 @@ The world at the time: Missionaries travelling from church to church relied on b
 
 # Jude
 When it happened: Likely written between the AD 60s and 80s.
-When it was written: By "Jude, the servant of Jesus Christ, and brother of James" (Jude 1:1), traditionally a brother of Jesus (compare Matthew 13:55).
+When it was written: Jude quotes a prophecy of Enoch (Jude 1:14–15) found in the book of 1 Enoch, a Jewish writing outside the Bible.
 Where: The readers are not identified beyond "them that are sanctified by God the Father" (Jude 1:1).
 The world at the time: Ungodly men had slipped into the churches, using God's grace as an excuse for immorality. Jude's warning closely parallels 2 Peter 2.
 
@@ -100,7 +100,7 @@ The world at the time: Ungodly men had slipped into the churches, using God's gr
 
 # Revelation
 When it happened: John was on the island of Patmos "for the word of God, and for the testimony of Jesus Christ" (Revelation 1:9). Early church tradition dates the book near the end of the emperor Domitian's reign, around AD 95; some scholars prefer the late AD 60s.
-When it was written: By John (Revelation 1:1, 4, 9), traditionally the apostle John.
+When it was written: It is written as a letter to seven churches in the province of Asia, recording visions John was told to write down: "What thou seest, write in a book, and send it unto the seven churches" (Revelation 1:11).
 Where: The island of Patmos in the Aegean Sea, writing to seven churches in the Roman province of Asia: Ephesus, Smyrna, Pergamos, Thyatira, Sardis, Philadelphia, and Laodicea.
 The world at the time: Believers in the Roman Empire faced persecution—Antipas had already been killed at Pergamos (Revelation 2:13)—and pressure to compromise with the surrounding culture and its worship.
 

@@ -1,6 +1,6 @@
 # Job
 When it happened: The book gives no date. Job's long life, wealth counted in flocks and herds, and his offering sacrifices for his own family resemble the age of the patriarchs, so many place the story in the second millennium BC.
-When it was written: The author is unnamed. Proposed dates range from the time of Solomon to after the exile; one Jewish tradition credits Moses.
+When it was written: Proposed dates range from the time of Solomon to after the exile; one Jewish tradition credits Moses.
 Where: "the land of Uz" (Job 1:1), probably east or southeast of Israel near Edom (compare Lamentations 4:21).
 The world at the time: Job is not tied to any event in Israel's history. Raiding Sabeans and Chaldeans attack his herds, and his friends come from Teman, Shuah, and Naamath.
 
@@ -16,7 +16,7 @@ The world at the time: Job is not tied to any event in Israel's history. Raiding
 
 # Psalms
 When it happened: The psalms span many centuries—from Psalm 90, titled "A Prayer of Moses," through the many psalms of David (about 1000 BC), to songs from the Babylonian exile (Psalm 137) and after.
-When it was written: The 150 psalms come from several writers. Their titles name David most often (73 psalms), along with Asaph, the sons of Korah, Solomon, Moses, Heman, and Ethan; many are untitled. They were gathered over time into five books, likely completed after the exile.
+When it was written: The 150 psalms were written over many centuries. Their titles name David most often (73 psalms), along with Asaph, the sons of Korah, Solomon, Moses, Heman, and Ethan; many are untitled. They were gathered over time into five books, likely completed after the exile.
 Where: Many are tied to worship at Jerusalem and the temple; some to moments in David's life, such as the wilderness of Judah (Psalm 63); and one to the rivers of Babylon (Psalm 137).
 The world at the time: The psalms were Israel's hymnbook and prayer book. David organized Levite singers and musicians for worship (1 Chronicles 25), and the psalms were sung at the temple and on pilgrimages to Jerusalem.
 
@@ -34,7 +34,7 @@ The world at the time: The psalms were Israel's hymnbook and prayer book. David 
 
 # Proverbs
 When it happened: Most of the proverbs come from King Solomon's reign (about 970–930 BC). Chapters 25–29 were copied out by "the men of Hezekiah king of Judah" (Proverbs 25:1) around 700 BC.
-When it was written: Solomon is named as the main author (Proverbs 1:1; 10:1; 25:1), along with "the words of the wise" (22:17; 24:23), Agur the son of Jakeh (chapter 30), and King Lemuel (chapter 31).
+When it was written: The book was gathered in stages: Solomon's proverbs (Proverbs 1:1; 10:1), "the words of the wise" (22:17; 24:23), the collection copied by Hezekiah's men (chapters 25–29), and the words of Agur (chapter 30) and King Lemuel (chapter 31). It reached its final form in or after Hezekiah's time.
 Where: The royal court at Jerusalem.
 The world at the time: Collections of wise sayings were common across the ancient Near East, especially in Egypt. 1 Kings 4:30–32 says Solomon's wisdom "excelled the wisdom of all the children of the east country, and all the wisdom of Egypt."
 
@@ -50,7 +50,7 @@ The world at the time: Collections of wise sayings were common across the ancien
 
 # Ecclesiastes
 When it happened: The book reflects on life rather than telling events. Its speaker, the Preacher, calls himself "the son of David, king in Jerusalem" (Ecclesiastes 1:1), traditionally Solomon, about 950 BC.
-When it was written: Tradition credits Solomon. Many scholars date the book later, in the Persian or Greek period, because of its style of Hebrew, and see the Preacher's royal voice as a literary role.
+When it was written: Many scholars date the book later than Solomon, in the Persian or Greek period, because of its style of Hebrew, and see the Preacher's royal voice as a literary role.
 Where: Jerusalem.
 The world at the time: The Preacher writes from the position of a king with every advantage—wisdom, wealth, great building projects, and every pleasure—and tests whether any of it gives lasting meaning.
 
@@ -64,7 +64,7 @@ The world at the time: The Preacher writes from the position of a king with ever
 
 # Song of Solomon
 When it happened: The poem does not describe historical events. It is associated with the era of Solomon (about 950 BC).
-When it was written: The book is titled "The song of songs, which is Solomon's" (Song of Solomon 1:1), which can mean it was written by Solomon or dedicated to him. Its date is debated.
+When it was written: The title "The song of songs, which is Solomon's" (Song of Solomon 1:1) can mean it was written by Solomon or dedicated to him. Its date is debated.
 Where: Jerusalem and the countryside of Israel—vineyards and gardens, Lebanon, Sharon, En-gedi, Gilead, and Tirzah.
 The world at the time: Love poetry was well known in the ancient world. Jewish readers have long read the Song at Passover as a picture of God's love for Israel, and many Christians have read it as a picture of Christ and the church, as well as a celebration of married love.
 

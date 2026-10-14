@@ -1,6 +1,6 @@
 # Isaiah
 When it happened: Isaiah prophesied "in the days of Uzziah, Jotham, Ahaz, and Hezekiah, kings of Judah" (Isaiah 1:1), roughly 740–700 BC. Chapters 40–66 speak to the people in Babylonian exile and name Cyrus of Persia (Isaiah 44:28; 45:1).
-When it was written: The book is credited to Isaiah the son of Amoz. Many scholars think chapters 40–66 come from later prophets in Isaiah's tradition during and after the exile; others hold that the whole book comes from Isaiah himself.
+When it was written: Many scholars think chapters 40–66 come from later prophets in Isaiah's tradition during and after the exile; others hold that the whole book comes from Isaiah himself.
 Where: Jerusalem and Judah, with prophecies concerning Assyria, Babylon, Egypt, Moab, Tyre, and other nations.
 The world at the time: The Assyrian Empire was expanding westward. Syria and the northern kingdom of Israel attacked Judah under King Ahaz (Isaiah 7), Assyria destroyed Samaria in 722 BC, and in 701 BC Sennacherib invaded Judah and surrounded Jerusalem.
 
@@ -44,7 +44,7 @@ The world at the time: Assyria collapsed, and Babylon under Nebuchadnezzar defea
 
 # Lamentations
 When it happened: Just after Babylon destroyed Jerusalem and the temple in 586 BC.
-When it was written: The author is unnamed; Jewish and Christian tradition credits Jeremiah, who is known to have written laments (2 Chronicles 35:25). The first four poems are acrostics, each verse or group of verses beginning with the next letter of the Hebrew alphabet.
+When it was written: The first four poems are acrostics, each verse or group of verses beginning with the next letter of the Hebrew alphabet. Their vivid detail suggests an eyewitness writing soon after the city fell. Jeremiah is known to have written laments (2 Chronicles 35:25).
 Where: The ruins of Jerusalem.
 The world at the time: The Babylonians had burned the temple and the city, many people had been killed or carried into exile, and those left behind faced famine. Neighboring Edom rejoiced at Jerusalem's fall (Lamentations 4:21).
 
@@ -60,7 +60,7 @@ The world at the time: The Babylonians had burned the temple and the city, many 
 
 # Ezekiel
 When it happened: From the fifth year of King Jehoiachin's captivity (593 BC; Ezekiel 1:2) to the twenty-seventh year (571 BC; Ezekiel 29:17). Many of the prophecies are dated to the day.
-When it was written: Ezekiel, a priest and the son of Buzi, wrote most of the book in his own voice.
+When it was written: Most of the book is Ezekiel's first-person record of his visions and messages (Ezekiel 1:1), likely written down during the exile in Babylon.
 Where: Among the exiles by the river Chebar in Babylonia, at Tel-abib (Ezekiel 1:1–3; 3:15). In visions he was carried to Jerusalem.
 The world at the time: Ezekiel was taken to Babylon with King Jehoiachin in 597 BC. For his first six years of prophesying, Jerusalem still stood under King Zedekiah; then in 586 BC the exiles received news that the city had fallen (Ezekiel 33:21).
 
@@ -76,7 +76,7 @@ The world at the time: Ezekiel was taken to Babylon with King Jehoiachin in 597 
 
 # Daniel
 When it happened: From the third year of King Jehoiakim (605 BC; Daniel 1:1) to the third year of Cyrus king of Persia (about 536 BC; Daniel 10:1).
-When it was written: Chapters 7–12 record Daniel's visions in his own voice, and tradition credits Daniel with the book. Many scholars date its final form to the 160s BC, during the persecution under the Greek king Antiochus IV. Daniel 2:4–7:28 is written in Aramaic rather than Hebrew.
+When it was written: Chapters 7–12 record Daniel's visions in his own voice. Many scholars date the book's final form to the 160s BC, during the persecution under the Greek king Antiochus IV. Daniel 2:4–7:28 is written in Aramaic rather than Hebrew.
 Where: Babylon, the palace at Shushan (Daniel 8:2), and the bank of the river Hiddekel, the Tigris (Daniel 10:4).
 The world at the time: The book spans the Babylonian Empire under Nebuchadnezzar and Belshazzar and its conquest by the Medes and Persians under Darius the Median and Cyrus.
 

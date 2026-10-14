@@ -1,6 +1,6 @@
 # Romans
 When it happened: Written as Paul was about to take a collection to the poor believers in Jerusalem (Romans 15:25–26), most likely from Corinth near the end of his third missionary journey (Acts 20:2–3), around AD 57.
-When it was written: By the apostle Paul (Romans 1:1). His helper Tertius wrote it down (Romans 16:22), and Phebe, a servant of the church at Cenchrea near Corinth, likely carried it (Romans 16:1).
+When it was written: Paul's helper Tertius wrote it down (Romans 16:22), and Phebe, a servant of the church at Cenchrea near Corinth, likely carried it (Romans 16:1).
 Where: Sent to the believers in Rome, a church Paul had not yet visited.
 The world at the time: Rome was the capital of the empire. Its church included both Jewish and Gentile believers; the emperor Claudius had earlier expelled the Jews from Rome (Acts 18:2), and many had since returned.
 
@@ -20,7 +20,7 @@ The world at the time: Rome was the capital of the empire. Its church included b
 
 # 1 Corinthians
 When it happened: Written from Ephesus (1 Corinthians 16:8) during Paul's third missionary journey, around AD 53–55.
-When it was written: By Paul, with Sosthenes (1 Corinthians 1:1). He was responding to reports from Chloe's household (1:11) and to a letter the Corinthians had sent him (7:1).
+When it was written: Paul wrote with Sosthenes (1 Corinthians 1:1), responding to reports from Chloe's household (1:11) and to a letter the Corinthians had sent him (7:1).
 Where: Corinth, a wealthy Greek port city and capital of the Roman province of Achaia, where Paul had founded the church on his second journey (Acts 18).
 The world at the time: Corinth was a busy center of trade, full of temples to many gods and known for its immorality. Meat sold in its markets had often been offered to idols first.
 
@@ -36,7 +36,7 @@ The world at the time: Corinth was a busy center of trade, full of temples to ma
 
 # 2 Corinthians
 When it happened: Written from Macedonia (2 Corinthians 2:13; 7:5), some months after 1 Corinthians, around AD 55–56.
-When it was written: By Paul, with Timothy (2 Corinthians 1:1).
+When it was written: Paul wrote with Timothy (2 Corinthians 1:1). He mentions an earlier, painful letter that he wrote "with many tears" (2 Corinthians 2:4).
 Where: Sent to the church at Corinth and to all the believers throughout Achaia.
 The world at the time: Paul's relationship with the Corinthians had been strained, and he had written them a painful letter "with many tears" (2:4). Rival teachers, whom he sarcastically calls "the very chiefest apostles" (11:5), were challenging his authority.
 
@@ -50,7 +50,7 @@ The world at the time: Paul's relationship with the Corinthians had been straine
 
 # Galatians
 When it happened: Probably around AD 48–55. Whether it was written before or after the Jerusalem council of Acts 15 is debated.
-When it was written: By Paul (Galatians 1:1), who wrote its closing lines in large letters with his own hand (Galatians 6:11).
+When it was written: Paul wrote its closing lines in large letters with his own hand (Galatians 6:11).
 Where: Sent to "the churches of Galatia" (Galatians 1:2) in central Asia Minor—possibly the churches at Antioch in Pisidia, Iconium, Lystra, and Derbe that Paul founded in Acts 13–14.
 The world at the time: Some teachers were insisting that Gentile believers must be circumcised and keep the law of Moses to belong fully to God's people. Even Peter, at Antioch, had withdrawn from eating with Gentile believers (Galatians 2:11–12).
 
@@ -62,7 +62,7 @@ The world at the time: Some teachers were insisting that Gentile believers must 
 
 # Ephesians
 When it happened: Written while Paul was a prisoner (Ephesians 3:1; 4:1; 6:20), most likely in Rome around AD 60–62.
-When it was written: By Paul (Ephesians 1:1), and carried by Tychicus (Ephesians 6:21). Some early manuscripts lack the words "at Ephesus," suggesting it may have circulated among several churches. Some scholars think it was written by a later follower of Paul.
+When it was written: Tychicus carried it (Ephesians 6:21). Some early manuscripts lack the words "at Ephesus," suggesting it may have circulated among several churches.
 Where: Ephesus, the leading city of the Roman province of Asia, where Paul had spent about three years (Acts 19–20).
 The world at the time: Ephesus was famous for its great temple of Diana. Its church included both Jewish and Gentile believers, and the letter stresses that Christ has made them one.
 
@@ -72,7 +72,7 @@ The world at the time: Ephesus was famous for its great temple of Diana. Its chu
 
 # Philippians
 When it happened: Written while Paul was in bonds (Philippians 1:7, 13), likely in Rome around AD 60–62; he sends greetings from "Caesar's household" (Philippians 4:22).
-When it was written: By Paul, with Timothy (Philippians 1:1). Epaphroditus, who had brought the Philippians' gift to Paul, carried it home (Philippians 2:25).
+When it was written: Epaphroditus, who had brought the Philippians' gift to Paul, carried it home (Philippians 2:25).
 Where: Philippi, a Roman colony in Macedonia and the first city in Europe where Paul founded a church (Acts 16).
 The world at the time: As a Roman colony, Philippi was proud of its Roman citizenship. The church there had supported Paul with gifts more than once (Philippians 4:15–18).
 
@@ -86,7 +86,7 @@ The world at the time: As a Roman colony, Philippi was proud of its Roman citize
 
 # Colossians
 When it happened: Written while Paul was in prison (Colossians 4:3, 18), likely in Rome around AD 60–62, and sent with Tychicus and Onesimus (Colossians 4:7–9).
-When it was written: By Paul, with Timothy (Colossians 1:1). Some scholars think it was written by a later follower of Paul.
+When it was written: Paul had not visited Colossae himself; the church learned the gospel from Epaphras (Colossians 1:7; 2:1).
 Where: Colosse, a small city in the Lycus valley of Asia Minor, near Laodicea and Hierapolis. The church had been founded by Epaphras (Colossians 1:7), and Paul had never visited it (Colossians 2:1).
 The world at the time: A false teaching was spreading that mixed human philosophy with rules about food, holy days, new moons, and sabbaths, and the worship of angels (Colossians 2:8, 16, 18).
 
@@ -98,7 +98,7 @@ The world at the time: A false teaching was spreading that mixed human philosoph
 
 # 1 Thessalonians
 When it happened: Written from Corinth around AD 50–51, shortly after Paul founded the church in Thessalonica (Acts 17–18; 1 Thessalonians 3:6). It is likely one of Paul's earliest letters.
-When it was written: By Paul, with Silvanus (Silas) and Timothy (1 Thessalonians 1:1).
+When it was written: Paul had been forced to leave Thessalonica after a short stay (Acts 17:1–10), and he wrote partly to explain why he had not been able to return (1 Thessalonians 2:17–18).
 Where: Thessalonica, the capital of Macedonia, on the great Roman road across northern Greece.
 The world at the time: Opposition had forced Paul to leave Thessalonica after only a short stay (Acts 17:1–10). The new believers were facing persecution, and some were grieving over believers who had died before Christ's return.
 
@@ -108,7 +108,7 @@ The world at the time: Opposition had forced Paul to leave Thessalonica after on
 
 # 2 Thessalonians
 When it happened: Written soon after 1 Thessalonians, probably from Corinth around AD 51.
-When it was written: By Paul, with Silvanus and Timothy (2 Thessalonians 1:1). Paul signed it with his own hand as a mark of every genuine letter from him (2 Thessalonians 3:17). Some scholars think it came from a later follower.
+When it was written: Paul signed it with his own hand as a mark of every genuine letter from him (2 Thessalonians 3:17). He wrote partly because of a message, possibly a forged letter, claiming that "the day of Christ is at hand" (2 Thessalonians 2:2).
 Where: Thessalonica in Macedonia.
 The world at the time: Persecution continued. Some were teaching that the day of Christ had already come—possibly using a letter falsely claimed to be from Paul (2 Thessalonians 2:2)—and some believers had stopped working.
 
@@ -120,7 +120,7 @@ The world at the time: Persecution continued. Some were teaching that the day of
 
 # 1 Timothy
 When it happened: Written after Paul left Timothy in Ephesus and went on to Macedonia (1 Timothy 1:3), often placed after Paul's first imprisonment in Rome, around AD 62–64.
-When it was written: By Paul (1 Timothy 1:1) to Timothy, his "own son in the faith" (1 Timothy 1:2). Many scholars think 1 and 2 Timothy and Titus were written by a later follower of Paul.
+When it was written: Paul writes to Timothy, his "own son in the faith" (1 Timothy 1:2), with instructions for leading the church in Ephesus.
 Where: Timothy was leading the church in Ephesus.
 The world at the time: False teachers were spreading fables and endless genealogies (1 Timothy 1:4) and forbidding marriage and certain foods (1 Timothy 4:3). Churches were organizing their leadership with bishops and deacons.
 
@@ -132,7 +132,7 @@ The world at the time: False teachers were spreading fables and endless genealog
 
 # 2 Timothy
 When it happened: Written while Paul was imprisoned in Rome and expected to be executed soon (2 Timothy 1:8, 17; 4:6)—traditionally under the emperor Nero, around AD 64–67.
-When it was written: By Paul, as his last letter. As with 1 Timothy, many scholars think it was written by a later follower.
+When it was written: It is presented as Paul's last letter, written as he expected to die: "the time of my departure is at hand" (2 Timothy 4:6).
 Where: Timothy was most likely at Ephesus (2 Timothy 1:18; 4:19).
 The world at the time: Many had deserted Paul (2 Timothy 1:15; 4:10, 16), and only Luke remained with him (2 Timothy 4:11).
 
@@ -142,7 +142,7 @@ The world at the time: Many had deserted Paul (2 Timothy 1:15; 4:10, 16), and on
 
 # Titus
 When it happened: Written after Paul left Titus on the island of Crete (Titus 1:5), likely around AD 62–64. Paul planned to spend the winter at Nicopolis (Titus 3:12).
-When it was written: By Paul to Titus, "mine own son after the common faith" (Titus 1:4). As with 1 and 2 Timothy, many scholars think it was written by a later follower.
+When it was written: Paul writes to Titus, "mine own son after the common faith" (Titus 1:4), with instructions for appointing elders in Crete (Titus 1:5).
 Where: The island of Crete in the Mediterranean.
 The world at the time: Cretans had a poor reputation, which Paul illustrates by quoting one of their own poets (Titus 1:12). False teachers, especially "they of the circumcision," were upsetting whole households (Titus 1:10–11).
 
@@ -154,7 +154,7 @@ The world at the time: Cretans had a poor reputation, which Paul illustrates by 
 
 # Philemon
 When it happened: Written while Paul was a prisoner (Philemon 1:1, 9), likely in Rome around AD 60–62, and sent at the same time as Colossians, which mentions Onesimus (Colossians 4:9).
-When it was written: By Paul, with Timothy (Philemon 1:1). Paul wrote at least part of it with his own hand (Philemon 1:19).
+When it was written: Paul wrote at least part of it with his own hand (Philemon 1:19). Though personal, it is also addressed to Apphia, Archippus, and "the church in thy house" (Philemon 1:2).
 Where: Sent to Philemon and the church that met in his house, apparently at Colosse.
 The world at the time: Slavery was common throughout the Roman Empire. Onesimus, a servant of Philemon, had left his master and met Paul, through whom he became a believer.
 

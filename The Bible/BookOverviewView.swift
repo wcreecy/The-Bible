@@ -27,35 +27,34 @@ struct BookOverviewView: View {
 
     private func overviewContent(_ overview: BibleBookOverview) -> some View {
         ScrollView {
+            // Ordered to build context before reading: what the book is, who wrote it
+            // and why, the world it came from, how to approach it, then what's inside.
             VStack(alignment: .leading, spacing: 20) {
-                SummarySection(overview: overview)
+                AtAGlanceSection(overview: overview)
 
-                BookReadingGuideSection(bookName: bookName)
+                LabeledRowsSection(title: "Background", icon: "person.2.fill", rows: [
+                    .init(title: "Author", icon: "pencil.line", content: overview.traditionalAuthorOrAttribution),
+                    .init(title: "Original Audience", icon: "person.3.fill", content: overview.originalAudience),
+                    .init(title: "Why It Was Written", icon: "target", content: overview.purpose)
+                ])
+
+                LabeledRowsSection(title: "Setting", icon: "map", rows: settingRows(overview))
+
+                BookReadingGuideSection(bookName: bookName, interpretiveNotes: overview.interpretiveNotes)
 
                 if !overview.story.isEmpty {
-                    StoryPreviewSection(bookName: bookName, story: overview.story)
-                }
-
-                LabeledRowsSection(title: "Who", icon: "person.2.fill", rows: [
-                    .init(title: "Author", icon: "pencil.line", content: overview.traditionalAuthorOrAttribution),
-                    .init(title: "Original Audience", icon: "person.3.fill", content: overview.originalAudience)
-                ])
-
-                LabeledRowsSection(title: "When & Where", icon: "map", rows: whenAndWhereRows(overview))
-
-                LabeledRowsSection(title: "Why It Was Written", icon: "target", rows: [
-                    .init(title: "Purpose", icon: "scope", content: overview.purpose)
-                ])
-
-                if !overview.movements.isEmpty {
-                    KeyEventsSection(bookName: bookName, movements: overview.movements)
+                    BookStructureSection(bookName: bookName, sections: overview.story)
                 }
 
                 if !overview.keyFigures.isEmpty {
                     KeyFiguresSection(keyFigures: overview.keyFigures)
                 }
 
-                KeyScriptureSection(keyScripture: overview.keyScripture)
+                if !overview.story.isEmpty {
+                    StoryPreviewSection(bookName: bookName, story: overview.story)
+                }
+
+                StartReadingButton(bookName: bookName)
             }
             .padding()
         }
@@ -65,13 +64,13 @@ struct BookOverviewView: View {
     }
 
     /// Falls back to the short historical-context note for any book without a When & Where section.
-    private func whenAndWhereRows(_ overview: BibleBookOverview) -> [LabeledRowsSection.Row] {
+    private func settingRows(_ overview: BibleBookOverview) -> [LabeledRowsSection.Row] {
         guard let whenAndWhere = overview.whenAndWhere else {
             return [.init(title: "Historical Context", icon: "calendar", content: overview.historicalContext)]
         }
         return [
             .init(title: "When It Happened", icon: "calendar", content: whenAndWhere.whenItHappened),
-            .init(title: "When It Was Written", icon: "scroll", content: whenAndWhere.whenItWasWritten),
+            .init(title: "How It Was Written", icon: "scroll", content: whenAndWhere.whenItWasWritten),
             .init(title: "Where", icon: "mappin.and.ellipse", content: whenAndWhere.location),
             .init(title: "The World at the Time", icon: "globe.europe.africa", content: whenAndWhere.worldAtTheTime)
         ]
@@ -86,12 +85,12 @@ struct BookOverviewView: View {
     }
 }
 
-/// The book summary, headed by its one-line theme.
-private struct SummarySection: View {
+/// The book in brief: its one-line theme, summary, and key verse.
+private struct AtAGlanceSection: View {
     let overview: BibleBookOverview
 
     var body: some View {
-        HeroCard(title: "Summary", icon: "book.closed") {
+        HeroCard(title: "At a Glance", icon: "book.closed") {
             VStack(alignment: .leading, spacing: 8) {
                 if !overview.overallTheme.isEmpty {
                     LinkedScriptureText(overview.overallTheme)
@@ -100,26 +99,118 @@ private struct SummarySection: View {
                 LinkedScriptureText(overview.plainEnglishSummary)
                     .font(.body)
                     .foregroundStyle(.secondary)
+
+                if !overview.keyScripture.text.isEmpty {
+                    Divider()
+                        .padding(.vertical, 4)
+                    KeyScriptureView(keyScripture: overview.keyScripture)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
 
+/// The book's genre and how to approach it, plus questions readers should keep in mind.
 private struct BookReadingGuideSection: View {
     let bookName: String
+    let interpretiveNotes: String
 
     var body: some View {
         HeroCard(title: "How to Read This Book", icon: "text.book.closed") {
-            VStack(alignment: .leading, spacing: 8) {
-                Label(BibleStudyMetadata.genre(for: bookName), systemImage: "tag")
-                    .font(.headline)
-                Text(BibleStudyMetadata.readingTip(for: bookName))
-                    .font(.body)
-                    .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Label(BibleStudyMetadata.genre(for: bookName), systemImage: "tag")
+                        .font(.headline)
+                    Text(BibleStudyMetadata.readingTip(for: bookName))
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                }
+
+                if !interpretiveNotes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Divider()
+                    VStack(alignment: .leading, spacing: 4) {
+                        Label("Keep in Mind", systemImage: "lightbulb")
+                            .font(.headline)
+                        LinkedScriptureText(interpretiveNotes)
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                    }
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+}
+
+/// A detailed outline of the book, one entry per part of its story.
+private struct BookStructureSection: View {
+    let bookName: String
+    let sections: [BibleBookStorySection]
+
+    var body: some View {
+        HeroCard(title: "Book Structure", icon: "list.number") {
+            VStack(alignment: .leading, spacing: 12) {
+                ForEach(Array(sections.enumerated()), id: \.element.id) { index, section in
+                    let outline = OutlineEntry(passage: section.passage)
+
+                    HStack(alignment: .firstTextBaseline, spacing: 10) {
+                        Text(index + 1, format: .number)
+                            .font(.subheadline.weight(.semibold).monospacedDigit())
+                            .foregroundStyle(.tint)
+                            .frame(minWidth: 20, alignment: .trailing)
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(outline.title)
+                                .font(.headline)
+                            if let reference = outline.reference {
+                                PassageReferenceChips(references: [reference], book: bookName)
+                            }
+                        }
+                    }
+
+                    if section.id != sections.last?.id {
+                        Divider()
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    /// Splits a story label such as "Sin Enters the World (Genesis 3:1–5:32)" into its title and reference.
+    private struct OutlineEntry {
+        let title: String
+        let reference: String?
+
+        init(passage: String) {
+            guard passage.hasSuffix(")"),
+                  let open = passage.range(of: " (", options: .backwards) else {
+                title = passage
+                reference = nil
+                return
+            }
+            title = String(passage[..<open.lowerBound])
+            reference = String(passage[open.upperBound..<passage.index(before: passage.endIndex)])
+        }
+    }
+}
+
+/// Opens the book at its first chapter.
+private struct StartReadingButton: View {
+    let bookName: String
+
+    var body: some View {
+        Button {
+            AppRouter.shared.openBibleReference(book: bookName, chapter: 1, verse: 1)
+        } label: {
+            Label("Start Reading \(bookName)", systemImage: "book.fill")
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+        }
+        .buttonStyle(.borderedProminent)
+        .accessibilityHint("Opens \(bookName) chapter 1")
     }
 }
 
@@ -129,7 +220,7 @@ private struct StoryPreviewSection: View {
     let story: [BibleBookStorySection]
 
     var body: some View {
-        HeroCard(title: "The Story of \(bookName)", icon: "book.pages") {
+        HeroCard(title: "Go Deeper: The Story of \(bookName)", icon: "book.pages") {
             VStack(alignment: .leading, spacing: 12) {
                 if let opening = story.first {
                     Text(opening.previewText)
@@ -151,61 +242,27 @@ private struct StoryPreviewSection: View {
     }
 }
 
-private struct KeyScriptureSection: View {
+/// The book's key verse, with its reference linked to a passage preview.
+private struct KeyScriptureView: View {
     let keyScripture: BibleKeyScripture
 
     var body: some View {
-        HeroCard(title: "Key Scripture", icon: "quote.bubble") {
-            VStack(alignment: .leading, spacing: 8) {
-                if let reference = PassageReferenceParser.parse(keyScripture.reference) {
-                    Link(destination: reference.url) {
-                        Label(reference.displayTitle, systemImage: "book")
-                            .font(.headline)
-                    }
-                    .accessibilityHint("Shows a preview of the passage")
-                } else {
-                    Text(keyScripture.reference)
-                        .font(.headline)
-                        .foregroundStyle(.tint)
+        VStack(alignment: .leading, spacing: 6) {
+            if let reference = PassageReferenceParser.parse(keyScripture.reference) {
+                Link(destination: reference.url) {
+                    Label("Key Verse: \(reference.displayTitle)", systemImage: "quote.bubble")
+                        .font(.subheadline.weight(.semibold))
                 }
-
-                Text("“\(keyScripture.text)”")
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityHint("Shows a preview of the passage")
+            } else {
+                Label("Key Verse: \(keyScripture.reference)", systemImage: "quote.bubble")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.tint)
             }
-        }
-    }
-}
 
-private struct KeyEventsSection: View {
-    let bookName: String
-    let movements: [BibleBookMovement]
-
-    var body: some View {
-        HeroCard(
-            title: "Book Structure",
-            icon: "list.number"
-        ) {
-            VStack(alignment: .leading, spacing: 12) {
-                ForEach(movements) { movement in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(movement.title)
-                            .font(.headline)
-                        LinkedScriptureText(movement.description)
-                            .font(.body)
-                            .foregroundStyle(.secondary)
-
-                        if !movement.keyPassages.isEmpty {
-                            PassageReferenceChips(references: movement.keyPassages, book: bookName)
-                        }
-                    }
-
-                    if movement.id != movements.last?.id {
-                        Divider()
-                    }
-                }
-            }
+            Text("“\(keyScripture.text)”")
+                .font(.body.italic())
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }

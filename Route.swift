@@ -10,6 +10,8 @@ enum Route: Hashable {
 }
 
 struct BibleReaderLocation: Hashable {
+    /// Each request is distinct, so opening the same passage twice still opens it.
+    let id = UUID()
     let bookName: String
     let chapterNumber: Int
     let verseNumber: Int

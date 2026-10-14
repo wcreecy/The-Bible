@@ -1,6 +1,6 @@
 # Joshua
 When it happened: From the death of Moses to the death of Joshua at 110 (Joshua 24:29). Depending on the date of the exodus, this is placed either around 1400 BC or in the 1200s BC.
-When it was written: The author is unnamed; Jewish tradition credits Joshua himself, and the book records that "Joshua wrote these words in the book of the law of God" (Joshua 24:26). Repeated notes that things remain "unto this day" show that at least parts were written some time after the events.
+When it was written: The book records that "Joshua wrote these words in the book of the law of God" (Joshua 24:26). Repeated notes that things remain "unto this day" show that at least parts were written some time after the events.
 Where: The Jordan River, Gilgal, Jericho, Ai, Gibeon, Mount Ebal, Shiloh, and Shechem in the land of Canaan.
 The world at the time: Canaan was a patchwork of walled city-states, each with its own king—Joshua 12 lists thirty-one of them. No single empire controlled the land at this point in the story.
 
@@ -18,7 +18,7 @@ The world at the time: Canaan was a patchwork of walled city-states, each with i
 
 # Judges
 When it happened: Between the death of Joshua and the rise of Israel's first king—roughly the 1300s to the 1000s BC. The judges' years add up to several centuries, but some of them may have ruled at the same time in different regions.
-When it was written: The author is unnamed; Jewish tradition credits Samuel. The repeated phrase "In those days there was no king in Israel" suggests it was written after Israel had kings.
+When it was written: The repeated phrase "In those days there was no king in Israel" suggests it was written after Israel had kings.
 Where: Throughout the tribal lands of Israel—the hill country of Ephraim, the valley of Jezreel, Gilead east of the Jordan, the far northern city of Dan, and the Philistine cities such as Gaza.
 The world at the time: The tribes had no central government and were attacked again and again by neighbors: a king of Mesopotamia, Moab, the Canaanite king Jabin of Hazor, Midian, Ammon, and the Philistines.
 
@@ -38,7 +38,7 @@ The world at the time: The tribes had no central government and were attacked ag
 
 # Ruth
 When it happened: "In the days when the judges ruled" (Ruth 1:1)—the period between Joshua and the first king, Saul, often placed around the 1100s BC. Exact dates are uncertain.
-When it was written: The author is unnamed; Jewish tradition credits Samuel. The book ends with David's genealogy (Ruth 4:17–22), so it was written down no earlier than David's time; scholars propose dates from the early monarchy to after the exile.
+When it was written: The book ends with David's genealogy (Ruth 4:17–22), so it was written down no earlier than David's time; scholars propose dates from the early monarchy to after the exile.
 Where: Bethlehem in Judah, and the country of Moab across the Dead Sea to the east.
 The world at the time: Israel had no king, and the tribes lived in the cycles of unfaithfulness and rescue described in Judges. Moab was a neighboring people that had at times oppressed Israel (Judges 3:12–30), which makes a Moabite woman's place in David's family line all the more striking.
 
@@ -54,7 +54,7 @@ When Naomi heard that the LORD had visited his people by giving them bread, she 
 
 # 1 Samuel
 When it happened: From the end of the judges to the death of King Saul, roughly 1100–1010 BC.
-When it was written: The author is unnamed; 1 and 2 Samuel were originally one book. Jewish tradition holds that Samuel wrote the early part and the prophets Nathan and Gad completed it (compare 1 Chronicles 29:29). Many scholars think it was compiled from earlier records during the monarchy.
+When it was written: 1 and 2 Samuel were originally one book. It continues past Samuel's death (1 Samuel 25:1), and 1 Chronicles 29:29 mentions records kept by Samuel, Nathan, and Gad. Many scholars think it was compiled from earlier records during the monarchy.
 Where: Shiloh, Ramah, Mizpeh, Gibeah, Bethlehem, the valley of Elah, the wilderness of Judah around En-gedi, the Philistine cities of Gath and Ziklag, and Mount Gilboa.
 The world at the time: The Philistines held the coastal plain and controlled iron-working, so that Israel had few swords (1 Samuel 13:19–22). Pressed by enemies, Israel asked for a king "like all the nations" (1 Samuel 8:5).
 
@@ -74,7 +74,7 @@ The world at the time: The Philistines held the coastal plain and controlled iro
 
 # 2 Samuel
 When it happened: The forty-year reign of King David, roughly 1010–970 BC—seven and a half years in Hebron and thirty-three in Jerusalem (2 Samuel 5:4–5).
-When it was written: The author is unnamed; it continues 1 Samuel, with which it was originally one book. It likely draws on records kept by prophets of David's court such as Nathan and Gad.
+When it was written: It continues 1 Samuel, with which it was originally one book. It likely draws on records kept by prophets of David's court such as Nathan and Gad.
 Where: Hebron, Jerusalem (the stronghold of Zion), Mahanaim east of the Jordan, and the surrounding lands of the Philistines, Moab, Ammon, Edom, and Syria.
 The world at the time: Egypt and Assyria were relatively weak in this era, which allowed a smaller kingdom to grow. David subdued Israel's neighbors and made Jerusalem the political and religious capital.
 

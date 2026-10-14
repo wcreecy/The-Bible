@@ -1,6 +1,6 @@
 # Hosea
 When it happened: In the days of Uzziah, Jotham, Ahaz, and Hezekiah, kings of Judah, and of Jeroboam II, king of Israel (Hosea 1:1)—roughly 755–715 BC.
-When it was written: Hosea the son of Beeri, a prophet to the northern kingdom of Israel.
+When it was written: Hosea prophesied to the northern kingdom of Israel in its last decades before Assyria conquered it in 722 BC. His messages were likely preserved and collected in Judah after the fall.
 Where: The northern kingdom of Israel, often called Ephraim, and its capital Samaria.
 The world at the time: Prosperity under Jeroboam II gave way to chaos as several kings were assassinated in quick succession. Israel turned for help to Egypt and Assyria, and in 722 BC Assyria destroyed Samaria.
 
@@ -12,7 +12,7 @@ The world at the time: Prosperity under Jeroboam II gave way to chaos as several
 
 # Joel
 When it happened: Joel gives no date. Suggestions range from the 800s BC to after the exile; the book assumes the temple and its priests are functioning and mentions trade with the Greeks (Joel 3:6).
-When it was written: Joel the son of Pethuel (Joel 1:1); nothing more is known about him.
+When it was written: Nothing more is known about Joel than his father's name (Joel 1:1). The book's descriptions of locusts and drought (Joel 1:4, 10–12) suggest it was written in response to a real disaster.
 Where: Judah and Jerusalem.
 The world at the time: A devastating plague of locusts and a drought had ruined the land's crops, so that even the offerings at the temple had stopped. Joel saw in this disaster a warning of the coming day of the LORD.
 
@@ -24,7 +24,7 @@ The world at the time: A devastating plague of locusts and a drought had ruined 
 
 # Amos
 When it happened: In the days of Uzziah king of Judah and Jeroboam II king of Israel, "two years before the earthquake" (Amos 1:1)—about 760 BC.
-When it was written: Amos, a herdman from Tekoa in Judah, who said he was neither a prophet nor a prophet's son (Amos 1:1; 7:14).
+When it was written: Amos was not a professional prophet but "an herdman, and a gatherer of sycomore fruit" (Amos 7:14), sent from Judah to preach in the northern kingdom. Dating his words "two years before the earthquake" (Amos 1:1) suggests they were written down after that earthquake.
 Where: Amos came from Tekoa, south of Bethlehem, but preached in the northern kingdom, at the royal shrine of Bethel and in Samaria.
 The world at the time: Under Jeroboam II, Israel was prosperous and secure. The wealthy built winter houses and summer houses decorated with ivory (Amos 3:15), while the poor were cheated and oppressed.
 
@@ -36,7 +36,7 @@ The world at the time: Under Jeroboam II, Israel was prosperous and secure. The 
 
 # Obadiah
 When it happened: Most likely soon after Babylon destroyed Jerusalem in 586 BC, when Edom joined in the plunder (Obadiah 1:11–14); some date it earlier.
-When it was written: Obadiah, about whom nothing else is known.
+When it was written: At 21 verses, it is the shortest book in the Old Testament. Obadiah 1:1–6 closely parallels Jeremiah 49:9–16, suggesting the two prophets drew on a shared message about Edom.
 Where: The message concerns Edom, the rugged mountain country south and east of the Dead Sea, around Mount Seir.
 The world at the time: The Edomites were descended from Esau, Jacob's brother, and had a long history of hostility toward Israel. When Jerusalem fell, Edom rejoiced and took part in the looting (compare Psalm 137:7).
 
@@ -48,7 +48,7 @@ The world at the time: The Edomites were descended from Esau, Jacob's brother, a
 
 # Jonah
 When it happened: Jonah the son of Amittai prophesied during the reign of Jeroboam II of Israel (2 Kings 14:25), roughly 790–750 BC.
-When it was written: The book tells Jonah's story in the third person; the author is unnamed and the date of writing is debated.
+When it was written: The book tells Jonah's story in the third person, and the date of writing is debated; proposals range from Jonah's own time to after the exile.
 Where: Joppa on the coast of Israel, the Mediterranean Sea, and Nineveh, the great city of Assyria on the Tigris River.
 The world at the time: Assyria was Israel's most feared enemy, known for its cruelty in war. Within a few decades it would destroy the northern kingdom.
 
@@ -62,7 +62,7 @@ The world at the time: Assyria was Israel's most feared enemy, known for its cru
 
 # Micah
 When it happened: In the days of Jotham, Ahaz, and Hezekiah, kings of Judah (Micah 1:1)—roughly 740–700 BC. Jeremiah 26:18 recalls Micah preaching in Hezekiah's reign.
-When it was written: Micah the Morasthite, from the town of Moresheth.
+When it was written: Micah came from Moresheth, a country town in the Judean foothills, and preached against Jerusalem. Over a century later, elders in Jeremiah's day quoted his warning (Jeremiah 26:18; Micah 3:12), showing his words had been preserved.
 Where: Moresheth in the lowlands of Judah; his messages concern both Samaria and Jerusalem.
 The world at the time: Micah lived at the same time as Isaiah, under the shadow of Assyria, which destroyed Samaria in 722 BC. In Judah, the powerful were seizing the fields and houses of the poor (Micah 2:2).
 
@@ -74,7 +74,7 @@ The world at the time: Micah lived at the same time as Isaiah, under the shadow 
 
 # Nahum
 When it happened: After the fall of the Egyptian city of Thebes, called No (Nahum 3:8), in 663 BC, and before the fall of Nineveh in 612 BC.
-When it was written: Nahum the Elkoshite (Nahum 1:1); his hometown of Elkosh has not been identified with certainty.
+When it was written: The book calls itself "The book of the vision of Nahum the Elkoshite" (Nahum 1:1); his hometown of Elkosh has not been identified with certainty.
 Where: The message concerns Nineveh, the capital of the Assyrian Empire.
 The world at the time: Assyria had destroyed the northern kingdom of Israel and dominated Judah for a century. In 612 BC Nineveh fell to the Babylonians and the Medes.
 
@@ -84,7 +84,7 @@ The world at the time: Assyria had destroyed the northern kingdom of Israel and 
 
 # Habakkuk
 When it happened: Likely just before Babylon invaded Judah, around 610–600 BC, since God says he is raising up the Chaldeans (Habakkuk 1:6).
-When it was written: Habakkuk the prophet (Habakkuk 1:1). Chapter 3 is a prayer with musical directions, as in the Psalms.
+When it was written: The book records a dialogue between the prophet and God (chapters 1–2), followed by a prayer with musical directions, as in the Psalms (chapter 3).
 Where: Judah.
 The world at the time: After the reforms of King Josiah, Judah slid back into violence and injustice. Meanwhile the Chaldeans, the Babylonians, were rising to replace Assyria as the great power of the region.
 
@@ -96,7 +96,7 @@ The world at the time: After the reforms of King Josiah, Judah slid back into vi
 
 # Zephaniah
 When it happened: In the days of Josiah king of Judah (Zephaniah 1:1), who reigned 640–609 BC—likely before Josiah's reforms began in earnest.
-When it was written: Zephaniah the son of Cushi, whose family line is traced back four generations to Hizkiah, possibly King Hezekiah (Zephaniah 1:1).
+When it was written: Zephaniah's family line is traced back four generations to Hizkiah, possibly King Hezekiah (Zephaniah 1:1).
 Where: Jerusalem and Judah.
 The world at the time: After the long reign of Manasseh, idolatry was widespread in Judah—the worship of Baal, the host of heaven, and Malcham (Zephaniah 1:4–5). Assyria's power was beginning to fade.
 
@@ -108,7 +108,7 @@ The world at the time: After the long reign of Manasseh, idolatry was widespread
 
 # Haggai
 When it happened: In the second year of King Darius of Persia (520 BC), between the sixth and ninth months (Haggai 1:1; 2:10).
-When it was written: Haggai the prophet. His four messages are each dated to the day.
+When it was written: His four messages are each dated to the day (Haggai 1:1; 2:1; 2:10; 2:20), all within a few months of 520 BC.
 Where: Jerusalem.
 The world at the time: The first exiles had returned from Babylon eighteen years earlier, but opposition had stopped the rebuilding of the temple (Ezra 4–5). Zerubbabel was governor of Judah, and Joshua was high priest.
 
@@ -118,7 +118,7 @@ The world at the time: The first exiles had returned from Babylon eighteen years
 
 # Zechariah
 When it happened: Zechariah began prophesying in the eighth month of the second year of Darius (520 BC; Zechariah 1:1), and his dated messages continue into Darius's fourth year (518 BC; Zechariah 7:1). Chapters 9–14 are undated.
-When it was written: Zechariah the son of Berechiah, the son of Iddo, from a priestly family (Nehemiah 12:16). Many scholars attribute chapters 9–14 to a later writer.
+When it was written: Zechariah came from a priestly family; his grandfather Iddo is listed among the priests who returned from exile (Nehemiah 12:4, 16). Chapters 9–14 are undated and different in style from chapters 1–8.
 Where: Jerusalem.
 The world at the time: Like Haggai, Zechariah encouraged the returned exiles to finish rebuilding the temple under Zerubbabel the governor and Joshua the high priest, in the Persian province of Judah.
 
@@ -130,7 +130,7 @@ The world at the time: Like Haggai, Zechariah encouraged the returned exiles to 
 
 # Malachi
 When it happened: Malachi is undated, but the temple had been rebuilt and a governor ruled Judah (Malachi 1:8). The problems he addresses match those Nehemiah faced, so it is usually placed around 450–430 BC.
-When it was written: Malachi, whose name means "my messenger"; nothing else is known about him.
+When it was written: Nothing else is known about the prophet. The book is written as a series of disputes, in which God makes a statement, the people question it, and God answers (for example Malachi 1:2).
 Where: Jerusalem and Judah.
 The world at the time: Judah was a small province of the Persian Empire. A century after the return, the priests had grown careless, tithes were being withheld, and marriages were breaking down.
 
