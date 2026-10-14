@@ -274,34 +274,33 @@ struct StudyHomeCard: View {
     }
 
     private func actionButtons(secondaryTitle: String?, secondarySheet: Sheet?) -> some View {
-        // Side by side when they fit; stacked at large text sizes.
-        ViewThatFits(in: .horizontal) {
-            HStack(spacing: 10) { actionButtonContent(secondaryTitle, secondarySheet) }
-            VStack(alignment: .leading, spacing: 10) { actionButtonContent(secondaryTitle, secondarySheet) }
+        HStack(spacing: 10) {
+            actionButtonContent(secondaryTitle, secondarySheet)
         }
     }
 
     @ViewBuilder
     private func actionButtonContent(_ secondaryTitle: String?, _ secondarySheet: Sheet?) -> some View {
         Button(action: onRead) {
-            Label("Read \(reference)", systemImage: "book.fill")
+            Label("Read", systemImage: "book.fill")
                 .lineLimit(1)
         }
         .buttonStyle(.bordered)
         .tint(.teal)
+        .frame(maxWidth: .infinity)
 
-        if let secondaryTitle, let secondarySheet {
+        if secondaryTitle != nil, let secondarySheet {
             Button {
                 Haptics.selection()
                 presentedSheet = secondarySheet
             } label: {
-                Label(secondaryTitle, systemImage: "text.book.closed")
+                Label("Insights", systemImage: "text.book.closed")
                     .lineLimit(1)
             }
             .buttonStyle(.bordered)
             .tint(.teal)
+            .frame(maxWidth: .infinity)
         }
-
     }
 
     private var loadingPlaceholder: some View {
