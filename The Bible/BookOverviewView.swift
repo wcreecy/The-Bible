@@ -32,8 +32,6 @@ struct BookOverviewView: View {
 
                 BookReadingGuideSection(bookName: bookName)
 
-                BookPlacementSection(bookName: bookName)
-
                 if !overview.story.isEmpty {
                     StoryPreviewSection(bookName: bookName, story: overview.story)
                 }
@@ -121,50 +119,6 @@ private struct BookReadingGuideSection: View {
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-}
-
-private struct BookPlacementSection: View {
-    let bookName: String
-
-    private var position: Int? {
-        BibleData.books.firstIndex { $0.name == bookName }
-    }
-
-    var body: some View {
-        if let position {
-            HeroCard(title: "Place in the Bible", icon: "square.stack.3d.up") {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("A \(BibleStudyMetadata.testament(for: bookName)) book")
-                        .font(.headline)
-
-                    HStack(spacing: 12) {
-                        if position > 0 {
-                            BookPlacementLink(title: "Before", bookName: BibleData.books[position - 1].name, icon: "chevron.left")
-                        }
-                        if position + 1 < BibleData.books.count {
-                            BookPlacementLink(title: "After", bookName: BibleData.books[position + 1].name, icon: "chevron.right")
-                        }
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-        }
-    }
-}
-
-private struct BookPlacementLink: View {
-    let title: String
-    let bookName: String
-    let icon: String
-
-    var body: some View {
-        NavigationLink {
-            BookOverviewView(bookName: bookName)
-        } label: {
-            Label("\(title): \(bookName)", systemImage: icon)
-                .font(.subheadline.weight(.semibold))
         }
     }
 }

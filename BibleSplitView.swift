@@ -84,17 +84,23 @@ struct BibleSplitView: View {
             }
             .padding(.horizontal, 8)
 
+            // Pinned above the scrolling book list so they stay reachable.
+            VStack(alignment: .leading, spacing: 16) {
+                sidebarSearchField
+
+                Button {
+                    detailPath.append(StudyRoute())
+                } label: {
+                    StudyBibleSidebarCard()
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 8)
+            .padding(.bottom, 8)
+
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 16) {
-                    sidebarSearchField
-
-                    Button {
-                        detailPath.append(StudyRoute())
-                    } label: {
-                        StudyBibleSidebarCard()
-                    }
-                    .buttonStyle(.plain)
-
                     if let match = sidebarReference {
                         BibleReferenceJumpRow(reference: match.reference, action: openSidebarReference)
                     }

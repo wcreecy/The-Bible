@@ -114,6 +114,7 @@ struct StudyBibleView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var searchText = ""
     @State private var testamentFilter: StudyTestamentFilter = .all
+    @AppStorage("studyBooksSortAlphabetical") private var sortAlphabetically = false
 
     private func bookColumns(for availableWidth: CGFloat) -> [GridItem] {
         let columnCount: Int
@@ -137,10 +138,13 @@ struct StudyBibleView: View {
     }
 
     private var displayedBooks: [Book] {
-        books.filter { book in
+        let filtered = books.filter { book in
             let matchesSearch = searchText.isEmpty || book.name.localizedCaseInsensitiveContains(searchText)
             return matchesSearch && testamentFilter.includes(book)
         }
+
+        guard sortAlphabetically else { return filtered }
+        return filtered.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
     }
 
     private var continuedBook: Book? {
@@ -179,7 +183,9 @@ struct StudyBibleView: View {
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $searchText, prompt: "Find a book")
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItemGroup(placement: .primaryAction) {
+                    BibleBookSortMenu(alphabetical: $sortAlphabetically)
+
                     Menu {
                         Picker("Books", selection: $testamentFilter) {
                             ForEach(StudyTestamentFilter.allCases) { filter in
