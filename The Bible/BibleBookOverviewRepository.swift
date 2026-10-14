@@ -16,6 +16,21 @@ struct BibleBookOverview: Equatable, Sendable {
     let keyFigures: [BibleBookKeyFigure]
     let whenAndWhere: BibleBookWhenAndWhere?
     let story: [BibleBookStorySection]
+    let readingTips: [String]
+    let connections: [BibleBookConnection]
+}
+
+/// How a book relates to the rest of the Bible: what it builds on, or where it is picked up later.
+struct BibleBookConnection: Identifiable, Equatable, Sendable {
+    enum Direction: String, Sendable {
+        case back
+        case ahead
+    }
+
+    let id: Int
+    let direction: Direction
+    let title: String
+    let text: String
 }
 
 /// The historical setting of a book: when it happened, when it was written, where, and the wider world.
@@ -136,7 +151,9 @@ actor BibleBookOverviewRepository {
                 movements: loadMovements(forBookNamed: bookName, database: database),
                 keyFigures: loadKeyFigures(forBookNamed: bookName, database: database),
                 whenAndWhere: loadWhenAndWhere(forBookNamed: bookName, database: database),
-                story: loadStory(forBookNamed: bookName, database: database)
+                story: loadStory(forBookNamed: bookName, database: database),
+                readingTips: loadReadingTips(forBookNamed: bookName, database: database),
+                connections: loadConnections(forBookNamed: bookName, database: database)
             )
         }
     }
@@ -273,6 +290,60 @@ actor BibleBookOverviewRepository {
             )
         }
         return sections
+    }
+
+    private func loadReadingTips(forBookNamed bookName: String, database: OpaquePointer) -> [String] {
+        let query = """
+        SELECT tip
+        FROM book_reading_tips
+        WHERE book_name = ?
+        ORDER BY sequence;
+        """
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return []
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_text(statement, 1, bookName, -1, Self.sqliteTransientDestructor())
+
+        var tips: [String] = []
+        while sqlite3_step(statement) == SQLITE_ROW {
+            tips.append(Self.columnText(statement, at: 0))
+        }
+        return tips
+    }
+
+    private func loadConnections(forBookNamed bookName: String, database: OpaquePointer) -> [BibleBookConnection] {
+        let query = """
+        SELECT id, direction, title, text
+        FROM book_connections
+        WHERE book_name = ?
+        ORDER BY direction = 'ahead', sequence;
+        """
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return []
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_text(statement, 1, bookName, -1, Self.sqliteTransientDestructor())
+
+        var connections: [BibleBookConnection] = []
+        while sqlite3_step(statement) == SQLITE_ROW {
+            guard let direction = BibleBookConnection.Direction(rawValue: Self.columnText(statement, at: 1)) else { continue }
+            connections.append(
+                BibleBookConnection(
+                    id: Int(sqlite3_column_int(statement, 0)),
+                    direction: direction,
+                    title: Self.columnText(statement, at: 2),
+                    text: Self.columnText(statement, at: 3)
+                )
+            )
+        }
+        return connections
     }
 
     private static func columnText(_ statement: OpaquePointer, at index: Int32) -> String {

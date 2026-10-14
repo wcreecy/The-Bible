@@ -40,7 +40,15 @@ struct BookOverviewView: View {
 
                 LabeledRowsSection(title: "Setting", icon: "map", rows: settingRows(overview))
 
-                BookReadingGuideSection(bookName: bookName, interpretiveNotes: overview.interpretiveNotes)
+                if !overview.connections.isEmpty {
+                    ConnectionsSection(connections: overview.connections)
+                }
+
+                BookReadingGuideSection(
+                    bookName: bookName,
+                    tips: overview.readingTips,
+                    interpretiveNotes: overview.interpretiveNotes
+                )
 
                 if !overview.story.isEmpty {
                     BookStructureSection(bookName: bookName, sections: overview.story)
@@ -114,17 +122,35 @@ private struct AtAGlanceSection: View {
 /// The book's genre and how to approach it, plus questions readers should keep in mind.
 private struct BookReadingGuideSection: View {
     let bookName: String
+    let tips: [String]
     let interpretiveNotes: String
 
     var body: some View {
         HeroCard(title: "How to Read This Book", icon: "text.book.closed") {
             VStack(alignment: .leading, spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 8) {
                     Label(BibleStudyMetadata.genre(for: bookName), systemImage: "tag")
                         .font(.headline)
-                    Text(BibleStudyMetadata.readingTip(for: bookName))
-                        .font(.body)
-                        .foregroundStyle(.secondary)
+
+                    if tips.isEmpty {
+                        // Books without their own tips fall back to the general advice for the genre.
+                        Text(BibleStudyMetadata.readingTip(for: bookName))
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(tips, id: \.self) { tip in
+                            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                                Image(systemName: "circle.fill")
+                                    .font(.system(size: 6))
+                                    .foregroundStyle(.tint)
+                                    .accessibilityHidden(true)
+                                LinkedScriptureText(tip)
+                                    .font(.body)
+                                    .foregroundStyle(.secondary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                        }
+                    }
                 }
 
                 if !interpretiveNotes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -139,6 +165,55 @@ private struct BookReadingGuideSection: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+/// Where the book fits in the Bible's larger story: what it builds on and where it is picked up later.
+private struct ConnectionsSection: View {
+    let connections: [BibleBookConnection]
+
+    private var looksBack: [BibleBookConnection] {
+        connections.filter { $0.direction == .back }
+    }
+
+    private var looksAhead: [BibleBookConnection] {
+        connections.filter { $0.direction == .ahead }
+    }
+
+    var body: some View {
+        HeroCard(title: "Connections Across the Bible", icon: "point.3.connected.trianglepath.dotted") {
+            VStack(alignment: .leading, spacing: 16) {
+                if !looksBack.isEmpty {
+                    group(title: "Builds On", icon: "arrow.uturn.backward", connections: looksBack)
+                }
+                if !looksBack.isEmpty && !looksAhead.isEmpty {
+                    Divider()
+                }
+                if !looksAhead.isEmpty {
+                    group(title: "Looks Ahead To", icon: "arrow.forward", connections: looksAhead)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private func group(title: String, icon: String, connections: [BibleBookConnection]) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(title, systemImage: icon)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.tint)
+
+            ForEach(connections) { connection in
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(connection.title)
+                        .font(.headline)
+                    LinkedScriptureText(connection.text)
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
         }
     }
 }

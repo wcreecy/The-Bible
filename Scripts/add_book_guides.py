@@ -46,6 +46,7 @@ def reference_problems(text, chapters_by_book):
     full = re.compile(
         r"(?<![A-Za-z0-9])(" + "|".join(map(re.escape, names)) + r")\s+(\d+)(?::(\d+))?(?:[–-](\d+)(?::(\d+))?)?"
         r"((?:\s*[;,]\s*\d+(?::\d+)?(?:[–-]\d+(?::\d+)?)?(?![A-Za-z]))*)"
+        # The app can't link a cross-chapter range after "; ", so require the book name there.
     )
     problems = []
 
@@ -68,7 +69,10 @@ def reference_problems(text, chapters_by_book):
             else:
                 check(book, int(match[4]), None, match[0])
         # Continuations: "; 6:16" starts a new chapter, ", 7" adds a verse in the same chapter.
-        for part in re.finditer(r"([;,])\s*(\d+)(?::(\d+))?(?:[–-](\d+))?", match[6] or ""):
+        for part in re.finditer(r"([;,])\s*(\d+)(?::(\d+))?(?:[–-](\d+)(:\d+)?)?", match[6] or ""):
+            if part[5]:
+                problems.append(f"write the book name before a cross-chapter range ({match[0]})")
+                continue
             if part[3]:
                 chapter, verse = int(part[2]), int(part[3])
             elif part[1] == "," and verse is not None:
