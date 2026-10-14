@@ -174,6 +174,7 @@ struct StudyBibleView: View {
                 .padding()
             }
             .background(AppBackgroundView(tab: .bible))
+            .accessibilityIdentifier("studyBibleView")
             .navigationTitle("Study")
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $searchText, prompt: "Find a book")

@@ -4,9 +4,11 @@ import SwiftUI
 /// the shared book list, chapter grid, reader, and search.
 struct BibleSplitView: View {
     let searchRequestID: Int
+    let studyRequestID: Int
     let initialReaderLocation: BibleReaderLocation?
 
     @State private var handledSearchRequestID: Int = 0
+    @State private var handledStudyRequestID: Int = 0
     @State private var handledInitialReaderLocation: BibleReaderLocation?
     @State private var selectedBook: Book?
     @State private var sidebarSearch: String = ""
@@ -44,6 +46,17 @@ struct BibleSplitView: View {
         } detail: {
             detailView
         }
+        .onAppear(perform: openStudyIfRequested)
+        .onChange(of: studyRequestID) { _, _ in
+            openStudyIfRequested()
+        }
+    }
+
+    private func openStudyIfRequested() {
+        guard studyRequestID > handledStudyRequestID else { return }
+        handledStudyRequestID = studyRequestID
+        detailPath = NavigationPath()
+        detailPath.append(StudyRoute())
     }
 
     // MARK: - Sidebar
@@ -346,6 +359,7 @@ private struct StudyBibleSidebarCard: View {
 #Preview {
     BibleSplitView(
         searchRequestID: 0,
+        studyRequestID: 0,
         initialReaderLocation: nil
     )
 }

@@ -25,6 +25,7 @@ struct ContentView: View {
     @State private var selectedTab: AppTab = .home
     @State private var tabViewRecoveryID = 0
     @State private var bibleSearchRequestID: Int = 0
+    @State private var bibleStudyRequestID: Int = 0
     @State private var launchBibleLocation: BibleReaderLocation?
     
     @AppStorage("colorSchemePreference") private var colorSchemePreferenceRaw: String = ColorSchemePreference.system.rawValue
@@ -72,6 +73,7 @@ struct ContentView: View {
             if usesWideLayout {
                 BibleSplitView(
                     searchRequestID: bibleSearchRequestID,
+                    studyRequestID: bibleStudyRequestID,
                     initialReaderLocation: launchBibleLocation
                 )
                     .tabItem { Label("Bible", systemImage: "book") }
@@ -230,6 +232,13 @@ struct ContentView: View {
             openBibleReference(location)
         case .bibleSearch:
             openBibleSearch()
+        case .bibleStudy:
+            selectedTab = .bible
+            if usesWideLayout {
+                bibleStudyRequestID += 1
+            } else {
+                bibleCoordinator.path = [.study]
+            }
         case .verseOfDayNotification:
             handlePendingVerseOfDayNotification()
         case .gameStart:

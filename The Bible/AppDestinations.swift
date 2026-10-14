@@ -34,6 +34,9 @@ extension View {
 
                 case .search:
                     SearchView()
+
+                case .study:
+                    StudyBibleView(books: BibleData.books)
                 }
             }
     }

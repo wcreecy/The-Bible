@@ -30,7 +30,9 @@ struct StudyHomeCard: View {
     let onRead: () -> Void
 
     private enum Sheet: String, Identifiable {
-        case chapterInsights, bookOverview
+        case chapterInsights
+        case bookOverview
+
         var id: String { rawValue }
     }
 
@@ -58,7 +60,21 @@ struct StudyHomeCard: View {
             title: "Study",
             subtitle: "\(overview != nil ? "Starting \(bookName)" : reference) · \(source.label)",
             icon: "text.book.closed",
-            tint: .teal
+            tint: .teal,
+            trailingAccessory: {
+                Button {
+                    Haptics.selection()
+                    AppRouter.shared.open(.bibleStudy)
+                } label: {
+                    Image(systemName: "rectangle.grid.2x2")
+                        .font(.body.weight(.semibold))
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.teal)
+                .frame(width: 44, height: 44)
+                .accessibilityIdentifier("browseStudyButton")
+                .accessibilityLabel("Browse Study")
+            }
         ) {
             VStack(alignment: .leading, spacing: 14) {
                 if isLoading {
@@ -113,19 +129,6 @@ struct StudyHomeCard: View {
                     themeChip(theme)
                 }
             }
-        }
-
-        if !insights.keyFigures.isEmpty {
-            Label {
-                Text(insights.keyFigures.map(\.name).joined(separator: " · "))
-                    .lineLimit(2)
-            } icon: {
-                Image(systemName: "person.2.fill")
-                    .foregroundStyle(.teal)
-            }
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-            .accessibilityLabel("Key figures: \(insights.keyFigures.map(\.name).formatted(.list(type: .and)))")
         }
 
         actionButtons(secondaryTitle: "Insights", secondarySheet: .chapterInsights)
@@ -310,6 +313,7 @@ struct StudyHomeCard: View {
             .buttonStyle(.bordered)
             .tint(.teal)
         }
+
     }
 
     private var loadingPlaceholder: some View {
