@@ -17,13 +17,13 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // NEW: Hangman per-category maps mirrored via KVS (JSON [String:Int])
+    // Hangman per-category maps mirrored via KVS (JSON [String:Int])
     static let hangmanPerCategoryMapKeys: [String] = [
         "hangmanPerCategoryAnsweredMap",
         "hangmanPerCategoryCorrectMap"
     ]
 
-    // NEW: Hangman persistent streak keys (local-only; used by HangmanGameView)
+    // Hangman persistent streak keys (local-only; used by HangmanGameView)
     static let hangmanPersistentStreakKeys: [String] = {
         var keys: [String] = []
         for d in ["easy","normal","hard"] {
@@ -46,7 +46,7 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // NEW: Beat the Clock persistent streak keys (local-only; used to seed streaks on launch)
+    // Beat the Clock persistent streak keys (local-only; used to seed streaks on launch)
     static let beatClockPersistentStreakKeys: [String] = {
         var keys: [String] = []
         for d in ["easy","normal","hard"] {
@@ -56,7 +56,7 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // NEW: Beat the Clock per-type maps mirrored via KVS (JSON [String:Int])
+    // Beat the Clock per-type maps mirrored via KVS (JSON [String:Int])
     static let beatClockPerTypeMapKeys: [String] = [
         "beatclockPerTypeAnsweredMap",
         "beatclockPerTypeCorrectMap"
@@ -92,7 +92,7 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // NEW: Verse Match persistent streak keys (local-only; used by VerseMatchGameView)
+    // Verse Match persistent streak keys (local-only; used by VerseMatchGameView)
     static let verseMatchPersistentStreakKeys: [String] = {
         var keys: [String] = []
         for d in ["easy","normal","hard"] {
@@ -102,7 +102,7 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // NEW: Verse Match per-book maps mirrored via KVS (JSON [String:Int])
+    // Verse Match per-book maps mirrored via KVS (JSON [String:Int])
     static let verseMatchPerBookMapKeys: [String] = [
         "versematchPerBookAnsweredMap",
         "versematchPerBookCorrectMap"
@@ -122,7 +122,7 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // NEW: Bible Quiz per-book maps mirrored via KVS (JSON [String:Int])
+    // Bible Quiz per-book maps mirrored via KVS (JSON [String:Int])
     static let quizPerBookMapKeys: [String] = [
         "quizPerBookAnsweredMap",
         "quizPerBookCorrectMap"
@@ -169,7 +169,7 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // NEW: Book Order persistent streak keys (local-only; used by BookOrderGameViewModel)
+    // Book Order persistent streak keys (local-only; used by BookOrderGameViewModel)
     static let bookOrderPersistentStreakKeys: [String] = {
         var keys: [String] = []
         for d in ["easy","normal","hard","all"] {
@@ -243,7 +243,7 @@ extension iCloudSyncCoordinator {
             keys.append("wordleAllTimeBestStreak_\(d)")
         }
 
-        // NEW: Per-type win-guess stats (no legacy "_all" variants)
+        // Per-type win-guess stats (no legacy "_all" variants)
         for d in ["daily", "free"] {
             keys.append("wordleWinsGuessSum_\(d)")
             for i in 1...6 {
@@ -251,14 +251,14 @@ extension iCloudSyncCoordinator {
             }
         }
 
-        // NEW: Per-type timing keys (total, wins, losses) so they mirror/reset via KVS
+        // Per-type timing keys (total, wins, losses) so they mirror/reset via KVS
         for d in ["daily", "free"] {
             keys.append("wordleTimeTotal_seconds_\(d)")
             keys.append("wordleTimeWins_seconds_\(d)")
             keys.append("wordleTimeLosses_seconds_\(d)")
         }
 
-        // NEW: Per-mode aggregates (normal/hard)
+        // Per-mode aggregates (normal/hard)
         for m in ["normal", "hard"] {
             // Counts + best streak
             keys.append("wordleAllTimeCorrect_\(m)")
@@ -280,18 +280,18 @@ extension iCloudSyncCoordinator {
         return keys
     }()
 
-    // NEW: WORD daily solved flags (JSON [String:Int] dayKey -> 1)
+    // WORD daily solved flags (JSON [String:Int] dayKey -> 1)
     static let wordleSolvedMapKeys: [String] = [
         "wordleDailySolvedDays"
     ]
 
-    // NEW: WORD daily result summary map (JSON Data [String: DailyResult])
+    // WORD daily result summary map (JSON Data [String: DailyResult])
     // We treat it as a raw Data key like other JSON maps, but with custom merge below.
     static let wordleDailyResultKeys: [String] = [
         "wordleDailyResultMap"
     ]
 
-    // NEW: WORD daily completion flags (String values)
+    // WORD daily completion flags (String values)
     static let wordleDailyFlagKeys: [String] = [
         "wordleDailyCompletedDay",  // yyyy-MM-dd
         "wordleDailyTarget"        // answer word
@@ -305,7 +305,7 @@ extension iCloudSyncCoordinator {
         "gamesLastPlayedGameName"  // String
     ]
 
-    // NEW: Per-game (and per-WORD-mode) daily maps (JSON [String:Int]) — now mirrored via KVS
+    // Per-game (and per-WORD-mode) daily maps (JSON [String:Int]) — now mirrored via KVS
     static let perGameDailyMapKeys: [String] = {
         let gameKeys = ["quiz","hangman","beatclock","versematch","bookorder","whoami","wordsearch","word"]
         var keys: [String] = []
@@ -410,7 +410,7 @@ extension iCloudSyncCoordinator {
                  "beatclockPerTypeAnsweredMap", "beatclockPerTypeCorrectMap",
                  "versematchPerBookAnsweredMap", "versematchPerBookCorrectMap",
                  "quizPerBookDailyAnswered", "quizPerBookDailyCorrect",
-                 // NEW: per-game daily maps
+                 // per-game daily maps
                  _ where Self.perGameDailyMapKeys.contains(key),
                  "wordleDailySolvedDays",
                  "wordleDailyResultMap":
@@ -523,7 +523,7 @@ extension iCloudSyncCoordinator {
                  "hangmanPerCategoryAnsweredMap", "hangmanPerCategoryCorrectMap",
                  "beatclockPerTypeAnsweredMap", "beatclockPerTypeCorrectMap",
                  "versematchPerBookAnsweredMap", "versematchPerBookCorrectMap",
-                 // NEW: per-game daily maps
+                 // per-game daily maps
                  _ where Self.perGameDailyMapKeys.contains(key),
                  "wordleDailySolvedDays":
                 if let remoteData = kvs.object(forKey: key) as? Data {
@@ -686,7 +686,7 @@ extension iCloudSyncCoordinator {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // NEW: Reset only Wordle counters (including timing + histogram) to zero.
+    // Reset only Wordle counters (including timing + histogram) to zero.
     func resetWordleCountersToZero() {
         let keys = Set(Self.wordleKeys)
         for key in keys {
@@ -699,7 +699,7 @@ extension iCloudSyncCoordinator {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // NEW: Local-only purge of all game-related data (used when a newer remote reset epoch is observed).
+    // Local-only purge of all game-related data (used when a newer remote reset epoch is observed).
     func clearAllGameDataLocalOnly() {
         // 1) Remove numeric counters locally (let remote zeros/timestamps win)
         let gameKeys = Array(
@@ -757,7 +757,7 @@ extension iCloudSyncCoordinator {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // NEW: Full wipe of all game-related data: counters, daily maps (overall + per-game), and last played.
+    // Full wipe of all game-related data: counters, daily maps (overall + per-game), and last played.
     func resetAllGameDataToZero() {
         // 1) Reset all-time counters (includes WORD extras)
         resetAllGameCountersToZero()
@@ -780,11 +780,11 @@ extension iCloudSyncCoordinator {
         kvs.removeObject(forKey: "gamesLastPlayedAt")
         kvs.removeObject(forKey: "gamesLastPlayedGameName")
 
-        // NEW: Clear WORD daily solved flags
+        // Clear WORD daily solved flags
         defaults.removeObject(forKey: "wordleDailySolvedDays")
         kvs.removeObject(forKey: "wordleDailySolvedDays")
 
-        // NEW: Clear WORD daily result summaries
+        // Clear WORD daily result summaries
         defaults.removeObject(forKey: "wordleDailyResultMap")
         kvs.removeObject(forKey: "wordleDailyResultMap")
 

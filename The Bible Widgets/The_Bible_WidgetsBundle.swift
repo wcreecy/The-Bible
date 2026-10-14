@@ -48,7 +48,7 @@ struct The_Bible_WidgetsBundle: WidgetBundle {
         VerseWidget()
         LastReadWidget()
         PinnedVerseWidget()        // <- existing pinned verse widget
-        RandomVerseLockScreenWidget() // <- NEW: Lock Screen random verse
+        RandomVerseLockScreenWidget() // Lock Screen random verse
         PrayerTimerLiveActivity()
     }
 }

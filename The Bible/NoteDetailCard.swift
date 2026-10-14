@@ -88,13 +88,13 @@ struct NoteDetailCard: View {
 
     private func toggleFavorite(_ note: VerseNote) {
         note.isFavorite.toggle()
-        try? modelContext.save()
+        modelContext.saveLoggingErrors()
         Haptics.selection()
     }
 
     private func toggleFavorite(_ note: UserNote) {
         note.isFavorite.toggle()
-        try? modelContext.save()
+        modelContext.saveLoggingErrors()
         Haptics.selection()
     }
 

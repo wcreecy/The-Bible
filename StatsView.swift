@@ -1,5 +1,3 @@
-// the entire code of the file with your changes goes here.
-// Do not skip over anything.
 import SwiftUI
 import Charts
 

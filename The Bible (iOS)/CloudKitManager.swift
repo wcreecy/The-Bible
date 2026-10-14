@@ -1,6 +1,24 @@
 import Foundation
 import Observation
 import CloudKit
+import SwiftUI
+
+// MARK: - Which SwiftData store the app ended up using at launch
+
+/// The SwiftData store created at launch. CloudKit is preferred; the other modes are
+/// fallbacks used only when the store before them fails to open.
+enum PersistenceStoreMode {
+    /// Notes, favorites, and bookmarks are saved and sync through iCloud.
+    case cloudKit
+    /// Saved on this device only; nothing syncs.
+    case localOnly
+    /// Nothing is written to disk; all changes are lost when the app quits.
+    case inMemory
+}
+
+extension EnvironmentValues {
+    @Entry var persistenceStoreMode: PersistenceStoreMode = .cloudKit
+}
 
 // MARK: - Simple CloudKit manager for availability and basic access
 @MainActor
@@ -28,9 +46,6 @@ public final class CloudKitManager {
     public private(set) var userRecordID: CKRecord.ID?
 
     private let container: CKContainer
-    private let privateDB: CKDatabase
-    private let sharedDB: CKDatabase
-    private let publicDB: CKDatabase
 
     // Throttling/coalescing
     @ObservationIgnored private var lastRefreshAt: Date?
@@ -40,9 +55,6 @@ public final class CloudKitManager {
 
     public init(containerIdentifier: String) {
         self.container = CKContainer(identifier: containerIdentifier)
-        self.privateDB = container.privateCloudDatabase
-        self.sharedDB = container.sharedCloudDatabase
-        self.publicDB = container.publicCloudDatabase
 
         let bundleID = Bundle.main.bundleIdentifier ?? "<unknown bundle id>"
         // Deprecated receipt URL removed; we log a coarse hint here and the precise one asynchronously.
@@ -106,10 +118,6 @@ public final class CloudKitManager {
         refreshTask = task
         await task.value
         refreshTask = nil
-    }
-
-    public func flushPending() async {
-        print("ℹ️ CloudKitManager.flushPending() called")
     }
 
     private func refreshAccountStatus() async {

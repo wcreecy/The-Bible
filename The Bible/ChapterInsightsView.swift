@@ -265,8 +265,10 @@ private struct ChapterReflectionSection: View {
             note.sourceBookName = bookName
             note.sourceChapterNumber = chapterNumber
             modelContext.insert(note)
-            try? modelContext.save()
-            UserDefaults.standard.removeObject(forKey: legacyResponseKey)
+            // Keep the legacy copy until the note is safely saved.
+            if modelContext.saveLoggingErrors() {
+                UserDefaults.standard.removeObject(forKey: legacyResponseKey)
+            }
             response = legacyResponse
         }
         hasLoadedResponse = true

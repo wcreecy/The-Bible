@@ -683,7 +683,7 @@ struct GamesOverviewCardView: View {
                         .padding(.top, 2)
                     }
 
-                    // NEW: Verse Match weak/strong sections (mirroring Bible Quiz)
+                    // Verse Match weak/strong sections (mirroring Bible Quiz)
                     if selectedGame == "Verse Match" {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {

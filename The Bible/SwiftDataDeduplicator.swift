@@ -24,7 +24,7 @@ enum SwiftDataDeduplicator {
         let removedBookmarks = dedupeBookmarks(in: context)
         let removedNotes = dedupeVerseNotes(in: context)
         guard cleanedText || renumbered || removedFavorites || removedBookmarks || removedNotes else { return }
-        try? context.save()
+        context.saveLoggingErrors()
     }
 
     /// Keeps the earliest favorite for each verse.

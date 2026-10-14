@@ -60,16 +60,16 @@ struct WordleView: View {
     @State private var practiceStreak: Int = 0
     @State private var practiceBestStreak: Int = 0
 
-    // NEW: Debug flag to allow replaying Daily Wordle (matches Settings/Games)
+    // Debug flag to allow replaying Daily Wordle (matches Settings/Games)
     @AppStorage("wordleAllowDailyReplay") private var wordleAllowDailyReplay: Bool = false
 
-    // NEW: Hard Mode toggle (persisted locally; stats still aggregate with normal mode)
+    // Hard Mode toggle (persisted locally; stats still aggregate with normal mode)
     @AppStorage("wordleHardModeEnabled") private var hardModeEnabled: Bool = false
 
     // Difficulty captured when a round starts, so a round keeps its rules even if the setting changes.
     @State private var roundHardMode: Bool = false
 
-    // NEW: Global Auto‑Win debug toggle
+    // Global Auto‑Win debug toggle
     @AppStorage("debugAutoWinEnabled") private var debugAutoWinEnabled: Bool = false
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
 
@@ -88,12 +88,12 @@ struct WordleView: View {
     /// leaves room for it.
     @State private var tipHeight: CGFloat = 0
 
-    // NEW: timing for each round
+    // timing for each round
     @State private var roundStartAt: Date? = nil
-    // NEW: store elapsed seconds for the last round to show in the bottom chip
+    // store elapsed seconds for the last round to show in the bottom chip
     @State private var lastRoundElapsedSeconds: Int? = nil
 
-    // NEW: confirmation for reveal
+    // confirmation for reveal
     @State private var confirmReveal: Bool = false
 
     // MARK: - Persistent WORD streak (overall, survives app relaunch)
@@ -856,7 +856,7 @@ struct WordleView: View {
             return
         }
 
-        // NEW: Hard Mode validation (must keep greens; must use yellows elsewhere)
+        // Hard Mode validation (must keep greens; must use yellows elsewhere)
         if roundHardMode, rowIndex > 0 {
             if let violation = hardModeViolation(for: guess) {
                 message = violation
@@ -980,7 +980,7 @@ struct WordleView: View {
         return result
     }
 
-    // MARK: - Hard Mode constraints (unchanged)
+    // MARK: - Hard Mode constraints
 
     private func buildHardModeConstraints() -> (greens: [Int: Character], minCount: [Character: Int], disallowedPositions: [Character: Set<Int>]) {
         var greens: [Int: Character] = [:]
@@ -1194,11 +1194,11 @@ struct WordleView: View {
         if mode == .daily {
             UserDefaults.standard.set(todayKey, forKey: "wordleDailyCompletedDay")
             UserDefaults.standard.set(target, forKey: "wordleDailyTarget")
-            // NEW: Push daily flags to iCloud KVS so other devices see completion/target
+            // Push daily flags to iCloud KVS so other devices see completion/target
             iCloudSyncCoordinator.shared.pushKey("wordleDailyCompletedDay")
             iCloudSyncCoordinator.shared.pushKey("wordleDailyTarget")
 
-            // NEW: Persist a per-day result summary for the Games list row
+            // Persist a per-day result summary for the Games list row
             let defaults = UserDefaults.standard
             let key = "wordleDailyResultMap"
             struct DailyResult: Codable { let won: Bool; let guesses: Int; let elapsed: Int; let word: String }

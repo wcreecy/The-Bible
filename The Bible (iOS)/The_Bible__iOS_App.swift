@@ -55,12 +55,19 @@ struct The_Bible__iOS_App: App {
     @UIApplicationDelegateAdaptor(BibleAppDelegate.self) private var appDelegate
     @Environment(\.scenePhase) private var scenePhase
 
+    private let sharedModelContainer: ModelContainer
+    /// Shown in Settings so a fallback store is never mistaken for working sync.
+    private let persistenceStoreMode: PersistenceStoreMode
+
     init() {
         UITestSupport.configureIfNeeded()
+        let store = Self.makeModelContainer()
+        sharedModelContainer = store.container
+        persistenceStoreMode = store.mode
     }
 
     // MARK: - SwiftData (CloudKit-backed with local fallback) + diagnostics
-    var sharedModelContainer: ModelContainer = {
+    private static func makeModelContainer() -> (container: ModelContainer, mode: PersistenceStoreMode) {
         let containerID = "iCloud.creecy.bible"
         let bundleID = Bundle.main.bundleIdentifier ?? "<unknown bundle id>"
         let teamID = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String ?? "<unknown team id>"
@@ -151,7 +158,7 @@ struct The_Bible__iOS_App: App {
 
             // Attempt to log the underlying store location(s) if available
             print("🔎 CloudKit ModelContainer ready. (Local cache path is managed by the system.)")
-            return container
+            return (container, .cloudKit)
         } catch {
             logError("Failed to create CloudKit-backed ModelContainer", error: error)
             print("⚠️ Falling back to local on-disk SwiftData store.")
@@ -173,7 +180,7 @@ struct The_Bible__iOS_App: App {
             print("🔎 Probing likely store locations (after local container init)…")
             logLikelyStoreLocations()
 
-            return localContainer
+            return (localContainer, .localOnly)
         } catch {
             logError("Failed to create local on-disk ModelContainer", error: error)
             print("⚠️ Attempting in-memory fallback.")
@@ -193,11 +200,11 @@ struct The_Bible__iOS_App: App {
                 configurations: memoryConfig
             )
             print("ℹ️ Using in-memory SwiftData store. Data will NOT persist or sync.")
-            return container
+            return (container, .inMemory)
         } catch {
             fatalError("Could not create any ModelContainer (including in-memory): \(error)")
         }
-    }()
+    }
 
     // MARK: - CloudKit
     @State private var cloudKitManager = CloudKitManager(containerIdentifier: "iCloud.creecy.bible")
@@ -206,6 +213,7 @@ struct The_Bible__iOS_App: App {
         WindowGroup {
             ContentView()
                 .environment(cloudKitManager)
+                .environment(\.persistenceStoreMode, persistenceStoreMode)
                 .task {
                     await cloudKitManager.prepare()
                     // iCloud key-value sync is started by ContentView.
@@ -224,7 +232,6 @@ struct The_Bible__iOS_App: App {
                         Task { await StreakReminderScheduler.refresh() }
                     case .background:
                         // iCloudSyncCoordinator pushes its own keys when the app enters the background.
-                        Task { await cloudKitManager.flushPending() }
                         // Drops today's reminder if reading in this session met the goal.
                         Task { await StreakReminderScheduler.refresh() }
                     default:

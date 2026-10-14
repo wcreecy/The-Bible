@@ -59,7 +59,7 @@ final class iCloudSyncCoordinator {
     private let bibleStatsResetEpochKVSKey = "bibleStatsResetEpoch"          // in KVS
     private let bibleStatsLastSeenEpochLocalKey = "bibleStatsLastSeenResetEpoch" // in local defaults
 
-    // MARK: - Reset epoch for Game stats (NEW)
+    // MARK: - Reset epoch for Game stats
 
     private let gameStatsResetEpochKVSKey = "gameStatsResetEpoch"            // in KVS
     private let gameStatsLastSeenEpochLocalKey = "gameStatsLastSeenResetEpoch" // in local defaults
@@ -609,7 +609,7 @@ final class iCloudSyncCoordinator {
             }
         }
 
-        // NEW: Check for a remote Game stats reset epoch; if newer than local, clear local game data only.
+        // Check for a remote Game stats reset epoch; if newer than local, clear local game data only.
         let incomingGameEpoch = kvs.double(forKey: gameStatsResetEpochKVSKey)
         if incomingGameEpoch > 0 {
             let lastSeenGame = defaults.double(forKey: gameStatsLastSeenEpochLocalKey)

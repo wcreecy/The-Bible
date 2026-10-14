@@ -267,7 +267,7 @@ struct WordSearchGameView: View {
             let cellSize = min(max(cellSizeFromWidth, minCell), maxCell)
             return CGFloat(vm.size) * cellSize + CGFloat(vm.size - 1) * spacing
         } else {
-            // iPad fallback (unchanged): reserve a comfortable target height.
+            // iPad fallback: reserve a comfortable target height.
             let targetCell: CGFloat = isPad ? 54 : 34
             return CGFloat(vm.size) * targetCell + CGFloat(vm.size - 1) * spacing
         }

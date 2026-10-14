@@ -44,9 +44,9 @@ final class GameStats {
         migrateLegacyGameKeysIfNeeded()
         migrateQuizCombinedIfNeeded()
         migrateBookOrderCombinedIfNeeded()
-        migrateHangmanCombinedIfNeeded() // NEW: backfill combined “_all” for Hangman
-        migrateVerseMatchCombinedIfNeeded() // NEW: backfill combined “_all” for Verse Match
-        migrateWhoAmICombinedIfNeeded() // NEW: backfill combined “_all” for Who am I?
+        migrateHangmanCombinedIfNeeded() // backfill combined “_all” for Hangman
+        migrateVerseMatchCombinedIfNeeded() // backfill combined “_all” for Verse Match
+        migrateWhoAmICombinedIfNeeded() // backfill combined “_all” for Who am I?
 
         observer = NotificationCenter.default.addObserver(
             forName: .gameStatsExternallyUpdated,
@@ -64,9 +64,9 @@ final class GameStats {
     private static let legacyWipeFlagKey = "didWipeLegacyUnsuffixedGameKeys_v1"
     private static let quizCombinedMigrationFlagKey = "didMigrateQuizCombinedAll_v1"
     private static let bookOrderCombinedMigrationFlagKey = "didMigrateBookOrderCombinedAll_v1"
-    private static let hangmanCombinedMigrationFlagKey = "didMigrateHangmanCombinedAll_v1" // NEW
-    private static let verseMatchCombinedMigrationFlagKey = "didMigrateVerseMatchCombinedAll_v1" // NEW
-    private static let whoamiCombinedMigrationFlagKey = "didMigrateWhoAmICombinedAll_v1" // NEW
+    private static let hangmanCombinedMigrationFlagKey = "didMigrateHangmanCombinedAll_v1"
+    private static let verseMatchCombinedMigrationFlagKey = "didMigrateVerseMatchCombinedAll_v1"
+    private static let whoamiCombinedMigrationFlagKey = "didMigrateWhoAmICombinedAll_v1"
 
     private func migrateLegacyGameKeysIfNeeded() {
         let defaults = UserDefaults.standard
@@ -190,7 +190,7 @@ final class GameStats {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // NEW: One-time migration: combine existing per-difficulty Hangman stats into combined "_all" keys.
+    // One-time migration: combine existing per-difficulty Hangman stats into combined "_all" keys.
     private func migrateHangmanCombinedIfNeeded() {
         let defaults = UserDefaults.standard
         guard !defaults.bool(forKey: Self.hangmanCombinedMigrationFlagKey) else { return }
@@ -243,7 +243,7 @@ final class GameStats {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // NEW: One-time migration: combine existing per-difficulty Verse Match stats into combined "_all" keys.
+    // One-time migration: combine existing per-difficulty Verse Match stats into combined "_all" keys.
     private func migrateVerseMatchCombinedIfNeeded() {
         let defaults = UserDefaults.standard
         guard !defaults.bool(forKey: Self.verseMatchCombinedMigrationFlagKey) else { return }
@@ -296,7 +296,7 @@ final class GameStats {
         NotificationCenter.default.post(name: .gameStatsExternallyUpdated, object: nil)
     }
 
-    // NEW: One-time migration: combine existing per-difficulty Who am I? stats into combined "_all" keys.
+    // One-time migration: combine existing per-difficulty Who am I? stats into combined "_all" keys.
     private func migrateWhoAmICombinedIfNeeded() {
         let defaults = UserDefaults.standard
         guard !defaults.bool(forKey: Self.whoamiCombinedMigrationFlagKey) else { return }
@@ -555,7 +555,7 @@ final class GameStats {
             iCloudSyncCoordinator.shared.pushKey("versematchPerBookCorrectMap")
         }
 
-        // NEW: Daily nested maps (local-only; not mirrored to KVS, same as Quiz)
+        // Daily nested maps (local-only; not mirrored to KVS, same as Quiz)
         let dayKey = Self.localDayKey(for: Date())
 
         var vmDailyA: [String: [String: Int]] = loadNestedJSONMap(forKey: "versematchPerBookDailyAnswered")
@@ -648,7 +648,7 @@ final class GameStats {
             incInt("quizAllTimeCorrect_\(s)", by: addCorrect)
             incInt("quizAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("quizAllTimeBestStreak_\(s)", candidate: currentBestStreak)
-            // NEW: Mirror to combined keys so all difficulties share the same all-time stats
+            // Mirror to combined keys so all difficulties share the same all-time stats
             incInt("quizAllTimeCorrect_all", by: addCorrect)
             incInt("quizAllTimeAnswered_all", by: addAnswered)
             maxInt("quizAllTimeBestStreak_all", candidate: currentBestStreak)
@@ -658,7 +658,7 @@ final class GameStats {
             incInt("hangmanAllTimeCorrect_\(s)", by: addCorrect)
             incInt("hangmanAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("hangmanAllTimeBestStreak_\(s)", candidate: currentBestStreak)
-            // NEW: Mirror to combined keys so all difficulties share the same all-time stats
+            // Mirror to combined keys so all difficulties share the same all-time stats
             incInt("hangmanAllTimeCorrect_all", by: addCorrect)
             incInt("hangmanAllTimeAnswered_all", by: addAnswered)
             maxInt("hangmanAllTimeBestStreak_all", candidate: currentBestStreak)
@@ -669,7 +669,7 @@ final class GameStats {
             incInt("beatclockAllTimeCorrect_\(s)", by: addCorrect)
             incInt("beatclockAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("beatclockAllTimeBestStreak_\(s)", candidate: currentBestStreak)
-            // NEW: Always mirror to combined keys so all difficulties share the same all-time stats
+            // Always mirror to combined keys so all difficulties share the same all-time stats
             incInt("beatclockAllTimeCorrect_all", by: addCorrect)
             incInt("beatclockAllTimeAnswered_all", by: addAnswered)
             maxInt("beatclockAllTimeBestStreak_all", candidate: currentBestStreak)
@@ -680,7 +680,7 @@ final class GameStats {
             incInt("versematchAllTimeCorrect_\(s)", by: addCorrect)
             incInt("versematchAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("versematchAllTimeBestStreak_\(s)", candidate: currentBestStreak)
-            // NEW: Mirror to combined keys so all difficulties share the same all-time stats
+            // Mirror to combined keys so all difficulties share the same all-time stats
             incInt("versematchAllTimeCorrect_all", by: addCorrect)
             incInt("versematchAllTimeAnswered_all", by: addAnswered)
             maxInt("versematchAllTimeBestStreak_all", candidate: currentBestStreak)
@@ -691,7 +691,7 @@ final class GameStats {
             incInt("bookorderAllTimeCorrect_\(s)", by: addCorrect)
             incInt("bookorderAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("bookorderAllTimeBestStreak_\(s)", candidate: currentBestStreak)
-            // NEW: Mirror to combined keys when not already writing to "_all"
+            // Mirror to combined keys when not already writing to "_all"
             if s != "all" {
                 incInt("bookorderAllTimeCorrect_all", by: addCorrect)
                 incInt("bookorderAllTimeAnswered_all", by: addAnswered)
@@ -704,7 +704,7 @@ final class GameStats {
             incInt("whoamiAllTimeCorrect_\(s)", by: addCorrect)
             incInt("whoamiAllTimeAnswered_\(s)", by: addAnswered)
             maxInt("whoamiAllTimeBestStreak_\(s)", candidate: currentBestStreak)
-            // NEW: Mirror to combined keys so all difficulties share the same all-time stats
+            // Mirror to combined keys so all difficulties share the same all-time stats
             incInt("whoamiAllTimeCorrect_all", by: addCorrect)
             incInt("whoamiAllTimeAnswered_all", by: addAnswered)
             maxInt("whoamiAllTimeBestStreak_all", candidate: currentBestStreak)
@@ -917,7 +917,7 @@ final class GameStats {
     }
 
     private var hangman: GameStat {
-        // NEW: Prefer combined keys if present; otherwise fall back to summing per-difficulty/legacy
+        // Prefer combined keys if present; otherwise fall back to summing per-difficulty/legacy
         let combinedC = max(0, readInt("hangmanAllTimeCorrect_all"))
         let combinedA = max(0, readInt("hangmanAllTimeAnswered_all"))
         let combinedB = max(0, readInt("hangmanAllTimeBestStreak_all"))
@@ -932,7 +932,7 @@ final class GameStats {
     }
 
     private var versematch: GameStat {
-        // NEW: Prefer combined keys if present; otherwise fall back to new per-difficulty or legacy refmatch
+        // Prefer combined keys if present; otherwise fall back to new per-difficulty or legacy refmatch
         let combinedC = max(0, readInt("versematchAllTimeCorrect_all"))
         let combinedA = max(0, readInt("versematchAllTimeAnswered_all"))
         let combinedB = max(0, readInt("versematchAllTimeBestStreak_all"))
@@ -956,7 +956,7 @@ final class GameStats {
     }
 
     private var beatclock: GameStat {
-        // NEW: Prefer combined keys if present; otherwise fall back to summing per-difficulty/legacy
+        // Prefer combined keys if present; otherwise fall back to summing per-difficulty/legacy
         let combinedC = max(0, readInt("beatclockAllTimeCorrect_all"))
         let combinedA = max(0, readInt("beatclockAllTimeAnswered_all"))
         let combinedB = max(0, readInt("beatclockAllTimeBestStreak_all"))
@@ -986,7 +986,7 @@ final class GameStats {
     }
 
     private var whoami: GameStat {
-        // NEW: Prefer combined keys if present; otherwise fall back to summing per-difficulty
+        // Prefer combined keys if present; otherwise fall back to summing per-difficulty
         let combinedC = max(0, readInt("whoamiAllTimeCorrect_all"))
         let combinedA = max(0, readInt("whoamiAllTimeAnswered_all"))
         let combinedB = max(0, readInt("whoamiAllTimeBestStreak_all"))
@@ -1751,7 +1751,7 @@ final class GameStats {
         return (a, c)
     }
 
-    // NEW: Verse Match daily nested per-book maps loader
+    // Verse Match daily nested per-book maps loader
     private func loadVerseMatchPerBookDailyMaps() -> (answered: [String: [String: Int]], correct: [String: [String: Int]]) {
         let a: [String: [String: Int]] = loadNestedJSONMap(forKey: "versematchPerBookDailyAnswered")
         let c: [String: [String: Int]] = loadNestedJSONMap(forKey: "versematchPerBookDailyCorrect")
@@ -1823,7 +1823,7 @@ final class GameStats {
         return rows
     }
 
-    // NEW: Verse Match weak/strong books over last N days (mirrors Quiz)
+    // Verse Match weak/strong books over last N days (mirrors Quiz)
     func verseMatchWeakBooks(lastNDays: Int, minAttempts: Int) -> [(book: String, answered: Int, correct: Int, pct: Double)] {
         let (dailyA, dailyC) = loadVerseMatchPerBookDailyMaps()
 

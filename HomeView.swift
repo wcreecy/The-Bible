@@ -17,7 +17,7 @@ import WidgetKit
 //     case timer
 //     case resumeReading
 //     case streaks // Daily Bible Streak (now includes Daily Goal progress)
-//     case bibleStats // NEW: Bible Stats (Top 5 by reading time)
+//     case bibleStats // Bible Stats (Top 5 by reading time)
 //     var id: String { rawValue }
 // }
 
@@ -229,7 +229,7 @@ struct HomeView: View {
     @State private var focusVM = FocusViewModel()
     @State private var bibleVM = HomeBibleStatsViewModel()
 
-    // NEW: Bind Live Activities setting directly so Home tracks Settings in real time.
+    // Bind Live Activities setting directly so Home tracks Settings in real time.
     @AppStorage("liveActivitiesEnabled") private var liveActivitiesEnabled: Bool = true
 
     @State private var layoutOrder: [HomeCardID] = HomeLayoutStore.baselineOrder

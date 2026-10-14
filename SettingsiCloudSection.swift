@@ -5,6 +5,7 @@ import UIKit
 struct SettingsiCloudSection: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(CloudKitManager.self) private var cloudKitManager
+    @Environment(\.persistenceStoreMode) private var persistenceStoreMode
     @State private var isRefreshingCloudStatus: Bool = false
     @State private var lastSyncActivity: Date?
     @State private var statsSyncState: iCloudSyncCoordinator.SyncState = .notStarted
@@ -12,7 +13,21 @@ struct SettingsiCloudSection: View {
     @State private var statsCloudBytes: Int = 0
     @State private var statsCloudKeyCount: Int = 0
 
+    /// Explains a fallback store, or nil when notes, favorites, and bookmarks sync normally.
+    private var storeFallbackWarning: String? {
+        switch persistenceStoreMode {
+        case .cloudKit:
+            return nil
+        case .localOnly:
+            return "iCloud couldn't be opened, so notes, favorites, and bookmarks are being saved on this device only and won't sync. Quit and reopen the app to try again."
+        case .inMemory:
+            return "Your library couldn't be opened, so new notes, favorites, and bookmarks won't be saved and will be lost when the app closes. Quit and reopen the app to try again."
+        }
+    }
+
     private var iCloudStatusText: String {
+        // A fallback store means nothing syncs, even if the iCloud account is fine.
+        if persistenceStoreMode != .cloudKit { return "Not Syncing" }
         switch cloudKitManager.accountState {
         case .available: return "Available"
         case .noAccount: return "No Account"
@@ -23,6 +38,7 @@ struct SettingsiCloudSection: View {
     }
 
     private var iCloudStatusColor: Color {
+        if persistenceStoreMode != .cloudKit { return .orange }
         switch cloudKitManager.accountState {
         case .available: return .green
         case .noAccount, .restricted, .couldNotDetermine: return .orange
@@ -38,6 +54,12 @@ struct SettingsiCloudSection: View {
                 Text(iCloudStatusText)
                     .foregroundStyle(iCloudStatusColor)
                     .accessibilityIdentifier("icloudStatusText")
+            }
+            if let storeFallbackWarning {
+                Label(storeFallbackWarning, systemImage: "exclamationmark.icloud")
+                    .font(.footnote)
+                    .foregroundStyle(.orange)
+                    .accessibilityIdentifier("icloudStoreFallbackWarning")
             }
             HStack {
                 Label("Stats Sync", systemImage: "arrow.triangle.2.circlepath.icloud")

@@ -283,7 +283,7 @@ struct ContentView: View {
         guard url.scheme?.lowercased() == "thebible" else { return }
         let host = url.host?.lowercased() ?? ""
 
-        // NEW: thebible://home -> switch to Home tab
+        // thebible://home -> switch to Home tab
         if host == "home" {
             selectedTab = .home
             return
@@ -366,7 +366,7 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Daily usage tracking (unchanged)...
+    // MARK: - Daily usage tracking
 
     private func returnToGameSelection() {
         guard !gamesPath.isEmpty else { return }

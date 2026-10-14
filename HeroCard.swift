@@ -129,7 +129,7 @@ struct HeroCard<Content: View, TrailingAccessory: View, TitleAccessory: View>: V
         self.content = content()
     }
 
-    // NEW: overloads that accept a custom icon view
+    // overloads that accept a custom icon view
     init(
         title: String,
         subtitle: String? = nil,

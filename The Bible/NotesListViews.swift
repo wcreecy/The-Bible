@@ -288,7 +288,7 @@ struct NotesListRow: View {
     private var favoriteButton: some View {
         Button {
             item.toggleFavorite()
-            try? modelContext.save()
+            modelContext.saveLoggingErrors()
             Haptics.selection()
         } label: {
             Label(

@@ -397,7 +397,7 @@ struct NotesAndHighlightsView: View {
             note.content = ""
             note.formattedContent = nil
             note.updatedAt = Date()
-            try? modelContext.save()
+            modelContext.saveLoggingErrors()
             showDeleteUndo("Note deleted · Highlight kept")
             return
         }
@@ -416,7 +416,7 @@ struct NotesAndHighlightsView: View {
             deletedNoteSnapshot = .user(UserNoteSnapshot(note: note), wasSelected: wasSelected)
             modelContext.delete(note)
         }
-        try? modelContext.save()
+        modelContext.saveLoggingErrors()
 
         if wasSelected {
             selectedScriptureNote = nil
@@ -461,7 +461,7 @@ struct NotesAndHighlightsView: View {
             }
         }
 
-        try? modelContext.save()
+        modelContext.saveLoggingErrors()
         self.deletedNoteSnapshot = nil
     }
 
