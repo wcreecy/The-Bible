@@ -33,6 +33,7 @@ struct ChapterRelatedVerse: Identifiable, Equatable, Sendable {
     let id: Int
     let sourceVerse: Int
     let relatedReference: String
+    let connectionExplanation: String?
 }
 
 actor ChapterInsightsRepository {
@@ -296,10 +297,15 @@ actor ChapterInsightsRepository {
         database: OpaquePointer
     ) -> [ChapterRelatedVerse] {
         let query = """
-        SELECT id, source_verse, related_reference
-        FROM chapter_related_verses
-        WHERE book_name = ? AND chapter_number = ?
-        ORDER BY sequence;
+        SELECT related.id, related.source_verse, related.related_reference, connection.explanation
+        FROM chapter_related_verses AS related
+        LEFT JOIN chapter_scripture_connections AS connection
+            ON connection.book_name = related.book_name
+            AND connection.chapter_number = related.chapter_number
+            AND connection.source_verse = related.source_verse
+            AND connection.related_reference = related.related_reference
+        WHERE related.book_name = ? AND related.chapter_number = ?
+        ORDER BY related.sequence;
         """
         var statement: OpaquePointer?
         guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
@@ -317,7 +323,8 @@ actor ChapterInsightsRepository {
                 ChapterRelatedVerse(
                     id: Int(sqlite3_column_int(statement, 0)),
                     sourceVerse: Int(sqlite3_column_int(statement, 1)),
-                    relatedReference: Self.columnText(statement, at: 2)
+                    relatedReference: Self.columnText(statement, at: 2),
+                    connectionExplanation: Self.optionalColumnText(statement, at: 3)
                 )
             )
         }
@@ -339,6 +346,12 @@ actor ChapterInsightsRepository {
     private static func columnText(_ statement: OpaquePointer, at index: Int32) -> String {
         guard let text = sqlite3_column_text(statement, index) else { return "" }
         return String(cString: text)
+    }
+
+    private static func optionalColumnText(_ statement: OpaquePointer, at index: Int32) -> String? {
+        guard let text = sqlite3_column_text(statement, index) else { return nil }
+        let value = String(cString: text)
+        return value.isEmpty ? nil : value
     }
 
     private nonisolated static func sqliteTransientDestructor() -> sqlite3_destructor_type {

@@ -552,9 +552,27 @@ private struct ScriptureCrossReferenceCard: View {
     var showsSource = true
 
     var body: some View {
+        if pair.connectionExplanation != nil {
+            NavigationLink {
+                ScriptureConnectionDetailView(pair: pair)
+            } label: {
+                cardContent
+            }
+            .buttonStyle(.plain)
+            .accessibilityHint("Opens the explanation of this Scripture connection")
+        } else {
+            cardContent
+        }
+    }
+
+    private var cardContent: some View {
         HStack(alignment: .top, spacing: 10) {
             if showsSource {
-                ScriptureExcerpt(reference: pair.source.reference, excerpt: pair.source.excerpt)
+                ScriptureExcerpt(
+                    reference: pair.source.reference,
+                    excerpt: pair.source.excerpt,
+                    showsPassageLink: pair.connectionExplanation == nil
+                )
             }
 
             Image(systemName: "arrow.left.and.right")
@@ -562,7 +580,11 @@ private struct ScriptureCrossReferenceCard: View {
                 .foregroundStyle(.tint)
                 .padding(.top, 4)
 
-            ScriptureExcerpt(reference: pair.target.reference, excerpt: pair.target.excerpt)
+            ScriptureExcerpt(
+                reference: pair.target.reference,
+                excerpt: pair.target.excerpt,
+                showsPassageLink: pair.connectionExplanation == nil
+            )
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -570,17 +592,81 @@ private struct ScriptureCrossReferenceCard: View {
     }
 }
 
-private struct ScriptureExcerpt: View {
+private struct ScriptureConnectionDetailView: View {
+    let pair: ScriptureCrossReference
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                HeroCard(title: "Scripture Connection", icon: "arrow.triangle.branch") {
+                    VStack(alignment: .leading, spacing: 16) {
+                        ScriptureConnectionPassage(
+                            reference: pair.source.reference,
+                            excerpt: pair.source.excerpt
+                        )
+
+                        Image(systemName: "arrow.down")
+                            .foregroundStyle(.tint)
+                            .frame(maxWidth: .infinity)
+
+                        ScriptureConnectionPassage(
+                            reference: pair.target.reference,
+                            excerpt: pair.target.excerpt
+                        )
+
+                        Divider()
+
+                        LinkedScriptureText(pair.connectionExplanation ?? "")
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            .padding()
+        }
+        .background(AppBackgroundView(tab: .bible))
+        .navigationTitle("Scripture Connection")
+        .navigationBarTitleDisplayMode(.inline)
+        .scripturePassagePreviews()
+    }
+}
+
+private struct ScriptureConnectionPassage: View {
     let reference: PassageReference
     let excerpt: String
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Link(destination: reference.url) {
+            Text(reference.displayTitle)
+                .font(.headline)
+                .foregroundStyle(.tint)
+
+            Text("“\(excerpt)”")
+                .font(.body)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct ScriptureExcerpt: View {
+    let reference: PassageReference
+    let excerpt: String
+    var showsPassageLink = true
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            if showsPassageLink {
+                Link(destination: reference.url) {
+                    Text(reference.displayTitle)
+                        .font(.subheadline.weight(.semibold))
+                }
+                .accessibilityHint("Shows a preview of the passage")
+            } else {
                 Text(reference.displayTitle)
                     .font(.subheadline.weight(.semibold))
             }
-            .accessibilityHint("Shows a preview of the passage")
 
             Text("“\(excerpt)”")
                 .font(.caption)
@@ -605,6 +691,7 @@ private struct ScriptureCrossReference: Identifiable, Hashable {
 
     let source: Source
     let target: Target
+    let connectionExplanation: String?
 
     var id: String { "\(source.reference.id)-\(target.reference.id)" }
 }
@@ -642,7 +729,8 @@ private enum ScriptureCrossReferenceLoader {
                     target: ScriptureCrossReference.Target(
                         reference: reference,
                         excerpt: excerpt(for: reference, in: books)
-                    )
+                    ),
+                    connectionExplanation: relatedVerse.connectionExplanation
                 )
             }
         }
