@@ -4,6 +4,7 @@ import Observation
 
 enum TodayChallengeKind: String, Codable {
     case readChapter
+    case studyChapter
     case playGame
     case prayerTimer
     case reflection
@@ -117,6 +118,18 @@ final class TodayChallengeStore {
         }
 
         challenges[index].isCompleted.toggle()
+        save()
+    }
+
+    func completeStudyChallenge(id: UUID) {
+        loadOrCreateForToday()
+
+        guard let index = challenges.firstIndex(where: { $0.id == id && $0.kind == .studyChapter }),
+              !challenges[index].isCompleted else {
+            return
+        }
+
+        challenges[index].isCompleted = true
         save()
     }
 
@@ -324,7 +337,14 @@ final class TodayChallengeStore {
         challenges.append(makeReflectionChallenge())
 
         while challenges.count < 3 {
-            challenges.append(Bool.random() ? makeGameChallenge() : makePrayerChallenge())
+            switch Int.random(in: 0...2) {
+            case 0:
+                challenges.append(makeGameChallenge())
+            case 1:
+                challenges.append(makePrayerChallenge())
+            default:
+                challenges.append(makeStudyChallenge())
+            }
         }
 
         return challenges.shuffled()
@@ -368,6 +388,24 @@ final class TodayChallengeStore {
             detail: "Open the chapter to complete this.",
             bookName: book.name,
             chapterNumber: chapter,
+            gameName: nil,
+            minimumMinutes: nil,
+            isCompleted: false
+        )
+    }
+
+    private func makeStudyChallenge() -> TodayChallenge {
+        let readingChallenge = makeReadingChallenge(excluding: [])
+        let bookName = readingChallenge.bookName ?? "Genesis"
+        let chapterNumber = readingChallenge.chapterNumber ?? 1
+
+        return TodayChallenge(
+            id: UUID(),
+            kind: .studyChapter,
+            title: "Study \(bookName) \(chapterNumber)",
+            detail: "Explore the chapter’s themes and background.",
+            bookName: bookName,
+            chapterNumber: chapterNumber,
             gameName: nil,
             minimumMinutes: nil,
             isCompleted: false
@@ -434,6 +472,7 @@ final class TodayChallengeStore {
 
 struct HomeTodayCard: View {
     private var store = TodayChallengeStore.shared
+    @State private var studyChallenge: TodayChallenge?
 
     /// Starts the Home prayer timer for the given number of minutes.
     let onStartPrayerTimer: (Int) -> Void
@@ -468,6 +507,22 @@ struct HomeTodayCard: View {
                 }
             }
         }
+        .sheet(item: $studyChallenge) { challenge in
+            NavigationStack {
+                if let bookName = challenge.bookName, let chapterNumber = challenge.chapterNumber {
+                    ChapterInsightsView(bookName: bookName, chapterNumber: chapterNumber)
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("Done") {
+                                    studyChallenge = nil
+                                }
+                            }
+                        }
+                } else {
+                    ContentUnavailableView("Study unavailable", systemImage: "text.book.closed")
+                }
+            }
+        }
         .onAppear {
             store.refresh()
         }
@@ -487,6 +542,11 @@ struct HomeTodayCard: View {
             guard let bookName = challenge.bookName, let chapter = challenge.chapterNumber else { return }
             Haptics.selection()
             AppRouter.shared.openBibleReference(book: bookName, chapter: chapter, verse: 1)
+        case .studyChapter:
+            guard challenge.bookName != nil, challenge.chapterNumber != nil else { return }
+            Haptics.selection()
+            store.completeStudyChallenge(id: challenge.id)
+            studyChallenge = challenge
         case .playGame:
             guard let gameName = challenge.gameName else { return }
             Haptics.selection()
@@ -557,6 +617,7 @@ private struct TodayChallengeRow: View {
     private var actionLabel: (title: String, systemImage: String)? {
         switch challenge.kind {
         case .readChapter: ("Read", "book")
+        case .studyChapter: ("Study", "text.book.closed")
         case .playGame: ("Play", "gamecontroller")
         case .prayerTimer: challenge.isCompleted ? nil : ("Start", "timer")
         case .reflection: nil
@@ -571,6 +632,8 @@ private struct TodayChallengeRow: View {
         switch challenge.kind {
         case .readChapter:
             "Opens the chapter."
+        case .studyChapter:
+            "Opens chapter insights and marks this study complete."
         case .playGame:
             "Opens the game."
         case .prayerTimer:
