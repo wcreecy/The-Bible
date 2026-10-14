@@ -107,16 +107,34 @@ struct StudyBibleEntryCard: View {
 /// Browse the Bible's study material independently of the reading-focused book list.
 struct StudyBibleView: View {
     let books: [Book]
+    var isBooksPaneHidden = false
 
     @AppStorage("lastStudiedBook") private var lastStudiedBook = ""
     @AppStorage("lastStudiedChapter") private var lastStudiedChapter = 0
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var searchText = ""
     @State private var testamentFilter: StudyTestamentFilter = .all
 
-    private let bookColumns = Array(
-        repeating: GridItem(.flexible(), spacing: 10),
-        count: 3
-    )
+    private func bookColumns(for availableWidth: CGFloat) -> [GridItem] {
+        let columnCount: Int
+
+        if horizontalSizeClass == .compact {
+            columnCount = 3
+        } else if isBooksPaneHidden && availableWidth >= 800 {
+            columnCount = 8
+        } else if availableWidth >= 800 {
+            columnCount = 6
+        } else if availableWidth >= 700 {
+            columnCount = 5
+        } else {
+            columnCount = 4
+        }
+
+        return Array(
+            repeating: GridItem(.flexible(), spacing: 10),
+            count: columnCount
+        )
+    }
 
     private var displayedBooks: [Book] {
         books.filter { book in
@@ -134,36 +152,42 @@ struct StudyBibleView: View {
     }
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 12) {
-                StudyBibleHeader()
+        GeometryReader { geometry in
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 12) {
+                    StudyBibleHeader()
 
-                if let book = continuedBook, let chapterNumber = continuedChapter {
-                    ContinueStudyingCard(book: book, chapterNumber: chapterNumber)
-                }
-
-                LazyVGrid(columns: bookColumns, alignment: .leading, spacing: 10) {
-                    ForEach(displayedBooks) { book in
-                        StudyBookTile(book: book)
+                    if let book = continuedBook, let chapterNumber = continuedChapter {
+                        ContinueStudyingCard(book: book, chapterNumber: chapterNumber)
                     }
-                }
-            }
-            .padding()
-        }
-        .background(AppBackgroundView(tab: .bible))
-        .navigationTitle("Study")
-        .navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $searchText, prompt: "Find a book")
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Menu {
-                    Picker("Books", selection: $testamentFilter) {
-                        ForEach(StudyTestamentFilter.allCases) { filter in
-                            Text(filter.title).tag(filter)
+
+                    LazyVGrid(
+                        columns: bookColumns(for: geometry.size.width - 32),
+                        alignment: .leading,
+                        spacing: 10
+                    ) {
+                        ForEach(displayedBooks) { book in
+                            StudyBookTile(book: book)
                         }
                     }
-                } label: {
-                    Label("Filter books", systemImage: "line.3.horizontal.decrease.circle")
+                }
+                .padding()
+            }
+            .background(AppBackgroundView(tab: .bible))
+            .navigationTitle("Study")
+            .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $searchText, prompt: "Find a book")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Menu {
+                        Picker("Books", selection: $testamentFilter) {
+                            ForEach(StudyTestamentFilter.allCases) { filter in
+                                Text(filter.title).tag(filter)
+                            }
+                        }
+                    } label: {
+                        Label("Filter books", systemImage: "line.3.horizontal.decrease.circle")
+                    }
                 }
             }
         }

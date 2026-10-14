@@ -182,7 +182,10 @@ struct BibleSplitView: View {
                         }
                 }
                 .navigationDestination(for: StudyRoute.self) { _ in
-                    StudyBibleView(books: books)
+                    StudyBibleView(
+                        books: books,
+                        isBooksPaneHidden: columnVisibility == .detailOnly
+                    )
                 }
                 .navigationDestination(for: ReadingRoute.self) { route in
                     readingDestination(for: route)
