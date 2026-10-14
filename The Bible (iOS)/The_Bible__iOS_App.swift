@@ -55,6 +55,10 @@ struct The_Bible__iOS_App: App {
     @UIApplicationDelegateAdaptor(BibleAppDelegate.self) private var appDelegate
     @Environment(\.scenePhase) private var scenePhase
 
+    init() {
+        UITestSupport.configureIfNeeded()
+    }
+
     // MARK: - SwiftData (CloudKit-backed with local fallback) + diagnostics
     var sharedModelContainer: ModelContainer = {
         let containerID = "iCloud.creecy.bible"

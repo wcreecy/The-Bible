@@ -618,6 +618,7 @@ struct HomeView: View {
             }
         }
         .background(AppBackgroundView(tab: .home))
+        .accessibilityIdentifier("homeView")
         .navigationTitle("")
         .toolbar {
             if isPad {
