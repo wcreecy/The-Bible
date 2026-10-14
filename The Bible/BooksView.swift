@@ -198,6 +198,13 @@ private enum StudyTestamentFilter: String, CaseIterable, Identifiable {
     case all
     case oldTestament
     case newTestament
+    case law
+    case history
+    case poetry
+    case majorProphets
+    case minorProphets
+    case gospels
+    case epistles
 
     var id: Self { self }
 
@@ -206,6 +213,13 @@ private enum StudyTestamentFilter: String, CaseIterable, Identifiable {
         case .all: "All Books"
         case .oldTestament: "Old Testament"
         case .newTestament: "New Testament"
+        case .law: "Law"
+        case .history: "History"
+        case .poetry: "Poetry"
+        case .majorProphets: "Major Prophets"
+        case .minorProphets: "Minor Prophets"
+        case .gospels: "Gospels"
+        case .epistles: "Epistles"
         }
     }
 
@@ -214,6 +228,8 @@ private enum StudyTestamentFilter: String, CaseIterable, Identifiable {
         case .all: true
         case .oldTestament: BibleStudyMetadata.testament(for: book.name) == "Old Testament"
         case .newTestament: BibleStudyMetadata.testament(for: book.name) == "New Testament"
+        case .law, .history, .poetry, .majorProphets, .minorProphets, .gospels, .epistles:
+            BibleStudyMetadata.studyFilter(for: book.name) == self
         }
     }
 }
@@ -228,6 +244,27 @@ enum BibleStudyMetadata {
 
     static func testament(for bookName: String) -> String {
         newTestamentBooks.contains(bookName) ? "New Testament" : "Old Testament"
+    }
+
+    fileprivate static func studyFilter(for bookName: String) -> StudyTestamentFilter? {
+        switch bookName {
+        case "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy":
+            .law
+        case "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Acts":
+            .history
+        case "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon":
+            .poetry
+        case "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel":
+            .majorProphets
+        case "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi":
+            .minorProphets
+        case "Matthew", "Mark", "Luke", "John":
+            .gospels
+        case "Romans", "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians", "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John", "Jude":
+            .epistles
+        default:
+            nil
+        }
     }
 
     static func genre(for bookName: String) -> String {

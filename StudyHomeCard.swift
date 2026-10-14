@@ -296,7 +296,7 @@ struct StudyHomeCard: View {
             Label("Read \(reference)", systemImage: "book.fill")
                 .lineLimit(1)
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(.bordered)
         .tint(.teal)
 
         if let secondaryTitle, let secondarySheet {
