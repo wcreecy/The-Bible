@@ -1,36 +1,42 @@
 import SwiftUI
 
-/// The iPad Home dashboard's two card columns.
+/// The iPad Home dashboard's three equal columns. The Today's Reading panel, when shown,
+/// sits above the cards in its column.
 ///
-/// In Edit Home mode, cards stop responding to taps and show controls to hide them, move them
-/// up or down, or move them to the other column; hidden cards appear as compact tiles so they
-/// can be shown again.
+/// In Edit Home mode, cards stop responding to taps and show controls to hide them or move
+/// them up, down, left, or right; hidden cards appear as compact tiles so they can be shown
+/// again.
 ///
 /// System drag-to-reorder (`reorderable(collectionID:)`) isn't used: on iOS 27.0 it crashed
 /// at lift ("Unexpected identifier type") once items had real card content.
-struct HomeCardColumnsView<Card: View>: View {
+struct HomeCardColumnsView<Card: View, Reader: View>: View {
     let columns: HomeColumnLayout
     let hiddenCards: Set<HomeCardID>
+    /// The Today's Reading panel's column, or nil when it's hidden.
+    let readerColumn: HomeColumn?
     let isEditing: Bool
-    /// The width of both columns together; each column gets exactly half so wide card
+    /// The width of all three columns together; each gets exactly a third so wide card
     /// content can't push the columns past the page margins.
     let width: CGFloat
-    let spacing: CGFloat
-    let onMoveToOtherColumn: (HomeCardID) -> Void
+    let columnSpacing: CGFloat
+    let cardSpacing: CGFloat
+    let onMoveAcross: (_ id: HomeCardID, _ offset: Int) -> Void
     let onMoveWithinColumn: (_ id: HomeCardID, _ offset: Int) -> Void
     let onToggleHidden: (HomeCardID) -> Void
     @ViewBuilder let card: (HomeCardID) -> Card
+    @ViewBuilder let reader: () -> Reader
 
     private var columnWidth: CGFloat {
-        max(0, (width - spacing) / 2)
+        let count = CGFloat(HomeColumn.allCases.count)
+        return max(0, (width - columnSpacing * (count - 1)) / count)
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: spacing) {
-            columnStack(.left)
-                .frame(width: columnWidth)
-            columnStack(.right)
-                .frame(width: columnWidth)
+        HStack(alignment: .top, spacing: columnSpacing) {
+            ForEach(HomeColumn.allCases, id: \.self) { column in
+                columnStack(column)
+                    .frame(width: columnWidth)
+            }
         }
         .frame(width: width, alignment: .top)
     }
@@ -42,12 +48,16 @@ struct HomeCardColumnsView<Card: View>: View {
 
     private func columnStack(_ column: HomeColumn) -> some View {
         let ids = cards(in: column)
-        return VStack(spacing: spacing) {
+        return VStack(spacing: cardSpacing) {
+            if readerColumn == column {
+                reader()
+            }
+
             ForEach(ids, id: \.self) { id in
                 item(for: id, in: column)
             }
 
-            if isEditing && ids.isEmpty {
+            if isEditing && ids.isEmpty && readerColumn != column {
                 emptyColumnPlaceholder
             }
         }
@@ -72,11 +82,12 @@ struct HomeCardColumnsView<Card: View>: View {
                         if isEditing {
                             HomeCardEditChrome(
                                 id: id,
-                                column: column,
                                 canMoveUp: columns.canMove(id, by: -1),
                                 canMoveDown: columns.canMove(id, by: 1),
+                                canMoveLeft: columns.canMoveAcross(id, by: -1),
+                                canMoveRight: columns.canMoveAcross(id, by: 1),
                                 onHide: { onToggleHidden(id) },
-                                onMoveToOtherColumn: { onMoveToOtherColumn(id) },
+                                onMoveAcross: { onMoveAcross(id, $0) },
                                 onMoveWithinColumn: { onMoveWithinColumn(id, $0) }
                             )
                         }
@@ -91,14 +102,19 @@ struct HomeCardColumnsView<Card: View>: View {
                 if columns.canMove(id, by: 1) {
                     Button("Move down") { onMoveWithinColumn(id, 1) }
                 }
-                Button("Move to \(column.other.title)") { onMoveToOtherColumn(id) }
+                if let left = column.neighbor(by: -1) {
+                    Button("Move to \(left.title)") { onMoveAcross(id, -1) }
+                }
+                if let right = column.neighbor(by: 1) {
+                    Button("Move to \(right.title)") { onMoveAcross(id, 1) }
+                }
                 Button(isHidden ? "Show" : "Hide") { onToggleHidden(id) }
             }
         }
     }
 
     private var emptyColumnPlaceholder: some View {
-        Text("Use the arrow on a card to move it here.")
+        Text("Use the arrows on a card to move it here.")
             .font(.subheadline)
             .foregroundStyle(.secondary)
             .multilineTextAlignment(.center)
@@ -117,11 +133,13 @@ struct HomeCardEditChrome: View {
     static let barHeight: CGFloat = 48
 
     let id: HomeCardID
-    let column: HomeColumn
     let canMoveUp: Bool
     let canMoveDown: Bool
+    let canMoveLeft: Bool
+    let canMoveRight: Bool
     let onHide: () -> Void
-    let onMoveToOtherColumn: () -> Void
+    /// Moves the card to the neighboring column: -1 is left, +1 is right.
+    let onMoveAcross: (Int) -> Void
     let onMoveWithinColumn: (Int) -> Void
 
     var body: some View {
@@ -150,23 +168,32 @@ struct HomeCardEditChrome: View {
 
             Spacer(minLength: 0)
 
-            controlButton("chevron.up", label: "Move \(id.title) up", disabled: !canMoveUp) {
+            HomeEditControlButton(systemImage: "arrow.left", label: "Move \(id.title) left", disabled: !canMoveLeft) {
+                onMoveAcross(-1)
+            }
+            HomeEditControlButton(systemImage: "chevron.up", label: "Move \(id.title) up", disabled: !canMoveUp) {
                 onMoveWithinColumn(-1)
             }
-            controlButton("chevron.down", label: "Move \(id.title) down", disabled: !canMoveDown) {
+            HomeEditControlButton(systemImage: "chevron.down", label: "Move \(id.title) down", disabled: !canMoveDown) {
                 onMoveWithinColumn(1)
             }
-            controlButton(
-                column.other == .right ? "arrow.right" : "arrow.left",
-                label: "Move \(id.title) to the \(column.other.title.lowercased())",
-                action: onMoveToOtherColumn
-            )
+            HomeEditControlButton(systemImage: "arrow.right", label: "Move \(id.title) right", disabled: !canMoveRight) {
+                onMoveAcross(1)
+            }
         }
         .padding(.horizontal, 6)
         .frame(height: Self.barHeight)
     }
+}
 
-    private func controlButton(_ systemImage: String, label: String, disabled: Bool = false, action: @escaping () -> Void) -> some View {
+/// A round glass button used in Edit Home bars.
+struct HomeEditControlButton: View {
+    let systemImage: String
+    let label: String
+    var disabled = false
+    let action: () -> Void
+
+    var body: some View {
         Button(action: action) {
             Image(systemName: systemImage)
                 .font(.subheadline.weight(.semibold))
@@ -218,4 +245,3 @@ private struct HiddenHomeCardTile: View {
         .accessibilityElement(children: .combine)
     }
 }
-
