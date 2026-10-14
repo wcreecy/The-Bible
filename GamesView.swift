@@ -89,7 +89,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
         case .verseMatch: "Connect Scripture passages with their references"
         case .bookOrder: "Learn the sequence of the Bible’s books"
         case .wordSearch: "Notice key words in Scripture"
-        case .whoAmI: "Learn people and their roles in the Bible story"
+        case .whoAmI: "Learn people and their roles in the Bible"
         case .wordle: "Return each day for a short Scripture word challenge"
         }
     }
@@ -124,7 +124,7 @@ private enum GameRoute: String, CaseIterable, Hashable, Identifiable {
 private enum GameLearningGroup: CaseIterable, Identifiable {
     case daily
     case learn
-    case memorize
+    case wordGames
 
     var id: Self { self }
 
@@ -132,7 +132,7 @@ private enum GameLearningGroup: CaseIterable, Identifiable {
         switch self {
         case .daily: "Daily"
         case .learn: "Learn"
-        case .memorize: "Memorize"
+        case .wordGames: "Word Games"
         }
     }
 
@@ -140,15 +140,15 @@ private enum GameLearningGroup: CaseIterable, Identifiable {
         switch self {
         case .daily: "Short practices to return to each day."
         case .learn: "Build familiarity with people, places, and Bible knowledge."
-        case .memorize: "Strengthen book order, verses, and Scripture vocabulary."
+        case .wordGames: "Find and recognize Bible words."
         }
     }
 
     var routes: [GameRoute] {
         switch self {
         case .daily: [.wordle]
-        case .learn: [.quiz, .hangman, .whoAmI, .wordSearch]
-        case .memorize: [.verseMatch, .bookOrder, .beatTheClock]
+        case .learn: [.beatTheClock, .quiz, .bookOrder, .verseMatch, .whoAmI]
+        case .wordGames: [.hangman, .wordSearch]
         }
     }
 }
