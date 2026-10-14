@@ -1,7 +1,9 @@
 import SwiftUI
 
 /// Chapter-specific context that helps readers interpret a passage in its literary, cultural,
-/// and scriptural setting. This currently supplies selected chapters in Romans.
+/// and scriptural setting. Every chapter has an imported context in BibleInsights.sqlite;
+/// `context(forBookNamed:chapterNumber:)` supplies fuller hand-written context for Romans 9–10,
+/// which takes precedence over the imported version.
 struct ChapterReadingContext: Equatable, Sendable {
     struct InterpretiveClue: Identifiable, Equatable, Sendable {
         let title: String
@@ -132,57 +134,8 @@ struct ChapterReadingContext: Equatable, Sendable {
     }
 }
 
-struct ChapterReadingContextSection: View {
-    let context: ChapterReadingContext
-
-    var body: some View {
-        VStack(spacing: 20) {
-            ChapterNarrativeContextCard(
-                narrativePlacement: context.narrativePlacement,
-                firstCenturyMoment: context.firstCenturyMoment,
-                originalAudience: context.originalAudience
-            )
-            ChapterInterpretiveCluesCard(clues: context.interpretiveClues)
-            ChapterCulturalLensesCard(lenses: context.culturalLenses)
-
-            if !context.scriptureConnections.isEmpty {
-                ChapterScriptureConnectionsCard(connections: context.scriptureConnections)
-            }
-        }
-    }
-}
-
-private struct ChapterNarrativeContextCard: View {
-    let narrativePlacement: String
-    let firstCenturyMoment: String
-    let originalAudience: String
-
-    var body: some View {
-        HeroCard(title: "Context for Reading", icon: "map") {
-            VStack(alignment: .leading, spacing: 14) {
-                ChapterContextSubheading(title: "IN THE STORY")
-                LinkedScriptureText(narrativePlacement)
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-
-                ChapterContextSubheading(title: "THE HISTORICAL MOMENT")
-                LinkedScriptureText(firstCenturyMoment)
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-
-                if !originalAudience.isEmpty {
-                    ChapterContextSubheading(title: "THE ORIGINAL AUDIENCE")
-                    LinkedScriptureText(originalAudience)
-                        .font(.body)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-}
-
-private struct ChapterInterpretiveCluesCard: View {
+/// Notes on reading difficult or easily misread verses.
+struct ChapterInterpretiveCluesCard: View {
     let clues: [ChapterReadingContext.InterpretiveClue]
 
     private func splitIntoThoughts(_ explanation: String) -> [String] {
@@ -194,7 +147,7 @@ private struct ChapterInterpretiveCluesCard: View {
     }
 
     var body: some View {
-        HeroCard(title: "Read This Chapter With…", icon: "lightbulb") {
+        HeroCard(title: "Read It Carefully", icon: "lightbulb") {
             VStack(alignment: .leading, spacing: 16) {
                 ForEach(clues) { clue in
                     VStack(alignment: .leading, spacing: 6) {
@@ -233,30 +186,8 @@ private struct ChapterInterpretiveCluesCard: View {
     }
 }
 
-private struct ChapterCulturalLensesCard: View {
-    let lenses: [ChapterReadingContext.CulturalLens]
-
-    var body: some View {
-        HeroCard(title: "The World Behind the Text", icon: "building.columns") {
-            VStack(alignment: .leading, spacing: 16) {
-                ForEach(lenses) { lens in
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(lens.title)
-                            .font(.headline)
-                        LinkedScriptureText(lens.reference)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.tint)
-                        ContextExplanation(label: "THEN", text: lens.then)
-                        ContextExplanation(label: "WHY IT MATTERS HERE", text: lens.whyItMatters)
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-}
-
-private struct ChapterScriptureConnectionsCard: View {
+/// Old Testament passages the chapter quotes or echoes, with how they are used.
+struct ChapterScriptureConnectionsCard: View {
     let connections: [ChapterReadingContext.ScriptureConnection]
 
     var body: some View {
@@ -275,32 +206,5 @@ private struct ChapterScriptureConnectionsCard: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-    }
-}
-
-private struct ContextExplanation: View {
-    let label: LocalizedStringKey
-    let text: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text(label)
-                .font(.footnote.weight(.bold))
-                .foregroundStyle(.primary)
-            LinkedScriptureText(text)
-                .font(.body)
-                .foregroundStyle(.secondary)
-        }
-    }
-}
-
-private struct ChapterContextSubheading: View {
-    let title: LocalizedStringKey
-
-    var body: some View {
-        Text(title)
-            .font(.footnote.weight(.bold))
-            .foregroundStyle(.primary)
-            .accessibilityAddTraits(.isHeader)
     }
 }

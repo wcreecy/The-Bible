@@ -3,15 +3,24 @@ import SwiftData
 import SwiftUI
 
 struct ChapterInsightsView: View {
-    let bookName: String
-    let chapterNumber: Int
-
+    /// Previous and next links change the chapter in place, so a sheet keeps its Done button
+    /// and moving through a book doesn't build a long back stack.
+    @State private var location: ChapterLocation
     @State private var insights: ChapterInsights?
+    @State private var neighborSummaries: [ChapterLocation: String] = [:]
     @State private var isLoading = true
     /// The chapter `insights` was loaded for; returning from a pushed page shouldn't reload.
-    @State private var loadedChapterKey: String?
+    @State private var loadedLocation: ChapterLocation?
     @AppStorage("lastStudiedBook") private var lastStudiedBook = ""
     @AppStorage("lastStudiedChapter") private var lastStudiedChapter = 0
+    @Environment(\.dismiss) private var dismiss
+
+    init(bookName: String, chapterNumber: Int) {
+        _location = State(initialValue: ChapterLocation(bookName: bookName, chapterNumber: chapterNumber))
+    }
+
+    private var bookName: String { location.bookName }
+    private var chapterNumber: Int { location.chapterNumber }
 
     var body: some View {
         Group {
@@ -23,26 +32,60 @@ struct ChapterInsightsView: View {
                 ContentUnavailableView(
                     "Chapter Insights Unavailable",
                     systemImage: "text.book.closed",
-                    description: Text("Insights for \(bookName) \(chapterNumber) have not been added yet.")
+                    description: Text("Insights for \(location.title) have not been added yet.")
                 )
             }
         }
-        .navigationTitle("Chapter Insights")
+        .navigationTitle(location.title)
         .navigationBarTitleDisplayMode(.inline)
-        .task(id: "\(bookName)-\(chapterNumber)", loadInsights)
-        .onAppear {
-            lastStudiedBook = bookName
-            lastStudiedChapter = chapterNumber
+        .task(id: location, loadInsights)
+        .onChange(of: location, initial: true) { _, newLocation in
+            lastStudiedBook = newLocation.bookName
+            lastStudiedChapter = newLocation.chapterNumber
         }
     }
 
+    // Ordered the way a reader takes in a chapter: where it falls in the story, what happens,
+    // who is involved, the world behind it, what it means, where Scripture picks it up, then
+    // a response and the way on to the next chapter.
     private func insightsContent(_ insights: ChapterInsights) -> some View {
-        ScrollView {
+        // The hand-written Romans context is fuller than the imported one, so it comes first.
+        let context = ChapterReadingContext.context(forBookNamed: bookName, chapterNumber: chapterNumber)
+            ?? insights.readingContext
+        let content = ChapterContentFilter(insights: insights, context: context)
+        let previous = location.previous
+        let next = location.next
+
+        return ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                WhereWeAreSection(
+                    narrativePlacement: content.narrativePlacement,
+                    previous: previous,
+                    previousSummary: previous.flatMap { neighborSummaries[$0] },
+                    onSelect: { location = $0 }
+                )
+
                 ChapterSummaryCard(
-                    title: insights.reference,
+                    bookName: bookName,
+                    chapterNumber: chapterNumber,
                     summary: insights.overallSummary
                 )
+
+                if !insights.keyFigures.isEmpty {
+                    ChapterInsightList(title: "Key People", icon: "person.2.fill") {
+                        ForEach(insights.keyFigures) { figure in
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(figure.name)
+                                    .font(.headline)
+                                LinkedScriptureText(figure.roleAndSignificance)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
+
+                ChapterBackgroundSection(rows: content.backgroundRows)
 
                 if !insights.keyThemes.isEmpty {
                     ChapterInsightList(title: "Key Themes", icon: "sparkles") {
@@ -68,91 +111,216 @@ struct ChapterInsightsView: View {
                     }
                 }
 
+                if !content.clues.isEmpty {
+                    ChapterInterpretiveCluesCard(clues: content.clues)
+                }
+
+                if let connections = context?.scriptureConnections, !connections.isEmpty {
+                    ChapterScriptureConnectionsCard(connections: connections)
+                }
+
                 if !insights.relatedVerses.isEmpty {
                     ChapterCrossReferencesPreview(
                         bookName: bookName,
                         chapterNumber: chapterNumber,
                         relatedVerses: insights.relatedVerses
                     )
-                } else if !insights.relatedVerses.isEmpty {
-                    ChapterInsightList(title: "Related Verses", icon: "arrow.triangle.branch") {
-                        ForEach(relatedVerseGroups(insights.relatedVerses), id: \.verse) { group in
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text("\(bookName) \(chapterNumber):\(group.verse)")
-                                    .font(.headline)
-                                PassageReferenceChips(
-                                    references: group.references,
-                                    book: bookName,
-                                    chapter: chapterNumber
-                                )
-                            }
-                        }
-                    }
-                }
-
-                if !insights.keyFigures.isEmpty {
-                    ChapterInsightList(title: "Key Figures", icon: "person.2.fill") {
-                        ForEach(insights.keyFigures) { figure in
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(figure.name)
-                                    .font(.headline)
-                                LinkedScriptureText(figure.roleAndSignificance)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                }
-
-                if let readingContext = insights.readingContext ?? ChapterReadingContext.context(
-                    forBookNamed: bookName,
-                    chapterNumber: chapterNumber
-                ) {
-                    ChapterReadingContextSection(context: readingContext)
-                } else {
-                    ChapterBackgroundSection(insights: insights)
                 }
 
                 ChapterReflectionSection(
                     bookName: bookName,
                     chapterNumber: chapterNumber,
-                    whyItMatters: insights.whyItMatters
+                    whyItMatters: content.whyItMatters
                 )
 
-                AboutBookLink(bookName: bookName)
+                ChapterNavigationSection(
+                    location: location,
+                    next: next,
+                    nextSummary: next.flatMap { neighborSummaries[$0] },
+                    onSelect: { location = $0 },
+                    onRead: readChapter
+                )
             }
             .padding()
         }
+        // A new chapter starts fresh: scrolled to the top, with its own reflection loaded.
+        .id(location)
         .background(AppBackgroundView(tab: .bible))
         .environment(\.scriptureContextBook, bookName)
         .scripturePassagePreviews()
     }
 
-    /// Groups related references under the chapter verse they relate to, in verse order.
-    private func relatedVerseGroups(_ relatedVerses: [ChapterRelatedVerse]) -> [(verse: Int, references: [String])] {
-        Dictionary(grouping: relatedVerses, by: \.sourceVerse)
-            .sorted { $0.key < $1.key }
-            .map { (verse: $0.key, references: $0.value.map(\.relatedReference)) }
+    private func readChapter() {
+        dismiss()
+        AppRouter.shared.openBibleReference(book: bookName, chapter: chapterNumber, verse: 1)
     }
 
     private func loadInsights() async {
-        let key = "\(bookName)-\(chapterNumber)"
-        guard loadedChapterKey != key else { return }
-        isLoading = true
-        insights = await ChapterInsightsRepository.shared.insights(
-            forBookNamed: bookName,
-            chapterNumber: chapterNumber
+        guard loadedLocation != location else { return }
+        let requested = location
+        isLoading = insights == nil
+        let loaded = await ChapterInsightsRepository.shared.insights(
+            forBookNamed: requested.bookName,
+            chapterNumber: requested.chapterNumber
         )
-        loadedChapterKey = key
+        var summaries: [ChapterLocation: String] = [:]
+        for neighbor in [requested.previous, requested.next].compactMap({ $0 }) {
+            summaries[neighbor] = await ChapterInsightsRepository.shared.summary(
+                forBookNamed: neighbor.bookName,
+                chapterNumber: neighbor.chapterNumber
+            )
+        }
+        // Ignore a result for a chapter the reader has already moved past.
+        guard requested == location else { return }
+        insights = loaded
+        neighborSummaries = summaries
+        loadedLocation = requested
         isLoading = false
     }
 }
 
+/// A chapter of a book, with its neighbors across book boundaries.
+struct ChapterLocation: Hashable {
+    let bookName: String
+    let chapterNumber: Int
+
+    var title: String { "\(bookName) \(chapterNumber)" }
+
+    var previous: ChapterLocation? {
+        let books = BibleData.books
+        guard let index = books.firstIndex(where: { $0.name == bookName }) else { return nil }
+        if chapterNumber > 1 {
+            return ChapterLocation(bookName: bookName, chapterNumber: chapterNumber - 1)
+        }
+        guard index > 0, let last = books[index - 1].chapters.last else { return nil }
+        return ChapterLocation(bookName: books[index - 1].name, chapterNumber: last.number)
+    }
+
+    var next: ChapterLocation? {
+        let books = BibleData.books
+        guard let index = books.firstIndex(where: { $0.name == bookName }) else { return nil }
+        if chapterNumber < books[index].chapters.count {
+            return ChapterLocation(bookName: bookName, chapterNumber: chapterNumber + 1)
+        }
+        guard index + 1 < books.count, let first = books[index + 1].chapters.first else { return nil }
+        return ChapterLocation(bookName: books[index + 1].name, chapterNumber: first.number)
+    }
+}
+
+/// Much of the imported reading context repeats other fields word for word (the summary,
+/// "why it matters", the customs note). This keeps only text the page doesn't already show,
+/// so genuinely chapter-specific content appears automatically once it is written.
+private struct ChapterContentFilter {
+    let narrativePlacement: String
+    let whyItMatters: String
+    let backgroundRows: [ChapterBackgroundSection.Row]
+    let clues: [ChapterReadingContext.InterpretiveClue]
+
+    init(insights: ChapterInsights, context: ChapterReadingContext?) {
+        var shown = Set<String>()
+        func claim(_ text: String) -> String {
+            let key = Self.normalized(text)
+            guard !key.isEmpty, shown.insert(key).inserted else { return "" }
+            return text
+        }
+
+        _ = claim(insights.overallSummary)
+
+        let placement = context?.narrativePlacement ?? insights.connectionToChapter
+        narrativePlacement = claim(placement)
+        // The imported placement joins two older fields; neither should appear again.
+        for part in [insights.whatWasHappening, insights.connectionToChapter]
+        where Self.normalized(placement).contains(Self.normalized(part)) {
+            _ = claim(part)
+        }
+
+        // Reserved for the reflection card, which is where it is most useful.
+        whyItMatters = claim(insights.whyItMatters)
+
+        var rows: [ChapterBackgroundSection.Row] = []
+        let moment = claim(context?.firstCenturyMoment ?? insights.historicalSetting)
+        if !moment.isEmpty {
+            rows.append(.init(title: "The Historical Moment", icon: "calendar", content: moment))
+        }
+        let audience = claim(context?.originalAudience ?? "")
+        if !audience.isEmpty {
+            rows.append(.init(title: "The Original Audience", icon: "person.3.fill", content: audience))
+        }
+        let lenses = context?.culturalLenses ?? [
+            .init(title: "", reference: "", then: insights.customsAndTraditions, whyItMatters: "")
+        ]
+        for lens in lenses {
+            let paragraphs = [claim(lens.then), claim(lens.whyItMatters)].filter { !$0.isEmpty }
+            guard !paragraphs.isEmpty else { continue }
+            let isGeneric = lens.title.isEmpty || lens.title.hasPrefix("Customs and traditions")
+            rows.append(.init(
+                title: isGeneric ? "Customs & Daily Life" : lens.title,
+                icon: "scroll",
+                reference: isGeneric ? "" : lens.reference,
+                content: paragraphs.joined(separator: "\n")
+            ))
+        }
+        backgroundRows = rows
+
+        clues = (context?.interpretiveClues ?? []).filter { !claim($0.explanation).isEmpty }
+    }
+
+    private static func normalized(_ text: String) -> String {
+        text.lowercased()
+            .components(separatedBy: .whitespacesAndNewlines)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+            .trimmingCharacters(in: CharacterSet(charactersIn: " .!?"))
+    }
+}
+
+/// Where the chapter falls in the book's story, with a link back to the chapter before it.
+private struct WhereWeAreSection: View {
+    let narrativePlacement: String
+    let previous: ChapterLocation?
+    let previousSummary: String?
+    let onSelect: (ChapterLocation) -> Void
+
+    var body: some View {
+        if !narrativePlacement.isEmpty || previous != nil {
+            HeroCard(title: "Where We Are", icon: "mappin.and.ellipse") {
+                VStack(alignment: .leading, spacing: 12) {
+                    if !narrativePlacement.isEmpty {
+                        LinkedScriptureText(narrativePlacement)
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    if let previous {
+                        if !narrativePlacement.isEmpty {
+                            Divider()
+                        }
+                        NeighborChapterLink(
+                            label: "Just Before",
+                            location: previous,
+                            summary: previousSummary,
+                            icon: "chevron.left",
+                            action: { onSelect(previous) }
+                        )
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+}
+
+/// The chapter's events as a numbered outline when the summary cites verse ranges, otherwise the summary itself.
 private struct ChapterSummaryCard: View {
-    let title: String
+    let bookName: String
+    let chapterNumber: Int
     let summary: String
 
     @State private var showsFullSummary = false
+
+    private var events: [ChapterEvent]? {
+        ChapterEvent.outline(from: summary, bookName: bookName, chapterNumber: chapterNumber)
+    }
 
     private var sentences: [String] {
         summary.sentences
@@ -164,25 +332,217 @@ private struct ChapterSummaryCard: View {
     }
 
     var body: some View {
-        HeroCard(title: title, icon: "text.book.closed") {
-            if summary.count <= 650 {
-                LinkedScriptureText(summary)
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            } else {
+        if let events {
+            HeroCard(title: "What Happens", icon: "list.number") {
                 VStack(alignment: .leading, spacing: 12) {
-                    ChapterInsightBullets(items: displayedSentences)
+                    ForEach(events) { event in
+                        HStack(alignment: .firstTextBaseline, spacing: 10) {
+                            Text(event.id + 1, format: .number)
+                                .font(.subheadline.weight(.semibold).monospacedDigit())
+                                .foregroundStyle(.tint)
+                                .frame(minWidth: 18, alignment: .trailing)
 
-                    if !showsFullSummary, sentences.count > displayedSentences.count {
-                        Button("Show full summary") {
-                            showsFullSummary = true
+                            VStack(alignment: .leading, spacing: 6) {
+                                LinkedScriptureText(event.text)
+                                    .font(.body)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                if let reference = event.reference {
+                                    PassageReferenceChips(
+                                        references: [reference],
+                                        book: bookName,
+                                        chapter: chapterNumber
+                                    )
+                                }
+                            }
                         }
-                        .font(.subheadline.weight(.semibold))
+
+                        if event.id != events.last?.id {
+                            Divider()
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        } else {
+            HeroCard(title: "Summary", icon: "text.book.closed") {
+                if summary.count <= 650 {
+                    LinkedScriptureText(summary)
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                } else {
+                    VStack(alignment: .leading, spacing: 12) {
+                        ChapterInsightBullets(items: displayedSentences)
+
+                        if !showsFullSummary, sentences.count > displayedSentences.count {
+                            Button("Show full summary") {
+                                showsFullSummary = true
+                            }
+                            .font(.subheadline.weight(.semibold))
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+/// One step in a chapter's outline, ending at a sentence that cites its verses.
+private struct ChapterEvent: Identifiable {
+    let id: Int
+    var text: String
+    let reference: String?
+
+    /// Builds an outline from summary sentences ending in a citation, such as
+    /// "Sisera flees into Jael's tent, where Jael kills him (Judges 4:17–24)."
+    /// Returns nil when fewer than two sentences cite their verses.
+    static func outline(from summary: String, bookName: String, chapterNumber: Int) -> [ChapterEvent]? {
+        var events: [ChapterEvent] = []
+        var pending: [String] = []
+
+        for sentence in summary.sentences {
+            if let citation = sentence.trailingCitation(bookName: bookName, chapterNumber: chapterNumber) {
+                pending.append(citation.text)
+                events.append(ChapterEvent(id: events.count, text: pending.joined(separator: " "), reference: citation.reference))
+                pending = []
+            } else {
+                pending.append(sentence)
+            }
+        }
+
+        guard events.count >= 2 else { return nil }
+        // Closing sentences without a citation belong with the last event.
+        if !pending.isEmpty {
+            events[events.count - 1].text += " " + pending.joined(separator: " ")
+        }
+        return events
+    }
+}
+
+/// The chapter's own background: its historical moment, audience, and customs, without
+/// repeating anything shown elsewhere on the page.
+private struct ChapterBackgroundSection: View {
+    struct Row: Identifiable {
+        let title: String
+        let icon: String
+        var reference = ""
+        let content: String
+        var id: String { title + reference }
+    }
+
+    let rows: [Row]
+
+    var body: some View {
+        if !rows.isEmpty {
+            HeroCard(title: "Historical & Cultural Background", icon: "building.columns") {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(rows) { row in
+                        VStack(alignment: .leading, spacing: 6) {
+                            Label(row.title, systemImage: row.icon)
+                                .font(.headline)
+
+                            if !row.reference.isEmpty {
+                                LinkedScriptureText(row.reference)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.tint)
+                            }
+
+                            if row.content.paragraphs.count > 1 {
+                                ChapterInsightBullets(items: row.content.paragraphs)
+                            } else {
+                                LinkedScriptureText(row.content)
+                                    .font(.body)
+                                    .foregroundStyle(.secondary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                        }
+
+                        if row.id != rows.last?.id {
+                            Divider()
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+}
+
+/// Opens the chapter in the reader, previews the next chapter, and links to the book overview.
+private struct ChapterNavigationSection: View {
+    let location: ChapterLocation
+    let next: ChapterLocation?
+    let nextSummary: String?
+    let onSelect: (ChapterLocation) -> Void
+    let onRead: () -> Void
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Button(action: onRead) {
+                Label("Read \(location.title)", systemImage: "book.fill")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 6)
+            }
+            .buttonStyle(.borderedProminent)
+            .accessibilityHint("Opens this chapter in the reader")
+
+            if let next {
+                NeighborChapterLink(
+                    label: "Up Next",
+                    location: next,
+                    summary: nextSummary,
+                    icon: "chevron.right",
+                    action: { onSelect(next) }
+                )
+                .padding(AppDesignMetrics.cardPadding)
+                .heroCardSurface()
+            }
+
+            AboutBookLink(bookName: location.bookName)
+        }
+    }
+}
+
+/// A link to the chapter before or after, previewed by the opening of its summary.
+private struct NeighborChapterLink: View {
+    let label: String
+    let location: ChapterLocation
+    let summary: String?
+    let icon: String
+    let action: () -> Void
+
+    private var opening: String? {
+        guard let summary else { return nil }
+        let first = summary.sentences.first ?? summary
+        return first.trailingCitation(bookName: location.bookName, chapterNumber: location.chapterNumber)?.text ?? first
+    }
+
+    var body: some View {
+        Button(action: action) {
+            HStack(alignment: .center, spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("\(label): \(location.title)")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.tint)
+                    if let opening {
+                        Text(opening)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                    }
+                }
+                Spacer(minLength: 0)
+                Image(systemName: icon)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Shows insights for \(location.title)")
     }
 }
 
@@ -206,6 +566,17 @@ private struct ChapterReflectionSection: View {
     var body: some View {
         HeroCard(title: "Reflect & Respond", icon: "square.and.pencil") {
             VStack(alignment: .leading, spacing: 12) {
+                if !whyItMatters.isEmpty {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Label("Why It Matters", systemImage: "heart.text.square")
+                            .font(.headline)
+                        LinkedScriptureText(whyItMatters)
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                    }
+                    Divider()
+                }
+
                 Text(prompt)
                     .font(.body)
 
@@ -305,60 +676,6 @@ private struct ChapterReflectionSection: View {
     }
 }
 
-/// The chapter's own historical background in one card. Background that applies to the
-/// whole book lives on the book overview instead, so many chapters show only a few entries.
-private struct ChapterBackgroundSection: View {
-    let insights: ChapterInsights
-
-    private struct Row: Identifiable {
-        let title: String
-        let icon: String
-        let content: String
-        /// Multi-paragraph content reads better as a bulleted list.
-        var isBulleted = false
-        var id: String { title }
-    }
-
-    private var rows: [Row] {
-        [
-            Row(title: "Setting", icon: "calendar", content: insights.historicalSetting),
-            Row(title: "What Was Happening", icon: "clock.arrow.circlepath", content: insights.whatWasHappening, isBulleted: true),
-            Row(title: "Connection to the Chapter", icon: "link", content: insights.connectionToChapter),
-            Row(title: "Customs and Traditions", icon: "scroll", content: insights.customsAndTraditions, isBulleted: true),
-            Row(title: "Why It Matters", icon: "heart.text.square", content: insights.whyItMatters)
-        ]
-        .filter { !$0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-    }
-
-    var body: some View {
-        if !rows.isEmpty {
-            HeroCard(title: "Background", icon: "building.columns") {
-                VStack(alignment: .leading, spacing: 12) {
-                    ForEach(rows) { row in
-                        VStack(alignment: .leading, spacing: 6) {
-                            Label(row.title, systemImage: row.icon)
-                                .font(.headline)
-
-                            if row.isBulleted, row.content.paragraphs.count > 1 {
-                                ChapterInsightBullets(items: row.content.paragraphs)
-                            } else {
-                                LinkedScriptureText(row.content)
-                                    .font(.body)
-                                    .foregroundStyle(.secondary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                        }
-
-                        if row.id != rows.last?.id {
-                            Divider()
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 /// Opens the book overview, where the book's history and full story are kept.
 private struct AboutBookLink: View {
     let bookName: String
@@ -432,7 +749,7 @@ private struct ChapterInsightList<Content: View>: View {
     }
 }
 
-/// A Genesis 1-only prototype for presenting cross-references as comparable Scripture passages.
+/// A preview of the chapter's cross references, each shown as a pair of passages.
 struct ChapterCrossReferencesPreview: View {
     let bookName: String
     let chapterNumber: Int
@@ -763,6 +1080,18 @@ private enum ScriptureCrossReferenceLoader {
 }
 
 private extension String {
+    /// Splits off a closing citation such as " (Judges 4:17–24)." and returns the sentence
+    /// without it, or nil when the sentence doesn't end in a reference.
+    func trailingCitation(bookName: String, chapterNumber: Int) -> (text: String, reference: String)? {
+        guard let match = firstMatch(of: #/\s*\(([^()]+)\)([.!?]?)["”’]?\s*$/#) else { return nil }
+        let reference = String(match.1).trimmingCharacters(in: .whitespaces)
+        guard !PassageReferenceParser.parseList(reference, book: bookName, chapter: chapterNumber).isEmpty else {
+            return nil
+        }
+        let text = String(self[..<match.range.lowerBound]) + String(match.2)
+        return (text, reference)
+    }
+
     var paragraphs: [String] {
         components(separatedBy: .newlines)
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }

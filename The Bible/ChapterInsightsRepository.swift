@@ -95,6 +95,31 @@ actor ChapterInsightsRepository {
         }
     }
 
+    /// Just the chapter's summary, for previewing neighboring chapters.
+    func summary(forBookNamed bookName: String, chapterNumber: Int) -> String? {
+        withDatabase { database in
+            let query = """
+            SELECT overall_summary
+            FROM chapter_insights
+            WHERE book_name = ? AND chapter_number = ?
+            LIMIT 1;
+            """
+            var statement: OpaquePointer?
+            guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+                  let statement else {
+                return nil
+            }
+            defer { sqlite3_finalize(statement) }
+
+            sqlite3_bind_text(statement, 1, bookName, -1, Self.sqliteTransientDestructor())
+            sqlite3_bind_int(statement, 2, Int32(chapterNumber))
+
+            guard sqlite3_step(statement) == SQLITE_ROW else { return nil }
+            let summary = Self.columnText(statement, at: 0)
+            return summary.isEmpty ? nil : summary
+        }
+    }
+
     private func loadReadingContext(
         forBookNamed bookName: String,
         chapterNumber: Int,

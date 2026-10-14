@@ -20,7 +20,26 @@ from add_related_verses import DATABASE
 
 # Words that begin the second sentence in the imported descriptions. A lowercase word (or a
 # closing parenthesis) followed by one of these and then a lowercase word marks a lost period.
-SENTENCE_STARTERS = ["Part", "Their", "His", "Her", "Its", "This", "These", "Collective", "The", "He", "She", "They", "Represents"]
+# Names and titles ("Israel", "Son", "King") are deliberately left out, as are words that could
+# be capitalized mid-sentence ("the Return from exile").
+SENTENCE_STARTERS = """
+    Part Their His Her Its This These Collective The He She They Those Both One's
+    Is Are Have Must Cannot Also Even Initially Earlier
+    Represents Represent Central Person People Followers Figures Figure Group Groups Participants
+    Recipients Recipient Fictional Illustrative Personified Portrayed Responsible Associated
+    Receives Receive Illustrate Illustrates Calls Called Show Shows Explains Accused Provides Provide
+    Embodies Promises Appears Appear Describes Serve Serves Participates Hear Hears Offers Faces Face
+    Introduces Declares Models Become Becomes Respond Responds Makes Announces Asks Ask Asked Urged
+    Express Expresses Argues Named Addresses Addressed Challenge Challenges Frames Frame Share Shares
+    Join Joins Bring Helps Help Form Forms Compared Condemned Condemns Objects Voices Reveal Reveals
+    Invited Works Experiences Warns Warned Sees Uses Used Stands Stand Targets Reports Report Continue
+    Continues Contrasts Exemplify Rebukes Questions Seek Leads Prompts Connects Defends Grounds
+    Example Examples Presents Presented Listed Moves Credited Confesses Places Exposes Charged
+    Interprets Included Recalls Directed Teaches Confirm Supplies Supply Identifies Sends Come Travel
+    Claims Learn Witnesses Sent Provokes Commissions Confronts Welcomes Declines Rejects Gives Told
+    Agent Appointed Knowing Anchors Orders Tests Attributes Refuse Records Oppressed Praised Deliver
+    Discuss Held Remembers
+""".split()
 LOST_PERIOD = re.compile(r"(?<=[a-z0-9)’'])( )(?=(?:" + "|".join(SENTENCE_STARTERS) + r") [a-z])")
 
 # A value repeated in more chapters than this is boilerplate rather than chapter context.
