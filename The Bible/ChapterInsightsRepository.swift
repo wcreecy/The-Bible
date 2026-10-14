@@ -4,6 +4,7 @@ import SQLite3
 struct ChapterInsights: Equatable, Sendable {
     let reference: String
     let overallSummary: String
+    let readingContext: ChapterReadingContext?
     let historicalSetting: String
     let whatWasHappening: String
     let connectionToChapter: String
@@ -64,6 +65,11 @@ actor ChapterInsightsRepository {
             return ChapterInsights(
                 reference: Self.columnText(statement, at: 0),
                 overallSummary: Self.columnText(statement, at: 1),
+                readingContext: loadReadingContext(
+                    forBookNamed: bookName,
+                    chapterNumber: chapterNumber,
+                    database: database
+                ),
                 historicalSetting: Self.columnText(statement, at: 2),
                 whatWasHappening: Self.columnText(statement, at: 3),
                 connectionToChapter: Self.columnText(statement, at: 4),
@@ -86,6 +92,117 @@ actor ChapterInsightsRepository {
                 )
             )
         }
+    }
+
+    private func loadReadingContext(
+        forBookNamed bookName: String,
+        chapterNumber: Int,
+        database: OpaquePointer
+    ) -> ChapterReadingContext? {
+        let contextQuery = """
+        SELECT in_story, historical_moment, original_audience
+        FROM chapter_reading_contexts
+        WHERE book_name = ? AND chapter_number = ?
+        LIMIT 1;
+        """
+
+        var contextStatement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, contextQuery, -1, &contextStatement, nil) == SQLITE_OK,
+              let contextStatement else {
+            return nil
+        }
+        defer { sqlite3_finalize(contextStatement) }
+
+        sqlite3_bind_text(contextStatement, 1, bookName, -1, Self.sqliteTransientDestructor())
+        sqlite3_bind_int(contextStatement, 2, Int32(chapterNumber))
+
+        guard sqlite3_step(contextStatement) == SQLITE_ROW else { return nil }
+
+        return ChapterReadingContext(
+            narrativePlacement: Self.columnText(contextStatement, at: 0),
+            firstCenturyMoment: Self.columnText(contextStatement, at: 1),
+            originalAudience: Self.columnText(contextStatement, at: 2),
+            interpretiveClues: loadInterpretiveClues(
+                forBookNamed: bookName,
+                chapterNumber: chapterNumber,
+                database: database
+            ),
+            culturalLenses: loadCulturalLenses(
+                forBookNamed: bookName,
+                chapterNumber: chapterNumber,
+                database: database
+            ),
+            scriptureConnections: []
+        )
+    }
+
+    private func loadInterpretiveClues(
+        forBookNamed bookName: String,
+        chapterNumber: Int,
+        database: OpaquePointer
+    ) -> [ChapterReadingContext.InterpretiveClue] {
+        let query = """
+        SELECT title, scripture_reference, explanation
+        FROM chapter_interpretive_clues
+        WHERE book_name = ? AND chapter_number = ?
+        ORDER BY sequence;
+        """
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return []
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_text(statement, 1, bookName, -1, Self.sqliteTransientDestructor())
+        sqlite3_bind_int(statement, 2, Int32(chapterNumber))
+
+        var clues: [ChapterReadingContext.InterpretiveClue] = []
+        while sqlite3_step(statement) == SQLITE_ROW {
+            clues.append(
+                ChapterReadingContext.InterpretiveClue(
+                    title: Self.columnText(statement, at: 0),
+                    reference: Self.columnText(statement, at: 1),
+                    explanation: Self.columnText(statement, at: 2)
+                )
+            )
+        }
+        return clues
+    }
+
+    private func loadCulturalLenses(
+        forBookNamed bookName: String,
+        chapterNumber: Int,
+        database: OpaquePointer
+    ) -> [ChapterReadingContext.CulturalLens] {
+        let query = """
+        SELECT title, scripture_reference, then_text, why_it_matters
+        FROM chapter_cultural_lenses
+        WHERE book_name = ? AND chapter_number = ?
+        ORDER BY sequence;
+        """
+        var statement: OpaquePointer?
+        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+              let statement else {
+            return []
+        }
+        defer { sqlite3_finalize(statement) }
+
+        sqlite3_bind_text(statement, 1, bookName, -1, Self.sqliteTransientDestructor())
+        sqlite3_bind_int(statement, 2, Int32(chapterNumber))
+
+        var lenses: [ChapterReadingContext.CulturalLens] = []
+        while sqlite3_step(statement) == SQLITE_ROW {
+            lenses.append(
+                ChapterReadingContext.CulturalLens(
+                    title: Self.columnText(statement, at: 0),
+                    reference: Self.columnText(statement, at: 1),
+                    then: Self.columnText(statement, at: 2),
+                    whyItMatters: Self.columnText(statement, at: 3)
+                )
+            )
+        }
+        return lenses
     }
 
     private func withDatabase<T>(_ operation: (OpaquePointer) -> T?) -> T? {

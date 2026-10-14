@@ -104,7 +104,14 @@ struct ChapterInsightsView: View {
                     }
                 }
 
-                ChapterBackgroundSection(insights: insights)
+                if let readingContext = insights.readingContext ?? ChapterReadingContext.context(
+                    forBookNamed: bookName,
+                    chapterNumber: chapterNumber
+                ) {
+                    ChapterReadingContextSection(context: readingContext)
+                } else {
+                    ChapterBackgroundSection(insights: insights)
+                }
 
                 ChapterReflectionSection(
                     bookName: bookName,
