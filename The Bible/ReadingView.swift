@@ -26,6 +26,10 @@ struct ReadingView: View {
     // Reader-specific font size (independent from global app UI font)
     @AppStorage("readerFontSize") private var readerFontSize: Double = 17
     @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers: Bool = true
+    @AppStorage(ReaderDisplaySettings.showsBookmarkMarkersKey) private var showsBookmarkMarkers: Bool = true
+    @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers: Bool = true
+    @AppStorage(ReaderDisplaySettings.showsNoteMarkersKey) private var showsNoteMarkers: Bool = true
+    @AppStorage(ReaderDisplaySettings.showsCrossReferenceMarkersKey) private var showsCrossReferenceMarkers: Bool = true
     // Older versions used this key for every status icon; it now controls read progress only.
     @AppStorage(ReaderDisplaySettings.showsReadProgressKey) private var showsReadProgress: Bool = false
     /// The verse whose note is open from its note marker.
@@ -358,7 +362,7 @@ struct ReadingView: View {
                         ContextualTipView(
                             id: "reader.statusIcons",
                             title: "Understand verse icons",
-                            message: "Icons beside a verse's reference show your bookmark, favorites, and notes. Tap the note icon to open the note. Change this in Settings › Bible Reader.",
+                            message: "Icons beside a verse's reference show bookmarks, favorites, notes, and cross-references. Tap a note or cross-reference icon to open it. Change this in Settings › Bible Reader.",
                             systemImage: "info.circle"
                         )
                         .padding(.bottom, 12)
@@ -390,6 +394,10 @@ struct ReadingView: View {
                                 seenVerseLocation == verseLocationKey &&
                                 seenVerseNumbers.contains(verse.number),
                             showsMarkers: showsVerseMarkers,
+                            showsBookmarkMarker: showsBookmarkMarkers,
+                            showsFavoriteMarker: showsFavoriteMarkers,
+                            showsNoteMarker: showsNoteMarkers,
+                            showsCrossReferenceMarker: showsCrossReferenceMarkers,
                             showsReadProgress: showsReadProgress,
                             savedHighlightColor: highlightColor(for: verse.number),
                             readerFontSize: readerFontSize,

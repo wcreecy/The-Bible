@@ -2,8 +2,13 @@ import SwiftUI
 
 /// UserDefaults keys for what the reader shows on each verse.
 enum ReaderDisplaySettings {
-    /// Bookmark, favorite, and note markers. On by default.
+    /// Master switch for the verse markers. On by default.
     static let showsVerseMarkersKey = "showVerseMarkers"
+    /// Individual marker visibility preferences. All are on by default.
+    static let showsBookmarkMarkersKey = "showBookmarkMarkers"
+    static let showsFavoriteMarkersKey = "showFavoriteMarkers"
+    static let showsNoteMarkersKey = "showNoteMarkers"
+    static let showsCrossReferenceMarkersKey = "showCrossReferenceMarkers"
     /// Read progress. Keeps the older all-icons key so existing choices carry over.
     static let showsReadProgressKey = "showReadVerseCheckmarks"
 }
@@ -19,8 +24,12 @@ struct ReadingVerseRow: View {
     let isPinned: Bool
     let hasCrossReferences: Bool
     let isRead: Bool
-    /// Bookmark, favorite, and note markers beside the reference.
+    /// Master switch for markers beside the reference.
     let showsMarkers: Bool
+    let showsBookmarkMarker: Bool
+    let showsFavoriteMarker: Bool
+    let showsNoteMarker: Bool
+    let showsCrossReferenceMarker: Bool
     /// A faint edge on verses already read.
     let showsReadProgress: Bool
     let savedHighlightColor: Color?
@@ -95,17 +104,17 @@ struct ReadingVerseRow: View {
 
     @ViewBuilder
     private var markers: some View {
-        if isPinned {
+        if showsBookmarkMarker && isPinned {
             Image(systemName: "bookmark.fill")
                 .foregroundStyle(Color.accentColor)
                 .accessibilityHidden(true)
         }
-        if isFavorite {
+        if showsFavoriteMarker && isFavorite {
             Image(systemName: "heart.fill")
                 .foregroundStyle(.red)
                 .accessibilityHidden(true)
         }
-        if hasNote {
+        if showsNoteMarker && hasNote {
             Button(action: onOpenNote) {
                 Image(systemName: "note.text")
                     .foregroundStyle(.blue)
@@ -115,7 +124,7 @@ struct ReadingVerseRow: View {
             .contentShape(Rectangle().inset(by: -10))
                 .accessibilityHidden(true)
         }
-        if hasCrossReferences {
+        if showsCrossReferenceMarker && hasCrossReferences {
             Button(action: onOpenCrossReferences) {
                 Image(systemName: "arrow.triangle.branch")
                     .foregroundStyle(.tint)

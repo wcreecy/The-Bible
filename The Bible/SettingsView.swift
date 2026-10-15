@@ -135,6 +135,10 @@ private struct SettingsPrayerLinksSection: View {
 
 private struct SettingsReadingProgressSection: View {
     @AppStorage(ReaderDisplaySettings.showsVerseMarkersKey) private var showsVerseMarkers = true
+    @AppStorage(ReaderDisplaySettings.showsBookmarkMarkersKey) private var showsBookmarkMarkers = true
+    @AppStorage(ReaderDisplaySettings.showsFavoriteMarkersKey) private var showsFavoriteMarkers = true
+    @AppStorage(ReaderDisplaySettings.showsNoteMarkersKey) private var showsNoteMarkers = true
+    @AppStorage(ReaderDisplaySettings.showsCrossReferenceMarkersKey) private var showsCrossReferenceMarkers = true
     @AppStorage(ReaderDisplaySettings.showsReadProgressKey) private var showsReadProgress = false
     @AppStorage("focusReadingEnabled") private var focusReadingEnabled = false
     @AppStorage(RedLetterText.suppliedWordsInItalicsKey) private var italicizesSuppliedWords = false
@@ -156,20 +160,13 @@ private struct SettingsReadingProgressSection: View {
             }
             .accessibilityIdentifier("focusReadingToggle")
 
-            Toggle(isOn: $showsVerseMarkers) {
-                Label {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Verse Markers")
-                        Text("Show your bookmark, favorites, and notes beside each reference")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                } icon: {
-                    Image(systemName: "bookmark")
-                        .foregroundStyle(.tint)
-                }
-            }
-            .accessibilityIdentifier("verseMarkersToggle")
+            SettingsVerseMarkersCard(
+                showsVerseMarkers: $showsVerseMarkers,
+                showsBookmarkMarkers: $showsBookmarkMarkers,
+                showsFavoriteMarkers: $showsFavoriteMarkers,
+                showsNoteMarkers: $showsNoteMarkers,
+                showsCrossReferenceMarkers: $showsCrossReferenceMarkers
+            )
 
             Toggle(isOn: $showsReadProgress) {
                 Label {
@@ -204,11 +201,72 @@ private struct SettingsReadingProgressSection: View {
             Text("Bible Reader")
         } footer: {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Bookmark, heart, and note icons appear beside the verse reference. Tap a note icon to open the note.")
+                Text("Choose which bookmark, favorite, note, and cross-reference icons appear beside each verse reference. Tap a note or cross-reference icon to open it.")
                 Text("Read progress reflects your reading statistics and disappears when they are reset.")
                 Text("Printed King James Bibles set supplied words in italics, such as “ye *are* the branches.”")
             }
         }
+    }
+}
+
+private struct SettingsVerseMarkersCard: View {
+    @Binding private var showsVerseMarkers: Bool
+    @Binding private var showsBookmarkMarkers: Bool
+    @Binding private var showsFavoriteMarkers: Bool
+    @Binding private var showsNoteMarkers: Bool
+    @Binding private var showsCrossReferenceMarkers: Bool
+
+    init(
+        showsVerseMarkers: Binding<Bool>,
+        showsBookmarkMarkers: Binding<Bool>,
+        showsFavoriteMarkers: Binding<Bool>,
+        showsNoteMarkers: Binding<Bool>,
+        showsCrossReferenceMarkers: Binding<Bool>
+    ) {
+        _showsVerseMarkers = showsVerseMarkers
+        _showsBookmarkMarkers = showsBookmarkMarkers
+        _showsFavoriteMarkers = showsFavoriteMarkers
+        _showsNoteMarkers = showsNoteMarkers
+        _showsCrossReferenceMarkers = showsCrossReferenceMarkers
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Toggle(isOn: $showsVerseMarkers) {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Verse Markers")
+                        Text("Show bookmarks, favorites, notes, and cross-references beside each reference")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "bookmark")
+                        .foregroundStyle(.tint)
+                }
+            }
+            .accessibilityIdentifier("verseMarkersToggle")
+
+            Divider()
+                .padding(.leading, 36)
+
+            VStack(spacing: 10) {
+                Toggle("Bookmarks", isOn: $showsBookmarkMarkers)
+                    .accessibilityIdentifier("bookmarkMarkerToggle")
+
+                Toggle("Favorites", isOn: $showsFavoriteMarkers)
+                    .accessibilityIdentifier("favoriteMarkerToggle")
+
+                Toggle("Notes", isOn: $showsNoteMarkers)
+                    .accessibilityIdentifier("noteMarkerToggle")
+
+                Toggle("Cross-References", isOn: $showsCrossReferenceMarkers)
+                    .accessibilityIdentifier("crossReferenceMarkerToggle")
+            }
+            .padding(.leading, 36)
+            .disabled(!showsVerseMarkers)
+        }
+        .padding(.vertical, 4)
     }
 }
 
