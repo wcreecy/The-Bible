@@ -13,6 +13,14 @@ struct PinnedVerseWidgetEntryView: View {
         PinnedVerseWidgetBackgroundStyle(rawValue: entry.backgroundStyleRaw) ?? .black
     }
 
+    private var primaryTextColor: Color {
+        backgroundStyle == .parchment ? Color(red: 0.20, green: 0.15, blue: 0.08) : .white
+    }
+
+    private var secondaryTextColor: Color {
+        primaryTextColor.opacity(0.7)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: isExtraLarge ? 18 : (isLarge ? 12 : 6)) {
             // Optional header to self-identify
@@ -23,25 +31,25 @@ struct PinnedVerseWidgetEntryView: View {
 
                 Text("Pinned Verse")
                     .font(isExtraLarge ? .title2.weight(.semibold) : (isLarge ? .headline.weight(.semibold) : (isMedium ? .subheadline.weight(.semibold) : .caption2.weight(.semibold))))
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(secondaryTextColor)
                     .lineLimit(1)
             }
 
             if !entry.text.isEmpty {
                 Text("“\(entry.text)”")
                     .font(isExtraLarge ? .largeTitle : (isLarge ? .title2 : (isMedium ? .body : .footnote)))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(primaryTextColor)
                     .lineLimit(isExtraLarge || isLarge ? 6 : 5)
                     .truncationMode(.tail)
                     .multilineTextAlignment(.leading)
 
                 Text("\(entry.book) \(entry.chapter):\(entry.verse)")
                     .font(isExtraLarge ? .title3 : (isLarge ? .subheadline : (isMedium ? .caption : .caption2)))
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(secondaryTextColor)
             } else {
                 Text("Long‑press a verse in the app to pin it here.")
                     .font(isExtraLarge ? .largeTitle : (isLarge ? .title2 : (isMedium ? .body : .footnote)))
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(secondaryTextColor)
             }
         }
         .padding(isExtraLarge ? 28 : (isLarge ? 22 : 16))
@@ -76,6 +84,7 @@ private enum PinnedVerseWidgetBackgroundStyle: String {
     case sunset
     case blackToGray
     case blueToPurple
+    case parchment
 }
 
 private struct PinnedVerseWidgetBackground: View {
@@ -127,6 +136,8 @@ private struct PinnedVerseWidgetBackground: View {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
+        case .parchment:
+            Color(red: 0.91, green: 0.85, blue: 0.70)
         }
     }
 }

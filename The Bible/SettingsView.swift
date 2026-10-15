@@ -809,6 +809,7 @@ private enum WidgetBackgroundStyle: String, CaseIterable, Identifiable {
     case sunset
     case blackToGray
     case blueToPurple
+    case parchment
 
     var id: String { rawValue }
 
@@ -822,6 +823,7 @@ private enum WidgetBackgroundStyle: String, CaseIterable, Identifiable {
         case .sunset: "Sunset"
         case .blackToGray: "Graphite"
         case .blueToPurple: "Aurora"
+        case .parchment: "Parchment"
         }
     }
 
@@ -855,6 +857,8 @@ private enum WidgetBackgroundStyle: String, CaseIterable, Identifiable {
                     endPoint: .bottomTrailing
                 )
             )
+        case .parchment:
+            AnyShapeStyle(Color(red: 0.91, green: 0.85, blue: 0.70))
         }
     }
 }

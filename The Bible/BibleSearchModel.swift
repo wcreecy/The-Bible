@@ -269,23 +269,31 @@ struct BibleSearchResultsView: View {
         systemImage: String,
         searches: [String]
     ) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(title)
-                .font(.headline)
+        VStack(alignment: .leading, spacing: 6) {
+            Label(title, systemImage: systemImage)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.secondary)
+
             ForEach(searches, id: \.self) { search in
                 Button {
                     model.query = search
                     model.saveRecentSearch(search)
                 } label: {
-                    Label(search, systemImage: systemImage)
+                    Text(search)
+                        .font(.subheadline)
+                        .foregroundStyle(.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.vertical, 4)
+                        .padding(.vertical, 6)
                 }
                 .buttonStyle(.plain)
             }
         }
-        .padding(16)
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(12)
+        .background(Color(.tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.06))
+        }
     }
 }
 

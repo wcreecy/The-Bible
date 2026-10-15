@@ -11,6 +11,7 @@ enum WidgetBackgroundOption: String, AppEnum {
     case sunset
     case blackToGray
     case blueToPurple
+    case parchment
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation {
         "Widget Background"
@@ -26,7 +27,8 @@ enum WidgetBackgroundOption: String, AppEnum {
             .indigo: "Indigo",
             .sunset: "Sunset",
             .blackToGray: "Graphite",
-            .blueToPurple: "Aurora"
+            .blueToPurple: "Aurora",
+            .parchment: "Parchment"
         ]
     }
 
