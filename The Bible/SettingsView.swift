@@ -77,6 +77,7 @@ private struct SettingsPersonalizeLinksSection: View {
                     systemImage: "rectangle.3.group"
                 )
             }
+            .accessibilityIdentifier("widgetsSettingsLink")
         }
     }
 }
