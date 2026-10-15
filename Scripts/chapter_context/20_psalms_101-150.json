@@ -145,7 +145,7 @@
     ]
   },
   "Psalms 110": {
-    "audience": "A psalm of David. It is the psalm most often quoted in the New Testament; Jesus asked how David could call his son \"Lord\" (Matthew 22:43–45), and Hebrews builds on verse 4 (Hebrews 5–7).",
+    "audience": "A psalm of David. It is one of the Old Testament passages most often quoted in the New Testament; Jesus asked how David could call his son \"Lord\" (Matthew 22:43–45), and Hebrews builds on verse 4 (Hebrews 5–7).",
     "culture": [
       {
         "title": "At the right hand",
@@ -300,7 +300,7 @@
     ]
   },
   "Psalms 120": {
-    "audience": "Psalm 120 is the first of fifteen \"Songs of degrees\" (Psalms 120–134), probably sung by pilgrims going up to Jerusalem for the feasts.",
+    "audience": "Psalm 120 is the first of fifteen psalms titled A Song of degrees (Psalms 120–134), ‘songs of ascents,’, probably sung by pilgrims going up to Jerusalem for the feasts.",
     "culture": [
       {
         "title": "Meshech and Kedar",
@@ -475,7 +475,7 @@
     ]
   },
   "Psalms 133": {
-    "audience": "A Song of degrees of David celebrating brothers dwelling together in unity—perhaps the gathering of pilgrims from every tribe in Jerusalem.",
+    "audience": "A Song of degrees of David celebrating brothers dwelling together in unity.",
     "culture": [
       {
         "title": "Oil on Aaron's beard",
@@ -665,7 +665,7 @@
     ]
   },
   "Psalms 147": {
-    "audience": "Psalm 147 praises God who \"doth build up Jerusalem\" and \"gathereth together the outcasts of Israel\" (Psalm 147:2), fitting the community after the exile.",
+    "audience": "Psalm 147 praises God who \"doth build up Jerusalem\" and \"gathereth together the outcasts of Israel\" (Psalm 147:2).",
     "culture": [
       {
         "title": "Naming the stars",

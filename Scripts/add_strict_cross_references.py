@@ -55,6 +55,8 @@ LONG_QUOTE_WORDS = 5
 MIN_SHORT_QUOTE_VOTES = 3
 # A rare shared phrase this well supported is a quotation even in common words.
 STRONG_QUOTE_VOTES = 10
+# Even a well-supported phrase needs one real content word ("one flesh", not "and that which is").
+STRONG_QUOTE_CONTENT_WORD_VERSES = 450
 # A word in more verses than this is too common to make a phrase distinctive.
 MAX_DISTINCTIVE_WORD_VERSES = 200
 # A name in more verses than this (Abraham, Moses, Israel) links too much to be specific.
@@ -71,8 +73,12 @@ STOPWORDS = set("""
     hundred thousand thousands score great before after against among about over under come came go went
     wilt indeed find found liveth live sat sit see saw seen eye eyes long thence hence rent clothes
     sons daughters
+    first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth
+    day days month months year years appearance country known know knew
 """.split())
-DIVINE_TITLES = {"almighty", "jehovah", "lord", "god", "highest"}
+DIVINE_TITLES = {"almighty", "jehovah", "lord", "god", "highest", "amen", "selah", "hallelujah", "alleluia"}
+# Month names date events but don't connect them.
+MONTH_NAMES = {"abib", "nisan", "zif", "sivan", "elul", "ethanim", "bul", "chisleu", "tebeth", "sebat", "adar"}
 REFERENCE = re.compile(r"^(.+?) (\d+):(\d+)(?:-(\d+)(?::(\d+))?)?$")
 
 
@@ -97,7 +103,7 @@ class Bible:
                 capitalized[word.lower()] += word[0].isupper()
         self.names = {
             w for w in total
-            if capitalized[w] / total[w] > 0.95 and self.word_verses[w] <= MAX_NAME_VERSES and w not in DIVINE_TITLES
+            if capitalized[w] / total[w] > 0.95 and self.word_verses[w] <= MAX_NAME_VERSES and w not in DIVINE_TITLES | MONTH_NAMES
         }
 
     @staticmethod
@@ -129,7 +135,12 @@ class Bible:
         if votes < 1:
             return None
         shared_phrases = self.phrases(self.words[source]) & self.phrases(self.words[target])
-        rare = [p for p in shared_phrases if self.phrase_verses[p] <= MAX_PHRASE_VERSES]
+        rare = [
+            p for p in shared_phrases
+            if self.phrase_verses[p] <= MAX_PHRASE_VERSES and any(
+                w not in STOPWORDS and self.word_verses[w] <= STRONG_QUOTE_CONTENT_WORD_VERSES for w in p.split()
+            )
+        ]
         if rare and votes >= STRONG_QUOTE_VOTES:
             return f"quotes \"{rare[0]}\""
         for phrase in shared_phrases:
