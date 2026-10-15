@@ -11,7 +11,10 @@ references elsewhere are left untouched (apart from appending stated fulfillment
 - a quotation: the two verses share a rare phrase (found in at most MAX_PHRASE_VERSES
   verses) containing at least two distinctive words that aren't names, so stock wording
   like "and it came to pass", or a shared place name like "the plains of Jericho",
-  doesn't count on its own. A shared run shorter than LONG_QUOTE_WORDS also needs
+  doesn't count on its own. Everything the two verses share must hold at least two real
+  words, and a shared run of LONG_QUOTE_WORDS words if it holds only two, so idioms like
+  "shall not be moved" or "under every green tree" don't count; parallel accounts (two
+  Gospels, or Samuel–Kings and Chronicles) are exempt. A shared run shorter than LONG_QUOTE_WORDS also needs
   MIN_SHORT_QUOTE_VOTES votes, which filters repeated formulas such as "how long wilt thou";
   or a rare shared phrase of any words with at least STRONG_QUOTE_VOTES votes, which catches
   New Testament quotations worded in common words ("thou shalt love the Lord"). Letters
@@ -83,6 +86,10 @@ STOPWORDS = set("""
     first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth
     day days month months year years appearance country known know knew
 """.split())
+PARALLEL_BOOKS = [
+    {"Matthew", "Mark", "Luke", "John"},
+    {"1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles"},
+]
 # Function words left out of STOPWORDS because they help name places ("Up" is never a name).
 PREPOSITIONS = {"out", "up", "down", "off", "through"}
 DIVINE_TITLES = {"almighty", "jehovah", "lord", "god", "highest", "amen", "selah", "hallelujah", "alleluia"}
@@ -114,7 +121,8 @@ class Bible:
             (book["name"], c + 1, v + 1): re.sub(r"\{[^{}]*\}|«[^«»]*»", " ", text)
             for book in kjv for c, chapter in enumerate(book["chapters"]) for v, text in enumerate(chapter)
         }
-        self.words = {key: normalize(text).split() for key, text in self.text.items()}
+        # Psalm titles ("[A Psalm of David.]") repeat, so they count toward names but not wording.
+        self.words = {key: normalize(re.sub(r"\[[^\]]*\]", " ", text)).split() for key, text in self.text.items()}
         self.new_testament = set(self.book_names[self.book_names.index("Matthew"):])
         self.phrase_verses = collections.Counter(p for words in self.words.values() for p in self.phrases(words))
         self.word_verses = collections.Counter(w for words in self.words.values() for w in set(words))
@@ -133,6 +141,11 @@ class Bible:
     @staticmethod
     def phrases(words, length=4):
         return {" ".join(words[i:i + length]) for i in range(len(words) - length + 1)}
+
+    @staticmethod
+    def parallel_accounts(a, b):
+        """Two different books that retell the same events: the Gospels, or Samuel–Kings and Chronicles."""
+        return a != b and any(a in group and b in group for group in PARALLEL_BOOKS)
 
     def exists(self, book, chapter, verse):
         counts = self.verse_counts.get(book)
@@ -186,6 +199,15 @@ class Bible:
             return "names " + ", ".join(sorted(shared)) if shared and votes >= MIN_NAME_VOTES else None
         shared_run = self.shared_run(self.words[source], self.words[target])
         run = len(shared_run)
+        # Real words across everything the verses share; a stock phrase ("shall not be moved",
+        # "under every green tree") has one or two. Parallel accounts are exempt, since they
+        # retell the same saying or event in different words.
+        real_words = {w for p in shared_phrases for w in p.split()} - STOPWORDS - PREPOSITIONS
+        stock_phrase = not self.parallel_accounts(source[0], target[0]) and (
+            len(real_words) < 2 or (len(real_words) == 2 and run < LONG_QUOTE_WORDS)
+        )
+        if stock_phrase:
+            shared_phrases, rare = set(), []
         # In a letter the shared wording must be long and carry at least two real words
         # ("all things under his feet", not "out of the snare of the").
         if in_letter and sum(w not in STOPWORDS | PREPOSITIONS for w in shared_run) < 2:
