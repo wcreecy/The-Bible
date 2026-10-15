@@ -1,22 +1,142 @@
 [
-  {"source": "Genesis 12:7", "target": "Joshua 21:43", "note": "Land promised to Abraham's offspring is given"},
-  {"source": "Genesis 15:13", "target": "Exodus 12:40-41", "note": "Sojourn and oppression foretold; the 430 years end"},
-  {"source": "Genesis 15:14", "target": "Exodus 12:36", "note": "Israel leaves Egypt with great substance"},
-  {"source": "Genesis 15:18", "target": "Joshua 21:43", "note": "The land sworn to the fathers is given"},
-  {"source": "Genesis 17:21", "target": "Genesis 21:2", "note": "Isaac born at the set time God had spoken"},
-  {"source": "Genesis 18:10", "target": "Genesis 21:1", "note": "The LORD did unto Sarah as he had spoken"},
-  {"source": "Genesis 37:7", "target": "Genesis 42:6", "note": "Joseph's brothers bow down to him"},
-  {"source": "Genesis 37:7", "target": "Genesis 42:9", "note": "Joseph remembers the dreams"},
-  {"source": "Genesis 50:25", "target": "Exodus 13:19", "note": "Moses takes Joseph's bones out of Egypt"},
-  {"source": "Genesis 50:25", "target": "Joshua 24:32", "note": "Joseph's bones are buried at Shechem"},
-  {"source": "Exodus 12:46", "target": "John 19:36", "note": "\"A bone of him shall not be broken\""},
-  {"source": "Exodus 13:19", "target": "Joshua 24:32", "note": "Joseph's bones are buried at Shechem"},
-  {"source": "Exodus 16:15", "target": "John 6:31", "note": "Manna in the wilderness recalled"},
-  {"source": "Exodus 17:6", "target": "1 Corinthians 10:4", "note": "The rock that gave water recalled"},
-  {"source": "Numbers 14:24", "target": "Joshua 14:9", "note": "Caleb receives the land he walked on"},
-  {"source": "Numbers 14:29", "target": "Numbers 26:64-65", "note": "None of the counted generation remains"},
-  {"source": "Numbers 21:9", "target": "John 3:14", "note": "Jesus compares himself to the serpent lifted up"},
-  {"source": "Deuteronomy 18:15", "target": "Acts 3:22", "note": "Peter applies the prophet like Moses to Jesus"},
-  {"source": "Deuteronomy 18:15", "target": "Acts 7:37", "note": "Stephen cites the prophet like Moses"},
-  {"source": "Joshua 6:26", "target": "1 Kings 16:34", "note": "Jericho rebuilt at the cost Joshua foretold"}
+  {
+    "source": "Genesis 12:7",
+    "target": "Joshua 21:43",
+    "note": "Land promised to Abraham's offspring is given"
+  },
+  {
+    "source": "Genesis 15:13",
+    "target": "Exodus 12:40-41",
+    "note": "Sojourn and oppression foretold; the 430 years end"
+  },
+  {
+    "source": "Genesis 15:14",
+    "target": "Exodus 12:36",
+    "note": "Israel leaves Egypt with great substance"
+  },
+  {
+    "source": "Genesis 15:18",
+    "target": "Joshua 21:43",
+    "note": "The land sworn to the fathers is given"
+  },
+  {
+    "source": "Genesis 17:21",
+    "target": "Genesis 21:2",
+    "note": "Isaac born at the set time God had spoken"
+  },
+  {
+    "source": "Genesis 18:10",
+    "target": "Genesis 21:1",
+    "note": "The LORD did unto Sarah as he had spoken"
+  },
+  {
+    "source": "Genesis 37:7",
+    "target": "Genesis 42:6",
+    "note": "Joseph's brothers bow down to him"
+  },
+  {
+    "source": "Genesis 37:7",
+    "target": "Genesis 42:9",
+    "note": "Joseph remembers the dreams"
+  },
+  {
+    "source": "Genesis 50:25",
+    "target": "Exodus 13:19",
+    "note": "Moses takes Joseph's bones out of Egypt"
+  },
+  {
+    "source": "Genesis 50:25",
+    "target": "Joshua 24:32",
+    "note": "Joseph's bones are buried at Shechem"
+  },
+  {
+    "source": "Exodus 12:46",
+    "target": "John 19:36",
+    "note": "\"A bone of him shall not be broken\""
+  },
+  {
+    "source": "Exodus 13:19",
+    "target": "Joshua 24:32",
+    "note": "Joseph's bones are buried at Shechem"
+  },
+  {
+    "source": "Exodus 16:15",
+    "target": "John 6:31",
+    "note": "Manna in the wilderness recalled"
+  },
+  {
+    "source": "Exodus 17:6",
+    "target": "1 Corinthians 10:4",
+    "note": "The rock that gave water recalled"
+  },
+  {
+    "source": "Numbers 14:24",
+    "target": "Joshua 14:9",
+    "note": "Caleb receives the land he walked on"
+  },
+  {
+    "source": "Numbers 14:29",
+    "target": "Numbers 26:64-65",
+    "note": "None of the counted generation remains"
+  },
+  {
+    "source": "Numbers 21:9",
+    "target": "John 3:14",
+    "note": "Jesus compares himself to the serpent lifted up"
+  },
+  {
+    "source": "Deuteronomy 18:15",
+    "target": "Acts 3:22",
+    "note": "Peter applies the prophet like Moses to Jesus"
+  },
+  {
+    "source": "Deuteronomy 18:15",
+    "target": "Acts 7:37",
+    "note": "Stephen cites the prophet like Moses"
+  },
+  {
+    "source": "Joshua 6:26",
+    "target": "1 Kings 16:34",
+    "note": "Jericho rebuilt at the cost Joshua foretold"
+  },
+  {
+    "source": "1 Samuel 2:31",
+    "target": "1 Kings 2:27",
+    "note": "Abiathar removed, fulfilling the word concerning Eli's house"
+  },
+  {
+    "source": "1 Samuel 2:34",
+    "target": "1 Samuel 4:11",
+    "note": "Hophni and Phinehas die on the same day"
+  },
+  {
+    "source": "1 Samuel 3:12",
+    "target": "1 Kings 2:27",
+    "note": "The word against Eli's house fulfilled"
+  },
+  {
+    "source": "1 Samuel 13:14",
+    "target": "Acts 13:22",
+    "note": "Paul cites God's choice of David"
+  },
+  {
+    "source": "1 Samuel 15:28",
+    "target": "1 Samuel 28:17",
+    "note": "Samuel recalls the kingdom torn from Saul"
+  },
+  {
+    "source": "2 Samuel 7:12",
+    "target": "1 Kings 8:20",
+    "note": "Solomon says the LORD has performed his word"
+  },
+  {
+    "source": "2 Samuel 7:12",
+    "target": "Acts 2:30",
+    "note": "Peter applies the oath to David to Christ"
+  },
+  {
+    "source": "2 Samuel 7:13",
+    "target": "1 Kings 5:5",
+    "note": "Solomon builds the house as the LORD told David"
+  }
 ]
