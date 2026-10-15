@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
 """Consolidate BibleInsights.sqlite around book-level history and chapter-specific detail.
 
-1. Loads each book's When & Where section and its story from Scripts/book_content/*.md
-   into the book_history and book_story_sections tables.
+1. Loads each book's When & Where section and its story from Scripts/book_content/*.md,
+   the source for that content, into the book_history and book_story_sections tables.
 2. Clears chapter background fields whose text is repeated across chapters of the same
    book. That repeated text describes the whole book rather than the chapter, and the
    book's When & Where section now covers it. (The original text remains in git history.)
 3. Cleans up imported text: decodes summaries stored as raw JSON, removes KJV translators'
    notes from key scriptures, and puts citations tacked onto the end of a clause in
    parentheses ("…remains debated (Ruth 3:5–7).").
-4. Optionally copies the database and a JSON export to an output folder.
+4. Repairs known reference defects with repair_bible_insight_references.py ("Jude 12" →
+   "Jude 1:12") and stops without saving if any reference is still invalid.
+5. Optionally copies the database and a JSON export to an output folder.
 
-Every step is safe to run again.
+Every step is safe to run again, except that step 1 replaces book_story_sections. The
+database holds story sections that were never written back to book_content/*.md, so the
+script stops if any would be lost; pass --replace-stories to replace them anyway.
 
 Run after build_bible_insights.py and add_related_verses.py:
-    python3 Scripts/consolidate_insights.py [output_dir]
+    python3 Scripts/consolidate_insights.py [output_dir] [--replace-stories]
 """
 
 import json
@@ -25,6 +29,7 @@ from pathlib import Path
 
 from add_related_verses import DATABASE, export_json
 from book_content_tools import check_passages, check_quotes, load_books
+from repair_bible_insight_references import repair as repair_references, validate as validate_references
 
 
 CHAPTER_BACKGROUND_COLUMNS = [
@@ -34,6 +39,13 @@ CHAPTER_BACKGROUND_COLUMNS = [
     "customs_and_traditions",
     "why_it_matters",
 ]
+
+
+def story_sections_lost(database, books):
+    """Story sections in the database that book_content/*.md would not recreate."""
+    existing = set(database.execute("SELECT book_name, passage, text FROM book_story_sections"))
+    imported = {(name, passage, text) for name, book in books.items() for passage, text in book["story"]}
+    return existing - imported
 
 
 def write_book_content(database, books):
@@ -163,19 +175,30 @@ def main():
         sys.exit("Fix the book content problems above before importing.")
 
     database = sqlite3.connect(DATABASE)
+    lost = story_sections_lost(database, books)
+    if lost and "--replace-stories" not in sys.argv:
+        sys.exit(f"{len(lost)} story sections in the database are not in book_content/*.md and would be "
+                 "deleted. Add them to the .md files, or pass --replace-stories to replace them anyway.")
     write_book_content(database, books)
     cleared = clear_repeated_chapter_background(database)
     decoded = decode_json_summaries(database)
     scriptures = clean_key_scripture(database)
     citations = parenthesize_chapter_citations(database)
+    repaired = repair_references(database)
+    try:
+        validate_references(database)
+    except RuntimeError as problems:
+        database.rollback()
+        sys.exit(f"{problems}\nInvalid references remain; nothing was saved.")
     database.commit()
     database.execute("VACUUM")
     print(f"Imported history and stories for {len(books)} books; cleared {cleared} repeated chapter fields")
     print(f"Decoded {decoded} JSON summaries, cleaned {scriptures} key scriptures, "
-          f"parenthesized citations in {citations} text fields")
+          f"parenthesized citations in {citations} text fields, repaired references in {repaired} rows")
 
-    if len(sys.argv) > 1:
-        output_dir = Path(sys.argv[1])
+    arguments = [argument for argument in sys.argv[1:] if not argument.startswith("--")]
+    if arguments:
+        output_dir = Path(arguments[0])
         output_dir.mkdir(parents=True, exist_ok=True)
         database.close()
         (output_dir / "BibleInsights.sqlite").write_bytes(DATABASE.read_bytes())

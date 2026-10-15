@@ -4,23 +4,55 @@ When it was written: Many scholars think chapters 40–66 come from later prophe
 Where: Jerusalem and Judah, with prophecies concerning Assyria, Babylon, Egypt, Moab, Tyre, and other nations.
 The world at the time: The Assyrian Empire was expanding westward. Syria and the northern kingdom of Israel attacked Judah under King Ahaz (Isaiah 7), Assyria destroyed Samaria in 722 BC, and in 701 BC Sennacherib invaded Judah and surrounded Jerusalem.
 
-**Isaiah 1-5** — "The vision of Isaiah the son of Amoz" opens with the LORD's charge against his people: "I have nourished and brought up children, and they have rebelled against me." Judah's sacrifices were empty while their hands were full of blood. Yet God invited them: "though your sins be as scarlet, they shall be as white as snow." Isaiah saw a day when the nations would stream to the LORD's mountain "and they shall beat their swords into plowshares," and sang a song about God's vineyard that brought forth only wild grapes.
+**God Calls Judah to Repent and Return (Isaiah 1:1–5:30)** — Isaiah warns Judah that religious ceremonies cannot replace obedience. God calls His people to reject injustice, defend the vulnerable, and return to Him, while promising forgiveness and warning that pride, idolatry, oppression, and corrupt leadership will bring judgment.
 
-**Isaiah 6** — In the year King Uzziah died, Isaiah saw the Lord "high and lifted up," with seraphims crying, "Holy, holy, holy, is the LORD of hosts." Isaiah cried, "Woe is me! for I am undone; because I am a man of unclean lips." A seraph touched his mouth with a live coal from the altar. When the Lord asked, "Whom shall I send," Isaiah answered, "Here am I; send me."
+**Isaiah Sees God's Holiness and Receives His Calling (Isaiah 6:1–13)** — Isaiah sees the Lord enthroned in holiness, confesses his uncleanness, receives cleansing from the altar, and accepts a difficult mission to a people who will largely refuse to understand. Judgment will leave the land desolate, but a holy remnant will remain.
 
-**Isaiah 7-12** — When Syria and Israel threatened King Ahaz, Isaiah urged him to trust the LORD and gave a sign: "a virgin shall conceive, and bear a son, and shall call his name Immanuel." He foretold a child to be born whose "name shall be called Wonderful, Counsellor, The mighty God, The everlasting Father, The Prince of Peace," and a rod out of the stem of Jesse on whom the Spirit of the LORD would rest. In his kingdom "The wolf also shall dwell with the lamb." Assyria, though it was the rod of God's anger, would itself be judged.
+**God Promises a Sign During Judah's Crisis (Isaiah 7:1–9:7)** — During threats from Syria and northern Israel, Isaiah calls Ahaz to trust God. He announces Immanuel as a sign, warns of Assyria, and points to a future child and righteous ruler whose reign will bring light, justice, and peace.
 
-**Isaiah 13-27** — Isaiah delivered prophecies against the nations—Babylon, Assyria, Philistia, Moab, Damascus, Ethiopia, Egypt, Tyre, and others—showing the LORD as ruler over all of them. Then he described judgment on the whole earth followed by a feast for all peoples on God's mountain, where "He will swallow up death in victory."
+**Israel's Pride and Assyria's Arrogance Face Judgment (Isaiah 9:8–10:34)** — God condemns northern Israel's pride, injustice, and persistent rebellion. Assyria will be used as an instrument of judgment, but its king's cruelty and arrogance will also be judged; a remnant will return to the Lord.
 
-**Isaiah 28-35** — Isaiah warned Judah's leaders against trusting Egypt instead of the LORD: "In returning and rest shall ye be saved; in quietness and in confidence shall be your strength." He promised a king who would reign in righteousness, and a day when "the desert shall rejoice, and blossom as the rose," the eyes of the blind would be opened, and the ransomed of the LORD would return to Zion with songs.
+**A Righteous King Brings Justice and Peace (Isaiah 11:1–12:6)** — A shoot from Jesse's family will rule through the Spirit of the Lord, judging with righteousness and defending the oppressed. Isaiah pictures peace, the gathering of scattered Israel and Judah, and joyful praise for God's salvation.
 
-**Isaiah 36-39** — When the officer of the Assyrian king Sennacherib surrounded Jerusalem and mocked Hezekiah's trust in God, Isaiah told the king not to be afraid. The angel of the LORD struck the Assyrian camp, and Sennacherib went home, where his own sons killed him. Hezekiah was healed of a deadly illness, but after he showed his treasures to envoys from Babylon, Isaiah foretold that everything would one day be carried away to Babylon.
+**Babylon and Other Nations Receive Warnings of Judgment (Isaiah 13:1–17:14)** — Babylon, Assyria, Philistia, Moab, Damascus, and northern Israel receive warnings that pride, cruelty, and reliance on earthly power cannot escape God's judgment. Even so, a remnant will turn toward its Maker.
 
-**Isaiah 40-48** — The tone turns to comfort: "Comfort ye, comfort ye my people... her warfare is accomplished." A voice cries out to prepare the way of the LORD in the wilderness. Idols are mocked as blocks of wood that cannot save, while the LORD, the Creator, gives power to the faint: "they that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles." God names Cyrus as his shepherd, who will say of Jerusalem, "Thou shalt be built," and he calls his people to go out from Babylon.
+**God's Authority Reaches Every Nation (Isaiah 18:1–23:18)** — Messages to Ethiopia, Egypt, Babylon, Arabia, Jerusalem, and Tyre show that wealth, trade, military power, and national pride remain under God's authority. Egypt and Assyria are ultimately pictured sharing God's blessing with Israel.
 
-**Isaiah 49-55** — The LORD's servant is called to be "a light to the Gentiles." The servant gives his back to those who strike him, and in chapter 53 he is "despised and rejected of men; a man of sorrows." "He was wounded for our transgressions, he was bruised for our iniquities... and with his stripes we are healed. All we like sheep have gone astray... and the LORD hath laid on him the iniquity of us all." Then comes the invitation: "Ho, every one that thirsteth, come ye to the waters."
+**The Whole Earth Faces Judgment and Restoration (Isaiah 24:1–27:13)** — Isaiah expands the vision to worldwide judgment for human unfaithfulness, while also promising praise, salvation, victory over death, peace for those who trust God, and the gathering of scattered Israelites to worship in Jerusalem.
 
-**Isaiah 56-66** — The final chapters call for true fasting—to loose the bands of wickedness and feed the hungry—and confess the people's sins. One anointed by God proclaims, "The Spirit of the Lord GOD is upon me; because the LORD hath anointed me to preach good tidings unto the meek." Isaiah sees Jerusalem's light rising as the nations come to it, and the book closes with God's promise of "new heavens and a new earth" and a final warning about those who rebel against him.
+**Judah Is Warned Against False Security (Isaiah 28:1–31:9)** — Isaiah rebukes drunken leaders, hypocritical worship, and Judah's trust in alliances with Egypt. God offers Zion a sure foundation and calls His people to return, rest, and trust Him rather than horses, chariots, and political schemes.
+
+**God Promises Righteous Rule and Renewal (Isaiah 32:1–35:10)** — A righteous king and just leaders will bring protection and clarity. After warnings to the complacent and judgment on hostile powers, Isaiah promises the Spirit's renewal, healing, a highway of holiness, and joyful return for the redeemed.
+
+**Hezekiah Trusts God During Assyria's Invasion (Isaiah 36:1–37:38)** — When Sennacherib threatens Jerusalem, Hezekiah seeks the Lord and asks Isaiah to pray. God promises that Assyria will not capture the city; the angel of the Lord strikes the invading camp, and Sennacherib returns to Nineveh.
+
+**Hezekiah Receives Healing and a Warning (Isaiah 38:1–39:8)** — God extends Hezekiah's life by fifteen years after his prayer and gives a confirming sign. After Hezekiah shows Babylonian envoys his treasures, Isaiah warns that Judah's wealth and some of its descendants will one day be taken to Babylon.
+
+**God Comforts His People and Reveals His Greatness (Isaiah 40:1–42:25)** — God announces comfort after captivity, reveals His unmatched power, and promises to shepherd His people. He introduces a servant who will establish justice and be a light to the nations, while confronting Israel's blindness and disobedience.
+
+**God Promises Redemption and the End of Captivity (Isaiah 43:1–45:25)** — God promises to redeem Israel, make a way through the wilderness, and blot out sin. He exposes idols as powerless and names Cyrus as the ruler appointed to restore Jerusalem and the temple, declaring that He alone is God and Savior.
+
+**Babylon's Idols Fall Before God's Power (Isaiah 46:1–48:22)** — Babylon's gods are helpless burdens, unlike the Lord who carries Israel. Babylon's pride will be humbled, and God calls His stubborn people to listen, leave captivity, remember His redemption, and recognize that the wicked have no true peace.
+
+**God's Servant Brings Salvation Beyond Israel (Isaiah 49:1–50:11)** — God's servant is called to restore Israel and become a light so salvation reaches the ends of the earth. Zion is assured that God has not forgotten her, and the obedient servant trusts God through rejection and suffering.
+
+**God Promises Everlasting Salvation to Zion (Isaiah 51:1–52:12)** — God calls His people to remember Abraham, trust His enduring salvation, and awaken from judgment. Zion is promised comfort, freedom, restoration, and messengers declaring peace as the people depart Babylon under God's protection.
+
+**The Suffering Servant Bears the Sins of Many (Isaiah 52:13–53:12)** — The servant is rejected, suffers innocently, and bears the sins of others like a lamb led to slaughter. God vindicates and exalts him, declaring that he makes intercession for transgressors and brings justification to many.
+
+**God Offers Mercy and an Everlasting Covenant (Isaiah 54:1–55:13)** — God promises Zion restoration, lasting compassion, protection, and an enduring covenant. He invites the thirsty to receive His provision freely, calls the wicked to return for mercy, and declares that His word will accomplish His purpose.
+
+**True Worship Welcomes the Faithful and Demands Justice (Isaiah 56:1–58:14)** — God welcomes faithful outsiders and calls His house a house of prayer for all peoples. He condemns selfish leaders and fasting without mercy, declaring that true worship requires justice, care for the oppressed, generosity, and honoring the Sabbath.
+
+**Sin Separates the People, but God Promises Redemption (Isaiah 59:1–21)** — Isaiah declares that injustice, violence, and lies have separated the people from God. When no human deliverer is found, the Lord Himself acts in righteousness, promises judgment on evil, and sends a Redeemer to those who turn from sin.
+
+**Zion's Light Draws the Nations (Isaiah 60:1–62:12)** — God promises that Zion will rise from darkness as nations bring their people and wealth to her. The anointed messenger brings good news, healing, liberty, and comfort; Jerusalem will be known for salvation, righteousness, and God's delight.
+
+**God Judges Evil and Remembers His Mercy (Isaiah 63:1–64:12)** — Isaiah presents God's judgment against hostile evil, then remembers His kindness to Israel and pleads for mercy. The people confess sin, call God their Father and potter, and mourn Jerusalem and the burned temple.
+
+**God Promises New Heavens and a New Earth (Isaiah 65:1–25)** — God judges persistent rebellion but preserves servants who seek Him. He promises new heavens and a new earth marked by joy, long life, secure work, answered prayer, and peace throughout creation.
+
+**God's Glory Is Revealed Among All Nations (Isaiah 66:1–24)** — God rejects empty worship and honors the humble who tremble at His word. He promises Jerusalem's comfort and restoration, gathers nations to see His glory, and closes with the enduring contrast between universal worship and judgment for rebellion.
 
 # Jeremiah
 When it happened: From the thirteenth year of King Josiah (627 BC) through the fall of Jerusalem in 586 BC, and afterward among the Jews who fled to Egypt (Jeremiah 1:2–3; 43–44).
@@ -28,19 +60,61 @@ When it was written: Jeremiah dictated his messages to his scribe Baruch, and wh
 Where: Anathoth, Jerusalem, and later Tahpanhes in Egypt.
 The world at the time: Assyria collapsed, and Babylon under Nebuchadnezzar defeated Egypt at Carchemish in 605 BC (Jeremiah 46:2). Judah's last kings wavered between Egypt and Babylon until Babylon destroyed Jerusalem.
 
-**Jeremiah 1** — The word of the LORD came to Jeremiah, the son of a priest from Anathoth, in the thirteenth year of King Josiah: "Before I formed thee in the belly I knew thee... and I ordained thee a prophet unto the nations." Jeremiah protested, "I cannot speak: for I am a child," but the LORD touched his mouth and promised to be with him. He saw a boiling pot facing from the north—disaster coming on Judah.
+**God Calls Jeremiah to Warn Judah (Jeremiah 1:1–19)** — God appoints Jeremiah before his birth to warn nations of judgment. Though Jeremiah feels too young, God places His words in the prophet's mouth, reveals disaster from the north, and promises to strengthen and deliver him against opposition.
 
-**Jeremiah 2-20** — Jeremiah charged Judah with forsaking the LORD, "the fountain of living waters," for broken cisterns that could hold no water. At the temple gate he warned the people not to trust in the words "The temple of the LORD" while they oppressed the poor and followed other gods. He wept for his people—"Oh that my head were waters, and mine eyes a fountain of tears"—and acted out his messages: he hid a linen girdle until it was ruined, watched a potter remake a marred vessel of clay, and broke an earthen bottle before the elders. The priest Pashur put him in the stocks, and Jeremiah cursed the day he was born, yet God's word was in his heart "as a burning fire shut up in my bones."
+**Judah Abandons the God Who Delivered Her (Jeremiah 2:1–4:4)** — God accuses Judah of abandoning the living water of His covenant for useless idols. Although Judah ignored northern Israel's example of judgment, God repeatedly calls the people to acknowledge sin, practice justice, remove idols, and return.
 
-**Jeremiah 21-29** — He told the last kings that Jerusalem would fall to Nebuchadnezzar and that Judah would serve the king of Babylon seventy years. He was nearly put to death for preaching against the temple. He wore a yoke to urge submission to Babylon, and when the prophet Hananiah broke it, Jeremiah said Hananiah would die that year, and he did. Jeremiah wrote to the exiles in Babylon to build houses, plant gardens, and seek the peace of the city: "For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil, to give you an expected end."
+**Judgment Approaches a Nation Refusing Correction (Jeremiah 4:5–6:30)** — Jeremiah warns that an invading army from the north will devastate Judah because leaders and people reject truth, justice, and correction. False prophets promise peace, but the nation refuses the old paths of righteousness.
 
-**Jeremiah 30-33** — During the siege, Jeremiah spoke of restoration. God would make "a new covenant with the house of Israel": "I will put my law in their inward parts, and write it in their hearts." While confined in the court of the prison, Jeremiah bought his cousin's field at Anathoth as a sign that "Houses and fields and vineyards shall be possessed again in this land."
+**The Temple Cannot Protect an Unfaithful People (Jeremiah 7:1–10:25)** — Jeremiah confronts false confidence in the temple, declaring that worship cannot protect people who steal, oppress, commit violence, and serve idols. He mourns Judah's refusal to repent and contrasts handmade idols with the living Creator.
 
-**Jeremiah 34-39** — Jeremiah dictated his prophecies to Baruch, and King Jehoiakim cut the scroll with a penknife and burned it in the fire, piece by piece; Jeremiah dictated it again. Under King Zedekiah, Jeremiah was arrested as a deserter, beaten, imprisoned, and let down into a miry dungeon until Ebed-melech the Ethiopian drew him out. Zedekiah secretly asked his advice but would not obey it. In the eleventh year of Zedekiah, the city was broken up.
+**Judah Breaks the Covenant and Rejects Jeremiah (Jeremiah 11:1–12:17)** — God recalls Judah's broken covenant and reveals a plot by Jeremiah's hometown against him. The prophet asks why wicked people prosper, while God warns of harder trials, announces judgment, and promises eventual compassion and restoration.
 
-**Jeremiah 40-45** — The Babylonians set Jeremiah free, and he stayed with the governor Gedaliah. After Gedaliah was murdered, the people who remained asked Jeremiah to seek God's guidance, then refused the LORD's word to stay in the land and fled to Egypt, taking Jeremiah with them. There he warned them against burning incense to the queen of heaven.
+**Jeremiah's Actions Show Judah's Coming Ruin (Jeremiah 13:1–15:21)** — A ruined linen garment and vessels of wine portray Judah's pride and coming captivity. Drought, false promises of peace, and Jeremiah's grief reveal that judgment will not be removed, though God promises to sustain His rejected prophet.
 
-**Jeremiah 46-52** — The book closes with prophecies against the nations—Egypt, the Philistines, Moab, Ammon, Edom, Damascus, and finally Babylon itself, which would one day fall. A historical appendix recounts the destruction of Jerusalem and the release of King Jehoiachin from prison in Babylon.
+**Jeremiah Warns of Exile and Calls for Trust (Jeremiah 16:1–17:27)** — Jeremiah's restricted personal life becomes a sign of coming disaster. God contrasts confidence in human strength with trust in Him, exposes the deceitfulness of the heart, and calls Judah to honor the Sabbath or face judgment.
+
+**The Potter Reveals God's Authority Over Nations (Jeremiah 18:1–20:18)** — At the potter's house, God shows His authority to reshape nations in response to repentance or rebellion. Judah refuses to turn, Jeremiah breaks a bottle to symbolize coming destruction, and persecution drives him to lament while God's word still burns within him.
+
+**Judah's Kings Hear the Warning of Destruction (Jeremiah 21:1–23:40)** — Jeremiah tells Judah's kings that Jerusalem will fall and condemns rulers who exploit rather than protect. God promises to gather a remnant and raise a righteous Branch from David's line, while false prophets who promise peace face judgment.
+
+**Two Baskets of Figs Reveal Different Futures (Jeremiah 24:1–10)** — Good figs represent Judeans already exiled to Babylon, whom God will watch over and restore. Bad figs represent Zedekiah and those remaining in Jerusalem or fleeing to Egypt, who will face further disaster for continued unfaithfulness.
+
+**Seventy Years of Captivity Are Announced (Jeremiah 25:1–38)** — After years of ignored warnings, Jeremiah announces seventy years of Babylonian domination for Judah and surrounding nations. Babylon itself will later be judged as the cup of God's wrath reaches rulers and peoples across the earth.
+
+**Jeremiah Is Threatened for Warning the Temple (Jeremiah 26:1–24)** — Jeremiah's warning that the temple could become like Shiloh leads priests and prophets to demand his death. Officials and elders defend his right to speak, recalling Micah, while Ahikam protects Jeremiah from Jehoiakim's violence.
+
+**God Commands the Nations to Submit to Babylon (Jeremiah 27:1–29:32)** — Jeremiah wears a yoke to command submission to Babylon and exposes false predictions of quick deliverance. He tells exiles to build homes, raise families, and seek Babylon's peace while waiting for God's promised restoration after seventy years.
+
+**God Promises Israel's Restoration and a New Covenant (Jeremiah 30:1–31:40)** — God promises to heal, gather, and rebuild Israel and Judah after captivity. He announces a new covenant in which His law will be written on their hearts, sins will be forgiven, and His commitment to His people will endure.
+
+**Jeremiah Buys a Field as a Sign of Hope (Jeremiah 32:1–33:26)** — While Jerusalem is under siege and Jeremiah is confined, he buys a field in Anathoth as a sign that homes, fields, and vineyards will be owned again. God confirms both coming judgment and His everlasting covenant of restoration.
+
+**Judah Breaks Its Promise to Free Servants (Jeremiah 34:1–22)** — During the siege, Judah's leaders covenant to free Hebrew servants but then force them back into slavery. God condemns the betrayal and declares that Babylon will return, capture Jerusalem, and bring consequences upon the covenant breakers.
+
+**The Rechabites Demonstrate Faithful Obedience (Jeremiah 35:1–19)** — The Rechabites refuse wine because they have obeyed their ancestor's command for generations. God uses their faithfulness to expose Judah's refusal to hear His repeated warnings, while promising Jonadab's descendants an enduring place before Him.
+
+**Jehoiakim Burns Jeremiah's Written Warnings (Jeremiah 36:1–32)** — Jeremiah dictates God's warnings to Baruch, who reads them publicly. Though officials fear the message, Jehoiakim cuts the scroll apart and burns it; God preserves Jeremiah and Baruch and commands a new scroll containing the same judgment.
+
+**Jeremiah Is Imprisoned During Jerusalem's Final Siege (Jeremiah 37:1–38:28)** — Jeremiah continues declaring that Egypt will not save Jerusalem and that surrender to Babylon will preserve life. He is beaten, imprisoned, and lowered into a muddy cistern until Ebedmelech rescues him, but Zedekiah still refuses God's warning.
+
+**Jerusalem Falls and Jeremiah Is Released (Jeremiah 39:1–18)** — Babylon captures Jerusalem, blinds and carries away Zedekiah, burns the city, and breaks its walls. Jeremiah is protected and placed with Gedaliah, while Ebedmelech receives God's promise of survival because he trusted the Lord.
+
+**The Survivors Struggle After Jerusalem's Destruction (Jeremiah 40:1–41:18)** — Gedaliah governs the remaining people in Judah and urges peace under Babylon, but Ishmael murders him and takes captives. Johanan rescues the captives, and the survivors fear Babylonian retaliation for the murder of its appointed governor.
+
+**The Survivors Reject God's Command to Remain in Judah (Jeremiah 42:1–44:30)** — The survivors ask Jeremiah for God's direction, promise obedience, then reject His command to remain in Judah. They flee to Egypt, continue idolatry, and receive warnings that the disasters they fear will follow them there.
+
+**God Gives Baruch a Personal Promise (Jeremiah 45:1–5)** — God answers Baruch's distress by warning him not to seek greatness in a time of coming national disaster. Though judgment is near, God promises to preserve Baruch's life wherever he goes.
+
+**Egypt and Philistia Face God's Judgment (Jeremiah 46:1–47:7)** — Jeremiah foretells Egypt's defeat by Babylon and warns that its gods and military confidence cannot save it, though Egypt will later be inhabited again. Philistia also faces an invading northern force appointed by God for judgment.
+
+**Moab and Ammon Receive Warnings of Destruction (Jeremiah 48:1–49:6)** — Moab is judged for pride, trust in wealth, and confidence in Chemosh; Ammon is judged for occupying Gad's territory and trusting its resources. Both nations receive a later promise of restored fortunes after judgment.
+
+**God Judges Edom, Damascus, Kedar, and Elam (Jeremiah 49:7–39)** — Edom's wisdom and mountain strongholds, Damascus's defenses, Kedar's desert distance, and Elam's military strength cannot prevent God's judgment. Elam, like other nations, is also promised future restoration.
+
+**Babylon's Fall and Israel's Return Are Foretold (Jeremiah 50:1–51:64)** — Babylon, which destroyed Jerusalem and carried Judah captive, will itself fall for pride and cruelty. Israel and Judah will return to seek the Lord, and a scroll sunk in the Euphrates symbolizes Babylon's final downfall.
+
+**Jerusalem Falls and Jehoiachin Receives Mercy (Jeremiah 52:1–34)** — The book closes with Jerusalem's siege, the blinding and captivity of Zedekiah, the destruction of the temple, and the exile of Judah. Years later, Babylon's new king releases Jehoiachin and grants him honor and daily provision.
 
 # Lamentations
 When it happened: Just after Babylon destroyed Jerusalem and the temple in 586 BC.
@@ -48,15 +122,17 @@ When it was written: The first four poems are acrostics, each verse or group of 
 Where: The ruins of Jerusalem.
 The world at the time: The Babylonians had burned the temple and the city, many people had been killed or carried into exile, and those left behind faced famine. Neighboring Edom rejoiced at Jerusalem's fall (Lamentations 4:21).
 
-**Lamentations 1** — "How doth the city sit solitary, that was full of people! how is she become as a widow!" Lamentations is five poems of grief over Jerusalem after its destruction. The city weeps in the night with no one to comfort her; her enemies prosper, and her children have gone into captivity. Jerusalem confesses, "The LORD is righteous; for I have rebelled against his commandment."
+**Jerusalem Mourns Its Destruction (Lamentations 1:1–22)** — Jerusalem, once full of worshipers and life, lies empty after Babylon's conquest. The city acknowledges that the Lord is righteous and that Judah rebelled, yet it mourns captivity, hunger, loss, and the cruelty of enemies who offer no comfort.
 
-**Lamentations 2** — The second poem describes the LORD acting as an enemy: he threw down the strongholds of Zion, cast off his altar, and let the walls fall. Children and infants faint from hunger in the streets, and all who pass by clap their hands and hiss at the city.
+**God's Judgment Falls Upon His People (Lamentations 2:1–22)** — The destruction of Jerusalem and its temple is presented as God's judgment on Judah's sin. Leaders, priests, and prophets are brought low; children faint from hunger; false prophets are exposed; and the people are urged to pour out their desperate hearts before God.
 
-**Lamentations 3** — At the center of the book, a man who "hath seen affliction by the rod of his wrath" pours out his suffering—and then turns to hope: "It is of the LORD's mercies that we are not consumed, because his compassions fail not. They are new every morning: great is thy faithfulness." "The LORD is my portion, saith my soul; therefore will I hope in him." He calls the people to search their ways and turn again to the LORD.
+**Hope Appears in the Middle of Suffering (Lamentations 3:1–39)** — A suffering voice describes affliction and despair, then recalls that the Lord's compassion and faithfulness do not end. God is the speaker's portion and reason for hope; He disciplines but does not cast people away forever and does not approve injustice.
 
-**Lamentations 4** — The fourth poem contrasts Zion's former glory with its present horror: the precious sons of Zion are treated like earthen pitchers, and the famine was so severe that mothers cooked their own children. It names the sins of the prophets and priests, and announces that Edom's turn for judgment will come.
+**A Broken People Cry Out to God (Lamentations 3:40–66)** — The people are called to examine their ways, confess rebellion, and return to God. Amid tears and persecution, the speaker calls on the Lord, remembers that He heard and defended him, and asks God to see and judge the cruelty of enemies.
 
-**Lamentations 5** — The final poem is a prayer: "Remember, O LORD, what is come upon us." The people describe their losses and confess, "woe unto us, that we have sinned!" They close by pleading, "Turn thou us unto thee, O LORD, and we shall be turned; renew our days as of old."
+**The Terrible Cost of Jerusalem's Fall (Lamentations 4:1–22)** — Jerusalem's former honor is replaced by famine, shame, and unbearable suffering. Priests and prophets share responsibility for corruption, false hope in foreign aid fails, and the captured king cannot protect the people; yet Zion's punishment is not promised to last forever.
+
+**Remembering the Ruins and Pleading for Restoration (Lamentations 5:1–22)** — Judah brings its disgrace, hunger, oppression, and ruined Jerusalem before God. Though joy has become mourning and Mount Zion is desolate, the people remember that the Lord reigns forever and plead for restoration while ending with unresolved sorrow.
 
 # Ezekiel
 When it happened: From the fifth year of King Jehoiachin's captivity (593 BC; Ezekiel 1:2) to the twenty-seventh year (571 BC; Ezekiel 29:17). Many of the prophecies are dated to the day.
@@ -64,15 +140,35 @@ When it was written: Most of the book is Ezekiel's first-person record of his vi
 Where: Among the exiles by the river Chebar in Babylonia, at Tel-abib (Ezekiel 1:1–3; 3:15). In visions he was carried to Jerusalem.
 The world at the time: Ezekiel was taken to Babylon with King Jehoiachin in 597 BC. For his first six years of prophesying, Jerusalem still stood under King Zedekiah; then in 586 BC the exiles received news that the city had fallen (Ezekiel 33:21).
 
-**Ezekiel 1-3** — Ezekiel was a priest among the exiles by the river Chebar in Babylon. In the fifth year of King Jehoiachin's captivity, the heavens opened and he saw visions of God: a whirlwind out of the north, four living creatures with the faces of a man, a lion, an ox, and an eagle, wheels full of eyes, and above them a throne with the likeness of a man upon it. "This was the appearance of the likeness of the glory of the LORD." God sent Ezekiel to a "rebellious house," had him eat a scroll that tasted as sweet as honey, and made him a watchman for Israel.
+**Ezekiel Sees God's Glory and Is Called (Ezekiel 1:1–3:27)** — Among Judean exiles by the river Chebar in Babylon, Ezekiel sees a vision of God's glory: living creatures, wheels, and a throne above them. God calls the priest Ezekiel to be a watchman for Israel, gives him a scroll of lamentation to eat, and commands him to speak whether the people listen or refuse.
 
-**Ezekiel 4-24** — Ezekiel acted out Jerusalem's coming siege: he drew the city on a tile, lay on his side for many days, ate rationed bread, and shaved his head and beard. In a vision he was carried to Jerusalem and saw abominations in the temple itself—idols, elders burning incense to images, women weeping for Tammuz, and men worshipping the sun—and he watched the glory of the LORD depart from the temple and the city. He taught that each person is responsible for his own sin: "the soul that sinneth, it shall die," and God has "no pleasure in the death of him that dieth." When Ezekiel's wife, "the desire of thine eyes," died suddenly, God told him not to mourn openly, as a sign of how the people would be stunned when the temple fell.
+**Signs Announce Jerusalem's Coming Siege (Ezekiel 4:1–7:27)** — God directs Ezekiel to act out Jerusalem's siege, lie on his side for Israel and Judah's years of sin, and eat restricted food as a sign of famine. Shaving his head and dividing the hair portrays death, scattering, and a small remnant, while God declares that idolatry and violence have brought the end near.
 
-**Ezekiel 25-32** — Ezekiel spoke against the surrounding nations: Ammon, Moab, Edom, the Philistines, the proud trading city of Tyre and its king, and Egypt and its Pharaoh.
+**God's Glory Reveals Jerusalem's Idolatry (Ezekiel 8:1–11:25)** — In visions of Jerusalem, Ezekiel sees hidden idol worship in the temple and leaders leading the people astray. God marks those who grieve over the city's sins, brings judgment on the rest, and His glory departs from the temple, while promising that He will later gather and give His people a new heart and spirit.
 
-**Ezekiel 33-39** — When a fugitive arrived with the news, "The city is smitten," Ezekiel's message turned to hope. God promised to search for his scattered sheep himself and to set over them one shepherd, "even my servant David." "A new heart also will I give you, and a new spirit will I put within you." In a valley full of dry bones, God told Ezekiel to prophesy; the bones came together, flesh covered them, breath entered them, and they stood up, "an exceeding great army"—a picture of Israel brought back to life from exile. God would also defeat Gog and his armies.
+**Judgment Reaches Kings and People (Ezekiel 12:1–19:14)** — Ezekiel acts out exile and announces that Zedekiah will be captured. God rejects false prophets, teaches that each person is accountable for sin, and declares that even righteous people cannot save a corrupt land. Parables of a useless vine, an unfaithful wife, two eagles, and lions expose Jerusalem's rebellion and the fall of its rulers.
 
-**Ezekiel 40-48** — In the twenty-fifth year of the exile, Ezekiel saw a vision of a new temple with exact measurements, and watched the glory of the LORD return and fill the house. A river flowed out from under the temple, growing deeper until it brought life to the Dead Sea, with trees along its banks whose leaves were for medicine. The land was divided among the twelve tribes, and the city was given a new name: "The LORD is there."
+**Israel's Long Rebellion Brings the End (Ezekiel 20:1–24:27)** — God recounts Israel's repeated rebellion from Egypt through the wilderness and the land, yet preserves His name among the nations. Ezekiel warns that Babylon's sword is coming, exposes Jerusalem's bloodshed and idolatry, and announces the siege through the sign of a boiling pot and the death of his wife.
+
+**God Judges Israel's Neighboring Nations (Ezekiel 25:1–28:26)** — Ammon, Moab, Edom, Philistia, Tyre, and Sidon are judged for pride, violence, and delight in Jerusalem's ruin. Tyre's wealth and trade cannot save it, and its ruler's exalted claims are brought down. God promises that Israel will dwell securely after judgment on the nations around it.
+
+**Egypt and Pharaoh Are Brought Low (Ezekiel 29:1–32:32)** — Egypt is compared to a great river creature that boasts of the Nile, and Pharaoh is pictured as a fallen cedar and a lion caught in a net. Babylon will humble Egypt and its allies, showing that military strength and wealth cannot stand against God's judgment.
+
+**Ezekiel Becomes Watchman Again (Ezekiel 33:1–33)** — After news arrives that Jerusalem has fallen, God renews Ezekiel's duty as a watchman. He teaches personal responsibility, calls the wicked to turn and live, rebukes people who hear the prophet's words without obeying them, and exposes leaders who exploit the land.
+
+**God Promises a True Shepherd and Restored Land (Ezekiel 34:1–36:38)** — God condemns Israel's shepherds, its leaders, for feeding themselves instead of caring for the flock. He promises to seek His sheep and set one shepherd, His servant David, over them. Edom is judged for hostility, while Israel is promised cleansing, a new heart, a new spirit, restored land, and renewed fruitfulness.
+
+**Dry Bones Live and Israel Is Reunited (Ezekiel 37:1–28)** — In a valley of dry bones, God shows Ezekiel that He can restore the whole house of Israel from hopeless exile. Breath enters the bones, and they become a great army. Two joined sticks portray Judah and Israel becoming one nation under one king from David's line, with God's sanctuary among them.
+
+**Gog Attacks but God Defends His People (Ezekiel 38:1–39:29)** — Ezekiel prophesies against Gog of Magog, who will come against a restored people living securely. God Himself defeats the invading forces, displays His holiness among the nations, and promises that Israel will know Him after He gathers and restores them.
+
+**Ezekiel Is Shown a Future Temple (Ezekiel 40:1–43:27)** — In the twenty-fifth year of exile, Ezekiel is brought in a vision to Israel and shown a carefully measured temple, its courts, gates, rooms, altar, and sacred boundaries. The glory of the Lord returns from the east and fills the temple, and God gives instructions for the altar and offerings.
+
+**Worship Is Ordered for a Holy Community (Ezekiel 44:1–46:24)** — God sets apart the eastern gate and gives duties for priests, Levites, the prince, and the people. Worship must reject former idolatry and honor God's holiness. Instructions govern offerings, Sabbaths, feasts, the prince's responsibilities, land, and sacred spaces.
+
+**The River Brings Life and the Land Is Divided (Ezekiel 47:1–48:29)** — Water flowing from the temple grows into a deep river that brings life wherever it goes, including healing for the Dead Sea. Ezekiel then describes the renewed land's boundaries and portions for the tribes, the sanctuary, priests, Levites, and prince.
+
+**The Restored City Is Called The Lord Is There (Ezekiel 48:30–35)** — The final vision names Jerusalem's gates after Israel's tribes and gives the restored city its closing name: THE LORD IS THERE. The book ends with God's presence, holiness, judgment, restoration, and His faithfulness to His scattered people held together.
 
 # Daniel
 When it happened: From the third year of King Jehoiakim (605 BC; Daniel 1:1) to the third year of Cyrus king of Persia (about 536 BC; Daniel 10:1).
@@ -80,16 +176,24 @@ When it was written: Chapters 7–12 record Daniel's visions in his own voice. M
 Where: Babylon, the palace at Shushan (Daniel 8:2), and the bank of the river Hiddekel, the Tigris (Daniel 10:4).
 The world at the time: The book spans the Babylonian Empire under Nebuchadnezzar and Belshazzar and its conquest by the Medes and Persians under Darius the Median and Cyrus.
 
-**Daniel 1** — In the third year of King Jehoiakim, Nebuchadnezzar besieged Jerusalem and took some of the young men of the royal family to Babylon to be trained for the king's service. Among them were Daniel, Hananiah, Mishael, and Azariah, who were renamed Belteshazzar, Shadrach, Meshach, and Abed-nego. "But Daniel purposed in his heart that he would not defile himself" with the king's food. After ten days of eating pulse and drinking water, they looked healthier than all the others, and God gave them knowledge and wisdom.
+**Daniel and His Friends Remain Faithful in Babylon (Daniel 1:1–21)** — Nebuchadnezzar of Babylon carries young people from Judah into exile, including Daniel, Hananiah, Mishael, and Azariah. They are trained for the king's court and given Babylonian names, but Daniel asks not to defile himself with the royal food. God gives the four men knowledge and skill, and Daniel receives understanding in visions and dreams.
 
-**Daniel 2** — Nebuchadnezzar had a troubling dream and demanded that his wise men tell him both the dream and its meaning or be killed. God revealed the secret to Daniel in a night vision: a great image with a head of gold, chest of silver, belly of brass, legs of iron, and feet of iron and clay, struck by a stone cut out without hands that became a great mountain. Earthly kingdoms would pass away, but "the God of heaven set up a kingdom, which shall never be destroyed."
+**God Reveals the King's Dream to Daniel (Daniel 2:1–49)** — Nebuchadnezzar demands that his wise men tell both his dream and its meaning, a task they cannot perform. Daniel and his friends pray, and God reveals the mystery: a great image represents a sequence of kingdoms, while a stone made without hands becomes a kingdom that will never be destroyed. The king honors Daniel's God and promotes Daniel and his friends.
 
-**Daniel 3** — Nebuchadnezzar set up an image of gold and commanded everyone to bow down to it. Shadrach, Meshach, and Abed-nego refused: "our God whom we serve is able to deliver us... But if not... we will not serve thy gods." They were thrown into a furnace heated seven times hotter than usual, but the king saw four men walking unharmed in the fire, and the fourth was "like the Son of God." They came out without even the smell of fire on them.
+**Three Hebrews Are Delivered from the Furnace (Daniel 3:1–30)** — Nebuchadnezzar sets up a golden image and commands worship. Shadrach, Meshach, and Abednego refuse, trusting God even if He does not deliver them. They are thrown into a blazing furnace, where a fourth figure appears with them; they emerge unharmed, and the king acknowledges the power of their God.
 
-**Daniel 4** — Nebuchadnezzar told of a dream about a great tree that was cut down. Daniel explained it, and a year later, as the king boasted of "great Babylon, that I have built," he was driven out to live among the beasts and eat grass until he learned "that the most High ruleth in the kingdom of men." When his understanding returned, he praised the King of heaven.
+**Nebuchadnezzar Learns Who Rules the Kingdoms (Daniel 4:1–37)** — Nebuchadnezzar dreams of a great tree cut down until he learns that the Most High rules human kingdoms. Daniel warns him to turn from sin, but the king later boasts in his power and is driven from people until he recognizes God's authority. His sanity and kingdom are restored when he praises the King of heaven.
 
-**Daniel 5** — King Belshazzar held a great feast and drank from the gold vessels taken from the temple in Jerusalem. The fingers of a man's hand appeared and wrote on the wall: "MENE, MENE, TEKEL, UPHARSIN." Daniel read it: God had numbered the kingdom and finished it; Belshazzar had been weighed in the balances and found wanting; his kingdom was given to the Medes and Persians. That night Belshazzar was slain, and Darius the Median took the kingdom.
+**Belshazzar Is Judged at His Feast (Daniel 5:1–31)** — Belshazzar uses vessels taken from Jerusalem's temple while praising idols. A hand writes a message on the wall, and Daniel explains that God has numbered the kingdom, weighed the king, and given Babylon to the Medes and Persians. Belshazzar is killed that night.
 
-**Daniel 6** — Under Darius, jealous officials persuaded the king to forbid prayer to anyone but the king for thirty days. Daniel kept praying three times a day with his windows open toward Jerusalem, and he was thrown into the den of lions. At dawn the king hurried to the den, and Daniel answered, "My God hath sent his angel, and hath shut the lions' mouths." Darius decreed that everyone should fear the God of Daniel.
+**Daniel Is Delivered from the Lions' Den (Daniel 6:1–28)** — Under Darius, Daniel's enemies use his faithfulness in prayer to trap him under a royal decree. Daniel continues praying to God and is thrown into a den of lions, but God shuts the lions' mouths. Darius recognizes God's power, while Daniel prospers during the reigns of Darius and Cyrus.
 
-**Daniel 7-12** — The second half records Daniel's own visions: four great beasts rising out of the sea, and "one like the Son of man" coming with the clouds of heaven to the Ancient of days to receive an everlasting kingdom; a ram and a he goat; and, after Daniel confessed his people's sins in prayer, the angel Gabriel's message of seventy weeks. A final vision by the river Hiddekel described the kings of the north and the south, a time of great trouble, and the resurrection: "many of them that sleep in the dust of the earth shall awake, some to everlasting life, and some to shame and everlasting contempt." Daniel was told to go his way, for he would rest and stand in his lot at the end of the days.
+**Daniel Sees Four Kingdoms and the Son of Man (Daniel 7:1–28)** — Daniel sees four beasts rising from the sea, followed by a heavenly court where the Ancient of days judges the arrogant power. One like the Son of man receives everlasting dominion. The vision explains that earthly kingdoms will pass away, while the saints of the Most High will receive the kingdom.
+
+**The Ram, the Goat, and the Coming Conflict (Daniel 8:1–27)** — Daniel sees a ram defeated by a swift goat whose great horn is broken and replaced. A later arrogant ruler opposes the holy people and interrupts the sanctuary service for a time. Gabriel explains that the vision concerns future kingdoms and a period of severe trouble.
+
+**Daniel Prays and Receives a Promise of Restoration (Daniel 9:1–27)** — While reading Jeremiah's prophecy of seventy years, Daniel confesses Israel's sin and asks God to restore Jerusalem and its sanctuary. Gabriel brings a message concerning seventy weeks, speaking of Jerusalem's rebuilding, an anointed one, coming desolation, and an appointed end; the passage's details have received differing interpretations.
+
+**Daniel Is Strengthened for His Final Vision (Daniel 10:1–11:35)** — Daniel mourns and fasts before receiving a vision near the Tigris River. A heavenly messenger strengthens him and describes conflict involving Persia, Greece, and later rulers. The vision includes a contemptible king who acts deceitfully, profanes the sanctuary, and persecutes those who know their God.
+
+**The Final Conflict and the Promise of Resurrection (Daniel 11:36–12:13)** — The final vision describes a proud ruler and a time of unmatched trouble. Daniel is told that many who sleep in the dust will awake, some to everlasting life and some to shame, and that the wise will shine. The book ends with Daniel instructed to seal the words until the appointed time and promised rest and a final inheritance.

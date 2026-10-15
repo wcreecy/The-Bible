@@ -33,6 +33,7 @@ from pathlib import Path
 from add_book_guides import quote_problems, reference_problems
 from add_related_verses import DATABASE
 from book_content_tools import KJV, kjv_books
+from repair_bible_insight_references import repair as repair_references, validate as validate_references
 
 
 CONTENT = Path(__file__).resolve().parent / "chapter_context"
@@ -149,6 +150,13 @@ def main():
         sys.exit(1 if problems else 0)
     with sqlite3.connect(DATABASE) as database:
         write_context(database, chapters)
+        # Repair known reference defects in the imported text and refuse to save if any remain.
+        repair_references(database)
+        try:
+            validate_references(database)
+        except RuntimeError as problems:
+            database.rollback()
+            sys.exit(f"{problems}\nInvalid references remain; nothing was saved.")
         for key, text in moments.items():
             book, chapter = CHAPTER_KEY.match(key).group(1, 2)
             database.execute(

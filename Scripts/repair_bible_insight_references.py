@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Repair known reference defects in the bundled Bible insights database.
 
-The script is safe to run repeatedly. It also validates every canonical reference
-that it can recognize against the app's bundled KJV chapter and verse boundaries.
+The script is safe to run repeatedly. It also validates every reference in every text
+column against the app's bundled KJV chapter and verse boundaries, and saves nothing if
+any reference is invalid.
 """
 
 import json
@@ -69,42 +70,71 @@ def repair(database: sqlite3.Connection) -> int:
         """
     )
     changes += cursor.rowcount
+    return changes + repair_all_text(database)
+
+
+# Books with a single chapter, which imported text sometimes cites by verse alone ("Jude 12").
+ONE_CHAPTER_BOOKS = ("Obadiah", "Philemon", "2 John", "3 John", "Jude")
+VERSE_ONLY = re.compile(
+    rf"\b(?P<book>{'|'.join(ONE_CHAPTER_BOOKS)}) (?P<verse>\d+)(?P<range>[–-]\d+)?(?![\d:])"
+)
+
+
+def text_columns(database: sqlite3.Connection):
+    for (table,) in database.execute("SELECT name FROM sqlite_master WHERE type = 'table'"):
+        for column in database.execute(f"PRAGMA table_info({table})"):
+            if column[2].upper() == "TEXT":
+                yield table, column[1]
+
+
+def repair_text(text: str) -> str:
+    def add_chapter(match: re.Match) -> str:
+        # "Jude 1" on its own is the whole (only) chapter, which is already valid.
+        if match["verse"] == "1" and not match["range"]:
+            return match.group()
+        return f"{match['book']} 1:{match['verse']}{match['range'] or ''}"
+
+    text = VERSE_ONLY.sub(add_chapter, text)
+    # 3 John has fourteen verses in the bundled KJV.
+    text = text.replace("3 John 1:11-15", "3 John 1:11-14")
+    # A semicolon before "2 Peter" reads as a second Jude chapter.
+    text = text.replace("(compare Jude 1:6; 2 Peter 2:4)", "(compare Jude 1:6 and 2 Peter 2:4)")
+    # Hebrew numbering, not a KJV reference: in the KJV these verses are Malachi 4:1–6.
+    text = text.replace(
+        "In the Hebrew numbering these verses are (Malachi 3:19–24) rather than a separate chapter 4.",
+        "In the Hebrew numbering these verses are chapter 3, verses 19–24, rather than a separate chapter 4.",
+    )
+    # 4 Ezra is the apocryphal 2 Esdras, not the book of Ezra.
+    text = text.replace("4 (Ezra 7:28-29)", "2 Esdras 7:28–29 (also called 4 Ezra)")
+    text = text.replace("4 Ezra 7:28–29", "2 Esdras 7:28–29 (also called 4 Ezra)")
+    return text
+
+
+def repair_all_text(database: sqlite3.Connection) -> int:
+    changes = 0
+    for table, column in text_columns(database):
+        for rowid, value in database.execute(f"SELECT rowid, {column} FROM {table}").fetchall():
+            if not value:
+                continue
+            fixed = repair_text(value)
+            if fixed != value:
+                database.execute(f"UPDATE {table} SET {column} = ? WHERE rowid = ?", (fixed, rowid))
+                changes += 1
     return changes
 
 
 def validate(database: sqlite3.Connection) -> None:
+    from add_book_guides import reference_problems
+
     books = {book["name"]: book["chapters"] for book in json.loads(KJV.read_text())}
-    names = "|".join(re.escape(name) for name in sorted(books, key=len, reverse=True))
-    pattern = re.compile(rf"(?P<book>{names}) (?P<chapter>\d+):(?P<verse>\d+)(?:[–-](?P<end>\d+))?")
-    errors: list[str] = []
-
-    for table, column in (
-        ("book_overviews", "key_scripture_reference"),
-        ("book_movements", "key_passages_json"),
-        ("book_story_sections", "passage"),
-        ("chapter_insights", "overall_summary"),
-        ("chapter_key_themes", "scripture_references_json"),
-        ("chapter_related_verses", "related_reference"),
-    ):
-        for rowid, value in database.execute(f"SELECT rowid, {column} FROM {table}"):
-            if column.endswith("_json"):
-                value = " ".join(json.loads(value))
-            for match in pattern.finditer(value):
-                book = match["book"]
-                chapter = int(match["chapter"])
-                verse = int(match["verse"])
-                end = int(match["end"] or verse)
-                if not 1 <= chapter <= len(books[book]):
-                    errors.append(f"{table} row {rowid}: invalid chapter in {match.group()}")
-                    continue
-                limit = len(books[book][chapter - 1])
-                # A short cross-chapter form such as "Mark 8:27–10" omits the
-                # ending verse. Its final number is a chapter, not a verse.
-                if match["end"] and end < verse and end <= len(books[book]):
-                    continue
-                if not 1 <= verse <= end <= limit:
-                    errors.append(f"{table} row {rowid}: invalid verse in {match.group()}")
-
+    # Every reference in every text column, including chapter-only and verse-only forms.
+    errors = [
+        f"{table}.{column} row {rowid}: {problem}"
+        for table, column in text_columns(database)
+        for rowid, value in database.execute(f"SELECT rowid, {column} FROM {table}")
+        if value
+        for problem in reference_problems(value, books)
+    ]
     if errors:
         raise RuntimeError("\n".join(errors))
 

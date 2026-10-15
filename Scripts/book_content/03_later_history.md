@@ -4,19 +4,41 @@ When it was written: 1 and 2 Kings were originally one book, and Jewish traditio
 Where: Jerusalem, Samaria, the shrines at Bethel and Dan, Mount Carmel, Mount Horeb, Jezreel, and the Phoenician cities of Tyre, Sidon, and Zarephath.
 The world at the time: Solomon traded with Hiram king of Tyre and married Pharaoh's daughter. After the kingdom split, Egypt's Shishak invaded Judah (1 Kings 14:25), Syria rose at Damascus, and Baal worship spread from Sidon through Ahab's wife Jezebel.
 
-**1 Kings 1-2** — As David grew old, his son Adonijah declared himself king. At the urging of the prophet Nathan and Bath-sheba, David had Solomon anointed king at Gihon. Before he died, David charged Solomon to keep the LORD's commandments, and Solomon secured his throne.
+**Solomon Becomes King After David (1 Kings 1:1–2:46)** — As David approaches death, a struggle over the throne ends with Solomon becoming king and securing his position. David ordered Solomon anointed when Adonijah attempted to rule. After David died, Solomon dealt with Adonijah, Abiathar, Joab, and Shimei, and his kingdom was established.
 
-**1 Kings 3-4** — At Gibeon the LORD appeared to Solomon in a dream and said, "Ask what I shall give thee." Solomon asked for "an understanding heart to judge thy people," and God gave him wisdom along with riches and honour. When two women each claimed the same baby, Solomon called for a sword to divide the child, and the true mother was revealed when she begged him to give the child to the other woman rather than kill it. His wisdom became famous; he spoke three thousand proverbs.
+**God Gives Solomon Wisdom (1 Kings 3:1–4:34)** — God grants Solomon extraordinary wisdom after he asks for understanding to govern Israel. At Gibeon Solomon asked for an understanding heart, and God also gave riches and honor. His judgment between two women showed his wisdom, and his reputation spread among nations.
 
-**1 Kings 5-8** — With cedar from Hiram king of Tyre, Solomon built the temple in Jerusalem over seven years, beginning in the 480th year after Israel came out of Egypt. When the ark was brought into the most holy place, a cloud filled the house of the LORD. At the dedication Solomon prayed, "the heaven and heaven of heavens cannot contain thee; how much less this house that I have builded?"
+**Solomon Begins Building God's Temple (1 Kings 5:1–6:38)** — Solomon prepares materials and workers for a permanent temple in Jerusalem. Hiram supplied Lebanon timber, Solomon organized workers, and the temple was completed after seven years. God reminded Solomon that His presence among Israel depended on obedience.
 
-**1 Kings 9-11** — The LORD warned Solomon to remain faithful. Solomon grew rich through trade, and the queen of Sheba came to test him with hard questions and left amazed. But he loved many foreign women—seven hundred wives and three hundred concubines—and in his old age they turned his heart after other gods. The LORD declared that the kingdom would be torn from his son, leaving one tribe for David's sake. The prophet Ahijah tore his new garment into twelve pieces and gave ten of them to Jeroboam.
+**Solomon Completes the Royal Buildings and Temple Furnishings (1 Kings 7:1–51)** — Solomon builds his palace and completes bronze and gold temple furnishings. Hiram made the pillars, molten sea, basins, and other bronze objects; Solomon prepared the sacred gold furnishings and brought in David's dedicated treasures.
 
-**1 Kings 12-16** — When Solomon's son Rehoboam refused to lighten the people's burdens—"my father also chastised you with whips, but I will chastise you with scorpions"—the ten northern tribes made Jeroboam their king. To keep his people from going to Jerusalem, Jeroboam set up golden calves at Bethel and Dan. From then on there were two kingdoms: Israel in the north and Judah in the south. King after king of Israel "did evil in the sight of the LORD." Omri built Samaria as Israel's capital, and his son Ahab married Jezebel of Sidon and served Baal.
+**God's Glory Fills the Temple (1 Kings 8:1–66)** — Solomon brings the ark into the temple, dedicates it through prayer, and celebrates God's faithfulness. The cloud of God's glory filled the temple. Solomon prayed for justice, forgiveness, deliverance, and mercy when Israel repented, then Israel celebrated.
 
-**1 Kings 17-19** — The prophet Elijah told Ahab there would be no rain. During the drought, ravens fed Elijah by the brook Cherith, and a widow of Zarephath's barrel of meal and cruse of oil did not run out; Elijah raised her son from the dead. On Mount Carmel he challenged the 450 prophets of Baal: "How long halt ye between two opinions?" They cried to Baal all day with no answer. Then Elijah prayed, and the fire of the LORD fell and consumed his water-soaked sacrifice. The people fell on their faces and said, "The LORD, he is the God." Rain returned. Fleeing Jezebel's threats, Elijah went to Horeb, where the LORD was not in the wind, the earthquake, or the fire, but came in "a still small voice," and sent him to anoint Elisha.
+**God Warns Solomon to Remain Faithful (1 Kings 9:1–28)** — God accepts the temple but warns that disobedience and idolatry will bring judgment. He promised to establish Solomon's line if faithful, but warned that apostasy would bring removal and ruin.
 
-**1 Kings 20-22** — Ahab fought the Syrians. When Ahab and Jezebel had Naboth killed to take his vineyard, Elijah pronounced judgment on their house; Ahab humbled himself, and the disaster was delayed. Ahab and King Jehoshaphat of Judah went to war at Ramoth-gilead. The prophet Micaiah foretold defeat, and Ahab, though disguised, was struck by an arrow drawn "at a venture" and died. Dogs licked his blood, as the LORD had said.
+**The Queen of Sheba Visits Solomon (1 Kings 10:1–29)** — Solomon's wisdom and wealth draw international attention. The Queen of Sheba tested Solomon, praised the Lord, and exchanged gifts. Kings sought his wisdom as his wealth, horses, and chariots increased.
+
+**Solomon Turns Away from God (1 Kings 11:1–43)** — Solomon's foreign wives turn him to idolatry, and God announces the kingdom will be divided. God raised adversaries and Ahijah foretold ten tribes for Jeroboam. Solomon died after forty years and Rehoboam succeeded him.
+
+**Israel Divides into Two Kingdoms (1 Kings 12:1–33)** — Rehoboam rejects the people's request for relief, and ten tribes establish Jeroboam as king. Jeroboam set up golden calves at Bethel and Dan with unauthorized priests and festivals.
+
+**A Prophet Warns Jeroboam About His Altar (1 Kings 13:1–34)** — A man of God condemned Jeroboam's altar, which split as a sign. He disobeyed God's command after an older prophet deceived him and was killed by a lion. Jeroboam still did not turn from false worship.
+
+**Judgment Falls Upon Jeroboam and Judah (1 Kings 14:1–31)** — Ahijah announced judgment on Jeroboam's house and the death of his son. Judah also fell into idolatry under Rehoboam. Shishak of Egypt took Jerusalem's treasures, and Rehoboam was succeeded by Abijam.
+
+**Judah and Israel Follow Different Paths (1 Kings 15:1–16:34)** — Asa reformed Judah, while Israel saw violence, idolatry, and unstable leadership. Nadab, Baasha, Elah, Zimri, and Omri ruled in succession. Omri established Samaria, and Ahab with Jezebel promoted Baal worship.
+
+**Elijah Announces a Drought and Receives God's Provision (1 Kings 17:1–24)** — Elijah declared drought to Ahab. God fed him by ravens and sustained a widow's meal and oil at Zarephath. God restored the widow's son to life through Elijah's prayer.
+
+**Elijah Confronts the Prophets of Baal (1 Kings 18:1–46)** — At Mount Carmel, Baal's prophets received no answer, but God sent fire on Elijah's water-soaked offering. Israel confessed that the Lord was God, Baal's prophets were killed, and rain ended the drought.
+
+**God Encourages Elijah at Horeb (1 Kings 19:1–21)** — Jezebel threatened Elijah, who fled to Horeb. God provided for him and spoke in a still small voice. Elijah was told to appoint Hazael, Jehu, and Elisha, and learned that seven thousand had not bowed to Baal.
+
+**Ahab Battles the Syrians (1 Kings 20:1–43)** — God gave Ahab victories over Benhadad of Syria. Ahab released Benhadad instead of carrying out judgment, and a prophet warned that Ahab would suffer for letting him escape.
+
+**Ahab Takes Naboth's Vineyard (1 Kings 21:1–29)** — Jezebel arranged Naboth's false accusation and death so Ahab could seize his vineyard. Elijah announced judgment on Ahab and Jezebel; Ahab humbled himself, so the disaster was delayed to his son's reign.
+
+**Ahab Dies in Battle and Ahaziah Succeeds Him (1 Kings 22:1–53)** — Ahab rejected Micaiah's warning and died at Ramothgilead when a Syrian arrow struck him. Ahaziah succeeded him in Israel, while Jehoshaphat's reign in Judah is also described. The divided kingdoms continued under rulers whose obedience or idolatry shaped their future.
 
 # 2 Kings
 When it happened: From about 850 BC to the fall of Jerusalem in 586 BC, ending with King Jehoiachin's release in Babylon in the thirty-seventh year of his exile, about 561 BC (2 Kings 25:27).
@@ -24,19 +46,49 @@ When it was written: The continuation of 1 Kings, with which it was originally o
 Where: Samaria, Jerusalem, the Jordan valley, Damascus in Syria, Assyria, and Babylon.
 The world at the time: The Assyrian Empire rose to dominate the region and destroyed Samaria and the northern kingdom in 722 BC. A century later Babylon replaced Assyria, and Nebuchadnezzar destroyed Jerusalem and the temple.
 
-**2 Kings 1-2** — Elijah called down fire on the soldiers sent by King Ahaziah. Then, as Elijah and Elisha walked on beyond the Jordan, a chariot of fire and horses of fire parted them, "and Elijah went up by a whirlwind into heaven." Elisha, who had asked for a double portion of Elijah's spirit, picked up his mantle and struck the Jordan, and the waters parted.
+**Elijah Confronts King Ahaziah (2 Kings 1:1–18)** — After Ahab's death, Ahaziah sought Baalzebub after injury. Elijah announced his death; two captains and their fifties were consumed by fire, but a third humbly received mercy. Ahaziah died and Jehoram succeeded him.
 
-**2 Kings 3-8** — Elisha's ministry was full of wonders. A widow's pot of oil filled every vessel she could borrow. A Shunammite woman who had shown him kindness bore a son, and when the boy died, Elisha raised him to life. He fed a hundred men with twenty loaves. Naaman, a Syrian captain with leprosy, was told to wash seven times in the Jordan; reluctantly he did, and his flesh became like that of a little child. Elisha's servant Gehazi secretly took payment from Naaman and became leprous himself. When a Syrian army surrounded Elisha, his servant's eyes were opened to see the mountain full of horses and chariots of fire around them. During a siege of Samaria so terrible that people ate their own children, Elisha foretold sudden plenty, and the Syrians fled in the night.
+**Elijah Is Taken to Heaven (2 Kings 2:1–25)** — Elijah and Elisha crossed the Jordan on dry ground. Elijah was taken in a whirlwind with chariot and horses of fire, and Elisha received his mantle. Elisha divided the Jordan, healed Jericho's water, and pronounced judgment on mocking youths.
 
-**2 Kings 9-10** — Elisha sent a young prophet to anoint Jehu king of Israel. Jehu, who "driveth furiously," killed King Joram of Israel and King Ahaziah of Judah, and Jezebel was thrown down from a window. Jehu destroyed the house of Ahab and the worshippers of Baal, but he kept Jeroboam's golden calves.
+**God Delivers Israel and Judah from Moab (2 Kings 3:1–27)** — Jehoram, Jehoshaphat, and Edom fought Moab. Elisha promised water without rain and victory. Moabites mistook the water for blood, attacked, and were defeated before their king sacrificed his eldest son.
 
-**2 Kings 11-17** — In Judah, Athaliah seized the throne and killed the royal family, but the infant Joash was hidden in the temple for six years and then crowned; he later repaired the temple. Kings rose and fell in both kingdoms, and almost every king of Israel continued in the sins of Jeroboam. Assyria grew powerful, and in the ninth year of King Hoshea, the king of Assyria took Samaria and carried Israel away into exile, "for so it was, that the children of Israel had sinned against the LORD their God." Assyria resettled Samaria with people from other lands.
+**Elisha Provides for Those in Need (2 Kings 4:1–44)** — God multiplied a widow's oil, gave a Shunammite woman a son, restored the child after death, made poisoned stew safe, and fed one hundred men from twenty loaves.
 
-**2 Kings 18-20** — In Judah, King Hezekiah "trusted in the LORD God of Israel." He removed the high places and broke up the brass serpent Moses had made, because the people were burning incense to it. When Sennacherib of Assyria threatened Jerusalem and mocked the LORD, Hezekiah spread the letter before the LORD and prayed, and the prophet Isaiah promised deliverance. That night the angel of the LORD struck 185,000 in the Assyrian camp. Later Hezekiah fell sick, prayed, and was given fifteen more years; as a sign, the shadow on the sundial went back ten degrees. But he showed all his treasures to messengers from Babylon, and Isaiah foretold that everything would one day be carried there.
+**Naaman Is Healed of His Leprosy (2 Kings 5:1–27)** — Naaman washed seven times in the Jordan at Elisha's word and was healed. Gehazi lied to obtain gifts, so Naaman's leprosy came upon him.
 
-**2 Kings 21-23** — Hezekiah's son Manasseh reigned fifty-five years and led Judah into greater evil than the nations, even making his son pass through the fire. His grandson Josiah became king at eight years old. While the temple was being repaired, the high priest Hilkiah found the book of the law. When it was read to him, Josiah tore his clothes. He renewed the covenant, destroyed idols across the land, including the altar at Bethel, and kept a Passover unlike any since the days of the judges. Yet the LORD's anger against Judah did not turn away, and Josiah was killed at Megiddo by Pharaoh-nechoh of Egypt.
+**God Protects Elisha from the Syrians (2 Kings 6:1–23)** — Elisha made an iron ax head float, warned Israel of Syrian attacks, and showed his servant heavenly horses and chariots. He led blinded Syrians into Samaria and told Israel to feed and release them.
 
-**2 Kings 24-25** — Nebuchadnezzar king of Babylon besieged Jerusalem and carried King Jehoiachin, the princes, the craftsmen, and the temple treasures to Babylon. Zedekiah, made king in his place, rebelled. After a long siege the city wall was broken. Zedekiah's sons were killed before his eyes, and he was blinded and taken to Babylon. The Babylonians burned the temple, the king's house, and the city, broke down the walls, and carried the people away. Gedaliah, left as governor, was murdered. The book closes in exile: in the thirty-seventh year of his captivity, Jehoiachin was released from prison and ate at the king of Babylon's table for the rest of his life.
+**God Ends the Famine in Samaria (2 Kings 6:24–7:20)** — During Syrian siege and famine, Elisha promised abundance the next day. Four lepers found the Syrian camp abandoned because God made the army flee. Food became plentiful, and the doubting officer was trampled.
+
+**Elisha's Influence Reaches Two Kingdoms (2 Kings 8:1–29)** — Elisha restored the Shunammite's property, foretold Hazael's Syrian rule, and Judah's kings Jehoram and Ahaziah followed Ahab's ways.
+
+**Jehu Destroys the House of Ahab (2 Kings 9:1–10:36)** — Jehu was anointed to judge Ahab's house. He killed Joram and Ahaziah, Jezebel died, Ahab's house was destroyed, and Baal worshipers and their temple were removed. Yet Jehu kept the golden calves.
+
+**Joash Becomes King and Repairs the Temple (2 Kings 11:1–12:21)** — Jehoiada preserved Joash from Athaliah, crowned him, and restored covenant worship. Joash repaired the temple but later gave treasures to Hazael and was murdered by servants.
+
+**Elisha Dies as Israel Faces Continued Conflict (2 Kings 13:1–25)** — God showed mercy during Syrian oppression. Before dying, Elisha promised Jehoash victories over Syria. A dead man revived after touching Elisha's bones, and Jehoash recovered cities.
+
+**Judah and Israel Experience Changing Fortunes (2 Kings 14:1–29)** — Amaziah defeated Edom but was defeated by Israel after prideful war. Jeroboam II recovered territory for Israel despite continuing sin, fulfilling Jonah's prophecy.
+
+**Israel's Kings Lead the Nation Toward Destruction (2 Kings 15:1–38)** — Judah had relative stability under Azariah and Jotham; Israel suffered assassinations and Assyrian pressure. Tiglathpileser captured northern territory, and Hoshea killed Pekah.
+
+**King Ahaz Turns Judah Toward False Worship (2 Kings 16:1–20)** — Ahaz practiced idolatry, sought Assyria's help, and altered temple worship after copying an altar from Damascus. He was succeeded by Hezekiah.
+
+**Assyria Conquers the Northern Kingdom of Israel (2 Kings 17:1–41)** — Assyria captured Samaria and carried Israel away because of persistent idolatry and rejection of prophets. Foreign settlers mixed worship of the Lord with their own gods.
+
+**Hezekiah Restores Worship and Trusts God (2 Kings 18:1–19:37)** — Hezekiah removed idols and trusted God when Sennacherib threatened Jerusalem. He prayed, Isaiah promised deliverance, and the angel of the Lord struck 185,000 Assyrians.
+
+**God Extends Hezekiah's Life (2 Kings 20:1–21)** — God healed Hezekiah and gave fifteen additional years, confirmed by the shadow moving backward. His display of wealth to Babylonian envoys brought Isaiah's prophecy of future exile.
+
+**Manasseh Leads Judah into Great Wickedness (2 Kings 21:1–26)** — Manasseh reversed Hezekiah's reforms, filled Judah with idolatry and bloodshed, and brought judgment on Jerusalem. Amon continued evil before being murdered.
+
+**Josiah Rediscovers God's Law and Begins Reform (2 Kings 22:1–23:30)** — Josiah heard the discovered law, humbled himself, renewed covenant, and destroyed idolatry. Huldah said judgment remained, though Josiah would not see it. Josiah died at Megiddo.
+
+**Judah's Final Kings Lead the Nation Toward Exile (2 Kings 23:31–24:20)** — Jehoahaz was removed by Egypt; Jehoiakim rebelled against Babylon; Jehoiachin was taken captive. Nebuchadnezzar made Zedekiah king, and he also rebelled.
+
+**Jerusalem Falls and the Temple Is Destroyed (2 Kings 25:1–21)** — Babylon besieged Jerusalem, captured Zedekiah, killed his sons, blinded him, burned the temple and city, and carried Judah's leaders and people into captivity.
+
+**The Survivors Scatter and Jehoiachin Receives Mercy (2 Kings 25:22–30)** — Gedaliah was murdered, causing survivors to flee toward Egypt. Years later Babylon's king released Jehoiachin, honored him, and gave him a daily allowance.
 
 # 1 Chronicles
 When it happened: Through genealogies it reaches from Adam to the return from exile, but its story covers the death of Saul and the reign of David, ending about 970 BC.
@@ -44,15 +96,37 @@ When it was written: 1 and 2 Chronicles were originally one book, and its writer
 Where: Centered on Jerusalem, with Hebron and the tribal lands of Israel.
 The world at the time: When Chronicles was written, Judah was a small province of the Persian Empire, with a rebuilt temple but no king. Retelling David's story reminded the community of God's promises to David's house and the importance of the temple.
 
-**1 Chronicles 1-9** — Chronicles begins with names: a genealogy running from Adam through Noah and Abraham to the twelve sons of Israel, with special attention to the families of Judah and David, and of Levi and the priests. Along the way it pauses on small details, such as Jabez, who "called on the God of Israel" to bless him, "And God granted him that which he requested." The lists end with those who lived in Jerusalem after the return from Babylon.
+**Israel's Family History Begins with Adam (1 Chronicles 1:1–2:55)** — Israel's ancestry is traced from Adam through Noah, Abraham, Jacob, Judah, Jesse, and David. The genealogies preserve Israel's family lines, towns, and the ancestry that established David's royal line.
 
-**1 Chronicles 10-12** — The narrative begins with Saul's death on Mount Gilboa, explaining, "So Saul died for his transgression." All Israel came to David at Hebron and anointed him king. He took Jerusalem, and the Chronicler lists David's mighty men and the warriors from every tribe who came to make him king.
+**The Descendants of David and Israel's Tribes (1 Chronicles 3:1–5:26)** — The records continue through David's royal descendants and Judah, Simeon, Reuben, Gad, and eastern Manasseh. They include Jabez's prayer and the eastern tribes' victories, unfaithfulness, and Assyrian captivity.
 
-**1 Chronicles 13-17** — David's first attempt to bring the ark to Jerusalem ended when Uzza touched it and died. The second time, the Levites carried it as Moses had commanded, with singers and musicians, and David appointed Asaph and his brothers to give thanks: "O give thanks unto the LORD; for he is good; for his mercy endureth for ever." When David wished to build a house for the LORD, Nathan brought God's promise to establish David's son and his throne for ever.
+**The Levites and Their Sacred Responsibilities (1 Chronicles 6:1–81)** — Levi's descendants are traced through priestly families and worship leaders. Aaron's line, Levite branches, musicians, and their cities show the continuing responsibilities of Israel's worship.
 
-**1 Chronicles 18-21** — David defeated the surrounding nations. When he numbered Israel against Joab's advice, a plague followed. The angel of the LORD stood by the threshing floor of Ornan with a drawn sword stretched out over Jerusalem. David bought the site and built an altar there, and the LORD answered him by fire from heaven.
+**The Remaining Tribes and Israel's Returned Families (1 Chronicles 7:1–9:34)** — Genealogies preserve additional tribal families and the returned community in Jerusalem after captivity, including priests, Levites, gatekeepers, and those responsible for temple vessels, offerings, and music.
 
-**1 Chronicles 22-29** — David declared that site to be the place for the house of the LORD. Because he had been a man of war, his son Solomon would build it, so David prepared materials—gold, silver, brass, iron, timber, and stone—and organized the Levites, priests, singers, gatekeepers, and officers. He gave Solomon the plans and invited the people to give, and they gave willingly. David blessed the LORD before the assembly: "all that is in the heaven and in the earth is thine." Solomon was made king, and David "died in a good old age, full of days, riches, and honour."
+**Saul's Reign Ends in Defeat (1 Chronicles 9:35–10:14)** — Saul and his sons died at Mount Gilboa. The account says Saul died because he was unfaithful, disobeyed God's word, and sought a medium; God transferred the kingdom to David.
+
+**David Becomes King Over Israel (1 Chronicles 11:1–12:40)** — Israel united at Hebron and anointed David king. He captured Zion with Joab's help, and mighty warriors and armed groups from across Israel supported his rule with joyful unity.
+
+**David Attempts to Bring the Ark to Jerusalem (1 Chronicles 13:1–14:17)** — David first brought the ark on a cart; Uzza touched it and died. The ark remained with Obededom, whom God blessed. David's kingdom grew, and God gave him victory over Philistines.
+
+**David Brings the Ark into Jerusalem (1 Chronicles 15:1–16:43)** — David corrected the earlier mistake: Levites carried the ark according to Moses' command. Music, sacrifice, thanksgiving, and continuing Levite duties accompanied its arrival in Jerusalem.
+
+**God Promises David an Enduring Kingdom (1 Chronicles 17:1–27)** — God told Nathan that David would not build Him a house; God would establish David's royal house. David's son would build the temple, and his throne would endure. David prayed in humility and praise.
+
+**David Defeats Israel's Enemies (1 Chronicles 18:1–20:8)** — God gave David victories over Philistines, Moab, Zobah, Syria, Edom, and Ammon. David dedicated captured wealth to God, administered justice, and Israel defeated further Philistine giants.
+
+**David's Census Brings Judgment Upon Israel (1 Chronicles 21:1–30)** — David ordered a census despite Joab's warning. A plague killed seventy thousand until God stopped the angel near Jerusalem. David bought Ornan's threshing floor, built an altar, and God answered with fire.
+
+**David Prepares Solomon to Build the Temple (1 Chronicles 22:1–19)** — David gathered materials and instructed Solomon to build the temple. God had said David's wars prevented him from building, but Solomon's peaceful reign would allow it.
+
+**David Organizes the Levites and Priests (1 Chronicles 23:1–24:31)** — David made Solomon king and organized Levites and priests for the permanent temple. Levites served in worship, judgment, praise, and guarding; priestly families formed twenty-four divisions.
+
+**David Establishes Musicians, Gatekeepers, and Officials (1 Chronicles 25:1–27:34)** — David organized worship musicians, gatekeepers, treasurers, officers, army divisions, tribal leaders, managers, and advisers to support the kingdom and future temple.
+
+**David Gives Solomon the Plans for the Temple (1 Chronicles 28:1–21)** — David publicly confirmed Solomon's responsibility and gave temple plans received through God's direction. He urged Solomon to seek and serve God without fear because workers and leaders were ready to help.
+
+**David Dedicates the Kingdom's Gifts to God (1 Chronicles 29:1–30)** — David and Israel gave generously for the temple, praising God as the source of all they possessed. Solomon was established king, Zadok priest, and David died after forty years, having prepared Israel for the temple.'
 
 # 2 Chronicles
 When it happened: From the beginning of Solomon's reign (about 970 BC) to the destruction of Jerusalem (586 BC), closing with the decree of Cyrus in 538 BC.
@@ -60,19 +134,45 @@ When it was written: The continuation of 1 Chronicles, written after the return 
 Where: Jerusalem and the kingdom of Judah.
 The world at the time: Chronicles follows only the kings of Judah, while Egypt, Assyria, and then Babylon threatened from outside. Written in the Persian period, it ends with a Persian king inviting the exiles home.
 
-**2 Chronicles 1-9** — The LORD gave Solomon wisdom and great wealth. Solomon built the temple on Mount Moriah, where the LORD had appeared to David. At its dedication the trumpeters and singers praised the LORD, "For he is good; for his mercy endureth for ever," and the house was filled with a cloud. When Solomon finished praying, fire came down from heaven and consumed the sacrifices. Later the LORD answered him: "If my people, which are called by my name, shall humble themselves, and pray, and seek my face, and turn from their wicked ways; then will I hear from heaven, and will forgive their sin, and will heal their land." The queen of Sheba visited, and Solomon surpassed all the kings of the earth in riches and wisdom.
+**God Gives Solomon Wisdom and Wealth (2 Chronicles 1:1–17)** — Solomon sought wisdom at Gibeon to govern Israel, and God gave wisdom, riches, and honor. His kingdom became prosperous.
 
-**2 Chronicles 10-12** — The northern tribes broke away from Solomon's son Rehoboam. Priests and Levites from the north moved to Judah. When Rehoboam forsook the law of the LORD, Shishak king of Egypt came up against Jerusalem and took away the treasures of the temple.
+**Solomon Builds the Temple in Jerusalem (2 Chronicles 2:1–5:1)** — Solomon used workers, Huram's materials, and Mount Moriah to build the temple and its sacred furnishings, then brought in David's dedicated treasures.
 
-**2 Chronicles 13-20** — The Chronicler measures each king of Judah by whether he sought the LORD. Asa removed idols and relied on the LORD against a huge Ethiopian army, but later relied on the king of Syria, and in his sickness sought physicians rather than the LORD. Jehoshaphat sent teachers through Judah with the book of the law. When a vast army came against him, he prayed, "neither know we what to do: but our eyes are upon thee," and the LORD answered, "the battle is not yours, but God's." Singers went out ahead of the army, and the enemies destroyed one another.
+**God's Glory Fills the Completed Temple (2 Chronicles 5:2–7:22)** — The ark entered the temple and God's glory filled it. Solomon prayed for justice, forgiveness, and mercy; fire consumed sacrifices. God promised to hear humble, repentant people but warned against idolatry.
 
-**2 Chronicles 21-28** — Judah's kings swung between faithfulness and evil. Joash repaired the temple while Jehoiada the priest was alive, but afterward had Jehoiada's son Zechariah stoned in the temple court. Uzziah grew strong, but when he proudly went into the temple to burn incense, he was struck with leprosy. Ahaz shut the doors of the house of the LORD and made altars in every corner of Jerusalem.
+**Solomon's Kingdom Reaches Great Prosperity (2 Chronicles 8:1–9:31)** — Solomon strengthened cities, organized worship, expanded trade, and received the Queen of Sheba. His wisdom and wealth spread internationally before he died after forty years.
 
-**2 Chronicles 29-32** — Hezekiah opened the temple doors, cleansed the house of the LORD, and held a great Passover, inviting even the people of the northern tribes; there had been nothing like it in Jerusalem since Solomon. When Sennacherib of Assyria invaded, Hezekiah encouraged the people—"With him is an arm of flesh; but with us is the LORD our God"—and the LORD sent an angel who cut off the leaders of the Assyrian army.
+**Israel Divides Under Rehoboam (2 Chronicles 10:1–12:16)** — Rehoboam answered harshly, and the northern tribes separated. He obeyed God's command not to fight them, but later Judah abandoned God. Shishak invaded; after humility, Jerusalem was spared from complete destruction.
 
-**2 Chronicles 33-35** — Manasseh led Judah into great evil. Carried in chains to Babylon by the Assyrian commanders, he humbled himself and prayed, and the LORD brought him back to Jerusalem, where he removed the foreign gods. His grandson Josiah began to seek God while still young, purged the land of idols, renewed the covenant after the book of the law was found, and kept a great Passover. He was killed fighting Pharaoh Necho of Egypt, and Jeremiah lamented for him.
+**Abijah Defeats Israel and Asa Seeks God (2 Chronicles 13:1–16:14)** — Abijah won against Israel when Judah cried to God. Asa reformed Judah and defeated Zerah, but later relied on Syria rather than God. Hanani rebuked him; Asa died after forty-one years.
 
-**2 Chronicles 36** — The last kings of Judah did evil. The LORD sent his messengers again and again, "But they mocked the messengers of God... till there was no remedy." Nebuchadnezzar burned the temple, broke down the walls of Jerusalem, and carried the survivors to Babylon, while the land kept its sabbaths for seventy years, as Jeremiah had said. The book ends with hope: Cyrus king of Persia proclaimed that the LORD had charged him to build Him a house in Jerusalem, and invited God's people to go up.
+**Jehoshaphat Strengthens Judah and Receives Deliverance (2 Chronicles 17:1–20:37)** — Jehoshaphat taught God's law and appointed judges. Though rebuked for helping Ahab, he later prayed when invaders came. God caused the enemies to destroy one another as Judah praised Him.
+
+**Judah Suffers Under Jehoram and Ahaziah (2 Chronicles 21:1–22:12)** — Jehoram killed his brothers and followed Ahab's house, bringing judgment. Ahaziah was killed during Jehu's campaign. Athaliah seized power, but Joash was secretly preserved in the temple.
+
+**Joash Restores the Temple but Later Turns Away (2 Chronicles 23:1–24:27)** — Jehoiada crowned Joash and restored worship. Joash repaired the temple, but after Jehoiada died he turned to false worship and ordered Zechariah stoned. Syrians defeated Judah, and Joash was murdered.
+
+**Amaziah and Uzziah Experience Victory and Pride (2 Chronicles 25:1–26:23)** — Amaziah defeated Edom but worshiped its gods and lost war against Israel. Uzziah prospered until pride led him to offer incense; leprosy struck him, and Jotham governed.
+
+**Jotham Remains Faithful While Ahaz Leads Judah Astray (2 Chronicles 27:1–28:27)** — Jotham strengthened Judah through obedience. Ahaz practiced idolatry, sacrificed children, sought Assyria, closed the temple, and brought trouble on Judah.
+
+**Hezekiah Reopens the Temple and Restores Worship (2 Chronicles 29:1–36)** — Hezekiah reopened and cleansed the temple. Priests and Levites restored sacrifices and Davidic music, and Judah rejoiced at the swift renewal.
+
+**Hezekiah Invites Israel to Celebrate Passover (2 Chronicles 30:1–31:21)** — Hezekiah invited Judah and Israel to Passover. Those who came celebrated with joy, destroyed idols, and brought abundant tithes to support temple service.
+
+**God Delivers Jerusalem from Assyria (2 Chronicles 32:1–23)** — Sennacherib threatened Jerusalem, but Hezekiah and Isaiah prayed. God sent an angel to destroy Assyria's leaders and warriors, and Sennacherib returned home in disgrace.
+
+**Hezekiah's Pride and Final Years (2 Chronicles 32:24–33)** — God healed Hezekiah, who became proud but humbled himself. He grew wealthy, made a water channel, and was tested by Babylonian visitors before dying with honor.
+
+**Manasseh Repents but Amon Rejects God (2 Chronicles 33:1–25)** — Manasseh led Judah into evil but humbled himself in captivity, prayed, and was restored. He removed idols, but Amon returned to idolatry and was murdered.
+
+**Josiah Restores the Temple and Rediscovers God's Law (2 Chronicles 34:1–33)** — Josiah removed idols and repaired the temple, where the law was found. He humbled himself, heard Huldah's warning, and renewed covenant obedience.
+
+**Josiah Celebrates Passover and Dies in Battle (2 Chronicles 35:1–27)** — Josiah kept an extraordinary Passover, then was wounded and died at Megiddo after confronting Pharaohnecho. Judah mourned, and Jeremiah composed a lament.
+
+**Judah's Final Kings Bring the Nation to Ruin (2 Chronicles 36:1–21)** — Judah's last kings and leaders rejected God's warnings. Babylon destroyed Jerusalem and the temple, carried survivors captive, and the land lay desolate for seventy years.
+
+**Cyrus Permits God's People to Return (2 Chronicles 36:22–23)** — God moved Cyrus of Persia to proclaim that God's people could return to Jerusalem and rebuild the temple, fulfilling Jeremiah's word.
 
 # Ezra
 When it happened: From the first year of Cyrus king of Persia (538 BC) to Ezra's arrival in Jerusalem in the seventh year of Artaxerxes (about 458 BC). The temple was finished in 515 BC, and about fifty-seven years pass between chapters 6 and 7.
@@ -80,13 +180,23 @@ When it was written: Chapters 7–9 are partly written in Ezra's own voice. Some
 Where: Babylon in the Persian Empire, and Jerusalem and the towns of Judah.
 The world at the time: Persia had conquered Babylon and allowed exiled peoples to return home. Judah was a small, poor province surrounded by neighbors who opposed the rebuilding.
 
-**Ezra 1-2** — In the first year of Cyrus king of Persia, the LORD stirred up Cyrus's spirit to fulfill the word spoken by Jeremiah. Cyrus proclaimed that the God of heaven had charged him to build a house at Jerusalem and invited the Jews to return. He gave back the temple vessels Nebuchadnezzar had taken. Led by Zerubbabel, 42,360 people, besides their servants, returned to Jerusalem and Judah.
+**Cyrus Allows God's People to Return Home (Ezra 1:1–2:70)** — After captivity, God moved Cyrus of Persia to permit the people to return to Jerusalem and rebuild the temple. Cyrus returned temple vessels to Sheshbazzar. Zerubbabel, Jeshua, priests, Levites, and more than forty-two thousand people returned; family records determined eligibility for priestly service.
 
-**Ezra 3-6** — The returned exiles built the altar and laid the foundation of the temple. The people shouted for joy, but many old men who had seen the first temple wept with a loud voice, so that the shouting could not be told apart from the weeping. Enemies of Judah offered to help, were refused, and then worked against the builders, writing to the Persian king until the work stopped. Years later the prophets Haggai and Zechariah stirred the people to build again. When the governor questioned their authority, King Darius found Cyrus's original decree in the royal records and ordered the work to continue at the king's expense. The temple was finished in the sixth year of Darius and dedicated with joy, and the people kept the Passover.
+**The Altar Is Restored and the Temple Foundation Laid (Ezra 3:1–13)** — Jeshua and Zerubbabel rebuilt the altar and restored sacrifices and the Feast of Tabernacles. When the temple foundation was laid, praise, joy, and the tears of those remembering Solomon's temple mingled together.
 
-**Ezra 7-8** — Many years later, in the reign of Artaxerxes, Ezra the priest came from Babylon to Jerusalem. He was "a ready scribe in the law of Moses," and he "had prepared his heart to seek the law of the LORD, and to do it, and to teach in Israel statutes and judgments." The king gave him a letter of authority and gifts for the temple. Ezra was ashamed to ask the king for soldiers, having told him that God's hand is on those who seek him, so the company fasted and prayed, and they arrived safely.
+**Opposition Brings the Work to a Halt (Ezra 4:1–24)** — Neighbors opposed the returned exiles, discouraged workers, and appealed to Persian rulers. A later order stopped Jerusalem's building, and the temple work remained halted until Darius's reign.
 
-**Ezra 9-10** — Ezra learned that many of the people, including priests and leaders, had married women from the surrounding peoples and followed their abominations. He tore his garment, pulled hair from his head and beard, and prayed a long prayer of confession. The people wept bitterly and agreed to put away the foreign wives, and the book ends with a list of those who had married them.
+**God's Prophets Encourage the Rebuilding (Ezra 5:1–6:12)** — Haggai and Zechariah encouraged Zerubbabel and Jeshua to rebuild. Darius's search found Cyrus's decree; Darius ordered officials not to interfere and to provide support for sacrifices.
+
+**The Temple Is Completed and Worship Restored (Ezra 6:13–22)** — The temple was completed in Darius's sixth year. The returned people dedicated it, organized priests and Levites, kept Passover and Unleavened Bread, and rejoiced that worship had been restored.
+
+**Ezra Is Sent to Teach God's Law (Ezra 7:1–28)** — Ezra, a priest and skilled scribe descended from Aaron, received Artaxerxes's decree to lead another return, carry gifts, appoint judges, and teach God's law.
+
+**Ezra Leads Another Group Home (Ezra 8:1–36)** — Ezra gathered families and Levites, proclaimed a fast at Ahava, and entrusted temple gifts to selected priests. God protected the travelers, who delivered the offerings and the king's orders in Jerusalem.
+
+**Ezra Confronts Israel's Unfaithfulness (Ezra 9:1–15)** — Ezra learned that Israelites, priests, and Levites had intermarried with surrounding peoples contrary to the community's covenant obligations. He mourned, confessed Israel's sin, and acknowledged God's mercy and their guilt.
+
+**The People Respond to Ezra's Prayer (Ezra 10:1–44)** — The people acknowledged wrongdoing and made a covenant to address the marriages. Leaders and judges examined the cases over time; Ezra ends with the names of those involved and the renewed seriousness of covenant obedience.
 
 # Nehemiah
 When it happened: From the twentieth year of Artaxerxes king of Persia (445 BC) to some time after his thirty-second year (about 433 BC; Nehemiah 13:6).
@@ -94,13 +204,29 @@ When it was written: Most of the book is Nehemiah's own first-person account, in
 Where: The Persian palace at Shushan (Susa), and Jerusalem.
 The world at the time: Nearly a century after the first exiles returned, Jerusalem's walls still lay in ruins. Local officials, Sanballat the Horonite, Tobiah the Ammonite, and Geshem the Arabian, opposed any effort to make the city strong again.
 
-**Nehemiah 1-2** — Nehemiah was cupbearer to King Artaxerxes in the palace at Shushan. When he heard that the wall of Jerusalem was broken down and its gates burned, he sat down and wept, and mourned, fasted, and prayed for days. When the king noticed his sad face, Nehemiah prayed to the God of heaven and asked to be sent to rebuild the city. The king granted his request, along with letters for timber. In Jerusalem Nehemiah inspected the walls by night, then told the leaders, "Let us rise up and build."
+**Nehemiah Prays for Jerusalem's Restoration (Nehemiah 1:1–2:20)** — After hearing Jerusalem's walls were broken, Nehemiah mourned, fasted, confessed Israel's sin, and prayed. Artaxerxes granted him authority and supplies to rebuild. Nehemiah inspected the walls, rallied the people, and answered opponents by trusting God.
 
-**Nehemiah 3-7** — Families, priests, and merchants each rebuilt a section of the wall. Sanballat and Tobiah mocked them—Tobiah said that if a fox went up on their wall, it would break it down—and plotted to attack. Nehemiah set guards, and the builders worked with one hand while holding a weapon in the other. He also stopped wealthy Jews from charging interest and taking their poor brothers' land. His enemies tried to lure him away and frighten him, but he answered, "I am doing a great work, so that I cannot come down." The wall was finished in fifty-two days, and even the surrounding nations "perceived that this work was wrought of our God."
+**Jerusalem's Families Rebuild the Walls (Nehemiah 3:1–32)** — Priests, rulers, craftsmen, merchants, Levites, and families repaired assigned sections of Jerusalem's gates and walls. The record preserves their names, including those who worked near their homes; the nobles of Tekoa did not join.
 
-**Nehemiah 8-10** — All the people gathered "as one man," and Ezra read the book of the law from a wooden pulpit from morning until midday, while the Levites helped the people understand it. The people wept, but Nehemiah told them, "the joy of the LORD is your strength." They kept the feast of tabernacles, confessed their sins in a long prayer recounting God's faithfulness, and sealed a covenant to keep the law.
+**Opposition Threatens the Rebuilding Effort (Nehemiah 4:1–23)** — Sanballat and Tobiah mocked and threatened the builders. Nehemiah prayed, stationed guards, and had workers build with weapons nearby while a trumpeter stood ready to summon defense.
 
-**Nehemiah 11-13** — One in ten of the people moved into Jerusalem to fill the city, and the wall was dedicated with two great choirs. Later, after a time back at the king's court, Nehemiah returned to find that Tobiah had been given a room in the temple, the Levites had not been supported, the sabbath was being broken by trade, and people had again married foreign wives. He threw out Tobiah's belongings, shut the city gates on the sabbath, and confronted the offenders. His account ends with the prayer, "Remember me, O my God, for good."
+**Nehemiah Confronts Injustice Among the People (Nehemiah 5:1–19)** — Nehemiah confronted nobles exploiting poor families through debt and interest. They agreed to return property and stop the practice. He refused the governor's allowance and supported many people at his table.
+
+**The Wall Is Completed Despite Opposition (Nehemiah 6:1–19)** — Nehemiah refused invitations, false accusations, and intimidation intended to stop him. Jerusalem's wall was completed in fifty-two days, and surrounding nations recognized God's help, though Tobiah continued his influence.
+
+**Jerusalem's Gates and People Are Organized (Nehemiah 7:1–73)** — Nehemiah appointed guards, gatekeepers, singers, and Levites, then examined the register of families returning from captivity. Jerusalem remained sparsely populated, and genealogies determined priestly eligibility.
+
+**Ezra Reads God's Law Before the People (Nehemiah 8:1–18)** — Ezra read Moses' law at the Water Gate while Levites explained it. The people were encouraged to rejoice, study the law, and restore the Feast of Tabernacles with great joy.
+
+**Israel Confesses Its Sins and Remembers God's Mercy (Nehemiah 9:1–38)** — Israel fasted, confessed, and recalled God's faithfulness from creation, Abraham, Egypt, Sinai, wilderness provision, and the land. The Levites acknowledged repeated rebellion and God's mercy, then resolved to make a written covenant.
+
+**The People Renew Their Covenant with God (Nehemiah 10:1–39)** — Leaders and families committed to obey God's law, honor Sabbath and sabbatical requirements, avoid unfaithful marriages, and support temple worship through offerings, firstfruits, wood, and tithes.
+
+**Families Settle in Jerusalem and Judah (Nehemiah 11:1–12:26)** — One in ten people was chosen by lot to live in Jerusalem, with others volunteering. The record names residents, priests, Levites, singers, gatekeepers, and the families responsible for restored worship.
+
+**Jerusalem's Rebuilt Wall Is Dedicated to God (Nehemiah 12:27–47)** — Levites, priests, singers, and two great thanksgiving processions dedicated the wall with purification, music, sacrifice, and joy. Arrangements supported singers, gatekeepers, priests, and Levites.
+
+**Nehemiah Confronts Renewed Disobedience (Nehemiah 13:1–31)** — Nehemiah returned to find Tobiah using temple space, Levites unsupported, Sabbath commerce, and unfaithful marriages. He removed Tobiah, restored offerings and guards, confronted wrongdoing, and asked God to remember him.
 
 # Esther
 When it happened: During the reign of King Ahasuerus of Persia, usually identified with Xerxes I (486–465 BC), from his third year (Esther 1:3) to his twelfth year and after.
@@ -108,10 +234,22 @@ When it was written: The book notes that "Mordecai wrote these things" in letter
 Where: Shushan (Susa), the royal city of the Persian Empire.
 The world at the time: Persia ruled 127 provinces "from India even unto Ethiopia" (Esther 1:1). Many Jews still lived scattered throughout the empire after the exile, and a royal law, once sealed, could not be reversed.
 
-**Esther 1-2** — King Ahasuerus ruled 127 provinces from India to Ethiopia. During a great feast at Shushan, Queen Vashti refused his command to appear before his guests, and she was removed as queen. Young women were gathered from across the empire, and the king chose Esther, a Jewish orphan raised by her cousin Mordecai, who told her not to reveal her people. Mordecai uncovered a plot by two of the king's chamberlains to kill the king, and the matter was written in the royal chronicles.
+**King Ahasuerus Removes Queen Vashti (Esther 1:1–22)** — At a royal feast in Shushan, Vashti refused the king's command to appear. Ahasuerus removed her as queen and issued a decree throughout his empire.
 
-**Esther 3-4** — The king promoted Haman above all his princes. When Mordecai would not bow to him, Haman was furious. He cast lots, called Pur, to choose a day, and persuaded the king to issue a decree to destroy all the Jews in the empire on that single day. Mordecai put on sackcloth and urged Esther to go to the king, though appearing before him uninvited could mean death: "who knoweth whether thou art come to the kingdom for such a time as this?" Esther asked the Jews to fast for three days and said, "if I perish, I perish."
+**Esther Becomes Queen of Persia (Esther 2:1–23)** — Esther, a Jewish orphan raised by Mordecai, became queen while concealing her identity. Mordecai uncovered a plot against Ahasuerus, which was recorded but not immediately rewarded.
 
-**Esther 5-7** — The king held out his golden sceptre to Esther, and she invited him and Haman to a banquet. Haman built a gallows fifty cubits high for Mordecai. That night the king could not sleep, had the chronicles read to him, and learned that Mordecai had never been honoured for saving his life. The next morning Haman, arriving to ask for Mordecai's death, was instead ordered to lead Mordecai through the city on the king's horse in royal apparel. At Esther's second banquet she revealed that she and her people had been sold to be destroyed and named Haman as the enemy. Haman was hanged on the gallows he had prepared for Mordecai.
+**Haman Plans to Destroy the Jews (Esther 3:1–15)** — Haman became furious when Mordecai refused to bow. He cast Pur and secured the king's sealed decree ordering the destruction of Jews across the Persian Empire.
 
-**Esther 8-10** — Since a Persian law could not be revoked, the king allowed Mordecai to write a new decree permitting the Jews to defend themselves. On the appointed day they overcame those who attacked them. Mordecai and Esther established the feast of Purim to be kept every year with feasting, gladness, gifts to one another, and gifts to the poor. Mordecai became second only to the king, "seeking the wealth of his people." The name of God never appears in the book of Esther.
+**Mordecai Calls Esther to Act (Esther 4:1–17)** — Mordecai urged Esther to plead for her people despite the danger of entering the king's court uninvited. Esther called for a three-day fast and resolved to go before the king.
+
+**Esther Invites the King and Haman to a Feast (Esther 5:1–14)** — The king extended his golden scepter to Esther. She invited him and Haman to two feasts. Haman's hatred of Mordecai led him to prepare a gallows.
+
+**Mordecai Receives an Unexpected Honor (Esther 6:1–14)** — The king's sleepless night revealed Mordecai's unrewarded loyalty. Haman, planning Mordecai's death, was instead ordered to lead him through the city in royal honor.
+
+**Esther Exposes Haman's Plot (Esther 7:1–10)** — At Esther's second feast, she revealed that Haman planned the destruction of her people. The king ordered Haman hanged on the gallows he had prepared for Mordecai.
+
+**Esther and Mordecai Secure a New Decree (Esther 8:1–17)** — Esther received Haman's estate and Mordecai the signet ring. Because the first decree could not be revoked, a new decree authorized Jews throughout the empire to gather and defend themselves.
+
+**The Jews Defend Themselves and Establish Purim (Esther 9:1–32)** — The Jews prevailed over their enemies on the days Haman had chosen for their destruction, without taking spoil. Mordecai and Esther established Purim to remember their deliverance.
+
+**Mordecai Becomes a Great Leader in Persia (Esther 10:1–3)** — Mordecai became second to Ahasuerus and sought the welfare and peace of his people. Esther closes with the Jews' deliverance from Haman's planned destruction.

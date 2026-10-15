@@ -4,7 +4,14 @@
 Each book is a "# Book Name" heading followed by four "Label: text" lines for
 the When & Where section and then the story, written as blank-line separated
 paragraphs. A paragraph that starts with "**Passage** — " begins a new part of
-the story labeled with the chapters it retells.
+the story labeled with the chapters it retells, such as
+"**The Flood and God's Covenant (Genesis 6:1–9:29)** — ". Paragraphs after it
+belong to the same part, separated by a blank line as in the app. A line that is
+just "---" begins a part with no label, such as a closing summary.
+
+These files are the source for book history and stories: edit them here, then run
+Scripts/consolidate_insights.py to load them into the database. If the database is ever
+edited directly, run Scripts/export_book_content.py to write the changes back here.
 
 Run directly to check every quotation in the content against the app's KJV text:
     python3 Scripts/book_content_tools.py
@@ -27,6 +34,7 @@ WHEN_WHERE_FIELDS = {
     "The world at the time": "world_at_the_time",
 }
 PASSAGE_PREFIX = re.compile(r"^\*\*(?P<passage>[^*]+)\*\*\s+—\s+")
+UNLABELED_PART = "---"
 
 
 def load_books():
@@ -53,16 +61,27 @@ def load_books():
                 continue
             if current is None:
                 raise ValueError(f"{path.name}: text before the first book heading")
+            if block == UNLABELED_PART:
+                current["story"].append(("", None))
+                continue
             text = " ".join(line.strip() for line in lines)
             match = PASSAGE_PREFIX.match(text)
-            passage = match["passage"].strip() if match else ""
-            current["story"].append((passage, text[match.end():] if match else text))
+            if match:
+                current["story"].append((match["passage"].strip(), text[match.end():]))
+            elif current["story"]:
+                # A continuation paragraph of the current part.
+                passage, previous = current["story"][-1]
+                current["story"][-1] = (passage, text if previous is None else f"{previous}\n\n{text}")
+            else:
+                raise ValueError(f"{path.name}: {current} story must start with a labeled paragraph")
     for name, book in books.items():
         missing = set(WHEN_WHERE_FIELDS.values()) - set(book["when_where"])
         if missing:
             raise ValueError(f"{name} is missing {sorted(missing)}")
         if not book["story"] or not book["story"][0][0]:
             raise ValueError(f"{name}: the story must start with a labeled paragraph")
+        if any(text is None for _, text in book["story"]):
+            raise ValueError(f"{name}: a \"{UNLABELED_PART}\" line must be followed by a paragraph")
     return books
 
 
@@ -95,21 +114,38 @@ def check_quotes(books):
 
 
 def check_passages(books):
-    """Each label must name its own book and chapters/verses that exist in the KJV."""
-    kjv = json.loads(KJV.read_text(encoding="utf-8-sig"))
+    """Each label must name its own book and chapters/verses that exist in the KJV.
+
+    A label is either a bare passage ("Genesis 1-3") or a title with the passage in
+    parentheses ("The Flood and God's Covenant (Genesis 6:1–9:29)").
+    """
+    kjv = {book["name"]: book["chapters"] for book in json.loads(KJV.read_text(encoding="utf-8-sig"))}
     problems = 0
-    for (name, book), source in zip(books.items(), kjv):
-        chapters = source["chapters"]
+    for name, book in books.items():
+        chapters = kjv[name]
         for passage, _ in book["story"]:
             if not passage:
                 continue
-            match = re.fullmatch(rf"{re.escape(name)} (\d+)(?::(\d+))?(?:-(\d+))?", passage)
-            first, verse, last = (int(value) if value else None for value in match.groups()) if match else (None,) * 3
-            valid = bool(match) and 1 <= first <= len(chapters)
-            if valid and verse is not None:
-                valid = 1 <= verse <= (last or verse) <= len(chapters[first - 1])
-            elif valid and last is not None:
-                valid = first < last <= len(chapters)
+            titled = re.fullmatch(r".+ \((?P<reference>[^()]+)\)", passage)
+            reference = titled["reference"] if titled else passage
+            match = re.fullmatch(
+                rf"{re.escape(name)} (\d+)(?::(\d+))?(?:[-–](\d+)(?::(\d+))?)?", reference
+            )
+            valid = bool(match)
+            if valid:
+                first, verse, second, end_verse = (int(value) if value else None for value in match.groups())
+                valid = 1 <= first <= len(chapters)
+                if valid and end_verse is not None:
+                    # "6:1–9:29": first chapter and verse through last chapter and verse.
+                    valid = (verse is not None and first < second <= len(chapters)
+                             and 1 <= verse <= len(chapters[first - 1])
+                             and 1 <= end_verse <= len(chapters[second - 1]))
+                elif valid and verse is not None:
+                    # "6:1" or "6:1–13": verses within one chapter.
+                    valid = 1 <= verse <= (second or verse) <= len(chapters[first - 1])
+                elif valid and second is not None:
+                    # "1-3": whole chapters.
+                    valid = first < second <= len(chapters)
             if not valid:
                 problems += 1
                 print(f"{name}: bad passage label: {passage}")

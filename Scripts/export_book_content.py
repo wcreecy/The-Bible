@@ -2,6 +2,9 @@
 """Write each book's When & Where section and story from BibleInsights.sqlite back to
 Scripts/book_content/*.md, so the files match what the app shows.
 
+The .md files are the source; edit them and run consolidate_insights.py. Use this only
+to recover changes that were made to the database directly.
+
 Books keep the file and order they already have. The result is checked by parsing the
 files again: every story part and When & Where field must come back exactly as stored,
 or nothing is written.
