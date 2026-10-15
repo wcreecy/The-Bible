@@ -1,0 +1,427 @@
+{
+  "1 Chronicles 1": {
+    "audience": "Chronicles was written for Jews who had returned from exile in Babylon. Its first chapter traces their ancestry from Adam through Noah and Abraham, drawing on the genealogies of Genesis 5, 10, 11, 25, and 36.",
+    "culture": [
+      {
+        "title": "Genealogy as identity",
+        "reference": "1 Chronicles 1:1",
+        "text": "Genealogies established who belonged to a people, who could own land, and who could serve as priests. Families unable to prove their descent were excluded from the priesthood after the exile (Ezra 2:62)."
+      },
+      {
+        "title": "Kings of Edom",
+        "reference": "1 Chronicles 1:43",
+        "text": "The list of Edomite kings who reigned \"before any king reigned over the children of Israel\" is repeated from Genesis 36:31–39."
+      }
+    ]
+  },
+  "1 Chronicles 2": {
+    "audience": "The genealogies begin with Judah, the tribe of David and of most of the returned exiles. Readers would trace David's line here through Perez, Hezron, Ram, Boaz, and Jesse (1 Chronicles 2:5–15).",
+    "culture": [
+      {
+        "title": "Achar the troubler",
+        "reference": "1 Chronicles 2:7",
+        "text": "Achan of Joshua 7 is called Achar here, ‘troubler,’ playing on the valley of Achor where he was judged."
+      },
+      {
+        "title": "Towns as descendants",
+        "reference": "1 Chronicles 2:50-51",
+        "text": "Some names in the lists are towns—Bethlehem, Kirjath-jearim, Tekoa—described as founded by a family's ancestor (\"the father of\")."
+      }
+    ]
+  },
+  "1 Chronicles 3": {
+    "audience": "This chapter traces David's descendants through the kings of Judah, into the exile, and beyond (1 Chronicles 3:17–24). Readers knew Zerubbabel, named here, as the governor who led the return (Ezra 3:2).",
+    "culture": [
+      {
+        "title": "Royal sons and wives",
+        "reference": "1 Chronicles 3:1-9",
+        "text": "David's sons are listed by their mothers and by where they were born—Hebron or Jerusalem—as was customary in royal records."
+      },
+      {
+        "title": "The line after exile",
+        "reference": "1 Chronicles 3:17-19",
+        "text": "Jeconiah (Jehoiachin) was taken to Babylon, and his line continues through Shealtiel and Zerubbabel. Both appear in Jesus' genealogy (Matthew 1:12)."
+      }
+    ]
+  },
+  "1 Chronicles 4": {
+    "audience": "The families of Judah and Simeon listed here include craftsmen, potters, and linen workers (1 Chronicles 4:14, 21, 23). Readers would recognize trades and towns of their own region.",
+    "culture": [
+      {
+        "title": "The prayer of Jabez",
+        "reference": "1 Chronicles 4:9-10",
+        "text": "Jabez's name sounds like the Hebrew word for pain, given because his mother bore him in sorrow. The genealogy pauses to record his prayer."
+      },
+      {
+        "title": "Guilds of craftsmen",
+        "reference": "1 Chronicles 4:21-23",
+        "text": "Some families were known for their trade—linen workers at Mareshah and potters who worked for the king. Crafts were passed down in families."
+      }
+    ]
+  },
+  "1 Chronicles 5": {
+    "audience": "Reuben, Gad, and half of Manasseh lived east of the Jordan and were the first tribes taken captive by Assyria (1 Chronicles 5:26). Readers would know these tribes had largely disappeared from the land.",
+    "culture": [
+      {
+        "title": "The birthright moved to Joseph",
+        "reference": "1 Chronicles 5:1-2",
+        "text": "Reuben lost the firstborn's birthright for defiling his father's bed (Genesis 35:22); it went to Joseph's sons, while Judah became the ruling tribe."
+      },
+      {
+        "title": "Herders against desert peoples",
+        "reference": "1 Chronicles 5:19-21",
+        "text": "The eastern tribes fought the Hagarites and took vast herds of camels, sheep, and donkeys, the wealth of desert peoples."
+      }
+    ]
+  },
+  "1 Chronicles 6": {
+    "audience": "The priests and Levites of the returned community traced their right to serve through these lists. The chapter gives the high priests from Aaron to the exile (1 Chronicles 6:3–15).",
+    "culture": [
+      {
+        "title": "Temple singers",
+        "reference": "1 Chronicles 6:31-33",
+        "text": "David appointed Levites as singers before the tabernacle. Heman, Asaph, and Ethan, named here, are linked with several psalm titles (Psalm 50; 88; 89)."
+      },
+      {
+        "title": "Levitical cities",
+        "reference": "1 Chronicles 6:54",
+        "text": "The towns given to the Levites throughout the tribes are listed again from Joshua 21."
+      }
+    ]
+  },
+  "1 Chronicles 7": {
+    "audience": "These lists cover the northern tribes—Issachar, Benjamin, Naphtali, Manasseh, Ephraim, and Asher. Most of these tribes were scattered by Assyria, but the Chronicler still counts them as part of Israel.",
+    "culture": [
+      {
+        "title": "Military registers",
+        "reference": "1 Chronicles 7:2",
+        "text": "Several genealogies give numbers of \"valiant men of might\" counted in David's day, drawn from military records."
+      },
+      {
+        "title": "A daughter who built towns",
+        "reference": "1 Chronicles 7:24",
+        "text": "Sherah, an Ephraimite woman, is said to have built Beth-horon and Uzzensherah."
+      }
+    ]
+  },
+  "1 Chronicles 8": {
+    "audience": "Benjamin, Saul's tribe, stayed with Judah after the kingdom divided. Readers would trace Saul's family through Jonathan and Mephibosheth (Meribbaal) for many generations (1 Chronicles 8:33–40).",
+    "culture": [
+      {
+        "title": "Names with Baal",
+        "reference": "1 Chronicles 8:33-34",
+        "text": "Here Saul's son is Eshbaal and Jonathan's son Meribbaal. Samuel calls them Ishbosheth and Mephibosheth, replacing \"baal\" with \"bosheth,\" meaning ‘shame.’ \"Baal\" can also mean ‘lord’ or ‘master.’"
+      },
+      {
+        "title": "Archers",
+        "reference": "1 Chronicles 8:40",
+        "text": "The sons of Ulam were mighty men and archers. Benjaminites were known for skill with the bow and sling (1 Chronicles 12:2)."
+      }
+    ]
+  },
+  "1 Chronicles 9": {
+    "audience": "This chapter lists those who resettled Jerusalem after the exile—Israelites, priests, Levites, and Nethinims (temple servants). Readers would find their own families here.",
+    "culture": [
+      {
+        "title": "Gatekeepers",
+        "reference": "1 Chronicles 9:22-27",
+        "text": "Levitical porters guarded the temple gates in shifts, lodged around the temple at night, and opened the doors each morning."
+      },
+      {
+        "title": "Temple duties",
+        "reference": "1 Chronicles 9:29-32",
+        "text": "Levites cared for the vessels, flour, wine, oil, frankincense, and spices, and prepared the showbread every Sabbath."
+      }
+    ]
+  },
+  "1 Chronicles 10": {
+    "audience": "Chronicles tells Saul's story only through his death on Mount Gilboa, then moves to David. Readers would see Saul's fall explained as unfaithfulness, including consulting a medium (1 Chronicles 10:13).",
+    "culture": [
+      {
+        "title": "Trophies in pagan temples",
+        "reference": "1 Chronicles 10:10",
+        "text": "The Philistines put Saul's armor in the house of their gods and fastened his head in the temple of Dagon."
+      }
+    ]
+  },
+  "1 Chronicles 11": {
+    "audience": "Chronicles begins David's reign with all Israel gathering at Hebron to make him king. Readers would see the capture of Jerusalem follow immediately.",
+    "culture": [
+      {
+        "title": "Millo",
+        "reference": "1 Chronicles 11:8",
+        "text": "David builds the city \"from Millo round about.\" Millo means ‘filling,’ probably terraces or a fill supporting buildings on the slope. A large stepped stone structure on the slope of the City of David has been excavated."
+      },
+      {
+        "title": "Mighty men",
+        "reference": "1 Chronicles 11:10",
+        "text": "The list of David's heroes is repeated and expanded from 2 Samuel 23."
+      }
+    ]
+  },
+  "1 Chronicles 12": {
+    "audience": "Warriors from every tribe join David, even from Saul's tribe of Benjamin (1 Chronicles 12:2). Readers would see all Israel united behind David.",
+    "culture": [
+      {
+        "title": "Ambidextrous slingers",
+        "reference": "1 Chronicles 12:2",
+        "text": "Some Benjaminites could use both the right and left hand to sling stones and shoot arrows."
+      },
+      {
+        "title": "Understanding the times",
+        "reference": "1 Chronicles 12:32",
+        "text": "The men of Issachar \"had understanding of the times, to know what Israel ought to do\"—a reputation for wise counsel."
+      },
+      {
+        "title": "Feasting at a coronation",
+        "reference": "1 Chronicles 12:40",
+        "text": "Northern tribes brought food on donkeys, camels, mules, and oxen for three days of feasting at David's coronation."
+      }
+    ]
+  },
+  "1 Chronicles 13": {
+    "audience": "The first attempt to bring the ark to Jerusalem ends with Uzza's death. Readers would see that the ark had been neglected \"in the days of Saul\" (1 Chronicles 13:3).",
+    "culture": [
+      {
+        "title": "A new cart",
+        "reference": "1 Chronicles 13:7",
+        "text": "The ark is carried on a new cart drawn by oxen, as the Philistines had sent it (1 Samuel 6:7). The law required it to be carried by Levites with poles (1 Chronicles 15:15)."
+      },
+      {
+        "title": "Instruments in worship",
+        "reference": "1 Chronicles 13:8",
+        "text": "Harps, psalteries, timbrels, cymbals, and trumpets accompanied the procession."
+      }
+    ]
+  },
+  "1 Chronicles 14": {
+    "audience": "Hiram of Tyre sends materials for David's house, and David defeats the Philistines twice. Readers would see David established as king among the nations.",
+    "culture": [
+      {
+        "title": "Burning captured idols",
+        "reference": "1 Chronicles 14:12",
+        "text": "The Philistines leave their gods behind in retreat, and David orders them burned, as the law commanded (Deuteronomy 7:5)."
+      },
+      {
+        "title": "The sound in the mulberry trees",
+        "reference": "1 Chronicles 14:15",
+        "text": "David is told to attack when he hears \"a sound of going in the tops of the mulberry trees\"—a sign that God had gone out before him."
+      }
+    ]
+  },
+  "1 Chronicles 15": {
+    "audience": "The Levites in the returned community traced their duties to David's arrangements for the ark. Readers would see the ark brought up correctly this time, on the Levites' shoulders.",
+    "culture": [
+      {
+        "title": "Sanctifying for service",
+        "reference": "1 Chronicles 15:12-14",
+        "text": "The priests and Levites sanctify themselves—washing and keeping ritual purity—before carrying the ark."
+      },
+      {
+        "title": "Levitical musicians",
+        "reference": "1 Chronicles 15:16",
+        "text": "David appoints Levite singers with psalteries, harps, and cymbals. Chenaniah, chief of the Levites, leads the song."
+      }
+    ]
+  },
+  "1 Chronicles 16": {
+    "audience": "The psalm sung when the ark arrives combines parts of Psalms 105, 96, and 106. Readers would recognize words from their own worship.",
+    "culture": [
+      {
+        "title": "Two places of worship",
+        "reference": "1 Chronicles 16:37-39",
+        "text": "Asaph serves before the ark in Jerusalem, while Zadok and the priests serve at the tabernacle and altar in Gibeon."
+      },
+      {
+        "title": "Responsive praise",
+        "reference": "1 Chronicles 16:36",
+        "text": "\"All the people said, Amen, and praised the LORD\"—the congregation joined the Levites' song with its response."
+      }
+    ]
+  },
+  "1 Chronicles 17": {
+    "audience": "God's promise to David is repeated here from 2 Samuel 7. For readers after the exile, with no king on the throne, it was a promise still waiting to be fulfilled.",
+    "culture": [
+      {
+        "title": "A house for God",
+        "reference": "1 Chronicles 17:1",
+        "text": "Ancient kings built temples for their gods as a sign of their reign's success. David wants to build one, but God says his son will build it."
+      }
+    ]
+  },
+  "1 Chronicles 18": {
+    "audience": "David's victories over the Philistines, Moab, Zobah, Syria, and Edom are summarized from 2 Samuel 8. The bronze he captured was later used for the temple (1 Chronicles 18:8).",
+    "culture": [
+      {
+        "title": "Dedicating spoil",
+        "reference": "1 Chronicles 18:11",
+        "text": "David dedicates silver and gold from conquered nations to the LORD—treasure later used to build the temple."
+      },
+      {
+        "title": "Garrisons",
+        "reference": "1 Chronicles 18:13",
+        "text": "David puts garrisons in Edom, the usual way of holding a conquered land."
+      }
+    ]
+  },
+  "1 Chronicles 19": {
+    "audience": "The insult to David's messengers by the Ammonites leads to war, repeated from 2 Samuel 10.",
+    "culture": [
+      {
+        "title": "Hired chariots",
+        "reference": "1 Chronicles 19:6-7",
+        "text": "The Ammonites pay a thousand talents of silver to hire 32,000 chariots and horsemen from Mesopotamia and Syria."
+      },
+      {
+        "title": "Waiting at Jericho",
+        "reference": "1 Chronicles 19:5",
+        "text": "David's shamed messengers wait at Jericho until their beards grow back."
+      }
+    ]
+  },
+  "1 Chronicles 20": {
+    "audience": "Chronicles records the capture of Rabbah but not David's sin with Bathsheba. Readers would see David's reign presented through his victories and preparations for the temple.",
+    "culture": [
+      {
+        "title": "A king's crown",
+        "reference": "1 Chronicles 20:2",
+        "text": "The crown of the Ammonite king weighed a talent of gold, set with precious stones. It may have been worn on an idol (Milcom) and taken from it."
+      },
+      {
+        "title": "Giants of Gath",
+        "reference": "1 Chronicles 20:4-8",
+        "text": "The chapter records battles against giants of Gath, including Goliath's brother Lahmi (1 Chronicles 20:5)."
+      }
+    ]
+  },
+  "1 Chronicles 21": {
+    "audience": "The threshing floor of Ornan (Araunah) bought by David became the site of the temple (2 Chronicles 3:1). Readers in Jerusalem knew it as the temple mount.",
+    "culture": [
+      {
+        "title": "Threshing floors",
+        "reference": "1 Chronicles 21:20",
+        "text": "Ornan is threshing wheat on a high, open floor where the wind could winnow the grain. Threshing floors were often on hilltops."
+      },
+      {
+        "title": "Fire from heaven",
+        "reference": "1 Chronicles 21:26",
+        "text": "God answers David's offerings with fire from heaven on the altar, the same sign given at the tabernacle and later at Solomon's temple."
+      }
+    ]
+  },
+  "1 Chronicles 22": {
+    "audience": "Readers rebuilding the temple after exile would see David gather materials and charge Solomon to build the first one.",
+    "culture": [
+      {
+        "title": "A man of war",
+        "reference": "1 Chronicles 22:8",
+        "text": "David is not allowed to build the temple because he had shed much blood in war. Solomon's name is connected with peace (\"shalom\")."
+      },
+      {
+        "title": "Stockpiling materials",
+        "reference": "1 Chronicles 22:14",
+        "text": "David prepares 100,000 talents of gold and 1,000,000 talents of silver, with bronze and iron \"without weight\"—figures that describe enormous wealth."
+      }
+    ]
+  },
+  "1 Chronicles 23": {
+    "audience": "The divisions of the Levites listed here shaped temple service for centuries. Readers would know the families and the duties.",
+    "culture": [
+      {
+        "title": "Age of service",
+        "reference": "1 Chronicles 23:24-27",
+        "text": "David lowers the age for Levites to begin service to twenty, because the tabernacle no longer needed to be carried."
+      },
+      {
+        "title": "Morning and evening praise",
+        "reference": "1 Chronicles 23:30",
+        "text": "Levites stood every morning and evening to thank and praise the LORD."
+      }
+    ]
+  },
+  "1 Chronicles 24": {
+    "audience": "The twenty-four courses of priests set up here continued into New Testament times. Zacharias, father of John the Baptist, served in \"the course of Abia\" (Luke 1:5), the eighth course (1 Chronicles 24:10).",
+    "culture": [
+      {
+        "title": "Rotating courses",
+        "reference": "1 Chronicles 24:7-19",
+        "text": "Each priestly family served at the temple for a set period in rotation, chosen by lot."
+      }
+    ]
+  },
+  "1 Chronicles 25": {
+    "audience": "The families of Asaph, Heman, and Jeduthun led temple music. Readers knew the psalms linked to their names (Psalm 39; 50; 73–83; 88).",
+    "culture": [
+      {
+        "title": "Prophesying with instruments",
+        "reference": "1 Chronicles 25:1",
+        "text": "The musicians \"should prophesy with harps, with psalteries, and with cymbals\"—their music is called a form of prophecy."
+      },
+      {
+        "title": "Twenty-four courses of musicians",
+        "reference": "1 Chronicles 25:8-31",
+        "text": "Like the priests, musicians were divided into twenty-four courses by lot, \"as well the small as the great, the teacher as the scholar.\""
+      }
+    ]
+  },
+  "1 Chronicles 26": {
+    "audience": "The porters (gatekeepers) and treasury officials listed here guarded the temple and its stores. Readers in the rebuilt temple knew these roles.",
+    "culture": [
+      {
+        "title": "Gates by lot",
+        "reference": "1 Chronicles 26:13",
+        "text": "Gates on each side of the temple were assigned to families by lot."
+      },
+      {
+        "title": "Treasuries of dedicated things",
+        "reference": "1 Chronicles 26:26-28",
+        "text": "The treasuries held spoil dedicated by Samuel, Saul, Abner, Joab, and David."
+      }
+    ]
+  },
+  "1 Chronicles 27": {
+    "audience": "This chapter lists David's army divisions, tribal leaders, and stewards of royal property. Readers would see the kingdom's administration.",
+    "culture": [
+      {
+        "title": "Monthly divisions",
+        "reference": "1 Chronicles 27:1",
+        "text": "The army was organized in twelve divisions of 24,000 men, each serving one month of the year."
+      },
+      {
+        "title": "Royal estates",
+        "reference": "1 Chronicles 27:25-31",
+        "text": "Officials oversaw the king's treasuries, fields, vineyards, wine cellars, olive and sycamore groves, oil stores, cattle, camels, donkeys, and flocks."
+      }
+    ]
+  },
+  "1 Chronicles 28": {
+    "audience": "David gives Solomon the plans for the temple before the leaders of Israel. Readers rebuilding the temple would see the first temple's design come from David by the Spirit (1 Chronicles 28:12, 19).",
+    "culture": [
+      {
+        "title": "A written pattern",
+        "reference": "1 Chronicles 28:19",
+        "text": "David says the pattern was given to him in writing \"by his hand upon me.\" Ancient temple builders often claimed divine plans for their temples."
+      },
+      {
+        "title": "Weights of gold and silver",
+        "reference": "1 Chronicles 28:14-17",
+        "text": "David gives the weight of gold and silver for each lampstand, table, bowl, and basin."
+      }
+    ]
+  },
+  "1 Chronicles 29": {
+    "audience": "The people give willingly for the temple. Readers in a poor community after the exile would hear David's prayer, \"all things come of thee, and of thine own have we given thee\" (1 Chronicles 29:14).",
+    "culture": [
+      {
+        "title": "Darics",
+        "reference": "1 Chronicles 29:7",
+        "text": "The \"drams\" of gold are darics, Persian gold coins first minted around 515 BC. The Chronicler states the value in the coinage of his own day."
+      },
+      {
+        "title": "Ophir gold",
+        "reference": "1 Chronicles 29:4",
+        "text": "David gives three thousand talents of gold of Ophir, a source famous for fine gold."
+      }
+    ]
+  }
+}

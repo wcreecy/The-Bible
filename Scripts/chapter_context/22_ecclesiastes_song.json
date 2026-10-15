@@ -1,0 +1,347 @@
+{
+  "Ecclesiastes 1": {
+    "audience": "Ecclesiastes presents the words of \"the Preacher, the son of David, king in Jerusalem\" (Ecclesiastes 1:1). The Hebrew title, Qoheleth, means one who gathers an assembly.",
+    "culture": [
+      {
+        "title": "Vanity",
+        "reference": "Ecclesiastes 1:2",
+        "text": "The Hebrew word translated \"vanity\" means vapor or breath—something fleeting. It appears over thirty times in the book."
+      },
+      {
+        "title": "Under the sun",
+        "reference": "Ecclesiastes 1:3",
+        "text": "\"Under the sun\" appears about thirty times, describing life in this world."
+      },
+      {
+        "title": "Rivers to the sea",
+        "reference": "Ecclesiastes 1:7",
+        "text": "\"All the rivers run into the sea; yet the sea is not full\"—an observation of the water cycle."
+      }
+    ]
+  },
+  "Ecclesiastes 2": {
+    "audience": "The Preacher describes testing pleasure, building, wealth, and work, in terms that fit a wealthy king's life.",
+    "culture": [
+      {
+        "title": "Gardens and pools",
+        "reference": "Ecclesiastes 2:5-6",
+        "text": "Kings built gardens, orchards, and pools to water them. Royal parks were a mark of wealth in Persia and earlier empires."
+      },
+      {
+        "title": "Singers and instruments",
+        "reference": "Ecclesiastes 2:8",
+        "text": "Royal courts kept male and female singers for entertainment (2 Samuel 19:35)."
+      }
+    ]
+  },
+  "Ecclesiastes 3": {
+    "audience": "The poem \"To every thing there is a season\" (Ecclesiastes 3:1) lists fourteen pairs of opposite times. It is often read at funerals today.",
+    "culture": [
+      {
+        "title": "Casting away stones",
+        "reference": "Ecclesiastes 3:5",
+        "text": "Farmers cleared stones from fields before planting, and gathered stones for walls and buildings."
+      },
+      {
+        "title": "Rending and sewing",
+        "reference": "Ecclesiastes 3:7",
+        "text": "Clothes were torn in grief and mended afterward."
+      }
+    ]
+  },
+  "Ecclesiastes 4": {
+    "audience": "The Preacher observes oppression, envy, and the loneliness of a man who works without companion or heir.",
+    "culture": [
+      {
+        "title": "Two are better than one",
+        "reference": "Ecclesiastes 4:9-12",
+        "text": "Travelers alone could freeze at night or be attacked. Companions helped each other up, kept each other warm, and defended each other."
+      },
+      {
+        "title": "A threefold cord",
+        "reference": "Ecclesiastes 4:12",
+        "text": "Rope was made by twisting strands together; three strands are much stronger than one."
+      }
+    ]
+  },
+  "Ecclesiastes 5": {
+    "audience": "The Preacher gives advice on worship—listening rather than rash vows—and on the emptiness of hoarded wealth.",
+    "culture": [
+      {
+        "title": "Paying vows",
+        "reference": "Ecclesiastes 5:4-5",
+        "text": "Vows made to God had to be paid (Deuteronomy 23:21). It is better not to vow than to vow and fail to pay."
+      },
+      {
+        "title": "Layers of officials",
+        "reference": "Ecclesiastes 5:8",
+        "text": "\"He that is higher than the highest regardeth; and there be higher than they\"—officials watching officials in a large government."
+      }
+    ]
+  },
+  "Ecclesiastes 6": {
+    "audience": "The Preacher describes a man with wealth, many children, and long life who still cannot enjoy what he has.",
+    "culture": [
+      {
+        "title": "An untimely birth",
+        "reference": "Ecclesiastes 6:3",
+        "text": "A stillborn child, never named, is said to be better off than a man who never enjoys life."
+      },
+      {
+        "title": "A hundred children",
+        "reference": "Ecclesiastes 6:3",
+        "text": "Many children and a proper burial were signs of a blessed life. The Preacher says neither is enough without contentment."
+      }
+    ]
+  },
+  "Ecclesiastes 7": {
+    "audience": "This chapter is a collection of proverbs comparing what is \"better\"—a good name, mourning, patience, and wisdom.",
+    "culture": [
+      {
+        "title": "The house of mourning",
+        "reference": "Ecclesiastes 7:2",
+        "text": "Mourning lasted for days, with family and friends gathered. Visiting a house of mourning reminds the living of their end."
+      },
+      {
+        "title": "Thorns under a pot",
+        "reference": "Ecclesiastes 7:6",
+        "text": "Thorns burn quickly with a loud crackle but give little heat—like the laughter of fools."
+      }
+    ]
+  },
+  "Ecclesiastes 8": {
+    "audience": "The Preacher advises obeying the king, \"in regard of the oath of God\" (Ecclesiastes 8:2), and admits he cannot understand all that God does.",
+    "culture": [
+      {
+        "title": "The king's word",
+        "reference": "Ecclesiastes 8:4",
+        "text": "\"Where the word of a king is, there is power: and who may say unto him, What doest thou?\" Royal decrees had absolute authority."
+      },
+      {
+        "title": "No discharge in war",
+        "reference": "Ecclesiastes 8:8",
+        "text": "Soldiers in battle could not leave their post. So no one can escape the day of death."
+      }
+    ]
+  },
+  "Ecclesiastes 9": {
+    "audience": "The Preacher urges enjoying life with one's wife and work, since the same fate comes to all.",
+    "culture": [
+      {
+        "title": "White garments and oil",
+        "reference": "Ecclesiastes 9:8",
+        "text": "White garments and anointed heads were signs of celebration, the opposite of mourning in sackcloth and ashes."
+      },
+      {
+        "title": "A poor wise man saves a city",
+        "reference": "Ecclesiastes 9:14-15",
+        "text": "A great king besieges a small city with bulwarks (siege works), and a poor wise man delivers it but is forgotten."
+      }
+    ]
+  },
+  "Ecclesiastes 10": {
+    "audience": "This chapter collects proverbs on folly, rulers, and everyday dangers of work.",
+    "culture": [
+      {
+        "title": "Dead flies in ointment",
+        "reference": "Ecclesiastes 10:1",
+        "text": "Perfumed oil was costly. A few dead flies could spoil a whole jar."
+      },
+      {
+        "title": "Dangers of labor",
+        "reference": "Ecclesiastes 10:8-9",
+        "text": "Digging a pit, breaking through a hedge (a stone wall), quarrying stones, and splitting wood could all lead to injury."
+      },
+      {
+        "title": "Servants on horses",
+        "reference": "Ecclesiastes 10:7",
+        "text": "Riding a horse was a sign of rank. Servants riding while princes walk shows the world turned upside down."
+      }
+    ]
+  },
+  "Ecclesiastes 11": {
+    "audience": "The Preacher urges generosity and diligence in the face of uncertainty, and calls the young to enjoy life while remembering judgment.",
+    "culture": [
+      {
+        "title": "Bread upon the waters",
+        "reference": "Ecclesiastes 11:1",
+        "text": "\"Cast thy bread upon the waters\" may refer to sea trade or to sowing seed in wet ground—an investment whose return comes later."
+      },
+      {
+        "title": "Watching the wind and clouds",
+        "reference": "Ecclesiastes 11:4",
+        "text": "Farmers watched the weather for sowing and reaping; waiting for perfect conditions means never working."
+      }
+    ]
+  },
+  "Ecclesiastes 12": {
+    "audience": "The book ends with a poem on old age and death and the conclusion: \"Fear God, and keep his commandments: for this is the whole duty of man\" (Ecclesiastes 12:13).",
+    "culture": [
+      {
+        "title": "Images of old age",
+        "reference": "Ecclesiastes 12:3-4",
+        "text": "Trembling keepers, few grinders, and darkened windows are often read as trembling hands, lost teeth, and failing eyes."
+      },
+      {
+        "title": "The silver cord and golden bowl",
+        "reference": "Ecclesiastes 12:6",
+        "text": "A golden lamp bowl hung by a silver cord, and a pitcher at the well—broken objects picture the end of life."
+      },
+      {
+        "title": "Goads and nails",
+        "reference": "Ecclesiastes 12:11",
+        "text": "Goads prodded oxen forward; nails fixed things firmly. Words of the wise both drive and hold."
+      }
+    ]
+  },
+  "Song of Solomon 1": {
+    "audience": "The book is titled \"The song of songs, which is Solomon's\" (Song of Solomon 1:1), a Hebrew way of saying the greatest song. It is a series of love poems between a bride and her beloved. Jewish communities read it at Passover.",
+    "culture": [
+      {
+        "title": "Tents of Kedar",
+        "reference": "Song of Solomon 1:5",
+        "text": "The Bedouin tribe of Kedar wove tents of black goat hair. The bride says she is dark from working in the sun."
+      },
+      {
+        "title": "Keeping vineyards",
+        "reference": "Song of Solomon 1:6",
+        "text": "Young women of farming families tended vineyards outdoors, which darkened their skin."
+      },
+      {
+        "title": "A bundle of myrrh",
+        "reference": "Song of Solomon 1:13",
+        "text": "Women wore small sachets of myrrh, a fragrant resin, on a cord around the neck."
+      }
+    ]
+  },
+  "Song of Solomon 2": {
+    "audience": "The beloved calls the bride to come away as winter ends: \"the rain is over and gone; the flowers appear on the earth\" (Song of Solomon 2:11–12).",
+    "culture": [
+      {
+        "title": "Spring in the land",
+        "reference": "Song of Solomon 2:11-13",
+        "text": "After the winter rains, flowers bloom, turtledoves return, figs ripen, and vines blossom—late March and April."
+      },
+      {
+        "title": "Little foxes",
+        "reference": "Song of Solomon 2:15",
+        "text": "Foxes and jackals dug under vines and spoiled the young grapes."
+      },
+      {
+        "title": "The rose of Sharon",
+        "reference": "Song of Solomon 2:1",
+        "text": "Sharon was the fertile coastal plain known for wildflowers. The \"rose\" was probably a crocus or similar bulb flower."
+      }
+    ]
+  },
+  "Song of Solomon 3": {
+    "audience": "The chapter describes the bride searching the city at night and Solomon's wedding procession from the wilderness.",
+    "culture": [
+      {
+        "title": "Watchmen in the city",
+        "reference": "Song of Solomon 3:3",
+        "text": "Night watchmen patrolled the city streets and walls."
+      },
+      {
+        "title": "Solomon's litter",
+        "reference": "Song of Solomon 3:7-10",
+        "text": "A royal litter or palanquin, guarded by sixty mighty men, was made of cedar of Lebanon with silver, gold, and purple."
+      },
+      {
+        "title": "Crowned on his wedding day",
+        "reference": "Song of Solomon 3:11",
+        "text": "Solomon wears the crown his mother put on him \"in the day of his espousals\"—grooms wore crowns or garlands at weddings."
+      }
+    ]
+  },
+  "Song of Solomon 4": {
+    "audience": "The beloved praises his bride in a series of images from the land—flocks, towers, and gardens—and calls her \"my spouse\" (Song of Solomon 4:8).",
+    "culture": [
+      {
+        "title": "Comparisons from the land",
+        "reference": "Song of Solomon 4:1-5",
+        "text": "Hair like goats descending Mount Gilead, teeth like freshly washed sheep, a neck like David's tower hung with shields—ancient love poetry praised beauty with images from nature and architecture."
+      },
+      {
+        "title": "A garden enclosed",
+        "reference": "Song of Solomon 4:12",
+        "text": "Walled gardens with private springs were kept closed to strangers—an image of the bride's purity."
+      },
+      {
+        "title": "Spices",
+        "reference": "Song of Solomon 4:14",
+        "text": "Spikenard, saffron, calamus, cinnamon, frankincense, myrrh, and aloes were costly spices, many imported from India and Arabia."
+      }
+    ]
+  },
+  "Song of Solomon 5": {
+    "audience": "The bride hesitates to open the door at night, then searches for her beloved and describes him to the daughters of Jerusalem.",
+    "culture": [
+      {
+        "title": "Feet washed for bed",
+        "reference": "Song of Solomon 5:3",
+        "text": "People washed their feet before bed. Getting up again meant dirtying them on the floor."
+      },
+      {
+        "title": "Hand through the hole of the door",
+        "reference": "Song of Solomon 5:4",
+        "text": "Doors were locked by a wooden bolt reached through a hole in the door."
+      },
+      {
+        "title": "Gold, ivory, and marble",
+        "reference": "Song of Solomon 5:14-15",
+        "text": "The bride describes her beloved like a costly statue of gold, ivory, sapphires, and marble."
+      }
+    ]
+  },
+  "Song of Solomon 6": {
+    "audience": "The bride says her beloved has gone down to his garden. He praises her again as \"terrible as an army with banners\" (Song of Solomon 6:4).",
+    "culture": [
+      {
+        "title": "Tirzah and Jerusalem",
+        "reference": "Song of Solomon 6:4",
+        "text": "Tirzah was a beautiful city, later the first capital of the northern kingdom (1 Kings 16:23). The bride is compared to it and to Jerusalem."
+      },
+      {
+        "title": "Queens and concubines",
+        "reference": "Song of Solomon 6:8",
+        "text": "Royal harems included queens and concubines; the bride is called unique among them."
+      }
+    ]
+  },
+  "Song of Solomon 7": {
+    "audience": "The beloved praises the Shulamite from her feet to her head (Song of Solomon 7:1–9).",
+    "culture": [
+      {
+        "title": "Pools of Heshbon",
+        "reference": "Song of Solomon 7:4",
+        "text": "Heshbon, east of the Jordan, had large reservoirs; her eyes are compared to its fishpools."
+      },
+      {
+        "title": "Mandrakes",
+        "reference": "Song of Solomon 7:13",
+        "text": "Mandrakes have a fragrant fruit and were believed to promote love and fertility (Genesis 30:14)."
+      }
+    ]
+  },
+  "Song of Solomon 8": {
+    "audience": "The book ends with the claim that \"love is strong as death\" and cannot be bought (Song of Solomon 8:6–7).",
+    "culture": [
+      {
+        "title": "A seal on the heart",
+        "reference": "Song of Solomon 8:6",
+        "text": "A signet seal was worn on a cord around the neck or on a ring and identified its owner. The bride asks to be set as a seal on her beloved's heart."
+      },
+      {
+        "title": "Silver and a wall for a sister",
+        "reference": "Song of Solomon 8:8-9",
+        "text": "Brothers took responsibility for an unmarried sister's protection and marriage arrangements (compare Genesis 24:50)."
+      },
+      {
+        "title": "Baalhamon's vineyard",
+        "reference": "Song of Solomon 8:11",
+        "text": "Solomon rented out his vineyard to keepers, each paying a thousand pieces of silver for its fruit."
+      }
+    ]
+  }
+}

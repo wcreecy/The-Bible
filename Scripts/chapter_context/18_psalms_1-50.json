@@ -1,0 +1,782 @@
+{
+  "Psalms 1": {
+    "audience": "Psalm 1 has no title and opens the whole book of Psalms. Israel sang and prayed these psalms in worship; this first one introduces the two ways of the righteous and the wicked.",
+    "culture": [
+      {
+        "title": "Chaff on the threshing floor",
+        "reference": "Psalms 1:4",
+        "text": "At threshing, grain was tossed into the air so the wind would blow away the light husks (chaff) while the heavier grain fell back."
+      },
+      {
+        "title": "Trees by irrigation channels",
+        "reference": "Psalms 1:3",
+        "text": "\"Rivers of water\" can mean irrigation channels. A tree planted beside them stays green through the dry summer (compare Jeremiah 17:8)."
+      }
+    ]
+  },
+  "Psalms 2": {
+    "audience": "Psalm 2 has no title, but Acts 4:25 attributes it to David. It is a royal psalm about the king the LORD has installed on Zion, quoted in the New Testament of Jesus (Acts 13:33; Hebrews 1:5).",
+    "culture": [
+      {
+        "title": "The king as son",
+        "reference": "Psalms 2:7",
+        "text": "In the ancient Near East, kings were often called sons of their gods. God promised David's heir, \"I will be his father, and he shall be my son\" (2 Samuel 7:14)."
+      },
+      {
+        "title": "A rod of iron and pottery",
+        "reference": "Psalms 2:9",
+        "text": "Egyptian kings had the names of enemies written on clay jars and smashed them in a ritual. Breaking \"like a potter's vessel\" pictures total defeat."
+      },
+      {
+        "title": "Kiss the Son",
+        "reference": "Psalms 2:12",
+        "text": "Kissing a king's hand or feet was a gesture of homage and submission."
+      }
+    ]
+  },
+  "Psalms 3": {
+    "audience": "The title links this psalm to David fleeing from his son Absalom (2 Samuel 15–18). It is the first psalm with a title and the first with \"Selah.\"",
+    "culture": [
+      {
+        "title": "Selah",
+        "reference": "Psalms 3:2",
+        "text": "Selah appears 71 times in the Psalms. Its meaning is uncertain; it is usually taken as a musical or liturgical direction, perhaps a pause."
+      },
+      {
+        "title": "A shield about me",
+        "reference": "Psalms 3:3",
+        "text": "Small round shields and large body shields protected soldiers in battle. Calling God \"a shield for me\" was a common image of protection."
+      }
+    ]
+  },
+  "Psalms 4": {
+    "audience": "Titled \"To the chief Musician on Neginoth, A Psalm of David.\" Neginoth means stringed instruments. Israel used this as an evening prayer (Psalm 4:8).",
+    "culture": [
+      {
+        "title": "The chief Musician",
+        "reference": "Psalms 4:1",
+        "text": "Fifty-five psalms are addressed \"to the chief Musician,\" probably the leader of the temple musicians, showing these psalms were used in public worship."
+      },
+      {
+        "title": "Corn and wine",
+        "reference": "Psalms 4:7",
+        "text": "A good harvest of grain and grapes was the main source of joy and security in a farming society."
+      }
+    ]
+  },
+  "Psalms 5": {
+    "audience": "Titled \"To the chief Musician upon Nehiloth,\" probably wind instruments. It is a morning prayer: \"in the morning will I direct my prayer unto thee\" (Psalm 5:3).",
+    "culture": [
+      {
+        "title": "Morning prayer and sacrifice",
+        "reference": "Psalms 5:3",
+        "text": "A lamb was offered every morning at the sanctuary (Numbers 28:4). The word for \"direct\" is used for laying out wood or a sacrifice on the altar."
+      },
+      {
+        "title": "An open sepulchre",
+        "reference": "Psalms 5:9",
+        "text": "\"Their throat is an open sepulchre\"—a grave left open gave off the stench of death. Paul quotes this verse in Romans 3:13."
+      }
+    ]
+  },
+  "Psalms 6": {
+    "audience": "Titled \"upon Sheminith,\" perhaps an eight-stringed instrument or the lower octave. This is the first of seven psalms the church has traditionally called Penitential Psalms (6, 32, 38, 51, 102, 130, 143).",
+    "culture": [
+      {
+        "title": "Tears on the bed",
+        "reference": "Psalms 6:6",
+        "text": "\"All the night make I my bed to swim; I water my couch with my tears.\" Loud weeping was the normal expression of grief."
+      },
+      {
+        "title": "Remembering God in death",
+        "reference": "Psalms 6:5",
+        "text": "\"In death there is no remembrance of thee.\" Israelites thought of Sheol, the place of the dead, as a place of silence."
+      }
+    ]
+  },
+  "Psalms 7": {
+    "audience": "Titled \"Shiggaion of David... concerning the words of Cush the Benjamite.\" Cush is not mentioned elsewhere; Benjamin was Saul's tribe.",
+    "culture": [
+      {
+        "title": "Shiggaion",
+        "reference": "Psalms 7:1",
+        "text": "Shiggaion is a musical or literary term of uncertain meaning, used again only in Habakkuk 3:1."
+      },
+      {
+        "title": "Lions tearing prey",
+        "reference": "Psalms 7:2",
+        "text": "Lions still lived in the land in biblical times. A lion tearing its prey was a familiar picture of a merciless enemy."
+      },
+      {
+        "title": "Bow and arrows",
+        "reference": "Psalms 7:12-13",
+        "text": "God is pictured as a warrior who whets his sword and bends his bow."
+      }
+    ]
+  },
+  "Psalms 8": {
+    "audience": "Titled \"upon Gittith,\" probably an instrument or tune from Gath. Hebrews 2:6–8 quotes it, and Jesus quotes verse 2 (Matthew 21:16).",
+    "culture": [
+      {
+        "title": "The night sky",
+        "reference": "Psalms 8:3",
+        "text": "In ancient Israel, without artificial light, the moon and stars were brilliantly visible. Neighboring peoples worshipped them; this psalm calls them \"the work of thy fingers.\""
+      },
+      {
+        "title": "Dominion over animals",
+        "reference": "Psalms 8:6-8",
+        "text": "The psalm lists sheep, oxen, wild beasts, birds, and fish—the creatures of field, wilderness, sky, and sea placed under human care (Genesis 1:26)."
+      }
+    ]
+  },
+  "Psalms 9": {
+    "audience": "Titled \"upon Muthlabben,\" a term of uncertain meaning. Psalms 9 and 10 together form a broken acrostic, with verses beginning with successive letters of the Hebrew alphabet; the Greek translation treats them as one psalm.",
+    "culture": [
+      {
+        "title": "The gates of Zion",
+        "reference": "Psalms 9:14",
+        "text": "The psalmist will praise God \"in the gates of the daughter of Zion\"—the city gates were the public meeting place."
+      },
+      {
+        "title": "A pit and a net",
+        "reference": "Psalms 9:15",
+        "text": "Hunters dug pits and set nets for animals. The nations fall into the pit they dug for others."
+      }
+    ]
+  },
+  "Psalms 10": {
+    "audience": "Psalm 10 has no title and continues the acrostic of Psalm 9. It describes the wicked who prey on the poor.",
+    "culture": [
+      {
+        "title": "Lurking in villages",
+        "reference": "Psalms 10:8-9",
+        "text": "The wicked lie in wait in the villages like a lion in its den, to catch the poor. Ambush on lonely roads and outlying villages was a real danger."
+      }
+    ]
+  },
+  "Psalms 11": {
+    "audience": "A psalm of David. Friends urge him to \"flee as a bird to your mountain\" (Psalm 11:1); he answers that he trusts the LORD.",
+    "culture": [
+      {
+        "title": "Fleeing to the mountains",
+        "reference": "Psalms 11:1",
+        "text": "The rugged hills and caves offered refuge from enemies, as when David hid from Saul (1 Samuel 23:14)."
+      },
+      {
+        "title": "A cup of fire",
+        "reference": "Psalms 11:6",
+        "text": "\"The portion of their cup\" is a person's allotted fate. The image of fire and brimstone recalls Sodom (Genesis 19:24)."
+      }
+    ]
+  },
+  "Psalms 12": {
+    "audience": "Titled \"upon Sheminith, A Psalm of David.\" It laments a society where \"the faithful fail from among the children of men\" (Psalm 12:1).",
+    "culture": [
+      {
+        "title": "Silver refined seven times",
+        "reference": "Psalms 12:6",
+        "text": "Silver was refined in a clay furnace to remove impurities. Seven times purified means completely pure."
+      },
+      {
+        "title": "Flattering lips",
+        "reference": "Psalms 12:2-3",
+        "text": "Speech \"with a double heart\" describes people who say one thing and mean another."
+      }
+    ]
+  },
+  "Psalms 13": {
+    "audience": "A psalm of David that asks \"How long?\" four times (Psalm 13:1–2) and ends in trust—a short lament Israel could pray in times of distress.",
+    "culture": [
+      {
+        "title": "Light to the eyes",
+        "reference": "Psalms 13:3",
+        "text": "\"Lighten mine eyes, lest I sleep the sleep of death.\" Dim eyes were a sign of illness and weakness (1 Samuel 14:27)."
+      }
+    ]
+  },
+  "Psalms 14": {
+    "audience": "A psalm of David, repeated with small changes as Psalm 53. Paul quotes it in Romans 3:10–12.",
+    "culture": [
+      {
+        "title": "The fool",
+        "reference": "Psalms 14:1",
+        "text": "In Hebrew wisdom writing the fool is not someone unintelligent but someone who lives as though God does not matter."
+      },
+      {
+        "title": "Eating up the people",
+        "reference": "Psalms 14:4",
+        "text": "Oppressors \"eat up my people as they eat bread\"—they exploit the poor as casually as a daily meal."
+      }
+    ]
+  },
+  "Psalms 15": {
+    "audience": "A psalm of David asking who may dwell in God's tabernacle and holy hill. It may have been used by worshippers approaching the sanctuary.",
+    "culture": [
+      {
+        "title": "Entrance questions",
+        "reference": "Psalms 15:1",
+        "text": "Temples in the ancient Near East sometimes posted requirements for those who entered. Psalms 15 and 24 both ask who may come into God's presence."
+      },
+      {
+        "title": "No interest, no bribes",
+        "reference": "Psalms 15:5",
+        "text": "The worshipper must not lend at interest to the poor (Exodus 22:25) or take a bribe against the innocent."
+      }
+    ]
+  },
+  "Psalms 16": {
+    "audience": "Titled \"Michtam of David,\" a term of uncertain meaning used for six psalms (16, 56–60). Peter and Paul both quote verse 10 of Jesus' resurrection (Acts 2:25–31; 13:35).",
+    "culture": [
+      {
+        "title": "Boundary lines",
+        "reference": "Psalms 16:6",
+        "text": "\"The lines are fallen unto me in pleasant places.\" Land was measured with cords and assigned by lot when Israel divided the land (Joshua 18:8–10)."
+      },
+      {
+        "title": "Drink offerings of blood",
+        "reference": "Psalms 16:4",
+        "text": "Libations—liquids poured out to gods—were part of worship across the ancient world. The psalmist will not pour out offerings to other gods."
+      }
+    ]
+  },
+  "Psalms 17": {
+    "audience": "Titled \"A Prayer of David.\" It asks God to hear a just cause and protect the psalmist from enemies.",
+    "culture": [
+      {
+        "title": "The apple of the eye",
+        "reference": "Psalms 17:8",
+        "text": "\"The apple of the eye\" is the pupil, the part a person protects most instinctively (Deuteronomy 32:10)."
+      },
+      {
+        "title": "Under the shadow of wings",
+        "reference": "Psalms 17:8",
+        "text": "Birds shelter their young under their wings. The image may also recall the cherubim's wings over the ark (Exodus 25:20)."
+      }
+    ]
+  },
+  "Psalms 18": {
+    "audience": "The title links this psalm to the day the LORD delivered David from Saul and all his enemies. It appears again, with small differences, in 2 Samuel 22.",
+    "culture": [
+      {
+        "title": "Horn of salvation",
+        "reference": "Psalms 18:2",
+        "text": "An animal's horn was a symbol of strength. Zacharias uses the phrase \"an horn of salvation\" of Jesus (Luke 1:69)."
+      },
+      {
+        "title": "Storm theophany",
+        "reference": "Psalms 18:7-15",
+        "text": "God comes in earthquake, smoke, fire, darkness, thunder, and lightning, as at Sinai (Exodus 19:16–18)."
+      },
+      {
+        "title": "Bow of steel",
+        "reference": "Psalms 18:34",
+        "text": "\"A bow of steel\" means a bow of bronze, or a bow reinforced with metal, which took great strength to bend."
+      }
+    ]
+  },
+  "Psalms 19": {
+    "audience": "A psalm of David that praises God first in creation and then in the law. Paul quotes verse 4 in Romans 10:18.",
+    "culture": [
+      {
+        "title": "The sun as bridegroom",
+        "reference": "Psalms 19:4-5",
+        "text": "The sun comes out like a bridegroom from his chamber and runs like a strong man. Many neighboring peoples worshipped the sun as a god; here it is God's creation."
+      },
+      {
+        "title": "Honey from the comb",
+        "reference": "Psalms 19:10",
+        "text": "Honey from the honeycomb was the sweetest food known. God's judgments are sweeter."
+      }
+    ]
+  },
+  "Psalms 20": {
+    "audience": "A psalm of David, a prayer for the king before battle. The people pray for the king, and the king answers.",
+    "culture": [
+      {
+        "title": "Chariots and horses",
+        "reference": "Psalms 20:7",
+        "text": "\"Some trust in chariots, and some in horses.\" Chariot forces were the strongest weapons of the time; Israel was warned against relying on them (Deuteronomy 17:16)."
+      },
+      {
+        "title": "Banners",
+        "reference": "Psalms 20:5",
+        "text": "Armies marched under raised banners, a sign of victory and identity."
+      }
+    ]
+  },
+  "Psalms 21": {
+    "audience": "A psalm of David giving thanks for the king's victory, paired with the prayer of Psalm 20.",
+    "culture": [
+      {
+        "title": "A crown of pure gold",
+        "reference": "Psalms 21:3",
+        "text": "Crowns of gold were placed on kings at coronation. David took the Ammonite king's gold crown at Rabbah (2 Samuel 12:30)."
+      },
+      {
+        "title": "A fiery oven",
+        "reference": "Psalms 21:9",
+        "text": "Ovens of clay were heated with fire for baking bread. The image is of enemies consumed."
+      }
+    ]
+  },
+  "Psalms 22": {
+    "audience": "Titled \"upon Aijeleth Shahar,\" ‘the hind of the morning,’ probably a tune. Jesus cried its first words from the cross (Matthew 27:46), and the Gospels quote it of his crucifixion (John 19:24).",
+    "culture": [
+      {
+        "title": "Bulls of Bashan",
+        "reference": "Psalms 22:12",
+        "text": "Bashan, east of the Sea of Galilee, was famous for strong, well-fed cattle (Amos 4:1)."
+      },
+      {
+        "title": "Dogs",
+        "reference": "Psalms 22:16",
+        "text": "In the ancient Near East, dogs were mostly scavengers roaming in packs, not pets. Calling enemies dogs was an insult."
+      },
+      {
+        "title": "Casting lots for clothing",
+        "reference": "Psalms 22:18",
+        "text": "Executioners took the clothing of the condemned. The soldiers at the cross cast lots for Jesus' coat (John 19:23–24)."
+      }
+    ]
+  },
+  "Psalms 23": {
+    "audience": "A psalm of David, who had been a shepherd (1 Samuel 16:11). Readers knew the shepherd's work firsthand: leading flocks to pasture and water and guarding them at night.",
+    "culture": [
+      {
+        "title": "Rod and staff",
+        "reference": "Psalms 23:4",
+        "text": "The shepherd's rod was a club for defending the flock; the staff was a long pole for guiding sheep and pulling them from danger."
+      },
+      {
+        "title": "Still waters",
+        "reference": "Psalms 23:2",
+        "text": "Sheep are reluctant to drink from fast-flowing water. A shepherd looked for quiet pools."
+      },
+      {
+        "title": "Anointing the head",
+        "reference": "Psalms 23:5",
+        "text": "A host honored a guest by anointing his head with oil (Luke 7:46). A table prepared and a full cup describe generous hospitality."
+      }
+    ]
+  },
+  "Psalms 24": {
+    "audience": "A psalm of David that may have been sung as the ark entered Jerusalem (2 Samuel 6). It asks who may ascend the hill of the LORD and calls on the gates to open for the King of glory.",
+    "culture": [
+      {
+        "title": "Gates lifting up their heads",
+        "reference": "Psalms 24:7",
+        "text": "City gates had lintels above the entrance. The gates are called to lift their heads to welcome the King."
+      },
+      {
+        "title": "Clean hands",
+        "reference": "Psalms 24:4",
+        "text": "Worshippers washed before approaching God, and priests washed at the laver (Exodus 30:19–20). \"Clean hands\" also means innocent actions."
+      }
+    ]
+  },
+  "Psalms 25": {
+    "audience": "A psalm of David written as an acrostic: each verse begins with the next letter of the Hebrew alphabet. Acrostics helped worshippers memorize prayers.",
+    "culture": [
+      {
+        "title": "A foot in the net",
+        "reference": "Psalms 25:15",
+        "text": "Hunters' nets caught animals by the feet. The psalmist trusts God to \"pluck my feet out of the net.\""
+      }
+    ]
+  },
+  "Psalms 26": {
+    "audience": "A psalm of David, a prayer of someone who claims integrity and loves God's house.",
+    "culture": [
+      {
+        "title": "Washing hands in innocency",
+        "reference": "Psalms 26:6",
+        "text": "Washing hands could declare innocence, as the elders did in Deuteronomy 21:6–7. Pilate later washed his hands before the crowd (Matthew 27:24)."
+      },
+      {
+        "title": "Compassing the altar",
+        "reference": "Psalms 26:6",
+        "text": "Worshippers walked in procession around the altar with songs of thanksgiving."
+      }
+    ]
+  },
+  "Psalms 27": {
+    "audience": "A psalm of David expressing trust in God and longing to \"dwell in the house of the LORD all the days of my life\" (Psalm 27:4).",
+    "culture": [
+      {
+        "title": "Hidden in the tabernacle",
+        "reference": "Psalms 27:5",
+        "text": "Guests in a tent were under the host's protection. The psalmist pictures God hiding him in his tabernacle."
+      },
+      {
+        "title": "Set upon a rock",
+        "reference": "Psalms 27:5",
+        "text": "A rock was a safe height above floods and attackers—a common image for security."
+      }
+    ]
+  },
+  "Psalms 28": {
+    "audience": "A psalm of David, a prayer for help and then thanksgiving for being heard.",
+    "culture": [
+      {
+        "title": "Lifting hands toward the oracle",
+        "reference": "Psalms 28:2",
+        "text": "Worshippers lifted their hands toward the most holy place (\"thy holy oracle\") when they prayed."
+      },
+      {
+        "title": "The pit",
+        "reference": "Psalms 28:1",
+        "text": "\"Them that go down into the pit\" means the dead. A pit or cistern was also used as a prison (Genesis 37:24)."
+      }
+    ]
+  },
+  "Psalms 29": {
+    "audience": "A psalm of David describing a thunderstorm as \"the voice of the LORD\" seven times. Canaanites credited storms to Baal; this psalm gives them to the LORD.",
+    "culture": [
+      {
+        "title": "Cedars of Lebanon",
+        "reference": "Psalms 29:5",
+        "text": "The cedars of Lebanon were the tallest, strongest trees known in the region. A storm breaking them showed overwhelming power."
+      },
+      {
+        "title": "Sirion",
+        "reference": "Psalms 29:6",
+        "text": "Sirion is the Sidonian name for Mount Hermon (Deuteronomy 3:9), the highest mountain near Israel."
+      },
+      {
+        "title": "Beauty of holiness",
+        "reference": "Psalms 29:2",
+        "text": "\"Worship the LORD in the beauty of holiness\" may refer to holy garments worn for worship (2 Chronicles 20:21)."
+      }
+    ]
+  },
+  "Psalms 30": {
+    "audience": "Titled \"A Psalm and Song at the dedication of the house of David.\" It gives thanks for being healed and brought up from the grave.",
+    "culture": [
+      {
+        "title": "Sackcloth to dancing",
+        "reference": "Psalms 30:11",
+        "text": "Sackcloth, a coarse cloth of goat hair, was worn in mourning. The psalmist's sackcloth is replaced with gladness."
+      },
+      {
+        "title": "Dedicating a house",
+        "reference": "Psalms 30:1",
+        "text": "Israel's law mentions dedicating a new house (Deuteronomy 20:5). Dedications were marked with celebration."
+      }
+    ]
+  },
+  "Psalms 31": {
+    "audience": "A psalm of David. Jesus prayed its words \"Into thine hand I commit my spirit\" as he died (Psalm 31:5; Luke 23:46).",
+    "culture": [
+      {
+        "title": "A broken vessel",
+        "reference": "Psalms 31:12",
+        "text": "Broken pottery was thrown away as useless. The psalmist feels forgotten \"like a broken vessel.\""
+      },
+      {
+        "title": "Times in God's hand",
+        "reference": "Psalms 31:15",
+        "text": "\"My times are in thy hand\"—the events of one's life are under God's control."
+      }
+    ]
+  },
+  "Psalms 32": {
+    "audience": "Titled \"A Psalm of David, Maschil.\" Paul quotes its opening blessing on forgiveness in Romans 4:7–8.",
+    "culture": [
+      {
+        "title": "Maschil",
+        "reference": "Psalms 32:1",
+        "text": "Maschil, used in thirteen psalm titles, probably means a skillful or instructive psalm."
+      },
+      {
+        "title": "Bit and bridle",
+        "reference": "Psalms 32:9",
+        "text": "Horses and mules were controlled with a bit in the mouth and a bridle. The psalmist warns against needing such force."
+      },
+      {
+        "title": "Summer drought",
+        "reference": "Psalms 32:4",
+        "text": "\"My moisture is turned into the drought of summer\"—the long dry season in Israel parched the land from May to October."
+      }
+    ]
+  },
+  "Psalms 33": {
+    "audience": "Psalm 33 has no title. It calls the righteous to sing a new song to the God who made the heavens by his word.",
+    "culture": [
+      {
+        "title": "Ten-stringed instruments",
+        "reference": "Psalms 33:2",
+        "text": "The psaltery and \"an instrument of ten strings\" were stringed instruments used in temple worship."
+      },
+      {
+        "title": "Waters in a heap",
+        "reference": "Psalms 33:7",
+        "text": "God gathers the sea waters \"as an heap,\" recalling the crossing of the Red Sea (Exodus 15:8)."
+      }
+    ]
+  },
+  "Psalms 34": {
+    "audience": "The title links this psalm to David pretending madness before Abimelech (Achish of Gath; 1 Samuel 21:10–15). It is an acrostic, and John quotes verse 20 at the crucifixion (John 19:36).",
+    "culture": [
+      {
+        "title": "An encamping angel",
+        "reference": "Psalms 34:7",
+        "text": "\"The angel of the LORD encampeth round about them\"—like an army camped around a city to protect it (2 Kings 6:17)."
+      },
+      {
+        "title": "Young lions hungry",
+        "reference": "Psalms 34:10",
+        "text": "Even strong young lions sometimes go hungry, but those who seek the LORD will not lack."
+      }
+    ]
+  },
+  "Psalms 35": {
+    "audience": "A psalm of David asking God to fight against his accusers. Jesus quotes \"They hated me without a cause\" from this psalm or Psalm 69 (John 15:25).",
+    "culture": [
+      {
+        "title": "Shield and buckler",
+        "reference": "Psalms 35:2",
+        "text": "The buckler was a small round shield and the shield a large one covering the body. God is asked to arm himself on the psalmist's behalf."
+      },
+      {
+        "title": "Fasting in sackcloth for the sick",
+        "reference": "Psalms 35:13",
+        "text": "When his enemies were sick, the psalmist wore sackcloth and fasted for them—signs of mourning and prayer."
+      }
+    ]
+  },
+  "Psalms 36": {
+    "audience": "Titled \"A Psalm of David the servant of the LORD.\" It contrasts the deceit of the wicked with God's lovingkindness.",
+    "culture": [
+      {
+        "title": "Fountain of life",
+        "reference": "Psalms 36:9",
+        "text": "A spring of running water meant life in a dry land (Jeremiah 2:13)."
+      },
+      {
+        "title": "Rivers of pleasures",
+        "reference": "Psalms 36:8",
+        "text": "\"The river of thy pleasures\" uses the same root as Eden. God's house is pictured as abundant as a feast."
+      }
+    ]
+  },
+  "Psalms 37": {
+    "audience": "A psalm of David, written as an acrostic and in the style of wisdom sayings. Jesus' words \"the meek... shall inherit the earth\" echo verse 11 (Matthew 5:5).",
+    "culture": [
+      {
+        "title": "Inheriting the land",
+        "reference": "Psalms 37:11",
+        "text": "Land was a family's inheritance and livelihood. \"Inherit the earth\" can also be read \"inherit the land.\""
+      },
+      {
+        "title": "A green bay tree",
+        "reference": "Psalms 37:35",
+        "text": "The wicked spread like \"a green bay tree\"—a native tree flourishing in its own soil—then suddenly disappear."
+      }
+    ]
+  },
+  "Psalms 38": {
+    "audience": "Titled \"A Psalm of David, to bring to remembrance.\" It is a prayer of someone suffering illness and isolation because of sin.",
+    "culture": [
+      {
+        "title": "Friends standing far off",
+        "reference": "Psalms 38:11",
+        "text": "People with serious disease were often avoided for fear of uncleanness or contagion (Leviticus 13:46)."
+      }
+    ]
+  },
+  "Psalms 39": {
+    "audience": "Titled \"To the chief Musician, even to Jeduthun.\" Jeduthun was one of David's chief musicians (1 Chronicles 16:41).",
+    "culture": [
+      {
+        "title": "A handbreadth",
+        "reference": "Psalms 39:5",
+        "text": "A handbreadth (the width of four fingers) was one of the smallest units of length—a picture of how short life is."
+      },
+      {
+        "title": "A stranger and sojourner",
+        "reference": "Psalms 39:12",
+        "text": "A sojourner was a resident foreigner without land rights. The psalmist sees himself as a guest on earth, as all his fathers were."
+      }
+    ]
+  },
+  "Psalms 40": {
+    "audience": "A psalm of David. Hebrews 10:5–7 quotes verses 6–8 of Christ coming to do God's will.",
+    "culture": [
+      {
+        "title": "Miry clay",
+        "reference": "Psalms 40:2",
+        "text": "An empty cistern had mud at the bottom; Jeremiah sank into the mire of one (Jeremiah 38:6)."
+      },
+      {
+        "title": "Ears opened",
+        "reference": "Psalms 40:6",
+        "text": "\"Mine ears hast thou opened\" (literally ‘dug’) may recall the servant whose ear was pierced to serve for life (Exodus 21:6)."
+      },
+      {
+        "title": "The volume of the book",
+        "reference": "Psalms 40:7",
+        "text": "\"The volume of the book\" is a scroll, the form books took before bound pages."
+      }
+    ]
+  },
+  "Psalms 41": {
+    "audience": "A psalm of David that closes Book I of the Psalms with a blessing: \"Blessed be the LORD God of Israel... Amen, and Amen\" (Psalm 41:13). Jesus applied verse 9 to Judas (John 13:18).",
+    "culture": [
+      {
+        "title": "Eating bread together",
+        "reference": "Psalms 41:9",
+        "text": "Sharing bread created a bond of loyalty. Betrayal by one who ate at your table was especially bitter."
+      },
+      {
+        "title": "Lifting up the heel",
+        "reference": "Psalms 41:9",
+        "text": "Lifting the heel against someone was a gesture of contempt or a picture of a horse kicking."
+      }
+    ]
+  },
+  "Psalms 42": {
+    "audience": "Psalm 42 opens Book II and is titled \"Maschil, for the sons of Korah,\" a family of Levite singers. Psalms 42 and 43 share a refrain and may have been one poem.",
+    "culture": [
+      {
+        "title": "Panting for water",
+        "reference": "Psalms 42:1",
+        "text": "Deer search the dry hills for streams in the summer. The psalmist thirsts for God in the same way."
+      },
+      {
+        "title": "Going with the multitude",
+        "reference": "Psalms 42:4",
+        "text": "Pilgrims traveled together to Jerusalem for the feasts, singing as they went."
+      },
+      {
+        "title": "Hermon and the Jordan",
+        "reference": "Psalms 42:6",
+        "text": "The psalmist remembers God \"from the land of Jordan, and of the Hermonites\"—far in the north, away from Jerusalem."
+      }
+    ]
+  },
+  "Psalms 43": {
+    "audience": "Psalm 43 has no title and repeats the refrain of Psalm 42: \"Why art thou cast down, O my soul?\"",
+    "culture": [
+      {
+        "title": "The altar and the harp",
+        "reference": "Psalms 43:4",
+        "text": "The psalmist longs to go to the altar of God and praise him with the harp, as worshippers did at the temple."
+      }
+    ]
+  },
+  "Psalms 44": {
+    "audience": "Titled \"for the sons of Korah, Maschil.\" It is a national lament after defeat. Paul quotes verse 22, \"we are counted as sheep for the slaughter\" (Romans 8:36).",
+    "culture": [
+      {
+        "title": "Sold for nothing",
+        "reference": "Psalms 44:12",
+        "text": "Captives of war were sold as slaves. The psalmist says God has sold his people \"for nought.\""
+      },
+      {
+        "title": "A byword",
+        "reference": "Psalms 44:14",
+        "text": "A defeated nation became \"a byword\"—a proverb of shame—among its neighbors."
+      }
+    ]
+  },
+  "Psalms 45": {
+    "audience": "Titled \"upon Shoshannim... A Song of loves,\" it celebrates a royal wedding. Hebrews 1:8–9 quotes verses 6–7 of the Son.",
+    "culture": [
+      {
+        "title": "Myrrh, aloes, and cassia",
+        "reference": "Psalms 45:8",
+        "text": "The king's garments are scented with myrrh, aloes, and cassia—costly imported perfumes."
+      },
+      {
+        "title": "Ivory palaces",
+        "reference": "Psalms 45:8",
+        "text": "Palaces decorated with carved ivory panels were a sign of royal wealth; such ivories have been found at Samaria."
+      },
+      {
+        "title": "The daughter of Tyre",
+        "reference": "Psalms 45:12",
+        "text": "Tyre was a wealthy trading city. Gifts from foreign nations at a royal wedding showed the king's standing."
+      }
+    ]
+  },
+  "Psalms 46": {
+    "audience": "Titled \"for the sons of Korah... upon Alamoth,\" perhaps meaning for high voices. Martin Luther's hymn \"A Mighty Fortress Is Our God\" is based on it.",
+    "culture": [
+      {
+        "title": "A river in the city",
+        "reference": "Psalms 46:4",
+        "text": "Jerusalem had no great river, only the Gihon spring. \"A river, the streams whereof shall make glad the city of God\" pictures God's presence as a source of life."
+      },
+      {
+        "title": "Burning chariots",
+        "reference": "Psalms 46:9",
+        "text": "Victors burned captured chariots so they could not be used again (Joshua 11:6)."
+      }
+    ]
+  },
+  "Psalms 47": {
+    "audience": "Titled \"for the sons of Korah.\" It celebrates the LORD as king over all the earth, \"gone up with a shout\" (Psalm 47:5).",
+    "culture": [
+      {
+        "title": "Clapping and shouting",
+        "reference": "Psalms 47:1",
+        "text": "People clapped and shouted when a king was crowned (2 Kings 11:12)."
+      },
+      {
+        "title": "Trumpet at enthronement",
+        "reference": "Psalms 47:5",
+        "text": "Trumpets were blown when a king was proclaimed (1 Kings 1:39)."
+      }
+    ]
+  },
+  "Psalms 48": {
+    "audience": "Titled \"A Song and Psalm for the sons of Korah.\" It praises Zion, the city of God, and invites people to walk around it and count its towers.",
+    "culture": [
+      {
+        "title": "The sides of the north",
+        "reference": "Psalms 48:2",
+        "text": "Mount Zion is called beautiful \"on the sides of the north.\" In Canaanite texts, Zaphon (‘north’) was the mountain of the gods."
+      },
+      {
+        "title": "Ships of Tarshish",
+        "reference": "Psalms 48:7",
+        "text": "Ships of Tarshish were the largest seagoing merchant ships. An east wind could wreck them."
+      }
+    ]
+  },
+  "Psalms 49": {
+    "audience": "Titled \"for the sons of Korah.\" It is a wisdom psalm addressed to \"all ye people\" (Psalm 49:1), rich and poor alike.",
+    "culture": [
+      {
+        "title": "A ransom for a life",
+        "reference": "Psalms 49:7-8",
+        "text": "The law allowed a ransom in some cases (Exodus 21:30), but no one can pay God a ransom for another's life."
+      },
+      {
+        "title": "Lands called after their names",
+        "reference": "Psalms 49:11",
+        "text": "The wealthy named their estates after themselves, hoping to be remembered."
+      },
+      {
+        "title": "A riddle on the harp",
+        "reference": "Psalms 49:4",
+        "text": "Wisdom was sometimes taught through \"dark sayings\" (riddles) sung with music."
+      }
+    ]
+  },
+  "Psalms 50": {
+    "audience": "The first psalm titled \"A Psalm of Asaph,\" one of David's chief musicians (1 Chronicles 16:5). It pictures God calling his people to judgment.",
+    "culture": [
+      {
+        "title": "The cattle on a thousand hills",
+        "reference": "Psalms 50:10",
+        "text": "God owns \"every beast of the forest, and the cattle upon a thousand hills.\" Many peoples believed sacrifices fed their gods; God says he needs nothing (Psalm 50:12–13)."
+      },
+      {
+        "title": "Sacrifice of thanksgiving",
+        "reference": "Psalms 50:14",
+        "text": "The thank offering was a peace offering eaten by the worshipper in celebration (Leviticus 7:12–15)."
+      }
+    ]
+  }
+}

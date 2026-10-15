@@ -1,0 +1,647 @@
+{
+  "Job 1": {
+    "audience": "Job is set in the land of Uz, outside Israel, and its hero is not an Israelite. Readers in Israel would hear it as a story about a righteous man known across the East (Job 1:3); Ezekiel names Job alongside Noah and Daniel (Ezekiel 14:14).",
+    "culture": [
+      {
+        "title": "Wealth in livestock",
+        "reference": "Job 1:3",
+        "text": "Job's wealth is counted in sheep, camels, oxen, she-asses, and servants—the measure of riches among herders of the region."
+      },
+      {
+        "title": "A father's sacrifices",
+        "reference": "Job 1:5",
+        "text": "Job offers burnt offerings for his children himself, acting as priest for his family as the patriarchs did before Israel had priests."
+      },
+      {
+        "title": "Raiders",
+        "reference": "Job 1:15-17",
+        "text": "Sabeans and Chaldeans raid Job's herds. Desert raiders taking livestock were a constant danger in the borderlands."
+      }
+    ]
+  },
+  "Job 2": {
+    "audience": "Job's three friends come from Teman, Shuah, and Naamah (Job 2:11). Teman was in Edom, known for its wise men (Jeremiah 49:7).",
+    "culture": [
+      {
+        "title": "Sitting in the ashes",
+        "reference": "Job 2:8",
+        "text": "Job sits among the ashes—probably the town's rubbish heap, where outcasts gathered—and scrapes his sores with a broken piece of pottery."
+      },
+      {
+        "title": "Seven days of silence",
+        "reference": "Job 2:13",
+        "text": "The friends sit with Job on the ground for seven days and nights without speaking. Seven days was a customary period of mourning (Genesis 50:10)."
+      }
+    ]
+  },
+  "Job 3": {
+    "audience": "From this chapter to Job 42:6 the book is poetry. Readers would hear Job curse the day of his birth, as Jeremiah later did (Jeremiah 20:14–18).",
+    "culture": [
+      {
+        "title": "Leviathan roused",
+        "reference": "Job 3:8",
+        "text": "Job calls on those who \"raise up their mourning\"—in the Hebrew, who rouse Leviathan. Ancient Near Eastern myths spoke of sea monsters that could swallow the sun."
+      },
+      {
+        "title": "Rest in the grave",
+        "reference": "Job 3:17-19",
+        "text": "Job pictures the dead—kings, prisoners, small and great—lying together at rest. Israelites thought of the dead as gathered in Sheol."
+      }
+    ]
+  },
+  "Job 4": {
+    "audience": "Eliphaz the Temanite speaks first, the oldest and most respected of the friends. Readers would hear him describe a vision in the night.",
+    "culture": [
+      {
+        "title": "Wisdom from observation",
+        "reference": "Job 4:8",
+        "text": "\"They that plow iniquity, and sow wickedness, reap the same\"—Eliphaz draws on the farming image common in wisdom sayings (compare Proverbs 22:8; Galatians 6:7)."
+      },
+      {
+        "title": "Houses of clay",
+        "reference": "Job 4:19",
+        "text": "Humans are those \"that dwell in houses of clay\"—mud-brick houses that crumble, a picture of how fragile life is."
+      }
+    ]
+  },
+  "Job 5": {
+    "audience": "Paul quotes Eliphaz's words, \"He taketh the wise in their own craftiness\" (Job 5:13), in 1 Corinthians 3:19.",
+    "culture": [
+      {
+        "title": "Children at the gate",
+        "reference": "Job 5:4",
+        "text": "The gate was where legal cases were decided. Children \"crushed in the gate\" have no one to defend them in court."
+      },
+      {
+        "title": "Stones of the field",
+        "reference": "Job 5:23",
+        "text": "Stony fields made farming hard. Being \"in league with the stones of the field\" pictures a land at peace with its farmer."
+      }
+    ]
+  },
+  "Job 6": {
+    "audience": "Job answers that his friends have failed him. Readers would recognize his image of desert caravans looking for water.",
+    "culture": [
+      {
+        "title": "Streams that vanish",
+        "reference": "Job 6:15-20",
+        "text": "Job compares his friends to wadis—streambeds that rush with water in the rainy season but dry up in the heat. Caravans of Tema and Sheba count on them and are disappointed."
+      },
+      {
+        "title": "Tasteless food",
+        "reference": "Job 6:6",
+        "text": "\"Can that which is unsavoury be eaten without salt?\" Salt was essential to flavor and preserve food."
+      }
+    ]
+  },
+  "Job 7": {
+    "audience": "Job describes his suffering in images readers knew from daily life: hired workers, a weaver's shuttle, and a passing cloud.",
+    "culture": [
+      {
+        "title": "A hired servant's day",
+        "reference": "Job 7:1-2",
+        "text": "Day laborers longed for evening, when work ended and wages were paid (Deuteronomy 24:15). Job's life feels like such a hard day."
+      },
+      {
+        "title": "The weaver's shuttle",
+        "reference": "Job 7:6",
+        "text": "A shuttle passes quickly back and forth through the threads on a loom. Weaving was done in most households."
+      }
+    ]
+  },
+  "Job 8": {
+    "audience": "Bildad the Shuhite appeals to the wisdom of earlier generations (Job 8:8). Readers valued tradition handed down from the fathers.",
+    "culture": [
+      {
+        "title": "Papyrus and reeds",
+        "reference": "Job 8:11-12",
+        "text": "The rush (papyrus) and the flag (reed) need marsh water; without it they wither first. Bildad compares the godless to them."
+      },
+      {
+        "title": "A spider's web",
+        "reference": "Job 8:14",
+        "text": "The trust of the hypocrite is \"a spider's web\"—something that looks like a house but cannot bear weight."
+      }
+    ]
+  },
+  "Job 9": {
+    "audience": "Job wishes for a fair hearing before God and finds none. Readers would hear him use the language of the law court.",
+    "culture": [
+      {
+        "title": "Constellations",
+        "reference": "Job 9:9",
+        "text": "Arcturus, Orion, and the Pleiades are named. Ancient peoples watched these star groups to mark the seasons."
+      },
+      {
+        "title": "A daysman",
+        "reference": "Job 9:33",
+        "text": "Job wishes for a \"daysman\"—an arbiter who could lay his hand on both parties in a dispute."
+      },
+      {
+        "title": "Swift ships",
+        "reference": "Job 9:26",
+        "text": "\"The swift ships\" are papyrus boats, light and fast, used on the Nile."
+      }
+    ]
+  },
+  "Job 10": {
+    "audience": "Job speaks directly to God about how he was made and why he is now being destroyed.",
+    "culture": [
+      {
+        "title": "Cheese-making",
+        "reference": "Job 10:10",
+        "text": "\"Hast thou not poured me out as milk, and curdled me like cheese?\" Curdling milk into cheese was a familiar household task, used here as a picture of the body's formation."
+      },
+      {
+        "title": "The land of darkness",
+        "reference": "Job 10:21-22",
+        "text": "Job describes the realm of the dead as a land of darkness and the shadow of death, \"without any order.\""
+      }
+    ]
+  },
+  "Job 11": {
+    "audience": "Zophar the Naamathite speaks most bluntly of the three friends. Readers would hear him insist that Job deserves even more than he suffers (Job 11:6).",
+    "culture": [
+      {
+        "title": "A wild ass's colt",
+        "reference": "Job 11:12",
+        "text": "The wild ass was a symbol of untamable stubbornness (Genesis 16:12)."
+      },
+      {
+        "title": "Measured by earth and sea",
+        "reference": "Job 11:8-9",
+        "text": "Zophar measures God's wisdom as higher than heaven, deeper than Sheol, longer than the earth, and broader than the sea—the full extent of the known world."
+      }
+    ]
+  },
+  "Job 12": {
+    "audience": "Job mocks his friends' wisdom and describes God overthrowing counselors, judges, kings, and priests. Readers knew such reversals from history.",
+    "culture": [
+      {
+        "title": "Wisdom of the aged",
+        "reference": "Job 12:12",
+        "text": "\"With the ancient is wisdom; and in length of days understanding.\" Elders were the recognized source of wisdom in the community."
+      },
+      {
+        "title": "Loosing the bonds of kings",
+        "reference": "Job 12:18",
+        "text": "Kings who lost power were stripped of their belts (girdles), symbols of office, and led away."
+      }
+    ]
+  },
+  "Job 13": {
+    "audience": "Job prepares to argue his case before God: \"Behold now, I have ordered my cause\" (Job 13:18).",
+    "culture": [
+      {
+        "title": "Forgers of lies",
+        "reference": "Job 13:4",
+        "text": "Job calls his friends \"forgers of lies\" and \"physicians of no value\"—healers whose remedies do not work."
+      },
+      {
+        "title": "Feet in the stocks",
+        "reference": "Job 13:27",
+        "text": "Stocks were wooden frames that locked a prisoner's feet. Jeremiah was later put in the stocks (Jeremiah 20:2)."
+      }
+    ]
+  },
+  "Job 14": {
+    "audience": "Job reflects on human life as short and full of trouble, asking, \"If a man die, shall he live again?\" (Job 14:14).",
+    "culture": [
+      {
+        "title": "A tree that sprouts again",
+        "reference": "Job 14:7-9",
+        "text": "A cut tree, especially an olive, can send up new shoots from its stump when watered. Job contrasts this with human death."
+      },
+      {
+        "title": "Sealed in a bag",
+        "reference": "Job 14:17",
+        "text": "Valuables and records were tied in bags and sealed. Job pictures his transgressions sealed up like this."
+      }
+    ]
+  },
+  "Job 15": {
+    "audience": "Eliphaz speaks again, now accusing Job directly. Readers would hear him describe the fate of the wicked in traditional terms.",
+    "culture": [
+      {
+        "title": "The east wind",
+        "reference": "Job 15:2",
+        "text": "The east wind blows hot and dry off the desert, withering crops. Filling oneself with the east wind means speaking empty, harmful words."
+      },
+      {
+        "title": "Cities in ruins",
+        "reference": "Job 15:28",
+        "text": "The wicked dwell in desolate cities and houses \"ready to become heaps\"—ruin mounds of abandoned towns."
+      }
+    ]
+  },
+  "Job 16": {
+    "audience": "Job calls his friends \"miserable comforters\" (Job 16:2) and appeals to a witness in heaven.",
+    "culture": [
+      {
+        "title": "Sackcloth sewn on",
+        "reference": "Job 16:15",
+        "text": "Job has \"sewed sackcloth upon my skin\" and defiled his horn in the dust—deep mourning and humiliation."
+      },
+      {
+        "title": "Covering blood",
+        "reference": "Job 16:18",
+        "text": "\"O earth, cover not thou my blood.\" Uncovered blood was thought to cry out for justice (Genesis 4:10)."
+      }
+    ]
+  },
+  "Job 17": {
+    "audience": "Job says his spirit is broken and the grave is ready for him. Readers would hear him describe being mocked as a byword.",
+    "culture": [
+      {
+        "title": "Striking hands",
+        "reference": "Job 17:3",
+        "text": "Striking hands sealed a pledge to stand surety for someone (Proverbs 6:1). Job asks God himself to be his surety."
+      },
+      {
+        "title": "Spat upon",
+        "reference": "Job 17:6",
+        "text": "Job says he has become one in whose face people spit—the deepest public contempt."
+      }
+    ]
+  },
+  "Job 18": {
+    "audience": "Bildad describes the fate of the wicked, whose light is put out and whose name is forgotten. Readers knew the dread of having no descendants.",
+    "culture": [
+      {
+        "title": "Snares and traps",
+        "reference": "Job 18:8-10",
+        "text": "Bildad lists hunters' tools—net, trap, snare, gin, and a hidden noose—used for catching birds and animals."
+      },
+      {
+        "title": "No name in the street",
+        "reference": "Job 18:17",
+        "text": "To have \"no name in the street\" meant no descendants to carry on one's memory."
+      }
+    ]
+  },
+  "Job 19": {
+    "audience": "Job expresses his hope: \"I know that my redeemer liveth\" (Job 19:25). Readers knew a redeemer as a kinsman who defended a family member's cause (Leviticus 25:25).",
+    "culture": [
+      {
+        "title": "Engraved in rock",
+        "reference": "Job 19:23-24",
+        "text": "Job wishes his words were written in a book, or engraved with an iron pen and lead in the rock forever. Kings carved inscriptions in rock, such as Darius' at Behistun."
+      },
+      {
+        "title": "Rejected by servants",
+        "reference": "Job 19:16",
+        "text": "Job calls his servant and gets no answer. In an honor culture, being ignored by one's own servants was a deep humiliation."
+      }
+    ]
+  },
+  "Job 20": {
+    "audience": "Zophar's second speech describes the brief triumph of the wicked. Readers would hear images of food that turns to poison inside.",
+    "culture": [
+      {
+        "title": "Venom of asps",
+        "reference": "Job 20:14-16",
+        "text": "The wicked man's food becomes \"the gall of asps\" in his stomach. Snakebite was a common danger."
+      },
+      {
+        "title": "An iron weapon and a bronze bow",
+        "reference": "Job 20:24",
+        "text": "He flees from an iron weapon and is struck by a bronze bow—bows were sometimes reinforced with metal."
+      }
+    ]
+  },
+  "Job 21": {
+    "audience": "Job answers that the wicked often prosper and die in peace. Readers would recognize the question from the Psalms (Psalm 73:3–12).",
+    "culture": [
+      {
+        "title": "Children dancing",
+        "reference": "Job 21:11-12",
+        "text": "The children of the wicked dance and play the timbrel, harp, and organ (pipe)—pictures of a happy household."
+      },
+      {
+        "title": "Guarded tombs",
+        "reference": "Job 21:32",
+        "text": "The wicked man is carried to the grave with honor and his tomb is watched over."
+      }
+    ]
+  },
+  "Job 22": {
+    "audience": "Eliphaz accuses Job of specific sins against the poor (Job 22:6–9). Readers would recognize these as the injustices condemned in the law.",
+    "culture": [
+      {
+        "title": "Taking a pledge",
+        "reference": "Job 22:6",
+        "text": "Eliphaz accuses Job of taking pledges and stripping the naked of clothing. The law required a poor man's cloak to be returned by night (Exodus 22:26)."
+      },
+      {
+        "title": "Gold of Ophir",
+        "reference": "Job 22:24",
+        "text": "Ophir was famous for fine gold (1 Kings 9:28). Eliphaz says Job should treat it as dust."
+      }
+    ]
+  },
+  "Job 23": {
+    "audience": "Job longs to find God and present his case. Readers would hear him say, \"when he hath tried me, I shall come forth as gold\" (Job 23:10).",
+    "culture": [
+      {
+        "title": "Refining gold",
+        "reference": "Job 23:10",
+        "text": "Gold was refined in a furnace to remove impurities. Testing by fire was a common image for proving character (Proverbs 17:3)."
+      },
+      {
+        "title": "Necessary food",
+        "reference": "Job 23:12",
+        "text": "Job values God's words \"more than my necessary food\"—the daily bread a person needs to live."
+      }
+    ]
+  },
+  "Job 24": {
+    "audience": "Job describes the oppression of the poor by people who move boundary stones, take widows' oxen, and drive the needy off the road.",
+    "culture": [
+      {
+        "title": "Removing landmarks",
+        "reference": "Job 24:2",
+        "text": "Moving boundary stones stole a neighbor's land, a crime condemned in the law (Deuteronomy 19:14)."
+      },
+      {
+        "title": "Treading winepresses thirsty",
+        "reference": "Job 24:11",
+        "text": "The poor make oil and tread the winepresses but suffer thirst, working for others who keep the produce."
+      }
+    ]
+  },
+  "Job 25": {
+    "audience": "Bildad's short final speech asks how a human can be righteous before God. It is the friends' last word.",
+    "culture": [
+      {
+        "title": "Worm and maggot",
+        "reference": "Job 25:6",
+        "text": "Humans are compared to a worm and a maggot—images of what is lowly and perishable."
+      }
+    ]
+  },
+  "Job 26": {
+    "audience": "Job describes God's power over the earth, the sea, and the heavens in images drawn from ancient pictures of the world.",
+    "culture": [
+      {
+        "title": "The earth on nothing",
+        "reference": "Job 26:7",
+        "text": "\"He stretcheth out the north over the empty place, and hangeth the earth upon nothing.\""
+      },
+      {
+        "title": "Smiting the proud",
+        "reference": "Job 26:12",
+        "text": "God \"smiteth through the proud\"—in the Hebrew, Rahab, a name for a sea monster representing chaos (compare Isaiah 51:9)."
+      }
+    ]
+  },
+  "Job 27": {
+    "audience": "Job swears an oath that he will hold to his integrity. Readers knew oaths \"as God liveth\" as the most solemn form of promise.",
+    "culture": [
+      {
+        "title": "An oath by God's life",
+        "reference": "Job 27:2",
+        "text": "\"As God liveth\" was a formal oath, calling on God as witness."
+      },
+      {
+        "title": "A moth's house",
+        "reference": "Job 27:18",
+        "text": "The wicked man builds his house \"as a moth\" and as a watchman's booth—flimsy shelters that do not last."
+      }
+    ]
+  },
+  "Job 28": {
+    "audience": "This poem on wisdom describes miners digging deep for precious metals. Readers would see wisdom as harder to find than anything a miner could dig out.",
+    "culture": [
+      {
+        "title": "Ancient mining",
+        "reference": "Job 28:1-4",
+        "text": "Miners dug shafts and tunnels, hanging by ropes far from where people walk. Copper was mined in the Arabah at sites such as Timna and Feinan."
+      },
+      {
+        "title": "Precious stones",
+        "reference": "Job 28:16-19",
+        "text": "The onyx, sapphire, coral, pearls, rubies, and topaz of Ethiopia are listed—treasures valued across the ancient world."
+      }
+    ]
+  },
+  "Job 29": {
+    "audience": "Job remembers his former honor in the city gate, where elders rose for him and princes fell silent. Readers would know the gate as the place of civic leadership.",
+    "culture": [
+      {
+        "title": "A seat in the street",
+        "reference": "Job 29:7",
+        "text": "Job prepared his seat in the street by the city gate, where the town's leaders sat to judge and advise."
+      },
+      {
+        "title": "Butter and oil",
+        "reference": "Job 29:6",
+        "text": "\"I washed my steps with butter, and the rock poured me out rivers of oil\"—pictures of overflowing plenty."
+      }
+    ]
+  },
+  "Job 30": {
+    "audience": "Job contrasts his past honor with his present shame, mocked even by outcasts. Readers would recognize the reversal.",
+    "culture": [
+      {
+        "title": "Outcasts in the wilderness",
+        "reference": "Job 30:3-7",
+        "text": "Job describes outcasts who live in caves and gather mallows and juniper roots for food—the lowest of society."
+      },
+      {
+        "title": "Harp turned to mourning",
+        "reference": "Job 30:31",
+        "text": "\"My harp also is turned to mourning, and my organ into the voice of them that weep.\" Instruments were played at both feasts and funerals."
+      }
+    ]
+  },
+  "Job 31": {
+    "audience": "Job takes a series of oaths of innocence, listing sins he has not committed. Readers would recognize the moral standards of the law and wisdom teaching.",
+    "culture": [
+      {
+        "title": "Oaths of innocence",
+        "reference": "Job 31:5-6",
+        "text": "Each oath has the form \"If I have done this, then let that happen to me.\" Similar declarations of innocence appear in the Egyptian Book of the Dead."
+      },
+      {
+        "title": "Kissing the hand to the sun",
+        "reference": "Job 31:26-27",
+        "text": "Job denies kissing his hand toward the sun or moon—a gesture of worship to heavenly bodies."
+      },
+      {
+        "title": "Open doors to travelers",
+        "reference": "Job 31:32",
+        "text": "\"The stranger did not lodge in the street: but I opened my doors to the traveller.\""
+      }
+    ]
+  },
+  "Job 32": {
+    "audience": "Elihu, a younger man, speaks for the first time. Readers would note that he waited because the others were older (Job 32:4).",
+    "culture": [
+      {
+        "title": "Youth waiting on age",
+        "reference": "Job 32:6-7",
+        "text": "Elihu says, \"Days should speak, and multitude of years should teach wisdom.\" The young were expected to let elders speak first."
+      },
+      {
+        "title": "New wineskins",
+        "reference": "Job 32:19",
+        "text": "Elihu feels like new wine in a sealed skin, ready to burst. Fermenting wine expands and can split wineskins (Matthew 9:17)."
+      }
+    ]
+  },
+  "Job 33": {
+    "audience": "Elihu says God speaks through dreams and through suffering. Readers would hear him speak of a messenger who intercedes and a ransom found (Job 33:23–24).",
+    "culture": [
+      {
+        "title": "Dreams and visions",
+        "reference": "Job 33:15",
+        "text": "Dreams in deep sleep were widely seen as a way divine messages came."
+      },
+      {
+        "title": "A ransom",
+        "reference": "Job 33:24",
+        "text": "A ransom was a payment to free a captive or someone condemned."
+      }
+    ]
+  },
+  "Job 34": {
+    "audience": "Elihu defends God's justice to \"ye wise men\" (Job 34:2), treating the conversation as a public hearing.",
+    "culture": [
+      {
+        "title": "Testing words",
+        "reference": "Job 34:3",
+        "text": "\"The ear trieth words, as the mouth tasteth meat\"—a proverb about discernment, also in Job 12:11."
+      }
+    ]
+  },
+  "Job 35": {
+    "audience": "Elihu argues that human righteousness or sin does not change God. Readers would hear him point to the heavens as evidence of God's greatness.",
+    "culture": [
+      {
+        "title": "Songs in the night",
+        "reference": "Job 35:10",
+        "text": "Elihu speaks of God \"who giveth songs in the night\"—comfort in times of darkness and trouble."
+      }
+    ]
+  },
+  "Job 36": {
+    "audience": "Elihu describes God's discipline and his power in the rain and the storm. Readers in a land dependent on rain would know these images well.",
+    "culture": [
+      {
+        "title": "The water cycle",
+        "reference": "Job 36:27-28",
+        "text": "God draws up drops of water that the clouds pour down as rain—a description of rain forming from water drawn upward."
+      },
+      {
+        "title": "Thunder as God's voice",
+        "reference": "Job 36:33",
+        "text": "Thunder was commonly heard as the voice of God (Psalm 29:3)."
+      }
+    ]
+  },
+  "Job 37": {
+    "audience": "Elihu describes snow, ice, whirlwind, and lightning as God's works. Readers would hear the storm build toward God speaking from the whirlwind in Job 38:1.",
+    "culture": [
+      {
+        "title": "Snow and frost",
+        "reference": "Job 37:6",
+        "text": "Snow falls on the hills of Israel in some winters. When snow and heavy rain come, farmers and herders stay in and \"every man\" stops work (Job 37:7)."
+      },
+      {
+        "title": "A molten mirror",
+        "reference": "Job 37:18",
+        "text": "The sky is compared to \"a molten looking glass\"—a polished bronze mirror, the only kind of mirror then."
+      }
+    ]
+  },
+  "Job 38": {
+    "audience": "The LORD answers Job out of the whirlwind with questions about creation that no human can answer.",
+    "culture": [
+      {
+        "title": "Foundations and a cornerstone",
+        "reference": "Job 38:4-6",
+        "text": "God describes creating the earth like a builder—measuring lines, foundations set in sockets, and a cornerstone laid with celebration."
+      },
+      {
+        "title": "Storehouses of snow and hail",
+        "reference": "Job 38:22",
+        "text": "Snow and hail are pictured as kept in heavenly storehouses, released at God's command."
+      },
+      {
+        "title": "Star groups",
+        "reference": "Job 38:31-32",
+        "text": "The Pleiades, Orion, Mazzaroth (probably the constellations of the zodiac), and Arcturus are named."
+      }
+    ]
+  },
+  "Job 39": {
+    "audience": "God points Job to wild animals that live beyond human control. Readers would know most of them from the wilderness around Israel.",
+    "culture": [
+      {
+        "title": "The ostrich",
+        "reference": "Job 39:13-16",
+        "text": "Ostriches lay their eggs in sand and seem to leave them; they run faster than a horse. They lived in the deserts near Israel in ancient times."
+      },
+      {
+        "title": "The war horse",
+        "reference": "Job 39:19-25",
+        "text": "The war horse charges at the sound of the trumpet. Horses were mainly used for chariots and cavalry, not farming."
+      },
+      {
+        "title": "Wild goats",
+        "reference": "Job 39:1",
+        "text": "Wild goats (ibex) still live in the cliffs around Engedi by the Dead Sea."
+      }
+    ]
+  },
+  "Job 40": {
+    "audience": "God challenges Job to answer, and Job places his hand over his mouth (Job 40:4). God then describes behemoth.",
+    "culture": [
+      {
+        "title": "Hand over the mouth",
+        "reference": "Job 40:4",
+        "text": "Laying the hand on the mouth was a gesture of silence and respect before a superior (Job 29:9)."
+      },
+      {
+        "title": "Behemoth",
+        "reference": "Job 40:15",
+        "text": "Behemoth is described as a huge plant-eating beast in the river reeds. Many identify it with the hippopotamus, which lived in the Nile."
+      }
+    ]
+  },
+  "Job 41": {
+    "audience": "God describes leviathan, a creature no human can tame. Readers knew leviathan from the Psalms and Isaiah (Psalm 74:14; Isaiah 27:1).",
+    "culture": [
+      {
+        "title": "Leviathan",
+        "reference": "Job 41:1",
+        "text": "Leviathan is described as a fearsome water creature with scales and terrible teeth. Many link it with the crocodile; texts from Ugarit also speak of a sea monster called Lotan."
+      },
+      {
+        "title": "Hooks and harpoons",
+        "reference": "Job 41:1-7",
+        "text": "Fishermen used hooks, cords, and barbed irons. God asks whether Job can catch leviathan with any of them."
+      }
+    ]
+  },
+  "Job 42": {
+    "audience": "The book ends in prose. Readers would see Job pray for his friends and have his fortunes restored twofold.",
+    "culture": [
+      {
+        "title": "A burnt offering for the friends",
+        "reference": "Job 42:8",
+        "text": "The friends offer seven bullocks and seven rams, and Job prays for them—as he had once offered for his children (Job 1:5)."
+      },
+      {
+        "title": "Daughters with an inheritance",
+        "reference": "Job 42:15",
+        "text": "Job's daughters, Jemima, Kezia, and Kerenhappuch, receive an inheritance along with their brothers—unusual when sons were living (compare Numbers 27:8)."
+      },
+      {
+        "title": "A piece of money",
+        "reference": "Job 42:11",
+        "text": "Each visitor gives Job \"a piece of money\" (a kesitah, an old unit of value; compare Genesis 33:19) and an earring of gold."
+      }
+    ]
+  }
+}
