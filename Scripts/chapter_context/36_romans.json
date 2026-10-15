@@ -1,0 +1,317 @@
+{
+  "Romans 1": {
+    "audience": "Paul writes to \"all that be in Rome, beloved of God\" (Romans 1:7), a church he had not yet visited (Romans 1:13). He wrote from Corinth around AD 57, before taking a collection to Jerusalem (Romans 15:25–26).",
+    "culture": [
+      {
+        "title": "Paul's letter opening",
+        "reference": "Romans 1:1-7",
+        "text": "Greek letters opened with the sender, the recipients, and a greeting. Paul's opening here is the longest in his letters."
+      },
+      {
+        "title": "Greeks and Barbarians",
+        "reference": "Romans 1:14",
+        "text": "Greeks called anyone who did not speak Greek a ‘barbarian,’ after the sound of foreign speech."
+      },
+      {
+        "title": "Images of animals",
+        "reference": "Romans 1:23",
+        "text": "Egyptian religion worshiped gods in the form of birds, beasts, and serpents. Greek and Roman temples held images of gods in human form."
+      }
+    ]
+  },
+  "Romans 2": {
+    "audience": "Paul writes as if answering a questioner, a style called diatribe, addressing someone who judges others and one who calls himself a Jew (Romans 2:1, 17).",
+    "culture": [
+      {
+        "title": "The diatribe",
+        "reference": "Romans 2:1",
+        "text": "Greek teachers such as the Stoic Epictetus taught by addressing an imaginary opponent, \"O man,\" and answering objections."
+      },
+      {
+        "title": "Robbing temples",
+        "reference": "Romans 2:22",
+        "text": "Temples stored treasure and offerings. Deuteronomy 7:25 forbade Israel from taking the silver and gold of idols."
+      },
+      {
+        "title": "Circumcision",
+        "reference": "Romans 2:25-29",
+        "text": "Circumcision marked Jewish males as members of the covenant (Genesis 17:10–14). Greeks and Romans often mocked it."
+      }
+    ]
+  },
+  "Romans 3": {
+    "audience": "Paul strings together quotations from the Psalms and Isaiah (Romans 3:10–18) to show that all, Jews and Gentiles, are under sin.",
+    "culture": [
+      {
+        "title": "The oracles of God",
+        "reference": "Romans 3:2",
+        "text": "Israel had been entrusted with the Scriptures, which were read in synagogues across the empire."
+      },
+      {
+        "title": "A chain of Scripture",
+        "reference": "Romans 3:10-18",
+        "text": "Linking passages from several books was a common Jewish teaching method. Here Paul draws on Psalms 14, 5, 140, 10, and 36 and Isaiah 59."
+      },
+      {
+        "title": "Propitiation",
+        "reference": "Romans 3:25",
+        "text": "The Greek word is also used in the Greek Old Testament for the mercy seat, the lid of the ark sprinkled with blood on the Day of Atonement (Leviticus 16:14–15)."
+      }
+    ]
+  },
+  "Romans 4": {
+    "audience": "Paul uses Abraham and David as examples from Scripture, quoting Genesis 15:6 and Psalm 32:1–2.",
+    "culture": [
+      {
+        "title": "Counted for righteousness",
+        "reference": "Romans 4:3",
+        "text": "The word \"counted\" (also \"reckoned\" and \"imputed\") was an accounting term for crediting an amount to someone's account."
+      },
+      {
+        "title": "Abraham before circumcision",
+        "reference": "Romans 4:10",
+        "text": "In Genesis, Abraham is counted righteous in chapter 15; he is circumcised in chapter 17."
+      },
+      {
+        "title": "About an hundred years old",
+        "reference": "Romans 4:19",
+        "text": "Abraham was ninety-nine when circumcised and a hundred when Isaac was born; Sarah was ninety (Genesis 17:17; 21:5)."
+      }
+    ]
+  },
+  "Romans 5": {
+    "audience": "Paul compares Adam and Christ, tracing sin and death from Adam (Genesis 3) to the law of Moses.",
+    "culture": [
+      {
+        "title": "Dying for a good man",
+        "reference": "Romans 5:7",
+        "text": "Greek and Roman stories honored those who died for friends or country."
+      },
+      {
+        "title": "Access",
+        "reference": "Romans 5:2",
+        "text": "The Greek word was used for being introduced into the presence of a king."
+      },
+      {
+        "title": "From Adam to Moses",
+        "reference": "Romans 5:14",
+        "text": "Paul refers to the generations of Genesis 5–11 who lived before the law was given at Sinai."
+      }
+    ]
+  },
+  "Romans 6": {
+    "audience": "Paul answers the question \"Shall we continue in sin, that grace may abound?\" (Romans 6:1) using pictures of baptism and slavery.",
+    "culture": [
+      {
+        "title": "Baptism by immersion",
+        "reference": "Romans 6:4",
+        "text": "Early Christian baptism was usually done by going down into water. Paul describes it as being \"buried with him by baptism.\""
+      },
+      {
+        "title": "Slavery in Rome",
+        "reference": "Romans 6:16-18",
+        "text": "Slaves made up a large part of Rome's population. A slave owed full obedience to his master, and could be freed or sold to a new owner."
+      },
+      {
+        "title": "Wages",
+        "reference": "Romans 6:23",
+        "text": "The word for wages was used for a soldier's pay or rations."
+      }
+    ]
+  },
+  "Romans 7": {
+    "audience": "Paul speaks \"to them that know the law\" (Romans 7:1) and illustrates with marriage law.",
+    "culture": [
+      {
+        "title": "Bound by the law while the husband lives",
+        "reference": "Romans 7:2-3",
+        "text": "Both Jewish and Roman law treated a wife as bound to her husband until his death, after which she was free to remarry."
+      },
+      {
+        "title": "Thou shalt not covet",
+        "reference": "Romans 7:7",
+        "text": "Paul quotes the tenth commandment (Exodus 20:17)."
+      }
+    ]
+  },
+  "Romans 8": {
+    "audience": "Paul writes of life in the Spirit, adoption, the groaning creation, and closes with a list of things that cannot separate believers from God's love.",
+    "culture": [
+      {
+        "title": "Adoption",
+        "reference": "Romans 8:15",
+        "text": "In Roman law an adopted son received a new legal identity, gained full rights as heir, and his old debts were cancelled."
+      },
+      {
+        "title": "Abba",
+        "reference": "Romans 8:15",
+        "text": "Paul keeps the Aramaic word for father, as Jesus used it in prayer (Mark 14:36)."
+      },
+      {
+        "title": "Sheep for the slaughter",
+        "reference": "Romans 8:36",
+        "text": "Paul quotes Psalm 44:22, a lament of Israel suffering though faithful to God."
+      }
+    ]
+  },
+  "Romans 9": {
+    "audience": "Paul begins three chapters on Israel (Romans 9–11), drawing on Genesis, Exodus, Hosea, and Isaiah.",
+    "culture": [
+      {
+        "title": "Israel's privileges",
+        "reference": "Romans 9:4-5",
+        "text": "Paul lists the adoption, the glory, the covenants, the giving of the law, the service of God, the promises, and the fathers."
+      },
+      {
+        "title": "Jacob and Esau",
+        "reference": "Romans 9:10-13",
+        "text": "Paul cites Genesis 25:23 and Malachi 1:2–3 about the twins born to Rebecca."
+      },
+      {
+        "title": "The potter and the clay",
+        "reference": "Romans 9:20-21",
+        "text": "Potters shaped vessels for honored and common use from the same lump of clay. The prophets used the image (Isaiah 29:16; 45:9; Jeremiah 18:1–6)."
+      }
+    ]
+  },
+  "Romans 10": {
+    "audience": "Paul continues on Israel and quotes Deuteronomy 30, Joel 2:32, and Isaiah 52:7 and 53:1.",
+    "culture": [
+      {
+        "title": "The end of the law",
+        "reference": "Romans 10:4",
+        "text": "The Greek word telos can mean ‘end,’ ‘goal,’ or ‘completion.’"
+      },
+      {
+        "title": "Confessing with the mouth",
+        "reference": "Romans 10:9",
+        "text": "‘Lord’ (kyrios) was used in the Greek Old Testament for God's name and was also a title claimed for the emperor."
+      },
+      {
+        "title": "Beautiful feet",
+        "reference": "Romans 10:15",
+        "text": "Messengers ran on foot to bring news. Paul quotes Isaiah 52:7."
+      }
+    ]
+  },
+  "Romans 11": {
+    "audience": "Paul addresses the Gentile believers directly: \"I speak to you Gentiles\" (Romans 11:13).",
+    "culture": [
+      {
+        "title": "Seven thousand",
+        "reference": "Romans 11:2-4",
+        "text": "Paul recalls Elijah's complaint and God's answer at Horeb (1 Kings 19:10, 18)."
+      },
+      {
+        "title": "Grafting olive branches",
+        "reference": "Romans 11:17",
+        "text": "Farmers grafted cultivated branches onto rootstock. Roman writer Columella also describes grafting a wild olive branch into an old tree."
+      },
+      {
+        "title": "The firstfruit",
+        "reference": "Romans 11:16",
+        "text": "A portion of the first dough was offered to God, and so the whole lump was holy (Numbers 15:20–21)."
+      }
+    ]
+  },
+  "Romans 12": {
+    "audience": "Paul turns to how believers should live, writing \"I beseech you therefore, brethren\" (Romans 12:1).",
+    "culture": [
+      {
+        "title": "A living sacrifice",
+        "reference": "Romans 12:1",
+        "text": "Animal sacrifice was part of both Jewish temple worship and Roman religion."
+      },
+      {
+        "title": "One body, many members",
+        "reference": "Romans 12:4-5",
+        "text": "Roman writers compared the state to a body whose parts depend on each other, as in the fable told by Menenius Agrippa (Livy)."
+      },
+      {
+        "title": "Coals of fire",
+        "reference": "Romans 12:20",
+        "text": "Paul quotes Proverbs 25:21–22."
+      }
+    ]
+  },
+  "Romans 13": {
+    "audience": "Paul writes about governing authorities and taxes to believers living in the capital of the Roman Empire, during the early reign of Nero.",
+    "culture": [
+      {
+        "title": "Bearing the sword",
+        "reference": "Romans 13:4",
+        "text": "The sword was a symbol of a Roman magistrate's power to punish, including by death."
+      },
+      {
+        "title": "Tribute and custom",
+        "reference": "Romans 13:7",
+        "text": "\"Tribute\" was direct tax paid by subject peoples; \"custom\" was a tax on goods. The historian Tacitus records complaints in Rome about tax collectors around AD 58."
+      },
+      {
+        "title": "Rioting and drunkenness",
+        "reference": "Romans 13:13",
+        "text": "Night-time banquets with heavy drinking were common in Roman social life."
+      }
+    ]
+  },
+  "Romans 14": {
+    "audience": "Paul addresses believers divided over food and holy days, the \"weak\" and the \"strong.\"",
+    "culture": [
+      {
+        "title": "Eating herbs",
+        "reference": "Romans 14:2",
+        "text": "Meat sold in markets often came from animals sacrificed to gods. Some Jews abroad avoided meat entirely (Daniel 1:12)."
+      },
+      {
+        "title": "Esteeming days",
+        "reference": "Romans 14:5",
+        "text": "Jewish believers kept the sabbath and feast days, which Gentile converts had not observed."
+      },
+      {
+        "title": "The judgment seat",
+        "reference": "Romans 14:10",
+        "text": "The bema was a raised platform where a magistrate heard cases."
+      }
+    ]
+  },
+  "Romans 15": {
+    "audience": "Paul shares his travel plans: Jerusalem with the collection, then Rome, then Spain (Romans 15:24–28).",
+    "culture": [
+      {
+        "title": "Illyricum",
+        "reference": "Romans 15:19",
+        "text": "Illyricum was the Roman province along the eastern Adriatic coast, roughly modern Croatia and Albania."
+      },
+      {
+        "title": "Spain",
+        "reference": "Romans 15:24",
+        "text": "Spain (Hispania) was the western edge of the known world, with Roman cities but few Jewish communities."
+      },
+      {
+        "title": "The collection",
+        "reference": "Romans 15:26",
+        "text": "Churches in Macedonia and Achaia gave money for the poor believers in Jerusalem (1 Corinthians 16:1–4; 2 Corinthians 8–9)."
+      }
+    ]
+  },
+  "Romans 16": {
+    "audience": "Paul greets about twenty-six people by name, including Priscilla and Aquila, and commends Phebe, who probably carried the letter (Romans 16:1–3).",
+    "culture": [
+      {
+        "title": "Phebe of Cenchrea",
+        "reference": "Romans 16:1",
+        "text": "Cenchrea was the eastern port of Corinth. Letters were carried by trusted travelers, who could also explain them."
+      },
+      {
+        "title": "House churches",
+        "reference": "Romans 16:5",
+        "text": "Believers met in private homes; Rome probably had several such groups."
+      },
+      {
+        "title": "Tertius and Erastus",
+        "reference": "Romans 16:22-23",
+        "text": "Tertius wrote the letter down for Paul. An inscription in Corinth names an Erastus who paved a street at his own expense as aedile."
+      }
+    ]
+  }
+}

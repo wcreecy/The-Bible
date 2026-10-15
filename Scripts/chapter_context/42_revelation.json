@@ -1,0 +1,432 @@
+{
+  "Revelation 1": {
+    "audience": "John writes to seven churches in the Roman province of Asia from the island of Patmos, where he was \"for the word of God, and for the testimony of Jesus Christ\" (Revelation 1:9). Early writers such as Irenaeus date it to the end of Domitian's reign, around AD 95.",
+    "culture": [
+      {
+        "title": "Patmos",
+        "reference": "Revelation 1:9",
+        "text": "Patmos is a small rocky island in the Aegean Sea, about 40 miles from the coast of Asia. Romans sometimes banished people to islands."
+      },
+      {
+        "title": "The Lord's day",
+        "reference": "Revelation 1:10",
+        "text": "Early Christian writings use \"the Lord's day\" for Sunday, the first day of the week."
+      },
+      {
+        "title": "Seven golden candlesticks",
+        "reference": "Revelation 1:12",
+        "text": "The tabernacle had a golden lampstand with seven lamps (Exodus 25:31–37)."
+      }
+    ]
+  },
+  "Revelation 2": {
+    "audience": "Jesus gives messages to the churches at Ephesus, Smyrna, Pergamos, and Thyatira. The seven cities lay on a circular road, in the order a messenger would travel.",
+    "culture": [
+      {
+        "title": "Smyrna",
+        "reference": "Revelation 2:8-10",
+        "text": "Smyrna built a temple to Tiberius in AD 26 and was proud of its loyalty to Rome."
+      },
+      {
+        "title": "Where Satan's seat is",
+        "reference": "Revelation 2:13",
+        "text": "Pergamos had a large altar of Zeus and was the first city in Asia to build a temple to the emperor, in 29 BC."
+      },
+      {
+        "title": "A white stone",
+        "reference": "Revelation 2:17",
+        "text": "White stones were used as tokens for voting to acquit and as admission tickets to feasts."
+      }
+    ]
+  },
+  "Revelation 3": {
+    "audience": "The messages continue to Sardis, Philadelphia, and Laodicea.",
+    "culture": [
+      {
+        "title": "Sardis",
+        "reference": "Revelation 3:2-3",
+        "text": "Sardis was built on a steep hill and thought impossible to capture, yet was taken by surprise in 547 and 214 BC. An earthquake ruined it in AD 17."
+      },
+      {
+        "title": "Neither cold nor hot",
+        "reference": "Revelation 3:15-16",
+        "text": "Laodicea's water came by aqueduct and arrived lukewarm. Nearby Hierapolis had hot springs and Colossae cold water."
+      },
+      {
+        "title": "Rich, and increased with goods",
+        "reference": "Revelation 3:17-18",
+        "text": "Laodicea was a banking center known for its black wool and an eye salve. After the earthquake of AD 60 it rebuilt without Roman aid (Tacitus)."
+      }
+    ]
+  },
+  "Revelation 4": {
+    "audience": "John is called up through \"a door\" in heaven and sees God's throne, with four living creatures and twenty-four elders.",
+    "culture": [
+      {
+        "title": "The four beasts",
+        "reference": "Revelation 4:6-8",
+        "text": "Ezekiel saw four creatures with faces of a man, a lion, an ox, and an eagle (Ezekiel 1:10). Isaiah's seraphim had six wings (Isaiah 6:2)."
+      },
+      {
+        "title": "Casting crowns",
+        "reference": "Revelation 4:10",
+        "text": "Conquered kings laid their crowns before a Roman emperor as a sign of submission."
+      },
+      {
+        "title": "Thou art worthy",
+        "reference": "Revelation 4:11",
+        "text": "Crowds greeted emperors with acclamations. Domitian liked to be addressed as ‘our Lord and God’ (Suetonius)."
+      }
+    ]
+  },
+  "Revelation 5": {
+    "audience": "A scroll sealed with seven seals is opened by \"the Lion of the tribe of Juda\" who appears as \"a Lamb as it had been slain\" (Revelation 5:5–6).",
+    "culture": [
+      {
+        "title": "Seven seals",
+        "reference": "Revelation 5:1",
+        "text": "Roman wills were sealed with seven seals by witnesses and opened only after the testator died."
+      },
+      {
+        "title": "Written within and on the backside",
+        "reference": "Revelation 5:1",
+        "text": "Scrolls were usually written on one side only. Ezekiel's scroll was \"written within and without\" (Ezekiel 2:10)."
+      },
+      {
+        "title": "Golden vials of odours",
+        "reference": "Revelation 5:8",
+        "text": "Incense was offered with prayer (Psalm 141:2)."
+      }
+    ]
+  },
+  "Revelation 6": {
+    "audience": "The Lamb opens six seals, bringing four horsemen, martyrs crying out, and a great earthquake.",
+    "culture": [
+      {
+        "title": "Four horses",
+        "reference": "Revelation 6:1-8",
+        "text": "Zechariah saw horses of four colors sent through the earth (Zechariah 1:8; 6:1–8)."
+      },
+      {
+        "title": "A bow",
+        "reference": "Revelation 6:2",
+        "text": "The Parthians, Rome's enemy on the eastern border, were famous mounted archers."
+      },
+      {
+        "title": "A measure of wheat for a penny",
+        "reference": "Revelation 6:6",
+        "text": "A penny (denarius) was a day's wage; a measure of wheat was one person's daily ration, so prices are many times normal."
+      }
+    ]
+  },
+  "Revelation 7": {
+    "audience": "Before the seventh seal, 144,000 from the tribes of Israel are sealed and John sees a great multitude from every nation.",
+    "culture": [
+      {
+        "title": "Sealing the servants",
+        "reference": "Revelation 7:3",
+        "text": "In Ezekiel 9:4 a mark is set on the foreheads of those who mourn over Jerusalem's sins."
+      },
+      {
+        "title": "The list of tribes",
+        "reference": "Revelation 7:5-8",
+        "text": "Dan is missing from this list, and Joseph and Manasseh are both included."
+      },
+      {
+        "title": "Palms in their hands",
+        "reference": "Revelation 7:9",
+        "text": "Palm branches were carried at the feast of tabernacles and at victory celebrations (John 12:13)."
+      }
+    ]
+  },
+  "Revelation 8": {
+    "audience": "The seventh seal is opened, and seven angels are given seven trumpets.",
+    "culture": [
+      {
+        "title": "Silence in heaven",
+        "reference": "Revelation 8:1",
+        "text": "In the temple, the burning of incense was done in silence while the people prayed outside (Luke 1:10)."
+      },
+      {
+        "title": "Trumpets",
+        "reference": "Revelation 8:2",
+        "text": "Trumpets announced feasts, war, and the presence of God at Sinai (Numbers 10:9–10; Exodus 19:16)."
+      },
+      {
+        "title": "Plagues like Egypt",
+        "reference": "Revelation 8:7-12",
+        "text": "Hail and fire, water turned to blood, and darkness recall the plagues of Egypt (Exodus 7–10)."
+      }
+    ]
+  },
+  "Revelation 9": {
+    "audience": "The fifth and sixth trumpets release locusts from the bottomless pit and an army from the river Euphrates.",
+    "culture": [
+      {
+        "title": "Locusts",
+        "reference": "Revelation 9:3-10",
+        "text": "Locust swarms could destroy whole harvests. Joel 2:4–5 compares locusts to horses and chariots."
+      },
+      {
+        "title": "The great river Euphrates",
+        "reference": "Revelation 9:14",
+        "text": "The Euphrates marked the eastern edge of the Roman Empire, beyond which lay the Parthians."
+      },
+      {
+        "title": "Abaddon and Apollyon",
+        "reference": "Revelation 9:11",
+        "text": "Abaddon is Hebrew for ‘destruction’ and Apollyon is Greek for ‘destroyer.’"
+      }
+    ]
+  },
+  "Revelation 10": {
+    "audience": "A mighty angel holds a little book, which John is told to eat, as Ezekiel ate a scroll (Ezekiel 3:1–3).",
+    "culture": [
+      {
+        "title": "Seven thunders",
+        "reference": "Revelation 10:3-4",
+        "text": "Psalm 29 describes the voice of the LORD as thunder seven times."
+      },
+      {
+        "title": "Lifting the hand to swear",
+        "reference": "Revelation 10:5-6",
+        "text": "Raising the hand toward heaven was a gesture for taking an oath (Daniel 12:7)."
+      }
+    ]
+  },
+  "Revelation 11": {
+    "audience": "John is told to measure the temple, and two witnesses prophesy for 1,260 days before the seventh trumpet sounds.",
+    "culture": [
+      {
+        "title": "Measuring the temple",
+        "reference": "Revelation 11:1",
+        "text": "Ezekiel 40–42 and Zechariah 2:1–2 also describe measuring the temple and Jerusalem."
+      },
+      {
+        "title": "Two olive trees",
+        "reference": "Revelation 11:4",
+        "text": "Zechariah saw two olive trees beside a golden lampstand (Zechariah 4:2–3, 11–14)."
+      },
+      {
+        "title": "Unburied bodies",
+        "reference": "Revelation 11:9",
+        "text": "Leaving bodies unburied was a great dishonor (Psalm 79:2–3)."
+      }
+    ]
+  },
+  "Revelation 12": {
+    "audience": "John sees a woman clothed with the sun, a great red dragon, and war in heaven between Michael and the dragon.",
+    "culture": [
+      {
+        "title": "Sun, moon, and twelve stars",
+        "reference": "Revelation 12:1",
+        "text": "In Joseph's dream, the sun, moon, and eleven stars bow to him (Genesis 37:9)."
+      },
+      {
+        "title": "That old serpent",
+        "reference": "Revelation 12:9",
+        "text": "The dragon is named \"that old serpent, called the Devil, and Satan,\" recalling Genesis 3."
+      },
+      {
+        "title": "Eagle's wings",
+        "reference": "Revelation 12:14",
+        "text": "God told Israel, \"I bare you on eagles' wings\" (Exodus 19:4)."
+      }
+    ]
+  },
+  "Revelation 13": {
+    "audience": "A beast rises from the sea and another from the earth, demanding worship and a mark on the hand or forehead.",
+    "culture": [
+      {
+        "title": "Out of the sea",
+        "reference": "Revelation 13:1-2",
+        "text": "Daniel saw four beasts rise from the sea: a lion, a bear, a leopard, and one with ten horns (Daniel 7:3–7)."
+      },
+      {
+        "title": "Worshipping the image",
+        "reference": "Revelation 13:14-15",
+        "text": "Cities in Asia had temples and statues for the emperor. Pliny made accused Christians offer incense before the emperor's image."
+      },
+      {
+        "title": "Six hundred threescore and six",
+        "reference": "Revelation 13:18",
+        "text": "In Hebrew and Greek, letters also served as numbers. Some early manuscripts read 616, as Irenaeus noted."
+      }
+    ]
+  },
+  "Revelation 14": {
+    "audience": "John sees the Lamb with the 144,000 on mount Sion, three angels with messages, and harvests of grain and grapes.",
+    "culture": [
+      {
+        "title": "Babylon is fallen",
+        "reference": "Revelation 14:8",
+        "text": "The cry quotes Isaiah 21:9. 1 Peter 5:13 also uses \"Babylon.\""
+      },
+      {
+        "title": "The winepress",
+        "reference": "Revelation 14:19-20",
+        "text": "Grapes were trodden in stone vats outside towns. Joel 3:13 and Isaiah 63:3 use the winepress as an image of judgment."
+      },
+      {
+        "title": "A thousand and six hundred furlongs",
+        "reference": "Revelation 14:20",
+        "text": "About 184 miles, roughly the length of the land of Israel."
+      }
+    ]
+  },
+  "Revelation 15": {
+    "audience": "Seven angels prepare the last seven plagues while the victors sing \"the song of Moses ... and the song of the Lamb\" (Revelation 15:3).",
+    "culture": [
+      {
+        "title": "A sea of glass mingled with fire",
+        "reference": "Revelation 15:2",
+        "text": "Solomon's temple had a large bronze basin called a \"molten sea\" (1 Kings 7:23)."
+      },
+      {
+        "title": "The song of Moses",
+        "reference": "Revelation 15:3",
+        "text": "Moses and Israel sang after crossing the Red Sea (Exodus 15)."
+      },
+      {
+        "title": "Filled with smoke",
+        "reference": "Revelation 15:8",
+        "text": "Glory filled the tabernacle so that Moses could not enter (Exodus 40:34–35)."
+      }
+    ]
+  },
+  "Revelation 16": {
+    "audience": "The seven vials of wrath are poured out, and the kings of the earth are gathered at Armageddon.",
+    "culture": [
+      {
+        "title": "Armageddon",
+        "reference": "Revelation 16:16",
+        "text": "The name means ‘mountain of Megiddo.’ Megiddo guarded a pass into the Jezreel valley, where many battles were fought (Judges 5:19; 2 Kings 23:29)."
+      },
+      {
+        "title": "The Euphrates dried up",
+        "reference": "Revelation 16:12",
+        "text": "Herodotus says Cyrus took Babylon by diverting the Euphrates."
+      },
+      {
+        "title": "Hail of a talent",
+        "reference": "Revelation 16:21",
+        "text": "A talent weighed roughly 75 pounds."
+      }
+    ]
+  },
+  "Revelation 17": {
+    "audience": "An angel shows John a woman named \"Babylon the great\" seated on a scarlet beast with seven heads.",
+    "culture": [
+      {
+        "title": "Seven mountains",
+        "reference": "Revelation 17:9",
+        "text": "Rome was known as the city on seven hills; Roman coins show the goddess Roma seated on them."
+      },
+      {
+        "title": "Purple and scarlet",
+        "reference": "Revelation 17:4",
+        "text": "Purple and scarlet dyes were costly and worn by royalty and the very wealthy."
+      },
+      {
+        "title": "Her name on her forehead",
+        "reference": "Revelation 17:5",
+        "text": "Roman writers describe prostitutes wearing their names on headbands."
+      }
+    ]
+  },
+  "Revelation 18": {
+    "audience": "An angel announces Babylon's fall, and kings, merchants, and sailors mourn over her.",
+    "culture": [
+      {
+        "title": "The merchandise",
+        "reference": "Revelation 18:12-13",
+        "text": "The list matches luxury goods imported to Rome: gold, pearls, silk, ivory, cinnamon, spices, wheat, horses—and \"slaves, and souls of men.\""
+      },
+      {
+        "title": "Shipmasters afar off",
+        "reference": "Revelation 18:17-19",
+        "text": "Rome's port at Ostia received huge trade fleets. Ezekiel 27 is a similar lament over the trading city of Tyre."
+      },
+      {
+        "title": "A millstone into the sea",
+        "reference": "Revelation 18:21",
+        "text": "Jeremiah told Seraiah to sink a book in the Euphrates as a sign that Babylon would sink (Jeremiah 51:63–64)."
+      }
+    ]
+  },
+  "Revelation 19": {
+    "audience": "A great multitude praises God, the marriage of the Lamb is announced, and a rider on a white horse called \"Faithful and True\" goes out to war.",
+    "culture": [
+      {
+        "title": "Alleluia",
+        "reference": "Revelation 19:1",
+        "text": "Alleluia is the Greek spelling of the Hebrew Hallelujah, ‘praise the LORD.’ These are its only uses in the New Testament."
+      },
+      {
+        "title": "The marriage supper",
+        "reference": "Revelation 19:9",
+        "text": "Wedding feasts lasted several days and were the greatest celebrations of village life (Matthew 22:2)."
+      },
+      {
+        "title": "Many crowns",
+        "reference": "Revelation 19:12",
+        "text": "Rulers of more than one kingdom could wear several diadems."
+      }
+    ]
+  },
+  "Revelation 20": {
+    "audience": "Satan is bound for a thousand years, then released, and the dead are judged before a great white throne.",
+    "culture": [
+      {
+        "title": "Gog and Magog",
+        "reference": "Revelation 20:8",
+        "text": "Ezekiel 38–39 describes Gog of the land of Magog attacking Israel."
+      },
+      {
+        "title": "The books were opened",
+        "reference": "Revelation 20:12",
+        "text": "Daniel 7:10 describes the same scene: \"the judgment was set, and the books were opened.\""
+      }
+    ]
+  },
+  "Revelation 21": {
+    "audience": "John sees a new heaven and a new earth (Isaiah 65:17) and the holy city, new Jerusalem, coming down from God.",
+    "culture": [
+      {
+        "title": "No more sea",
+        "reference": "Revelation 21:1",
+        "text": "John was on an island, cut off by the sea (Revelation 1:9)."
+      },
+      {
+        "title": "Twelve gates",
+        "reference": "Revelation 21:12-13",
+        "text": "Ezekiel's restored city also has twelve gates named for the tribes of Israel (Ezekiel 48:30–35)."
+      },
+      {
+        "title": "Precious stones",
+        "reference": "Revelation 21:19-20",
+        "text": "Many of the twelve stones match those on the high priest's breastplate (Exodus 28:17–20)."
+      }
+    ]
+  },
+  "Revelation 22": {
+    "audience": "The book closes with the river of life, the tree of life, and Jesus saying, \"Surely I come quickly\" (Revelation 22:20).",
+    "culture": [
+      {
+        "title": "The river and the tree",
+        "reference": "Revelation 22:1-2",
+        "text": "Ezekiel saw a river flowing from the temple with trees bearing fruit every month and leaves for healing (Ezekiel 47:1–12). The tree of life was in Eden (Genesis 2:9)."
+      },
+      {
+        "title": "Adding to the book",
+        "reference": "Revelation 22:18-19",
+        "text": "Deuteronomy 4:2 gives a similar warning about the law. Ancient authors sometimes warned copyists not to change their texts."
+      },
+      {
+        "title": "Even so, come",
+        "reference": "Revelation 22:20",
+        "text": "Paul wrote the Aramaic prayer Maranatha, ‘Our Lord, come’ (1 Corinthians 16:22)."
+      }
+    ]
+  }
+}
