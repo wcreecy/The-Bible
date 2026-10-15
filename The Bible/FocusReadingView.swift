@@ -136,7 +136,8 @@ struct FocusReadingView: View {
             NavigationStack {
                 ChapterInsightsView(
                     bookName: currentLocation.bookName,
-                    chapterNumber: currentLocation.chapterNumber
+                    chapterNumber: currentLocation.chapterNumber,
+                    openedFromReader: true
                 )
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {

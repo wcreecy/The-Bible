@@ -44,11 +44,7 @@ struct BookOverviewView: View {
                     ConnectionsSection(connections: overview.connections)
                 }
 
-                BookReadingGuideSection(
-                    bookName: bookName,
-                    tips: overview.readingTips,
-                    interpretiveNotes: overview.interpretiveNotes
-                )
+                BookReadingGuideSection(bookName: bookName, tips: overview.readingTips)
 
                 if !overview.story.isEmpty {
                     BookStructureSection(bookName: bookName, sections: overview.story)
@@ -119,48 +115,34 @@ private struct AtAGlanceSection: View {
     }
 }
 
-/// The book's genre and how to approach it, plus questions readers should keep in mind.
+/// The book's genre and practical tips for reading it.
 private struct BookReadingGuideSection: View {
     let bookName: String
     let tips: [String]
-    let interpretiveNotes: String
 
     var body: some View {
         HeroCard(title: "How to Read This Book", icon: "text.book.closed") {
-            VStack(alignment: .leading, spacing: 12) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Label(BibleStudyMetadata.genre(for: bookName), systemImage: "tag")
-                        .font(.headline)
+            VStack(alignment: .leading, spacing: 8) {
+                Label(BibleStudyMetadata.genre(for: bookName), systemImage: "tag")
+                    .font(.headline)
 
-                    if tips.isEmpty {
-                        // Books without their own tips fall back to the general advice for the genre.
-                        Text(BibleStudyMetadata.readingTip(for: bookName))
-                            .font(.body)
-                            .foregroundStyle(.secondary)
-                    } else {
-                        ForEach(tips, id: \.self) { tip in
-                            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                                Image(systemName: "circle.fill")
-                                    .font(.system(size: 6))
-                                    .foregroundStyle(.tint)
-                                    .accessibilityHidden(true)
-                                LinkedScriptureText(tip)
-                                    .font(.body)
-                                    .foregroundStyle(.secondary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
+                if tips.isEmpty {
+                    // Books without their own tips fall back to the general advice for the genre.
+                    Text(BibleStudyMetadata.readingTip(for: bookName))
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(tips, id: \.self) { tip in
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 6))
+                                .foregroundStyle(.tint)
+                                .accessibilityHidden(true)
+                            LinkedScriptureText(tip)
+                                .font(.body)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                    }
-                }
-
-                if !interpretiveNotes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    Divider()
-                    VStack(alignment: .leading, spacing: 4) {
-                        Label("Keep in Mind", systemImage: "lightbulb")
-                            .font(.headline)
-                        LinkedScriptureText(interpretiveNotes)
-                            .font(.body)
-                            .foregroundStyle(.secondary)
                     }
                 }
             }

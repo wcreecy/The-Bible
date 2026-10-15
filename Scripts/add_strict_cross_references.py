@@ -6,10 +6,11 @@ https://a.openbible.info/data/cross-references.zip
 
 Unlike add_related_verses.py, which rebuilds the whole table, this only adds rows for
 chapters in the chosen books that have no cross references yet, so hand-explained
-references elsewhere are left untouched. A candidate is kept only if it is:
+references elsewhere are left untouched (apart from appending stated fulfillments). A candidate is kept only if it is:
 
 - a quotation: the two verses share a rare four-word phrase containing at least two
-  distinctive words (so stock wording like "and it came to pass" doesn't count), or
+  distinctive words that aren't names (so stock wording like "and it came to pass", or a
+  shared place name like "the plains of Jericho", doesn't count on its own), or
 - a named link: both verses name the same uncommon person or place, and the link has
   at least MIN_NAME_VOTES votes, or
 - a stated fulfillment from Scripts/curated_cross_references.json, where one passage
@@ -45,6 +46,17 @@ MAX_DISTINCTIVE_WORD_VERSES = 600
 # A name in more verses than this (Abraham, Moses, Israel) links too much to be specific.
 MAX_NAME_VERSES = 120
 CURATED_VOTES = 1000
+# Never distinctive, however rare: function words, numbers, and titles of God.
+STOPWORDS = set("""
+    a an and the of to in into unto upon on at by for from with without within as than that this these those
+    which what who whom whose when where there here then thus so also even yea nay not no nor but or if
+    i me my mine we us our ye you your thee thou thy thine he him his she her it its they them their
+    is are was were be been being am art hath have had shall shall will would should may might must
+    let say said saying pray little more most many much times all every any some one two three four
+    five six seven eight nine ten eleven twelve twenty thirty forty fifty sixty seventy eighty ninety
+    hundred thousand thousands score great before after against among about over under come came go went
+""".split())
+DIVINE_TITLES = {"almighty", "jehovah", "lord", "god", "highest"}
 REFERENCE = re.compile(r"^(.+?) (\d+):(\d+)(?:-(\d+)(?::(\d+))?)?$")
 
 
@@ -67,7 +79,10 @@ class Bible:
             for word in re.findall(r"[A-Za-z]+", text)[1:]:
                 total[word.lower()] += 1
                 capitalized[word.lower()] += word[0].isupper()
-        self.names = {w for w in total if capitalized[w] / total[w] > 0.95 and self.word_verses[w] <= MAX_NAME_VERSES}
+        self.names = {
+            w for w in total
+            if capitalized[w] / total[w] > 0.95 and self.word_verses[w] <= MAX_NAME_VERSES and w not in DIVINE_TITLES
+        }
 
     @staticmethod
     def phrases(words, length=4):
@@ -83,7 +98,10 @@ class Bible:
     def reason(self, source, target, votes):
         """Why the link is direct, or None when it is only thematic."""
         for phrase in self.phrases(self.words[source]) & self.phrases(self.words[target]):
-            distinctive = [w for w in phrase.split() if self.word_verses[w] <= MAX_DISTINCTIVE_WORD_VERSES]
+            distinctive = [
+                w for w in phrase.split()
+                if self.word_verses[w] <= MAX_DISTINCTIVE_WORD_VERSES and w not in STOPWORDS and w not in self.names
+            ]
             if self.phrase_verses[phrase] <= MAX_PHRASE_VERSES and len(distinctive) >= 2:
                 return f"quotes \"{phrase}\""
         shared = self.names_in(source) & self.names_in(target)
@@ -183,6 +201,24 @@ def main():
                 print(f"{book} {chapter}:")
                 for verse, ref, votes, reason in chosen:
                     print(f"   v{verse} → {ref}  [{reason}]")
+
+    # Stated fulfillments are added even to chapters that already have cross references.
+    for (book, chapter), links in sorted(curated_links(bible, books).items()):
+        if (book, chapter) not in covered:
+            continue
+        existing = {ref for (ref,) in database.execute(
+            "SELECT related_reference FROM chapter_related_verses WHERE book_name = ? AND chapter_number = ?",
+            (book, chapter),
+        )}
+        (next_sequence,) = database.execute(
+            "SELECT coalesce(max(sequence), -1) + 1 FROM chapter_related_verses WHERE book_name = ? AND chapter_number = ?",
+            (book, chapter),
+        ).fetchone()
+        for votes, verse, reference, _ in sorted(links, key=lambda link: link[1]):
+            if reference not in existing:
+                rows.append((book, chapter, next_sequence, verse, reference, votes))
+                existing.add(reference)
+                next_sequence += 1
 
     filled = len({(r[0], r[1]) for r in rows})
     print(f"{'Would add' if dry_run else 'Added'} {len(rows)} cross references to {filled} chapters")

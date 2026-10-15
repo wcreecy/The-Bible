@@ -291,7 +291,8 @@ struct ReadingView: View {
                 NavigationStack {
                     ChapterInsightsView(
                         bookName: viewModel.currentBook.name,
-                        chapterNumber: viewModel.currentChapter.number
+                        chapterNumber: viewModel.currentChapter.number,
+                        openedFromReader: true
                     )
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {

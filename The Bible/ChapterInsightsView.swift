@@ -14,9 +14,15 @@ struct ChapterInsightsView: View {
     @AppStorage("lastStudiedBook") private var lastStudiedBook = ""
     @AppStorage("lastStudiedChapter") private var lastStudiedChapter = 0
     @Environment(\.dismiss) private var dismiss
+    /// The chapter open in the reader beneath this sheet, if the reader presented it.
+    private let readerLocation: ChapterLocation?
 
-    init(bookName: String, chapterNumber: Int) {
-        _location = State(initialValue: ChapterLocation(bookName: bookName, chapterNumber: chapterNumber))
+    /// Pass `openedFromReader` when the reader presents this page for its current chapter,
+    /// so Read returns to the reader (keeping its place) instead of reopening the chapter.
+    init(bookName: String, chapterNumber: Int, openedFromReader: Bool = false) {
+        let location = ChapterLocation(bookName: bookName, chapterNumber: chapterNumber)
+        _location = State(initialValue: location)
+        readerLocation = openedFromReader ? location : nil
     }
 
     private var bookName: String { location.bookName }
@@ -111,10 +117,6 @@ struct ChapterInsightsView: View {
                     }
                 }
 
-                if !content.clues.isEmpty {
-                    ChapterInterpretiveCluesCard(clues: content.clues)
-                }
-
                 if let connections = context?.scriptureConnections, !connections.isEmpty {
                     ChapterScriptureConnectionsCard(connections: connections)
                 }
@@ -152,6 +154,8 @@ struct ChapterInsightsView: View {
 
     private func readChapter() {
         dismiss()
+        // The reader underneath already shows this chapter; closing returns to it in place.
+        guard location != readerLocation else { return }
         AppRouter.shared.openBibleReference(book: bookName, chapter: chapterNumber, verse: 1)
     }
 
@@ -214,7 +218,6 @@ private struct ChapterContentFilter {
     let narrativePlacement: String
     let whyItMatters: String
     let backgroundRows: [ChapterBackgroundSection.Row]
-    let clues: [ChapterReadingContext.InterpretiveClue]
 
     init(insights: ChapterInsights, context: ChapterReadingContext?) {
         var shown = Set<String>()
@@ -261,8 +264,6 @@ private struct ChapterContentFilter {
             ))
         }
         backgroundRows = rows
-
-        clues = (context?.interpretiveClues ?? []).filter { !claim($0.explanation).isEmpty }
     }
 
     private static func normalized(_ text: String) -> String {

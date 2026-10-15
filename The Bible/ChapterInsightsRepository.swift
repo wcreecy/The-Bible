@@ -148,11 +148,6 @@ actor ChapterInsightsRepository {
             narrativePlacement: Self.columnText(contextStatement, at: 0),
             firstCenturyMoment: Self.columnText(contextStatement, at: 1),
             originalAudience: Self.columnText(contextStatement, at: 2),
-            interpretiveClues: loadInterpretiveClues(
-                forBookNamed: bookName,
-                chapterNumber: chapterNumber,
-                database: database
-            ),
             culturalLenses: loadCulturalLenses(
                 forBookNamed: bookName,
                 chapterNumber: chapterNumber,
@@ -160,40 +155,6 @@ actor ChapterInsightsRepository {
             ),
             scriptureConnections: []
         )
-    }
-
-    private func loadInterpretiveClues(
-        forBookNamed bookName: String,
-        chapterNumber: Int,
-        database: OpaquePointer
-    ) -> [ChapterReadingContext.InterpretiveClue] {
-        let query = """
-        SELECT title, scripture_reference, explanation
-        FROM chapter_interpretive_clues
-        WHERE book_name = ? AND chapter_number = ?
-        ORDER BY sequence;
-        """
-        var statement: OpaquePointer?
-        guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
-              let statement else {
-            return []
-        }
-        defer { sqlite3_finalize(statement) }
-
-        sqlite3_bind_text(statement, 1, bookName, -1, Self.sqliteTransientDestructor())
-        sqlite3_bind_int(statement, 2, Int32(chapterNumber))
-
-        var clues: [ChapterReadingContext.InterpretiveClue] = []
-        while sqlite3_step(statement) == SQLITE_ROW {
-            clues.append(
-                ChapterReadingContext.InterpretiveClue(
-                    title: Self.columnText(statement, at: 0),
-                    reference: Self.columnText(statement, at: 1),
-                    explanation: Self.columnText(statement, at: 2)
-                )
-            )
-        }
-        return clues
     }
 
     private func loadCulturalLenses(
