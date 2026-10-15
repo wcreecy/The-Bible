@@ -1,0 +1,462 @@
+{
+  "Luke 1": {
+    "audience": "Luke addresses \"most excellent Theophilus\" and says he has carefully gathered accounts from eyewitnesses (Luke 1:1–4). The same author wrote Acts (Acts 1:1).",
+    "culture": [
+      {
+        "title": "Courses of priests",
+        "reference": "Luke 1:5, 8-9",
+        "text": "Priests were divided into twenty-four courses, each serving in the temple for a week at a time (1 Chronicles 24:10 names the course of Abijah). Offering incense was chosen by lot and might happen once in a lifetime."
+      },
+      {
+        "title": "Barrenness",
+        "reference": "Luke 1:25",
+        "text": "Childlessness was seen as a reproach. Elisabeth's story parallels Sarah (Genesis 18) and Hannah (1 Samuel 1)."
+      },
+      {
+        "title": "Naming on the eighth day",
+        "reference": "Luke 1:59-63",
+        "text": "Boys were circumcised on the eighth day (Genesis 17:12) and named then, often after a relative."
+      }
+    ]
+  },
+  "Luke 2": {
+    "audience": "Luke dates Jesus' birth by the Roman emperor Caesar Augustus and the governor Cyrenius (Luke 2:1–2), placing the story in world history.",
+    "culture": [
+      {
+        "title": "The census",
+        "reference": "Luke 2:1-3",
+        "text": "Roman censuses were used for taxation. Papyri from Egypt show people returning to their home districts to register."
+      },
+      {
+        "title": "The manger",
+        "reference": "Luke 2:7",
+        "text": "A manger was a feeding trough. Village houses often had a lower area where animals were kept at night; the ‘inn’ may mean a guest room."
+      },
+      {
+        "title": "Purification and redemption",
+        "reference": "Luke 2:22-24",
+        "text": "After childbirth a mother offered a lamb, or two birds if poor (Leviticus 12:8). Mary and Joseph bring \"a pair of turtledoves, or two young pigeons.\""
+      }
+    ]
+  },
+  "Luke 3": {
+    "audience": "Luke dates John the Baptist's ministry to the fifteenth year of Tiberius, naming Pilate, Herod, Philip, Lysanias, Annas, and Caiaphas (Luke 3:1–2), about AD 28–29.",
+    "culture": [
+      {
+        "title": "Publicans and soldiers",
+        "reference": "Luke 3:12-14",
+        "text": "Tax collectors could add their own charges, and soldiers were known to extort money. John tells them to collect no more than is appointed and to be content with their wages."
+      },
+      {
+        "title": "The genealogy",
+        "reference": "Luke 3:23-38",
+        "text": "Luke traces Jesus' line back through David and Abraham to \"Adam, which was the son of God,\" while Matthew starts with Abraham."
+      }
+    ]
+  },
+  "Luke 4": {
+    "audience": "After the temptation, Jesus reads Isaiah 61 in the Nazareth synagogue and is driven out of town.",
+    "culture": [
+      {
+        "title": "Reading in the synagogue",
+        "reference": "Luke 4:16-20",
+        "text": "A reader stood to read the scroll, handed it back to the attendant, and sat down to teach."
+      },
+      {
+        "title": "The brow of the hill",
+        "reference": "Luke 4:29",
+        "text": "Nazareth was built on a hillside with steep slopes nearby."
+      },
+      {
+        "title": "Widows and lepers",
+        "reference": "Luke 4:25-27",
+        "text": "Jesus cites the widow of Sarepta (1 Kings 17) and Naaman the Syrian (2 Kings 5), both foreigners."
+      }
+    ]
+  },
+  "Luke 5": {
+    "audience": "Jesus calls Simon, James, and John after a great catch of fish, and heals a leper and a paralyzed man.",
+    "culture": [
+      {
+        "title": "Lake of Gennesaret",
+        "reference": "Luke 5:1",
+        "text": "Luke calls the Sea of Galilee the lake of Gennesaret, after the plain on its northwest shore."
+      },
+      {
+        "title": "Washing nets",
+        "reference": "Luke 5:2",
+        "text": "Fishermen worked at night with nets and cleaned and mended them in the morning."
+      },
+      {
+        "title": "Through the tiling",
+        "reference": "Luke 5:19",
+        "text": "Luke describes the roof as tiling, a style familiar to readers across the Greek world."
+      }
+    ]
+  },
+  "Luke 6": {
+    "audience": "After praying all night, Jesus chooses twelve apostles and gives a sermon on a level place (Luke 6:12–17).",
+    "culture": [
+      {
+        "title": "Rubbing grain",
+        "reference": "Luke 6:1",
+        "text": "Picking grain by hand from a neighbor's field was allowed (Deuteronomy 23:25). Pharisees counted rubbing it out as work on the sabbath."
+      },
+      {
+        "title": "Good measure",
+        "reference": "Luke 6:38",
+        "text": "Grain sellers filled a measure, pressed it down, and shook it to settle the grain. The buyer carried it in the fold of a robe, called the \"bosom.\""
+      }
+    ]
+  },
+  "Luke 7": {
+    "audience": "Jesus heals a centurion's servant, raises a widow's son at Nain, and is anointed by a sinful woman at a Pharisee's house.",
+    "culture": [
+      {
+        "title": "A centurion who built a synagogue",
+        "reference": "Luke 7:5",
+        "text": "Some Gentiles admired Judaism and supported synagogues. The remains of a fourth-century synagogue at Capernaum stand on top of earlier foundations."
+      },
+      {
+        "title": "Funeral processions",
+        "reference": "Luke 7:12",
+        "text": "Burial happened the same day. The body was carried on an open bier outside the town, followed by mourners."
+      },
+      {
+        "title": "Reclining at table",
+        "reference": "Luke 7:38",
+        "text": "Guests reclined on their left side with feet stretched away from the table, so the woman could stand behind at Jesus' feet."
+      }
+    ]
+  },
+  "Luke 8": {
+    "audience": "Luke names women who traveled with Jesus and supported him from their own means, including Joanna, wife of Herod's steward (Luke 8:1–3).",
+    "culture": [
+      {
+        "title": "Sowing",
+        "reference": "Luke 8:5",
+        "text": "Seed was scattered by hand, sometimes before plowing, so some fell on paths and rocky ground."
+      },
+      {
+        "title": "The Gadarenes",
+        "reference": "Luke 8:26",
+        "text": "The region across the lake from Galilee was largely Gentile, which explains the herd of swine."
+      }
+    ]
+  },
+  "Luke 9": {
+    "audience": "Jesus sends out the twelve, feeds five thousand, is transfigured, and \"stedfastly set his face to go to Jerusalem\" (Luke 9:51).",
+    "culture": [
+      {
+        "title": "Shaking off the dust",
+        "reference": "Luke 9:5",
+        "text": "Shaking dust from the feet was a public sign of breaking off contact."
+      },
+      {
+        "title": "Samaritans and pilgrims",
+        "reference": "Luke 9:52-53",
+        "text": "Samaritans worshiped at Mount Gerizim rather than Jerusalem and sometimes refused hospitality to Jews traveling to Jerusalem's feasts."
+      },
+      {
+        "title": "Bury my father",
+        "reference": "Luke 9:59",
+        "text": "Burying a parent was a central family duty in Jewish life."
+      }
+    ]
+  },
+  "Luke 10": {
+    "audience": "Jesus sends out seventy, tells the parable of the good Samaritan, and visits Martha and Mary.",
+    "culture": [
+      {
+        "title": "The Jericho road",
+        "reference": "Luke 10:30",
+        "text": "The road from Jerusalem to Jericho drops about 3,300 feet in roughly 17 miles through desert hills, a place known for robbers."
+      },
+      {
+        "title": "Oil and wine",
+        "reference": "Luke 10:34",
+        "text": "Oil soothed wounds and wine cleaned them; both were common remedies."
+      },
+      {
+        "title": "Two pence",
+        "reference": "Luke 10:35",
+        "text": "A penny (denarius) was a day's wage, so two would pay for several days at an inn."
+      }
+    ]
+  },
+  "Luke 11": {
+    "audience": "Jesus teaches the disciples to pray and pronounces woes on Pharisees and lawyers at a meal.",
+    "culture": [
+      {
+        "title": "A friend at midnight",
+        "reference": "Luke 11:5-7",
+        "text": "Families slept together on a raised floor in one room, and the door was barred at night. Hospitality required feeding an arriving guest."
+      },
+      {
+        "title": "Tithing herbs",
+        "reference": "Luke 11:42",
+        "text": "Pharisees tithed even garden herbs like mint and rue."
+      },
+      {
+        "title": "Whitewashed graves",
+        "reference": "Luke 11:44",
+        "text": "Touching a grave made a person unclean (Numbers 19:16). Unmarked graves could be walked over without knowing."
+      }
+    ]
+  },
+  "Luke 12": {
+    "audience": "Jesus warns a crowd of thousands about hypocrisy, greed, and worry, and tells them to be ready for the master's return.",
+    "culture": [
+      {
+        "title": "Sparrows",
+        "reference": "Luke 12:6",
+        "text": "Sparrows were the cheapest birds in the market: five for two farthings."
+      },
+      {
+        "title": "Building bigger barns",
+        "reference": "Luke 12:18",
+        "text": "Grain was stored in barns and storehouses."
+      },
+      {
+        "title": "Loins girded",
+        "reference": "Luke 12:35",
+        "text": "Long robes were tucked into a belt for work or travel."
+      }
+    ]
+  },
+  "Luke 13": {
+    "audience": "Jesus speaks about recent disasters, heals a woman bent for eighteen years, and laments over Jerusalem.",
+    "culture": [
+      {
+        "title": "Pilate and the Galileans",
+        "reference": "Luke 13:1",
+        "text": "Luke is the only source for this killing of Galileans at their sacrifices; Josephus records other violent acts by Pilate."
+      },
+      {
+        "title": "The tower in Siloam",
+        "reference": "Luke 13:4",
+        "text": "Siloam was in the southern part of Jerusalem, near the pool of Siloam."
+      },
+      {
+        "title": "That fox",
+        "reference": "Luke 13:32",
+        "text": "Jesus calls Herod Antipas, ruler of Galilee and Perea, \"that fox.\""
+      }
+    ]
+  },
+  "Luke 14": {
+    "audience": "At a sabbath meal at a Pharisee leader's house, Jesus speaks about seating, guests, and the great supper.",
+    "culture": [
+      {
+        "title": "Seats of honor",
+        "reference": "Luke 14:7-10",
+        "text": "Places at a feast were ranked; the host could move a guest up or down in front of everyone."
+      },
+      {
+        "title": "Invitations",
+        "reference": "Luke 14:16-17",
+        "text": "A first invitation was followed by a servant's call when the meal was ready. Refusing at that point was an insult."
+      },
+      {
+        "title": "Counting the cost",
+        "reference": "Luke 14:28",
+        "text": "Towers in vineyards served as watchtowers and shelters."
+      }
+    ]
+  },
+  "Luke 15": {
+    "audience": "Tax collectors and sinners gather to hear Jesus, and the Pharisees and scribes complain, so he tells three parables of lost things (Luke 15:1–3).",
+    "culture": [
+      {
+        "title": "Ten pieces of silver",
+        "reference": "Luke 15:8",
+        "text": "Village houses had small windows and earthen floors, so finding a coin required a lamp and a broom."
+      },
+      {
+        "title": "Asking for the inheritance",
+        "reference": "Luke 15:12",
+        "text": "Under the law the elder son received a double portion (Deuteronomy 21:17), so the younger would receive a third."
+      },
+      {
+        "title": "Feeding swine",
+        "reference": "Luke 15:15-16",
+        "text": "Pigs were unclean animals (Leviticus 11:7). The husks were probably carob pods used as animal feed."
+      }
+    ]
+  },
+  "Luke 16": {
+    "audience": "Jesus tells the parable of the unjust steward and of the rich man and Lazarus. The Pharisees, \"who were covetous,\" scoff (Luke 16:14).",
+    "culture": [
+      {
+        "title": "Stewards and debts",
+        "reference": "Luke 16:5-7",
+        "text": "A steward managed an estate's business. A hundred measures of oil and of wheat were large amounts."
+      },
+      {
+        "title": "Purple and fine linen",
+        "reference": "Luke 16:19",
+        "text": "Purple dye, made from murex sea snails, was very costly and worn by the wealthy."
+      },
+      {
+        "title": "Abraham's bosom",
+        "reference": "Luke 16:22",
+        "text": "Reclining next to the host at a banquet put a guest at his bosom (John 13:23)."
+      }
+    ]
+  },
+  "Luke 17": {
+    "audience": "Between Samaria and Galilee, Jesus heals ten lepers; the only one who returns to thank him is a Samaritan (Luke 17:11–18).",
+    "culture": [
+      {
+        "title": "A millstone",
+        "reference": "Luke 17:2",
+        "text": "A large millstone was turned by a donkey; a smaller one was turned by hand by women (Luke 17:35)."
+      },
+      {
+        "title": "Lepers stood afar off",
+        "reference": "Luke 17:12",
+        "text": "People with skin disease had to live apart and keep their distance (Leviticus 13:45–46)."
+      },
+      {
+        "title": "Show yourselves unto the priests",
+        "reference": "Luke 17:14",
+        "text": "A priest had to confirm healing before a leper could return to the community (Leviticus 14)."
+      }
+    ]
+  },
+  "Luke 18": {
+    "audience": "Jesus tells parables on prayer, blesses children, and speaks with a rich ruler as he nears Jericho.",
+    "culture": [
+      {
+        "title": "Widows and judges",
+        "reference": "Luke 18:3",
+        "text": "Widows had few legal protectors; the law commanded justice for them (Exodus 22:22)."
+      },
+      {
+        "title": "Fasting twice a week",
+        "reference": "Luke 18:12",
+        "text": "Some devout Jews fasted on Mondays and Thursdays, more than the law required."
+      },
+      {
+        "title": "Smote upon his breast",
+        "reference": "Luke 18:13",
+        "text": "Beating the breast was a gesture of grief or remorse (Luke 23:48)."
+      }
+    ]
+  },
+  "Luke 19": {
+    "audience": "Jesus stays with Zacchaeus in Jericho, tells the parable of the pounds, enters Jerusalem, and weeps over the city.",
+    "culture": [
+      {
+        "title": "Chief among the publicans",
+        "reference": "Luke 19:2",
+        "text": "Jericho was a wealthy city on a trade route, with balsam groves and palm plantations. Zacchaeus oversaw other tax collectors there."
+      },
+      {
+        "title": "Fourfold restitution",
+        "reference": "Luke 19:8",
+        "text": "The law required fourfold repayment for a stolen sheep (Exodus 22:1)."
+      },
+      {
+        "title": "A nobleman receiving a kingdom",
+        "reference": "Luke 19:12, 14",
+        "text": "Herod's son Archelaus went to Rome to receive his kingdom, and a Jewish delegation followed to oppose him (Josephus)."
+      }
+    ]
+  },
+  "Luke 20": {
+    "audience": "In the temple, the chief priests, scribes, and Sadducees question Jesus' authority and test him on taxes and resurrection.",
+    "culture": [
+      {
+        "title": "Absentee landlords",
+        "reference": "Luke 20:9-10",
+        "text": "Wealthy owners leased vineyards to tenants and sent servants to collect a share of the harvest."
+      },
+      {
+        "title": "Sadducees",
+        "reference": "Luke 20:27",
+        "text": "The Sadducees, a priestly party, denied the resurrection."
+      },
+      {
+        "title": "Levirate marriage",
+        "reference": "Luke 20:28",
+        "text": "If a man died childless, his brother was to marry the widow (Deuteronomy 25:5–6)."
+      }
+    ]
+  },
+  "Luke 21": {
+    "audience": "Jesus praises a poor widow's gift and foretells Jerusalem \"compassed with armies\" (Luke 21:20). The Romans destroyed the city in AD 70.",
+    "culture": [
+      {
+        "title": "The treasury",
+        "reference": "Luke 21:1",
+        "text": "Thirteen trumpet-shaped chests in the temple court received offerings."
+      },
+      {
+        "title": "Goodly stones and gifts",
+        "reference": "Luke 21:5",
+        "text": "The temple was decorated with gifts, including a golden vine (Josephus)."
+      }
+    ]
+  },
+  "Luke 22": {
+    "audience": "Luke tells of Judas' agreement, the Last Supper, the prayer on the Mount of Olives, the arrest, and Peter's denial.",
+    "culture": [
+      {
+        "title": "Unleavened bread and Passover",
+        "reference": "Luke 22:1, 7",
+        "text": "The Passover lamb was killed on the fourteenth of Nisan, followed by the seven-day feast of unleavened bread (Leviticus 23:5–6)."
+      },
+      {
+        "title": "Benefactors",
+        "reference": "Luke 22:25",
+        "text": "Rulers and rich patrons were honored with the title ‘Benefactor’ in public inscriptions."
+      },
+      {
+        "title": "Sweat as drops of blood",
+        "reference": "Luke 22:44",
+        "text": "This verse and verse 43 are missing from some early manuscripts."
+      }
+    ]
+  },
+  "Luke 23": {
+    "audience": "Only Luke records that Pilate sent Jesus to Herod Antipas, who was in Jerusalem for the feast (Luke 23:6–12).",
+    "culture": [
+      {
+        "title": "Herod and Pilate",
+        "reference": "Luke 23:12",
+        "text": "Galilee was Herod's territory, so Pilate sent Jesus, a Galilean, to him."
+      },
+      {
+        "title": "Daughters of Jerusalem",
+        "reference": "Luke 23:27-28",
+        "text": "Women wept and mourned as the condemned were led out."
+      },
+      {
+        "title": "Joseph of Arimathaea",
+        "reference": "Luke 23:50-53",
+        "text": "A member of the council asked for Jesus' body and buried it in a new rock-cut tomb. Bodies of executed criminals were usually not given honorable burial."
+      }
+    ]
+  },
+  "Luke 24": {
+    "audience": "Luke records the empty tomb, two disciples on the road to Emmaus, Jesus appearing in Jerusalem, and his ascension near Bethany.",
+    "culture": [
+      {
+        "title": "Emmaus",
+        "reference": "Luke 24:13",
+        "text": "Emmaus was about sixty furlongs (roughly seven miles) from Jerusalem."
+      },
+      {
+        "title": "Breaking bread",
+        "reference": "Luke 24:30",
+        "text": "At meals the host took bread, gave thanks, broke it, and gave it to the guests."
+      },
+      {
+        "title": "Moses, prophets, and psalms",
+        "reference": "Luke 24:44",
+        "text": "Jesus names the parts of the Hebrew Scriptures: the law of Moses, the prophets, and the psalms."
+      }
+    ]
+  }
+}

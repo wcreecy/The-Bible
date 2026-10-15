@@ -1,0 +1,537 @@
+{
+  "Acts 1": {
+    "audience": "Luke writes again to Theophilus, picking up from \"the former treatise\" (Acts 1:1). Acts follows the apostles from Jerusalem to Rome.",
+    "culture": [
+      {
+        "title": "A sabbath day's journey",
+        "reference": "Acts 1:12",
+        "text": "The distance a person could walk on the sabbath, about 2,000 cubits (roughly two-thirds of a mile)."
+      },
+      {
+        "title": "The upper room",
+        "reference": "Acts 1:13",
+        "text": "Upper rooms were built on the flat roofs of larger houses and could hold a sizable group."
+      },
+      {
+        "title": "Casting lots",
+        "reference": "Acts 1:26",
+        "text": "Lots were used to make decisions left to God (Proverbs 16:33), including priestly duties (Luke 1:9)."
+      }
+    ]
+  },
+  "Acts 2": {
+    "audience": "At Pentecost, Jews and proselytes from across the Roman and Parthian world are in Jerusalem (Acts 2:9–11). Peter preaches, and about three thousand are baptized.",
+    "culture": [
+      {
+        "title": "Pentecost",
+        "reference": "Acts 2:1",
+        "text": "Pentecost (‘fiftieth’) is the feast of weeks, fifty days after Passover, celebrating the wheat harvest (Leviticus 23:15–21)."
+      },
+      {
+        "title": "The third hour",
+        "reference": "Acts 2:15",
+        "text": "About 9 a.m., the hour of morning prayer, too early for drunkenness."
+      },
+      {
+        "title": "Breaking bread from house to house",
+        "reference": "Acts 2:46",
+        "text": "Believers met in the temple courts and shared meals in homes."
+      }
+    ]
+  },
+  "Acts 3": {
+    "audience": "Peter and John heal a lame man at the temple gate and Peter speaks in Solomon's porch.",
+    "culture": [
+      {
+        "title": "The hour of prayer",
+        "reference": "Acts 3:1",
+        "text": "The ninth hour (about 3 p.m.) was the time of the evening sacrifice and prayer."
+      },
+      {
+        "title": "The gate called Beautiful",
+        "reference": "Acts 3:2",
+        "text": "Josephus describes a temple gate of Corinthian bronze, which may be this gate. Beggars sat where worshipers passed."
+      }
+    ]
+  },
+  "Acts 4": {
+    "audience": "Peter and John are arrested and questioned by the high priest's family. The believers share their possessions.",
+    "culture": [
+      {
+        "title": "The captain of the temple",
+        "reference": "Acts 4:1",
+        "text": "The captain of the temple was a senior priest in charge of the temple police."
+      },
+      {
+        "title": "Unlearned and ignorant men",
+        "reference": "Acts 4:13",
+        "text": "The council means they had no formal training under the rabbis."
+      },
+      {
+        "title": "Barnabas",
+        "reference": "Acts 4:36",
+        "text": "Joses, a Levite from Cyprus, is given the name Barnabas, which Luke translates \"The son of consolation.\""
+      }
+    ]
+  },
+  "Acts 5": {
+    "audience": "Ananias and Sapphira die after lying about their gift. The apostles are arrested again, and Gamaliel advises the council to leave them alone.",
+    "culture": [
+      {
+        "title": "Gamaliel",
+        "reference": "Acts 5:34",
+        "text": "Gamaliel was a leading Pharisee teacher, remembered in Jewish tradition as Rabban Gamaliel the Elder. Paul studied under him (Acts 22:3)."
+      },
+      {
+        "title": "Theudas and Judas of Galilee",
+        "reference": "Acts 5:36-37",
+        "text": "Josephus describes Judas the Galilean, who led a revolt over the census of AD 6, and a Theudas who led a movement later."
+      },
+      {
+        "title": "Beaten",
+        "reference": "Acts 5:40",
+        "text": "The law limited a beating to forty stripes (Deuteronomy 25:3); in practice thirty-nine were given (2 Corinthians 11:24)."
+      }
+    ]
+  },
+  "Acts 6": {
+    "audience": "Greek-speaking Jewish believers complain that their widows are neglected, and seven men are chosen to serve.",
+    "culture": [
+      {
+        "title": "Grecians and Hebrews",
+        "reference": "Acts 6:1",
+        "text": "Grecians were Jews from outside the land who spoke Greek; Hebrews spoke Aramaic and were from Judea or Galilee."
+      },
+      {
+        "title": "The synagogue of the Libertines",
+        "reference": "Acts 6:9",
+        "text": "Libertines were freedmen, perhaps descendants of Jews enslaved by Rome. A Greek inscription found in Jerusalem records a synagogue built by Theodotus for visitors from abroad."
+      }
+    ]
+  },
+  "Acts 7": {
+    "audience": "Stephen reviews Israel's history from Abraham to Solomon before the council and is stoned. Saul watches the coats of the witnesses (Acts 7:58).",
+    "culture": [
+      {
+        "title": "The learning of the Egyptians",
+        "reference": "Acts 7:22",
+        "text": "This detail about Moses' education does not appear in Exodus but is also found in Philo and Josephus."
+      },
+      {
+        "title": "Stoning outside the city",
+        "reference": "Acts 7:58",
+        "text": "Executions took place outside the camp or city, and the witnesses threw the first stones (Deuteronomy 17:7)."
+      }
+    ]
+  },
+  "Acts 8": {
+    "audience": "Persecution scatters the believers. Philip preaches in Samaria and to an Ethiopian official on the road to Gaza.",
+    "culture": [
+      {
+        "title": "Simon the sorcerer",
+        "reference": "Acts 8:9",
+        "text": "Magicians who claimed special powers were common in the Roman world. The word \"simony\" (buying church office) comes from this Simon."
+      },
+      {
+        "title": "Candace",
+        "reference": "Acts 8:27",
+        "text": "Candace (Kandake) was a title for the queen mother of the kingdom of Meroë, in modern Sudan, not a personal name."
+      },
+      {
+        "title": "Reading aloud",
+        "reference": "Acts 8:30",
+        "text": "Reading was usually done aloud, so Philip could hear the official reading Isaiah."
+      }
+    ]
+  },
+  "Acts 9": {
+    "audience": "Saul, sent with letters to arrest believers in Damascus, sees Jesus on the road. Peter heals Aeneas and raises Tabitha.",
+    "culture": [
+      {
+        "title": "Letters to Damascus",
+        "reference": "Acts 9:2",
+        "text": "The high priest's letters gave Saul authority with Damascus' synagogues, which had large Jewish communities."
+      },
+      {
+        "title": "The street called Straight",
+        "reference": "Acts 9:11",
+        "text": "Damascus' main east–west street still follows the line of the Roman road."
+      },
+      {
+        "title": "Let down in a basket",
+        "reference": "Acts 9:25",
+        "text": "Paul describes the same escape in 2 Corinthians 11:32–33."
+      }
+    ]
+  },
+  "Acts 10": {
+    "audience": "Peter sees a vision of unclean animals and goes to the house of Cornelius, a Roman centurion, in Caesarea.",
+    "culture": [
+      {
+        "title": "The Italian band",
+        "reference": "Acts 10:1",
+        "text": "A cohort of about 600 soldiers. Caesarea was the Roman capital of Judea."
+      },
+      {
+        "title": "Simon a tanner",
+        "reference": "Acts 10:6",
+        "text": "Tanning used animal hides and was considered unclean work, often done by the sea outside town."
+      },
+      {
+        "title": "Unlawful to keep company",
+        "reference": "Acts 10:28",
+        "text": "Many Jews avoided entering Gentile houses or eating with Gentiles to keep the food and purity laws."
+      }
+    ]
+  },
+  "Acts 11": {
+    "audience": "Peter defends his visit to Cornelius in Jerusalem. The church in Antioch grows, and the disciples are first called Christians there (Acts 11:26).",
+    "culture": [
+      {
+        "title": "Antioch",
+        "reference": "Acts 11:19-20",
+        "text": "Antioch in Syria was the third-largest city in the Roman Empire, with a large Jewish population."
+      },
+      {
+        "title": "Christians",
+        "reference": "Acts 11:26",
+        "text": "The name means ‘followers of Christ’; the -ianus ending is Latin, like ‘Herodians.’"
+      },
+      {
+        "title": "Famine under Claudius",
+        "reference": "Acts 11:28",
+        "text": "Roman writers record several food shortages under Claudius (AD 41–54), and Josephus a famine in Judea around AD 46–48."
+      }
+    ]
+  },
+  "Acts 12": {
+    "audience": "Herod Agrippa I kills James and imprisons Peter, then dies at Caesarea.",
+    "culture": [
+      {
+        "title": "Four quaternions",
+        "reference": "Acts 12:4",
+        "text": "Sixteen soldiers in four squads guarded Peter, one squad for each watch of the night."
+      },
+      {
+        "title": "Mary's house",
+        "reference": "Acts 12:12",
+        "text": "Mary, mother of John Mark, owned a house large enough for a gathering, with a gate and a servant girl, Rhoda."
+      },
+      {
+        "title": "Herod's death",
+        "reference": "Acts 12:21-23",
+        "text": "Josephus also records that Agrippa died suddenly at Caesarea in AD 44 after the crowd hailed him as a god."
+      }
+    ]
+  },
+  "Acts 13": {
+    "audience": "The church at Antioch sends Barnabas and Saul to Cyprus and southern Galatia. From here Saul is called Paul (Acts 13:9).",
+    "culture": [
+      {
+        "title": "Sergius Paulus",
+        "reference": "Acts 13:7",
+        "text": "Luke correctly calls him a deputy (proconsul), the title of a governor of a senatorial province. Inscriptions mention men named Sergius Paullus."
+      },
+      {
+        "title": "Reading the law and the prophets",
+        "reference": "Acts 13:15",
+        "text": "Synagogue services included readings from the law and the prophets, after which visitors could be asked to speak."
+      },
+      {
+        "title": "Devout and honourable women",
+        "reference": "Acts 13:50",
+        "text": "Gentile women of high standing were often drawn to the synagogue."
+      }
+    ]
+  },
+  "Acts 14": {
+    "audience": "In Lystra, the crowd takes Barnabas and Paul for gods; then Paul is stoned. They return, appointing elders in each church.",
+    "culture": [
+      {
+        "title": "The speech of Lycaonia",
+        "reference": "Acts 14:11",
+        "text": "The crowd speaks their local language, so Paul and Barnabas don't understand at first."
+      },
+      {
+        "title": "Jupiter and Mercurius",
+        "reference": "Acts 14:12",
+        "text": "Zeus and Hermes. A local legend told by Ovid has the two gods visiting the region in disguise. Inscriptions near Lystra honor both together."
+      },
+      {
+        "title": "Oxen and garlands",
+        "reference": "Acts 14:13",
+        "text": "Sacrificial animals were decorated with wreaths before being offered."
+      }
+    ]
+  },
+  "Acts 15": {
+    "audience": "The apostles and elders in Jerusalem meet to decide whether Gentile believers must be circumcised and keep the law of Moses.",
+    "culture": [
+      {
+        "title": "Things strangled and blood",
+        "reference": "Acts 15:20",
+        "text": "The requests echo laws for foreigners living in Israel (Leviticus 17–18)."
+      },
+      {
+        "title": "Moses read every sabbath",
+        "reference": "Acts 15:21",
+        "text": "The law was read every sabbath in synagogues across the Roman world."
+      },
+      {
+        "title": "Letters",
+        "reference": "Acts 15:23",
+        "text": "The letter follows the standard Greek form: senders, recipients, \"greeting,\" and \"Fare ye well\" at the end."
+      }
+    ]
+  },
+  "Acts 16": {
+    "audience": "Paul takes Timothy, crosses to Macedonia, and founds the church in Philippi. Luke starts writing \"we\" here (Acts 16:10).",
+    "culture": [
+      {
+        "title": "Philippi, a colony",
+        "reference": "Acts 16:12",
+        "text": "Philippi was a Roman colony settled by veterans, governed under Roman law and proud of its Roman citizenship."
+      },
+      {
+        "title": "A seller of purple",
+        "reference": "Acts 16:14",
+        "text": "Thyatira was known for its dyeing trade; inscriptions there mention guilds of dyers."
+      },
+      {
+        "title": "Romans beaten uncondemned",
+        "reference": "Acts 16:37",
+        "text": "Roman citizens were protected from beating without trial; the magistrates had broken the law."
+      }
+    ]
+  },
+  "Acts 17": {
+    "audience": "Paul preaches in Thessalonica and Berea, then speaks to philosophers on the Areopagus in Athens.",
+    "culture": [
+      {
+        "title": "Politarchs",
+        "reference": "Acts 17:6",
+        "text": "The \"rulers of the city\" are politarchs in Greek, a title found in inscriptions from Thessalonica."
+      },
+      {
+        "title": "Epicureans and Stoics",
+        "reference": "Acts 17:18",
+        "text": "Two main philosophical schools: Epicureans valued tranquility and believed the gods were distant; Stoics taught living by reason and divine order."
+      },
+      {
+        "title": "To the unknown god",
+        "reference": "Acts 17:23",
+        "text": "Ancient writers mention altars in Athens to unknown gods. Paul quotes Greek poets, including Aratus (Acts 17:28)."
+      }
+    ]
+  },
+  "Acts 18": {
+    "audience": "Paul stays eighteen months in Corinth, working with Aquila and Priscilla, before returning to Antioch.",
+    "culture": [
+      {
+        "title": "Claudius expels the Jews",
+        "reference": "Acts 18:2",
+        "text": "The Roman historian Suetonius records that Claudius expelled Jews from Rome because of disturbances, around AD 49."
+      },
+      {
+        "title": "Tentmakers",
+        "reference": "Acts 18:3",
+        "text": "Tentmakers worked in leather and cloth. Rabbis were expected to learn a trade."
+      },
+      {
+        "title": "Gallio",
+        "reference": "Acts 18:12",
+        "text": "An inscription found at Delphi dates Gallio's term as proconsul of Achaia to about AD 51–52."
+      }
+    ]
+  },
+  "Acts 19": {
+    "audience": "Paul spends over two years in Ephesus. A silversmith stirs up a riot in the theater over the goddess Diana.",
+    "culture": [
+      {
+        "title": "Burning magic books",
+        "reference": "Acts 19:19",
+        "text": "Ephesus was known for magical texts, called ‘Ephesian letters.’ The books burned were worth fifty thousand pieces of silver."
+      },
+      {
+        "title": "Diana of the Ephesians",
+        "reference": "Acts 19:27",
+        "text": "Diana (Artemis) had a temple at Ephesus that was one of the Seven Wonders of the World."
+      },
+      {
+        "title": "The theatre",
+        "reference": "Acts 19:29",
+        "text": "Ephesus' excavated theater could seat about 24,000 people."
+      }
+    ]
+  },
+  "Acts 20": {
+    "audience": "Paul travels through Macedonia and Greece and says farewell to the Ephesian elders at Miletus.",
+    "culture": [
+      {
+        "title": "The first day of the week",
+        "reference": "Acts 20:7",
+        "text": "Believers in Troas gathered on the first day of the week to break bread."
+      },
+      {
+        "title": "Many lights",
+        "reference": "Acts 20:8",
+        "text": "Oil lamps in a crowded third-floor room would make the air warm and stuffy."
+      },
+      {
+        "title": "Falling on his neck",
+        "reference": "Acts 20:37",
+        "text": "Embracing and kissing was a common farewell (Genesis 33:4)."
+      }
+    ]
+  },
+  "Acts 21": {
+    "audience": "Paul arrives in Jerusalem and is seized in the temple. A Roman commander rescues him.",
+    "culture": [
+      {
+        "title": "Paying for vows",
+        "reference": "Acts 21:23-24",
+        "text": "A Nazarite vow ended with shaving the head and offering sacrifices (Numbers 6:13–18)."
+      },
+      {
+        "title": "Gentiles in the temple",
+        "reference": "Acts 21:28",
+        "text": "Stone inscriptions warned Gentiles not to pass the barrier into the inner courts on pain of death; two have been found."
+      },
+      {
+        "title": "The castle",
+        "reference": "Acts 21:34",
+        "text": "The Antonia fortress at the northwest corner of the temple housed a Roman garrison, with stairs down into the temple courts."
+      }
+    ]
+  },
+  "Acts 22": {
+    "audience": "Paul tells his story to the crowd in Hebrew and avoids flogging by appealing to his Roman citizenship.",
+    "culture": [
+      {
+        "title": "Brought up at Gamaliel's feet",
+        "reference": "Acts 22:3",
+        "text": "Students sat at their teacher's feet."
+      },
+      {
+        "title": "Freeborn",
+        "reference": "Acts 22:28",
+        "text": "Citizenship could be bought, granted, or inherited. Paul was born a citizen."
+      },
+      {
+        "title": "Scourging",
+        "reference": "Acts 22:24-25",
+        "text": "Romans flogged suspects to get confessions. Beating a citizen without trial was illegal."
+      }
+    ]
+  },
+  "Acts 23": {
+    "audience": "Paul appears before the Sanhedrin. A plot against him leads the commander to send him to Felix at Caesarea.",
+    "culture": [
+      {
+        "title": "Ananias the high priest",
+        "reference": "Acts 23:2",
+        "text": "Josephus describes Ananias, high priest about AD 47–59, as greedy and violent."
+      },
+      {
+        "title": "Pharisees and Sadducees",
+        "reference": "Acts 23:8",
+        "text": "Luke explains that the Sadducees deny resurrection, angels, and spirits, but the Pharisees believe in all three."
+      },
+      {
+        "title": "Claudius Lysias' letter",
+        "reference": "Acts 23:26",
+        "text": "The letter follows the Greek form: sender, \"unto the most excellent governor Felix,\" greeting."
+      }
+    ]
+  },
+  "Acts 24": {
+    "audience": "The orator Tertullus accuses Paul before Felix, who keeps him in custody for two years hoping for a bribe (Acts 24:26–27).",
+    "culture": [
+      {
+        "title": "Flattering the governor",
+        "reference": "Acts 24:2-3",
+        "text": "Speeches often began with praise of the judge. Roman historian Tacitus says Felix ruled with cruelty and lust."
+      },
+      {
+        "title": "Drusilla",
+        "reference": "Acts 24:24",
+        "text": "Drusilla was a daughter of Herod Agrippa I. She left her first husband to marry Felix."
+      }
+    ]
+  },
+  "Acts 25": {
+    "audience": "Festus replaces Felix. Paul appeals to Caesar, and Festus consults King Agrippa.",
+    "culture": [
+      {
+        "title": "Appeal to Caesar",
+        "reference": "Acts 25:11",
+        "text": "Roman citizens could appeal a case to the emperor, at this time Nero."
+      },
+      {
+        "title": "Agrippa and Bernice",
+        "reference": "Acts 25:13",
+        "text": "Herod Agrippa II, son of Agrippa I, ruled territories to the north and east. Bernice was his sister."
+      }
+    ]
+  },
+  "Acts 26": {
+    "audience": "Paul tells Agrippa about his life and conversion. Agrippa and Festus agree that he could have been released if he had not appealed to Caesar (Acts 26:32).",
+    "culture": [
+      {
+        "title": "Stretching forth the hand",
+        "reference": "Acts 26:1",
+        "text": "Orators raised their hand as a gesture when starting a speech."
+      },
+      {
+        "title": "Kicking against the pricks",
+        "reference": "Acts 26:14",
+        "text": "Oxen kicking against a goad hurt only themselves; the saying also appears in Greek writers."
+      },
+      {
+        "title": "Done in a corner",
+        "reference": "Acts 26:26",
+        "text": "A Greek phrase for something done in secret."
+      }
+    ]
+  },
+  "Acts 27": {
+    "audience": "Paul sails for Rome under a centurion named Julius and is shipwrecked on Malta. Luke describes the journey in detail as an eyewitness (\"we\").",
+    "culture": [
+      {
+        "title": "Ships of Alexandria",
+        "reference": "Acts 27:6",
+        "text": "Large grain ships carried wheat from Egypt to Rome and also took passengers."
+      },
+      {
+        "title": "The fast",
+        "reference": "Acts 27:9",
+        "text": "The fast of the Day of Atonement came in late September or October. Sailing became dangerous from mid-September and stopped for the winter."
+      },
+      {
+        "title": "Undergirding the ship",
+        "reference": "Acts 27:17",
+        "text": "Sailors passed cables under the hull to hold it together in a storm."
+      }
+    ]
+  },
+  "Acts 28": {
+    "audience": "Paul winters on Malta, reaches Rome, and lives two years in his own rented house, preaching under guard (Acts 28:30–31).",
+    "culture": [
+      {
+        "title": "Castor and Pollux",
+        "reference": "Acts 28:11",
+        "text": "The ship's figurehead was the twin gods, considered protectors of sailors."
+      },
+      {
+        "title": "Appii forum and The three taverns",
+        "reference": "Acts 28:15",
+        "text": "Stops on the Appian Way, about 43 and 33 miles south of Rome."
+      },
+      {
+        "title": "House arrest",
+        "reference": "Acts 28:16",
+        "text": "Paul is allowed to live alone with a soldier guarding him, probably chained to him (Acts 28:20)."
+      }
+    ]
+  }
+}

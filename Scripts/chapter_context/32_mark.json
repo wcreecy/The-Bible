@@ -1,0 +1,317 @@
+{
+  "Mark 1": {
+    "audience": "Mark wrote for readers who needed Jewish customs explained (Mark 7:3–4) and Aramaic words translated (Mark 5:41). Early tradition connects the Gospel with Peter's preaching and with Rome.",
+    "culture": [
+      {
+        "title": "Straightway",
+        "reference": "Mark 1:10",
+        "text": "The word translated \"straightway\" or \"immediately\" appears over forty times in Mark, giving the Gospel a rapid pace."
+      },
+      {
+        "title": "The synagogue",
+        "reference": "Mark 1:21",
+        "text": "Synagogues were local meeting places for prayer and Scripture reading on the sabbath. Visiting teachers could be invited to speak."
+      },
+      {
+        "title": "Peter's mother-in-law",
+        "reference": "Mark 1:30",
+        "text": "Extended families lived together in courtyard houses; Peter's household in Capernaum included his wife's mother."
+      }
+    ]
+  },
+  "Mark 2": {
+    "audience": "Mark records early conflicts with scribes and Pharisees in Capernaum over forgiveness, table fellowship, fasting, and the sabbath.",
+    "culture": [
+      {
+        "title": "Uncovering the roof",
+        "reference": "Mark 2:4",
+        "text": "Galilean roofs were made of beams covered with branches and packed clay, reached by an outside stairway. Friends dug through to lower the paralyzed man."
+      },
+      {
+        "title": "Levi at the receipt of custom",
+        "reference": "Mark 2:14",
+        "text": "Capernaum lay on a trade route near a border, where tolls were collected on goods."
+      },
+      {
+        "title": "Patching garments",
+        "reference": "Mark 2:21",
+        "text": "Unshrunk new cloth sewn onto an old garment shrinks when washed and tears the old cloth."
+      }
+    ]
+  },
+  "Mark 3": {
+    "audience": "Crowds come to Jesus from Galilee, Judea, Idumaea, beyond Jordan, and Tyre and Sidon (Mark 3:7–8). He appoints the twelve.",
+    "culture": [
+      {
+        "title": "Herodians",
+        "reference": "Mark 3:6",
+        "text": "The Herodians supported the rule of Herod's family under Rome. They joined the Pharisees against Jesus."
+      },
+      {
+        "title": "Boanerges",
+        "reference": "Mark 3:17",
+        "text": "Jesus names James and John Boanerges, which Mark translates as \"The sons of thunder.\""
+      },
+      {
+        "title": "Binding the strong man",
+        "reference": "Mark 3:27",
+        "text": "A thief must first tie up the owner before plundering his house."
+      }
+    ]
+  },
+  "Mark 4": {
+    "audience": "Jesus teaches parables from a boat and then calms a storm on the Sea of Galilee.",
+    "culture": [
+      {
+        "title": "A candle under a bushel",
+        "reference": "Mark 4:21",
+        "text": "A bushel was a grain measure; a lamp covered by one would go out."
+      },
+      {
+        "title": "Sudden storms",
+        "reference": "Mark 4:37",
+        "text": "The Sea of Galilee lies about 700 feet below sea level; winds rushing down from the surrounding hills can whip up sudden, violent storms."
+      },
+      {
+        "title": "A Galilean boat",
+        "reference": "Mark 4:38",
+        "text": "In 1986 a first-century fishing boat about 27 feet long was found in the mud of the Sea of Galilee."
+      }
+    ]
+  },
+  "Mark 5": {
+    "audience": "Jesus heals a demon-possessed man in Gentile territory, a woman with a twelve-year illness, and raises Jairus' daughter.",
+    "culture": [
+      {
+        "title": "Living among the tombs",
+        "reference": "Mark 5:3",
+        "text": "Tombs cut in hillsides could shelter outcasts. Contact with the dead made a person ritually unclean."
+      },
+      {
+        "title": "Legion",
+        "reference": "Mark 5:9",
+        "text": "A Roman legion had about 6,000 soldiers."
+      },
+      {
+        "title": "Talitha cumi",
+        "reference": "Mark 5:41",
+        "text": "Mark preserves Jesus' Aramaic words, \"Talitha cumi,\" and translates them: \"Damsel, I say unto thee, arise.\""
+      }
+    ]
+  },
+  "Mark 6": {
+    "audience": "Jesus is rejected at Nazareth, sends out the twelve, and feeds five thousand. Mark tells of John the Baptist's death at Herod's banquet.",
+    "culture": [
+      {
+        "title": "The carpenter",
+        "reference": "Mark 6:3",
+        "text": "The word for carpenter (tekton) means a builder or craftsman in wood or stone. Nazareth was a small village near the growing city of Sepphoris."
+      },
+      {
+        "title": "Herod's oath",
+        "reference": "Mark 6:23",
+        "text": "\"Unto the half of my kingdom\" echoes King Ahasuerus' words to Esther (Esther 5:3)."
+      },
+      {
+        "title": "Groups on the green grass",
+        "reference": "Mark 6:39-40",
+        "text": "Grass is green in Galilee in spring, near Passover (John 6:4). The crowd sits in groups of hundreds and fifties."
+      }
+    ]
+  },
+  "Mark 7": {
+    "audience": "Mark explains Jewish washing customs for readers unfamiliar with them (Mark 7:3–4) and notes that Jesus declared all foods clean (Mark 7:19).",
+    "culture": [
+      {
+        "title": "Washing pots and couches",
+        "reference": "Mark 7:4",
+        "text": "Pharisees washed cups, pots, bronze vessels, and couches according to purity rules. Stone vessels, which could not become impure, were common in Jewish homes."
+      },
+      {
+        "title": "Corban",
+        "reference": "Mark 7:11",
+        "text": "Corban means ‘a gift’ dedicated to God. An ossuary lid found near Jerusalem bears the word as an inscription."
+      },
+      {
+        "title": "Ephphatha",
+        "reference": "Mark 7:34",
+        "text": "Jesus says the Aramaic word \"Ephphatha,\" which Mark translates \"Be opened.\""
+      }
+    ]
+  },
+  "Mark 8": {
+    "audience": "After feeding four thousand, Jesus asks his disciples at Caesarea Philippi who he is, and Peter answers, \"Thou art the Christ\" (Mark 8:29).",
+    "culture": [
+      {
+        "title": "Leaven of the Pharisees",
+        "reference": "Mark 8:15",
+        "text": "Leaven—a lump of fermented dough—spread through the whole batch. It was a common image for hidden influence."
+      },
+      {
+        "title": "Men as trees walking",
+        "reference": "Mark 8:24",
+        "text": "Only Mark records this healing in two stages at Bethsaida."
+      },
+      {
+        "title": "Taking up the cross",
+        "reference": "Mark 8:34",
+        "text": "Condemned men carried their own crossbeam to the place of execution."
+      }
+    ]
+  },
+  "Mark 9": {
+    "audience": "Jesus is transfigured on a high mountain and teaches the disciples privately about his death and about humility.",
+    "culture": [
+      {
+        "title": "Elijah must first come",
+        "reference": "Mark 9:11",
+        "text": "Based on Malachi 4:5, the scribes taught that Elijah would return before the Messiah."
+      },
+      {
+        "title": "Gehenna",
+        "reference": "Mark 9:43-48",
+        "text": "\"Hell\" here is Gehenna, the valley of Hinnom outside Jerusalem, once a place of child sacrifice (Jeremiah 7:31)."
+      },
+      {
+        "title": "Salted with fire",
+        "reference": "Mark 9:49",
+        "text": "Every sacrifice was salted (Leviticus 2:13)."
+      }
+    ]
+  },
+  "Mark 10": {
+    "audience": "Jesus travels toward Jerusalem through Judea and beyond the Jordan, teaching on divorce, wealth, and service, and heals blind Bartimaeus at Jericho.",
+    "culture": [
+      {
+        "title": "Women divorcing husbands",
+        "reference": "Mark 10:12",
+        "text": "Under Roman law, women could divorce their husbands; Mark includes this case for his readers."
+      },
+      {
+        "title": "A ransom",
+        "reference": "Mark 10:45",
+        "text": "A ransom was a price paid to free a slave or captive."
+      },
+      {
+        "title": "Begging by the road",
+        "reference": "Mark 10:46",
+        "text": "Blind beggars sat by busy roads, especially the pilgrim route near Jericho before the feasts."
+      }
+    ]
+  },
+  "Mark 11": {
+    "audience": "Jesus enters Jerusalem, curses a fig tree, and drives out traders from the temple courts.",
+    "culture": [
+      {
+        "title": "A colt never ridden",
+        "reference": "Mark 11:2",
+        "text": "An animal never used for ordinary work was considered fit for sacred purposes (Numbers 19:2)."
+      },
+      {
+        "title": "Figs out of season",
+        "reference": "Mark 11:13",
+        "text": "Fig trees put out small early fruit with their leaves in spring; a tree in full leaf without any promised a poor crop."
+      },
+      {
+        "title": "The court of the Gentiles",
+        "reference": "Mark 11:17",
+        "text": "The outer temple court, open to Gentiles, was used for selling animals and changing money."
+      }
+    ]
+  },
+  "Mark 12": {
+    "audience": "In the temple, Jesus tells the parable of the wicked tenants and answers questions on taxes, resurrection, and the greatest commandment.",
+    "culture": [
+      {
+        "title": "A penny with Caesar's image",
+        "reference": "Mark 12:15-16",
+        "text": "The Roman denarius bore the emperor's portrait and title."
+      },
+      {
+        "title": "Devouring widows' houses",
+        "reference": "Mark 12:40",
+        "text": "Scribes could manage estates for widows and might take advantage of them."
+      },
+      {
+        "title": "Two mites",
+        "reference": "Mark 12:42",
+        "text": "A mite (lepton) was the smallest copper coin. Mark explains for his readers that two of them made a quadrans, a Roman coin."
+      }
+    ]
+  },
+  "Mark 13": {
+    "audience": "On the Mount of Olives, Jesus foretells the temple's destruction and warns his disciples to watch.",
+    "culture": [
+      {
+        "title": "Great buildings",
+        "reference": "Mark 13:1",
+        "text": "Herod's temple, rebuilt from about 20 BC, was one of the wonders of the Roman world."
+      },
+      {
+        "title": "Councils and synagogues",
+        "reference": "Mark 13:9",
+        "text": "Local councils and synagogues could punish members with flogging (2 Corinthians 11:24)."
+      },
+      {
+        "title": "The watches of the night",
+        "reference": "Mark 13:35",
+        "text": "Mark names the four Roman watches: even, midnight, cockcrowing, and morning."
+      }
+    ]
+  },
+  "Mark 14": {
+    "audience": "Mark tells of the anointing at Bethany, the Last Supper, Gethsemane, the arrest, and Peter's denial.",
+    "culture": [
+      {
+        "title": "Spikenard",
+        "reference": "Mark 14:3",
+        "text": "Spikenard was a costly perfume from a plant grown in the Himalayas. Three hundred pence was nearly a year's wages."
+      },
+      {
+        "title": "A man carrying a pitcher",
+        "reference": "Mark 14:13",
+        "text": "Carrying water jars was usually women's work, so a man doing it would be easy to spot."
+      },
+      {
+        "title": "Abba",
+        "reference": "Mark 14:36",
+        "text": "Jesus prays \"Abba, Father\"—Abba is the Aramaic word for father used within a family."
+      }
+    ]
+  },
+  "Mark 15": {
+    "audience": "Jesus is tried by Pilate, crucified at Golgotha, and buried. Mark names Simon of Cyrene as \"the father of Alexander and Rufus\" (Mark 15:21), apparently known to his readers.",
+    "culture": [
+      {
+        "title": "Golgotha",
+        "reference": "Mark 15:22",
+        "text": "Golgotha means \"The place of a skull,\" a site just outside the city walls near a road."
+      },
+      {
+        "title": "Wine mingled with myrrh",
+        "reference": "Mark 15:23",
+        "text": "Drugged wine was offered to dull the pain of crucifixion; Jesus refused it."
+      },
+      {
+        "title": "The third hour",
+        "reference": "Mark 15:25",
+        "text": "The third hour was about 9 a.m.; darkness came at the sixth hour (noon) until the ninth (3 p.m.)."
+      }
+    ]
+  },
+  "Mark 16": {
+    "audience": "Women come to anoint Jesus' body and find the tomb empty. The oldest surviving manuscripts end at Mark 16:8; verses 9–20 are found in most later manuscripts.",
+    "culture": [
+      {
+        "title": "Spices for the body",
+        "reference": "Mark 16:1",
+        "text": "Bodies were anointed with spices and wrapped in cloth for burial. The women waited until the sabbath was over."
+      },
+      {
+        "title": "A very great stone",
+        "reference": "Mark 16:3-4",
+        "text": "Round rolling stones sealed some wealthy tombs and took several people to move."
+      }
+    ]
+  }
+}

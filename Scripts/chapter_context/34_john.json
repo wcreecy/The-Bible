@@ -1,0 +1,402 @@
+{
+  "John 1": {
+    "audience": "John says he wrote \"that ye might believe that Jesus is the Christ, the Son of God\" (John 20:31). Early tradition places the Gospel's writing in Ephesus late in the first century.",
+    "culture": [
+      {
+        "title": "The Word",
+        "reference": "John 1:1",
+        "text": "The Greek word logos meant ‘word’ or ‘reason.’ Jewish readers knew God creating by his word (Genesis 1:3; Psalm 33:6)."
+      },
+      {
+        "title": "Priests and Levites from Jerusalem",
+        "reference": "John 1:19",
+        "text": "Religious leaders sent a delegation to question John about his baptizing at Bethabara beyond Jordan (John 1:28)."
+      },
+      {
+        "title": "The tenth hour",
+        "reference": "John 1:39",
+        "text": "Counting hours from sunrise, the tenth hour was about 4 p.m."
+      }
+    ]
+  },
+  "John 2": {
+    "audience": "Jesus turns water into wine at a wedding in Cana and drives traders from the temple at Passover. John places the temple cleansing early in Jesus' ministry.",
+    "culture": [
+      {
+        "title": "Wedding feasts",
+        "reference": "John 2:1-3",
+        "text": "Village weddings lasted several days. Running out of wine would shame the host family."
+      },
+      {
+        "title": "Stone waterpots",
+        "reference": "John 2:6",
+        "text": "Stone jars were used for purification water because stone could not become ritually unclean. Each held two or three firkins, about 20–30 gallons."
+      },
+      {
+        "title": "Forty and six years",
+        "reference": "John 2:20",
+        "text": "Herod began rebuilding the temple around 20/19 BC, so forty-six years later is around AD 27/28."
+      }
+    ]
+  },
+  "John 3": {
+    "audience": "Nicodemus, a Pharisee and ruler, visits Jesus by night. John the Baptist's disciples report that people are going to Jesus.",
+    "culture": [
+      {
+        "title": "A ruler of the Jews",
+        "reference": "John 3:1",
+        "text": "Nicodemus was a member of the Sanhedrin, the Jerusalem council (John 7:50)."
+      },
+      {
+        "title": "The serpent in the wilderness",
+        "reference": "John 3:14",
+        "text": "Jesus refers to the brass serpent Moses lifted up on a pole (Numbers 21:8–9)."
+      },
+      {
+        "title": "Friend of the bridegroom",
+        "reference": "John 3:29",
+        "text": "The bridegroom's friend helped arrange the wedding and rejoiced with him."
+      }
+    ]
+  },
+  "John 4": {
+    "audience": "Traveling through Samaria, Jesus speaks with a Samaritan woman at Jacob's well. John explains, \"the Jews have no dealings with the Samaritans\" (John 4:9).",
+    "culture": [
+      {
+        "title": "Jacob's well",
+        "reference": "John 4:5-6",
+        "text": "Sychar was near Shechem, at the land Jacob gave to Joseph (Genesis 48:22). A deep well near Nablus is identified with Jacob's well."
+      },
+      {
+        "title": "This mountain",
+        "reference": "John 4:20",
+        "text": "The Samaritans worshiped on Mount Gerizim. John Hyrcanus destroyed their temple there around 110 BC."
+      },
+      {
+        "title": "Four months to harvest",
+        "reference": "John 4:35",
+        "text": "Grain sown in late autumn was harvested about four months later in spring."
+      }
+    ]
+  },
+  "John 5": {
+    "audience": "Jesus heals a man at the pool of Bethesda on the sabbath, and Jerusalem's leaders seek to kill him.",
+    "culture": [
+      {
+        "title": "Five porches",
+        "reference": "John 5:2",
+        "text": "Excavations near the Sheep Gate uncovered two large pools with colonnades, matching the description of five porches."
+      },
+      {
+        "title": "Troubling of the water",
+        "reference": "John 5:3-4",
+        "text": "The note about an angel troubling the water is missing from many early manuscripts."
+      },
+      {
+        "title": "Carrying a bed",
+        "reference": "John 5:10",
+        "text": "Carrying a burden on the sabbath was forbidden (Jeremiah 17:21)."
+      }
+    ]
+  },
+  "John 6": {
+    "audience": "Near Passover, Jesus feeds five thousand, walks on the sea, and teaches in the Capernaum synagogue that he is \"the bread of life\" (John 6:35).",
+    "culture": [
+      {
+        "title": "Barley loaves",
+        "reference": "John 6:9",
+        "text": "Barley bread was cheaper than wheat and was ordinary food for the poor."
+      },
+      {
+        "title": "Manna",
+        "reference": "John 6:31",
+        "text": "The crowd quotes the story of manna in the wilderness (Exodus 16; Psalm 78:24)."
+      },
+      {
+        "title": "Five and twenty or thirty furlongs",
+        "reference": "John 6:19",
+        "text": "About three or four miles, near the middle of the lake."
+      }
+    ]
+  },
+  "John 7": {
+    "audience": "Jesus goes up to Jerusalem secretly for the feast of tabernacles and teaches in the temple, causing division among the crowds.",
+    "culture": [
+      {
+        "title": "The feast of tabernacles",
+        "reference": "John 7:2",
+        "text": "Tabernacles was an autumn harvest feast; people lived in booths for seven days (Leviticus 23:34–43)."
+      },
+      {
+        "title": "The last day, that great day",
+        "reference": "John 7:37",
+        "text": "According to the Mishnah, each day of the feast a priest poured water from the pool of Siloam at the altar."
+      },
+      {
+        "title": "Out of Galilee",
+        "reference": "John 7:52",
+        "text": "Jonah came from Gath-hepher in Galilee (2 Kings 14:25)."
+      }
+    ]
+  },
+  "John 8": {
+    "audience": "In the temple treasury, Jesus calls himself \"the light of the world\" (John 8:12) and argues with those who claim Abraham as their father. John 7:53–8:11 is missing from the earliest manuscripts.",
+    "culture": [
+      {
+        "title": "Stoning for adultery",
+        "reference": "John 8:5",
+        "text": "The law required death for both the man and the woman (Leviticus 20:10; Deuteronomy 22:22)."
+      },
+      {
+        "title": "Two witnesses",
+        "reference": "John 8:17",
+        "text": "The law required at least two witnesses (Deuteronomy 19:15)."
+      },
+      {
+        "title": "Lamps at the feast",
+        "reference": "John 8:12, 20",
+        "text": "According to the Mishnah, huge lamps were lit in the court of the women during tabernacles; the treasury was in that court."
+      }
+    ]
+  },
+  "John 9": {
+    "audience": "Jesus heals a man born blind on the sabbath. The man's parents fear being \"put out of the synagogue\" (John 9:22).",
+    "culture": [
+      {
+        "title": "Who did sin?",
+        "reference": "John 9:2",
+        "text": "Many believed disability was a punishment for sin."
+      },
+      {
+        "title": "The pool of Siloam",
+        "reference": "John 9:7",
+        "text": "A large stepped pool from the first century was excavated in 2004 at the south end of the City of David. Hezekiah's tunnel fed water to the area."
+      },
+      {
+        "title": "Making clay on the sabbath",
+        "reference": "John 9:14",
+        "text": "Kneading was one of the kinds of work later listed as forbidden on the sabbath."
+      }
+    ]
+  },
+  "John 10": {
+    "audience": "Jesus calls himself the good shepherd and teaches in Solomon's porch at the feast of the dedication (John 10:22–23).",
+    "culture": [
+      {
+        "title": "The sheepfold",
+        "reference": "John 10:1-3",
+        "text": "Sheep were kept at night in stone pens with a single opening. Several flocks could share a fold, and each recognized its own shepherd's voice."
+      },
+      {
+        "title": "The feast of the dedication",
+        "reference": "John 10:22",
+        "text": "This winter feast (Hanukkah) remembered the rededication of the temple in 164 BC after Antiochus IV defiled it (1 Maccabees 4:52–59)."
+      },
+      {
+        "title": "Solomon's porch",
+        "reference": "John 10:23",
+        "text": "A covered colonnade on the east side of the temple courts, where people could shelter in winter."
+      }
+    ]
+  },
+  "John 11": {
+    "audience": "Jesus raises Lazarus at Bethany, and the council plans his death. Caiaphas says one man should die for the people (John 11:49–50).",
+    "culture": [
+      {
+        "title": "Bethany",
+        "reference": "John 11:18",
+        "text": "Bethany was about fifteen furlongs (under two miles) from Jerusalem, on the Mount of Olives."
+      },
+      {
+        "title": "Four days",
+        "reference": "John 11:17, 39",
+        "text": "Burial was on the day of death. A later Jewish tradition held that the soul stayed near the body for three days."
+      },
+      {
+        "title": "Graveclothes",
+        "reference": "John 11:44",
+        "text": "Bodies were wrapped in linen strips with spices, and the face covered with a cloth."
+      }
+    ]
+  },
+  "John 12": {
+    "audience": "Six days before Passover, Mary anoints Jesus at Bethany. Jesus enters Jerusalem, and Greeks ask to see him (John 12:1, 20–21).",
+    "culture": [
+      {
+        "title": "A pound of spikenard",
+        "reference": "John 12:3, 5",
+        "text": "Judas values the ointment at three hundred pence, about a year's wages for a laborer."
+      },
+      {
+        "title": "Palm branches",
+        "reference": "John 12:13",
+        "text": "Palm branches were waved at tabernacles and at victory celebrations (1 Maccabees 13:51)."
+      },
+      {
+        "title": "Greeks at the feast",
+        "reference": "John 12:20",
+        "text": "Gentiles who worshiped Israel's God came to the feasts and could enter the outer court."
+      }
+    ]
+  },
+  "John 13": {
+    "audience": "Before the Passover, Jesus washes the disciples' feet and foretells Judas' betrayal and Peter's denial.",
+    "culture": [
+      {
+        "title": "Washing feet",
+        "reference": "John 13:5",
+        "text": "Foot washing was a servant's task when guests arrived from dusty roads."
+      },
+      {
+        "title": "Leaning on Jesus' bosom",
+        "reference": "John 13:23",
+        "text": "Guests reclined on their left side, so the disciple to Jesus' right could lean back against his chest."
+      },
+      {
+        "title": "The sop",
+        "reference": "John 13:26",
+        "text": "Dipping a piece of bread in a shared dish and handing it to someone was a gesture of hospitality."
+      }
+    ]
+  },
+  "John 14": {
+    "audience": "At the supper, Jesus tells the disciples he is going to prepare a place for them and promises the Comforter.",
+    "culture": [
+      {
+        "title": "Many mansions",
+        "reference": "John 14:2",
+        "text": "Families often added rooms around a shared courtyard as sons married."
+      },
+      {
+        "title": "Peace I leave",
+        "reference": "John 14:27",
+        "text": "Shalom (‘peace’) was the everyday greeting and farewell."
+      }
+    ]
+  },
+  "John 15": {
+    "audience": "Jesus calls himself the true vine and warns that the world will hate his disciples.",
+    "culture": [
+      {
+        "title": "Pruning vines",
+        "reference": "John 15:2",
+        "text": "Vinedressers cut away unfruitful branches and pruned fruitful ones to increase the yield. The cut wood was burned (John 15:6)."
+      },
+      {
+        "title": "The vine of Israel",
+        "reference": "John 15:1",
+        "text": "Israel is pictured as a vine in Psalm 80:8 and Isaiah 5:1–7. A golden vine decorated the temple entrance (Josephus)."
+      }
+    ]
+  },
+  "John 16": {
+    "audience": "Jesus warns that his followers will be put out of synagogues and promises that their sorrow will turn to joy.",
+    "culture": [
+      {
+        "title": "Out of the synagogues",
+        "reference": "John 16:2",
+        "text": "Being put out of the synagogue cut a person off from community and worship."
+      },
+      {
+        "title": "A woman in travail",
+        "reference": "John 16:21",
+        "text": "Childbirth pains are a common picture in the prophets (Isaiah 26:17; Micah 4:10)."
+      }
+    ]
+  },
+  "John 17": {
+    "audience": "Jesus prays for himself, for his disciples, and for those who will believe through their word (John 17:20).",
+    "culture": [
+      {
+        "title": "Lifting up the eyes",
+        "reference": "John 17:1",
+        "text": "Jews usually prayed standing with eyes and hands lifted toward heaven."
+      },
+      {
+        "title": "The son of perdition",
+        "reference": "John 17:12",
+        "text": "Paul uses the same phrase in 2 Thessalonians 2:3."
+      }
+    ]
+  },
+  "John 18": {
+    "audience": "Jesus is arrested in a garden over the brook Cedron, questioned by Annas, and tried by Pilate.",
+    "culture": [
+      {
+        "title": "The brook Cedron",
+        "reference": "John 18:1",
+        "text": "The Kidron valley lies between the temple mount and the Mount of Olives. David crossed it fleeing Absalom (2 Samuel 15:23)."
+      },
+      {
+        "title": "Annas",
+        "reference": "John 18:13",
+        "text": "Annas was high priest AD 6–15. Five of his sons and his son-in-law Caiaphas later held the office."
+      },
+      {
+        "title": "The judgment hall",
+        "reference": "John 18:28",
+        "text": "Entering a Gentile's house would make the priests unclean for Passover. Pilate's headquarters (praetorium) was probably Herod's palace."
+      }
+    ]
+  },
+  "John 19": {
+    "audience": "Pilate hands Jesus over to be crucified. John notes the title in Hebrew, Greek, and Latin and records Jesus' burial in a garden tomb.",
+    "culture": [
+      {
+        "title": "Gabbatha",
+        "reference": "John 19:13",
+        "text": "Pilate sits on the judgment seat at a place called the Pavement, in Hebrew Gabbatha."
+      },
+      {
+        "title": "Breaking the legs",
+        "reference": "John 19:31-33",
+        "text": "Breaking a crucified man's legs hastened death. Bodies were not to remain on a tree overnight (Deuteronomy 21:23)."
+      },
+      {
+        "title": "A hundred pound weight",
+        "reference": "John 19:39",
+        "text": "Nicodemus brings a mixture of myrrh and aloes, a quantity used in royal burials."
+      }
+    ]
+  },
+  "John 20": {
+    "audience": "Mary Magdalene finds the tomb empty. Jesus appears to her, to the disciples, and a week later to Thomas.",
+    "culture": [
+      {
+        "title": "Rabboni",
+        "reference": "John 20:16",
+        "text": "Rabboni is an Aramaic form of ‘my teacher’; John translates it as \"Master.\""
+      },
+      {
+        "title": "Grave clothes left behind",
+        "reference": "John 20:6-7",
+        "text": "The linen clothes lie in place, with the head cloth folded by itself."
+      },
+      {
+        "title": "Doors shut",
+        "reference": "John 20:19",
+        "text": "The disciples meet behind shut doors \"for fear of the Jews.\""
+      }
+    ]
+  },
+  "John 21": {
+    "audience": "Jesus appears to seven disciples by the sea of Tiberias and restores Peter. The closing verses identify the beloved disciple as the writer (John 21:24).",
+    "culture": [
+      {
+        "title": "The sea of Tiberias",
+        "reference": "John 21:1",
+        "text": "Herod Antipas founded Tiberias about AD 20 and named it after the emperor; the lake took its name."
+      },
+      {
+        "title": "Fishing at night",
+        "reference": "John 21:3",
+        "text": "Night fishing was common with nets on the Sea of Galilee."
+      },
+      {
+        "title": "A fire of coals",
+        "reference": "John 21:9",
+        "text": "John mentions a \"fire of coals\" only here and at Peter's denial (John 18:18)."
+      }
+    ]
+  }
+}
