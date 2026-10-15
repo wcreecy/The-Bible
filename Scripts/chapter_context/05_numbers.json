@@ -1,0 +1,502 @@
+{
+  "Numbers 1": {
+    "audience": "The census counts men \"from twenty years old and upward, all that are able to go forth to war\" (Numbers 1:3), tribe by tribe. Israelite families knew these tribal leaders and divisions as the structure of their nation.",
+    "culture": [
+      {
+        "title": "Military censuses",
+        "reference": "Numbers 1:2-3",
+        "text": "Ancient rulers counted fighting men to organize armies and levy taxes. Israel's census is taken by families and fathers' houses."
+      },
+      {
+        "title": "Levites not counted",
+        "reference": "Numbers 1:47-50",
+        "text": "The tribe of Levi was not included in the military count because it was set apart to care for the tabernacle."
+      }
+    ]
+  },
+  "Numbers 2": {
+    "audience": "Each tribe camped under its own standard in a fixed position around the tabernacle—Judah on the east, Reuben on the south, Ephraim on the west, and Dan on the north (Numbers 2:3–25).",
+    "culture": [
+      {
+        "title": "Standards and banners",
+        "reference": "Numbers 2:2",
+        "text": "Armies and tribes marched under standards—poles topped with emblems—so that each group could find its place. Egyptian army units also carried standards."
+      },
+      {
+        "title": "Facing east",
+        "reference": "Numbers 2:3",
+        "text": "Judah camps on the east side, toward the sunrise, in front of the tabernacle's entrance, and leads the march (Numbers 10:14)."
+      }
+    ]
+  },
+  "Numbers 3": {
+    "audience": "Israel's Levites knew this chapter as the origin of their duties: the Gershonites, Kohathites, and Merarites each cared for different parts of the tabernacle.",
+    "culture": [
+      {
+        "title": "Levites for the firstborn",
+        "reference": "Numbers 3:12-13",
+        "text": "The Levites are taken in place of Israel's firstborn, who belonged to the LORD since the Passover. The extra 273 firstborn are redeemed for five shekels each (Numbers 3:46–47)."
+      }
+    ]
+  },
+  "Numbers 4": {
+    "audience": "Levites between thirty and fifty years old did the work of carrying the tabernacle (Numbers 4:3). Each family knew exactly which pieces it was responsible for.",
+    "culture": [
+      {
+        "title": "Covering the holy things",
+        "reference": "Numbers 4:5-6",
+        "text": "Before moving camp, the priests covered the ark and furnishings with cloths and skins so that the Kohathites carrying them would not see or touch them."
+      },
+      {
+        "title": "Badger skins",
+        "reference": "Numbers 4:6",
+        "text": "The KJV's \"badgers' skins\" translates a word of uncertain meaning; it may refer to the hide of a sea creature such as the dugong, or to a type of fine leather."
+      }
+    ]
+  },
+  "Numbers 5": {
+    "audience": "These laws dealt with the life of the camp as a whole: keeping it clean, making restitution, and settling a husband's suspicion of his wife before the priest.",
+    "culture": [
+      {
+        "title": "Trial by ordeal",
+        "reference": "Numbers 5:17-22",
+        "text": "Many ancient societies used ordeals—such as being thrown into a river—to decide cases with no witnesses. The Code of Hammurabi includes a river ordeal for a wife accused of adultery. In Israel, the accused woman drank holy water before the priest."
+      },
+      {
+        "title": "Confession and restitution",
+        "reference": "Numbers 5:6-8",
+        "text": "Someone who wronged another had to confess and repay the full amount plus a fifth. If the injured person had no relative to receive it, the payment went to the priest."
+      }
+    ]
+  },
+  "Numbers 6": {
+    "audience": "Any Israelite man or woman could take a Nazarite vow (Numbers 6:2). Hearers knew Samson and Samuel as lifelong Nazarites (Judges 13:5; 1 Samuel 1:11).",
+    "culture": [
+      {
+        "title": "The Nazarite vow",
+        "reference": "Numbers 6:3-5",
+        "text": "A Nazarite avoided all grape products, did not cut his hair, and stayed away from dead bodies. Paul later took part in the completion of a vow involving shaving the head (Acts 21:23–26)."
+      },
+      {
+        "title": "The priestly blessing",
+        "reference": "Numbers 6:24-26",
+        "text": "Small silver scrolls inscribed with words of this blessing, dating to around 600 BC, were found at Ketef Hinnom in Jerusalem. They are among the oldest known copies of any biblical text."
+      }
+    ]
+  },
+  "Numbers 7": {
+    "audience": "Each tribe's leader brings an identical offering on his own day over twelve days. Israelite hearers would hear every tribe honored equally in the dedication of the altar.",
+    "culture": [
+      {
+        "title": "Covered wagons",
+        "reference": "Numbers 7:3",
+        "text": "Ox-drawn wagons carried the heavier tabernacle parts. The Kohathites received none because they carried the holy objects on their shoulders (Numbers 7:9)."
+      },
+      {
+        "title": "Silver charger and bowl",
+        "reference": "Numbers 7:13",
+        "text": "Each gift included a silver dish of 130 shekels and a silver bowl of 70 shekels. Recording offerings in full was typical of temple records in the ancient world."
+      }
+    ]
+  },
+  "Numbers 8": {
+    "audience": "Israel's Levites were installed in this ceremony. Hearers would see the whole congregation lay hands on the Levites, presenting them to the LORD on behalf of the people (Numbers 8:10).",
+    "culture": [
+      {
+        "title": "Shaving and washing",
+        "reference": "Numbers 8:7",
+        "text": "The Levites were sprinkled, shaved all over, and washed their clothes. Shaving the whole body was also part of cleansing from skin disease (Leviticus 14:8–9)."
+      },
+      {
+        "title": "Age of service",
+        "reference": "Numbers 8:24-25",
+        "text": "Levites served from twenty-five to fifty, then assisted rather than doing heavy work."
+      }
+    ]
+  },
+  "Numbers 9": {
+    "audience": "The first Passover after leaving Egypt is kept here in the wilderness of Sinai. The provision for a second Passover a month later shows how the law handled people who were unclean or away on a journey.",
+    "culture": [
+      {
+        "title": "A cloud by day, fire by night",
+        "reference": "Numbers 9:15-16",
+        "text": "In open desert, a column of smoke by day or fire by night could be seen from far away. Caravans and armies sometimes used fire signals to guide travelers."
+      }
+    ]
+  },
+  "Numbers 10": {
+    "audience": "Israel leaves Sinai in the second year after the exodus (Numbers 10:11). Hearers knew the silver trumpets as instruments used in their worship and in war.",
+    "culture": [
+      {
+        "title": "Silver trumpets",
+        "reference": "Numbers 10:2",
+        "text": "Two hammered silver trumpets were blown to gather the people, to break camp, to sound an alarm in war, and at feasts. Trumpets of silver and bronze were found in Tutankhamun's tomb."
+      },
+      {
+        "title": "A guide in the desert",
+        "reference": "Numbers 10:31",
+        "text": "Moses asks his relative Hobab to stay with them because he knows where to camp in the wilderness. Local desert people knew the routes and water sources."
+      }
+    ]
+  },
+  "Numbers 11": {
+    "audience": "Israel remembered these complaints at Taberah and Kibroth-hattaavah as examples of ingratitude (Psalm 78:18–31). Hearers knew the Egyptian foods the people longed for.",
+    "culture": [
+      {
+        "title": "Egyptian foods",
+        "reference": "Numbers 11:5",
+        "text": "Fish from the Nile, cucumbers, melons, leeks, onions, and garlic were staple foods of ordinary Egyptians."
+      },
+      {
+        "title": "Manna",
+        "reference": "Numbers 11:7-8",
+        "text": "Manna is described as like coriander seed with the color of bdellium (a pale resin). The people ground it in mills or beat it in mortars and baked it into cakes."
+      }
+    ]
+  },
+  "Numbers 12": {
+    "audience": "Miriam and Aaron, Moses' own sister and brother, challenge him here. Hearers knew Miriam as a prophetess and leader (Exodus 15:20).",
+    "culture": [
+      {
+        "title": "A Cushite wife",
+        "reference": "Numbers 12:1",
+        "text": "Cush was the land south of Egypt along the Nile (modern Sudan). The Ethiopian woman Moses married came from there or from a people with that name."
+      },
+      {
+        "title": "Spitting in the face",
+        "reference": "Numbers 12:14",
+        "text": "Being spat on was a public disgrace in the ancient world, requiring a period of shame—here seven days outside the camp."
+      }
+    ]
+  },
+  "Numbers 13": {
+    "audience": "The places named—the Negev, Hebron, and the valley of Eshcol—were in the heart of Judah's later territory. Hearers knew Hebron as an ancient city, built \"seven years before Zoan in Egypt\" (Numbers 13:22).",
+    "culture": [
+      {
+        "title": "Grapes of Eshcol",
+        "reference": "Numbers 13:23",
+        "text": "The hill country around Hebron is still known for its grapes. Eshcol means ‘cluster.’ The spies carried one cluster on a pole between two men."
+      },
+      {
+        "title": "Walled cities",
+        "reference": "Numbers 13:28",
+        "text": "Canaanite cities were protected by thick walls and gates. To people used to tents, these fortifications looked impossible to take."
+      }
+    ]
+  },
+  "Numbers 14": {
+    "audience": "Israel remembered this rebellion as the reason the generation that left Egypt died in the wilderness. The later psalms and Hebrews return to it as a warning (Psalm 95:10–11; Hebrews 3:16–19).",
+    "culture": [
+      {
+        "title": "Tearing clothes",
+        "reference": "Numbers 14:6",
+        "text": "Joshua and Caleb tear their clothes, a sign of grief and horror at the people's refusal to enter the land."
+      },
+      {
+        "title": "A year for a day",
+        "reference": "Numbers 14:34",
+        "text": "Israel spends forty years in the wilderness, a year for each day the spies searched the land."
+      }
+    ]
+  },
+  "Numbers 15": {
+    "audience": "These laws look ahead to life in the land: \"When ye be come into the land of your habitations\" (Numbers 15:2). Hearers settled in Canaan offered grain, oil, and wine from their own farms.",
+    "culture": [
+      {
+        "title": "Drink offerings",
+        "reference": "Numbers 15:5",
+        "text": "Wine was poured out beside the altar as a drink offering with many sacrifices. Paul uses the image of being \"poured out\" for his own life (Philippians 2:17; 2 Timothy 4:6 in Greek)."
+      },
+      {
+        "title": "Tassels",
+        "reference": "Numbers 15:38-39",
+        "text": "Israelites wore tassels (fringes) with a blue cord on the corners of their garments as a reminder of the commandments. A woman touched the hem of Jesus' garment—the same tassel (Matthew 9:20)."
+      }
+    ]
+  },
+  "Numbers 16": {
+    "audience": "The Korahites, descendants of Korah, did not all die (Numbers 26:11); they later served as temple singers, and eleven psalms are titled \"for the sons of Korah\" (Psalm 42, 44–49, 84–85, 87–88).",
+    "culture": [
+      {
+        "title": "Censers as a test",
+        "reference": "Numbers 16:17",
+        "text": "Offering incense was a priestly act. Moses has the rebels bring censers so that the LORD will show whom he has chosen."
+      },
+      {
+        "title": "Bronze plates for the altar",
+        "reference": "Numbers 16:38-40",
+        "text": "The censers of the rebels are hammered into plates covering the altar as a memorial that only Aaron's descendants may burn incense."
+      }
+    ]
+  },
+  "Numbers 17": {
+    "audience": "Aaron's rod was kept before the testimony as a sign (Numbers 17:10). Hebrews lists it among the contents of the ark (Hebrews 9:4).",
+    "culture": [
+      {
+        "title": "Rods with names",
+        "reference": "Numbers 17:2",
+        "text": "A leader's rod or staff symbolized his authority. Each tribal leader's name was written on his rod."
+      },
+      {
+        "title": "Almonds",
+        "reference": "Numbers 17:8",
+        "text": "Aaron's rod budded, blossomed, and produced ripe almonds overnight. Almond blossoms also decorated the lampstand (Exodus 25:33)."
+      }
+    ]
+  },
+  "Numbers 18": {
+    "audience": "This chapter explains how Israel's priests and Levites were supported. Hearers knew that the Levites received the tithes and owned no tribal territory.",
+    "culture": [
+      {
+        "title": "No inheritance",
+        "reference": "Numbers 18:20",
+        "text": "The LORD tells Aaron, \"I am thy part and thine inheritance.\" The priests and Levites lived on offerings and tithes rather than farmland, though they were later given towns to live in (Numbers 35:2)."
+      },
+      {
+        "title": "A tithe of the tithe",
+        "reference": "Numbers 18:26",
+        "text": "The Levites themselves gave a tenth of the tithes they received to the priests."
+      }
+    ]
+  },
+  "Numbers 19": {
+    "audience": "Contact with the dead was unavoidable in family life, so every Israelite household needed the purification described here. The ashes were kept for the whole congregation (Numbers 19:9).",
+    "culture": [
+      {
+        "title": "The red heifer",
+        "reference": "Numbers 19:2",
+        "text": "A red heifer without blemish that had never been yoked was burned, and its ashes mixed with water for cleansing. Hebrews mentions \"the ashes of an heifer\" (Hebrews 9:13)."
+      },
+      {
+        "title": "Unclean for seven days",
+        "reference": "Numbers 19:11",
+        "text": "Touching a dead body made a person unclean for seven days. Graves were often whitewashed in later times so people could avoid accidental contact (Matthew 23:27)."
+      }
+    ]
+  },
+  "Numbers 20": {
+    "audience": "Israel remembered Meribah as a place of rebellion (Psalm 95:8) and Moses' failure there as the reason he did not enter the land (Deuteronomy 32:51). Miriam and Aaron also die in this chapter.",
+    "culture": [
+      {
+        "title": "Kadesh",
+        "reference": "Numbers 20:1",
+        "text": "Kadesh (Kadesh-barnea) was an oasis on the southern edge of Canaan, with springs that made it a long-term base for Israel in the wilderness."
+      },
+      {
+        "title": "The king's highway",
+        "reference": "Numbers 20:17",
+        "text": "The King's Highway was a major trade route running north–south east of the Jordan and Dead Sea, through Edom and Moab. Israel asks permission to pass along it."
+      }
+    ]
+  },
+  "Numbers 21": {
+    "audience": "The victories over Sihon king of the Amorites and Og king of Bashan were celebrated for generations in Israel's songs and speeches (Psalm 136:19–20; Joshua 2:10).",
+    "culture": [
+      {
+        "title": "The book of the wars of the LORD",
+        "reference": "Numbers 21:14",
+        "text": "The text quotes a lost book, \"the book of the wars of the LORD,\" probably a collection of songs. Israel's writers drew on such sources, like the book of Jasher (Joshua 10:13)."
+      },
+      {
+        "title": "Digging wells",
+        "reference": "Numbers 21:16-18",
+        "text": "The song of the well celebrates water dug by the leaders with their staffs. Finding water in the desert was cause for celebration."
+      }
+    ]
+  },
+  "Numbers 22": {
+    "audience": "Moab was Israel's neighbor east of the Dead Sea. Hearers knew Balaam as a foreign prophet hired against them, remembered later in both Testaments (Micah 6:5; 2 Peter 2:15).",
+    "culture": [
+      {
+        "title": "Hiring a seer",
+        "reference": "Numbers 22:6-7",
+        "text": "Kings hired diviners to curse enemies before battle. An inscription from Deir Alla in Jordan mentions \"Balaam son of Beor\" as a seer of the gods."
+      },
+      {
+        "title": "Fees for divination",
+        "reference": "Numbers 22:7",
+        "text": "The elders of Moab carry \"the rewards of divination\" in their hand. Seers were paid for their services."
+      }
+    ]
+  },
+  "Numbers 23": {
+    "audience": "Israel heard Balaam's oracles as a foreign prophet's testimony that God had blessed them and would not let them be cursed.",
+    "culture": [
+      {
+        "title": "Seven altars",
+        "reference": "Numbers 23:1",
+        "text": "Balaam has Balak build seven altars and offer a bull and a ram on each. Elaborate sacrifices were made before seeking a divine message."
+      },
+      {
+        "title": "Viewing the camp",
+        "reference": "Numbers 23:13",
+        "text": "Balak moves Balaam to different heights so he can see part of Israel's camp, as if a curse needed to be pronounced within sight of its target."
+      }
+    ]
+  },
+  "Numbers 24": {
+    "audience": "Balaam's last oracles mention nations Israel knew well: Moab, Edom, Amalek, the Kenites, and Asshur (Assyria).",
+    "culture": [
+      {
+        "title": "Star and sceptre",
+        "reference": "Numbers 24:17",
+        "text": "Stars and sceptres were common symbols of kings in the ancient Near East. A Jewish rebel leader in AD 132 was named Bar Kokhba, ‘son of the star,’ after this verse."
+      },
+      {
+        "title": "Ships of Chittim",
+        "reference": "Numbers 24:24",
+        "text": "Chittim (Kittim) originally referred to Cyprus and later more broadly to peoples from the western Mediterranean."
+      }
+    ]
+  },
+  "Numbers 25": {
+    "audience": "Israel remembered the sin at Baalpeor as a turning point; Paul cites it as a warning (1 Corinthians 10:8). The Levitical priesthood traced a promise to Phinehas here (Numbers 25:13).",
+    "culture": [
+      {
+        "title": "Baal of Peor",
+        "reference": "Numbers 25:3",
+        "text": "Baal was a Canaanite storm god worshipped under local names. Baalpeor was the Baal worshipped at Peor in Moab. His worship included sacrificial meals (Numbers 25:2)."
+      }
+    ]
+  },
+  "Numbers 26": {
+    "audience": "This second census counts the new generation that would enter the land (Numbers 26:64–65). The clan names listed were the family groups Israel used to divide its land.",
+    "culture": [
+      {
+        "title": "Land by size of tribe",
+        "reference": "Numbers 26:54-55",
+        "text": "Larger tribes were to receive larger territories, but the location of each was decided by lot."
+      }
+    ]
+  },
+  "Numbers 27": {
+    "audience": "Israelite families knew the problem of a man who died without sons. The daughters of Zelophehad's case became a lasting law of inheritance (Numbers 27:8–11).",
+    "culture": [
+      {
+        "title": "Inheritance by daughters",
+        "reference": "Numbers 27:7-8",
+        "text": "In most ancient societies, land passed only to sons. Here daughters inherit when there are no sons, keeping the land in the family."
+      },
+      {
+        "title": "Laying on of hands",
+        "reference": "Numbers 27:18-23",
+        "text": "Moses lays his hands on Joshua before Eleazar and the people, publicly transferring authority. The early church used the same practice (Acts 6:6)."
+      }
+    ]
+  },
+  "Numbers 28": {
+    "audience": "Israel's priests followed this schedule of offerings every day, every Sabbath, every new moon, and at each feast. It describes the public worship of the nation.",
+    "culture": [
+      {
+        "title": "New moons",
+        "reference": "Numbers 28:11",
+        "text": "Israel's months began with the new moon, marked with special offerings and trumpet blasts. Saul's household kept a new moon feast (1 Samuel 20:5)."
+      },
+      {
+        "title": "Morning and evening",
+        "reference": "Numbers 28:3-4",
+        "text": "A lamb was offered every morning and evening. In later times, Jews prayed at the hour of the evening offering (Acts 3:1)."
+      }
+    ]
+  },
+  "Numbers 29": {
+    "audience": "The seventh month, in autumn, held three of Israel's holy days: trumpets, the Day of Atonement, and the feast of tabernacles. Hearers knew it as the busiest month of worship.",
+    "culture": [
+      {
+        "title": "Decreasing bulls",
+        "reference": "Numbers 29:13-32",
+        "text": "During tabernacles, thirteen bulls were offered on the first day and one fewer each day after, seventy bulls in all over seven days."
+      }
+    ]
+  },
+  "Numbers 30": {
+    "audience": "This law addresses the heads of Israel's tribes (Numbers 30:1) and concerns vows made by women living in their father's or husband's household.",
+    "culture": [
+      {
+        "title": "Household authority",
+        "reference": "Numbers 30:3-5",
+        "text": "A father or husband could cancel a woman's vow on the day he heard it. A widow or divorced woman's vows stood on her own authority (Numbers 30:9)."
+      }
+    ]
+  },
+  "Numbers 31": {
+    "audience": "The war with Midian follows the events at Baalpeor. Balaam, who advised Midian, is killed here (Numbers 31:8, 16).",
+    "culture": [
+      {
+        "title": "Dividing the spoil",
+        "reference": "Numbers 31:27",
+        "text": "The spoil was divided equally between the soldiers and the rest of the people, with a portion for the priests and Levites. David later made a similar rule (1 Samuel 30:24–25)."
+      },
+      {
+        "title": "Purifying metal by fire",
+        "reference": "Numbers 31:22-23",
+        "text": "Gold, silver, bronze, iron, tin, and lead were purified by fire; other things by water."
+      }
+    ]
+  },
+  "Numbers 32": {
+    "audience": "Reuben, Gad, and half of Manasseh settled east of the Jordan. Hearers knew these tribes as the ones separated from the rest by the river (Joshua 22).",
+    "culture": [
+      {
+        "title": "Grazing land",
+        "reference": "Numbers 32:1",
+        "text": "The plateau of Gilead and the land of Jazer had rich pasture, ideal for tribes with large herds."
+      },
+      {
+        "title": "Sheepfolds and cities",
+        "reference": "Numbers 32:16",
+        "text": "Shepherds built stone-walled folds to protect sheep at night, and fortified towns for their families."
+      }
+    ]
+  },
+  "Numbers 33": {
+    "audience": "This list of camping places from Egypt to the Jordan was written down by Moses (Numbers 33:2). Israel kept it as a record of the whole wilderness journey.",
+    "culture": [
+      {
+        "title": "Itineraries",
+        "reference": "Numbers 33:1-2",
+        "text": "Ancient records sometimes listed stages of a journey or military campaign, as Egyptian lists of places along routes in Canaan do."
+      },
+      {
+        "title": "Aaron's death",
+        "reference": "Numbers 33:38",
+        "text": "The list gives the exact date of Aaron's death: the first day of the fifth month of the fortieth year, at age 123."
+      }
+    ]
+  },
+  "Numbers 34": {
+    "audience": "These borders describe the land promised to Israel, from the wilderness of Zin in the south to the entrance of Hamath in the north, and from the Mediterranean to the Jordan.",
+    "culture": [
+      {
+        "title": "Boundary descriptions",
+        "reference": "Numbers 34:3-12",
+        "text": "Borders were described by landmarks—rivers, mountains, towns, and the sea. The \"great sea\" is the Mediterranean, and the \"salt sea\" the Dead Sea."
+      }
+    ]
+  },
+  "Numbers 35": {
+    "audience": "Israel's towns included forty-eight Levitical cities, six of which were cities of refuge (Numbers 35:6–7). Joshua 20–21 records which towns they were.",
+    "culture": [
+      {
+        "title": "Cities of refuge",
+        "reference": "Numbers 35:11-12",
+        "text": "A person who killed someone accidentally could flee to a city of refuge for protection from the avenger of blood until a trial."
+      },
+      {
+        "title": "Two witnesses",
+        "reference": "Numbers 35:30",
+        "text": "A murderer could not be put to death on the testimony of only one witness."
+      }
+    ]
+  },
+  "Numbers 36": {
+    "audience": "The leaders of Manasseh raise a concern about tribal land after the earlier ruling for Zelophehad's daughters. Hearers knew that each tribe's land was meant to stay within the tribe.",
+    "culture": [
+      {
+        "title": "Marriage within the tribe",
+        "reference": "Numbers 36:6-8",
+        "text": "Daughters who inherited land were to marry within their father's tribe, so that land would not pass to another tribe. Zelophehad's daughters married their cousins (Numbers 36:11)."
+      }
+    ]
+  }
+}
