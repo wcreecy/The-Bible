@@ -353,6 +353,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1DC55AC1079FE4DD9987A2C2 /* Exceptions for "The Bible Widgets" folder in "The Bible (iOS)" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				LockScreenVerses.json,
+			);
+			target = 2C49CEFF2EBE0F6C0006FF79 /* The Bible (iOS) */;
+		};
 		2C49CF282EBE0F6D0006FF79 /* Exceptions for "The Bible (iOS)" folder in "The Bible (iOS)" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -396,6 +403,7 @@
 		2C49CF632EBE16090006FF79 /* The Bible Widgets */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				1DC55AC1079FE4DD9987A2C2 /* Exceptions for "The Bible Widgets" folder in "The Bible (iOS)" target */,
 				2C49CF772EBE160A0006FF79 /* Exceptions for "The Bible Widgets" folder in "The Bible WidgetsExtension" target */,
 			);
 			path = "The Bible Widgets";

@@ -327,6 +327,17 @@ private struct SettingsHelpSection: View {
             }
             .accessibilityIdentifier("shareFeedbackLink")
 
+            NavigationLink {
+                AcknowledgementsView()
+            } label: {
+                SettingsNavigationRow(
+                    title: "Acknowledgements",
+                    subtitle: "Sources and credits",
+                    systemImage: "heart.text.square"
+                )
+            }
+            .accessibilityIdentifier("acknowledgementsLink")
+
             LabeledContent {
                 Text(appVersion)
             } label: {
@@ -351,6 +362,34 @@ private struct SettingsHelpSection: View {
         let version = info?["CFBundleShortVersionString"] as? String ?? "—"
         guard let build = info?["CFBundleVersion"] as? String else { return version }
         return "\(version) (\(build))"
+    }
+}
+
+/// Credits for data the app includes, as their licenses require.
+private struct AcknowledgementsView: View {
+    var body: some View {
+        List {
+            Section {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("OpenBible.info")
+                        .font(.headline)
+                    Text("Cross references in Chapter Insights are selected from the OpenBible.info cross-reference dataset, used under the Creative Commons Attribution license.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.vertical, 2)
+
+                if let url = URL(string: "https://www.openbible.info") {
+                    Link(destination: url) {
+                        Label("openbible.info", systemImage: "safari")
+                    }
+                }
+            } header: {
+                Text("Cross References")
+            }
+        }
+        .navigationTitle("Acknowledgements")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

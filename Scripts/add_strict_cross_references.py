@@ -34,7 +34,9 @@ Every link needs at least one vote; the dataset includes down-voted links. Links
 both directions, since a New Testament quotation is often recorded from the quoting verse.
 
 Usage:
-    python3 Scripts/add_strict_cross_references.py path/to/cross_references.txt [Book ...] [--dry-run] [--rebuild]
+    python3 Scripts/add_strict_cross_references.py [path/to/cross_references.txt|.zip] [Book ...] [--dry-run] [--rebuild]
+
+The dataset defaults to Scripts/data/openbible_cross_references.zip (see Scripts/data/README.md).
 
 With no books given, it fills Genesis through Ruth. Safe to run again. --rebuild first removes
 the links this script added for those books (rows in chapters without hand-written
@@ -42,6 +44,8 @@ explanations, plus curated fulfillments), so changed rules can be applied again.
 """
 
 import collections
+import io
+import zipfile
 import json
 import re
 import sqlite3
@@ -54,6 +58,7 @@ from book_content_tools import KJV, normalize
 
 DEFAULT_BOOKS = ["Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth"]
 CURATED = Path(__file__).resolve().parent / "curated_cross_references.json"
+DATASET = Path(__file__).resolve().parent / "data" / "openbible_cross_references.zip"
 
 MAX_PER_CHAPTER = 15
 MAX_PER_SOURCE_VERSE = 3
@@ -237,10 +242,18 @@ def parse_osis(osis, book_names):
     return book_names[book], int(chapter), int(verse)
 
 
+def open_dataset(path):
+    """The dataset's lines, read from cross_references.txt or the zip it is distributed in."""
+    if Path(path).suffix == ".zip":
+        archive = zipfile.ZipFile(path)
+        return io.TextIOWrapper(archive.open("cross_references.txt"), encoding="utf-8")
+    return open(path, encoding="utf-8")
+
+
 def candidate_links(path, bible, books):
     osis_names = dict(zip(OSIS_BOOKS, bible.book_names))
     links = collections.defaultdict(list)
-    with open(path, encoding="utf-8") as source:
+    with open_dataset(path) as source:
         next(source)
         for line in source:
             from_osis, to_osis, votes = line.rstrip("\n").split("\t")[:3]
@@ -303,13 +316,17 @@ def main():
     if not args:
         sys.exit(__doc__)
     dry_run = "--dry-run" in sys.argv
-    books = args[1:] or DEFAULT_BOOKS
+    # An optional dataset path comes first; everything else is a book name.
+    dataset = DATASET
+    if Path(args[0]).suffix in (".txt", ".zip"):
+        dataset = Path(args.pop(0))
+    books = args or DEFAULT_BOOKS
 
     bible = Bible()
     unknown = [b for b in books if b not in bible.verse_counts]
     if unknown:
         sys.exit(f"Unknown books: {unknown}")
-    found = candidate_links(Path(args[0]), bible, books)
+    found = candidate_links(dataset, bible, books)
     for key, links in curated_links(bible, books).items():
         found[key].extend(links)
 
