@@ -13,6 +13,7 @@ struct NotesAndHighlightsView: View {
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @State private var selectedFilter = NotesFilter.all
     @State private var highlightFilter = NotesHighlightFilter.all
+    @State private var selectedCustomTag: String?
     @State private var searchText = ""
     @State private var isSearchPresented = false
     @State private var selectedScriptureNote: VerseNote?
@@ -119,6 +120,12 @@ struct NotesAndHighlightsView: View {
         .onAppear(perform: selectFirstVisibleNoteIfNeeded)
         .onChange(of: selectedFilter) { _, _ in selectFirstVisibleNoteIfNeeded() }
         .onChange(of: highlightFilter) { _, _ in selectFirstVisibleNoteIfNeeded() }
+        .onChange(of: selectedCustomTag) { _, _ in selectFirstVisibleNoteIfNeeded() }
+        .onChange(of: customTags) { _, newTags in
+            if let selectedCustomTag, !newTags.contains(selectedCustomTag) {
+                self.selectedCustomTag = nil
+            }
+        }
         .onChange(of: sortFieldRawValue) { _, _ in selectFirstVisibleNoteIfNeeded() }
         .onChange(of: sortAscending) { _, _ in selectFirstVisibleNoteIfNeeded() }
         .onChange(of: searchText) { _, _ in selectFirstVisibleNoteIfNeeded() }
@@ -144,7 +151,12 @@ struct NotesAndHighlightsView: View {
 
     private var compactContent: some View {
         VStack(spacing: 12) {
-            NotesCategoryStrip(selection: $selectedFilter, highlightFilter: $highlightFilter)
+            NotesCategoryStrip(
+                selection: $selectedFilter,
+                highlightFilter: $highlightFilter,
+                selectedCustomTag: $selectedCustomTag,
+                customTags: customTags
+            )
             contextualTip
 
             notesList(
@@ -161,7 +173,12 @@ struct NotesAndHighlightsView: View {
 
     private var regularContent: some View {
         VStack(spacing: 12) {
-            NotesCategoryStrip(selection: $selectedFilter, highlightFilter: $highlightFilter)
+            NotesCategoryStrip(
+                selection: $selectedFilter,
+                highlightFilter: $highlightFilter,
+                selectedCustomTag: $selectedCustomTag,
+                customTags: customTags
+            )
             contextualTip
 
             ResizableNotesColumns {
@@ -237,12 +254,20 @@ struct NotesAndHighlightsView: View {
         )
     }
 
-    /// Notes matching the active tag, highlight filter, and search. Favorites are
+    private var customTags: [String] {
+        let allNoteText = scriptureNotes.map(\.content) + userNotes.map(\.content)
+        return Array(Set(allNoteText.flatMap { NoteCustomTags.tags(in: $0) })).sorted {
+            $0.localizedStandardCompare($1) == .orderedAscending
+        }
+    }
+
+    /// Notes matching the active category, custom tag, highlight filter, and search. Favorites are
     /// pinned above the rest but are still subject to every filter.
     private var visibleNotes: [NotesListItem] {
         let allNotes = scriptureNotes.map(NotesListItem.scripture) + userNotes.map(NotesListItem.user)
         let matchingNotes = allNotes.filter { note in
             matchesSelectedCategory(note.categoryRawValue) &&
+                matchesCustomTag(note) &&
                 matchesHighlight(note.highlightColor) &&
                 note.matchesSearch(searchText)
         }
@@ -266,19 +291,28 @@ struct NotesAndHighlightsView: View {
     }
 
     private var hasActiveFilters: Bool {
-        selectedFilter != .all || highlightFilter != .all || !searchText.isEmpty
+        selectedFilter != .all ||
+            highlightFilter != .all ||
+            selectedCustomTag != nil ||
+            !searchText.isEmpty
     }
 
     private func clearFilters() {
         withAnimation(.snappy) {
             selectedFilter = .all
             highlightFilter = .all
+            selectedCustomTag = nil
             searchText = ""
         }
     }
 
     private func matchesSelectedCategory(_ rawValue: String) -> Bool {
         selectedFilter == .all || rawValue == selectedFilter.rawValue
+    }
+
+    private func matchesCustomTag(_ note: NotesListItem) -> Bool {
+        guard let selectedCustomTag else { return true }
+        return note.customTags.contains(selectedCustomTag)
     }
 
     private func matchesHighlight(_ rawValue: String) -> Bool {

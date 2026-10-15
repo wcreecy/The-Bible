@@ -4,37 +4,75 @@ import SwiftUI
 struct NotesCategoryStrip: View {
     @Binding var selection: NotesFilter
     @Binding var highlightFilter: NotesHighlightFilter
+    @Binding var selectedCustomTag: String?
+
+    let customTags: [String]
+
+    @State private var isShowingCustomTags = false
 
     var body: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 8) {
-                if highlightFilter != .all {
-                    activeHighlightChip
-                }
-
-                ForEach(NotesFilter.allCases) { filter in
-                    Button {
-                        withAnimation(.snappy) {
-                            selection = filter
-                        }
-                    } label: {
-                        Label(filter.title, systemImage: filter.systemImage)
-                            .font(.subheadline.weight(.semibold))
-                            .padding(.horizontal, 14)
-                            .frame(minHeight: 40)
-                            .foregroundStyle(selection == filter ? Color.white : Color.primary)
-                            .background(
-                                selection == filter ? Color.accentColor : Color.primary.opacity(0.07),
-                                in: Capsule()
-                            )
+        VStack(alignment: .leading, spacing: 8) {
+            ScrollView(.horizontal) {
+                HStack(spacing: 8) {
+                    if highlightFilter != .all {
+                        activeHighlightChip
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(selection == filter ? .isSelected : [])
+
+                    ForEach(NotesFilter.allCases) { filter in
+                        Button {
+                            withAnimation(.snappy) {
+                                selection = filter
+                            }
+                        } label: {
+                            Label(filter.title, systemImage: filter.systemImage)
+                                .font(.subheadline.weight(.semibold))
+                                .padding(.horizontal, 14)
+                                .frame(minHeight: 40)
+                                .foregroundStyle(selection == filter ? Color.white : Color.primary)
+                                .background(
+                                    selection == filter ? Color.accentColor : Color.primary.opacity(0.07),
+                                    in: Capsule()
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityAddTraits(selection == filter ? .isSelected : [])
+                    }
+
+                    if !customTags.isEmpty {
+                        Button {
+                            withAnimation(.snappy) {
+                                isShowingCustomTags.toggle()
+                            }
+                        } label: {
+                            Text("#Custom")
+                                .font(.subheadline.weight(.semibold))
+                                .padding(.horizontal, 14)
+                                .frame(minHeight: 40)
+                                .foregroundStyle(
+                                    isShowingCustomTags || selectedCustomTag != nil ? Color.white : Color.primary
+                                )
+                                .background(
+                                    isShowingCustomTags || selectedCustomTag != nil
+                                        ? Color.accentColor
+                                        : Color.primary.opacity(0.07),
+                                    in: Capsule()
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityAddTraits(
+                            isShowingCustomTags || selectedCustomTag != nil ? .isSelected : []
+                        )
+                        .accessibilityHint("Shows your custom note tags")
+                    }
                 }
+                .padding(.horizontal, 2)
             }
-            .padding(.horizontal, 2)
+            .scrollIndicators(.hidden)
+
+            if isShowingCustomTags {
+                CustomNoteTagsStrip(tags: customTags, selection: $selectedCustomTag)
+            }
         }
-        .scrollIndicators(.hidden)
     }
 
     /// Makes an active highlight filter visible and removable with one tap.
@@ -69,6 +107,58 @@ struct NotesCategoryStrip: View {
         .accessibilityLabel("Highlight filter")
         .accessibilityValue(Text(highlightFilter.title))
         .accessibilityHint("Removes the highlight color filter")
+    }
+}
+
+private struct CustomNoteTagsStrip: View {
+    let tags: [String]
+    @Binding var selection: String?
+
+    var body: some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: 8) {
+                Button {
+                    withAnimation(.snappy) {
+                        selection = nil
+                    }
+                } label: {
+                    Label("All Custom", systemImage: "tag")
+                        .font(.subheadline.weight(.semibold))
+                        .padding(.horizontal, 14)
+                        .frame(minHeight: 40)
+                        .foregroundStyle(selection == nil ? Color.white : Color.primary)
+                        .background(
+                            selection == nil ? Color.accentColor : Color.primary.opacity(0.07),
+                            in: Capsule()
+                        )
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(selection == nil ? .isSelected : [])
+
+                ForEach(tags, id: \.self) { tag in
+                    Button {
+                        withAnimation(.snappy) {
+                            selection = tag
+                        }
+                    } label: {
+                        Text("#\(tag)")
+                            .font(.subheadline.weight(.semibold))
+                            .padding(.horizontal, 14)
+                            .frame(minHeight: 40)
+                            .foregroundStyle(selection == tag ? Color.white : Color.primary)
+                            .background(
+                                selection == tag ? Color.accentColor : Color.primary.opacity(0.07),
+                                in: Capsule()
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(selection == tag ? .isSelected : [])
+                }
+            }
+            .padding(.horizontal, 2)
+        }
+        .scrollIndicators(.hidden)
+        .accessibilityLabel("Custom note tags")
     }
 }
 

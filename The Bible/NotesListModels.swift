@@ -1,6 +1,71 @@
 import SwiftData
 import SwiftUI
 
+/// Parses custom tags from note body text. Tags begin with # and may contain
+/// letters, numbers, or underscores; matching is case-insensitive.
+nonisolated enum NoteCustomTags {
+    static func tags(in text: String) -> [String] {
+        Set(ranges(in: text).map { range in
+            String(text[text.index(after: range.lowerBound)..<range.upperBound]).lowercased()
+        })
+        .sorted {
+            $0.localizedStandardCompare($1) == .orderedAscending
+        }
+    }
+
+    static func ranges(in text: String) -> [Range<String.Index>] {
+        var tagRanges: [Range<String.Index>] = []
+        var index = text.startIndex
+
+        while index < text.endIndex {
+            guard text[index] == "#" else {
+                index = text.index(after: index)
+                continue
+            }
+
+            if index != text.startIndex {
+                let precedingCharacter = text[text.index(before: index)]
+                guard !isTagCharacter(precedingCharacter) else {
+                    index = text.index(after: index)
+                    continue
+                }
+            }
+
+            let tagStart = text.index(after: index)
+            guard tagStart < text.endIndex, isTagCharacter(text[tagStart]) else {
+                index = tagStart
+                continue
+            }
+
+            var tagEnd = tagStart
+            while tagEnd < text.endIndex, isTagCharacter(text[tagEnd]) {
+                tagEnd = text.index(after: tagEnd)
+            }
+
+            tagRanges.append(index..<tagEnd)
+            index = tagEnd
+        }
+
+        return tagRanges
+    }
+
+    static func normalizedSearchTag(from searchText: String) -> String? {
+        let trimmedText = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmedText.first == "#" else { return nil }
+
+        let tag = trimmedText.dropFirst()
+        guard !tag.isEmpty, tag.allSatisfy(isTagCharacter) else { return nil }
+        return String(tag).lowercased()
+    }
+
+    private static func isTagCharacter(_ character: Character) -> Bool {
+        !character.unicodeScalars.isEmpty &&
+            character.unicodeScalars.allSatisfy {
+                CharacterSet.alphanumerics.contains($0) || $0.value == 95
+            }
+    }
+}
+
 enum NotesTabSort: String, CaseIterable, Identifiable {
     case modified
     case created
@@ -109,6 +174,13 @@ enum NotesListItem: Identifiable {
         }
     }
 
+    var customTags: [String] {
+        switch self {
+        case .scripture(let note): NoteCustomTags.tags(in: note.content)
+        case .user(let note): NoteCustomTags.tags(in: note.content)
+        }
+    }
+
     var preview: String {
         let content: String
         switch self {
@@ -203,6 +275,9 @@ enum NotesListItem: Identifiable {
 
     func matchesSearch(_ searchText: String) -> Bool {
         guard !searchText.isEmpty else { return true }
+        if let searchTag = NoteCustomTags.normalizedSearchTag(from: searchText) {
+            return customTags.contains(searchTag)
+        }
         switch self {
         case .scripture(let note):
             return title.localizedCaseInsensitiveContains(searchText) ||

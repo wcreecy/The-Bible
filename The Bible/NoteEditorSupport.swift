@@ -410,6 +410,13 @@ extension View {
     }
 }
 
+/// Runtime-only marker for generated custom-tag styling, so it can be refreshed
+/// without affecting other note formatting.
+private enum NoteCustomTagAttribute: AttributedStringKey {
+    typealias Value = Bool
+    static let name = "com.thebible.custom-note-tag"
+}
+
 private struct RichNoteEditing: ViewModifier {
     @Environment(\.fontResolutionContext) private var fontResolutionContext
     @AppStorage(NoteEditorTextSize.storageKey) private var textSizeStep = NoteEditorTextSize.defaultStep
@@ -450,9 +457,11 @@ private struct RichNoteEditing: ViewModifier {
             .onAppear {
                 tabKeyAction.handler = handleTabKey
                 linkScriptureReferences()
+                styleCustomTags()
             }
             .onChange(of: String(text.characters)) { oldValue, newValue in
                 handleListTyping(previousCount: oldValue.count, newCount: newValue.count)
+                styleCustomTags()
                 scheduleReferenceLinking()
             }
             // Hardware Tab / Shift-Tab, delivered by the editor's key commands.
@@ -488,6 +497,47 @@ private struct RichNoteEditing: ViewModifier {
         let linked = BibleReferenceLinker.linkify(text)
         guard linked != text else { return }
         text = linked
+    }
+
+    // MARK: - Custom tags
+
+    /// Applies lightweight, editable recognition styling to each complete custom tag.
+    private func styleCustomTags() {
+        var styledText = text
+        let styledRanges = styledText.runs.compactMap { run in
+            run[NoteCustomTagAttribute.self] == true ? run.range : nil
+        }
+
+        for range in styledRanges {
+            styledText[range].foregroundColor = nil
+            styledText[range].backgroundColor = nil
+            styledText[range][NoteCustomTagAttribute.self] = nil
+        }
+
+        let plainText = String(styledText.characters)
+        for stringRange in NoteCustomTags.ranges(in: plainText) {
+            guard let lowerBound = AttributedString.Index(stringRange.lowerBound, within: styledText),
+                  let upperBound = AttributedString.Index(stringRange.upperBound, within: styledText) else {
+                continue
+            }
+
+            let range = lowerBound..<upperBound
+            styledText[range].foregroundColor = .accentColor
+            styledText[range].backgroundColor = .accentColor.opacity(0.14)
+            styledText[range][NoteCustomTagAttribute.self] = true
+
+            // The delimiter must remain unstyled so the editor doesn't carry a tag's
+            // appearance into the word typed after a space or punctuation mark.
+            if upperBound < styledText.endIndex {
+                let delimiterRange = upperBound..<styledText.characters.index(after: upperBound)
+                styledText[delimiterRange].foregroundColor = nil
+                styledText[delimiterRange].backgroundColor = nil
+                styledText[delimiterRange][NoteCustomTagAttribute.self] = nil
+            }
+        }
+
+        guard styledText != text else { return }
+        text = styledText
     }
 
     // MARK: - Formatting

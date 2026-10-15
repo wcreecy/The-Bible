@@ -95,6 +95,21 @@ struct RegressionCoverageTests {
     }
 
     @Test
+    func customTagsAreExtractedFromBodiesAndNormalizeTagSearches() {
+        let tags = NoteCustomTags.tags(in: "#Faith and #grace, then #FAITH. C# is not a tag.")
+
+        #expect(tags == ["faith", "grace"])
+
+        let rangeText = "#test tags #faith, more"
+        let parsedTags = NoteCustomTags.ranges(in: rangeText).map { String(rangeText[$0]) }
+        #expect(parsedTags == ["#test", "#faith"])
+
+        #expect(NoteCustomTags.normalizedSearchTag(from: "#Faith") == "faith")
+        #expect(NoteCustomTags.normalizedSearchTag(from: "faith") == nil)
+        #expect(NoteCustomTags.normalizedSearchTag(from: "#faith today") == nil)
+    }
+
+    @Test
     func cloudGameKeyCatalogIncludesEachGameAndPersistentStreaks() {
         let allKeys = iCloudSyncCoordinator.hangmanKeys
             + iCloudSyncCoordinator.beatClockKeys
