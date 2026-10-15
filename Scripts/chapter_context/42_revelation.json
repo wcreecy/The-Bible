@@ -20,7 +20,7 @@
     ]
   },
   "Revelation 2": {
-    "audience": "Jesus gives messages to the churches at Ephesus, Smyrna, Pergamos, and Thyatira. The seven cities lay on a circular road, in the order a messenger would travel.",
+    "audience": "Jesus gives messages to the churches at Ephesus, Smyrna, Pergamos, and Thyatira. The seven cities lay along a circular route in the order they are listed.",
     "culture": [
       {
         "title": "Smyrna",
@@ -50,7 +50,7 @@
       {
         "title": "Neither cold nor hot",
         "reference": "Revelation 3:15-16",
-        "text": "Laodicea's water came by aqueduct and arrived lukewarm. Nearby Hierapolis had hot springs and Colossae cold water."
+        "text": "Laodicea had no spring of its own and piped its water in by aqueduct. Nearby Hierapolis had hot springs, and Colossae had cold water."
       },
       {
         "title": "Rich, and increased with goods",
@@ -108,11 +108,6 @@
         "text": "Zechariah saw horses of four colors sent through the earth (Zechariah 1:8; 6:1–8)."
       },
       {
-        "title": "A bow",
-        "reference": "Revelation 6:2",
-        "text": "The Parthians, Rome's enemy on the eastern border, were famous mounted archers."
-      },
-      {
         "title": "A measure of wheat for a penny",
         "reference": "Revelation 6:6",
         "text": "A penny (denarius) was a day's wage; a measure of wheat was one person's daily ration, so prices are many times normal."
@@ -143,9 +138,9 @@
     "audience": "The seventh seal is opened, and seven angels are given seven trumpets.",
     "culture": [
       {
-        "title": "Silence in heaven",
-        "reference": "Revelation 8:1",
-        "text": "In the temple, the burning of incense was done in silence while the people prayed outside (Luke 1:10)."
+        "title": "Incense and prayers",
+        "reference": "Revelation 8:3-4",
+        "text": "When incense was offered in the temple, the people prayed outside (Luke 1:10)."
       },
       {
         "title": "Trumpets",
@@ -270,7 +265,7 @@
       {
         "title": "A thousand and six hundred furlongs",
         "reference": "Revelation 14:20",
-        "text": "About 184 miles, roughly the length of the land of Israel."
+        "text": "About 184 miles."
       }
     ]
   },
@@ -310,7 +305,7 @@
       {
         "title": "Hail of a talent",
         "reference": "Revelation 16:21",
-        "text": "A talent weighed roughly 75 pounds."
+        "text": "A talent weighed between about 55 and 75 pounds."
       }
     ]
   },
@@ -330,7 +325,7 @@
       {
         "title": "Her name on her forehead",
         "reference": "Revelation 17:5",
-        "text": "Roman writers describe prostitutes wearing their names on headbands."
+        "text": "Roman writers such as Seneca describe prostitutes wearing their names on headbands."
       }
     ]
   },
@@ -340,7 +335,7 @@
       {
         "title": "The merchandise",
         "reference": "Revelation 18:12-13",
-        "text": "The list matches luxury goods imported to Rome: gold, pearls, silk, ivory, cinnamon, spices, wheat, horses—and \"slaves, and souls of men.\""
+        "text": "The list is made up of goods traded across the Roman world: gold, pearls, silk, ivory, cinnamon, spices, wheat, horses—and \"slaves, and souls of men.\""
       },
       {
         "title": "Shipmasters afar off",
@@ -392,11 +387,6 @@
   "Revelation 21": {
     "audience": "John sees a new heaven and a new earth (Isaiah 65:17) and the holy city, new Jerusalem, coming down from God.",
     "culture": [
-      {
-        "title": "No more sea",
-        "reference": "Revelation 21:1",
-        "text": "John was on an island, cut off by the sea (Revelation 1:9)."
-      },
       {
         "title": "Twelve gates",
         "reference": "Revelation 21:12-13",

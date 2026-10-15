@@ -40,7 +40,7 @@
       {
         "title": "Left at Athens alone",
         "reference": "1 Thessalonians 3:1",
-        "text": "Athens was about 300 miles from Thessalonica by road, roughly two weeks' travel on foot."
+        "text": "Paul had been sent from Berea to Athens for his safety, while Silas and Timothy stayed behind (Acts 17:13–15)."
       },
       {
         "title": "Afflictions",
@@ -75,7 +75,7 @@
       {
         "title": "Peace and safety",
         "reference": "1 Thessalonians 5:3",
-        "text": "Roman coins and inscriptions advertised the ‘peace and security’ (pax et securitas) brought by Roman rule."
+        "text": "Roman coins and inscriptions celebrated the ‘peace’ (pax) and ‘security’ (securitas) of Roman rule."
       },
       {
         "title": "As a thief in the night",
@@ -120,7 +120,7 @@
     ]
   },
   "2 Thessalonians 3": {
-    "audience": "Paul addresses members who were \"walking disorderly, working not at all\" (2 Thessalonians 3:11) and signs the letter himself.",
+    "audience": "Paul addresses some \"which walk among you disorderly, working not at all\" (2 Thessalonians 3:11) and signs the letter himself.",
     "culture": [
       {
         "title": "If any would not work",
@@ -166,11 +166,6 @@
         "title": "Broided hair, gold, pearls",
         "reference": "1 Timothy 2:9",
         "text": "Elaborate braided hairstyles with gold and pearls were a mark of wealth among Roman women. Moral writers criticized such display."
-      },
-      {
-        "title": "The temple of Artemis",
-        "reference": "1 Timothy 1:3; 2:9",
-        "text": "Ephesus was home to the great temple of Artemis (Diana), served by many priestesses (Acts 19:27–28)."
       }
     ]
   },
@@ -186,11 +181,6 @@
         "title": "Given to hospitality",
         "reference": "1 Timothy 3:2",
         "text": "Traveling believers depended on hosts, since inns had a poor reputation."
-      },
-      {
-        "title": "Pillar and ground of the truth",
-        "reference": "1 Timothy 3:15",
-        "text": "Ephesus' temple of Artemis was famous for its 127 columns."
       }
     ]
   },
@@ -225,7 +215,7 @@
       {
         "title": "Threescore years old",
         "reference": "1 Timothy 5:9",
-        "text": "Sixty was considered old age; few women would remarry after it."
+        "text": "Sixty was a common age for being counted elderly."
       },
       {
         "title": "A little wine",
@@ -383,9 +373,9 @@
     "audience": "Paul writes from prison to Philemon, a believer in Colossae, about his slave Onesimus, who had become a believer through Paul (Philemon 1:10). The letter is also addressed to Apphia, Archippus, and the church in Philemon's house.",
     "culture": [
       {
-        "title": "A runaway slave",
+        "title": "Onesimus departed",
         "reference": "Philemon 1:15-16",
-        "text": "Runaway slaves could be severely punished. A Roman letter by Pliny the Younger asks a friend to forgive a freedman who had wronged him."
+        "text": "Paul does not say why Onesimus left. Runaway slaves could be severely punished. A letter by Pliny the Younger asks a friend to forgive a freedman who had wronged him."
       },
       {
         "title": "Onesimus",

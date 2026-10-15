@@ -14,7 +14,14 @@ references elsewhere are left untouched (apart from appending stated fulfillment
   doesn't count on its own. A shared run shorter than LONG_QUOTE_WORDS also needs
   MIN_SHORT_QUOTE_VOTES votes, which filters repeated formulas such as "how long wilt thou";
   or a rare shared phrase of any words with at least STRONG_QUOTE_VOTES votes, which catches
-  New Testament quotations worded in common words ("thou shalt love the Lord"), or
+  New Testament quotations worded in common words ("thou shalt love the Lord"). Letters
+  (Romans–Revelation) share many formulas ("Grace be unto you, and peace from God our
+  Father", "rejoice in the Lord"), so when a letter quotes the Old Testament the looser test
+  needs a shared run of LONG_QUOTE_WORDS words with at least two that aren't function words,
+  and greeting words aren't distinctive;
+  between a letter and another New Testament book, a quotation needs a shared run of
+  LETTER_PARALLEL_WORDS words not counting greeting words, names, or names of God,
+  including a phrase found in at most LETTER_PARALLEL_MAX_VERSES verses (so refrains don't count), or
 - a named link: both verses name the same uncommon person or place, and the link has
   at least MIN_NAME_VOTES votes, or
 - a stated fulfillment from Scripts/curated_cross_references.json, where one passage
@@ -76,9 +83,24 @@ STOPWORDS = set("""
     first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth
     day days month months year years appearance country known know knew
 """.split())
+# Function words left out of STOPWORDS because they help name places ("Up" is never a name).
+PREPOSITIONS = {"out", "up", "down", "off", "through"}
 DIVINE_TITLES = {"almighty", "jehovah", "lord", "god", "highest", "amen", "selah", "hallelujah", "alleluia"}
 # Month names date events but don't connect them.
 MONTH_NAMES = {"abib", "nisan", "zif", "sivan", "elul", "ethanim", "bul", "chisleu", "tebeth", "sebat", "adar"}
+# Letters share short formulas, so links touching them need longer shared wording.
+LETTERS = set("""Romans|1 Corinthians|2 Corinthians|Galatians|Ephesians|Philippians|Colossians|1 Thessalonians|
+    2 Thessalonians|1 Timothy|2 Timothy|Titus|Philemon|Hebrews|James|1 Peter|2 Peter|1 John|2 John|3 John|Jude|
+    Revelation""".replace("\n    ", "").split("|"))
+# Words from letter openings, greetings, and doxologies, never distinctive in a letter.
+LETTER_FORMULA_WORDS = {
+    "paul", "apostle", "grace", "peace", "saints", "salute", "greet", "mention", "thanks", "glory", "dominion", "ever",
+}
+# Run breakers when matching a letter against another New Testament book.
+LETTER_RUN_BREAKERS = LETTER_FORMULA_WORDS | DIVINE_TITLES | {"jesus", "christ", "father", "amen"}
+LETTER_PARALLEL_WORDS = 8
+# ...and must share a phrase found in no more verses than this.
+LETTER_PARALLEL_MAX_VERSES = 2
 REFERENCE = re.compile(r"^(.+?) (\d+):(\d+)(?:-(\d+)(?::(\d+))?)?$")
 
 
@@ -88,10 +110,12 @@ class Bible:
         self.book_names = [book["name"] for book in kjv]
         self.verse_counts = {book["name"]: [len(chapter) for chapter in book["chapters"]] for book in kjv}
         self.text = {
-            (book["name"], c + 1, v + 1): re.sub(r"\{[^{}]*\}", " ", text)
+            # Drop italic-word braces and the closing notes on letters («Written from Rome»).
+            (book["name"], c + 1, v + 1): re.sub(r"\{[^{}]*\}|«[^«»]*»", " ", text)
             for book in kjv for c, chapter in enumerate(book["chapters"]) for v, text in enumerate(chapter)
         }
         self.words = {key: normalize(text).split() for key, text in self.text.items()}
+        self.new_testament = set(self.book_names[self.book_names.index("Matthew"):])
         self.phrase_verses = collections.Counter(p for words in self.words.values() for p in self.phrases(words))
         self.word_verses = collections.Counter(w for words in self.words.values() for w in set(words))
 
@@ -120,15 +144,21 @@ class Bible:
     @staticmethod
     def longest_run(a, b):
         """Length of the longest run of words the two verses share."""
-        best, previous = 0, [0] * (len(b) + 1)
-        for word in a:
+        return len(Bible.shared_run(a, b))
+
+    @staticmethod
+    def shared_run(a, b):
+        """The longest run of words the two verses share."""
+        best, end, previous = 0, 0, [0] * (len(b) + 1)
+        for i, word in enumerate(a, 1):
             current = [0] * (len(b) + 1)
             for j, other in enumerate(b, 1):
                 if word == other:
                     current[j] = previous[j - 1] + 1
-                    best = max(best, current[j])
+                    if current[j] > best:
+                        best, end = current[j], i
             previous = current
-        return best
+        return a[end - best:end]
 
     def reason(self, source, target, votes):
         """Why the link is direct, or None when it is only thematic."""
@@ -141,16 +171,38 @@ class Bible:
                 w not in STOPWORDS and self.word_verses[w] <= STRONG_QUOTE_CONTENT_WORD_VERSES for w in p.split()
             )
         ]
-        if rare and votes >= STRONG_QUOTE_VOTES:
+        in_letter = source[0] in LETTERS or target[0] in LETTERS
+        if in_letter and source[0] in self.new_testament and target[0] in self.new_testament:
+            masked = [
+                [f"<{side}{i}>" if w in LETTER_RUN_BREAKERS or w in self.names else w for i, w in enumerate(self.words[key])]
+                for side, key in enumerate((source, target))
+            ]
+            # A refrain or doxology repeats across many verses; a true parallel is (almost) unique.
+            shared_phrases = self.phrases(self.words[source]) & self.phrases(self.words[target])
+            unique = any(self.phrase_verses[p] <= LETTER_PARALLEL_MAX_VERSES for p in shared_phrases)
+            if unique and self.longest_run(*masked) >= LETTER_PARALLEL_WORDS:
+                return "quotes a shared passage"
+            shared = self.names_in(source) & self.names_in(target)
+            return "names " + ", ".join(sorted(shared)) if shared and votes >= MIN_NAME_VOTES else None
+        shared_run = self.shared_run(self.words[source], self.words[target])
+        run = len(shared_run)
+        # In a letter the shared wording must be long and carry at least two real words
+        # ("all things under his feet", not "out of the snare of the").
+        if in_letter and sum(w not in STOPWORDS | PREPOSITIONS for w in shared_run) < 2:
+            run = 0
+        if rare and votes >= STRONG_QUOTE_VOTES and (not in_letter or run >= LONG_QUOTE_WORDS):
             return f"quotes \"{rare[0]}\""
+        ignored = STOPWORDS | (LETTER_FORMULA_WORDS if in_letter else set())
         for phrase in shared_phrases:
             distinctive = [
                 w for w in phrase.split()
-                if self.word_verses[w] <= MAX_DISTINCTIVE_WORD_VERSES and w not in STOPWORDS and w not in self.names
+                if self.word_verses[w] <= MAX_DISTINCTIVE_WORD_VERSES and w not in ignored and w not in self.names
             ]
             if self.phrase_verses[phrase] > MAX_PHRASE_VERSES or len(distinctive) < 2:
                 continue
-            if votes >= MIN_SHORT_QUOTE_VOTES or self.longest_run(self.words[source], self.words[target]) >= LONG_QUOTE_WORDS:
+            if in_letter and run < LONG_QUOTE_WORDS:
+                continue
+            if votes >= MIN_SHORT_QUOTE_VOTES or run >= LONG_QUOTE_WORDS:
                 return f"quotes \"{phrase}\""
         shared = self.names_in(source) & self.names_in(target)
         if shared and votes >= MIN_NAME_VOTES:
@@ -260,7 +312,7 @@ def main():
             if not chosen:
                 empty.append(f"{book} {chapter}")
             rows += [(book, chapter, i, verse, ref, votes) for i, (verse, ref, votes, _) in enumerate(chosen)]
-            if dry_run and chapter in (1, 4):
+            if dry_run and chosen:
                 print(f"{book} {chapter}:")
                 for verse, ref, votes, reason in chosen:
                     print(f"   v{verse} → {ref}  [{reason}]")

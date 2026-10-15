@@ -55,9 +55,7 @@ struct ChapterInsightsView: View {
     // who is involved, the world behind it, what it means, where Scripture picks it up, then
     // a response and the way on to the next chapter.
     private func insightsContent(_ insights: ChapterInsights) -> some View {
-        // The hand-written Romans context is fuller than the imported one, so it comes first.
-        let context = ChapterReadingContext.context(forBookNamed: bookName, chapterNumber: chapterNumber)
-            ?? insights.readingContext
+        let context = insights.readingContext
         let content = ChapterContentFilter(insights: insights, context: context)
         let previous = location.previous
         let next = location.next
