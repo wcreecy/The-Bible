@@ -48,6 +48,7 @@ struct VerseNoteEditorView: View {
 
                 if contextualTipsEnabled {
                     ScriptureReferenceLinkTip()
+                    CustomNoteTagsTip()
                 }
 
                 ScriptureEditorReferenceCard(

@@ -34,6 +34,7 @@ struct UserNoteEditorView: View {
 
             if contextualTipsEnabled {
                 ScriptureReferenceLinkTip()
+                CustomNoteTagsTip()
             }
 
             HStack {

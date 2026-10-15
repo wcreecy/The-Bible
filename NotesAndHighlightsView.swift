@@ -226,7 +226,7 @@ struct NotesAndHighlightsView: View {
             ContextualTipView(
                 id: "notes.quickActions",
                 title: "Browse and manage notes",
-                message: "Filter by tag or highlight color. Select a note to follow links without editing, or swipe or press and hold it for quick actions.",
+                message: "Tap #Custom to reveal custom tags, or filter by category and highlight color. Select a note to follow links without editing, or swipe or press and hold it for quick actions.",
                 systemImage: "hand.point.up.left"
             )
         }

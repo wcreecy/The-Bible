@@ -144,6 +144,17 @@ struct ScriptureReferenceLinkTip: View {
     }
 }
 
+struct CustomNoteTagsTip: View {
+    var body: some View {
+        ContextualTipView(
+            id: "notes.customTags",
+            title: "Organize with custom tags",
+            message: "Type a tag such as #prayer in the note body. In Notes, tap #Custom to reveal and filter by your tags.",
+            systemImage: "number"
+        )
+    }
+}
+
 struct NoteCategoryMenu: View {
     @Binding var category: NoteCategory
 
