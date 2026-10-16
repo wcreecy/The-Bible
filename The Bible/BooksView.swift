@@ -419,18 +419,20 @@ struct StudyBookView: View {
 
     @AppStorage(ChapterListLayout.storageKey) private var chapterLayout: ChapterListLayout = .detailed
     @State private var details = ChapterOutlineDetails()
+    @State private var overallTheme: String?
+    @State private var isShowingOverview = false
+    @State private var headerHeight: CGFloat = 0
+    @State private var isHeaderScrolledAway = false
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let columns = [GridItem(.adaptive(minimum: 52), spacing: 10)]
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                NavigationLink {
-                    BookOverviewView(bookName: book.name)
-                } label: {
-                    StudyOverviewCard(bookName: book.name)
-                }
-                .buttonStyle(.plain)
+                StudyBookHeader(bookName: book.name, overallTheme: overallTheme, onOpenOverview: openOverview)
+                    .onGeometryChange(for: CGFloat.self, of: \.size.height) { headerHeight = $0 }
 
                 HeroCard(title: "Chapter Insights", icon: "lightbulb.max") {
                     VStack(alignment: .leading, spacing: 12) {
@@ -447,6 +449,25 @@ struct StudyBookView: View {
             }
             .padding()
         }
+        // Once most of the full header has scrolled out of view, a compact bar takes
+        // its place. It floats over the content rather than insetting it, so showing
+        // or hiding it never shifts the scroll position.
+        .onScrollGeometryChange(for: Bool.self) { geometry in
+            let scrolled = geometry.contentOffset.y + geometry.contentInsets.top
+            return headerHeight > 0 && scrolled > headerHeight * 0.75
+        } action: { _, isScrolledAway in
+            withAnimation(reduceMotion ? .easeInOut(duration: 0.2) : .smooth(duration: 0.25)) {
+                isHeaderScrolledAway = isScrolledAway
+            }
+        }
+        .overlay(alignment: .top) {
+            if isHeaderScrolledAway {
+                CompactStudyBookHeader(bookName: book.name, onOpenOverview: openOverview)
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+                    .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
+            }
+        }
         .background(AppBackgroundView(tab: .bible))
         .navigationTitle(book.name)
         .navigationBarTitleDisplayMode(.inline)
@@ -455,9 +476,21 @@ struct StudyBookView: View {
                 ChapterLayoutMenu(layout: $chapterLayout)
             }
         }
+        .navigationDestination(isPresented: $isShowingOverview) {
+            BookOverviewView(bookName: book.name)
+        }
         .task(id: book.name) {
             details = await ChapterOutlineDetails.load(for: book)
         }
+        .task(id: book.name) {
+            overallTheme = await BibleBookOverviewRepository.shared
+                .overview(forBookNamed: book.name)?
+                .overallTheme
+        }
+    }
+
+    private func openOverview() {
+        isShowingOverview = true
     }
 
     private var numberGrid: some View {
@@ -492,30 +525,93 @@ struct StudyBookView: View {
     }
 }
 
-private struct StudyOverviewCard: View {
+/// The top of a book's study page: the book's emblem and title, a taste of its
+/// overall theme, and a prominent button into the full book overview.
+private struct StudyBookHeader: View {
     let bookName: String
+    let overallTheme: String?
+    let onOpenOverview: () -> Void
+
+    private var theme: BookChapterTheme? {
+        BookChapterTheme.themes[bookName]
+    }
 
     var body: some View {
-        HStack(spacing: 14) {
-            Image(systemName: "text.book.closed")
-                .font(.title2)
-                .foregroundStyle(.tint)
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 14) {
+                if let theme {
+                    BookChapterEmblem(theme: theme, size: 56)
+                }
 
-            VStack(alignment: .leading, spacing: 3) {
-                Text("About \(bookName)")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                Text("Read the book overview, story, setting, and key people")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                Text(bookName)
+                    .font(.system(.largeTitle, design: .serif, weight: .bold))
+                    .foregroundStyle(titleStyle)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.7)
+                    .accessibilityAddTraits(.isHeader)
             }
 
-            Spacer(minLength: 0)
+            if let overallTheme, !overallTheme.isEmpty {
+                Text(overallTheme)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(3)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
 
-            Image(systemName: "chevron.right")
-                .foregroundStyle(.tertiary)
+            Button(action: onOpenOverview) {
+                Label("Read the Book Overview", systemImage: "book.closed.fill")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 4)
+            }
+            .buttonStyle(.borderedProminent)
+            .accessibilityHint("Who wrote \(bookName), when and where, and the story of the whole book")
         }
         .padding(AppDesignMetrics.cardPadding)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .heroCardSurface()
+    }
+
+    private var titleStyle: AnyShapeStyle {
+        if let theme {
+            AnyShapeStyle(LinearGradient(colors: theme.colors, startPoint: .leading, endPoint: .trailing))
+        } else {
+            AnyShapeStyle(.primary)
+        }
+    }
+}
+
+/// A one-row version of `StudyBookHeader` that stays pinned once the full header
+/// scrolls away, keeping the book overview one tap away.
+private struct CompactStudyBookHeader: View {
+    let bookName: String
+    let onOpenOverview: () -> Void
+
+    var body: some View {
+        HStack(spacing: 10) {
+            if let theme = BookChapterTheme.themes[bookName] {
+                BookChapterEmblem(theme: theme, size: 28)
+            }
+
+            Text(bookName)
+                .font(.system(.title3, design: .serif, weight: .bold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .accessibilityAddTraits(.isHeader)
+
+            Spacer(minLength: 8)
+
+            Button("Overview", systemImage: "book.closed.fill", action: onOpenOverview)
+                .font(.subheadline.weight(.semibold))
+                .buttonStyle(.borderedProminent)
+                .buttonBorderShape(.capsule)
+                .controlSize(.small)
+                .accessibilityLabel("About \(bookName)")
+                .accessibilityHint("Opens the book overview")
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
         .frame(maxWidth: .infinity, alignment: .leading)
         .heroCardSurface()
     }
