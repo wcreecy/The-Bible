@@ -430,23 +430,55 @@ When it was written: Chapters 7–9 are partly written in Ezra's own voice. Some
 Where: Babylon in the Persian Empire, and Jerusalem and the towns of Judah.
 The world at the time: Persia had conquered Babylon and allowed exiled peoples to return home. Judah was a small, poor province surrounded by neighbors who opposed the rebuilding.
 
-**Cyrus Allows God's People to Return Home (Ezra 1:1–2:70)** — After captivity, God moved Cyrus of Persia to permit the people to return to Jerusalem and rebuild the temple. Cyrus returned temple vessels to Sheshbazzar. Zerubbabel, Jeshua, priests, Levites, and more than forty-two thousand people returned; family records determined eligibility for priestly service.
+**Cyrus Allows God's People to Return Home (Ezra 1:1–2:70)** — After the captivity, God moves Cyrus of Persia to let His people return to Jerusalem and rebuild the temple.
 
-**The Altar Is Restored and the Temple Foundation Laid (Ezra 3:1–13)** — Jeshua and Zerubbabel rebuilt the altar and restored sacrifices and the Feast of Tabernacles. When the temple foundation was laid, praise, joy, and the tears of those remembering Solomon's temple mingled together.
+In the first year of Cyrus king of Persia, the Lord stirred up his spirit to fulfill the word spoken by Jeremiah. Cyrus proclaimed that the God of heaven had charged him to build Him a house in Jerusalem and invited God's people to go up and rebuild it. Their neighbors helped them with silver, gold, goods, and animals, and Cyrus returned the temple vessels Nebuchadnezzar had taken, handing them over to Sheshbazzar, the prince of Judah.
 
-**Opposition Brings the Work to a Halt (Ezra 4:1–24)** — Neighbors opposed the returned exiles, discouraged workers, and appealed to Persian rulers. A later order stopped Jerusalem's building, and the temple work remained halted until Darius's reign.
+Led by Zerubbabel and Jeshua, the whole congregation of forty-two thousand three hundred sixty returned, along with their servants and singers. Priests who could not find their names in the family records were kept from the priesthood until a priest could consult the Urim and Thummim. When they arrived, the leaders gave freely toward rebuilding the house of God.
 
-**God's Prophets Encourage the Rebuilding (Ezra 5:1–6:12)** — Haggai and Zechariah encouraged Zerubbabel and Jeshua to rebuild. Darius's search found Cyrus's decree; Darius ordered officials not to interfere and to provide support for sacrifices.
+**The Altar Is Restored and the Temple Foundation Laid (Ezra 3:1–13)** — The returned exiles restore the altar and lay the temple's foundation with mingled joy and weeping.
 
-**The Temple Is Completed and Worship Restored (Ezra 6:13–22)** — The temple was completed in Darius's sixth year. The returned people dedicated it, organized priests and Levites, kept Passover and Unleavened Bread, and rejoiced that worship had been restored.
+In the seventh month the people gathered in Jerusalem, and Jeshua and Zerubbabel rebuilt the altar so that the morning and evening burnt offerings could resume, though they feared the surrounding peoples. They kept the Feast of Tabernacles and hired masons and carpenters, paying Tyre and Sidon for cedar from Lebanon.
 
-**Ezra Is Sent to Teach God's Law (Ezra 7:1–28)** — Ezra, a priest and skilled scribe descended from Aaron, received Artaxerxes's decree to lead another return, carry gifts, appoint judges, and teach God's law.
+When the builders laid the temple's foundation, the priests sounded trumpets and the Levites sang, “because he is good, for his mercy endureth for ever toward Israel.” Many older men who had seen Solomon's temple wept with a loud voice, while others shouted for joy, so that no one could tell the sound of joy from the sound of weeping.
 
-**Ezra Leads Another Group Home (Ezra 8:1–36)** — Ezra gathered families and Levites, proclaimed a fast at Ahava, and entrusted temple gifts to selected priests. God protected the travelers, who delivered the offerings and the king's orders in Jerusalem.
+**Opposition Brings the Work to a Halt (Ezra 4:1–24)** — Opponents of Judah discourage the builders and persuade Persian kings to stop the work.
 
-**Ezra Confronts Israel's Unfaithfulness (Ezra 9:1–15)** — Ezra learned that Israelites, priests, and Levites had intermarried with surrounding peoples contrary to the community's covenant obligations. He mourned, confessed Israel's sin, and acknowledged God's mercy and their guilt.
+The adversaries of Judah offered to help build, claiming they worshiped the same God, but Zerubbabel and Jeshua refused. Then “the people of the land weakened the hands of the people of Judah,” troubled them, and hired counselors against them throughout the reign of Cyrus.
 
-**The People Respond to Ezra's Prayer (Ezra 10:1–44)** — The people acknowledged wrongdoing and made a covenant to address the marriages. Leaders and judges examined the cases over time; Ezra ends with the names of those involved and the renewed seriousness of covenant obedience.
+The chapter then looks ahead to later opposition under Ahasuerus and Artaxerxes, when officials wrote that Jerusalem had always been a rebellious city, and Artaxerxes ordered the rebuilding of the city stopped. Returning to the temple, the account says the work ceased until the second year of Darius king of Persia.
+
+**God's Prophets Encourage the Rebuilding (Ezra 5:1–6:12)** — Haggai and Zechariah stir the people to build again, and Darius confirms Cyrus's decree.
+
+The prophets Haggai and Zechariah prophesied to the Jews, and Zerubbabel and Jeshua began to build again. When Tatnai the governor asked who had authorized the work, the elders answered that they were servants of the God of heaven and earth, rebuilding the house destroyed because their fathers had provoked Him, and that Cyrus had decreed it.
+
+Tatnai wrote to Darius, and a search of the royal records at Achmetha found Cyrus's decree. Darius ordered the officials to leave the work alone, to pay its costs from the royal revenue, and to provide what was needed for sacrifices, so that the priests would pray for the life of the king and his sons.
+
+**The Temple Is Completed and Worship Restored (Ezra 6:13–22)** — The temple is finished and dedicated, and the returned exiles keep the Passover with joy.
+
+With the prophets' encouragement, the elders prospered, and the temple was finished on the third day of the month Adar, in the sixth year of Darius. The people dedicated it with joy, offering sacrifices and twelve goats as a sin offering for all Israel, one for each tribe, and set the priests and Levites in their divisions as written in the book of Moses. They kept the Passover and the Feast of Unleavened Bread with joy, for the Lord had made them joyful and turned the heart of the Persian king toward them.
+
+**Ezra Is Sent to Teach God's Law (Ezra 7:1–28)** — Ezra, a priest and scribe descended from Aaron, receives the king's support to lead another return and teach God's law.
+
+Nearly sixty years after the temple was finished, Ezra, a ready scribe in the law of Moses descended from Aaron, came up from Babylon in the seventh year of Artaxerxes. The hand of the Lord was upon him, for “Ezra had prepared his heart to seek the law of the LORD, and to do it, and to teach in Israel statutes and judgments.”
+
+Artaxerxes gave him a letter allowing any Israelite who wished to go with him, sending silver and gold for offerings, exempting temple workers from taxes, and commissioning Ezra to appoint judges who knew God's law and to teach those who did not. Ezra blessed the Lord, who had put this in the king's heart.
+
+**Ezra Leads Another Group Home (Ezra 8:1–36)** — Ezra gathers families and Levites, seeks God's protection, and brings the temple gifts safely to Jerusalem.
+
+At the river Ahava, Ezra found no Levites among the travelers and sent for them, and Levites and temple servants joined the company. He proclaimed a fast to seek God for a safe journey, explaining, “I was ashamed to require of the king a band of soldiers and horsemen,” because he had told the king, “The hand of our God is upon all them for good that seek him.”
+
+Ezra weighed out the silver, gold, and vessels and entrusted them to twelve chief priests. God delivered the travelers from enemies along the way. In Jerusalem the treasure was weighed again and recorded, the returned exiles offered burnt offerings, and the king's orders were delivered to the governors.
+
+**Ezra Confronts Israel's Unfaithfulness (Ezra 9:1–15)** — Ezra learns that the people have intermarried with the surrounding nations and confesses their sin before God.
+
+The leaders reported that the people, priests, and Levites had taken wives from the surrounding nations, and that the princes and rulers had led the way, though God's law forbade such marriages because they would turn Israel to other gods. Ezra tore his garment and mantle, pulled hair from his head and beard, and sat stunned until the evening sacrifice.
+
+Then he knelt and prayed, “O my God, I am ashamed and blush to lift up my face to thee.” He confessed that Israel's sins had brought the exile, praised God for leaving a remnant and giving them favor with the kings of Persia, and acknowledged that they stood guilty before Him.
+
+**The People Respond to Ezra's Prayer (Ezra 10:1–44)** — The people confess their sin and agree to send away their foreign wives.
+
+As Ezra wept and prayed before the house of God, a great crowd gathered and wept with him. Shechaniah said, “yet now there is hope in Israel concerning this thing,” and proposed a covenant “to put away all the wives, and such as are born of them.” The people gathered in Jerusalem in the ninth month, trembling over the matter and the heavy rain, and agreed. Over the next three months, leaders examined each case. The book ends with a list of the priests, Levites, and other Israelites who had married foreign wives, noting that some of them had children.
 
 # Nehemiah
 When it happened: From the twentieth year of Artaxerxes king of Persia (445 BC) to some time after his thirty-second year (about 433 BC; Nehemiah 13:6).
@@ -454,29 +486,67 @@ When it was written: Most of the book is Nehemiah's own first-person account, in
 Where: The Persian palace at Shushan (Susa), and Jerusalem.
 The world at the time: Nearly a century after the first exiles returned, Jerusalem's walls still lay in ruins. Local officials, Sanballat the Horonite, Tobiah the Ammonite, and Geshem the Arabian, opposed any effort to make the city strong again.
 
-**Nehemiah Prays for Jerusalem's Restoration (Nehemiah 1:1–2:20)** — After hearing Jerusalem's walls were broken, Nehemiah mourned, fasted, confessed Israel's sin, and prayed. Artaxerxes granted him authority and supplies to rebuild. Nehemiah inspected the walls, rallied the people, and answered opponents by trusting God.
+**Nehemiah Prays for Jerusalem's Restoration (Nehemiah 1:1–2:20)** — Grieved by news of Jerusalem's ruined walls, Nehemiah prays, receives the king's support, and rallies the people to rebuild.
 
-**Jerusalem's Families Rebuild the Walls (Nehemiah 3:1–32)** — Priests, rulers, craftsmen, merchants, Levites, and families repaired assigned sections of Jerusalem's gates and walls. The record preserves their names, including those who worked near their homes; the nobles of Tekoa did not join.
+At the Persian palace in Shushan, Nehemiah learned from his brother Hanani that the survivors in Judah were in great affliction and that Jerusalem's wall was broken down and its gates burned. He wept, mourned, fasted, and prayed for days, confessing Israel's sins and asking God to remember His promise to gather His people if they returned to Him. Nehemiah was the king's cupbearer.
 
-**Opposition Threatens the Rebuilding Effort (Nehemiah 4:1–23)** — Sanballat and Tobiah mocked and threatened the builders. Nehemiah prayed, stationed guards, and had workers build with weapons nearby while a trumpeter stood ready to summon defense.
+Months later, as Nehemiah served wine, Artaxerxes asked, “Why is thy countenance sad, seeing thou art not sick?” Nehemiah writes, “So I prayed to the God of heaven,” and then asked to be sent to rebuild the city. The king granted letters and timber. In Jerusalem Nehemiah inspected the walls by night, then told the leaders, and they answered, “Let us rise up and build.” When Sanballat, Tobiah, and Geshem mocked them, Nehemiah replied, “The God of heaven, he will prosper us.”
 
-**Nehemiah Confronts Injustice Among the People (Nehemiah 5:1–19)** — Nehemiah confronted nobles exploiting poor families through debt and interest. They agreed to return property and stop the practice. He refused the governor's allowance and supported many people at his table.
+**Jerusalem's Families Rebuild the Walls (Nehemiah 3:1–32)** — Families from every part of the community repair assigned sections of Jerusalem's gates and walls.
 
-**The Wall Is Completed Despite Opposition (Nehemiah 6:1–19)** — Nehemiah refused invitations, false accusations, and intimidation intended to stop him. Jerusalem's wall was completed in fifty-two days, and surrounding nations recognized God's help, though Tobiah continued his influence.
+Eliashib the high priest and his fellow priests rebuilt the sheep gate and sanctified it. Section by section, the record names those who repaired the walls and gates: goldsmiths, perfumers, rulers, Levites, merchants, men from nearby towns, and even Shallum with his daughters. Many repaired the part of the wall nearest their own houses. Only the nobles of Tekoa refused to put their necks to the work.
 
-**Jerusalem's Gates and People Are Organized (Nehemiah 7:1–73)** — Nehemiah appointed guards, gatekeepers, singers, and Levites, then examined the register of families returning from captivity. Jerusalem remained sparsely populated, and genealogies determined priestly eligibility.
+**Opposition Threatens the Rebuilding Effort (Nehemiah 4:1–23)** — The builders keep working under mockery and threats, with weapons close at hand.
 
-**Ezra Reads God's Law Before the People (Nehemiah 8:1–18)** — Ezra read Moses' law at the Water Gate while Levites explained it. The people were encouraged to rejoice, study the law, and restore the Feast of Tabernacles with great joy.
+Sanballat mocked the feeble Jews, and Tobiah joked that even a fox walking on their wall would break it down. Nehemiah prayed and the work continued until the wall was joined to half its height, “for the people had a mind to work.” When enemies plotted a surprise attack, the people prayed and set a watch day and night.
 
-**Israel Confesses Its Sins and Remembers God's Mercy (Nehemiah 9:1–38)** — Israel fasted, confessed, and recalled God's faithfulness from creation, Abraham, Egypt, Sinai, wilderness provision, and the land. The Levites acknowledged repeated rebellion and God's mercy, then resolved to make a written covenant.
+Nehemiah stationed families behind the wall with swords, spears, and bows and told them, “Remember the Lord, which is great and terrible,” and fight for their families. From then on half the men worked while half stood guard, and the builders worked “with one of his hands wrought in the work, and with the other hand held a weapon.” A trumpeter stayed beside Nehemiah to call the people together, and they did not even take off their clothes except for washing.
 
-**The People Renew Their Covenant with God (Nehemiah 10:1–39)** — Leaders and families committed to obey God's law, honor Sabbath and sabbatical requirements, avoid unfaithful marriages, and support temple worship through offerings, firstfruits, wood, and tithes.
+**Nehemiah Confronts Injustice Among the People (Nehemiah 5:1–19)** — Nehemiah stops the wealthy from exploiting their poor neighbors and sets an example of generosity.
 
-**Families Settle in Jerusalem and Judah (Nehemiah 11:1–12:26)** — One in ten people was chosen by lot to live in Jerusalem, with others volunteering. The record names residents, priests, Levites, singers, gatekeepers, and the families responsible for restored worship.
+During a famine, poor families had mortgaged their fields, borrowed to pay the king's tax, and even sold their children into bondage to their fellow Jews. Nehemiah was very angry and rebuked the nobles and rulers for charging interest to their own people. They agreed to restore the fields, vineyards, and houses and to stop taking interest, and swore an oath before the priests.
 
-**Jerusalem's Rebuilt Wall Is Dedicated to God (Nehemiah 12:27–47)** — Levites, priests, singers, and two great thanksgiving processions dedicated the wall with purification, music, sacrifice, and joy. Arrangements supported singers, gatekeepers, priests, and Levites.
+For twelve years as governor, Nehemiah did not take the governor's food allowance because the burden on the people was heavy, and he fed a hundred fifty Jews and rulers at his table, along with visitors. He prayed, “Think upon me, my God, for good.”
 
-**Nehemiah Confronts Renewed Disobedience (Nehemiah 13:1–31)** — Nehemiah returned to find Tobiah using temple space, Levites unsupported, Sabbath commerce, and unfaithful marriages. He removed Tobiah, restored offerings and guards, confronted wrongdoing, and asked God to remember him.
+**The Wall Is Completed Despite Opposition (Nehemiah 6:1–19)** — Nehemiah refuses every scheme to stop him, and the wall is finished in fifty-two days.
+
+Sanballat and Geshem invited Nehemiah four times to meet them in the plain of Ono, but he answered, “I am doing a great work, so that I cannot come down.” They sent an open letter accusing him of planning to rebel and make himself king, and he replied that they had invented it. A hired prophet urged him to hide in the temple, but Nehemiah refused: “Should such a man as I flee?”
+
+The wall was finished on the twenty-fifth day of the month Elul, in fifty-two days. When the surrounding nations heard, they were cast down, for they saw that the work was done by God. Yet nobles of Judah still corresponded with Tobiah, who sent letters to frighten Nehemiah.
+
+**Jerusalem's Gates and People Are Organized (Nehemiah 7:1–73)** — Nehemiah sets guards over the city and turns to the register of families who first returned.
+
+With the doors in place, Nehemiah appointed gatekeepers, singers, and Levites and put his brother Hanani and Hananiah, a faithful man who feared God, over Jerusalem. The gates were not to be opened until the sun was hot. “The city was large and great: but the people were few therein,” and the houses were not built. God put it in Nehemiah's heart to gather the people by their genealogy, and he found the register of those who had first come up from captivity, which the chapter records.
+
+**Ezra Reads God's Law Before the People (Nehemiah 8:1–18)** — Ezra reads the law, the Levites explain it, and the people's mourning turns into joy.
+
+In the seventh month all the people gathered as one man in the street before the Water Gate and asked Ezra to bring the book of the law of Moses. Ezra stood on a wooden pulpit and read from morning until midday, and when he opened the book, the people stood. The Levites “read in the book in the law of God distinctly, and gave the sense, and caused them to understand the reading.”
+
+The people wept as they heard the law, but Nehemiah, Ezra, and the Levites told them not to mourn, for the day was holy: “the joy of the LORD is your strength.” They sent portions to those who had nothing. Finding in the law that Israel was to live in booths during the feast of the seventh month, the people made booths on their roofs and in the courts, which Israel had not done in this way since the days of Joshua, and there was very great gladness.
+
+**Israel Confesses Its Sins and Remembers God's Mercy (Nehemiah 9:1–38)** — The people fast and confess, recounting God's faithfulness through all of Israel's history.
+
+The people gathered with fasting, sackcloth, and earth on their heads, separated themselves from foreigners, and confessed their sins. The Levites led a long prayer recounting God's works: creation, the call of Abraham, the deliverance from Egypt, the giving of the law at Sinai, manna and water in the wilderness, and the gift of the land.
+
+Again and again Israel rebelled, yet the prayer declares, “thou art a God ready to pardon, gracious and merciful, slow to anger, and of great kindness, and forsookest them not.” It confesses that God was just in all that had come upon them, and that they were now servants in their own land. The leaders resolved to make a sure covenant and put it in writing.
+
+**The People Renew Their Covenant with God (Nehemiah 10:1–39)** — Leaders and families sign a covenant to keep God's law and support His house.
+
+Nehemiah, the priests, the Levites, and the chief men set their seals to the covenant, and the rest of the people joined them with an oath to walk in God's law. They promised not to give their children in marriage to the surrounding peoples, not to buy goods on the Sabbath, to let the land rest and release debts in the seventh year, and to bring the temple tax, wood for the altar, firstfruits, firstborn, and tithes. They concluded, “we will not forsake the house of our God.”
+
+**Families Settle in Jerusalem and Judah (Nehemiah 11:1–12:26)** — Jerusalem is repopulated, and the families who serve in its worship are recorded.
+
+The leaders lived in Jerusalem, and the rest of the people cast lots to bring one of every ten to live in the holy city, while the others stayed in their towns. The people blessed those who willingly offered to live in Jerusalem. The record lists the residents of the city, the towns of Judah and Benjamin, and the priests and Levites who had come up with Zerubbabel and Jeshua and served in the generations after them.
+
+**Jerusalem's Rebuilt Wall Is Dedicated to God (Nehemiah 12:27–47)** — The wall is dedicated with two great choirs, sacrifices, and joy heard far away.
+
+The Levites and singers gathered from the surrounding villages, and the priests and Levites purified themselves, the people, the gates, and the wall. Nehemiah appointed two great companies of thanksgiving that walked the wall in opposite directions, one led by Ezra the scribe, and met at the house of God. They offered great sacrifices and rejoiced, the women and children also, “so that the joy of Jerusalem was heard even afar off.” Officials were appointed over the storerooms for the portions of the priests and Levites, as in the days of David and Asaph.
+
+**Nehemiah Confronts Renewed Disobedience (Nehemiah 13:1–31)** — Returning after an absence, Nehemiah confronts a series of renewed violations of the covenant.
+
+While Nehemiah was away serving Artaxerxes, Eliashib the priest gave Tobiah a large room in the temple courts. On his return Nehemiah threw Tobiah's furniture out and had the rooms cleansed. He found that the Levites had not received their portions and had gone back to their fields, so he restored the tithes and appointed faithful treasurers.
+
+He saw people treading winepresses and selling goods on the Sabbath, so he shut the gates of Jerusalem from Sabbath eve and threatened the merchants who waited outside. When he found men who had married women of Ashdod, Ammon, and Moab, and whose children could not speak the language of Judah, he “contended with them, and cursed them, and smote certain of them, and plucked off their hair,” reminding them that such marriages had led even Solomon into sin. He drove away a grandson of the high priest who had married Sanballat's daughter. Nehemiah closes, “Remember me, O my God, for good.”
 
 # Esther
 When it happened: During the reign of King Ahasuerus of Persia, usually identified with Xerxes I (486–465 BC), from his third year (Esther 1:3) to his twelfth year and after.
@@ -484,22 +554,60 @@ When it was written: The book notes that "Mordecai wrote these things" in letter
 Where: Shushan (Susa), the royal city of the Persian Empire.
 The world at the time: Persia ruled 127 provinces "from India even unto Ethiopia" (Esther 1:1). Many Jews still lived scattered throughout the empire after the exile, and a royal law, once sealed, could not be reversed.
 
-**King Ahasuerus Removes Queen Vashti (Esther 1:1–22)** — At a royal feast in Shushan, Vashti refused the king's command to appear. Ahasuerus removed her as queen and issued a decree throughout his empire.
+**King Ahasuerus Removes Queen Vashti (Esther 1:1–22)** — At a royal feast in Shushan, Queen Vashti refuses the king's summons, and Ahasuerus removes her.
 
-**Esther Becomes Queen of Persia (Esther 2:1–23)** — Esther, a Jewish orphan raised by Mordecai, became queen while concealing her identity. Mordecai uncovered a plot against Ahasuerus, which was recorded but not immediately rewarded.
+Ahasuerus reigned over a hundred twenty-seven provinces from India to Ethiopia. In his third year he held a feast for his princes lasting a hundred eighty days, followed by a seven-day feast for all the people of Shushan. On the seventh day, merry with wine, he commanded his chamberlains to bring Queen Vashti wearing the royal crown to show her beauty, but she refused to come.
 
-**Haman Plans to Destroy the Jews (Esther 3:1–15)** — Haman became furious when Mordecai refused to bow. He cast Pur and secured the king's sealed decree ordering the destruction of Jews across the Persian Empire.
+The king was furious. His adviser Memucan warned that Vashti's refusal would encourage wives everywhere to despise their husbands, so the king removed her as queen and sent letters to every province declaring that “every man should bear rule in his own house.”
 
-**Mordecai Calls Esther to Act (Esther 4:1–17)** — Mordecai urged Esther to plead for her people despite the danger of entering the king's court uninvited. Esther called for a three-day fast and resolved to go before the king.
+**Esther Becomes Queen of Persia (Esther 2:1–23)** — Esther, a Jewish orphan raised by her cousin Mordecai, becomes queen without revealing her people.
 
-**Esther Invites the King and Haman to a Feast (Esther 5:1–14)** — The king extended his golden scepter to Esther. She invited him and Haman to two feasts. Haman's hatred of Mordecai led him to prepare a gallows.
+The king's servants proposed gathering young women from every province so the king could choose a new queen. Mordecai, a Benjamite descended from those carried away from Jerusalem, had raised his cousin Hadassah, also called Esther, as his own daughter after her parents died. Esther was taken into the palace, where she won the favor of Hegai, keeper of the women, and everyone who saw her. On Mordecai's instruction she did not reveal her people or family. The king loved Esther above all the women and made her queen.
 
-**Mordecai Receives an Unexpected Honor (Esther 6:1–14)** — The king's sleepless night revealed Mordecai's unrewarded loyalty. Haman, planning Mordecai's death, was instead ordered to lead him through the city in royal honor.
+While Mordecai sat in the king's gate, he learned that two chamberlains, Bigthan and Teresh, planned to kill the king. He told Esther, who reported it in Mordecai's name. The two were hanged, and the matter was written in the king's chronicles, but Mordecai was not rewarded.
 
-**Esther Exposes Haman's Plot (Esther 7:1–10)** — At Esther's second feast, she revealed that Haman planned the destruction of her people. The king ordered Haman hanged on the gallows he had prepared for Mordecai.
+**Haman Plans to Destroy the Jews (Esther 3:1–15)** — When Mordecai refuses to bow, Haman obtains a decree to destroy every Jew in the empire.
 
-**Esther and Mordecai Secure a New Decree (Esther 8:1–17)** — Esther received Haman's estate and Mordecai the signet ring. Because the first decree could not be revoked, a new decree authorized Jews throughout the empire to gather and defend themselves.
+The king promoted Haman the Agagite above all his princes, and everyone at the king's gate bowed to him except Mordecai, who had told them he was a Jew. Furious, Haman set out to destroy not only Mordecai but all his people. Pur, the lot, was cast before Haman to choose a day, and it fell on the thirteenth day of the twelfth month, Adar.
 
-**The Jews Defend Themselves and Establish Purim (Esther 9:1–32)** — The Jews prevailed over their enemies on the days Haman had chosen for their destruction, without taking spoil. Mordecai and Esther established Purim to remember their deliverance.
+Haman told the king that a scattered people kept their own laws and did not obey the king's, and offered ten thousand talents of silver for their destruction. The king gave Haman his ring, and letters sealed with it went to every province, commanding that all Jews, young and old, women and children, be killed on that day and their goods taken. Then “the king and Haman sat down to drink; but the city Shushan was perplexed.”
 
-**Mordecai Becomes a Great Leader in Persia (Esther 10:1–3)** — Mordecai became second to Ahasuerus and sought the welfare and peace of his people. Esther closes with the Jews' deliverance from Haman's planned destruction.
+**Mordecai Calls Esther to Act (Esther 4:1–17)** — Mordecai urges Esther to risk her life for her people, and she resolves to go to the king.
+
+Mordecai tore his clothes, put on sackcloth and ashes, and cried bitterly in the city, and the Jews mourned and fasted in every province. Through the chamberlain Hatach, he sent Esther a copy of the decree and urged her to plead with the king. Esther replied that anyone who entered the inner court uninvited would be put to death unless the king held out his golden scepter, and she had not been called for thirty days.
+
+Mordecai warned that she would not escape by being in the palace, and that if she kept silent, deliverance would arise for the Jews from another place. He asked, “who knoweth whether thou art come to the kingdom for such a time as this?” Esther asked all the Jews in Shushan to fast for her for three days, as she and her maidens would, and said, “so will I go in unto the king, which is not according to the law: and if I perish, I perish.”
+
+**Esther Invites the King and Haman to a Feast (Esther 5:1–14)** — The king receives Esther, and Haman, enraged by Mordecai, builds a gallows.
+
+On the third day Esther stood in the inner court in her royal apparel, and the king held out the golden scepter and promised, “it shall be even given thee to the half of the kingdom.” She asked only that the king and Haman come to a banquet, and there she invited them to a second banquet the next day.
+
+Haman went out joyful until he saw Mordecai, who would not rise or move for him. At home he boasted of his riches and honor, yet said none of it satisfied him while Mordecai sat at the king's gate. His wife Zeresh and his friends advised him to build a gallows fifty cubits high and ask the king to hang Mordecai on it in the morning, and Haman had the gallows made.
+
+**Mordecai Receives an Unexpected Honor (Esther 6:1–14)** — On a sleepless night the king learns of Mordecai's loyalty, and Haman is made to honor him.
+
+That night the king could not sleep and had the chronicles read to him, which recorded how Mordecai had exposed the plot against his life. Learning that nothing had been done for him, the king asked who was in the court, just as Haman arrived to ask for Mordecai's hanging. The king asked, “What shall be done unto the man whom the king delighteth to honour?”
+
+Thinking the king meant him, Haman described royal robes, the king's horse, and a noble proclaiming the man's honor through the streets. The king told Haman to do all of it for Mordecai the Jew. Afterward Haman hurried home in mourning, and his wise men and Zeresh said, “thou shalt not prevail against him, but shalt surely fall before him.”
+
+**Esther Exposes Haman's Plot (Esther 7:1–10)** — At the second banquet Esther reveals that she is a Jew, and Haman is hanged on his own gallows.
+
+At the second banquet the king again asked Esther's petition. She answered, “let my life be given me at my petition, and my people at my request,” for she and her people had been sold to be destroyed. When the king asked who had dared to do this, Esther said, “The adversary and enemy is this wicked Haman.”
+
+The king rose in anger and went into the palace garden. Haman stayed to plead for his life and fell on Esther's couch just as the king returned, who took it as an assault on the queen. The chamberlain Harbonah mentioned the gallows Haman had built for Mordecai, and the king said, “Hang him thereon.” So Haman was hanged on the gallows he had prepared, and the king's wrath was pacified.
+
+**Esther and Mordecai Secure a New Decree (Esther 8:1–17)** — Because the first decree cannot be revoked, a second decree lets the Jews defend themselves.
+
+The king gave Esther the house of Haman, and gave Mordecai the signet ring he had taken from Haman. Esther fell at the king's feet in tears and begged him to reverse Haman's plot. Since a law written in the king's name and sealed with his ring could not be revoked, the king allowed Mordecai to write a new decree. It granted the Jews in every city the right to gather and stand for their lives against anyone who attacked them on the thirteenth of Adar.
+
+Mordecai went out in royal apparel of blue and white with a great crown of gold, and the city of Shushan rejoiced. “The Jews had light, and gladness, and joy, and honour,” and many people of the land became Jews, because the fear of the Jews fell on them.
+
+**The Jews Defend Themselves and Establish Purim (Esther 9:1–32)** — On the day meant for their destruction, the Jews overcome their enemies and establish the feast of Purim.
+
+On the thirteenth of Adar, the day their enemies had hoped to destroy them, the Jews gathered and struck down those who sought their harm, and officials helped them for fear of Mordecai. In Shushan they killed five hundred men and Haman's ten sons. At Esther's request the king granted a second day in Shushan and had the bodies of Haman's sons hanged. In the provinces the Jews killed seventy-five thousand of their foes, but “on the spoil laid they not their hand.”
+
+Mordecai wrote to the Jews in every province to keep the fourteenth and fifteenth of Adar each year as days of feasting, gladness, sending portions to one another, and gifts to the poor, because these were the days when their mourning was “turned unto them from sorrow to joy.” The days were called Purim, after the lot Haman had cast, and Esther confirmed the custom with a second letter.
+
+**Mordecai Becomes a Great Leader in Persia (Esther 10:1–3)** — Mordecai rises to second in the kingdom and works for the good of his people.
+
+Ahasuerus's power and Mordecai's greatness were recorded in the chronicles of the kings of Media and Persia. Mordecai the Jew was next to the king, great among the Jews and accepted by his brothers, “seeking the wealth of his people, and speaking peace to all his seed.” The book never names God, yet its story turns on a sleepless night, a perfectly timed arrival, and a gallows that served the opposite purpose from the one intended.
