@@ -49,6 +49,7 @@ final class VerseOfDayViewModel {
             )
             mirrorVerseToAppGroup(book: storedVerseBook, chapter: storedVerseChapter, verse: storedVerseNumber, text: storedVerseText)
         }
+        mirrorScheduleToAppGroup()
         updateNextDescription()
         scheduleNextVerseRefreshTimer()
         updateRefreshNotificationSchedule()
@@ -120,6 +121,15 @@ final class VerseOfDayViewModel {
         shared.set(verse, forKey: "verseOfDayNumber")
         shared.set(text, forKey: "verseOfDayText")
         DebouncedWidgetReloader.shared.reload(kind: "VerseWidget")
+    }
+
+    private func mirrorScheduleToAppGroup() {
+        guard let shared = sharedDefaults else { return }
+        shared.set(refreshFrequencyRaw, forKey: "votdRefreshFrequency")
+        shared.set(votdRefresh1Hour, forKey: "votdRefresh1Hour")
+        shared.set(votdRefresh1Minute, forKey: "votdRefresh1Minute")
+        shared.set(votdRefresh2Hour, forKey: "votdRefresh2Hour")
+        shared.set(votdRefresh2Minute, forKey: "votdRefresh2Minute")
     }
 
     private enum VerseScope: String { case old, new, whole, book }
@@ -215,6 +225,8 @@ final class VerseOfDayViewModel {
 
     // Expose handlers for setting changes
     func refreshScheduleChanged() {
+        mirrorScheduleToAppGroup()
+        DebouncedWidgetReloader.shared.reload(kind: "VerseWidget")
         updateNextDescription()
         scheduleNextVerseRefreshTimer()
         updateRefreshNotificationSchedule()

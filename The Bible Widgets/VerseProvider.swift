@@ -134,12 +134,12 @@ struct VerseProvider: AppIntentTimelineProvider {
     }
 
     private func nextAutoRefreshDate(from now: Date = Date()) -> Date {
-        let defaults = UserDefaults.standard
-        let frequency = defaults.string(forKey: "votdRefreshFrequency") ?? "custom"
-        let h1 = defaults.object(forKey: "votdRefresh1Hour") as? Int ?? 6
-        let m1 = defaults.object(forKey: "votdRefresh1Minute") as? Int ?? 0
-        let h2 = defaults.object(forKey: "votdRefresh2Hour") as? Int ?? 18
-        let m2 = defaults.object(forKey: "votdRefresh2Minute") as? Int ?? 0
+        let defaults = UserDefaults(suiteName: "group.bible.app")
+        let frequency = defaults?.string(forKey: "votdRefreshFrequency") ?? "custom"
+        let h1 = defaults?.object(forKey: "votdRefresh1Hour") as? Int ?? 6
+        let m1 = defaults?.object(forKey: "votdRefresh1Minute") as? Int ?? 0
+        let h2 = defaults?.object(forKey: "votdRefresh2Hour") as? Int ?? 18
+        let m2 = defaults?.object(forKey: "votdRefresh2Minute") as? Int ?? 0
 
         func dateForToday(hour: Int, minute: Int, from date: Date) -> Date? {
             let calendar = Calendar.current
