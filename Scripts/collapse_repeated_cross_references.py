@@ -15,7 +15,7 @@ Safe to run again.
 import sqlite3
 import sys
 
-from add_related_verses import DATABASE
+from insights_common import DATABASE
 
 
 def main():

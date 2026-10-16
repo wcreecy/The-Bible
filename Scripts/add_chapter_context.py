@@ -31,7 +31,7 @@ import sys
 from pathlib import Path
 
 from add_book_guides import quote_problems, reference_problems
-from add_related_verses import DATABASE
+from insights_common import DATABASE
 from book_content_tools import KJV, kjv_books
 from repair_bible_insight_references import repair as repair_references, validate as validate_references
 
@@ -95,7 +95,7 @@ def validate(chapters, chapters_by_book):
         if not audience:
             problems.append(f"{key}: empty audience")
         elif audience in audiences:
-            # Repeated text is treated as boilerplate and cleared by clean_chapter_insights.py.
+            # Repeated text would read as boilerplate on every chapter page.
             problems.append(f"{key}: audience repeats {audiences[audience]}")
         audiences[audience] = key
         if not 1 <= len(entry["culture"]) <= 3:

@@ -10,7 +10,7 @@ belong to the same part, separated by a blank line as in the app. A line that is
 just "---" begins a part with no label, such as a closing summary.
 
 These files are the source for book history and stories: edit them here, then run
-Scripts/consolidate_insights.py to load them into the database. If the database is ever
+Scripts/build_insights.py to load them into the database. If the database is ever
 edited directly, run Scripts/export_book_content.py to write the changes back here.
 
 Run directly to check every quotation in the content against the app's KJV text:

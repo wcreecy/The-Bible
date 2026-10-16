@@ -2,7 +2,7 @@
 """Write each book's When & Where section and story from BibleInsights.sqlite back to
 Scripts/book_content/*.md, so the files match what the app shows.
 
-The .md files are the source; edit them and run consolidate_insights.py. Use this only
+The .md files are the source; edit them and run build_insights.py. Use this only
 to recover changes that were made to the database directly.
 
 Books keep the file and order they already have. The result is checked by parsing the
@@ -18,7 +18,7 @@ import re
 import sqlite3
 import sys
 
-from add_related_verses import DATABASE
+from insights_common import DATABASE
 from book_content_tools import CONTENT, UNLABELED_PART, WHEN_WHERE_FIELDS, load_books
 
 

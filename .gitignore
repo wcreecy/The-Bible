@@ -1,3 +1,6 @@
 
 # Per-user Xcode state
 xcuserdata/
+
+# Python
+__pycache__/

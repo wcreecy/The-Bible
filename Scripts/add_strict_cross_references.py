@@ -4,7 +4,7 @@
 Candidates come from the OpenBible.info cross-reference dataset (CC-BY):
 https://a.openbible.info/data/cross-references.zip
 
-Unlike add_related_verses.py, which rebuilds the whole table, this only adds rows for
+This only adds rows for
 chapters in the chosen books that have no cross references yet, so hand-explained
 references elsewhere are left untouched (apart from appending stated fulfillments). A candidate is kept only if it is:
 
@@ -52,7 +52,7 @@ import sqlite3
 import sys
 from pathlib import Path
 
-from add_related_verses import DATABASE, OSIS_BOOKS, format_target
+from insights_common import DATABASE, OSIS_BOOKS, format_target
 from book_content_tools import KJV, normalize
 
 

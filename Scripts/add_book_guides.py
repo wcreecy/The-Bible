@@ -22,7 +22,7 @@ import sqlite3
 import sys
 from pathlib import Path
 
-from add_related_verses import DATABASE
+from insights_common import DATABASE
 from book_content_tools import KJV, kjv_books, normalize
 
 

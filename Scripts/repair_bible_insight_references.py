@@ -12,9 +12,7 @@ import sqlite3
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
-DATABASE = ROOT / "The Bible (iOS)" / "BibleInsights.sqlite"
-KJV = ROOT / "The Bible" / "kjv.json"
+from insights_common import DATABASE, KJV
 
 
 def repair(database: sqlite3.Connection) -> int:
