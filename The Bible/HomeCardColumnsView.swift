@@ -1,7 +1,8 @@
 import SwiftUI
 
 /// The iPad Home dashboard's three equal columns. The Today's Reading panel, when shown,
-/// sits above the cards in its column.
+/// sits above the cards in its column. A wide Verse of the Day sits above the columns it
+/// covers (see `HomeCardWidth`).
 ///
 /// In Edit Home mode, cards stop responding to taps and show controls to hide them or move
 /// them up, down, left, or right; hidden cards appear as compact tiles so they can be shown
@@ -23,6 +24,8 @@ struct HomeCardColumnsView<Card: View, Reader: View>: View {
     let onMoveAcross: (_ id: HomeCardID, _ offset: Int) -> Void
     let onMoveWithinColumn: (_ id: HomeCardID, _ offset: Int) -> Void
     let onToggleHidden: (HomeCardID) -> Void
+    /// Sets how many columns Verse of the Day covers: 1, 2, or 3.
+    let onSetVerseOfDayColumnCount: (Int) -> Void
     @ViewBuilder let card: (HomeCardID) -> Card
     @ViewBuilder let reader: () -> Reader
 
@@ -31,19 +34,49 @@ struct HomeCardColumnsView<Card: View, Reader: View>: View {
         return max(0, (width - columnSpacing * (count - 1)) / count)
     }
 
+    /// The width shown: a hidden Verse of the Day leaves no banner, except while editing,
+    /// where its tile holds the banner's place.
+    private var verseOfDayWidth: HomeCardWidth {
+        isEditing || !hiddenCards.contains(.verseOfDay) ? columns.verseOfDayWidth : .oneColumn
+    }
+
     var body: some View {
+        let covered = verseOfDayWidth.coveredColumns
         HStack(alignment: .top, spacing: columnSpacing) {
-            ForEach(HomeColumn.allCases, id: \.self) { column in
-                columnStack(column)
-                    .frame(width: columnWidth)
+            if covered.isEmpty {
+                columnStacks(HomeColumn.allCases)
+            } else {
+                // Uncovered columns run the full height beside the banner and the columns
+                // below it.
+                columnStacks(Array(HomeColumn.allCases.prefix { $0 != covered[0] }))
+                VStack(spacing: cardSpacing) {
+                    item(for: .verseOfDay, in: nil)
+                    HStack(alignment: .top, spacing: columnSpacing) {
+                        columnStacks(covered)
+                    }
+                }
+                .frame(width: spanWidth(covered.count))
+                columnStacks(Array(HomeColumn.allCases.drop { $0 != covered[covered.count - 1] }.dropFirst()))
             }
         }
         .frame(width: width, alignment: .top)
     }
 
+    private func spanWidth(_ count: Int) -> CGFloat {
+        columnWidth * CGFloat(count) + columnSpacing * CGFloat(max(0, count - 1))
+    }
+
+    private func columnStacks(_ list: [HomeColumn]) -> some View {
+        ForEach(list, id: \.self) { column in
+            columnStack(column)
+                .frame(width: columnWidth)
+        }
+    }
+
     /// Hidden cards are listed only while editing.
     private func cards(in column: HomeColumn) -> [HomeCardID] {
-        isEditing ? columns[column] : columns[column].filter { !hiddenCards.contains($0) }
+        let cards = columns.stackedCards(in: column)
+        return isEditing ? cards : cards.filter { !hiddenCards.contains($0) }
     }
 
     private func columnStack(_ column: HomeColumn) -> some View {
@@ -63,8 +96,9 @@ struct HomeCardColumnsView<Card: View, Reader: View>: View {
         }
     }
 
+    /// `column` is nil for a card spanning above the columns.
     @ViewBuilder
-    private func item(for id: HomeCardID, in column: HomeColumn) -> some View {
+    private func item(for id: HomeCardID, in column: HomeColumn?) -> some View {
         let isHidden = hiddenCards.contains(id)
         Group {
             if isEditing && isHidden {
@@ -86,6 +120,8 @@ struct HomeCardColumnsView<Card: View, Reader: View>: View {
                                 canMoveDown: columns.canMove(id, by: 1),
                                 canMoveLeft: columns.canMoveAcross(id, by: -1),
                                 canMoveRight: columns.canMoveAcross(id, by: 1),
+                                width: id == .verseOfDay ? columns.verseOfDayWidth : nil,
+                                onSetColumnCount: onSetVerseOfDayColumnCount,
                                 onHide: { onToggleHidden(id) },
                                 onMoveAcross: { onMoveAcross(id, $0) },
                                 onMoveWithinColumn: { onMoveWithinColumn(id, $0) }
@@ -102,11 +138,22 @@ struct HomeCardColumnsView<Card: View, Reader: View>: View {
                 if columns.canMove(id, by: 1) {
                     Button("Move down") { onMoveWithinColumn(id, 1) }
                 }
-                if let left = column.neighbor(by: -1) {
+                if let left = column?.neighbor(by: -1) {
                     Button("Move to \(left.title)") { onMoveAcross(id, -1) }
+                } else if column == nil, columns.canMoveAcross(id, by: -1) {
+                    Button("Move left") { onMoveAcross(id, -1) }
                 }
-                if let right = column.neighbor(by: 1) {
+                if let right = column?.neighbor(by: 1) {
                     Button("Move to \(right.title)") { onMoveAcross(id, 1) }
+                } else if column == nil, columns.canMoveAcross(id, by: 1) {
+                    Button("Move right") { onMoveAcross(id, 1) }
+                }
+                if id == .verseOfDay {
+                    ForEach(HomeCardWidthOption.allCases) { option in
+                        if option.columnCount != columns.verseOfDayWidth.columnCount {
+                            Button("Make \(option.title)") { onSetVerseOfDayColumnCount(option.columnCount) }
+                        }
+                    }
                 }
                 Button(isHidden ? "Show" : "Hide") { onToggleHidden(id) }
             }
@@ -137,6 +184,9 @@ struct HomeCardEditChrome: View {
     let canMoveDown: Bool
     let canMoveLeft: Bool
     let canMoveRight: Bool
+    /// The card's width, for cards whose width can change; shows a width menu.
+    var width: HomeCardWidth?
+    var onSetColumnCount: (Int) -> Void = { _ in }
     let onHide: () -> Void
     /// Moves the card to the neighboring column: -1 is left, +1 is right.
     let onMoveAcross: (Int) -> Void
@@ -168,6 +218,10 @@ struct HomeCardEditChrome: View {
 
             Spacer(minLength: 0)
 
+            if let width {
+                widthMenu(width)
+            }
+
             HomeEditControlButton(systemImage: "arrow.left", label: "Move \(id.title) left", disabled: !canMoveLeft) {
                 onMoveAcross(-1)
             }
@@ -183,6 +237,63 @@ struct HomeCardEditChrome: View {
         }
         .padding(.horizontal, 6)
         .frame(height: Self.barHeight)
+    }
+
+    private func widthMenu(_ width: HomeCardWidth) -> some View {
+        Menu {
+            Picker("Width", selection: Binding(get: { width.columnCount }, set: onSetColumnCount)) {
+                ForEach(HomeCardWidthOption.allCases) { option in
+                    Label(option.title, systemImage: option.systemImage).tag(option.columnCount)
+                }
+            }
+        } label: {
+            Image(systemName: "arrow.left.and.right")
+                .font(.subheadline.weight(.semibold))
+                .frame(width: 36, height: 36)
+                .contentShape(.circle)
+        }
+        .buttonStyle(.glass)
+        .buttonBorderShape(.circle)
+        .accessibilityLabel("\(id.title) width")
+        .accessibilityValue(HomeCardWidthOption(columnCount: width.columnCount).title)
+    }
+}
+
+/// The widths offered for Verse of the Day. Which two columns a two-column card covers is
+/// chosen with the left and right arrows.
+enum HomeCardWidthOption: Int, CaseIterable, Identifiable {
+    case one = 1, two, full
+
+    init(columnCount: Int) {
+        self = HomeCardWidthOption(rawValue: min(3, max(1, columnCount))) ?? .one
+    }
+
+    var id: Int { rawValue }
+    var columnCount: Int { rawValue }
+
+    var title: String {
+        switch self {
+        case .one: return "One Column"
+        case .two: return "Two Columns"
+        case .full: return "Full Width"
+        }
+    }
+
+    /// The short name used in segmented pickers.
+    var shortTitle: String {
+        switch self {
+        case .one: return "One"
+        case .two: return "Two"
+        case .full: return "Full"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .one: return "rectangle.portrait"
+        case .two: return "rectangle.split.2x1"
+        case .full: return "rectangle"
+        }
     }
 }
 

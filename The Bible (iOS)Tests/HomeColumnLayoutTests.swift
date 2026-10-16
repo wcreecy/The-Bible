@@ -106,4 +106,69 @@ struct HomeColumnLayoutTests {
         #expect(readerLeft?.middle.prefix(2) == [.verseOfDay, .today])
         #expect(readerLeft?.right.prefix(2) == [.study, .timer])
     }
+
+    // MARK: - Wide Verse of the Day
+
+    @Test
+    func widenedVerseOfDayCoversItsOwnSideOrTheSideAwayFromTheReader() {
+        var layout = HomeColumnLayout(left: [.verseOfDay, .today], middle: [.study], right: [.timer]).normalized()
+        layout.setVerseOfDayColumnCount(2, readerColumn: .right)
+        #expect(layout.verseOfDayWidth == .leftTwoColumns)
+
+        var fromRight = HomeColumnLayout(left: [.today], middle: [.study], right: [.verseOfDay]).normalized()
+        fromRight.setVerseOfDayColumnCount(2, readerColumn: nil)
+        #expect(fromRight.verseOfDayWidth == .rightTwoColumns)
+
+        // From the middle, it leaves the reader's column its full height.
+        var fromMiddle = HomeColumnLayout(left: [.today], middle: [.verseOfDay], right: [.timer]).normalized()
+        fromMiddle.setVerseOfDayColumnCount(2, readerColumn: .left)
+        #expect(fromMiddle.verseOfDayWidth == .rightTwoColumns)
+
+        // Already two columns wide, it stays on its side.
+        fromMiddle.setVerseOfDayColumnCount(2, readerColumn: .right)
+        #expect(fromMiddle.verseOfDayWidth == .rightTwoColumns)
+
+        fromMiddle.setVerseOfDayColumnCount(3, readerColumn: .right)
+        #expect(fromMiddle.verseOfDayWidth == .allColumns)
+    }
+
+    @Test
+    func wideVerseOfDayStaysOnTopAndKeepsItsColumnPlace() {
+        var layout = HomeColumnLayout(left: [.today, .verseOfDay, .streaks], middle: [.study], right: [.timer]).normalized()
+        layout.setVerseOfDayColumnCount(2, readerColumn: nil)
+
+        #expect(layout.stackedCards(in: .left).prefix(2) == [.today, .streaks])
+        #expect(!layout.canMove(.verseOfDay, by: -1))
+        #expect(!layout.canMove(.verseOfDay, by: 1))
+
+        // Moves skip over it, then it's back where it was once narrowed.
+        layout.move(.streaks, by: -1)
+        #expect(layout.stackedCards(in: .left).prefix(2) == [.streaks, .today])
+        #expect(layout.left.prefix(3) == [.streaks, .verseOfDay, .today])
+
+        // The arrows switch which two columns it covers; full width can't move.
+        #expect(!layout.canMoveAcross(.verseOfDay, by: -1))
+        layout.moveAcross(.verseOfDay, by: 1)
+        #expect(layout.verseOfDayWidth == .rightTwoColumns)
+        #expect(layout.column(of: .verseOfDay) == .left)
+        layout.setVerseOfDayColumnCount(3, readerColumn: nil)
+        #expect(!layout.canMoveAcross(.verseOfDay, by: -1) && !layout.canMoveAcross(.verseOfDay, by: 1))
+
+        layout.setVerseOfDayColumnCount(1, readerColumn: nil)
+        #expect(layout.stackedCards(in: .left).prefix(3) == [.streaks, .verseOfDay, .today])
+    }
+
+    @Test
+    func wideVerseOfDayLeadsTheNarrowOrderAndIsSaved() {
+        var layout = HomeColumnLayout(left: [.today, .verseOfDay], middle: [.study], right: [.timer, .streaks])
+        layout.verseOfDayWidth = .allColumns
+        #expect(layout.flatOrder == [.verseOfDay, .today, .study, .timer, .streaks])
+
+        let normalized = layout.normalized()
+        #expect(HomeColumnLayout(storageString: normalized.storageString, readerColumn: nil) == normalized)
+
+        // Layouts saved before widths existed load at one column.
+        let legacy = HomeColumnLayout(storageString: #"{"left":["verseOfDay"],"middle":[],"right":[]}"#, readerColumn: nil)
+        #expect(legacy?.verseOfDayWidth == .oneColumn)
+    }
 }

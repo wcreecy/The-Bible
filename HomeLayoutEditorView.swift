@@ -127,19 +127,104 @@ struct HomeLayoutEditorView: View {
 
     private func moveInColumn(_ id: HomeCardID, by offset: Int) {
         guard let column = columns.column(of: id),
-              let row = columns[column].firstIndex(of: id),
-              columns[column].indices.contains(row + offset) else { return }
-        let swappedCard = columns[column][row + offset]
+              case let cards = columns.stackedCards(in: column),
+              let row = cards.firstIndex(of: id),
+              cards.indices.contains(row + offset) else { return }
+        let swappedCard = cards[row + offset]
         changeColumns(highlighting: [id, swappedCard], confirmation: "\(id.title) moved to position \(row + offset + 1)") {
             $0.move(id, by: offset)
         }
     }
 
     private func moveInColumn(_ column: HomeColumn, fromOffsets source: IndexSet, toOffset destination: Int) {
-        let moved = source.map { columns[column][$0] }
+        let cards = columns.stackedCards(in: column)
+        let moved = source.map { cards[$0] }
         changeColumns(highlighting: Set(moved), confirmation: nil) {
-            $0[column].move(fromOffsets: source, toOffset: destination)
+            $0.moveStacked(in: column, fromOffsets: source, toOffset: destination)
         }
+    }
+
+    // MARK: - Verse of the Day width
+
+    private var verseOfDayColumnCount: Binding<Int> {
+        Binding {
+            columns.verseOfDayWidth.columnCount
+        } set: { count in
+            let title = HomeCardWidthOption(columnCount: count).title.lowercased()
+            changeColumns(highlighting: [.verseOfDay], confirmation: "Verse of the Day set to \(title)") {
+                $0.setVerseOfDayColumnCount(count, readerColumn: bibleReaderVisible ? bibleReaderColumn : nil)
+            }
+        }
+    }
+
+    private var verseOfDayTwoColumnSide: Binding<HomeCardWidth> {
+        Binding {
+            columns.verseOfDayWidth
+        } set: { width in
+            changeColumns(highlighting: [.verseOfDay], confirmation: "Verse of the Day moved") {
+                $0.verseOfDayWidth = width
+            }
+        }
+    }
+
+    private var verseOfDaySection: some View {
+        Section {
+            Picker("Width", selection: verseOfDayColumnCount) {
+                ForEach(HomeCardWidthOption.allCases) { option in
+                    Text(option.shortTitle).tag(option.columnCount)
+                }
+            }
+            .pickerStyle(.segmented)
+            .accessibilityLabel("Verse of the Day width")
+
+            if columns.verseOfDayWidth.columnCount == 2 {
+                Picker("Columns", selection: verseOfDayTwoColumnSide) {
+                    Text("Left & Middle").tag(HomeCardWidth.leftTwoColumns)
+                    Text("Middle & Right").tag(HomeCardWidth.rightTwoColumns)
+                }
+                .pickerStyle(.segmented)
+                .accessibilityLabel("Verse of the Day columns")
+            }
+
+            if columns.isSpanning(.verseOfDay) {
+                HStack {
+                    Image(systemName: HomeCardID.verseOfDay.systemImage)
+                        .foregroundStyle(.secondary)
+                        .frame(width: 24)
+                    Text(HomeCardID.verseOfDay.title)
+                        .foregroundStyle(isVisible(.verseOfDay) ? .primary : .secondary)
+                    Spacer()
+                    visibilityButton(for: .verseOfDay)
+                }
+                .padding(.vertical, 4)
+                .background(
+                    highlightedCards.contains(.verseOfDay) ? Color.accentColor.opacity(0.14) : Color.clear,
+                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                )
+            }
+        } header: {
+            Label("Verse of the Day", systemImage: HomeCardID.verseOfDay.systemImage)
+        } footer: {
+            Text(columns.isSpanning(.verseOfDay)
+                ? "Verse of the Day sits across the top of the columns it covers, and the cards in those columns continue below it. Set it back to one column to return it to its place in a column."
+                : "Widen Verse of the Day to sit across the top of two columns or the whole dashboard.")
+        }
+    }
+
+    private func visibilityButton(for id: HomeCardID) -> some View {
+        Button {
+            toggleVisibility(id)
+        } label: {
+            Label(
+                isVisible(id) ? "Shown" : "Hidden",
+                systemImage: isVisible(id) ? "eye" : "eye.slash"
+            )
+            .font(.subheadline)
+            .foregroundStyle(isVisible(id) ? Color.accentColor : .secondary)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(isVisible(id) ? "Hide" : "Show") \(id.title)")
+        .accessibilityHint("Changes whether this card is available on Home")
     }
 
     private func columnRow(for id: HomeCardID, in column: HomeColumn, position: Int) -> some View {
@@ -155,19 +240,7 @@ struct HomeLayoutEditorView: View {
 
             Spacer()
 
-            Button {
-                toggleVisibility(id)
-            } label: {
-                Label(
-                    isVisible(id) ? "Shown" : "Hidden",
-                    systemImage: isVisible(id) ? "eye" : "eye.slash"
-                )
-                .font(.subheadline)
-                .foregroundStyle(isVisible(id) ? Color.accentColor : .secondary)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("\(isVisible(id) ? "Hide" : "Show") \(id.title)")
-            .accessibilityHint("Changes whether this card is available on Home")
+            visibilityButton(for: id)
 
             HStack(spacing: 2) {
                 Button {
@@ -215,7 +288,7 @@ struct HomeLayoutEditorView: View {
             }
         }
         .accessibilityElement(children: .combine)
-        .accessibilityValue("\(column.title), position \(position) of \(columns[column].count), \(isVisible(id) ? "shown" : "hidden")")
+        .accessibilityValue("\(column.title), position \(position) of \(columns.stackedCards(in: column).count), \(isVisible(id) ? "shown" : "hidden")")
         .accessibilityActions {
             if columns.canMove(id, by: -1) {
                 Button("Move up") { moveInColumn(id, by: -1) }
@@ -264,22 +337,31 @@ struct HomeLayoutEditorView: View {
             Text("A full-height reading panel at the top of its column; any cards in that column appear below it. It shows your bookmark, or the Verse of the Day in its chapter.")
         }
 
+        verseOfDaySection
+
         ForEach(HomeColumn.allCases, id: \.self) { column in
             Section {
+                // A wide Verse of the Day heads the columns it covers, the reader panel included.
+                if isVisible(.verseOfDay), columns.verseOfDayWidth.coveredColumns.contains(column) {
+                    Label("Below Verse of the Day", systemImage: "arrow.up.to.line")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
                 if bibleReaderVisible && bibleReaderColumn == column {
                     Label("Today's Reading panel", systemImage: "book.pages")
                         .foregroundStyle(.secondary)
                         .accessibilityHint("Choose its column in Today's Reading Panel above")
                 }
 
-                ForEach(Array(columns[column].enumerated()), id: \.element) { index, id in
+                ForEach(Array(columns.stackedCards(in: column).enumerated()), id: \.element) { index, id in
                     columnRow(for: id, in: column, position: index + 1)
                 }
                 .onMove { source, destination in
                     moveInColumn(column, fromOffsets: source, toOffset: destination)
                 }
 
-                if columns[column].isEmpty {
+                if columns.stackedCards(in: column).isEmpty {
                     Text("No cards. Use the arrows on a card to move it here.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)

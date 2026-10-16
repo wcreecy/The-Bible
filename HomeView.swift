@@ -388,7 +388,12 @@ struct HomeView: View {
                 onMoveWithinColumn: { id, offset in
                     updateColumns { $0.move(id, by: offset) }
                 },
-                onToggleHidden: toggleCardHidden
+                onToggleHidden: toggleCardHidden,
+                onSetVerseOfDayColumnCount: { count in
+                    updateColumns {
+                        $0.setVerseOfDayColumnCount(count, readerColumn: bibleReaderVisible ? bibleReaderColumn : nil)
+                    }
+                }
             ) { cardID in
                 card(for: cardID)
             } reader: {
@@ -409,7 +414,7 @@ struct HomeView: View {
 
     private var editHomeHint: some View {
         Label {
-            Text("Use the arrows to move cards up, down, left, or right. Tap – to hide a card. Tap Done when you're finished.")
+            Text("Use the arrows to move cards up, down, left, or right. Tap – to hide a card, or \(Image(systemName: "arrow.left.and.right")) to widen Verse of the Day. Tap Done when you're finished.")
         } icon: {
             Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
         }
