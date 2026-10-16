@@ -130,19 +130,19 @@ The world at the time: Egypt was the great power of the region, and its king, wh
 
 Many years after Joseph, a Hebrew who had become a powerful leader in Egypt, brought his family there, his descendants had grown into a large and thriving people. They were called the children of Israel because they descended from Jacob, whom God had renamed Israel.
 
-A new king arose who did not know Joseph. Fearing the Israelites' growing numbers, Pharaoh, the king of Egypt, forced them into harsh labor. Yet they continued to multiply. Pharaoh then commanded that Hebrew baby boys be killed.
+A new king arose who did not know Joseph. Fearing the Israelites' growing numbers, Pharaoh, the king of Egypt, forced them into harsh labor. Yet they continued to multiply. Pharaoh told the Hebrew midwives, Shiphrah and Puah, to kill the baby boys at birth, but the midwives feared God and let them live. Pharaoh then commanded all his people, “Every son that is born ye shall cast into the river.”
 
-During this time, a Hebrew woman hid her newborn son for three months before placing him in a basket among the reeds of the Nile River. Pharaoh's daughter discovered the child and raised him as her own, naming him Moses.
+During this time, a Hebrew woman hid her newborn son for three months before placing him in a basket among the reeds of the Nile River. Pharaoh's daughter discovered the child. His sister, who had been watching, offered to find a Hebrew nurse and brought the baby's own mother, who nursed him. When the child grew, he became the son of Pharaoh's daughter, who named him Moses because she had drawn him out of the water.
 
 When Moses became an adult, he killed an Egyptian who was beating a Hebrew. Fearing for his life, he fled to Midian, where he married Zipporah and became a shepherd. Meanwhile, the Israelites continued to suffer, and God heard their cries, remembering His covenant with Abraham, Isaac, and Jacob, their ancestors.
 
 **God Calls Moses to Deliver Israel (Exodus 3:1–4:31)** — God appears to Moses through a burning bush and sends him back to Egypt to lead the Israelites out of slavery.
 
-While tending sheep near Mount Horeb, Moses saw a bush burning without being consumed. God called to him from the flames and revealed Himself as the God of his ancestors.
+While tending sheep near Mount Horeb, Moses saw a bush burning without being consumed. God called to him from the midst of the bush, told him to remove his shoes because he stood on holy ground, and revealed Himself as the God of Abraham, Isaac, and Jacob.
 
-God told Moses that He had seen Israel's suffering and would deliver His people into a land flowing with milk and honey, meaning a land of abundance. Moses was to confront Pharaoh and lead the Israelites out of Egypt.
+God told Moses that He had seen Israel's suffering and would deliver His people into a land flowing with milk and honey, meaning a land of abundance. Moses was to confront Pharaoh and lead the Israelites out of Egypt. When Moses asked what name to give the people, God answered, “I AM THAT I AM,” and told him to say, “I AM hath sent me unto you.”
 
-Moses questioned his ability to accomplish this task. God promised to be with him and gave him miraculous signs to demonstrate His authority. When Moses expressed concern about speaking, God appointed Aaron, Moses' brother, to help him.
+Moses questioned his ability to accomplish this task. God promised to be with him and gave him miraculous signs to demonstrate His authority. When Moses expressed concern about speaking, God appointed Aaron, Moses' brother, to help him. God also told Moses that He would harden Pharaoh's heart, so that Pharaoh would not let the people go.
 
 Moses returned to Egypt, where he and Aaron gathered Israel's elders. After hearing God's promise and seeing the signs, the people believed and worshiped.
 
@@ -154,7 +154,7 @@ Instead of granting freedom, Pharaoh increased the Israelites' workload. They no
 
 The people blamed Moses and Aaron for their worsening conditions. Moses turned to God, who reaffirmed His promise to deliver Israel and bring them into the land promised to their ancestors.
 
-God sent Moses and Aaron back to Pharaoh. Aaron threw down his rod, which became a serpent. Pharaoh's magicians performed a similar sign, but Aaron's rod swallowed theirs. Still, Pharaoh refused to listen.
+God sent Moses and Aaron back to Pharaoh. Aaron threw down his rod, which became a serpent. Pharaoh's magicians performed a similar sign, but Aaron's rod swallowed theirs. Still, Pharaoh's heart was hardened, and he refused to listen.
 
 **God Sends Ten Plagues Upon Egypt (Exodus 7:14–12:36)** — God sends devastating judgments upon Egypt, demonstrating His authority and leading to Pharaoh's eventual decision to release Israel.
 
@@ -162,9 +162,9 @@ God struck Egypt with a series of plagues after Pharaoh repeatedly refused to re
 
 The Nile River turned to blood, frogs covered the land, and lice and flies afflicted the people. Disease killed Egyptian livestock, painful boils appeared, hail destroyed crops, locusts consumed what remained, and darkness covered Egypt for three days.
 
-Throughout these judgments, Pharaoh sometimes promised to release Israel but repeatedly changed his mind. God also made distinctions between the Egyptians and His people during several plagues.
+Throughout these judgments, Pharaoh sometimes promised to release Israel but repeatedly changed his mind. At times Pharaoh hardened his own heart, and at other times the Lord hardened it, so that God's power would be shown in Egypt. God also made distinctions between the Egyptians and His people during several plagues.
 
-Before the final plague, God instructed Israelite families to sacrifice a lamb and place its blood on their doorposts. They were to eat the meal prepared for departure. This observance became known as Passover because God would pass over the marked houses.
+Before the final plague, God instructed Israelite families to sacrifice a lamb and place its blood on the side posts and upper door posts of their houses. They were to eat it with unleavened bread and bitter herbs, dressed and ready to depart. This observance became known as Passover because God would pass over the marked houses.
 
 That night, the firstborn throughout Egypt died, including Pharaoh's son. The Israelite households protected according to God's instructions were spared.
 
@@ -172,13 +172,13 @@ Pharaoh finally ordered the Israelites to leave. The Egyptians also gave them si
 
 **Israel Leaves Egypt and Crosses the Sea (Exodus 12:37–15:21)** — God leads Israel out of Egypt, protects them from Pharaoh's pursuing army, and brings them safely through the divided sea.
 
-The Israelites departed from Egypt with their families, livestock, and a mixed group of other people. God established the Passover as a lasting remembrance of their deliverance and gave instructions concerning the firstborn.
+About six hundred thousand men on foot, besides children, departed from Egypt with their livestock and a mixed multitude of other people. Israel had dwelt in Egypt four hundred and thirty years. God established the Passover as a lasting remembrance of their deliverance and gave instructions concerning the firstborn. Moses also took the bones of Joseph with them, as Joseph had made the children of Israel swear.
 
 God guided the people with a pillar of cloud during the day and a pillar of fire at night.
 
-Pharaoh soon regretted releasing them and pursued them with his army. Trapped between the Egyptians and the sea, the Israelites became afraid.
+Pharaoh soon regretted releasing them and pursued them with his army. Trapped between the Egyptians and the sea, the Israelites became afraid and cried out against Moses. Moses answered, “Fear ye not, stand still, and see the salvation of the LORD.”
 
-God instructed Moses to stretch out his hand over the water. The sea divided, allowing Israel to cross on dry ground. When the Egyptian army followed, the waters returned and overwhelmed them.
+God instructed Moses to stretch out his hand over the water. The Lord drove back the sea with a strong east wind all that night, and the waters divided, allowing Israel to cross on dry ground. When the Egyptian army followed, the waters returned and overwhelmed them.
 
 Safe on the other side, Moses and the Israelites sang praises to God for their deliverance. Miriam, Moses' sister, led the women in celebration with musical instruments and dancing.
 
@@ -190,17 +190,17 @@ When food became scarce, the people complained. God provided quail in the evenin
 
 Later, when the people lacked water at Rephidim, God commanded Moses to strike a rock, and water came out.
 
-Israel also faced an attack from the Amalekites. Joshua, a leader serving under Moses, commanded the fighters while Moses held up his hands with God's rod. Israel prevailed.
+Israel also faced an attack from the Amalekites. Joshua, a leader serving under Moses, commanded the fighters while Moses stood on a hill holding the rod of God. When Moses held up his hands, Israel prevailed, and when they grew heavy, Aaron and Hur held them up until sunset, and Israel won the battle.
 
 Moses' father-in-law, Jethro, later visited and advised him to appoint capable leaders to help settle disputes among the people.
 
 **God Establishes His Covenant at Sinai (Exodus 19:1–20:26)** — At Mount Sinai, God establishes a covenant with Israel and gives the Ten Commandments as the foundation of their responsibilities to Him.
 
-Three months after leaving Egypt, the Israelites arrived at Mount Sinai.
+In the third month after leaving Egypt, the Israelites arrived in the wilderness of Sinai and camped before the mountain.
 
 God reminded them of their deliverance and declared that, if they obeyed His covenant, they would become His treasured people, a kingdom of priests, and a holy nation.
 
-The mountain shook with thunder, lightning, smoke, and the sound of a trumpet as God descended upon it. The people were instructed not to approach the mountain improperly.
+The mountain shook with thunder, lightning, smoke, and the sound of a trumpet as God descended upon it. Moses set bounds around the mountain, and the people were warned that anyone who touched it would be put to death.
 
 God then spoke the Ten Commandments, forbidding other gods, idols, misuse of His name, murder, adultery, theft, false testimony, and coveting. He also commanded observance of the Sabbath and honor toward parents.
 
@@ -222,37 +222,37 @@ Afterward, Moses went up the mountain, where God's glory appeared like consuming
 
 God commanded the people to contribute materials willingly for a portable sanctuary called the tabernacle.
 
-He gave detailed instructions for its sacred furniture, including the ark containing the covenant testimony, a table, a golden lampstand, and altars. Curtains, coverings, and carefully arranged spaces would separate the sanctuary's different areas.
+He gave detailed instructions for its sacred furniture, including the ark containing the covenant testimony, covered by the mercy seat with two cherubim, a table, a golden lampstand, and altars. Curtains, coverings, and carefully arranged spaces would separate the sanctuary's different areas.
 
 Aaron and his sons were chosen to serve as priests. God prescribed their special garments, sacrifices for their appointment, and responsibilities in worship.
 
-God also appointed Bezalel and Aholiab, craftsmen equipped with skill and understanding, to oversee the work.
+God also appointed Bezaleel and Aholiab, craftsmen equipped with skill and understanding, to oversee the work.
 
 Before Moses descended, God emphasized the importance of keeping the Sabbath and gave him two stone tablets containing the covenant testimony.
 
 **Israel Breaks the Covenant with a Golden Calf (Exodus 32:1–33:23)** — While Moses remains on the mountain, Israel turns to an idol, bringing God's judgment and threatening the relationship established through His covenant.
 
-When Moses delayed returning, the people asked Aaron to make gods to lead them. Aaron collected gold and formed a calf, which the people worshiped.
+When Moses delayed returning, the people asked Aaron to make gods to lead them. Aaron collected their golden earrings and formed a calf, and the people said, “These be thy gods, O Israel, which brought thee up out of the land of Egypt.” Aaron built an altar before it, and the people offered sacrifices and celebrated.
 
-God told Moses that Israel had corrupted itself. Moses pleaded for the people, appealing to God's promises to their ancestors.
+God told Moses that Israel had corrupted itself and that He would consume them and make a great nation of Moses instead. Moses pleaded for the people, appealing to God's promises to their ancestors, and the Lord turned from the destruction He had threatened.
 
-Descending the mountain, Moses saw the calf and the celebrations. He broke the stone tablets, destroyed the idol, and confronted Aaron and the people.
+Descending the mountain, Moses saw the calf and the celebrations. He broke the stone tablets, burned the calf, ground it to powder, and made the people drink it in water. Then he confronted Aaron and the people.
 
-The Levites, members of Israel's priestly tribe, rallied to Moses, and about three thousand men were killed that day. God also struck the people with a plague.
+The men of the tribe of Levi rallied to Moses, and about three thousand men were killed that day. Moses then returned to the Lord and asked Him to forgive the people, or else to blot Moses himself out of His book. God also struck the people with a plague.
 
-Moses continued interceding for Israel. God declared that His angel would lead them onward, but warned that His own presence would not go among them in the same way because of their stubbornness.
+Moses continued interceding for Israel. God declared that His angel would lead them onward, but warned that He would not go up in their midst, because they were a stiffnecked people.
 
-Moses pleaded for God's presence to accompany them. God assured him of His favor and allowed Moses a limited revelation of His glory.
+Moses pleaded for God's presence to accompany them. God promised, “My presence shall go with thee,” and allowed Moses to see His glory pass by, but not His face, saying, “Thou canst not see my face: for there shall no man see me, and live.”
 
 **God Renews His Covenant with Israel (Exodus 34:1–35:3)** — God renews His covenant after Israel's rebellion, revealing His mercy and reaffirming His commands concerning worship, obedience, and the Sabbath.
 
 God instructed Moses to prepare two new stone tablets and return to Mount Sinai.
 
-There, God proclaimed His mercy, grace, patience, and forgiveness, while also declaring that wrongdoing would not go unpunished.
+There the Lord passed by and proclaimed Himself “merciful and gracious, longsuffering, and abundant in goodness and truth,” forgiving iniquity, transgression, and sin, while declaring that He would “by no means clear the guilty.”
 
 God renewed His covenant and warned Israel against worshiping the gods of other nations. He repeated instructions about appointed feasts, offerings, and proper worship.
 
-After another forty days and nights, Moses descended carrying the tablets. His face shone because he had spoken with God, and he wore a veil when addressing the people afterward.
+After another forty days and nights, Moses descended carrying the tablets. His face shone because he had spoken with God. After delivering God's words to the people, Moses covered his face with a veil, removing it whenever he went in to speak with the Lord.
 
 Moses then gathered Israel and repeated God's command to keep the Sabbath holy.
 
@@ -262,7 +262,7 @@ Moses invited the people to bring offerings for the sanctuary. Men and women con
 
 Their generosity became so great that the craftsmen reported having more than enough. Moses instructed the people to stop bringing gifts.
 
-Under Bezalel and Aholiab's leadership, skilled workers constructed the tabernacle, its furnishings, and the sacred garments worn by Aaron and his sons.
+Under Bezaleel and Aholiab's leadership, skilled workers constructed the tabernacle, its furnishings, and the sacred garments worn by Aaron and his sons.
 
 The detailed work followed God's commands, including the ark, lampstand, altars, curtains, and priestly clothing.
 
@@ -272,7 +272,7 @@ When everything was finished, the completed work was brought to Moses. He inspec
 
 God commanded Moses to establish the tabernacle on the first day of the first month of the second year after Israel's departure from Egypt.
 
-Moses arranged the sacred furniture, prepared the altars, washed and dressed Aaron and his sons, and completed everything according to God's instructions.
+Moses set up the tabernacle and arranged its furniture and altars. God also instructed him to wash, clothe, and anoint Aaron and his sons for the priesthood, and Moses did everything according to God's instructions.
 
 Then a cloud covered the tabernacle, and the glory of the Lord filled it so completely that Moses could not enter.
 
@@ -290,7 +290,7 @@ The world at the time: Israel was a newly freed people between Egypt and Canaan.
 
 The Israelites were living near Mount Sinai after God had delivered them from slavery in Egypt. Through Moses, their leader, God had established a covenant, a sacred agreement, with them. They had also built the tabernacle, a portable sanctuary where God's presence would dwell among His people.
 
-God called Moses from the tabernacle and gave instructions for Israel's worship. The people could bring burnt offerings, grain offerings, peace offerings, sin offerings, and trespass offerings. Some expressed devotion or thanksgiving, while others provided atonement, the means God established for dealing with sin.
+God called Moses from the tabernacle and gave instructions for Israel's worship. The people could bring burnt offerings, grain offerings, peace offerings, sin offerings, and trespass offerings. Some expressed devotion or thanksgiving, while others provided atonement, the means God established for dealing with sin. Sin offerings covered sins committed through ignorance, and trespass offerings included repaying, with an added fifth, anyone who had been wronged.
 
 Each offering had specific requirements. Animals used for sacrifice had to meet God's standards, and priests were responsible for presenting offerings properly. God also gave detailed instructions about which portions belonged on the altar and which could be eaten by the priests.
 
@@ -308,7 +308,7 @@ On the eighth day, Aaron began offering sacrifices for himself and the people. W
 
 **A Warning About Approaching God (Leviticus 10:1–20)** — Two of Aaron's sons die after presenting unauthorized fire before God, showing the seriousness of disregarding His instructions for worship.
 
-Soon after the priestly ministry began, Aaron's sons Nadab and Abihu offered fire before the Lord that He had not commanded. Fire came from God and consumed them, and they died.
+Soon after the priestly ministry began, Aaron's sons Nadab and Abihu offered strange fire before the Lord, which He had not commanded. Fire came from God and consumed them, and they died.
 
 Moses explained that God must be treated as holy by those who approach Him. Aaron remained silent.
 
@@ -332,9 +332,9 @@ Through these laws, God commanded Israel to distinguish between clean and unclea
 
 After the deaths of Aaron's sons, God gave instructions limiting when Aaron could enter the Most Holy Place, the innermost room of the tabernacle.
 
-Once each year, the high priest would enter this sacred place to make atonement. He first offered a sacrifice for his own sins and those of his household.
+Once each year, on the tenth day of the seventh month, the high priest would enter this sacred place to make atonement. He first offered a sacrifice for his own sins and those of his household.
 
-Two goats were then presented for the people. One was sacrificed as a sin offering, while the other was sent into the wilderness after Aaron confessed Israel's sins over it.
+Lots were then cast over two goats for the people. One was sacrificed as a sin offering, while the other, the scapegoat, was sent away alive into the wilderness after Aaron laid his hands on its head and confessed Israel's sins over it.
 
 The day required the people to humble themselves and rest from their work. It became an annual observance through which atonement was made for the sins of the nation.
 
@@ -346,7 +346,7 @@ He also established boundaries for sexual relationships and prohibited practices
 
 The commands extended beyond ceremonial worship into everyday life. Israel was told to honor parents, care for the poor, deal honestly, avoid oppression, and judge fairly.
 
-God commanded the people to love their neighbors as themselves and treat foreigners living among them with love.
+God commanded, “thou shalt love thy neighbour as thyself,” and told Israel to love the foreigner living among them as themselves, because they had been strangers in Egypt.
 
 Other laws prohibited idolatry, child sacrifice, consulting spirits, and serious violations of God's moral commands. Certain offenses carried severe penalties.
 
@@ -392,7 +392,7 @@ God also gave laws concerning murder, injury, and restitution, requiring consist
 
 God instructed that the land receive rest every seventh year. During that year, Israel was not to plant fields or prune vineyards for a regular harvest.
 
-After seven cycles of seven years, the fiftieth year would be declared the Year of Jubilee. Property sold under the established rules would return to its original family holdings, and Israelites in certain forms of servitude would be released.
+After seven cycles of seven years, a trumpet would sound on the Day of Atonement, and the fiftieth year would be declared the Year of Jubilee, when Israel was to “proclaim liberty throughout all the land unto all the inhabitants thereof.” Property sold under the established rules would return to its original family holdings, and Israelites in certain forms of servitude would be released.
 
 God reminded the people that the land belonged to Him and that they lived upon it under His authority.
 
@@ -446,7 +446,7 @@ He also required people who had wronged others to confess their wrongdoing and m
 
 God then described the Nazirite vow, a special commitment through which a person could dedicate a period of life to Him. Those taking the vow were required to avoid wine and other grape products, refrain from cutting their hair, and avoid contact with dead bodies.
 
-Finally, God gave Aaron and his sons words of blessing to speak over Israel, asking that the Lord bless, protect, show favor, and grant peace to His people.
+Finally, God gave Aaron and his sons words of blessing to speak over Israel: “The LORD bless thee, and keep thee: The LORD make his face shine upon thee, and be gracious unto thee: The LORD lift up his countenance upon thee, and give thee peace.”
 
 **Israel Dedicates the Tabernacle and Celebrates Passover (Numbers 7:1–9:23)** — Israel's leaders bring offerings for the sanctuary, the Levites are dedicated for service, and God directs the people's movements through His presence.
 
@@ -476,7 +476,7 @@ Miriam and Aaron criticized Moses concerning the Ethiopian woman he had married.
 
 God summoned the three to the tabernacle and explained that His relationship with Moses was different from His communication with other prophets. He spoke with Moses directly rather than only through visions and dreams.
 
-When God departed, Miriam was afflicted with a serious skin condition. Aaron acknowledged their wrongdoing, and Moses pleaded with God to heal her.
+When God departed, Miriam became leprous, white as snow. Aaron acknowledged their wrongdoing, and Moses pleaded with God to heal her.
 
 God required Miriam to remain outside the camp for seven days. The people waited until she returned before continuing their journey.
 
@@ -484,11 +484,11 @@ God required Miriam to remain outside the camp for seven days. The people waited
 
 At God's command, Moses sent twelve leaders to explore Canaan, the land promised to Israel's ancestors. After forty days, they returned carrying fruit and reporting that the land was productive.
 
-However, ten of the men warned that its inhabitants were powerful and its cities strongly defended. Only Joshua and Caleb urged Israel to trust God and enter the land.
+However, ten of the men warned that its inhabitants were powerful and its cities strongly defended. They said they had seen giants there and that “we were in our own sight as grasshoppers.” Only Joshua and Caleb urged Israel to trust God and enter the land.
 
-The people believed the fearful report and rebelled against Moses and Aaron. They even proposed returning to Egypt.
+The people believed the fearful report and rebelled against Moses and Aaron. They even proposed choosing a captain to lead them back to Egypt, and they spoke of stoning Joshua and Caleb. When God threatened to destroy the people, Moses interceded, and the Lord pardoned them according to his word.
 
-God declared that the adults counted in the earlier census, apart from Joshua and Caleb, would not enter the promised land. Instead, Israel would wander in the wilderness for forty years, and that generation would die there.
+God declared that the adults counted in the earlier census, apart from Joshua and Caleb, would not enter the promised land. Instead, Israel would wander in the wilderness forty years, one year for each day the land was searched, and that generation would die there. The ten men who brought the evil report died by a plague.
 
 When some Israelites later attempted to enter the land against God's command, they were defeated.
 
@@ -496,11 +496,11 @@ When some Israelites later attempted to enter the land against God's command, th
 
 Following Israel's rebellion, God gave additional laws concerning sacrifices, offerings, and forgiveness for unintentional sins. He also commanded the people to wear fringes on their garments as reminders of His commandments.
 
-A man who deliberately violated the Sabbath was put to death according to God's judgment.
+God warned that sins committed presumptuously could not be treated as unintentional. When a man was found gathering sticks on the Sabbath, God commanded that he be put to death.
 
 Later, Korah, a Levite, joined Dathan, Abiram, and other leaders in challenging Moses and Aaron. They questioned the authority God had given them.
 
-God judged the rebellion. The earth opened beneath Dathan, Abiram, and those associated with them, while fire consumed the 250 men offering incense. A later outbreak of judgment was stopped when Aaron made atonement for the people.
+God judged the rebellion. The earth opened and swallowed Dathan, Abiram, their households, and the men who belonged to Korah, while fire consumed the 250 men offering incense. The next day the congregation murmured against Moses and Aaron, and a plague broke out. Aaron ran among the people with incense to make atonement and stood between the dead and the living, and the plague stopped after 14,700 had died.
 
 God then caused Aaron's rod to bud, blossom, and produce almonds, confirming His choice of Aaron's family for the priesthood.
 
@@ -518,9 +518,9 @@ Those who became unclean through contact with a dead body were required to follo
 
 The Israelites arrived in the wilderness of Zin, where Miriam died and was buried at Kadesh.
 
-When the people complained about having no water, God instructed Moses to speak to a rock before the congregation.
+When the people complained about having no water, God told Moses to take the rod and speak to the rock before the congregation.
 
-Instead, Moses rebuked the people and struck the rock twice with his rod. Water flowed abundantly, but God declared that Moses and Aaron had failed to honor Him as holy before Israel.
+Instead, Moses said, “Hear now, ye rebels; must we fetch you water out of this rock?” and struck the rock twice with his rod. Water flowed abundantly, but God declared that Moses and Aaron had failed to honor Him as holy before Israel.
 
 Because of this disobedience, neither would lead the people into the promised land.
 
@@ -544,13 +544,13 @@ These victories brought Israel into possession of territory east of the Jordan R
 
 As Israel camped near Moab, King Balak became afraid of their growing presence. He sent messengers to Balaam, a man known for pronouncing blessings and curses, asking him to curse Israel.
 
-God initially forbade Balaam to go. After further messengers arrived, God permitted him to travel under specific conditions.
+God initially forbade Balaam to go. After further messengers arrived, God permitted him to go but told him to speak only the word God gave him. Even so, God's anger was kindled because he went.
 
 During the journey, Balaam's donkey saw an angel blocking the road and repeatedly turned aside. God enabled the donkey to speak, and Balaam eventually saw the angel himself.
 
 When Balaam reached Balak, he could speak only the words God gave him. Instead of cursing Israel, he repeatedly blessed them.
 
-His messages declared that God had blessed Israel and foretold future victories, including the rising of a star out of Jacob and a scepter out of Israel.
+His messages declared that God had blessed Israel and foretold future victories: “there shall come a Star out of Jacob, and a Sceptre shall rise out of Israel.”
 
 **Israel Falls Into Sin at Baalpeor (Numbers 25:1–18)** — Israel becomes involved in idolatry and sexual immorality with Moabite women, bringing judgment upon the people before Phinehas acts to stop the offense.
 
@@ -560,7 +560,7 @@ The Israelites began worshiping Baalpeor, provoking God's anger.
 
 God commanded judgment against those involved, and a plague spread through the congregation.
 
-When an Israelite man openly brought a Midianite woman into the camp, Phinehas, the grandson of Aaron, killed them both. His action stopped the plague, which had claimed 24,000 lives.
+When Zimri, a leader from the tribe of Simeon, openly brought a Midianite woman named Cozbi into the camp, Phinehas, the grandson of Aaron, killed them both. His action stopped the plague, which had claimed 24,000 lives.
 
 God commended Phinehas for his zeal and established a covenant of peace with him, promising an enduring priesthood to his descendants.
 
@@ -568,7 +568,7 @@ God commended Phinehas for his zeal and established a covenant of peace with him
 
 After the plague, God commanded Moses and Eleazar to count Israel's men who were twenty years old and older.
 
-The new census recorded 601,730 men, showing that a new generation had arisen during the wilderness years.
+The new census recorded 601,730 men. Apart from Caleb and Joshua, not one of the men counted at Sinai remained, for the earlier generation had died in the wilderness as God had said.
 
 Five daughters of Zelophehad approached Moses because their father had died without sons. God upheld their request for an inheritance and established rules for similar situations.
 
@@ -580,7 +580,7 @@ Additional instructions established daily, weekly, monthly, and festival offerin
 
 God commanded Israel to carry out judgment against Midian for its role in leading the people into sin.
 
-Moses sent an army under the leadership of Phinehas. The Midianite kings and Balaam were killed, and the Israelites took captives and possessions. Moses then gave further commands concerning the captives, purification, and distribution of the spoils.
+Moses sent an army of a thousand men from each tribe, accompanied by Phinehas the priest. The Midianite kings and Balaam were killed, and the Israelites took captives and possessions. Moses was angry that the officers had spared the Midianite women, because they had led Israel into sin at Peor through the counsel of Balaam. He then gave commands concerning the captives, purification, and distribution of the spoils.
 
 Afterward, the tribes of Reuben and Gad requested land east of the Jordan River because it was suitable for their large herds.
 
@@ -596,7 +596,7 @@ God commanded the Israelites to remove the inhabitants of Canaan and destroy the
 
 God then established the boundaries of the promised land and appointed leaders to oversee its division among the tribes.
 
-The Levites were to receive cities and surrounding lands rather than a separate tribal territory. Six of their cities would serve as places of refuge for people who had killed someone unintentionally, allowing their cases to be judged.
+The Levites were to receive cities and surrounding lands rather than a separate tribal territory. Six of their cities would serve as places of refuge for people who had killed someone unintentionally, allowing their cases to be judged. A person cleared of murder was to stay in the city of refuge until the death of the high priest.
 
 God also clarified laws concerning murder, accidental death, and inheritance. The daughters of Zelophehad were permitted to inherit, with marriage arrangements that would preserve their tribe's land.
 
@@ -618,7 +618,7 @@ When Israel first approached Canaan, twelve men explored the land. Although God 
 
 Moses also recalled how God had guided Israel around neighboring territories and given them victories over Sihon and Og, two powerful kings east of the Jordan.
 
-Because Moses had failed to honor God at the waters of Meribah, he would not enter Canaan. Joshua, his appointed successor, would lead the people across the river.
+Moses recalled how the tribes of Reuben and Gad and half the tribe of Manasseh received land east of the Jordan. He also told how he had pleaded with God to let him cross into the land, but the Lord, angry with him because of the people, refused and told him to view it from the top of Pisgah instead. Joshua, his appointed successor, would lead the people across the river.
 
 **Israel Must Remember God's Covenant (Deuteronomy 4:1–5:33)** — Moses urges Israel to obey God's commandments, avoid idols, and remember the covenant established when God spoke to them at Mount Sinai.
 
@@ -636,13 +636,13 @@ Moses recalled how the people feared God's voice at the mountain and asked him t
 
 **God Calls Israel to Love and Obey Him (Deuteronomy 6:1–8:20)** — Moses teaches Israel that wholehearted love for God must shape daily life, especially when the people begin enjoying the blessings of Canaan.
 
-Moses gave Israel a central command: to love the Lord with all their heart, soul, and might.
+Moses gave Israel a central confession and command: “Hear, O Israel: The LORD our God is one LORD: And thou shalt love the LORD thy God with all thine heart, and with all thy soul, and with all thy might.”
 
 Parents were instructed to teach God's words diligently to their children, speaking of them at home, while traveling, and throughout daily life.
 
 As Israel prepared to enter Canaan, Moses warned against adopting the worship practices of its inhabitants. God had chosen Israel not because it was greater than other nations, but because of His love and His promise to their ancestors.
 
-Moses reminded the people how God had provided manna, water, and clothing that did not wear out during their wilderness journey.
+Moses reminded the people how God had provided manna, water, and clothing that did not wear out during their wilderness journey. God had humbled them and fed them with manna to teach them “that man doth not live by bread only, but by every word that proceedeth out of the mouth of the LORD.”
 
 When they entered a land of abundant food, flowing water, and valuable resources, they were not to forget who had provided these blessings.
 
@@ -666,7 +666,7 @@ Moses instructed Israel to destroy the idols and pagan worship sites found in Ca
 
 Rather than copying surrounding nations, the Israelites were to bring sacrifices and sacred offerings to the place God would choose for His name.
 
-The people could eat meat in their towns, but they were forbidden to consume blood because it represented life.
+The people could eat meat in their towns, but they were forbidden to eat blood, because “the blood is the life.”
 
 Moses also warned against false prophets and anyone attempting to lead Israel toward other gods, even when the influence came from close family members or entire communities.
 
@@ -684,7 +684,7 @@ Moses established standards for judges and warned against bribery and dishonest 
 
 If Israel eventually appointed a king, that ruler was to follow God's law rather than pursue excessive wealth, horses, or wives.
 
-The priests and Levites received instructions concerning their support. Moses also prohibited occult practices and declared that God would raise up a prophet from among Israel's people, whom they were to hear.
+The priests and Levites received instructions concerning their support. Moses also prohibited occult practices and declared that God would raise up a Prophet from among their own people, “like unto me,” whom they were to hear.
 
 **God Establishes Laws for Justice and Protection (Deuteronomy 19:1–21:23)** — God provides laws addressing accidental death, truthful testimony, warfare, unsolved murders, and responsibilities toward vulnerable people.
 
@@ -694,7 +694,7 @@ He also prohibited moving property boundaries and required reliable witnesses be
 
 Instructions for warfare reminded Israel not to fear powerful enemies because God would accompany His people.
 
-Additional laws addressed the treatment of cities during war, responsibility for unsolved murders, marriage to women taken captive, inheritance rights, and discipline concerning persistently rebellious sons.
+Additional laws addressed the treatment of cities during war, responsibility for unsolved murders, marriage to women taken captive, inheritance rights, and the judgment of a stubborn and rebellious son who refused to obey his parents. The body of an executed man hanged on a tree was not to remain there overnight, “for he that is hanged is accursed of God.”
 
 Even when dealing with serious offenses, Israel was required to follow the procedures God had established.
 
@@ -750,13 +750,13 @@ Yet he declared that if the people returned to God with all their heart, He woul
 
 God's commandments were not presented as unreachable or impossible to understand. Moses explained that His word had been made known to them.
 
-He placed before Israel life and death, blessing and cursing, urging them to choose life by loving God, obeying His voice, and remaining faithful to Him.
+He placed before Israel life and death, blessing and cursing, and told them to “choose life” by loving God, obeying His voice, and remaining faithful to Him.
 
 **Joshua Is Commissioned to Lead Israel (Deuteronomy 31:1–30)** — As Moses approaches the end of his leadership, he appoints Joshua, preserves God's law, and prepares Israel for future challenges.
 
 Moses told the people that he was 120 years old and would not cross the Jordan River.
 
-He encouraged Israel not to fear, reminding them that God would go before them.
+He told Israel, “Be strong and of a good courage,” reminding them that God would go before them and would not fail or forsake them.
 
 Joshua was publicly commissioned to lead the nation into Canaan.
 
@@ -774,7 +774,7 @@ It proclaimed God's justice and faithfulness while describing how His people mig
 
 The song warned of judgment but also declared God's authority and His power to show mercy.
 
-Afterward, God instructed Moses to ascend Mount Nebo, where he would view Canaan before his death.
+Afterward, God instructed Moses to ascend Mount Nebo, where he would view Canaan before his death, because he and Aaron had not honored God as holy at the waters of Meribah-Kadesh.
 
 Before departing, Moses pronounced blessings over Israel's tribes, speaking of their responsibilities, protection, and future blessings.
 
@@ -792,6 +792,6 @@ God buried him in a valley in Moab, but the location of his grave remained unkno
 
 The Israelites mourned Moses for thirty days.
 
-Joshua, filled with the spirit of wisdom, became Israel's new leader, and the people listened to him as God had commanded.
+Joshua, full of the spirit of wisdom because Moses had laid his hands upon him, became Israel's new leader, and the people listened to him as God had commanded.
 
 Deuteronomy closes by honoring Moses as a prophet uniquely known by the Lord, through whom God performed great signs and wonders in Egypt and before Israel. The generation that had wandered through the wilderness now stood at the edge of the promised land, carrying God's commandments and covenant promises into a new chapter of its history.
