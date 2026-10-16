@@ -81,7 +81,7 @@ struct StudyBibleEntryCard: View {
                     .background(Color.accentColor.opacity(0.12), in: Circle())
 
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("Study the Bible")
+                    Text("Bible Study")
                         .font(.headline)
                         .foregroundStyle(.primary)
                     Text("Explore book overviews and chapter insights")
@@ -108,6 +108,9 @@ struct StudyBibleEntryCard: View {
 struct StudyBibleView: View {
     let books: [Book]
     var isBooksPaneHidden = false
+    /// Set by the iPad split view so a chosen book is also selected in the Books pane;
+    /// otherwise each book pushes its study page.
+    var onSelectBook: ((Book) -> Void)?
 
     @AppStorage("lastStudiedBook") private var lastStudiedBook = ""
     @AppStorage("lastStudiedChapter") private var lastStudiedChapter = 0
@@ -171,7 +174,7 @@ struct StudyBibleView: View {
                         spacing: 10
                     ) {
                         ForEach(displayedBooks) { book in
-                            StudyBookTile(book: book)
+                            StudyBookTile(book: book, onSelect: onSelectBook)
                         }
                     }
                 }
@@ -349,6 +352,7 @@ private struct StudyBibleHeader: View {
 
 private struct StudyBookTile: View {
     let book: Book
+    let onSelect: ((Book) -> Void)?
 
     private var verseCount: Int {
         book.chapters.reduce(into: 0) { count, chapter in
@@ -361,45 +365,56 @@ private struct StudyBookTile: View {
     }
 
     var body: some View {
-        NavigationLink {
-            StudyBookView(book: book)
-        } label: {
-            VStack(alignment: .leading, spacing: 8) {
-                if let theme = BookChapterTheme.themes[book.name] {
-                    BookChapterEmblem(theme: theme, size: 32)
+        Group {
+            if let onSelect {
+                Button { onSelect(book) } label: { tile }
+            } else {
+                NavigationLink {
+                    StudyBookView(book: book)
+                } label: {
+                    tile
                 }
-
-                Text(book.name)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-                    .lineLimit(2, reservesSpace: true)
-                    .minimumScaleFactor(0.75)
-                    .multilineTextAlignment(.leading)
-
-                Spacer(minLength: 0)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(chapterCountLabel)
-                    Text("\(verseCount) verses")
-                }
-                .font(.caption2)
-                .foregroundStyle(.secondary)
             }
-            .frame(
-                maxWidth: .infinity,
-                minHeight: 154,
-                maxHeight: 154,
-                alignment: .topLeading
-            )
-            .padding(12)
-            .heroCardSurface()
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(book.name), \(chapterCountLabel), \(verseCount) verses")
     }
+
+    private var tile: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if let theme = BookChapterTheme.themes[book.name] {
+                BookChapterEmblem(theme: theme, size: 32)
+            }
+
+            Text(book.name)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.primary)
+                .lineLimit(2, reservesSpace: true)
+                .minimumScaleFactor(0.75)
+                .multilineTextAlignment(.leading)
+
+            Spacer(minLength: 0)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(chapterCountLabel)
+                Text("\(verseCount) verses")
+            }
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+        }
+        .frame(
+            maxWidth: .infinity,
+            minHeight: 154,
+            maxHeight: 154,
+            alignment: .topLeading
+        )
+        .padding(12)
+        .heroCardSurface()
+    }
 }
 
-private struct StudyBookView: View {
+/// A book's study page: its overview and its chapters, each opening Chapter Insights.
+struct StudyBookView: View {
     let book: Book
 
     @AppStorage(ChapterListLayout.storageKey) private var chapterLayout: ChapterListLayout = .detailed

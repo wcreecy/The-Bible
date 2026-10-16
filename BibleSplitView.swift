@@ -16,6 +16,9 @@ struct BibleSplitView: View {
     @State private var isShowingBookOverview = false
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State private var searchModel = BibleSearchModel()
+    /// While on, choosing a book opens its study page instead of its chapter grid. Not
+    /// saved, so the tab always opens for reading.
+    @State private var isStudyMode = false
 
     // Shared preference for sort mode across iPhone/iPad
     @AppStorage("bibleBooksSortAlphabetical") private var sortAlphabetically: Bool = false
@@ -32,7 +35,10 @@ struct BibleSplitView: View {
         let bookName: String
     }
 
-    private struct StudyRoute: Hashable {}
+    /// A book's study page, above the Bible Study home so Back returns there.
+    private struct StudyBookRoute: Hashable {
+        let bookName: String
+    }
 
     private var books: [Book] { BibleData.books }
 
@@ -55,8 +61,34 @@ struct BibleSplitView: View {
     private func openStudyIfRequested() {
         guard studyRequestID > handledStudyRequestID else { return }
         handledStudyRequestID = studyRequestID
+        setStudyMode(true)
+    }
+
+    /// Switches modes, keeping the selected book: its study page and its chapter grid
+    /// swap places.
+    private func setStudyMode(_ isOn: Bool) {
+        searchModel.query = ""
+        isShowingBookOverview = false
         detailPath = NavigationPath()
-        detailPath.append(StudyRoute())
+        withAnimation(.snappy) { isStudyMode = isOn }
+        Haptics.selection()
+
+        guard let bookName = selectedBook?.name else { return }
+        Task { @MainActor in
+            // Changing modes replaces the detail stack; install the book's page after it.
+            await Task.yield()
+            detailPath = bookPath(for: bookName)
+        }
+    }
+
+    /// The detail stack showing a book. Reading mode shows its chapter grid at the root;
+    /// Study mode puts its study page above the Bible Study home.
+    private func bookPath(for bookName: String) -> NavigationPath {
+        var path = NavigationPath()
+        if isStudyMode {
+            path.append(StudyBookRoute(bookName: bookName))
+        }
+        return path
     }
 
     // MARK: - Sidebar
@@ -89,11 +121,13 @@ struct BibleSplitView: View {
                 sidebarSearchField
 
                 Button {
-                    detailPath.append(StudyRoute())
+                    setStudyMode(!isStudyMode)
                 } label: {
-                    StudyBibleSidebarCard()
+                    StudyBibleSidebarCard(isActive: isStudyMode)
                 }
                 .buttonStyle(.plain)
+                .accessibilityAddTraits(isStudyMode ? .isSelected : [])
+                .accessibilityHint(isStudyMode ? "Turns off Study mode so books open for reading" : "Books open their study pages until you turn it off")
             }
             .padding(.horizontal, 12)
             .padding(.top, 8)
@@ -109,7 +143,8 @@ struct BibleSplitView: View {
                         books: books,
                         filterText: sidebarSearch,
                         alphabetical: sortAlphabetically,
-                        selectedBookName: selectedBook?.name,
+                        // On the Bible Study home, no book is open.
+                        selectedBookName: isStudyMode && detailPath.isEmpty ? nil : selectedBook?.name,
                         onSelect: select
                     )
                 }
@@ -168,6 +203,12 @@ struct BibleSplitView: View {
             .background(AppBackgroundView(tab: .bible))
             .navigationTitle(searchModel.statusText)
             .navigationBarTitleDisplayMode(.inline)
+        } else if isStudyMode {
+            StudyBibleView(
+                books: books,
+                isBooksPaneHidden: columnVisibility == .detailOnly,
+                onSelectBook: select
+            )
         } else if let book = selectedBook {
             ChaptersView(
                 book: book,
@@ -200,19 +241,19 @@ struct BibleSplitView: View {
                             }
                         }
                 }
-                .navigationDestination(for: StudyRoute.self) { _ in
-                    StudyBibleView(
-                        books: books,
-                        isBooksPaneHidden: columnVisibility == .detailOnly
-                    )
+                .navigationDestination(for: StudyBookRoute.self) { route in
+                    if let book = books.first(where: { $0.name == route.bookName }) {
+                        StudyBookView(book: book)
+                    }
                 }
                 .navigationDestination(for: ReadingRoute.self) { route in
                     readingDestination(for: route)
                 }
         }
         .background(AppBackgroundView(tab: .bible))
-        // Choosing another book starts that book's detail stack fresh.
-        .id(selectedBook?.name ?? "__no_book__")
+        // Changing modes, or choosing another book to read, starts the detail stack
+        // fresh. Study mode keeps one stack, since its books open above the Bible Study home.
+        .id(isStudyMode ? "study" : "read-\(selectedBook?.name ?? "__no_book__")")
         .searchable(
             text: $searchModel.query,
             placement: .navigationBarDrawer(displayMode: .automatic),
@@ -248,7 +289,7 @@ struct BibleSplitView: View {
             // Yield before installing the reader route into the new stack.
             selectBookForReader(named: location.bookName)
             await Task.yield()
-            detailPath = NavigationPath()
+            detailPath = bookPath(for: location.bookName)
             detailPath.append(ReadingRoute(
                 bookName: location.bookName,
                 chapterNumber: location.chapterNumber,
@@ -271,13 +312,13 @@ struct BibleSplitView: View {
                     detailPath.append(SearchRoute())
                 },
                 onNavigateBack: { currentBook in
-                    // Return to the chapter grid for the book being read.
+                    // Return to the chapter grid, or study page, for the book being read.
                     selectedBook = currentBook
-                    detailPath = NavigationPath()
+                    detailPath = bookPath(for: currentBook.name)
                 },
                 onBookSelected: { newBook in
                     selectedBook = newBook
-                    detailPath = NavigationPath()
+                    detailPath = bookPath(for: newBook.name)
                 }
             )
             .id("\(route.bookName)-\(route.chapterNumber)-\(route.verseNumber)")
@@ -289,6 +330,13 @@ struct BibleSplitView: View {
     // MARK: - Actions
 
     private func select(_ book: Book) {
+        if isStudyMode {
+            selectedBook = book
+            searchModel.query = ""
+            detailPath = bookPath(for: book.name)
+            return
+        }
+
         let shouldKeepOverviewOpen = isShowingBookOverview
         selectedBook = book
         searchModel.query = ""
@@ -315,7 +363,7 @@ struct BibleSplitView: View {
         sidebarSearch = ""
         selectedBook = match.book
         searchModel.query = ""
-        detailPath = NavigationPath()
+        detailPath = bookPath(for: match.book.name)
         detailPath.append(ReadingRoute(
             bookName: match.book.name,
             chapterNumber: match.chapter.number,
@@ -329,36 +377,67 @@ struct BibleSplitView: View {
         Task { @MainActor in
             // The book change may replace the detail stack; install the route after it.
             await Task.yield()
-            detailPath = NavigationPath()
+            detailPath = bookPath(for: bookName)
             detailPath.append(ReadingRoute(bookName: bookName, chapterNumber: chapter, verseNumber: verse))
         }
     }
 }
 
+/// Turns Study mode on and off; stays highlighted while it's on.
 private struct StudyBibleSidebarCard: View {
+    let isActive: Bool
+
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: "graduationcap.fill")
-                .foregroundStyle(.tint)
+                .foregroundStyle(isActive ? AnyShapeStyle(.white) : AnyShapeStyle(.tint))
+                .frame(width: 28, height: 28)
+                .background(isActive ? Color.accentColor : .clear, in: Circle())
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("Study the Bible")
+                Text(isActive ? "Studying" : "Bible Study")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.primary)
-                Text("Overviews and insights")
+                Text(isActive ? "Books open their study pages" : "Overviews and insights")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
 
             Spacer(minLength: 0)
 
-            Image(systemName: "chevron.right")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.tertiary)
+            Image(systemName: isActive ? "xmark.circle.fill" : "chevron.right")
+                .font(isActive ? .body : .caption.weight(.semibold))
+                .foregroundStyle(isActive ? AnyShapeStyle(.tint) : AnyShapeStyle(.tertiary))
+                .accessibilityHidden(true)
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .heroCardSurface()
+        .modifier(SurfaceStyle(isActive: isActive))
+        .contentShape(.rect(cornerRadius: AppDesignMetrics.cardCornerRadius))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Bible Study")
+        .accessibilityValue(isActive ? "On" : "Off")
+    }
+}
+
+/// The standard card surface, or a tinted, outlined one while Study mode is on.
+private struct SurfaceStyle: ViewModifier {
+    let isActive: Bool
+
+    func body(content: Content) -> some View {
+        if isActive {
+            content
+                .glassEffect(
+                    .regular.tint(Color.accentColor.opacity(0.25)),
+                    in: .rect(cornerRadius: AppDesignMetrics.cardCornerRadius)
+                )
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppDesignMetrics.cardCornerRadius, style: .continuous)
+                        .strokeBorder(Color.accentColor.opacity(0.7), lineWidth: 1.5)
+                }
+        } else {
+            content.heroCardSurface()
+        }
     }
 }
 
