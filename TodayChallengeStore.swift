@@ -28,6 +28,71 @@ private struct TodayChallengeSnapshot: Codable {
     var lastModified: Date
 }
 
+/// What recent days' tasks were, so the same thing doesn't come back within `windowDays`.
+private struct TodayChallengeHistory: Codable {
+    static let windowDays = 30
+
+    /// Day key (yyyy-MM-dd) to the `HistoryKey`s of what was shown that day.
+    var days: [String: [String]] = [:]
+
+    /// The most recent day each key was shown, leaving out `excludedDay`.
+    func lastShown(excluding excludedDay: String) -> [String: String] {
+        var result: [String: String] = [:]
+        for (day, keys) in days where day != excludedDay {
+            for key in keys where day > result[key, default: ""] {
+                result[key] = day
+            }
+        }
+        return result
+    }
+
+    func merged(with other: Self) -> Self {
+        var copy = self
+        copy.days.merge(other.days) { mine, theirs in Array(Set(mine).union(theirs)).sorted() }
+        return copy
+    }
+
+    /// Drops days older than `oldestDay`. Day keys sort in date order.
+    mutating func prune(keepingFrom oldestDay: String) {
+        days = days.filter { $0.key >= oldestDay }
+    }
+}
+
+/// How each kind of shown item is recorded in `TodayChallengeHistory`.
+private enum HistoryKey {
+    static let reflectionPrefix = "reflection:"
+
+    /// Shared by reading and study, so a chapter isn't assigned again either way.
+    static func chapter(_ bookName: String, _ chapter: Int) -> String { "chapter:\(bookName)-\(chapter)" }
+    static func game(_ name: String) -> String { "game:\(name)" }
+    static func prayer(_ minutes: Int) -> String { "prayer:\(minutes)" }
+    static func reflection(_ templateTitle: String) -> String { reflectionPrefix + templateTitle }
+}
+
+/// Chooses options so nothing repeats within the history window when the pool allows it.
+private struct FreshPicker {
+    let lastShown: [String: String]
+    private(set) var usedToday: [String] = []
+
+    /// A random option not shown in the window. If every option was shown (games and
+    /// prayer lengths have fewer than 30), one of those shown longest ago instead.
+    mutating func pick<T>(from options: [T], key: (T) -> String) -> T? {
+        let notUsedToday = options.filter { !usedToday.contains(key($0)) }
+        let pool = notUsedToday.isEmpty ? options : notUsedToday
+
+        let choice: T?
+        if let fresh = pool.filter({ lastShown[key($0)] == nil }).randomElement() {
+            choice = fresh
+        } else {
+            let oldest = pool.compactMap { lastShown[key($0)] }.min()
+            choice = pool.filter { lastShown[key($0)] == oldest }.randomElement()
+        }
+
+        if let choice { usedToday.append(key(choice)) }
+        return choice
+    }
+}
+
 
 private struct TodayChallengeCatalog: Decodable {
     struct PrayerMinutes: Decodable {
@@ -131,6 +196,30 @@ final class TodayChallengeStore {
 
         challenges[index].isCompleted = true
         save()
+    }
+
+    // MARK: - History
+
+    private let historyKey = "todayChallengesHistoryV1"
+
+    /// Combines this device's history with the synced copy, so tasks shown on another
+    /// device count too.
+    private func loadHistory() -> TodayChallengeHistory {
+        func decode(_ data: Data?) -> TodayChallengeHistory {
+            guard let data, let history = try? JSONDecoder().decode(TodayChallengeHistory.self, from: data) else {
+                return TodayChallengeHistory()
+            }
+            return history
+        }
+        return decode(UserDefaults.standard.data(forKey: historyKey))
+            .merged(with: decode(cloudStore.data(forKey: historyKey)))
+    }
+
+    /// Saved locally and to iCloud; the next snapshot publish synchronizes the store.
+    private func saveHistory(_ history: TodayChallengeHistory) {
+        guard let data = try? JSONEncoder().encode(history) else { return }
+        UserDefaults.standard.set(data, forKey: historyKey)
+        cloudStore.set(data, forKey: historyKey)
     }
 
     #if DEBUG
@@ -320,73 +409,86 @@ final class TodayChallengeStore {
         return challenge
     }
 
+    /// The tasks tracked inside the app, which fill the slots after reading (and reflection).
+    private enum InAppTask: CaseIterable {
+        case study, prayer, game
+    }
+
+    /// Builds today's three tasks: one reading every day, a reflection once a week, and
+    /// the rest drawn from study, prayer, and games, with each kind at most once a day.
+    /// Nothing shown in the last 30 days comes back when there's anything fresh to pick.
     private func makeChallenges() -> [TodayChallenge] {
-        let readingCount = Int.random(in: 1...2)
-        var challenges: [TodayChallenge] = []
-        var readingTargets = Set<String>()
+        let now = Date()
+        let todayKey = dayKey(for: now)
+        var history = loadHistory()
+        var picker = FreshPicker(lastShown: history.lastShown(excluding: todayKey))
 
-        for _ in 0..<readingCount {
-            let readingChallenge = makeReadingChallenge(excluding: readingTargets)
-            if let bookName = readingChallenge.bookName,
-               let chapterNumber = readingChallenge.chapterNumber {
-                readingTargets.insert("\(bookName)-\(chapterNumber)")
-            }
-            challenges.append(readingChallenge)
+        var challenges = [makeReadingChallenge(using: &picker)]
+        if isReflectionDue(on: now, history: history) {
+            challenges.append(makeReflectionChallenge(using: &picker))
         }
-
-        challenges.append(makeReflectionChallenge())
-
-        while challenges.count < 3 {
-            switch Int.random(in: 0...2) {
-            case 0:
-                challenges.append(makeGameChallenge())
-            case 1:
-                challenges.append(makePrayerChallenge())
-            default:
-                challenges.append(makeStudyChallenge())
+        for task in InAppTask.allCases.shuffled().prefix(Self.challengesPerDay - challenges.count) {
+            switch task {
+            case .study: challenges.append(makeStudyChallenge(using: &picker))
+            case .prayer: challenges.append(makePrayerChallenge(using: &picker))
+            case .game: challenges.append(makeGameChallenge(using: &picker))
             }
         }
+
+        history.days[todayKey] = picker.usedToday
+        let oldestKept = Calendar.autoupdatingCurrent.date(
+            byAdding: .day,
+            value: -(TodayChallengeHistory.windowDays - 1),
+            to: now
+        ) ?? now
+        history.prune(keepingFrom: dayKey(for: oldestKept))
+        saveHistory(history)
 
         return challenges.shuffled()
     }
 
-    private func makeReadingChallenge(excluding readingTargets: Set<String>) -> TodayChallenge {
+    private static let challengesPerDay = 3
+
+    /// Reflection tasks are done outside the app, so they come once per calendar week on
+    /// a random day: each day without one so far has a 1-in-(days left in the week) chance.
+    private func isReflectionDue(on date: Date, history: TodayChallengeHistory) -> Bool {
+        let calendar = Calendar.autoupdatingCurrent
+        guard let week = calendar.dateInterval(of: .weekOfYear, for: date) else { return false }
+        let weekStartKey = dayKey(for: week.start)
+        let todayKey = dayKey(for: date)
+
+        let alreadyShown = history.days.contains { day, keys in
+            day >= weekStartKey && day < todayKey && keys.contains { $0.hasPrefix(HistoryKey.reflectionPrefix) }
+        }
+        guard !alreadyShown else { return false }
+
+        let daysLeft = calendar.dateComponents([.day], from: calendar.startOfDay(for: date), to: week.end).day ?? 1
+        return Int.random(in: 1...max(1, daysLeft)) == 1
+    }
+
+    /// Picks a chapter that hasn't been read or studied recently, with every chapter in
+    /// the Bible equally likely (so one psalm is as likely as Obadiah 1).
+    private func pickChapter(using picker: inout FreshPicker) -> (bookName: String, chapter: Int) {
         // Challenges are only created once the corpus has loaded (see loadOrCreateForToday).
-        let availableBooks = BibleData.books
-        guard let initialBook = availableBooks.randomElement() else {
+        let allChapters = BibleData.books.flatMap { book in
+            book.chapters.map { (bookName: book.name, chapter: $0.number) }
+        }
+        guard let pick = picker.pick(from: allChapters, key: { HistoryKey.chapter($0.bookName, $0.chapter) }) else {
             assertionFailure("Bible fallback corpus must contain at least one book.")
-            return TodayChallenge(
-                id: UUID(),
-                kind: .readChapter,
-                title: "Read Genesis 1",
-                detail: "Open the chapter to complete this.",
-                bookName: "Genesis",
-                chapterNumber: 1,
-                gameName: nil,
-                minimumMinutes: nil,
-                isCompleted: false
-            )
+            return ("Genesis", 1)
         }
+        return pick
+    }
 
-        var book = initialBook
-        var chapter = book.chapters.randomElement()?.number ?? 1
-
-        for _ in 0..<10 {
-            let target = "\(book.name)-\(chapter)"
-            if !readingTargets.contains(target) {
-                break
-            }
-            guard let nextBook = availableBooks.randomElement() else { break }
-            book = nextBook
-            chapter = book.chapters.randomElement()?.number ?? 1
-        }
+    private func makeReadingChallenge(using picker: inout FreshPicker) -> TodayChallenge {
+        let (bookName, chapter) = pickChapter(using: &picker)
 
         return TodayChallenge(
             id: UUID(),
             kind: .readChapter,
-            title: "Read \(book.name) \(chapter)",
+            title: "Read \(bookName) \(chapter)",
             detail: "Open the chapter to complete this.",
-            bookName: book.name,
+            bookName: bookName,
             chapterNumber: chapter,
             gameName: nil,
             minimumMinutes: nil,
@@ -394,10 +496,8 @@ final class TodayChallengeStore {
         )
     }
 
-    private func makeStudyChallenge() -> TodayChallenge {
-        let readingChallenge = makeReadingChallenge(excluding: [])
-        let bookName = readingChallenge.bookName ?? "Genesis"
-        let chapterNumber = readingChallenge.chapterNumber ?? 1
+    private func makeStudyChallenge(using picker: inout FreshPicker) -> TodayChallenge {
+        let (bookName, chapterNumber) = pickChapter(using: &picker)
 
         return TodayChallenge(
             id: UUID(),
@@ -412,8 +512,8 @@ final class TodayChallengeStore {
         )
     }
 
-    private func makeGameChallenge() -> TodayChallenge {
-        let gameName = catalog.gameNames.randomElement() ?? "Bible Quiz"
+    private func makeGameChallenge(using picker: inout FreshPicker) -> TodayChallenge {
+        let gameName = picker.pick(from: catalog.gameNames, key: HistoryKey.game) ?? "Bible Quiz"
 
         return TodayChallenge(
             id: UUID(),
@@ -428,8 +528,9 @@ final class TodayChallengeStore {
         )
     }
 
-    private func makePrayerChallenge() -> TodayChallenge {
-        let prayerMinutes = Int.random(in: catalog.prayerMinutes.range)
+    private func makePrayerChallenge(using picker: inout FreshPicker) -> TodayChallenge {
+        let prayerMinutes = picker.pick(from: Array(catalog.prayerMinutes.range), key: HistoryKey.prayer)
+            ?? catalog.prayerMinutes.minimum
 
         return TodayChallenge(
             id: UUID(),
@@ -444,8 +545,9 @@ final class TodayChallengeStore {
         )
     }
 
-    private func makeReflectionChallenge() -> TodayChallenge {
-        let task = catalog.reflectionTasks.randomElement()
+    private func makeReflectionChallenge(using picker: inout FreshPicker) -> TodayChallenge {
+        // Keyed by the template, so "Pray for {{prayerFocus}}" counts once whatever the focus.
+        let task = picker.pick(from: catalog.reflectionTasks, key: { HistoryKey.reflection($0.title) })
             ?? TodayChallengeCatalog.ReflectionTask(
                 title: "Reflect on your blessings",
                 detail: "Name three things you are grateful for."
