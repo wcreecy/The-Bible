@@ -1,13 +1,13 @@
 import Foundation
 
 /// How the Study page lists a book's chapters.
-enum StudyChapterLayout: String, CaseIterable, Identifiable {
+enum ChapterListLayout: String, CaseIterable, Identifiable {
     /// A compact grid of chapter numbers.
     case simple
     /// A row per chapter with its key themes, grouped under the book's sections.
     case detailed
 
-    static let storageKey = "studyChapterLayout"
+    static let storageKey = "chapterListLayout"
 
     var id: Self { self }
 
@@ -79,7 +79,7 @@ enum StudyChapterOutline {
         let range = trimmed.dropFirst(bookName.count + 1)
         guard !range.contains(";"), !range.contains(",") else { return nil }
 
-        let start = range.split(separator: "-", maxSplits: 1).first ?? range
+        let start = range.split(maxSplits: 1, whereSeparator: { $0 == "-" || $0 == "–" }).first ?? range
         let parts = start.split(separator: ":")
         guard let chapter = parts.first.flatMap({ Int($0.trimmingCharacters(in: .whitespaces)) }) else {
             return nil

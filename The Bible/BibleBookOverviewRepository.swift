@@ -153,6 +153,11 @@ actor BibleBookOverviewRepository {
         }
     }
 
+    /// Just the book's sections, for grouping its chapters.
+    func movements(forBookNamed bookName: String) -> [BibleBookMovement] {
+        withDatabase { loadMovements(forBookNamed: bookName, database: $0) } ?? []
+    }
+
     private func withDatabase<T>(_ operation: (OpaquePointer) -> T?) -> T? {
         guard let databaseURL = Bundle.main.url(forResource: databaseResourceName, withExtension: "sqlite") else {
             return nil

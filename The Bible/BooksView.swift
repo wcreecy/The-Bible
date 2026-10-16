@@ -402,6 +402,9 @@ private struct StudyBookTile: View {
 private struct StudyBookView: View {
     let book: Book
 
+    @AppStorage(ChapterListLayout.storageKey) private var chapterLayout: ChapterListLayout = .detailed
+    @State private var details = ChapterOutlineDetails()
+
     private let columns = [GridItem(.adaptive(minimum: 52), spacing: 10)]
 
     var body: some View {
@@ -420,22 +423,9 @@ private struct StudyBookView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
 
-                        LazyVGrid(columns: columns, spacing: 10) {
-                            ForEach(book.chapters) { chapter in
-                                NavigationLink {
-                                    ChapterInsightsView(
-                                        bookName: book.name,
-                                        chapterNumber: chapter.number
-                                    )
-                                } label: {
-                                    Text(chapter.number, format: .number)
-                                        .font(.subheadline.weight(.semibold))
-                                        .frame(maxWidth: .infinity)
-                                        .padding(.vertical, 10)
-                                        .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
-                                }
-                                .accessibilityLabel("Chapter \(chapter.number) insights")
-                            }
+                        switch chapterLayout {
+                        case .simple: numberGrid
+                        case .detailed: themedChapters
                         }
                     }
                 }
@@ -445,6 +435,45 @@ private struct StudyBookView: View {
         .background(AppBackgroundView(tab: .bible))
         .navigationTitle(book.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                ChapterLayoutMenu(layout: $chapterLayout)
+            }
+        }
+        .task(id: book.name) {
+            details = await ChapterOutlineDetails.load(for: book)
+        }
+    }
+
+    private var numberGrid: some View {
+        LazyVGrid(columns: columns, spacing: 10) {
+            ForEach(book.chapters) { chapter in
+                NavigationLink {
+                    ChapterInsightsView(
+                        bookName: book.name,
+                        chapterNumber: chapter.number
+                    )
+                } label: {
+                    Text(chapter.number, format: .number)
+                        .font(.subheadline.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+                }
+                .accessibilityLabel("Chapter \(chapter.number) insights")
+            }
+        }
+    }
+
+    private var themedChapters: some View {
+        ChapterOutlineList(chapterNumbers: book.chapters.map(\.number), sections: details.sections) { number in
+            NavigationLink {
+                ChapterInsightsView(bookName: book.name, chapterNumber: number)
+            } label: {
+                ChapterThemeRow(number: number, themes: details.themeNames[number] ?? [])
+            }
+            .buttonStyle(.plain)
+        }
     }
 }
 

@@ -82,9 +82,6 @@ private struct ChapterSectionHeader: View {
 struct ChapterThemeRow: View {
     let number: Int
     let themes: [String]
-    /// Shows the number in green once the chapter has been read.
-    var isCompleted = false
-    var accessibilityHint: LocalizedStringKey = "Opens chapter insights"
 
     private var themeSummary: String {
         themes.prefix(2).joined(separator: " · ")
@@ -95,7 +92,7 @@ struct ChapterThemeRow: View {
             Text(number, format: .number)
                 .font(.subheadline.weight(.semibold))
                 .monospacedDigit()
-                .foregroundStyle(isCompleted ? AnyShapeStyle(Color.green) : AnyShapeStyle(.tint))
+                .foregroundStyle(.tint)
                 .frame(minWidth: 40, minHeight: 40)
                 .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
 
@@ -115,13 +112,12 @@ struct ChapterThemeRow: View {
         .background(Color.primary.opacity(0.04), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         .contentShape(.rect(cornerRadius: 12))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(themeSummary.isEmpty ? "Chapter \(number)" : "Chapter \(number): \(themes.prefix(2).joined(separator: ", "))")
-        .accessibilityValue(isCompleted ? "Read" : "")
-        .accessibilityHint(accessibilityHint)
+        .accessibilityLabel(themeSummary.isEmpty ? "Chapter \(number) insights" : "Chapter \(number): \(themes.prefix(2).joined(separator: ", "))")
+        .accessibilityHint("Opens chapter insights")
     }
 }
 
-/// The toolbar menu that switches chapter lists between the number grid and themed rows.
+/// The toolbar menu that switches the Study chapter list between the number grid and themed rows.
 struct ChapterLayoutMenu: View {
     @Binding var layout: ChapterListLayout
 

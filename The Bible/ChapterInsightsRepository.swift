@@ -109,6 +109,35 @@ actor ChapterInsightsRepository {
         }
     }
 
+    /// Every chapter's key theme names in a book, in order, keyed by chapter number, for
+    /// previewing chapters in a list.
+    func themeNames(forBookNamed bookName: String) -> [Int: [String]] {
+        withDatabase { database in
+            let query = """
+            SELECT chapter_number, theme
+            FROM chapter_key_themes
+            WHERE book_name = ?
+            ORDER BY chapter_number, id;
+            """
+            var statement: OpaquePointer?
+            guard sqlite3_prepare_v2(database, query, -1, &statement, nil) == SQLITE_OK,
+                  let statement else {
+                return nil
+            }
+            defer { sqlite3_finalize(statement) }
+
+            sqlite3_bind_text(statement, 1, bookName, -1, Self.sqliteTransientDestructor())
+
+            var themes: [Int: [String]] = [:]
+            while sqlite3_step(statement) == SQLITE_ROW {
+                let theme = Self.columnText(statement, at: 1)
+                guard !theme.isEmpty else { continue }
+                themes[Int(sqlite3_column_int(statement, 0)), default: []].append(theme)
+            }
+            return themes
+        } ?? [:]
+    }
+
     private func loadReadingContext(
         forBookNamed bookName: String,
         chapterNumber: Int,
