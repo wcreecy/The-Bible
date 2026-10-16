@@ -31,38 +31,7 @@ final class The_Bible__iOS_UITests: XCTestCase {
     }
 
     @MainActor
-    func testParchmentWidgetBackgroundCanBeSelectedForEachWidget() throws {
-        app.launch()
-
-        tapFloatingTab(named: "More")
-
-        let settings = app.buttons["Settings"].firstMatch
-        XCTAssertTrue(settings.waitForExistence(timeout: 5))
-        settings.tap()
-
-        let widgetsSettings = app.descendants(matching: .any)["widgetsSettingsLink"].firstMatch
-        XCTAssertTrue(widgetsSettings.waitForExistence(timeout: 5))
-        widgetsSettings.tap()
-
-        selectBackground(
-            named: "Parchment",
-            pickerIdentifier: "verseWidgetBackgroundPicker",
-            widgetName: "Verse of the Day"
-        )
-        selectBackground(
-            named: "Parchment",
-            pickerIdentifier: "lastReadWidgetBackgroundPicker",
-            widgetName: "Last Read"
-        )
-        selectBackground(
-            named: "Parchment",
-            pickerIdentifier: "pinnedVerseWidgetBackgroundPicker",
-            widgetName: "Pinned Verse"
-        )
-    }
-
-    @MainActor
-    func testNewWidgetBackgroundsCanBeSelectedForEachWidget() throws {
+    func testWidgetBackgroundsCanBeSelectedForEachWidget() throws {
         app.launch()
 
         tapFloatingTab(named: "More")
@@ -80,7 +49,7 @@ final class The_Bible__iOS_UITests: XCTestCase {
             (pickerIdentifier: "pinnedVerseWidgetBackgroundPicker", name: "Pinned Verse")
         ]
 
-        for background in ["Riverstone", "Olive & Gold", "Amethyst"] {
+        for background in ["Parchment", "Riverstone", "Olive & Gold", "Amethyst"] {
             for widget in widgets {
                 selectBackground(
                     named: background,
