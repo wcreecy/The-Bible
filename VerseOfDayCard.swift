@@ -22,6 +22,21 @@ struct VerseOfDayCard: View {
     // Dynamic title/icon based on time of day
     let title: String
     let icon: String
+    /// How many iPad dashboard columns the card covers; wider cards set shorter verses larger.
+    var columnCount = 1
+
+    /// A wide card leaves a short verse as one sparse line, so it gets a larger text style:
+    /// the shorter the verse and the wider the card, the larger. Long verses stay close to
+    /// the regular size so they don't run past the line limit.
+    private func verseFont(for text: String) -> Font {
+        guard columnCount > 1 else { return .headline }
+        let isFullWidth = columnCount >= 3
+        switch text.count {
+        case ..<100: return isFullWidth ? .title : .title2
+        case ..<200: return isFullWidth ? .title2 : .title3
+        default: return isFullWidth ? .title3 : .headline
+        }
+    }
 
     var body: some View {
         HeroCard(
@@ -54,7 +69,8 @@ struct VerseOfDayCard: View {
             VStack(alignment: .leading, spacing: 10) {
                 if let v = verseOfDay {
                     Text(v.verseText)
-                        .font(.headline)
+                        .font(verseFont(for: v.verseText))
+                        .fontWeight(.semibold)
                         .italic()
                         .lineLimit(8)
                         .truncationMode(.tail)

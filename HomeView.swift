@@ -216,7 +216,8 @@ struct HomeView: View {
                     votdVM.togglePaused()
                 },
                 title: verseCardTitle,
-                icon: verseCardIcon
+                icon: verseCardIcon,
+                columnCount: isShowingDashboard ? columns.verseOfDayWidth.columnCount : 1
             )
             .contentShape(Rectangle())
             .onTapGesture {
