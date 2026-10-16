@@ -108,16 +108,14 @@ enum NoteEditorTextSize {
     static let defaultStep = 3
     static let storageKey = "noteEditorTextSizeStep"
 
-    static func dynamicTypeSize(for step: Int) -> DynamicTypeSize {
-        switch min(maximumStep, max(minimumStep, step)) {
-        case 0: .xSmall
-        case 1: .small
-        case 2: .medium
-        case 3: .large
-        case 4: .xLarge
-        case 5: .xxLarge
-        default: .xxxLarge
-        }
+    /// The default step matches the system text size; each step above or below it moves one
+    /// Dynamic Type size larger or smaller.
+    static func dynamicTypeSize(for step: Int, relativeTo base: DynamicTypeSize) -> DynamicTypeSize {
+        let sizes = DynamicTypeSize.allCases
+        guard let baseIndex = sizes.firstIndex(of: base) else { return base }
+        let offset = min(maximumStep, max(minimumStep, step)) - defaultStep
+        let index = min(sizes.count - 1, max(0, baseIndex + offset))
+        return sizes[index]
     }
 }
 
@@ -343,18 +341,21 @@ fileprivate extension EnvironmentValues {
 struct NoteBodyTextEditor: View {
     @AppStorage(NoteEditorTextSize.storageKey) private var textSizeStep = NoteEditorTextSize.defaultStep
     @Environment(\.noteTabKeyAction) private var tabKeyAction
+    @Environment(\.dynamicTypeSize) private var systemTypeSize
     @Environment(\.self) private var environment
 
     @Binding var text: AttributedString
     @Binding var selection: AttributedTextSelection
+    /// Set while the body has keyboard focus, so editors can tuck other fields away.
+    var isFocused: Binding<Bool> = .constant(false)
 
     var body: some View {
         NoteEditorKeyCommandHost(
             onTab: { tabKeyAction?.perform($0) },
             content: AnyView(
-                TextEditor(text: $text, selection: $selection)
+                FocusReportingTextEditor(text: $text, selection: $selection, isFocused: isFocused)
                     .font(.body)
-                    .dynamicTypeSize(NoteEditorTextSize.dynamicTypeSize(for: textSizeStep))
+                    .dynamicTypeSize(NoteEditorTextSize.dynamicTypeSize(for: textSizeStep, relativeTo: systemTypeSize))
                     .scrollContentBackground(.hidden)
                     .accessibilityLabel("Note")
                     // A hosted view doesn't inherit SwiftUI's environment (e.g. the
@@ -369,6 +370,42 @@ struct NoteBodyTextEditor: View {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.1))
         }
+    }
+}
+
+/// Stands in for the fields above the note body while they're collapsed for typing.
+struct NoteEditorShowFieldsButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "chevron.down")
+                .font(.subheadline.weight(.semibold))
+                .frame(maxWidth: .infinity, minHeight: 28)
+                .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(.secondary)
+        .accessibilityLabel("Show Note Details")
+        .transition(.opacity)
+    }
+}
+
+/// Tracks focus inside the hosted hierarchy, since a `FocusState` doesn't reach across the
+/// hosting controller boundary.
+private struct FocusReportingTextEditor: View {
+    @FocusState private var hasFocus: Bool
+
+    @Binding var text: AttributedString
+    @Binding var selection: AttributedTextSelection
+    @Binding var isFocused: Bool
+
+    var body: some View {
+        TextEditor(text: $text, selection: $selection)
+            .focused($hasFocus)
+            .onChange(of: hasFocus) { _, focused in
+                isFocused = focused
+            }
     }
 }
 

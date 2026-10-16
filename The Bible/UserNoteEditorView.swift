@@ -21,6 +21,9 @@ struct UserNoteEditorView: View {
     @State private var formattingChanged = false
     @State private var restoredDraftDate: Date?
     @State private var isShowingSermonDetails: Bool
+    @State private var isEditingBody = false
+    /// Hides everything above the body while typing, so the keyboard doesn't squeeze it.
+    @State private var areFieldsCollapsed = false
     @State private var persistenceFailure: PersistenceFailure?
 
     /// The note as last saved, to tell whether anything has changed.
@@ -65,20 +68,27 @@ struct UserNoteEditorView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            NoteEditorTitleField(title: $title, placeholder: "Note title")
+            if areFieldsCollapsed {
+                NoteEditorShowFieldsButton { areFieldsCollapsed = false }
+            } else {
+                Group {
+                    NoteEditorTitleField(title: $title, placeholder: "Note title")
 
-            if contextualTipsEnabled {
-                ScriptureReferenceLinkTip()
-                CustomNoteTagsTip()
+                    if contextualTipsEnabled {
+                        ScriptureReferenceLinkTip()
+                        CustomNoteTagsTip()
+                    }
+
+                    optionsBar
+
+                    if selectedCategory == .sermon {
+                        sermonDetails
+                    }
+                }
+                .transition(.move(edge: .top).combined(with: .opacity))
             }
 
-            optionsBar
-
-            if selectedCategory == .sermon {
-                sermonDetails
-            }
-
-            NoteBodyTextEditor(text: $noteText, selection: $noteSelection)
+            NoteBodyTextEditor(text: $noteText, selection: $noteSelection, isFocused: $isEditingBody)
                 .overlay(alignment: .topTrailing) {
                     if selectedCategory == .sermon, trimmedNote.isEmpty {
                         Button("Insert Sermon Outline", systemImage: "list.bullet.rectangle", action: insertSermonOutline)
@@ -90,6 +100,11 @@ struct UserNoteEditorView: View {
                 }
         }
         .padding()
+        .animation(.snappy, value: areFieldsCollapsed)
+        .onChange(of: isEditingBody) { _, editing in
+            // Typing collapses everything above the body; leaving the body brings it back.
+            areFieldsCollapsed = editing
+        }
         .background(AppBackgroundView(tab: .notes))
         .richNoteEditing(text: $noteText, selection: $noteSelection, onFormattingChange: { formattingChanged = true })
         .navigationTitle(existingNote == nil ? "New Note" : "Edit Note")
@@ -104,7 +119,8 @@ struct UserNoteEditorView: View {
             deleteTitle: existingNote == nil ? nil : "Delete Note",
             deleteMessage: "This note will be deleted from all your devices.",
             save: save,
-            delete: deleteNote
+            delete: deleteNote,
+            hidesRestoredDraftBanner: areFieldsCollapsed
         )
         .persistenceFailureAlert(failure: $persistenceFailure)
     }

@@ -22,6 +22,9 @@ struct VerseNoteEditorView: View {
     @State private var endVerse: Int
     @State private var formattingChanged = false
     @State private var restoredDraftDate: Date?
+    @State private var isEditingBody = false
+    /// Hides everything above the body while typing, so the keyboard doesn't squeeze it.
+    @State private var areFieldsCollapsed = false
     @State private var persistenceFailure: PersistenceFailure?
 
     private let saved: NoteDraft
@@ -70,28 +73,36 @@ struct VerseNoteEditorView: View {
     var body: some View {
         GeometryReader { proxy in
             VStack(spacing: 14) {
-                NoteEditorTitleField(title: $title, placeholder: "Scripture note title")
+                if areFieldsCollapsed {
+                    NoteEditorShowFieldsButton { areFieldsCollapsed = false }
+                } else {
+                    Group {
+                        NoteEditorTitleField(title: $title, placeholder: "Scripture note title")
 
-                if contextualTipsEnabled {
-                    ScriptureReferenceLinkTip()
-                    CustomNoteTagsTip()
+                        if contextualTipsEnabled {
+                            ScriptureReferenceLinkTip()
+                            CustomNoteTagsTip()
+                        }
+
+                        ScriptureEditorReferenceCard(
+                            reference: reference,
+                            verseText: rangeText,
+                            startVerse: start.verseNumber,
+                            lastVerseInChapter: lastVerseInChapter,
+                            endVerse: $endVerse
+                        )
+
+                        VerseNoteOptionsBar(
+                            category: $selectedCategory,
+                            highlight: $selectedColor
+                        )
+                    }
+                    .transition(.move(edge: .top).combined(with: .opacity))
                 }
 
-                ScriptureEditorReferenceCard(
-                    reference: reference,
-                    verseText: rangeText,
-                    startVerse: start.verseNumber,
-                    lastVerseInChapter: lastVerseInChapter,
-                    endVerse: $endVerse
-                )
-
-                VerseNoteOptionsBar(
-                    category: $selectedCategory,
-                    highlight: $selectedColor
-                )
-
-                NoteBodyTextEditor(text: $noteText, selection: $noteSelection)
+                NoteBodyTextEditor(text: $noteText, selection: $noteSelection, isFocused: $isEditingBody)
             }
+            .animation(.snappy, value: areFieldsCollapsed)
             .frame(
                 width: max(0, proxy.size.width - (editorHorizontalPadding * 2)),
                 height: proxy.size.height
@@ -99,6 +110,10 @@ struct VerseNoteEditorView: View {
             .frame(maxWidth: .infinity)
         }
         .padding(.vertical)
+        .onChange(of: isEditingBody) { _, editing in
+            // Typing collapses everything above the body; leaving the body brings it back.
+            areFieldsCollapsed = editing
+        }
         .background(AppBackgroundView(tab: .notes))
         .richNoteEditing(
             text: $noteText,
@@ -118,7 +133,8 @@ struct VerseNoteEditorView: View {
             deleteTitle: existingNote == nil ? nil : deleteTitle,
             deleteMessage: deleteMessage,
             save: save,
-            delete: deleteEntry
+            delete: deleteEntry,
+            hidesRestoredDraftBanner: areFieldsCollapsed
         )
         .persistenceFailureAlert(failure: $persistenceFailure)
     }

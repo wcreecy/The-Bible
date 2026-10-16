@@ -65,7 +65,8 @@ extension View {
         deleteTitle: LocalizedStringResource?,
         deleteMessage: LocalizedStringResource,
         save: @escaping () -> Void,
-        delete: @escaping () -> Void
+        delete: @escaping () -> Void,
+        hidesRestoredDraftBanner: Bool = false
     ) -> some View {
         modifier(NoteEditorShell(
             hasChanges: hasChanges,
@@ -77,7 +78,8 @@ extension View {
             deleteTitle: deleteTitle,
             deleteMessage: deleteMessage,
             save: save,
-            delete: delete
+            delete: delete,
+            hidesRestoredDraftBanner: hidesRestoredDraftBanner
         ))
     }
 }
@@ -99,11 +101,13 @@ private struct NoteEditorShell: ViewModifier {
     let deleteMessage: LocalizedStringResource
     let save: () -> Void
     let delete: () -> Void
+    /// Set while the editor's fields are collapsed for typing.
+    let hidesRestoredDraftBanner: Bool
 
     func body(content: Content) -> some View {
         content
             .safeAreaInset(edge: .top, spacing: 0) {
-                if let restoredDraftDate {
+                if let restoredDraftDate, !hidesRestoredDraftBanner {
                     restoredDraftBanner(restoredDraftDate)
                 }
             }
