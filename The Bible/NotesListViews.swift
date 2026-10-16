@@ -1,8 +1,8 @@
 import SwiftData
 import SwiftUI
 
-/// The Notes page's filters in one row: type, highlight color, and custom tags. Tags open
-/// a second row listing each tag with how many notes use it.
+/// The Notes page's filters in one row: type and custom tags. Tags open a second row
+/// listing each tag with how many notes use it.
 struct NotesFilterBar: View {
     @Binding var filters: NotesFilters
 
@@ -22,8 +22,6 @@ struct NotesFilterBar: View {
                             Label { Text(filter.title) } icon: { Image(systemName: filter.systemImage) }
                         }
                     }
-
-                    colorChip
 
                     if !tags.isEmpty || filters.tag != nil {
                         FilterChip(isSelected: isShowingTags || filters.tag != nil) {
@@ -49,34 +47,6 @@ struct NotesFilterBar: View {
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
-    }
-
-    /// Picks a highlight color; shows the chosen color and clears with one tap from the menu.
-    private var colorChip: some View {
-        Menu {
-            Picker("Highlight Color", selection: binding(\.highlight)) {
-                ForEach(NotesHighlightFilter.allCases) { option in
-                    Text(option.title).tag(option)
-                }
-            }
-            .pickerStyle(.inline)
-        } label: {
-            FilterChipLabel(isSelected: filters.highlight != .all) {
-                HStack(spacing: 6) {
-                    if let color = filters.highlight.highlightColor?.color {
-                        Circle().fill(color).frame(width: 12, height: 12)
-                    } else {
-                        Image(systemName: filters.highlight == .none ? "circle.slash" : "highlighter")
-                    }
-                    Text(filters.highlight == .all ? "Color" : filters.highlight.title)
-                    Image(systemName: "chevron.down")
-                        .font(.caption2.weight(.bold))
-                }
-            }
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Highlight color")
-        .accessibilityValue(Text(filters.highlight.title))
     }
 
     private var tagRow: some View {
@@ -117,13 +87,6 @@ struct NotesFilterBar: View {
 
     private func update(_ change: (inout NotesFilters) -> Void) {
         withAnimation(.snappy) { change(&filters) }
-    }
-
-    private func binding<Value>(_ keyPath: WritableKeyPath<NotesFilters, Value>) -> Binding<Value> {
-        Binding(
-            get: { filters[keyPath: keyPath] },
-            set: { newValue in withAnimation(.snappy) { filters[keyPath: keyPath] = newValue } }
-        )
     }
 }
 
@@ -294,7 +257,7 @@ struct NotesListCard: View {
             ContentUnavailableView {
                 Label("No Matching Notes", systemImage: "note.text")
             } description: {
-                Text("Try another tag, color, or search.")
+                Text("Try another type, tag, or search.")
             } actions: {
                 if showsClearFiltersAction {
                     Button("Clear All Filters", systemImage: "line.3.horizontal.decrease.circle") {
@@ -307,7 +270,7 @@ struct NotesListCard: View {
             ContentUnavailableView {
                 Label("No Notes Yet", systemImage: "note.text")
             } description: {
-                Text("Tap + to write a note, or press and hold a verse in the Bible to add a note or highlight.")
+                Text("Tap + to write a note, or press and hold a verse in the Bible to add a note to it.")
             } actions: {
                 Button("New Note", systemImage: "plus", action: createFirstNoteAction)
                     .buttonStyle(.borderedProminent)
@@ -350,28 +313,15 @@ struct NotesListRow: View {
     let deleteAction: () -> Void
 
     var body: some View {
-        Group {
-            if item.hasNoteText {
-                NotesTitleButton(
-                    title: item.title,
-                    preview: item.preview,
-                    reference: item.rowPassage,
-                    isFavorite: item.isFavorite,
-                    updatedAt: item.updatedAt ?? item.createdAt,
-                    isSelected: isSelected,
-                    action: selectAction
-                )
-            } else {
-                HighlightOnlyRow(
-                    reference: item.title,
-                    verseText: item.verseText,
-                    isFavorite: item.isFavorite,
-                    updatedAt: item.updatedAt ?? item.createdAt,
-                    isSelected: isSelected,
-                    action: selectAction
-                )
-            }
-        }
+        NotesTitleButton(
+            title: item.title,
+            preview: item.preview,
+            reference: item.rowPassage,
+            isFavorite: item.isFavorite,
+            updatedAt: item.updatedAt ?? item.createdAt,
+            isSelected: isSelected,
+            action: selectAction
+        )
         .swipeActions(edge: .leading) {
             favoriteButton
                 .tint(.yellow)
@@ -422,11 +372,10 @@ struct NotesListRow: View {
     }
 }
 
-/// Sorting, what to show, tag management, and export in one toolbar menu.
+/// Sorting, tag management, and export in one toolbar menu.
 struct NotesViewOptionsMenu: View {
     @Binding var sortField: NotesTabSort
     @Binding var sortAscending: Bool
-    @Binding var contentFilter: NotesContentFilter
     let hasTags: Bool
     let manageTagsAction: () -> Void
     let exportAction: () -> Void
@@ -452,36 +401,15 @@ struct NotesViewOptionsMenu: View {
             }
 
             Section {
-                Picker(selection: $contentFilter) {
-                    ForEach(NotesContentFilter.allCases) { option in
-                        Label(option.title, systemImage: option.systemImage).tag(option)
-                    }
-                } label: {
-                    Label("Show", systemImage: "eye")
-                    Text(contentFilter.title)
-                }
-                .pickerStyle(.menu)
-            }
-
-            Section {
                 if hasTags {
                     Button("Manage Tags…", systemImage: "tag", action: manageTagsAction)
                 }
                 Button("Export All Notes…", systemImage: "square.and.arrow.up", action: exportAction)
             }
         } label: {
-            Image(
-                systemName: contentFilter == .all
-                    ? "line.3.horizontal.decrease"
-                    : "line.3.horizontal.decrease.circle.fill"
-            )
-            .foregroundStyle(
-                contentFilter == .all
-                    ? AnyShapeStyle(.primary)
-                    : AnyShapeStyle(.tint)
-            )
+            Image(systemName: "line.3.horizontal.decrease")
         }
-        .accessibilityLabel("Sort, show, and export notes")
+        .accessibilityLabel("Sort and export notes")
         .accessibilityValue(Text(sortField.title))
     }
 }
@@ -539,50 +467,6 @@ struct NotesTitleButton: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
-        .accessibilityValue(isFavorite ? Text("Favorite") : Text(""))
-    }
-}
-
-/// A verse that's highlighted without a note: one compact line with the reference and the
-/// start of the verse, so highlights don't read as empty notes. The color shows in the note.
-private struct HighlightOnlyRow: View {
-    let reference: String
-    let verseText: String
-    let isFavorite: Bool
-    let updatedAt: Date?
-    let isSelected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 10) {
-                Text(reference)
-                    .font(.subheadline.weight(isSelected ? .semibold : .medium))
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
-                    .layoutPriority(1)
-
-                Text(verseText)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-
-                Spacer(minLength: 4)
-
-                if let updatedAt {
-                    Text(updatedAt, format: NotesRowDate.format(for: updatedAt))
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .frame(minHeight: 44, alignment: .leading)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 4)
-            .contentShape(.rect)
-        }
-        .buttonStyle(.plain)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("\(reference), highlight"))
         .accessibilityValue(isFavorite ? Text("Favorite") : Text(""))
     }
 }

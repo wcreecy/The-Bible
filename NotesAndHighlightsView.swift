@@ -58,7 +58,6 @@ struct NotesAndHighlightsView: View {
                 NotesViewOptionsMenu(
                     sortField: sortFieldBinding,
                     sortAscending: $sortAscending,
-                    contentFilter: $filters.content,
                     hasTags: !library.tags.isEmpty,
                     manageTagsAction: { isManagingTags = true },
                     exportAction: {
@@ -234,7 +233,7 @@ struct NotesAndHighlightsView: View {
             ContextualTipView(
                 id: "notes.quickActions",
                 title: "Browse and manage notes",
-                message: "Filter by type or color, or tap #Tags to filter by your own tags. Search for a verse such as John 3:16 to find every note on it. Swipe or press and hold a note for quick actions.",
+                message: "Filter by type, or tap #Tags to filter by your own tags. Search for a verse such as John 3:16 to find every note on it. Swipe or press and hold a note for quick actions.",
                 systemImage: "hand.point.up.left"
             )
         }

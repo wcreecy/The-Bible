@@ -176,8 +176,10 @@ struct NotesTabTests {
         let favorite = userNote(title: "Psalm", content: "#faith", favorite: true, updated: 0)
         let notes = ([highlight, written], [sermon, favorite])
 
+        // A verse highlighted without a note belongs to Saved Verses, not Notes.
         let all = library(notes.0, notes.1)
-        #expect(all.visibleItems.map(\.title) == ["Psalm", "John 3:16", "Hope", "Sunday"])
+        #expect(all.visibleItems.map(\.title) == ["Psalm", "Hope", "Sunday"])
+        #expect(all.allItems.count == 3)
         #expect(all.tags == [.init(tag: "faith", count: 2), .init(tag: "hope", count: 2)])
 
         var filters = NotesFilters()
@@ -186,14 +188,6 @@ struct NotesTabTests {
 
         filters = NotesFilters(tag: "hope")
         #expect(library(notes.0, notes.1, filters: filters, sort: .title, ascending: true).visibleItems.map(\.title) == ["Hope", "Sunday"])
-
-        filters = NotesFilters(highlight: .yellow)
-        #expect(library(notes.0, notes.1, filters: filters).visibleItems.map(\.title) == ["John 3:16"])
-
-        filters = NotesFilters(content: .highlightsOnly)
-        #expect(library(notes.0, notes.1, filters: filters).visibleItems.map(\.title) == ["John 3:16"])
-        filters = NotesFilters(content: .written)
-        #expect(library(notes.0, notes.1, filters: filters).visibleItems.count == 3)
 
         filters = NotesFilters(category: .sermon, tag: "hope")
         let summary = library(notes.0, notes.1, filters: filters).summaryTitle

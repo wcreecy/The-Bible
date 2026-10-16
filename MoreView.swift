@@ -11,7 +11,7 @@ struct MoreView: View {
         List {
             Section {
                 NavigationLink(value: MoreDestination.favorites) {
-                    Label("Favorites", systemImage: "heart")
+                    Label("Saved Verses", systemImage: "heart")
                 }
 
                 NavigationLink(value: MoreDestination.stats) {

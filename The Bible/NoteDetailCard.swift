@@ -25,10 +25,22 @@ struct NoteDetailCard: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
                         details(for: item)
-                        Text(BibleReferenceLinker.linkify(NoteFormattedContent.decode(item.formattedContent, fallback: item.content)))
-                            .font(.body)
-                            .lineSpacing(5)
+                        if item.hasNoteText {
+                            Text(BibleReferenceLinker.linkify(NoteFormattedContent.decode(item.formattedContent, fallback: item.content)))
+                                .font(.body)
+                                .lineSpacing(5)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        } else {
+                            // A verse highlighted without a note, opened from Saved Verses.
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("You haven't written a note about this verse yet.")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                Button("Add a Note", systemImage: "square.and.pencil", action: editAction)
+                                    .buttonStyle(.borderedProminent)
+                            }
                             .frame(maxWidth: .infinity, alignment: .leading)
+                        }
                         NoteTimestampView(createdAt: item.createdAt, updatedAt: item.updatedAt)
                     }
                     .frame(maxWidth: 760, alignment: .leading)
@@ -71,7 +83,9 @@ struct NoteDetailCard: View {
     }
 
     /// The type, plus the passage for a personal note (a Scripture note shows its verses below).
+    /// A highlight without a note isn't a note yet, so it has no type.
     private func subtitle(for item: NotesListItem) -> String? {
+        guard item.hasNoteText else { return nil }
         var parts: [String] = []
         if let category = item.category { parts.append(String(localized: category.title)) }
         if case .user(let note) = item, note.hasSourceChapter {

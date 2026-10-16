@@ -2,7 +2,23 @@ import SwiftUI
 import SwiftData
 import UIKit
 
+/// Saved Verses: favorite verses and highlighted verses, one list at a time.
 struct FavoritesView: View {
+    /// The two lists, chosen with the switch at the top.
+    enum SavedList: String, CaseIterable, Identifiable {
+        case favorites
+        case highlights
+
+        var id: String { rawValue }
+
+        var title: LocalizedStringResource {
+            switch self {
+            case .favorites: "Favorites"
+            case .highlights: "Highlights"
+            }
+        }
+    }
+
     /// How the list is ordered.
     enum SortOrder: String, CaseIterable, Identifiable {
         case recent
@@ -33,9 +49,12 @@ struct FavoritesView: View {
 
     @Environment(\.modelContext) private var modelContext
     @Query(sort: [SortDescriptor(\Favorite.createdAt, order: .reverse)]) private var favorites: [Favorite]
+    @Query(filter: #Predicate<VerseNote> { $0.highlightColor != "" }) private var highlights: [VerseNote]
     @AppStorage("contextualTipsEnabled") private var contextualTipsEnabled = false
     @AppStorage("favoritesSortOrder") private var sortOrder: SortOrder = .recent
 
+    /// Not saved, so Saved Verses always opens on Favorites.
+    @State private var shownList: SavedList = .favorites
     @State private var searchText: String = ""
     @State private var removedFavorites: [RemovedFavorite] = []
     @State private var toastMessage: ToastMessage?
@@ -46,10 +65,65 @@ struct FavoritesView: View {
     }
 
     private var countSubtitle: String {
-        favorites.count == 1 ? String(localized: "1 verse") : String(localized: "\(favorites.count) verses")
+        Self.verseCount(favorites.count)
+    }
+
+    private static func verseCount(_ count: Int) -> String {
+        count == 1 ? String(localized: "1 verse") : String(localized: "\(count) verses")
+    }
+
+    /// The count for the list on screen.
+    private var shownCount: Int {
+        shownList == .favorites ? favorites.count : highlights.count
     }
 
     var body: some View {
+        Group {
+            switch shownList {
+            case .favorites:
+                favoritesContent
+            case .highlights:
+                SavedHighlightsView(
+                    notes: highlights,
+                    searchText: searchText,
+                    sortOrder: sortOrder,
+                    bookNames: bookNames
+                )
+            }
+        }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            Picker("Show", selection: $shownList.animation(.snappy)) {
+                ForEach(SavedList.allCases) { list in
+                    Text(list.title).tag(list)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+        }
+        .background(AppBackgroundView(tab: .more))
+        .navigationTitle("Saved Verses")
+        .navigationSubtitle(shownCount == 0 ? "" : Self.verseCount(shownCount))
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar { toolbarContent }
+        .searchable(
+            text: $searchText,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: shownList == .favorites ? "Search favorites" : "Search highlights and notes"
+        )
+        .appToast(
+            isPresented: isShowingToast,
+            symbol: toastMessage == .copied ? "doc.on.doc" : "heart.slash",
+            text: toastText,
+            tint: .secondary,
+            actionTitle: isShowingRemovalToast ? String(localized: "Undo") : nil,
+            action: toastAction
+        )
+        .persistenceFailureAlert(failure: $persistenceFailure)
+    }
+
+    @ViewBuilder
+    private var favoritesContent: some View {
         // Computed once per update and shared by the list and its delete handlers.
         let sections = makeSections(from: filteredFavorites())
 
@@ -70,21 +144,6 @@ struct FavoritesView: View {
                 favoritesList(sections: sections)
             }
         }
-        .background(AppBackgroundView(tab: .more))
-        .navigationTitle("Favorites")
-        .navigationSubtitle(favorites.isEmpty ? "" : countSubtitle)
-        .navigationBarTitleDisplayMode(.large)
-        .toolbar { toolbarContent }
-        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search favorites")
-        .appToast(
-            isPresented: isShowingToast,
-            symbol: toastMessage == .copied ? "doc.on.doc" : "heart.slash",
-            text: toastText,
-            tint: .secondary,
-            actionTitle: isShowingRemovalToast ? String(localized: "Undo") : nil,
-            action: toastAction
-        )
-        .persistenceFailureAlert(failure: $persistenceFailure)
     }
 
     // MARK: - List
@@ -149,7 +208,7 @@ struct FavoritesView: View {
 
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
-        if !favorites.isEmpty {
+        if shownCount > 0 {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Picker("Sort By", selection: $sortOrder) {
@@ -161,6 +220,9 @@ struct FavoritesView: View {
                     Label("Sort", systemImage: "arrow.up.arrow.down")
                 }
             }
+        }
+        // Editing removes several favorites at once; highlights are removed one at a time.
+        if shownList == .favorites && !favorites.isEmpty {
             ToolbarItem(placement: .primaryAction) { EditButton() }
         }
     }
@@ -210,7 +272,7 @@ struct FavoritesView: View {
     // MARK: - Filtering and grouping
 
     private func filteredFavorites() -> [Favorite] {
-        guard let query = FavoriteSearchQuery(searchText, bookNames: bookNames) else { return favorites }
+        guard let query = SavedVerseSearchQuery(searchText, bookNames: bookNames) else { return favorites }
         return favorites.filter { query.matches($0) }
     }
 
@@ -238,10 +300,10 @@ struct FavoritesView: View {
         }
     }
 
-    /// Book names in Bible order, or the favorites' own books while the Bible is loading.
+    /// Book names in Bible order, or the saved verses' own books while the Bible is loading.
     private var bookNames: [String] {
         let names = BibleData.books.map(\.name)
-        return names.isEmpty ? Array(Set(favorites.map(\.bookName))).sorted() : names
+        return names.isEmpty ? Array(Set(favorites.map(\.bookName) + highlights.map(\.bookName))).sorted() : names
     }
 
     // MARK: - Actions
@@ -327,11 +389,12 @@ struct FavoritesView: View {
     }
 }
 
-/// Parses a Favorites search. A query that starts with a book name ("1 John", "John 3:16")
+/// Parses a Saved Verses search. A query that starts with a book name ("1 John", "John 3:16")
 /// narrows to that book, with the next numbers taken as chapter and verse. Anything else
-/// must appear in the verse text or book name, and bare numbers must equal the chapter or
-/// verse, so "1" doesn't match every reference that merely contains a 1.
-private struct FavoriteSearchQuery {
+/// must appear in the verse text, a highlight's note, or the book name, and bare numbers
+/// must equal the chapter or a verse, so "1" doesn't match every reference that merely
+/// contains a 1.
+struct SavedVerseSearchQuery {
     let book: String?
     let numbers: [Int]
     let words: [String]
@@ -364,17 +427,25 @@ private struct FavoriteSearchQuery {
 
     @MainActor
     func matches(_ favorite: Favorite) -> Bool {
-        let verseText = favorite.currentVerseText.lowercased()
-        let bookName = favorite.bookName.lowercased()
+        matches(
+            bookName: favorite.bookName,
+            chapter: favorite.chapterNumber,
+            verses: favorite.verseNumber...favorite.verseNumber,
+            texts: [favorite.currentVerseText]
+        )
+    }
 
+    /// `verses` is the range a highlight covers; a searched verse anywhere in it matches.
+    func matches(bookName: String, chapter: Int, verses: ClosedRange<Int>, texts: [String]) -> Bool {
         if let book {
-            guard favorite.bookName == book else { return false }
-            if numbers.count > 0, favorite.chapterNumber != numbers[0] { return false }
-            if numbers.count > 1, favorite.verseNumber != numbers[1] { return false }
-        } else if !numbers.allSatisfy({ $0 == favorite.chapterNumber || $0 == favorite.verseNumber }) {
+            guard bookName == book else { return false }
+            if numbers.count > 0, chapter != numbers[0] { return false }
+            if numbers.count > 1, !verses.contains(numbers[1]) { return false }
+        } else if !numbers.allSatisfy({ $0 == chapter || verses.contains($0) }) {
             return false
         }
-        return words.allSatisfy { verseText.contains($0) || bookName.contains($0) }
+        let searchable = texts.map { $0.lowercased() } + [bookName.lowercased()]
+        return words.allSatisfy { word in searchable.contains { $0.contains(word) } }
     }
 }
 

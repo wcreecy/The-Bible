@@ -130,7 +130,6 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
     case title
     /// Sorts by the note's type. The raw value stays "tag" so saved preferences carry over.
     case tag
-    case color
     /// By the note's passage, Genesis to Revelation, then chapter and verse.
     case bibleOrder
 
@@ -142,7 +141,6 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
         case .created: "Date Created"
         case .title: "Title"
         case .tag: "Type"
-        case .color: "Highlight Color"
         case .bibleOrder: "Bible Order"
         }
     }
@@ -153,7 +151,6 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
         case .created: "calendar"
         case .title: "textformat"
         case .tag: "square.stack"
-        case .color: "highlighter"
         case .bibleOrder: "book"
         }
     }
@@ -162,7 +159,7 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
     var defaultAscending: Bool {
         switch self {
         case .modified, .created: false
-        case .title, .tag, .color, .bibleOrder: true
+        case .title, .tag, .bibleOrder: true
         }
     }
 
@@ -170,7 +167,6 @@ enum NotesTabSort: String, CaseIterable, Identifiable {
         switch self {
         case .modified, .created: ascending ? "Oldest First" : "Newest First"
         case .title, .tag: ascending ? "A–Z" : "Z–A"
-        case .color: ascending ? "Picker Order" : "Reverse Picker Order"
         case .bibleOrder: ascending ? "Genesis to Revelation" : "Revelation to Genesis"
         }
     }
@@ -212,75 +208,6 @@ enum NotesFilter: String, CaseIterable, Identifiable {
         case .personal: .personal
         case .scripture: .scripture
         case .chapterInsights: .chapterInsights
-        }
-    }
-}
-
-/// Separates written notes from highlight-only verse entries.
-enum NotesContentFilter: String, CaseIterable, Identifiable {
-    case all
-    case written
-    case highlightsOnly
-
-    var id: String { rawValue }
-
-    var title: LocalizedStringResource {
-        switch self {
-        case .all: "Notes & Highlights"
-        case .written: "Written Notes"
-        case .highlightsOnly: "Highlights Only"
-        }
-    }
-
-    var systemImage: String {
-        switch self {
-        case .all: "square.stack"
-        case .written: "note.text"
-        case .highlightsOnly: "highlighter"
-        }
-    }
-
-    func matches(_ item: NotesListItem) -> Bool {
-        switch self {
-        case .all: true
-        case .written: item.hasNoteText
-        case .highlightsOnly: !item.hasNoteText
-        }
-    }
-}
-
-enum NotesHighlightFilter: String, CaseIterable, Identifiable {
-    case all
-    case none
-    case yellow
-    case green
-    case blue
-    case pink
-    case purple
-
-    var id: String { rawValue }
-
-    var title: LocalizedStringResource {
-        switch self {
-        case .all: "All Colors"
-        case .none: "No Highlight"
-        case .yellow: "Yellow"
-        case .green: "Green"
-        case .blue: "Blue"
-        case .pink: "Pink"
-        case .purple: "Purple"
-        }
-    }
-
-    var highlightColor: VerseHighlightColor? {
-        VerseHighlightColor(rawValue: rawValue)
-    }
-
-    func matches(_ rawValue: String) -> Bool {
-        switch self {
-        case .all: true
-        case .none: rawValue.isEmpty
-        default: rawValue == self.rawValue
         }
     }
 }
@@ -381,14 +308,6 @@ enum NotesListItem: Identifiable {
     /// untitled Scripture note is titled with its reference).
     var rowPassage: String? {
         passage == title ? nil : passage
-    }
-
-    /// The highlighted verse text, for highlight-only rows.
-    var verseText: String {
-        switch self {
-        case .scripture(let note): note.verseText
-        case .user: ""
-        }
     }
 
     /// Where "Open in Bible" goes: the note's verse, or the start of a personal note's passage.

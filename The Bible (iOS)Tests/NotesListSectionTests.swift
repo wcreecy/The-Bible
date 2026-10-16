@@ -98,24 +98,27 @@ struct NotesListSectionTests {
     }
 
     @Test
-    func typeAndColorSortsGroupByThatField() {
+    func typeSortGroupsByType() {
         let byType = library(
             [verseNote("John", 3, 16, content: "Love")],
             [userNote(title: "Sunday", category: .sermon), userNote(title: "Journal")],
             sort: .tag
         )
         #expect(headings(byType) == ["Personal Notes", "Scripture Notes", "Sermon Notes"])
+    }
 
-        let byColor = library(
+    @Test
+    func highlightsWithoutNotesStayOutOfNotes() {
+        let notes = library(
             [
-                verseNote("John", 3, 16, highlight: "blue"),
-                verseNote("Romans", 8, 28, highlight: "yellow"),
-                verseNote("Psalms", 23, 1)
+                verseNote("John", 3, 16, highlight: "yellow"),
+                verseNote("Romans", 8, 28, content: "All things", highlight: "blue")
             ],
             [],
-            sort: .color
+            sort: .modified
         )
-        #expect(headings(byColor) == ["Yellow", "Blue", "No Highlight"])
+        // Only the written note is listed, and its highlight isn't a filter or heading.
+        #expect(notes.visibleItems.map(\.title) == ["Romans 8:28"])
     }
 
     @Test

@@ -4,13 +4,10 @@ import Foundation
 struct NotesFilters: Equatable {
     var category: NotesFilter = .all
     var tag: String?
-    var highlight: NotesHighlightFilter = .all
-    var content: NotesContentFilter = .all
     var search = ""
 
     var isActive: Bool {
-        category != .all || tag != nil || highlight != .all || content != .all ||
-            !search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        category != .all || tag != nil || !search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }
 
@@ -25,6 +22,9 @@ struct NotesListSection: Identifiable {
 
 /// Filters, sorts, and summarizes notes in one pass, so the page computes them once per update.
 /// Favorites come first, but every filter still applies to them.
+///
+/// Only written notes are listed. A verse that's highlighted without a note belongs to
+/// Saved Verses, and a highlighted note mentions its highlight only in the note itself.
 @MainActor
 struct NotesLibrary {
     struct TagCount: Identifiable, Equatable {
@@ -33,7 +33,7 @@ struct NotesLibrary {
         var id: String { tag }
     }
 
-    /// Every note, in no particular order.
+    /// Every written note, in no particular order.
     let allItems: [NotesListItem]
     /// Notes that match the filters: favorites first, then the rest, each in sort order.
     let visibleItems: [NotesListItem]
@@ -54,7 +54,7 @@ struct NotesLibrary {
         calendar: Calendar = .current
     ) {
         self.filters = filters
-        let items = scriptureNotes.map(NotesListItem.scripture) + userNotes.map(NotesListItem.user)
+        let items = scriptureNotes.map(NotesListItem.scripture).filter(\.hasNoteText) + userNotes.map(NotesListItem.user)
         allItems = items
 
         // Parse each note's tags once; filtering, search, and the tag counts all reuse them.
@@ -71,8 +71,6 @@ struct NotesLibrary {
             let itemTags = tagsByID[item.id] ?? []
             return (filters.category == .all || item.categoryRawValue == filters.category.rawValue) &&
                 (filters.tag.map(itemTags.contains) ?? true) &&
-                filters.highlight.matches(item.highlightColor) &&
-                filters.content.matches(item) &&
                 item.matchesSearch(filters.search, tags: itemTags)
         }
         let ordered = Self.sorted(matching, by: sort, ascending: ascending)
@@ -138,11 +136,6 @@ struct NotesLibrary {
             let filter = NotesFilter(rawValue: item.categoryRawValue)
             let title = item.category.map { String(localized: $0.title) } ?? String(localized: "Other")
             return NotesListSection(id: "type.\(item.categoryRawValue)", title: title, systemImage: filter?.systemImage, items: [])
-        case .color:
-            guard let color = VerseHighlightColor(rawValue: item.highlightColor) else {
-                return NotesListSection(id: "color.none", title: String(localized: "No Highlight"), systemImage: "circle.slash", items: [])
-            }
-            return NotesListSection(id: "color.\(color.rawValue)", title: String(localized: color.name), items: [])
         case .bibleOrder:
             guard let book = item.bibleLocation?.bookName else {
                 return NotesListSection(id: "book.none", title: String(localized: "No Passage"), systemImage: "note.text", items: [])
@@ -194,12 +187,10 @@ struct NotesLibrary {
     }
 
     /// The list heading: the type, then any other active filter, then the count,
-    /// e.g. "Sermon Notes · #prayer · Yellow · 4".
+    /// e.g. "Sermon Notes · #prayer · 4".
     var summaryTitle: String {
         var parts = [String(localized: filters.category.libraryTitle)]
         if let tag = filters.tag { parts.append("#\(tag)") }
-        if filters.highlight != .all { parts.append(String(localized: filters.highlight.title)) }
-        if filters.content != .all { parts.append(String(localized: filters.content.title)) }
         let search = filters.search.trimmingCharacters(in: .whitespacesAndNewlines)
         if !search.isEmpty { parts.append("“\(search)”") }
         parts.append(visibleItems.count.formatted())
@@ -263,15 +254,6 @@ struct NotesLibrary {
             let left = lhs.category.map { String(localized: $0.title) } ?? lhs.categoryRawValue
             let right = rhs.category.map { String(localized: $0.title) } ?? rhs.categoryRawValue
             return left.localizedStandardCompare(right)
-        case .color:
-            // Follow the highlight picker's color order; notes without a highlight sort last.
-            let left = colorPosition(lhs.highlightColor)
-            let right = colorPosition(rhs.highlightColor)
-            return left == right ? .orderedSame : (left < right ? .orderedAscending : .orderedDescending)
         }
-    }
-
-    private static func colorPosition(_ rawValue: String) -> Int {
-        VerseHighlightColor.allCases.firstIndex { $0.rawValue == rawValue } ?? VerseHighlightColor.allCases.count
     }
 }
