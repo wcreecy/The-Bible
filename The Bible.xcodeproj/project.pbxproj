@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C04929F3082AC5800123668 /* SavedVersesHomeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C04929E3082AC5800123668 /* SavedVersesHomeCard.swift */; };
 		2C0DFA21306E9C5A00E114A5 /* NotesAndHighlightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DFA20306E9C5A00E114A5 /* NotesAndHighlightsView.swift */; };
 		2C135C3B2EC650D900306AD5 /* GameScoreboardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */; };
 		2C1400F82EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1400F72EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift */; };
@@ -200,6 +201,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2C04929E3082AC5800123668 /* SavedVersesHomeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedVersesHomeCard.swift; sourceTree = "<group>"; };
 		2C0DFA20306E9C5A00E114A5 /* NotesAndHighlightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesAndHighlightsView.swift; sourceTree = "<group>"; };
 		2C135C3A2EC650D900306AD5 /* GameScoreboardCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScoreboardCard.swift; sourceTree = "<group>"; };
 		2C1400F72EF23EC900A93CA9 /* TopBooksThisMonthCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBooksThisMonthCardView.swift; sourceTree = "<group>"; };
@@ -599,6 +601,7 @@
 				2C40D8E13079119300839A64 /* SearchHomeCard.swift */,
 				2C40DA6B307A720E00839A64 /* RedLetterVerseText.swift */,
 				2CA7DBB4307B249E009CE9AC /* UITestSupport.swift */,
+				2C04929E3082AC5800123668 /* SavedVersesHomeCard.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -890,6 +893,7 @@
 				2C2A44D82EEE151E00FE8C2F /* WordSearchViewModel.swift in Sources */,
 				2C2A45082EEE351E00FE8C2F /* SettingsResetDataSection.swift in Sources */,
 				2C2A44E62EEE154500FE8C2F /* WrapWordsView.swift in Sources */,
+				2C04929F3082AC5800123668 /* SavedVersesHomeCard.swift in Sources */,
 				2C0DFA21306E9C5A00E114A5 /* NotesAndHighlightsView.swift in Sources */,
 				2C2A44EC2EEE261400FE8C2F /* iCloudSyncCoordinator+BibleStats.swift in Sources */,
 				2C1400FA2EF2BB2900A93CA9 /* StatsTypes.swift in Sources */,

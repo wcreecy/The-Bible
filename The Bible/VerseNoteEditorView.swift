@@ -219,6 +219,8 @@ struct VerseNoteEditorView: View {
     // MARK: Saving
 
     private func save() {
+        let addsHighlight = selectedColor != nil && (existingNote?.highlightColor.isEmpty ?? true)
+
         ModelContextPersistence.perform(
             in: modelContext,
             operation: {
@@ -248,6 +250,9 @@ struct VerseNoteEditorView: View {
                 try modelContext.save()
             },
             onSuccess: {
+                if addsHighlight {
+                    TodayChallengeStore.shared.recordVerseHighlightSaved()
+                }
                 NoteDraftStore.clear(draftKey)
                 Haptics.success()
                 dismiss()

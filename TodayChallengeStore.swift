@@ -8,11 +8,13 @@ enum TodayChallengeKind: String, Codable {
     case playGame
     case prayerTimer
     case reflection
+    case favoriteVerse
+    case highlightVerse
 }
 
 struct TodayChallenge: Identifiable, Codable, Equatable {
     let id: UUID
-    let kind: TodayChallengeKind
+    var kind: TodayChallengeKind
     let title: String
     let detail: String
     let bookName: String?
@@ -186,6 +188,18 @@ final class TodayChallengeStore {
         save()
     }
 
+    /// Marks today's favorite-verse task complete after a verse is successfully saved.
+    func recordFavoriteVerseSaved() {
+        loadOrCreateForToday()
+        updateChallenges { $0.kind == .favoriteVerse }
+    }
+
+    /// Marks today's highlight task complete after a verse highlight is successfully saved.
+    func recordVerseHighlightSaved() {
+        loadOrCreateForToday()
+        updateChallenges { $0.kind == .highlightVerse }
+    }
+
     func completeStudyChallenge(id: UUID) {
         loadOrCreateForToday()
 
@@ -264,7 +278,8 @@ final class TodayChallengeStore {
 
         if let cloudSnapshot,
            !Self.needsNewChallenges(snapshotDayKey: cloudSnapshot.dayKey, on: now),
-           cloudSnapshot.challenges.count == 3 {
+           cloudSnapshot.challenges.count == 3,
+           !Self.containsRetiredBookmarkTask(in: cloudSnapshot.challenges) {
             let cloudChallenges = cloudSnapshot.challenges.map(repairedChallenge)
             challenges = cloudChallenges
             persistLocally(lastModified: cloudSnapshot.lastModified)
@@ -274,7 +289,8 @@ final class TodayChallengeStore {
             }
         } else if let localSnapshot,
                   !Self.needsNewChallenges(snapshotDayKey: localSnapshot.dayKey, on: now),
-                  localSnapshot.challenges.count == 3 {
+                  localSnapshot.challenges.count == 3,
+                  !Self.containsRetiredBookmarkTask(in: localSnapshot.challenges) {
             challenges = localSnapshot.challenges.map(repairedChallenge)
             if challenges != localSnapshot.challenges {
                 save()
@@ -548,6 +564,21 @@ final class TodayChallengeStore {
         )
     }
 
+    static func kind(forReflectionTaskTitle title: String) -> TodayChallengeKind {
+        switch title {
+        case "Add a verse to your favorites":
+            .favoriteVerse
+        case "Highlight a verse to study later":
+            .highlightVerse
+        default:
+            .reflection
+        }
+    }
+
+    private static func containsRetiredBookmarkTask(in challenges: [TodayChallenge]) -> Bool {
+        challenges.contains { $0.title == "Add a verse to your bookmarks" }
+    }
+
     private func makeReflectionChallenge(using picker: inout FreshPicker) -> TodayChallenge {
         // Keyed by the template, so "Pray for {{prayerFocus}}" counts once whatever the focus.
         let task = picker.pick(from: catalog.reflectionTasks, key: { HistoryKey.reflection($0.title) })
@@ -563,7 +594,7 @@ final class TodayChallengeStore {
 
         return TodayChallenge(
             id: UUID(),
-            kind: .reflection,
+            kind: Self.kind(forReflectionTaskTitle: title),
             title: title,
             detail: task.detail,
             bookName: nil,
@@ -689,6 +720,8 @@ struct HomeTodayCard: View {
             onStartPrayerTimer(minutes)
         case .reflection:
             store.toggleManualChallenge(id: challenge.id)
+        case .favoriteVerse, .highlightVerse:
+            break
         }
     }
 }
@@ -699,7 +732,8 @@ private struct TodayChallengeRow: View {
 
     /// Completed prayer challenges have nothing left to start.
     private var isActionable: Bool {
-        !(challenge.kind == .prayerTimer && challenge.isCompleted)
+        ![.favoriteVerse, .highlightVerse].contains(challenge.kind) &&
+            !(challenge.kind == .prayerTimer && challenge.isCompleted)
     }
 
     var body: some View {
@@ -753,6 +787,8 @@ private struct TodayChallengeRow: View {
         case .playGame: ("Play", "gamecontroller")
         case .prayerTimer: challenge.isCompleted ? nil : ("Start", "timer")
         case .reflection: nil
+        case .favoriteVerse: ("Favorite verse", "heart")
+        case .highlightVerse: ("Highlight verse", "highlighter")
         }
     }
 
@@ -772,6 +808,10 @@ private struct TodayChallengeRow: View {
             challenge.isCompleted ? "" : "Starts a prayer timer."
         case .reflection:
             challenge.isCompleted ? "Double tap to mark incomplete." : "Double tap to mark complete."
+        case .favoriteVerse:
+            challenge.isCompleted ? "Completed automatically when a verse was added to Favorites." : "Add a verse to Favorites to complete this automatically."
+        case .highlightVerse:
+            challenge.isCompleted ? "Completed automatically when a verse was highlighted." : "Highlight a verse to complete this automatically."
         }
     }
 }

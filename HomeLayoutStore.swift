@@ -46,6 +46,7 @@ struct HomeLayoutStore {
             return [
                 .verseOfDay,
                 .today,
+                .savedVerses,
                 .study,
                 .streaks,
                 .timer,
@@ -62,6 +63,7 @@ struct HomeLayoutStore {
             .resumeReading,
             .study,
             .verseOfDay,
+            .savedVerses,
             .today,
             .streaks,
             .timer,

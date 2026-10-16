@@ -101,8 +101,12 @@
       "detail": "Turn a verse into a short prayer to God."
     },
     {
-      "title": "Add a verse to your bookmarks",
+      "title": "Add a verse to your favorites",
       "detail": "Save one verse you want to return to."
+    },
+    {
+      "title": "Highlight a verse to study later",
+      "detail": "Mark one verse to revisit and reflect on."
     },
     {
       "title": "Spend 5 minutes in silence with God",

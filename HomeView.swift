@@ -57,11 +57,51 @@ struct HomeView: View {
     private var isPad: Bool { horizontalSizeClass == .regular }
     // Newest first; synced devices can briefly hold more than one bookmark.
     @Query(sort: [SortDescriptor(\Bookmark.createdAt, order: .reverse)]) private var bookmarks: [Bookmark]
+    @Query(sort: [SortDescriptor(\Favorite.createdAt, order: .reverse)]) private var favorites: [Favorite]
+    @Query(filter: #Predicate<VerseNote> { $0.highlightColor != "" }) private var highlights: [VerseNote]
 
     /// The verse the reader bookmarked; the single source for Continue Reading.
     /// (The automatic last-read position only drives where the Bible tab opens.)
     private var bookmark: Bookmark? {
         bookmarks.first
+    }
+
+    private var savedVersePreview: SavedVerseHomePreview? {
+        let favorite = favorites.first.map {
+            SavedVerseHomePreview(
+                reference: "\($0.bookName) \($0.chapterNumber):\($0.verseNumber)",
+                text: $0.verseText,
+                kind: .favorite,
+                date: $0.createdAt,
+                bookName: $0.bookName,
+                chapterNumber: $0.chapterNumber,
+                verseNumber: $0.verseNumber
+            )
+        }
+        let highlight = highlights.max { lhs, rhs in
+            (lhs.updatedAt ?? lhs.createdAt ?? .distantPast) < (rhs.updatedAt ?? rhs.createdAt ?? .distantPast)
+        }.map {
+            SavedVerseHomePreview(
+                reference: $0.reference,
+                text: $0.verseText,
+                kind: .highlight,
+                date: $0.updatedAt ?? $0.createdAt ?? .distantPast,
+                bookName: $0.bookName,
+                chapterNumber: $0.chapterNumber,
+                verseNumber: $0.verseNumber
+            )
+        }
+
+        switch (favorite, highlight) {
+        case let (favorite?, highlight?) where favorite.date >= highlight.date:
+            return favorite
+        case let (_, highlight?):
+            return highlight
+        case let (favorite?, nil):
+            return favorite
+        case (nil, nil):
+            return nil
+        }
     }
 
     // Verse-of-the-Day: configurable times and scheduler (delegated to VM, keep keys observed)
@@ -262,6 +302,20 @@ struct HomeView: View {
                 onOpenReference: { _ in openContinueReading() },
                 onStartReading: {
                     openBibleReference(book: "Genesis", chapter: 1, verse: 1)
+                }
+            )
+        case .savedVerses:
+            SavedVersesHomeCard(
+                preview: savedVersePreview,
+                onOpenSavedVerses: {
+                    AppRouter.shared.open(.favorites)
+                },
+                onOpenVerse: { preview in
+                    openBibleReference(
+                        book: preview.bookName,
+                        chapter: preview.chapterNumber,
+                        verse: preview.verseNumber
+                    )
                 }
             )
         case .study:

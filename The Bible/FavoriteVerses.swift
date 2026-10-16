@@ -39,6 +39,9 @@ enum FavoriteVerses {
             }
         }
         try context.save()
+        if existing.isEmpty {
+            TodayChallengeStore.shared.recordFavoriteVerseSaved()
+        }
         return existing.isEmpty
     }
 }

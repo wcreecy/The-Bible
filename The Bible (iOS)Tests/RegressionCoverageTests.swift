@@ -142,10 +142,19 @@ struct RegressionCoverageTests {
     }
 
     @Test
+    func savedVerseChallengesAreSystemTracked() {
+        #expect(TodayChallengeStore.kind(forReflectionTaskTitle: "Add a verse to your favorites") == .favoriteVerse)
+        #expect(TodayChallengeStore.kind(forReflectionTaskTitle: "Highlight a verse to study later") == .highlightVerse)
+        #expect(TodayChallengeStore.kind(forReflectionTaskTitle: "Add a verse to your bookmarks") == .reflection)
+    }
+
+    @Test
     func homeLayoutBaselineIncludesEveryCardExactlyOnce() {
         let order = HomeLayoutStore.baselineOrder
         #expect(Set(order) == Set(HomeCardID.allCases))
         #expect(order.count == HomeCardID.allCases.count)
+        #expect(order.contains(.savedVerses))
+        #expect(!HomeLayoutStore.baselineHidden.contains(.savedVerses))
         #expect(HomeLayoutStore.baselineHidden.isSubset(of: Set(HomeCardID.allCases)))
     }
 

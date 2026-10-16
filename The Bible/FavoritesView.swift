@@ -14,7 +14,7 @@ struct FavoritesView: View {
         var title: LocalizedStringResource {
             switch self {
             case .favorites: "Favorites"
-            case .highlights: "Highlights"
+            case .highlights: "Highlighted Verses"
             }
         }
     }
