@@ -373,6 +373,34 @@ struct NoteBodyTextEditor: View {
     }
 }
 
+extension View {
+    /// Sets `isShown` while the on-screen keyboard is up. With a hardware keyboard, iPad
+    /// shows only a short shortcut bar, which doesn't count, so editors keep their fields.
+    func onScreenKeyboardVisibility(_ isShown: Binding<Bool>) -> some View {
+        task {
+            for await notification in NotificationCenter.default.notifications(named: UIResponder.keyboardWillChangeFrameNotification) {
+                isShown.wrappedValue = OnScreenKeyboard.isShown(
+                    endFrame: (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue,
+                    screenHeight: (notification.object as? UIScreen)?.bounds.height
+                )
+            }
+        }
+    }
+}
+
+enum OnScreenKeyboard {
+    /// Taller than the hardware keyboard's shortcut bar, shorter than any on-screen keyboard.
+    static let minimumHeight: CGFloat = 150
+
+    /// Whether a keyboard frame is a full on-screen keyboard on screen. A hidden keyboard
+    /// ends below the screen; a floating iPad keyboard reports no frame and covers little.
+    static func isShown(endFrame: CGRect?, screenHeight: CGFloat?) -> Bool {
+        guard let endFrame, endFrame.height >= minimumHeight else { return false }
+        guard let screenHeight else { return true }
+        return endFrame.minY < screenHeight
+    }
+}
+
 /// Stands in for the fields above the note body while they're collapsed for typing.
 struct NoteEditorShowFieldsButton: View {
     let action: () -> Void

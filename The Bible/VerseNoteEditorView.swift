@@ -23,7 +23,9 @@ struct VerseNoteEditorView: View {
     @State private var formattingChanged = false
     @State private var restoredDraftDate: Date?
     @State private var isEditingBody = false
-    /// Hides everything above the body while typing, so the keyboard doesn't squeeze it.
+    @State private var isOnScreenKeyboardShown = false
+    /// Hides everything above the body while typing with the on-screen keyboard, so it
+    /// doesn't squeeze the body.
     @State private var areFieldsCollapsed = false
     @State private var persistenceFailure: PersistenceFailure?
 
@@ -110,9 +112,11 @@ struct VerseNoteEditorView: View {
             .frame(maxWidth: .infinity)
         }
         .padding(.vertical)
-        .onChange(of: isEditingBody) { _, editing in
-            // Typing collapses everything above the body; leaving the body brings it back.
-            areFieldsCollapsed = editing
+        .onScreenKeyboardVisibility($isOnScreenKeyboardShown)
+        .onChange(of: isEditingBody && isOnScreenKeyboardShown) { _, collapse in
+            // Typing collapses everything above the body; leaving the body or putting the
+            // keyboard away brings it back.
+            areFieldsCollapsed = collapse
         }
         .background(AppBackgroundView(tab: .notes))
         .richNoteEditing(
@@ -133,8 +137,7 @@ struct VerseNoteEditorView: View {
             deleteTitle: existingNote == nil ? nil : deleteTitle,
             deleteMessage: deleteMessage,
             save: save,
-            delete: deleteEntry,
-            hidesRestoredDraftBanner: areFieldsCollapsed
+            delete: deleteEntry
         )
         .persistenceFailureAlert(failure: $persistenceFailure)
     }

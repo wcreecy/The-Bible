@@ -159,6 +159,22 @@ struct HomeColumnLayoutTests {
     }
 
     @Test
+    func draggingPastAWideVerseOfDayKeepsItsColumnPlace() {
+        var layout = HomeColumnLayout(left: [.today, .verseOfDay, .streaks, .study], middle: [], right: [.timer]).normalized()
+        layout.verseOfDayWidth = .allColumns
+
+        // Settings lists only the stacked cards, so drag offsets refer to them.
+        layout.moveStacked(in: .left, fromOffsets: [2], toOffset: 0)
+        #expect(layout.stackedCards(in: .left).prefix(3) == [.study, .today, .streaks])
+        #expect(layout.left[1] == .verseOfDay)
+
+        layout.moveStacked(in: .left, fromOffsets: [0], toOffset: 3)
+        #expect(layout.stackedCards(in: .left).prefix(3) == [.today, .streaks, .study])
+        #expect(layout.left[1] == .verseOfDay)
+        #expect(Set(layout.left + layout.middle + layout.right) == Set(HomeCardID.allCases))
+    }
+
+    @Test
     func wideVerseOfDayLeadsTheNarrowOrderAndIsSaved() {
         var layout = HomeColumnLayout(left: [.today, .verseOfDay], middle: [.study], right: [.timer, .streaks])
         layout.verseOfDayWidth = .allColumns
@@ -166,6 +182,13 @@ struct HomeColumnLayoutTests {
 
         let normalized = layout.normalized()
         #expect(HomeColumnLayout(storageString: normalized.storageString, readerColumn: nil) == normalized)
+
+        // Every width survives saving.
+        for width in HomeCardWidth.allCases {
+            var saved = normalized
+            saved.verseOfDayWidth = width
+            #expect(HomeColumnLayout(storageString: saved.storageString, readerColumn: nil)?.verseOfDayWidth == width)
+        }
 
         // Layouts saved before widths existed load at one column.
         let legacy = HomeColumnLayout(storageString: #"{"left":["verseOfDay"],"middle":[],"right":[]}"#, readerColumn: nil)

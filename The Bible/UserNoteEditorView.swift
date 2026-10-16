@@ -22,7 +22,9 @@ struct UserNoteEditorView: View {
     @State private var restoredDraftDate: Date?
     @State private var isShowingSermonDetails: Bool
     @State private var isEditingBody = false
-    /// Hides everything above the body while typing, so the keyboard doesn't squeeze it.
+    @State private var isOnScreenKeyboardShown = false
+    /// Hides everything above the body while typing with the on-screen keyboard, so it
+    /// doesn't squeeze the body.
     @State private var areFieldsCollapsed = false
     @State private var persistenceFailure: PersistenceFailure?
 
@@ -101,9 +103,11 @@ struct UserNoteEditorView: View {
         }
         .padding()
         .animation(.snappy, value: areFieldsCollapsed)
-        .onChange(of: isEditingBody) { _, editing in
-            // Typing collapses everything above the body; leaving the body brings it back.
-            areFieldsCollapsed = editing
+        .onScreenKeyboardVisibility($isOnScreenKeyboardShown)
+        .onChange(of: isEditingBody && isOnScreenKeyboardShown) { _, collapse in
+            // Typing collapses everything above the body; leaving the body or putting the
+            // keyboard away brings it back.
+            areFieldsCollapsed = collapse
         }
         .background(AppBackgroundView(tab: .notes))
         .richNoteEditing(text: $noteText, selection: $noteSelection, onFormattingChange: { formattingChanged = true })
@@ -119,8 +123,7 @@ struct UserNoteEditorView: View {
             deleteTitle: existingNote == nil ? nil : "Delete Note",
             deleteMessage: "This note will be deleted from all your devices.",
             save: save,
-            delete: deleteNote,
-            hidesRestoredDraftBanner: areFieldsCollapsed
+            delete: deleteNote
         )
         .persistenceFailureAlert(failure: $persistenceFailure)
     }
