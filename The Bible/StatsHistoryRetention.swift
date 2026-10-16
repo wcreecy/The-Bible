@@ -86,17 +86,14 @@ struct ReadingHistoryArchive: Codable, Equatable {
         let walkStart = isEmpty ? (foldedDailyTotals.keys.min() ?? newCutoff) : cutoff
         if var day = StatsHistoryRetention.date(fromDayKey: walkStart, calendar: calendar),
            let end = StatsHistoryRetention.date(fromDayKey: newCutoff, calendar: calendar) {
-            // Uses the same grace-day rules as the live streak.
+            // Uses the same rules as the live streak.
             var runner = StreakRunner(
-                allowsGraceDays: StreakTracker.allowsGraceDays,
                 run: isEmpty ? 0 : streakRunAtCutoff,
                 best: bestStreak
             )
             while day < end {
                 runner.advance(
-                    goalMet: StreakTracker.isGoalMet(on: day, dailyTotals: foldedDailyTotals, calendar: calendar),
-                    on: day,
-                    calendar: calendar
+                    goalMet: StreakTracker.isGoalMet(on: day, dailyTotals: foldedDailyTotals, calendar: calendar)
                 )
                 guard let next = calendar.date(byAdding: .day, value: 1, to: day) else { break }
                 day = next

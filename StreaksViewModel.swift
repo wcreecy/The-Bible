@@ -3,7 +3,6 @@ import Observation
 
 enum ReadingWeekStatus {
     case completed
-    case grace
     case missed
     case today
     case future
@@ -89,8 +88,6 @@ final class StreaksViewModel {
             return .future
         }
 
-        if goalMet { return .completed }
-        let key = BibleStatsStore.isoDateString(date, calendar: calendar)
-        return summary.graceDayKeys.contains(key) ? .grace : .missed
+        return goalMet ? .completed : .missed
     }
 }

@@ -307,20 +307,12 @@ private struct GoalStatusLine: View {
                 }
                 .font(.footnote.weight(.semibold))
 
-                Text(detailText)
+                Text("\(readMinutes) of \(goalMinutes) min today")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
         }
         .accessibilityElement(children: .combine)
-    }
-
-    private var detailText: String {
-        var text = "\(readMinutes) of \(goalMinutes) min today"
-        if summary.usedGraceYesterday {
-            text += " · Grace day used yesterday, so today counts"
-        }
-        return text
     }
 }
 
@@ -334,15 +326,9 @@ private struct ReadingWeekDay: View {
     var body: some View {
         VStack(spacing: 5) {
             ZStack {
-                if status == .grace {
-                    Image(systemName: "snowflake")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(.cyan)
-                } else {
-                    Text(weekdaySymbol)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(status == .future ? .tertiary : .secondary)
-                }
+                Text(weekdaySymbol)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(status == .future ? .tertiary : .secondary)
 
                 if status == .completed {
                     HanddrawnCheckMark()
@@ -378,8 +364,6 @@ private struct ReadingWeekDay: View {
         switch status {
         case .completed:
             Circle().fill(Color.green.opacity(0.18))
-        case .grace:
-            Circle().fill(Color.cyan.opacity(0.15))
         case .today:
             // Today's ring fills as you read toward the goal.
             Circle()
@@ -410,8 +394,6 @@ private struct ReadingWeekDay: View {
         switch status {
         case .completed:
             return "\(dateLabel), daily goal completed"
-        case .grace:
-            return "\(dateLabel), grace day kept your streak"
         case .missed:
             return "\(dateLabel), daily goal missed"
         case .today:

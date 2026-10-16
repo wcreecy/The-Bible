@@ -3,7 +3,6 @@ import UserNotifications
 
 struct SettingsDailyGoalSection: View {
     @AppStorage("dailyGoalMinutes") private var dailyGoalMinutes: Int = 30
-    @AppStorage(StreakTracker.graceDaysEnabledKey) private var graceDaysEnabled = true
     @AppStorage(StreakReminderScheduler.enabledKey) private var reminderEnabled = false
     @AppStorage(StreakReminderScheduler.hourKey) private var reminderHour = StreakReminderScheduler.defaultHour
     @AppStorage(StreakReminderScheduler.minuteKey) private var reminderMinute = 0
@@ -14,7 +13,7 @@ struct SettingsDailyGoalSection: View {
     var body: some View {
         Section(
             header: Text("Daily Goal").foregroundStyle(.primary),
-            footer: Text("Set the number of minutes you want to spend in the app each day. Your reading streak is based on meeting this goal. With a grace day, missing one day a week won't end your streak. The reminder is skipped on days you've already met your goal.")
+            footer: Text("Set the number of minutes you want to spend in the app each day. Your reading streak is based on meeting this goal. The reminder is skipped on days you've already met your goal.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         ) {
@@ -39,16 +38,6 @@ struct SettingsDailyGoalSection: View {
             }
             .sheet(isPresented: $isDailyGoalSheetPresented) {
                 DailyGoalEditorView()
-            }
-
-            Toggle(isOn: $graceDaysEnabled) {
-                Label("Weekly Grace Day", systemImage: "snowflake")
-            }
-            .accessibilityIdentifier("streakGraceDayToggle")
-            .onChange(of: graceDaysEnabled) { _, _ in
-                // Streak counts change with this setting, so refresh anything showing them.
-                NotificationCenter.default.post(name: .bibleStatsExternallyUpdated, object: nil)
-                Task { await StreakReminderScheduler.refresh() }
             }
 
             Toggle(isOn: reminderBinding) {

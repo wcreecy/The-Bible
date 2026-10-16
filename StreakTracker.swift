@@ -1,52 +1,25 @@
 import Foundation
 
-/// Steps through days in order and keeps the goal streak, including grace days.
+/// Steps through days in order and keeps the goal streak.
 ///
-/// With grace days on, one missed day per `graceWindowDays` keeps an active streak
-/// going. The grace day doesn't add to the count, and a second miss inside the window
-/// ends the streak. The same rules are used for live streaks and archived history.
+/// Each day the goal is met adds to the run; any missed day ends it. The same rules
+/// are used for live streaks and archived history.
 struct StreakRunner {
-    static let graceWindowDays = 7
-
-    enum Outcome {
-        case counted
-        case grace
-        case missed
-    }
-
-    let allowsGraceDays: Bool
     private(set) var run: Int
     private(set) var best: Int
-    private(set) var lastGraceDay: Date?
 
-    init(allowsGraceDays: Bool, run: Int = 0, best: Int = 0) {
-        self.allowsGraceDays = allowsGraceDays
+    init(run: Int = 0, best: Int = 0) {
         self.run = run
         self.best = max(best, run)
     }
 
-    /// Whether missing `day` would be covered by a grace day.
-    func canUseGrace(on day: Date, calendar: Calendar) -> Bool {
-        guard allowsGraceDays, run > 0 else { return false }
-        guard let lastGraceDay else { return true }
-        let gap = calendar.dateComponents([.day], from: lastGraceDay, to: day).day ?? 0
-        return gap >= Self.graceWindowDays
-    }
-
-    @discardableResult
-    mutating func advance(goalMet: Bool, on day: Date, calendar: Calendar) -> Outcome {
+    mutating func advance(goalMet: Bool) {
         if goalMet {
             run += 1
             best = max(best, run)
-            return .counted
+        } else {
+            run = 0
         }
-        if canUseGrace(on: day, calendar: calendar) {
-            lastGraceDay = day
-            return .grace
-        }
-        run = 0
-        lastGraceDay = nil
-        return .missed
     }
 }
 
@@ -54,12 +27,6 @@ struct StreakRunner {
 struct StreakSummary {
     var current: Int = 0
     var best: Int = 0
-    /// Missed days kept by a grace day, as `yyyy-MM-dd` keys.
-    var graceDayKeys: Set<String> = []
-    /// Whether missing today would be covered by a grace day.
-    var graceAvailableToday: Bool = false
-    /// Whether yesterday was a grace day, so today has to count.
-    var usedGraceYesterday: Bool = false
     var todaySeconds: Int = 0
     var todayGoalSeconds: Int = 60
     /// The per-day totals the summary was built from, for callers that need day lookups.
@@ -75,13 +42,6 @@ struct StreakSummary {
 /// Updated to use BibleStatsStore's synced daily totals (yyyy-MM-dd local keys) instead of sessions,
 /// for consistent cross-device behavior via iCloud KVS.
 enum StreakTracker {
-    /// UserDefaults key for the grace day setting (on by default).
-    static let graceDaysEnabledKey = "streakGraceDaysEnabled"
-
-    static var allowsGraceDays: Bool {
-        UserDefaults.standard.object(forKey: graceDaysEnabledKey) as? Bool ?? true
-    }
-
     /// How far back streaks are evaluated when no archive covers older days.
     private static let maxHistoryDays = 1825
 
@@ -126,7 +86,7 @@ enum StreakTracker {
     // MARK: - Summary
 
     /// Walks reading history forward once and returns the current and best streaks,
-    /// grace days, and today's goal progress. Pass `dailyTotals` when already loaded.
+    /// and today's goal progress. Pass `dailyTotals` when already loaded.
     static func summary(
         dailyTotals: [String: Int]? = nil,
         now: Date = Date(),
@@ -142,16 +102,12 @@ enum StreakTracker {
         summary.todaySeconds = max(0, totals[BibleStatsStore.isoDateString(today, calendar: cal), default: 0])
         summary.todayGoalSeconds = max(1, dailyGoalSeconds(on: today))
 
-        var runner = StreakRunner(allowsGraceDays: allowsGraceDays)
+        var runner = StreakRunner()
         var cursor = cal.date(byAdding: .day, value: -maxHistoryDays, to: today) ?? today
 
         if let archived = archivedStreak, archived.cutoff > cursor {
             cursor = archived.cutoff
-            runner = StreakRunner(
-                allowsGraceDays: allowsGraceDays,
-                run: archived.runAtCutoff,
-                best: archived.best
-            )
+            runner = StreakRunner(run: archived.runAtCutoff, best: archived.best)
         } else if let earliest = totals.keys.min(),
                   let earliestDate = StatsHistoryRetention.date(fromDayKey: earliest, calendar: cal),
                   earliestDate > cursor {
@@ -159,27 +115,15 @@ enum StreakTracker {
             cursor = cal.startOfDay(for: earliestDate)
         }
 
-        let yesterday = cal.date(byAdding: .day, value: -1, to: today) ?? today
         while cursor < today {
-            let outcome = runner.advance(
-                goalMet: isGoalMet(on: cursor, dailyTotals: totals, calendar: cal),
-                on: cursor,
-                calendar: cal
-            )
-            if outcome == .grace {
-                summary.graceDayKeys.insert(BibleStatsStore.isoDateString(cursor, calendar: cal))
-                if cal.isDate(cursor, inSameDayAs: yesterday) {
-                    summary.usedGraceYesterday = true
-                }
-            }
+            runner.advance(goalMet: isGoalMet(on: cursor, dailyTotals: totals, calendar: cal))
             guard let next = cal.date(byAdding: .day, value: 1, to: cursor) else { break }
             cursor = next
         }
 
         // Today only adds to the streak once its goal is met; until then it can't break it.
-        summary.graceAvailableToday = runner.canUseGrace(on: today, calendar: cal)
         if summary.todayGoalMet {
-            runner.advance(goalMet: true, on: today, calendar: cal)
+            runner.advance(goalMet: true)
         }
 
         summary.current = runner.run

@@ -256,54 +256,26 @@ struct The_Bible__iOS_Tests {
     // MARK: - Streaks
 
     /// Runs `pattern` (true = goal met) through a runner, one day per entry.
-    private func runStreak(_ pattern: [Bool], allowsGraceDays: Bool) -> (runner: StreakRunner, outcomes: [StreakRunner.Outcome]) {
-        let calendar = Calendar(identifier: .gregorian)
-        let start = calendar.date(from: DateComponents(year: 2026, month: 1, day: 1)) ?? Date()
-        var runner = StreakRunner(allowsGraceDays: allowsGraceDays)
-        var outcomes: [StreakRunner.Outcome] = []
-        for (offset, met) in pattern.enumerated() {
-            let day = calendar.date(byAdding: .day, value: offset, to: start) ?? start
-            outcomes.append(runner.advance(goalMet: met, on: day, calendar: calendar))
+    private func runStreak(_ pattern: [Bool]) -> StreakRunner {
+        var runner = StreakRunner()
+        for met in pattern {
+            runner.advance(goalMet: met)
         }
-        return (runner, outcomes)
+        return runner
     }
 
     @Test
-    func missedDayEndsStreakWithoutGraceDays() {
-        let result = runStreak([true, true, false, true], allowsGraceDays: false)
-        #expect(result.runner.run == 1)
-        #expect(result.runner.best == 2)
+    func missedDayEndsStreak() {
+        let runner = runStreak([true, true, false, true])
+        #expect(runner.run == 1)
+        #expect(runner.best == 2)
     }
 
     @Test
-    func graceDayKeepsStreakWithoutCountingIt() {
-        let result = runStreak([true, true, false, true], allowsGraceDays: true)
-        #expect(result.outcomes[2] == .grace)
-        #expect(result.runner.run == 3)
-    }
-
-    @Test
-    func secondMissInsideGraceWindowEndsStreak() {
-        let result = runStreak([true, false, true, false, true], allowsGraceDays: true)
-        #expect(result.outcomes[1] == .grace)
-        #expect(result.outcomes[3] == .missed)
-        #expect(result.runner.run == 1)
-    }
-
-    @Test
-    func graceDayIsAvailableAgainAfterAWeek() {
-        let pattern = [true, false] + Array(repeating: true, count: 6) + [false, true]
-        let result = runStreak(pattern, allowsGraceDays: true)
-        #expect(result.outcomes[1] == .grace)
-        #expect(result.outcomes[8] == .grace)
-        #expect(result.runner.run == 8)
-    }
-
-    @Test
-    func graceDayNeedsAnActiveStreak() {
-        let result = runStreak([false, true], allowsGraceDays: true)
-        #expect(result.outcomes[0] == .missed)
-        #expect(result.runner.run == 1)
+    func consecutiveDaysBuildStreak() {
+        let runner = runStreak([false, true, true, true])
+        #expect(runner.run == 3)
+        #expect(runner.best == 3)
     }
 
     @Test
