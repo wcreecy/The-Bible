@@ -167,6 +167,8 @@ final class VerseOfDayViewModel {
         storedVerseChapter = ref.chapterNumber
         storedVerseNumber = ref.verseNumber
         storedVerseText = ref.verseText
+        // The widget favors itself in Smart Stacks for a while after a new verse.
+        sharedDefaults?.set(Date(), forKey: "verseOfDayChangedAt")
         mirrorVerseToAppGroup(book: ref.bookName, chapter: ref.chapterNumber, verse: ref.verseNumber, text: ref.verseText)
     }
 

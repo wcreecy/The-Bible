@@ -89,6 +89,7 @@ final class ReadingPositionStore {
             date: position.date,
             notify: false
         )
+        ReadingTimeHistory.recordReading(at: position.date)
         mirrorToWidget(position)
         NotificationCenter.default.post(name: .readingPositionChanged, object: nil)
     }

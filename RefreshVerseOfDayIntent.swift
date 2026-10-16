@@ -31,6 +31,7 @@ struct RefreshVerseOfDayIntent: AppIntent {
             shared.set(chapter, forKey: "verseOfDayChapter")
             shared.set(verse, forKey: "verseOfDayNumber")
             shared.set(text, forKey: "verseOfDayText")
+            shared.set(Date(), forKey: "verseOfDayChangedAt")
         }
 
         // Reload only the Verse widget timelines (debounce not available in intents; rate-limits still apply)

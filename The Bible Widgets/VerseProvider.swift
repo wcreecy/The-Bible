@@ -60,6 +60,8 @@ struct VerseWidgetEntry: TimelineEntry {
     let verse: Int
     let fontColor: Color
     let backgroundStyleRaw: String
+    /// Tells Smart Rotate when this widget belongs at the top of a stack.
+    var relevance: TimelineEntryRelevance? = nil
 }
 
 struct VerseProvider: AppIntentTimelineProvider {
@@ -83,11 +85,37 @@ struct VerseProvider: AppIntentTimelineProvider {
     }
 
     func timeline(for configuration: Intent, in context: Context) async -> Timeline<Entry> {
-        let entry = loadCurrentEntry(configuration: configuration)
-        return Timeline(entries: [entry], policy: .after(nextAutoRefreshDate()))
+        let now = Date()
+        let refresh = nextAutoRefreshDate(from: now)
+        var entry = loadCurrentEntry(configuration: configuration, date: now)
+        entry.relevance = TimelineEntryRelevance(score: Self.restingScore)
+        var entries = [entry]
+
+        // A new verse is worth surfacing for a few hours, then the widget settles back.
+        let changedAt = UserDefaults(suiteName: "group.bible.app")?.object(forKey: "verseOfDayChangedAt") as? Date
+        if let changedAt {
+            let boostEnd = changedAt.addingTimeInterval(Self.newVerseBoost)
+            if boostEnd > now {
+                entries[0].relevance = TimelineEntryRelevance(
+                    score: Self.newVerseScore,
+                    duration: boostEnd.timeIntervalSince(now)
+                )
+                if boostEnd < refresh {
+                    var settled = loadCurrentEntry(configuration: configuration, date: boostEnd)
+                    settled.relevance = TimelineEntryRelevance(score: Self.restingScore)
+                    entries.append(settled)
+                }
+            }
+        }
+        return Timeline(entries: entries, policy: .after(refresh))
     }
 
-    private func loadCurrentEntry(configuration: Intent) -> Entry {
+    /// Relevance scores are compared only with this app's other widgets.
+    private static let restingScore: Float = 10
+    private static let newVerseScore: Float = 70
+    private static let newVerseBoost: TimeInterval = 3 * 60 * 60
+
+    private func loadCurrentEntry(configuration: Intent, date: Date = Date()) -> Entry {
         let shared = UserDefaults(suiteName: "group.bible.app")
         let book = shared?.string(forKey: "verseOfDayBook") ?? "John"
         let chapter = shared?.integer(forKey: "verseOfDayChapter") ?? 1
@@ -95,7 +123,7 @@ struct VerseProvider: AppIntentTimelineProvider {
         let text = shared?.string(forKey: "verseOfDayText") ?? "For God so loved the world..."
 
         return Entry(
-            date: Date(),
+            date: date,
             text: text,
             book: book,
             chapter: chapter,

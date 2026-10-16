@@ -58,6 +58,8 @@ struct PinnedVerseEntry: TimelineEntry {
     let verse: Int
     let text: String
     let backgroundStyleRaw: String
+    /// Tells Smart Rotate when this widget belongs at the top of a stack.
+    var relevance: TimelineEntryRelevance? = nil
 }
 
 struct PinnedVerseProvider: AppIntentTimelineProvider {
@@ -80,10 +82,11 @@ struct PinnedVerseProvider: AppIntentTimelineProvider {
     }
 
     func timeline(for configuration: Intent, in context: Context) async -> Timeline<Entry> {
-        Timeline(
-            entries: [loadCurrentEntry(configuration: configuration)],
-            policy: .never
-        )
+        var entry = loadCurrentEntry(configuration: configuration)
+        // A pinned verse doesn't change on its own, so it stays at a low, steady score
+        // and lets the time-sensitive widgets take the top of a stack when they matter.
+        entry.relevance = TimelineEntryRelevance(score: entry.book.isEmpty ? 0 : 5)
+        return Timeline(entries: [entry], policy: .never)
     }
 
     private func loadCurrentEntry(configuration: Intent) -> Entry {
