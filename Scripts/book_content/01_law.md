@@ -6,13 +6,13 @@ The world at the time: Powerful cities rose in Mesopotamia and Egypt was ruled b
 
 **Creation and the First Command (Genesis 1:1–2:25)** — God creates the heavens, the earth, every living thing, and the first man and woman, giving them a good world and a clear command.
 
-In the beginning, God created the heavens and the earth. He brought light out of darkness, separated waters and land, and filled the earth with plants, animals, sun, moon, and stars. God made human beings in His image, male and female, and gave them authority over the living creatures. He blessed the seventh day and rested from His work.
+In the beginning, God created the heavens and the earth. He brought light out of darkness, separated the waters from the dry land, filled the earth with plants and animals, and set the sun, moon, and stars in the heavens. God made human beings in His image, male and female, and gave them authority over the living creatures. He blessed the seventh day and rested from His work.
 
-God formed Adam from the dust of the ground and placed him in the garden of Eden, a place watered by a river and filled with trees. Adam was to dress and keep the garden. God told him that he could eat from every tree except the tree of the knowledge of good and evil. God then made Eve from Adam’s side, and the two became husband and wife.
+God formed Adam from the dust of the ground and placed him in the garden of Eden, a place watered by a river and filled with trees. Adam was to dress and keep the garden. God told him that he could eat from every tree except the tree of the knowledge of good and evil, warning him, “in the day that thou eatest thereof thou shalt surely die.” God then made a woman from a rib taken from Adam, and the two became husband and wife.
 
 **Sin Enters the World (Genesis 3:1–5:32)** — Adam and Eve disobey God, and their sin brings judgment, hardship, death, and a broken human family.
 
-The serpent questioned God’s command and told Eve that she would not surely die if she ate from the forbidden tree. Eve ate the fruit and gave some to Adam. Their eyes were opened, and they hid when God came to the garden. God judged the serpent, the woman, and the man, yet He also clothed Adam and Eve before sending them from Eden so they would not eat from the tree of life.
+The serpent questioned God’s command and told the woman that she would not surely die if she ate from the forbidden tree. She ate the fruit and gave some to Adam. Their eyes were opened, and they hid when God came to the garden. God judged the serpent, the woman, and the man. Adam named his wife Eve, “because she was the mother of all living,” and God clothed Adam and Eve before sending them from Eden so they would not eat from the tree of life.
 
 Their sons Cain and Abel brought offerings to the Lord. God accepted Abel’s offering but did not respect Cain’s. Cain became angry and killed his brother in the field. God judged Cain, though He placed a mark on him so that no one would kill him.
 
@@ -22,9 +22,9 @@ Human families continued to grow. Adam had another son, Seth, and the line from 
 
 The earth became corrupt before God and was filled with violence. Noah found grace in the eyes of the Lord and was described as a just man who walked with God. God told Noah that He would bring a flood upon the earth and commanded him to build an ark, a large vessel of gopher wood. Noah was to bring his wife, his sons Shem, Ham, and Japheth, their wives, and animals into it.
 
-Rain fell for forty days and forty nights, and the waters covered the earth. Everything outside the ark that had the breath of life died. After the waters began to go down, the ark rested on the mountains of Ararat. Noah sent out birds, and eventually a dove returned with an olive leaf. When the ground was dry, God told Noah and his family to leave the ark.
+Rain fell for forty days and forty nights, and the waters covered the earth. Every creature on the dry land that had the breath of life died, except those in the ark. After the waters began to go down, the ark rested on the mountains of Ararat. Noah sent out birds, and eventually a dove returned with an olive leaf. When the ground was dry, God told Noah and his family to leave the ark.
 
-Noah built an altar and offered sacrifices. God promised never again to destroy every living thing with a flood and set the rainbow in the cloud as the sign of His covenant. He blessed Noah’s family and told them to multiply and fill the earth. Yet sin remained: Noah later became drunk, and conflict arose among his sons, leading Noah to pronounce words concerning Canaan and the families of Shem and Japheth.
+Noah built an altar and offered sacrifices. God blessed Noah and his sons and told them to multiply and fill the earth. He promised never again to destroy every living thing with a flood and set the rainbow in the cloud as the sign of His covenant. Yet sin remained: Noah later became drunk, and Ham, the father of Canaan, saw his father’s nakedness and told his brothers. Shem and Japheth walked in backward and covered their father. When Noah awoke, he cursed Canaan, Ham’s son, and blessed Shem and Japheth.
 
 **Nations Spread and Babel Rises (Genesis 10:1–11:32)** — The descendants of Noah spread into nations, but people gather in rebellion at Babel before God scatters them across the earth.
 
@@ -32,7 +32,7 @@ Genesis traces the families that came from Noah’s three sons. From them came m
 
 At Babel, people used brick and slime to build a city and a tower, seeking to make a name for themselves so they would not be scattered. The Lord confused their language, and they could no longer understand one another. Their building stopped, and the people were scattered abroad over the earth.
 
-The record then narrows from the nations to the family of Shem. Through generations it reaches Terah, who lived in Ur of the Chaldees. Terah’s son Abram married Sarai, while Abram’s brother Haran became the father of Lot. Terah began traveling toward Canaan but settled in Haran, where he died.
+The record then narrows from the nations to the family of Shem. Through generations it reaches Terah, who lived in Ur of the Chaldees. Terah’s son Abram married Sarai, who was barren and had no child, while Abram’s brother Haran became the father of Lot and died in Ur. Terah began traveling toward Canaan but settled in a city also called Haran, where he died.
 
 **Abram Receives God’s Promise (Genesis 12:1–14:24)** — God calls Abram to Canaan and promises to make a great nation from him as he learns to rely on God amid danger and conflict.
 
@@ -46,21 +46,23 @@ Abram and Lot separated because their herdsmen could not live together peacefull
 
 God told Abram not to fear and promised that his own descendant would be his heir. Abram believed the Lord, and it was counted to him for righteousness. God made a covenant with him, declaring that his descendants would inherit the land, though they would first be afflicted in another land for four hundred years.
 
-Sarai, who had no children, gave her servant Hagar to Abram. Hagar bore Ishmael, but conflict grew between the two women. Later, when Abram was ninety-nine, God changed his name to Abraham and Sarai’s name to Sarah. He gave circumcision as the sign of His covenant and said that Sarah herself would bear a son.
+Sarai, who had no children, gave her servant Hagar to Abram. When Hagar conceived, she despised Sarai, and Sarai dealt harshly with her until Hagar fled. The angel of the Lord found Hagar by a fountain in the wilderness, sent her back, and promised that her son, Ishmael, would have many descendants. Later, when Abram was ninety-nine, God changed his name to Abraham and Sarai’s name to Sarah. He gave circumcision as the sign of His covenant and said that Sarah herself would bear a son. Abraham fell on his face and laughed at the thought of a child born to a man a hundred years old, and God told him to name the son Isaac.
 
-Three men visited Abraham near his tent. The Lord again announced that Sarah would have a son in her old age. Sarah laughed within herself, but the Lord asked, “Is any thing too hard for the Lord?” The promised son would be born at the appointed time.
+Three men visited Abraham near his tent. The Lord again announced that Sarah would have a son in her old age. Sarah, too, laughed within herself, but the Lord asked, “Is any thing too hard for the Lord?” The promised son would be born at the appointed time.
 
 **Sodom Falls and Isaac Is Born (Genesis 18:16–21:34)** — God judges Sodom and Gomorrah, preserves Lot, and fulfills His promise by giving Abraham and Sarah their son Isaac.
 
 The Lord revealed that the outcry against Sodom and Gomorrah was great. Abraham pleaded for the cities, asking whether God would destroy the righteous with the wicked. God said He would spare Sodom if ten righteous people were found there, but the city was not spared.
 
-Angels led Lot, his wife, and his daughters out of Sodom. Fire and brimstone fell upon Sodom and Gomorrah. Lot’s wife looked back and became a pillar of salt. Lot later lived in a cave with his daughters, and they became mothers of Moab and Ammon.
+Angels led Lot, his wife, and his daughters out of Sodom. Fire and brimstone fell upon Sodom and Gomorrah. Lot’s wife looked back and became a pillar of salt. Lot later lived in a cave with his two daughters. They made their father drunk and conceived by him, and their sons, Moab and Benammi, became the fathers of the Moabites and the children of Ammon.
+
+At Gerar, Abraham again said that Sarah was his sister, and Abimelech king of Gerar took her. God warned Abimelech in a dream, and he returned Sarah to Abraham, who prayed for Abimelech’s household.
 
 Sarah gave birth to Isaac, just as God had said. Abraham circumcised him on the eighth day. Sarah asked Abraham to send away Hagar and Ishmael, and God told Abraham to listen to Sarah, while promising to make a nation of Ishmael also. God provided water for Hagar and her son in the wilderness. Abraham later made a covenant of peace with Abimelech at Beersheba.
 
 **Abraham Is Tested and Sarah Dies (Genesis 22:1–23:20)** — Abraham obeys God’s command concerning Isaac, receives God’s renewed promise, and secures a burial place when Sarah dies.
 
-God tested Abraham by commanding him to take Isaac to the land of Moriah and offer him there. Abraham obeyed and prepared to sacrifice his son, but the angel of the Lord stopped him. A ram caught in a thicket was offered instead. God renewed His promise that Abraham’s descendants would be multiplied and that through his seed all nations of the earth would be blessed, because Abraham obeyed His voice.
+God tested Abraham by commanding him to take Isaac to the land of Moriah and offer him there. On the way Isaac asked where the lamb was, and Abraham answered, “God will provide himself a lamb for a burnt offering.” Abraham obeyed and prepared to sacrifice his son, but the angel of the Lord stopped him. A ram caught in a thicket was offered instead, and Abraham called the place Jehovahjireh, meaning the Lord will provide. God renewed His promise that Abraham’s descendants would be multiplied and that through his seed all nations of the earth would be blessed, because Abraham obeyed His voice.
 
 Sarah died at Hebron in Canaan. Abraham mourned for her and spoke with the sons of Heth to obtain a burial place. He bought the field and cave of Machpelah from Ephron for four hundred shekels of silver. There Sarah was buried, making it Abraham’s first permanent possession in the land promised to him.
 
@@ -68,29 +70,35 @@ Sarah died at Hebron in Canaan. Abraham mourned for her and spoke with the sons 
 
 Abraham sent his oldest servant to his relatives in Mesopotamia to find a wife for Isaac. At a well, the servant prayed for a sign, and Rebekah offered water to him and his camels. She agreed to return with him and became Isaac’s wife. After Abraham died, God blessed Isaac.
 
-Rebekah gave birth to twins, Esau and Jacob. Esau, the older, became a hunter, while Jacob dwelt in tents. Esau sold his birthright to Jacob for bread and pottage. Later, Jacob, aided by Rebekah, received Isaac’s blessing that had been intended for Esau. Esau planned to kill Jacob after their father’s death, so Jacob fled toward Rebekah’s family.
+Rebekah was barren until Isaac prayed for her. When she conceived twins, the Lord told her that two nations were in her womb and that “the elder shall serve the younger.” Esau, the older, became a hunter, while Jacob dwelt in tents. Esau sold his birthright to Jacob for bread and pottage.
+
+During a famine the Lord appeared to Isaac, told him not to go down to Egypt, and renewed to him the oath He had sworn to Abraham: the land, many descendants, and blessing for all nations through his seed. Like his father, Isaac said his wife was his sister, this time to the Philistines at Gerar. He later dug wells in the land, and the Lord blessed him at Beersheba.
+
+When Isaac was old and his eyes were dim, Rebekah urged Jacob to deceive his father. Wearing Esau’s clothes and goatskins on his hands and neck, Jacob told Isaac, “I am Esau thy firstborn,” and received the blessing intended for Esau. Esau planned to kill Jacob after their father’s death, so Jacob fled toward Rebekah’s family.
 
 On the journey Jacob dreamed of a ladder set up on earth, with angels ascending and descending. The Lord repeated to him the promises given to Abraham and Isaac: the land, many descendants, and blessing for all families of the earth through his seed. Jacob called the place Bethel and vowed that the Lord would be his God.
 
 **Jacob’s Family Grows in Haran (Genesis 29:1–31:55)** — Jacob serves Laban, marries Leah and Rachel, fathers many sons, and returns toward Canaan after years away from home.
 
-Jacob met Rachel at a well and came to the house of her father Laban. He agreed to serve seven years to marry Rachel, but Laban gave him Leah instead. Jacob then married Rachel also and served Laban seven more years. Leah bore sons including Reuben, Simeon, Levi, and Judah. Rachel remained barren for a time, and the family grew through Rachel, Leah, and their servants Bilhah and Zilpah.
+Jacob met Rachel at a well and came to the house of her father Laban. He agreed to serve seven years to marry Rachel, but Laban gave him Leah instead. Jacob then married Rachel also and served Laban seven more years. Leah bore sons including Reuben, Simeon, Levi, and Judah. Rachel remained barren for a time, and the family grew through Leah and through Bilhah and Zilpah, the servants of Rachel and Leah.
 
 Rachel later bore Joseph, and Jacob asked to return home. Laban sought to keep him because the Lord had blessed Laban through Jacob. Jacob’s flocks increased, and conflict grew between him and Laban’s sons. God told Jacob to return to the land of his fathers.
 
-Jacob left with his wives, children, and possessions. Laban pursued him, but God warned Laban not to speak to Jacob either good or bad. After resolving their dispute, they made a covenant marked by a heap of stones and separated.
+While Laban was away shearing his sheep, Jacob left secretly with his wives, children, and possessions, and Rachel stole her father’s household images. Laban pursued him, but God warned Laban not to speak to Jacob either good or bad. After resolving their dispute, they made a covenant marked by a heap of stones and separated.
 
 **Jacob Returns as Israel (Genesis 32:1–36:43)** — Jacob meets Esau again, receives the name Israel, and his family settles in Canaan amid both reconciliation and loss.
 
-As Jacob approached Canaan, he feared Esau, who came toward him with four hundred men. Jacob prayed to the God of his fathers and sent gifts ahead. That night he wrestled with a man until daybreak. The man changed Jacob’s name to Israel, saying that he had power with God and with men and had prevailed.
+As Jacob approached Canaan, he feared Esau, who came toward him with four hundred men. Jacob prayed to the God of his fathers and sent gifts ahead. That night he wrestled with a man until daybreak. The man changed Jacob’s name to Israel, saying that he had power with God and with men and had prevailed. Jacob named the place Peniel, saying, “I have seen God face to face, and my life is preserved,” and he limped away as the sun rose.
 
 Esau met Jacob, embraced him, and they wept. Jacob later settled near Shechem, where Dinah was defiled by Shechem the son of Hamor. Her brothers Simeon and Levi killed the men of the city through deceit, bringing trouble upon Jacob’s household.
 
-God called Jacob back to Bethel, where Jacob removed foreign gods from his household and built an altar. Rachel died while giving birth to Benjamin. Isaac died and was buried by Esau and Jacob. The record also traces Esau’s descendants, the people of Edom, and their kings.
+God called Jacob back to Bethel, where Jacob removed foreign gods from his household and built an altar. There God confirmed his new name, Israel, and renewed the promises of the land and many descendants. Rachel died while giving birth to Benjamin. Isaac died and was buried by Esau and Jacob. The record also traces Esau’s descendants, the people of Edom, and their kings.
 
 **Joseph Is Sold and Rises in Egypt (Genesis 37:1–41:57)** — Joseph is rejected by his brothers but is raised from prison to rule in Egypt after God enables him to interpret Pharaoh’s dreams.
 
 Jacob loved Joseph, the son of Rachel, more than his other sons and gave him a coat of many colours. Joseph reported dreams in which his family bowed before him, and his brothers hated him. When Joseph came to them near Dothan, they sold him to Ishmaelites traveling to Egypt and deceived their father by showing him Joseph’s bloodstained coat.
+
+Meanwhile Judah married a Canaanite woman, and after his two oldest sons died, he withheld his third son from their widow, Tamar. Tamar disguised herself and conceived by Judah himself. When the truth came out, Judah confessed, “She hath been more righteous than I.” Tamar bore twins, Pharez and Zarah, and through Pharez the line of Judah would later lead to King David.
 
 In Egypt, Joseph served in Potiphar’s house but was imprisoned after Potiphar’s wife falsely accused him. The Lord was with Joseph, and he interpreted the dreams of Pharaoh’s butler and baker. Two years later Pharaoh dreamed of seven fat cattle and seven lean cattle, then seven full ears of corn and seven thin ears. Joseph explained that God had revealed seven years of plenty followed by seven years of famine.
 
@@ -98,7 +106,7 @@ Pharaoh placed Joseph over Egypt to store food during the years of abundance. Jo
 
 **Joseph Saves His Family (Genesis 42:1–47:31)** — Joseph’s brothers come to Egypt for food, and the family is reunited as Joseph brings them safely into the land of Goshen.
 
-Jacob sent ten sons to Egypt for grain, but Benjamin remained at home. Joseph recognized his brothers, though they did not recognize him. He tested them by demanding that Benjamin be brought before him. After they returned with Benjamin, Joseph arranged a final test by placing his silver cup in Benjamin’s sack.
+Jacob sent ten sons to Egypt for grain, but Benjamin remained at home. Joseph recognized his brothers, though they did not recognize him. He accused them of being spies, kept Simeon bound in Egypt, and demanded that they bring Benjamin back with them. After they returned with Benjamin, Joseph arranged a final test by placing his silver cup in Benjamin’s sack.
 
 Judah offered himself as a servant in Benjamin’s place rather than return to his father without the younger brother. Joseph then revealed himself, telling his brothers not to be grieved or angry with themselves because God had sent him ahead to preserve life. He sent for Jacob and the whole household.
 
@@ -106,7 +114,7 @@ Jacob came to Egypt with his family. God told him not to fear going there, promi
 
 **Jacob Blesses His Sons and Dies (Genesis 48:1–50:26)** — Jacob blesses Joseph’s sons and speaks concerning his family before his death, while Joseph’s final years close the book in Egypt.
 
-Jacob adopted Joseph’s sons, Ephraim and Manasseh, as his own. Though Manasseh was older, Jacob placed his right hand on Ephraim and gave the greater blessing to him. He then called his sons together and spoke concerning each of them, including Reuben, Simeon, Levi, Judah, Joseph, and Benjamin.
+Jacob adopted Joseph’s sons, Ephraim and Manasseh, as his own. Though Manasseh was older, Jacob placed his right hand on Ephraim and gave the greater blessing to him. He then called his sons together and spoke concerning each of them, including Reuben, Simeon, Levi, Judah, Joseph, and Benjamin. To Judah he said, “The sceptre shall not depart from Judah, nor a lawgiver from between his feet, until Shiloh come.”
 
 Jacob commanded his sons to bury him in the cave of Machpelah, where Abraham, Sarah, Isaac, Rebekah, and Leah were buried. After Jacob died, Joseph and his brothers carried his body to Canaan and buried him there. Joseph’s brothers feared that he would now repay their earlier wrong, but Joseph told them, “Ye thought evil against me; but God meant it unto good,” to save many people alive.
 
